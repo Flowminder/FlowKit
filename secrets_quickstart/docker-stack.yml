@@ -1,0 +1,78 @@
+#
+# Stack file for flowkit integration tests
+#
+
+version: '3.1'
+secrets:
+  cert-flowkit.pem: # SSL Certificate used to serve FlowAPI over https
+    external: true
+  API_DB_USER: # Database user used by FlowAPI
+    external: true
+  API_DB_PASS: # Password for the FlowAPI database user
+    external: true
+  FM_DB_USER: # Database user for FlowMachine
+    external: true
+  FM_DB_PASS: # Password for FlowDB
+    external: true
+  POSTGRES_PASSWORD_FILE: # Postgres superuser password
+    external: true
+  JWT_SECRET_KEY: # Secret used to sign api tokens
+    external: true
+networks:
+  db:
+  redis:
+  zero:
+  api:
+services:
+    flowdb:
+        image: "flowminder/flowdb:testdata-${CIRCLE_BRANCH:-master}"
+        secrets:
+          - POSTGRES_PASSWORD_FILE
+          - API_DB_USER
+          - API_DB_PASS
+          - FM_DB_USER
+          - FM_DB_PASS
+        tty: true
+        stdin_open: true
+        networks:
+          db:
+            aliases:
+              - flowdb
+    flowmachine:
+        image: "flowminder/flowmachine:${CIRCLE_BRANCH:-master}"
+        environment:
+            - DB_PORT=5432
+            - DB_HOST=flowdb
+            - LOG_LEVEL=${LOG_LEVEL:-error}
+            - DEBUG=${FM_DEBUG:-False}
+        secrets:
+          - FM_DB_USER
+          - FM_DB_PASS
+        networks:
+          - db
+          - redis
+          - zero
+    flowapi:
+        image: "flowminder/flowapi:${CIRCLE_BRANCH:-master}"
+        ports:
+          - "9090:9090"
+        environment:
+            - SERVER=flowmachine
+            - LOG_LEVEL=${LOG_LEVEL:-error}
+            - DB_HOST=flowdb
+        secrets:
+          - cert-flowkit.pem
+          - JWT_SECRET_KEY
+          - API_DB_USER
+          - API_DB_PASS
+        networks:
+          - zero
+          - db
+          - api
+    query_locker:
+        image: redis
+        networks:
+          redis:
+            aliases:
+              - redis
+

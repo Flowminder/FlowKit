@@ -1,0 +1,52 @@
+version: '2.1'
+
+networks:
+  database:
+  web:
+
+services:
+  flowauth:
+    image: flowminder/flowauth:${TAG:-auth-manager}
+    environment:
+      VIRTUAL_HOST: ${VIRTUAL_HOST:-exampledomain.com}
+      LETSENCRYPT_HOST: ${HOST-exampledomain.com}
+      LETSENCRYPT_EMAIL: ${EMAIL:-admin@exampledomain.com}
+      DB_URI: "postgresql://postgres:${POSTGRES_PASSWORD:-changeme}@db:5432/flowauth"
+    networks:
+      database:
+        aliases:
+          - web
+      web:
+        aliases:
+          - auth
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    networks:
+      database:
+        aliases:
+          - db
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/nginx/vhost.d"
+      - "/usr/share/nginx/html"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+      - "/etc/nginx/certs"
+    networks:
+      web:
+        aliases:
+          - proxy
+
+  letsencrypt-nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    volumes_from:
+      - "nginx-proxy"

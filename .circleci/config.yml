@@ -1,0 +1,654 @@
+defaults:
+    - &base_docker
+      - image: circleci/python:3.7
+        environment:
+          DB_PORT: 5432
+          MPLBACKEND: "agg"
+    - &flowdb_env
+      PYENV_VERSION: 3.6.6
+      DB_PORT: 9000
+      ORACLE_DB_PORT: 9002
+      SYNTHETIC_DATA_DB_PORT: 5432
+      POSTGRES_UID: 1180
+      POSTGRES_GID: 1180
+      FLOWDB_DATA_DIR: /home/circleci/database_data
+      FLOWDB_INGESTION_DIR: /home/circleci/project/flowdb/tests/data
+      POSTGRES_PASSWORD: flowflow
+      POSTGRES_USER: flowdb
+      FM_PASSWORD: foo
+      API_PASSWORD: foo
+    - &flowdb_docker
+      - image: circleci/python:3.7
+        environment:
+          DB_PORT: 5432
+          MPLBACKEND: "agg"
+          REDIS_HOST: "localhost"
+      - image: flowminder/flowdb:testdata-$CIRCLE_TAG$CIRCLE_BRANCH
+        environment:
+          FM_PASSWORD: foo
+          API_PASSWORD: foo
+        auth:
+          username: $DOCKER_CLOUD_USER
+          password: $DOCKER_CLOUD_PASSWORD
+      - image: redis
+    - &docs_build
+      - image: circleci/python:3.7
+        environment:
+          DB_PORT: 5432
+          MPLBACKEND: "agg"
+          REDIS_HOST: "localhost"
+      # - image: "flowminder/flowdb:testdata-$CIRCLE_TAG$CIRCLE_BRANCH"
+      #   environment:
+      #     FM_PASSWORD: foo
+      #     API_PASSWORD: foo
+      #   auth:
+      #     username: $DOCKER_CLOUD_USER
+      #     password: $DOCKER_CLOUD_PASSWORD
+      # - image: "flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH"
+      #   environment:
+      #     DB_PORT: 5432
+      #     DB_HOST: localhost
+      #     REDIS_HOST: localhost
+      #   auth:
+      #     username: $DOCKER_CLOUD_USER
+      #     password: $DOCKER_CLOUD_PASSWORD
+      # - image: "flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH"
+      #   environment:
+      #     SERVER: localhost
+      #     DB_USER: reporter
+      #     DB_PASS: foo
+      #     DB_HOST: localhost
+      #     DB_PORT: 5432
+      #     JWT_SECRET_KEY: secret
+      #   auth:
+      #     username: $DOCKER_CLOUD_USER
+      #     password: $DOCKER_CLOUD_PASSWORD
+      # - image: redis
+    - &flowdbsynth_docker
+      - image: circleci/python:3.6
+        environment:
+          POSTGRES_PASSWORD: flowflow
+          DB_PORT: 5432
+          FM_PASSWORD: foo
+          API_PASSWORD: foo
+      - image: flowminder/flowdb:synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH
+        auth:
+          username: $DOCKER_CLOUD_USER
+          password: $DOCKER_CLOUD_PASSWORD
+        environment:
+          N_DAYS: 3
+          N_USERS: 400
+          N_CELLS: 100
+          N_CALLS: 2000
+          FM_PASSWORD: foo
+          API_PASSWORD: foo
+    - &wait_for_flowdb
+        name: Wait for flowdb to start
+        command: |
+          dockerize -wait tcp://localhost:8000 -timeout 10m
+          sleep 10
+          dockerize -wait tcp://localhost:5432 -timeout 10m
+    - &run_always_org_context
+          context: org-global
+          filters:
+            tags:
+              only: /.*/
+    - &tag_only_org_context
+          context: org-global
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+
+
+version: 2
+jobs:
+  build_flowdb:
+    machine: true
+    working_directory: /home/circleci/project
+    environment: *flowdb_env
+    steps:
+      - checkout
+      - restore_cache:
+          key: flowdb-deps-1-{{ .Environment.PYENV_VERSION }}-{{ checksum "flowdb/Pipfile.lock"}}
+      - run:
+          name: Install system dependencies
+          command: |
+            sudo apt-get install build-essential git libreadline-dev zlib1g-dev libssl-dev libbz2-dev libsqlite3-dev
+            git -C $(pyenv root) pull
+            pyenv install -s $PYENV_VERSION
+            pip install --upgrade pip pipenv
+      - run:
+          name: Install python dependencies
+          command: |
+            PIPENV_PIPFILE=flowdb/Pipfile pipenv install --deploy --dev
+      - save_cache:
+          key: flowdb-deps-1-{{ .Environment.PYENV_VERSION }}-{{ checksum "flowdb/Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/flowdb-NgQ6vyXW
+            - /opt/circleci/.pyenv
+      - run:
+          name: Set additional environment variables
+          command: |
+            echo "export FLOWDB_VERSION=$(git describe --tags --always)" | tee -a $BASH_ENV /home/circleci/.env
+            echo 'export TAG_PREFIXES=(""  "testdata-" "synthetic-data-")' | tee -a $BASH_ENV /home/circleci/.env
+            echo "export FLOWDB_RELEASE_DATE=$(git show -s --date=short-local --pretty=format:%cd -n1)"| tee -a $BASH_ENV /home/circleci/.env
+      - run:
+          name: Log in to docker cloud
+          command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
+      - run:
+          name: Build main image
+          command: |
+            echo Building version $FLOWDB_VERSION
+            echo Tagging as $CIRCLE_TAG$CIRCLE_BRANCH
+            docker pull flowminder/flowdb:latest && export BUILD_CACHE_TAG=latest || true
+            docker pull flowminder/flowdb:$CIRCLE_TAG$CIRCLE_BRANCH && export BUILD_CACHE_TAG=$CIRCLE_TAG$CIRCLE_BRANCH || true
+            echo Using cache from $BUILD_CACHE_TAG
+            docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
+              --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$CIRCLE_TAG$CIRCLE_BRANCH flowdb
+      - run:
+          name: Build testdata image
+          command: |
+            echo Building testdata version $FLOWDB_VERSION
+            echo Tagging as testdata-$CIRCLE_TAG$CIRCLE_BRANCH
+            docker build --build-arg CODE_VERSION=$CIRCLE_TAG$CIRCLE_BRANCH -t flowminder/flowdb:testdata-$CIRCLE_TAG$CIRCLE_BRANCH \
+            flowdb/testdata
+          background: true
+      - run:
+          name: Build synthetic data image
+          command: |
+            echo Building synthetic testdata version $FLOWDB_VERSION.
+            echo Tagging as synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH
+            docker build --build-arg CODE_VERSION=$CIRCLE_TAG$CIRCLE_BRANCH -t flowminder/flowdb:synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH \
+              -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
+          background: true
+      - run:
+          name: Build image with Oracle
+          command: |
+            echo Building Oracle_fdw version $FLOWDB_VERSION
+            echo Tagging as oracle-$CIRCLE_TAG$CIRCLE_BRANCH
+            docker build --build-arg CODE_VERSION=$CIRCLE_TAG$CIRCLE_BRANCH --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
+             -t flowminder/flowdb:oracle-$CIRCLE_TAG$CIRCLE_BRANCH flowdb/oracle_fdw
+      - run:
+          name: Create ingestion environment
+          command: |
+            echo "User ID ($POSTGRES_UID) and Group ID ($POSTGRES_GID)"
+            sudo groupadd --gid $POSTGRES_UID ingestion
+            sudo useradd -g ingestion -u $POSTGRES_GID ingestion
+            mkdir $FLOWDB_DATA_DIR
+            sudo chown -R ingestion:ingestion $FLOWDB_DATA_DIR $FLOWDB_INGESTION_DIR
+            sudo chmod -R a+rw $FLOWDB_INGESTION_DIR
+      - run:
+          name: Launch flowdb
+          command: |
+            docker run --name flowdb --publish $DB_PORT:5432 --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
+              --volume=${FLOWDB_INGESTION_DIR}:/ingestion -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+              -e MAX_CPUS=2 -e MAX_WORKERS=2 -e MAX_WORKERS_PER_GATHER=2 \
+              --detach flowminder/flowdb:$CIRCLE_TAG$CIRCLE_BRANCH
+
+            echo "Waiting for flowdb to be ready.."
+            docker run --name flowdb_oracle --publish $ORACLE_DB_PORT:5432 -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+             --detach flowminder/flowdb:oracle-$CIRCLE_TAG$CIRCLE_BRANCH
+            docker exec flowdb bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
+            echo "Waiting for flowdb with oracle_fdw to be ready.."
+            docker exec flowdb_oracle bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
+            docker ps -a
+            docker images -a
+      - run:
+          name: Run tests
+          command: cd flowdb && pipenv run pytest --junit-xml=test_results/pytest/results.xml --ignore=tests/test_synthetic_data.py
+      - store_test_results:
+          path: flowdb/test_results
+      - run:
+          name: FlowDB Docker logs
+          command: docker logs flowdb
+          when: on_fail
+      - run:
+          name: FlowDB-oracle Docker logs
+          command: docker logs flowdb_oracle
+          when: on_fail
+      - run:
+          name: Push images to Docker cloud
+          command: |
+            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag"
+            for PREFIX in "${TAG_PREFIXES[@]}"; do
+              docker push flowminder/flowdb:${PREFIX}${CIRCLE_TAG}${CIRCLE_BRANCH}
+              [ "$CIRCLE_BRANCH" = "master" ] && docker tag flowminder/flowdb:${PREFIX}${CIRCLE_TAG}${CIRCLE_BRANCH} flowminder/flowdb:${PREFIX}latest \
+              && docker push flowminder/flowdb:${PREFIX}latest
+              echo "Done pushing flowminder/flowdb:${PREFIX}${CIRCLE_TAG}${CIRCLE_BRANCH}."
+            done
+      - persist_to_workspace:
+          root: /home/circleci/
+          paths:
+            - .env
+
+  install_flowmachine_deps:
+    docker: *base_docker
+    working_directory: /home/circleci/project
+    steps:
+      - checkout
+      - restore_cache:
+          key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
+      - run: cd flowmachine && pip install --upgrade pip pipenv && pipenv install --dev --deploy && pipenv run pip install -e .
+      - run:
+          name: Set port for flowmachine
+          command: |
+            echo "database:" > /home/circleci/flowmachine.yml
+            echo "  port: '5432'" >> /home/circleci/flowmachine.yml
+            echo "  host: 'localhost'" >> /home/circleci/flowmachine.yml
+            echo "  user: 'flowdb'" >> /home/circleci/flowmachine.yml
+            echo "  database: 'flowdb'" >> /home/circleci/flowmachine.yml
+            echo "  password: 'flowflow'" >> /home/circleci/flowmachine.yml
+            echo "  pool_size: 5" >> /home/circleci/flowmachine.yml
+            echo "  overflow: 10" >> /home/circleci/flowmachine.yml
+      - save_cache:
+          key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/flowmachine-caaCcVrN
+      - persist_to_workspace:
+          root: /home/circleci/
+          paths:
+            - flowmachine.yml
+
+  lint:
+    docker: *base_docker
+    working_directory: /home/circleci/project
+    steps:
+      - checkout
+      - restore_cache:
+          key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
+      - run:
+          name: Linting files with black
+          command: PIPENV_PIPFILE=flowmachine/Pipfile pipenv run black --check .
+
+  run_flowmachine_tests:
+    docker: *flowdb_docker
+    working_directory: /home/circleci/project/flowmachine
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - attach_workspace:
+          at: /home/circleci/
+      - restore_cache:
+          key: flowmachine-deps-1-{{ checksum "Pipfile.lock" }}
+      - run: *wait_for_flowdb
+      - run:
+          name: Run tests
+          command: |
+            pipenv run pytest \
+                      --junit-xml=test_results/pytest/results.xml \
+                      --cov flowmachine/ \
+                      --cov-report xml \
+                      --cov-report term \
+                      --durations=10
+      - store_test_results:
+          path: test_results
+      - run:
+          name: Upload coverage
+          command: bash <(curl -s https://codecov.io/bash)
+          when: always
+      - run:
+          name: Build wheel
+          command: |
+            pipenv run python setup.py bdist_wheel sdist
+      - persist_to_workspace:
+          root: /home/circleci/project/flowmachine
+          paths:
+            - dist
+
+  run_flowdbsynth_tests:
+    docker: *flowdbsynth_docker
+    environment: *flowdb_env
+    working_directory: /home/circleci/project/flowdb
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run:
+          name: install deps
+          command: pip install pipenv && pipenv install --dev --deploy
+      - run: *wait_for_flowdb
+      - run:
+          name: Run tests
+          command: pipenv run pytest --junit-xml=test_results/pytest/results.xml tests/test_synthetic_data.py
+      - store_test_results:
+          path: test_results
+      
+  run_flowkit_api_tests:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowapi
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run: pipenv install --deploy --dev
+      - run:
+          name: Run API unit tests
+          command:  |
+            pipenv run python -m pytest --junitxml=test_results/pytest/results.xml --cov=app/ \
+             --cov-report term --cov-report xml --durations=10
+      - store_test_results:
+          path: test_results
+      - run: bash <(curl -s https://codecov.io/bash)
+
+
+  run_flowauth_tests:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowauth
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run: pipenv install --deploy --dev
+      - run:
+          name: Run backend unit tests
+          command:  |
+            pipenv run pytest --junitxml=test_results/pytest/results.xml --cov=backend/flowauth/ \
+             --cov-report term --cov-report xml --durations=10
+      - store_test_results:
+          path: test_results
+      - run: bash <(curl -s https://codecov.io/bash)
+
+  run_flowclient_tests:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowclient
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run: pipenv install --deploy --dev && pipenv run pip install -e .
+      - run:
+          name: Run API client unit tests
+          command:  |
+            pipenv run pytest --junitxml=test_results/pytest/results.xml --cov=flowclient/ \
+            --cov-report term --cov-report xml --durations=10
+      - store_test_results:
+          path: test_results
+      - run: bash <(curl -s https://codecov.io/bash)
+
+  build_flowmachine:
+    docker:
+      - image: docker:stable-git
+    working_directory: /home/circleci/project/
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - attach_workspace:
+          at: /home/circleci
+      - setup_remote_docker
+      - run:
+          name: Log in to docker cloud
+          command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
+      - run:
+          name: Build flowmachine image
+          command: |
+            echo Tagging as $CIRCLE_TAG$CIRCLE_BRANCH
+            docker build -t flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH ./flowmachine
+      - run:
+          name: Push images to Docker cloud
+          command: |
+            docker push flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH
+            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag"
+                docker tag flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowmachine
+                docker push flowminder/flowmachine
+
+  build_flowauth:
+    docker:
+      - image: docker:stable-git
+    working_directory: /home/circleci/project/
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - attach_workspace:
+          at: /home/circleci
+      - setup_remote_docker
+      - run:
+          name: Log in to docker cloud
+          command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
+      - run:
+          name: Build flowauth image
+          command: docker build -t flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH ./flowauth
+      - run:
+          name: Push images to Docker cloud
+          command: |
+              docker push flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH
+              [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag"
+                  docker tag flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowauth
+                  docker push flowminder/flowauth
+
+  build_flowapi:
+    docker:
+      - image: docker:stable-git
+    working_directory: /home/circleci/project/
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - attach_workspace:
+          at: /home/circleci
+      - setup_remote_docker
+      - run:
+          name: Log in to docker cloud
+          command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
+      - run:
+          name: Build flowapi image
+          command: docker build -t flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH ./flowapi
+      - run:
+          name: Push images to Docker cloud
+          command: |
+            docker push flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH
+            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag"
+                docker tag flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowapi
+                docker push flowminder/flowapi
+
+  integration_tests:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/integration_tests
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - attach_workspace:
+          at: /home/circleci
+      - setup_remote_docker
+      - run:
+          name: Log in to docker cloud
+          command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
+      - run:
+          name: Spin up containers
+          command: |
+            pip install --user docker-compose
+            docker-compose up -d
+      # Have to do something a bit convoluted here, because we do not have
+      # network access to the remote docker. So we must run the tests _inside_ another docker container,
+      # then copy the results back out.
+      - run:
+          name: Create test environment
+          command: |
+            docker run -t -d --name testrunner circleci/python:3.7
+            docker network connect integration_tests_db testrunner
+            docker network connect integration_tests_api testrunner
+            docker network connect integration_tests_redis testrunner
+            docker network connect integration_tests_zero testrunner
+            docker cp . testrunner:/tests
+            docker cp ../flowclient testrunner:/
+            docker cp ../flowmachine testrunner:/
+            docker exec testrunner bash -c "cd /tests && pip install pipenv && pipenv install --deploy && pipenv run pip install ../flowclient[http2] ../flowmachine"
+      - run:
+          name: Wait for API to be available
+          command: docker exec testrunner bash -c "i=0;until [ \$i -ge 24 ] || (curl -k --fail http://flowapi:9090);do let i=i+1; echo Waiting 10s; sleep 10;done"
+      - run:
+          name: Run integration tests
+          command: |
+            docker exec testrunner bash -c "cd /tests && FLOWDB_HOST=flowdb FLOWDB_PORT=5432 FLOWMACHINE_ZMQ_HOST=flowmachine REDIS_HOST=redis pipenv run pytest --junitxml=test_results/pytest/results.xml --durations=10"
+      - run:
+          name: Extract test results
+          command: docker cp testrunner:/tests/test_results .
+          when: always
+      - store_test_results:
+          path: test_results
+      - run:
+          name: Compose logs
+          command: docker-compose logs
+          when: always
+
+
+  build_docs:
+    docker: *docs_build
+    working_directory: /home/circleci/project/docs
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - attach_workspace:
+          at: /home/circleci/
+      - restore_cache:
+          key: flowkit-docs-deps-{{ checksum "Pipfile.lock" }}
+      - run:
+          name: Install pandoc
+          command: |
+            wget https://github.com/jgm/pandoc/releases/download/1.19.2.1/pandoc-1.19.2.1-1-amd64.deb
+            sudo dpkg -i pandoc-1.19.2.1-1-amd64.deb
+      - run: pipenv install
+      - save_cache:
+          key: flowkit-docs-deps-{{ checksum "Pipfile.lock" }}
+          paths:
+          - /home/circleci/.local/share/virtualenvs/docs-M9UCfob2
+      #- run: *wait_for_flowdb
+      - run:
+          name: Mkdocs build
+          # We set PIPENV_DONT_LOAD_ENV here to use env vars provided by circle, rather than in the
+          # .env for local build usage
+          command: |
+            FLOWMACHINE_VERSION=$(pipenv run python -c "import flowmachine; print(flowmachine.__version__)")
+            PIPENV_DONT_LOAD_ENV=1 pipenv run mkdocs build
+            zip -r flowkit-docs.zip flowkit-docs/*
+      - persist_to_workspace:
+          root: /home/circleci/project
+          paths:
+            - docs/flowkit-docs.zip
+      - store_artifacts:
+          path: /home/circleci/project/docs/flowkit-docs.zip
+          destination: docs
+
+
+  build_client_wheel:
+    docker: *base_docker
+    working_directory: /home/circleci/project/flowclient
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run:
+          name: Build wheel
+          command: python setup.py bdist_wheel
+      - persist_to_workspace:
+          root: /home/circleci/project/flowclient
+          paths:
+            - dist
+      - store_artifacts:
+          path: /home/circleci/project/flowclient
+          destination: wheel
+
+  deploy_docs:
+    docker: *docs_build
+    working_directory: /home/circleci/project/docs
+    steps:
+    - checkout:
+        path: /home/circleci/project/
+    - attach_workspace:
+        at: /home/circleci/
+    - restore_cache:
+        key: flowkit-docs-deps-{{ checksum "Pipfile.lock" }}
+    - run:
+        name: Install pandoc
+        command: |
+          wget https://github.com/jgm/pandoc/releases/download/1.19.2.1/pandoc-1.19.2.1-1-amd64.deb
+          sudo dpkg -i pandoc-1.19.2.1-1-amd64.deb
+    - run: pipenv install
+    - save_cache:
+        key: flowkit-docs-deps-{{ checksum "Pipfile.lock" }}
+        paths:
+        - /home/circleci/.local/share/virtualenvs/docs-M9UCfob2
+    #- run: *wait_for_flowdb
+    - run:
+        name: Deploy to github pages
+        # We set PIPENV_DONT_LOAD_ENV here to use env vars provided by circle, rather than in the
+        # .env for local build usage
+        command: |
+          FLOWMACHINE_VERSION=$(pipenv run python -c "import flowmachine; print(flowmachine.__version__)")
+          PIPENV_DONT_LOAD_ENV=1 BRANCH=$CIRCLE_BRANCH pipenv run mkdocs gh-deploy
+
+  push_wheel:
+    docker: *base_docker
+    steps:
+      - attach_workspace:
+          at: /home/circleci/
+      - run:
+          name: Upload FlowClient Wheel
+          command: |
+            pipenv install twine
+            pipenv run twine upload /home/circleci/dist/*
+
+
+workflows:
+  version: 2
+  run_build_pipeline:
+    jobs:
+      - build_flowdb:
+          <<: *run_always_org_context
+      - install_flowmachine_deps:
+          <<: *run_always_org_context
+      - run_flowkit_api_tests:
+          <<: *run_always_org_context
+      - run_flowclient_tests:
+          <<: *run_always_org_context
+      - run_flowauth_tests:
+          <<: *run_always_org_context
+      - lint:
+          requires:
+            - install_flowmachine_deps
+          <<: *run_always_org_context
+      - run_flowmachine_tests:
+          requires:
+            - build_flowdb
+            - install_flowmachine_deps
+          <<: *run_always_org_context
+      - run_flowdbsynth_tests:
+          requires:
+            - build_flowdb
+          <<: *run_always_org_context
+      - build_flowmachine:
+          requires:
+            - run_flowmachine_tests
+          <<: *run_always_org_context
+      - build_docs:
+          requires:
+           - build_flowmachine
+          <<: *run_always_org_context
+      - build_flowauth:
+          requires:
+            - run_flowauth_tests
+          <<: *run_always_org_context
+      - build_flowapi:
+          requires:
+            - run_flowkit_api_tests
+          <<: *run_always_org_context
+      - build_client_wheel:
+          requires:
+            - run_flowclient_tests
+          <<: *run_always_org_context
+      - integration_tests:
+          requires:
+            - build_flowmachine
+            - build_flowapi
+          <<: *run_always_org_context
+      - deploy_docs:
+          requires:
+          - build_docs
+          - build_client_wheel
+          - integration_tests
+          <<: *tag_only_org_context
+      - push_wheel:
+          requires:
+          - build_docs
+          - build_client_wheel
+          - integration_tests
+          <<: *tag_only_org_context

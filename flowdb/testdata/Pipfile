@@ -1,0 +1,11 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+tohu = {file = "https://github.com/maxalbert/tohu/archive/v0.5.1.tar.gz"}
+
+[requires]
+python_version = "3.6"
