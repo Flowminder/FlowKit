@@ -1,0 +1,40 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+mkdocs = "*"
+jupyter-client = "*"
+nbconvert = "*"
+nbconvert-utils = "*"
+pygments = "*"
+pymdown-extensions = "*"
+tabulate = "*"
+pandas = "*"
+mkdocs-material = "*"
+ipykernel = "*"
+cython = "*" # Required until pyproj provide a wheel for 3.7
+pyproj = {editable = true, git = "https://github.com/jswhit/pyproj.git"} # Required until pyproj provide a wheel for 3.7
+geopandas = "*"
+numpydoc = "*"
+black = "==18.6b4"
+click = "*"
+"d3609ea" = {editable = true, path = "./../flowmachine"}
+descartes = "*"
+seaborn = "*"
+"3ff404a" = {editable = true, path = "./../flowclient"}
+mktheapidocs = "*"
+mknotebooks = "*"
+flask-jwt-extended = "*"
+quart = "*"
+python-dotenv = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
+
+[scripts]
+build = "bash build.sh"
+serve = "bash serve.sh"

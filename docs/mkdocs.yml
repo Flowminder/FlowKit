@@ -1,0 +1,82 @@
+site_name: FlowKit
+repo_name: 'Flowminder/FlowKit'
+repo_url: https://github.com/Flowminder/flowkit
+docs_dir: source
+site_dir: flowkit-docs
+edit_uri: ""
+plugins:
+  - mktheapidocs:
+      modules:
+        flowmachine:
+          section: developer/api
+          source_repo: "https://github.com/Flowminder/flowkit/tree/$BRANCH/flowmachine"
+        flowclient:
+          section: analyst/client
+          source_repo: "https://github.com/Flowminder/flowkit/tree/$BRANCH/flowclient"
+  - mknotebooks:
+      execute: false
+      preamble: "pandas_to_markdown.py"
+
+theme:
+  name: 'material'
+  # Don't include MkDocs' JavaScript
+  include_search_page: false
+  search_index_only: true
+
+  # Default values, taken from mkdocs_theme.yml
+  language: en
+  feature:
+      tabs: true
+  palette:
+      primary: "#095798"
+      accent: "#2977B8"
+  font:
+      text: Roboto
+      code: Roboto Mono
+  favicon: assets/images/favicon.png
+  logo:
+      icon: "\uE80C"
+# Extensions
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - markdown.extensions.def_list
+  - markdown.extensions.footnotes
+  - markdown.extensions.meta
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_div_format
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra_css:
+  - 'stylesheets/extra.css'
+  - https://unpkg.com/mermaid@7.1.2/dist/mermaid.css
+extra_javascript:
+  - https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js
+extra:
+  repo_icon: 'github'
+  social:
+    - type: 'github'
+      link: 'https://github.com/Flowminder'
+    - type: 'twitter'
+      link: 'https://twitter.com/Flowminder'
