@@ -1,0 +1,58 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+#
+#  FLOWDB
+#  -----
+#
+#
+#  Extends the basic FlowDB image to include arbitrary amount of test data.
+#
+ARG CODE_VERSION=latest
+FROM flowminder/flowdb:${CODE_VERSION}
+
+RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.list \
+        && apt-get -y update \
+        && apt-get -y install python3.6 python3.6-distutils python3-psutil \
+        && pip3 install pipenv \
+        && apt-get clean --yes \
+        && apt-get autoclean --yes \
+        && apt-get autoremove --yes \
+        && rm -rf /var/cache/debconf/*-old \
+        && rm -rf /var/lib/apt/lists/*
+
+# Install python dependencies
+COPY ./Pipfile* /tmp/
+RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
+    && rm /tmp/Pipfile*
+
+#
+#   Add synthetic data to the ingestion directory.
+#
+RUN mkdir -p /docker-entrypoint-initdb.d/sql/syntheticdata/ && \
+    mkdir -p /opt/synthetic_data/ && \
+    mkdir -p /docker-entrypoint-initdb.d/data/records/calls && \
+    mkdir -p /docker-entrypoint-initdb.d/data/infrastructure
+
+COPY ./bin/z_ingest_synthetic_data.sh /docker-entrypoint-initdb.d/
+
+COPY bin/generate_synthetic_data.py /opt/synthetic_data/
+ADD ./synthetic_data/sql/* /docker-entrypoint-initdb.d/sql/syntheticdata/
+ADD ./test_data/sql/admin*.sql /docker-entrypoint-initdb.d/sql/syntheticdata/
+ADD ./synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson /opt/synthetic_data/
+
+RUN chown $POSTGRES_UID:$POSTGRES_GID -R \
+        /docker-entrypoint-initdb.d/sql/syntheticdata \
+        /docker-entrypoint-initdb.d/data/records/calls \
+        /opt/synthetic_data/ \
+        /docker-entrypoint-initdb.d/data/infrastructure
+
+ENV N_DAYS=7
+ENV N_SUBSCRIBERS=4000
+ENV N_CELLS=1000
+ENV N_CALLS=200000
+ENV SUBSCRIBERS_SEED=11111
+ENV CALLS_SEED=22222
+ENV CELLS_SEED=33333
+ENV OUTPUT_ROOT_DIR=/docker-entrypoint-initdb.d

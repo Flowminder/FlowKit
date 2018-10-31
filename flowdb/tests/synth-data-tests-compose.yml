@@ -1,0 +1,33 @@
+#
+# Synthetic data container test settings
+# This compose file creates a container suitable for use
+# with tests targeted at the synthetic data container.
+
+version: '2'
+
+services:
+    flowdb:
+        container_name: '${FLOWDB_CONTAINER_NAME:-flowdb-synth}'
+        image: flowminder/flowdb:synthetic-data-${FLOWDB_BRANCH:-master}
+        environment:
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - FM_PASSWORD=${FM_PASSWORD}
+            - API_PASSWORD=${API_PASSWORD}
+            - LOCATION_TABLE=${LOCATION_TABLE}
+            - ENV N_DAYS=3
+            - ENV N_USERS=400
+            - ENV N_CELLS=100
+            - ENV N_CALLS=2000
+            - ENV USERS_SEED=12345
+            - ENV CALLS_SEED=22222
+            - ENV CELLS_SEED=99999
+        ports:
+            - "${FLOWDB_PORT:-9000}:5432"
+        tty: true
+        stdin_open: true
+        restart: always
+        volumes:
+            - ${FLOWDB_DATA_DIR}:/var/lib/postgresql/data
+            - ${FLOWDB_INGESTION_DIR}:/ingestion

@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pyzmq = "*"
+quart = "*"
+hypercorn = "*"
+asyncpg = "*"
+flask-jwt-extended = "*"
+
+[dev-packages]
+pytest = "*"
+pytest-asyncio = "*"
+"pytest-cov" = "*"
+asynctest = "*"
+black = "==18.6b4"
+
+[requires]
+python_version = "3.7"

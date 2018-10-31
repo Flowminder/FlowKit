@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+flask-sqlalchemy = "*"
+flask-login = "*"
+flask-principal = "*"
+flask-jwt-extended = "*"
+flask-wtf =  "*"
+zxcvbn = "*"
+versioneer = "*"
+passlib = "*"
+argon2_cffi = "*"
+"psycopg2-binary" = "*"
+cryptography = "*"
+
+[dev-packages]
+pytest = "*"
+pytest-cov = "*"
+"flowauth" = {editable = true, path = "./backend"}
+
+[requires]
+python_version = "3.7"

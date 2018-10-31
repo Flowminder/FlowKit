@@ -1,0 +1,8 @@
+build/
+dist/
+tests/
+Dockerfile/
+.ipynb_checkpoints/
+.pytest_cache/
+.flowmachine.egg-info/
+docs/

@@ -1,0 +1,13 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pytest-dotenv = "*"
+
+[requires]
+python_version = "3.7"
+
+[scripts]
+secrets_quickstart = "bash secrets-quickstart.sh"

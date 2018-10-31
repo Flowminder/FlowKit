@@ -1,0 +1,20 @@
+[run]
+branch = True
+
+[report]
+fail_under = 90
+
+omit =
+    */python?.?/*
+    */venv/*
+    */site-packages/nose/*
+    */tests/*
+    */_version.py
+    */versioneer.py
+    *__init__*
+    flowmachine/core/server/server.py
+
+exclude_lines =
+    if __name__ == '__main__':
+
+show_missing = True

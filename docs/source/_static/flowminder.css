@@ -1,0 +1,36 @@
+a {
+    color: #2977b8;
+}
+.navbar-inverse {
+    background-color: #095798;
+}
+.navbar-brand {
+    padding: 10.5px 15px;
+}
+.navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+    margin-left: 0px;
+}
+.flowminder-logo {
+    max-height: 100%;
+}
+div.navbar-top {
+    content:url(_static/flowminder_logo.png);
+}
+h1 {
+   font-family: 'Merriweather';
+}
+h2 {
+   font-family: 'Merriweather';
+}
+h3 {
+   font-family: 'Merriweather';
+}
+h4 {
+   font-family: 'Merriweather';
+}
+h5 {
+   font-family: 'Merriweather';
+}
+h6 {
+   font-family: 'Merriweather';
+}

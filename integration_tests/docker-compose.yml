@@ -1,0 +1,68 @@
+#
+# Compose file for flowkit integration tests
+#
+
+version: '3'
+
+networks:
+  db:
+  redis:
+  zero:
+  api:
+services:
+    flowdb:
+        container_name: 'flowdb'
+        image: "flowminder/flowdb:testdata-${CIRCLE_BRANCH:-master}"
+        environment:
+            - POSTGRES_DB=${POSTGRES_DB:-flowdb}
+            - POSTGRES_USER=${POSTGRES_USER:-flowdb}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
+            - FM_PASSWORD=${FM_PASSWORD:-foo}
+            - API_PASSWORD=${API_PASSWORD:-foo}
+        tty: true
+        stdin_open: true
+        restart: always
+        networks:
+          db:
+            aliases:
+              - flowdb
+    flowmachine:
+        container_name: 'flowmachine'
+        image: "flowminder/flowmachine:${CIRCLE_BRANCH:-master}"
+        restart: always
+        environment:
+            - DB_PORT=${DB_PORT:-5432}
+            - DB_HOST=${DB_HOST:-flowdb}
+            - LOG_LEVEL=${LOG_LEVEL:-error}
+            - DEBUG=${FM_DEBUG:-False}
+            - REDIS_HOST=${REDIS_HOST:-redis}
+        networks:
+          - db
+          - redis
+          - zero
+    flowapi:
+        container_name: 'flowapi'
+        image: "flowminder/flowapi:${CIRCLE_BRANCH:-master}"
+        restart: always
+        ports:
+          - "9090:9090"
+        environment:
+            - SERVER=flowmachine
+            - LOG_LEVEL=${LOG_LEVEL:-error}
+            - DB_USER=reporter
+            - DB_PASS=${API_PASSWORD:-foo}
+            - DB_HOST=${DB_HOST:-flowdb}
+            - DB_PORT=${DB_PORT:-5432}
+            - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}
+        networks:
+          - zero
+          - db
+          - api
+    query_locker:
+        container_name: flowmachine_redis
+        image: redis
+        networks:
+          redis:
+            aliases:
+              - redis
+
