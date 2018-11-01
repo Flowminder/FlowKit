@@ -2388,19 +2388,19 @@
 <h2 id="class-missingqueryerror">Class <strong>MissingQueryError</strong><a class="headerlink" href="#class-missingqueryerror" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">MissingQueryError</span><span class="p">(</span><span class="n">missing_query_id</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L68">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L68">flowmachine/core/server/query_proxy.py</a></p>
 <p>Custom exception to indicate that a query for a given query id doesn't exist.</p>
 <h2 id="class-queryproxy">Class <strong>QueryProxy</strong><a class="headerlink" href="#class-queryproxy" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">QueryProxy</span><span class="p">(</span><span class="n">query_kind</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">redis</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">func_construct_query_object</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L236">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L236">flowmachine/core/server/query_proxy.py</a></p>
 <p>This class acts as the interface and "translator" between the JSON representation of a query (via <code>query_kind</code> and <code>params</code>) and the actual flowmachine.core.query.Query object.
 It is responsible for storing the lookup between query_id and a string representing (query_kind, params) in redis and for constructing the flowmachine.core.query.Query if needed.</p>
 <h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
 <h4 id="get_sql">get_sql<a class="headerlink" href="#get_sql" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L365">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L365">flowmachine/core/server/query_proxy.py</a></p>
 <p>For a query which has been completed, return the SQL code which, when run against flowdb, returns the output.</p>
 <h5 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2409,7 +2409,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmac
 <h4 id="poll">poll<a class="headerlink" href="#poll" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">poll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L343">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L343">flowmachine/core/server/query_proxy.py</a></p>
 <p>Return the status of a submitted query.</p>
 <h5 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2418,44 +2418,44 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmac
 <h4 id="run_query_async">run_query_async<a class="headerlink" href="#run_query_async" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">run_query_async</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L306">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L306">flowmachine/core/server/query_proxy.py</a></p>
 <p>Trigger an async store of a query, and return the resulting query id which can be used for polling the query and obtaining the result.</p>
 <h5 id="returns_2">Returns<a class="headerlink" href="#returns_2" title="Permanent link">&para;</a></h5>
 <ul>
 <li><code>str</code></li>
 </ul>
 <h2 id="class-queryproxyerror">Class <strong>QueryProxyError</strong><a class="headerlink" href="#class-queryproxyerror" title="Permanent link">&para;</a></h2>
-<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L60">flowmachine/core/server/query_proxy.py</a></p>
+<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L60">flowmachine/core/server/query_proxy.py</a></p>
 <p>Custom exception to indicate an error related to QueryProxy, for example if construction of a query object failed or a query id doesn't exist even though it should.</p>
 <h2 id="class-redisinterface">Class <strong>RedisInterface</strong><a class="headerlink" href="#class-redisinterface" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">RedisInterface</span><span class="p">(</span><span class="n">redis</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L30">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L30">flowmachine/core/server/query_proxy.py</a></p>
 <p>Wrapper class to encapsulate interactions with redis. The main purpose of this is to allow easier testing, especially when locks are involved.</p>
 <h3 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h3>
 <h4 id="get">get<a class="headerlink" href="#get" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L40">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L40">flowmachine/core/server/query_proxy.py</a></p>
 <h4 id="has_lock">has_lock<a class="headerlink" href="#has_lock" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">has_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L52">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L52">flowmachine/core/server/query_proxy.py</a></p>
 <h4 id="keys">keys<a class="headerlink" href="#keys" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L49">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L49">flowmachine/core/server/query_proxy.py</a></p>
 <h4 id="set">set<a class="headerlink" href="#set" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L46">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L46">flowmachine/core/server/query_proxy.py</a></p>
 <h2 id="class-redislookuperror">Class <strong>RedisLookupError</strong><a class="headerlink" href="#class-redislookuperror" title="Permanent link">&para;</a></h2>
-<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L23">flowmachine/core/server/query_proxy.py</a></p>
+<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L23">flowmachine/core/server/query_proxy.py</a></p>
 <p>Custom exception to indicate that a redis lookup (e.g. of query_id -&gt; query_descr) failed.</p>
 <h2 id="cache_table_exists">cache_table_exists<a class="headerlink" href="#cache_table_exists" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">cache_table_exists</span><span class="p">(</span><span class="n">query_id</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L196">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L196">flowmachine/core/server/query_proxy.py</a></p>
 <p>Return True if a cache table for the query with id <code>query_id</code> exist, otherwise return False.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2471,7 +2471,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmac
 <h2 id="construct_query_object">construct_query_object<a class="headerlink" href="#construct_query_object" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">construct_query_object</span><span class="p">(</span><span class="n">query_kind</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L78">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L78">flowmachine/core/server/query_proxy.py</a></p>
 <p>Create an instance of the appropriate subclass of flowmachine.core.query.Query</p>
 <h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2491,7 +2491,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmac
 <h2 id="get_sql_for_query_id">get_sql_for_query_id<a class="headerlink" href="#get_sql_for_query_id" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">get_sql_for_query_id</span><span class="p">(</span><span class="n">query_id</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree//flowmachine/flowmachine/core/server/query_proxy.py#L217">flowmachine/core/server/query_proxy.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_proxy.py#L217">flowmachine/core/server/query_proxy.py</a></p>
 <p>Return the SQL which, when run against flowdb, will return the result for the query with the given id.</p>
 <h3 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h3>
 <ul>
