@@ -1957,7 +1957,7 @@
 <div class="codehilite"><pre><span></span><span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;http://localhost:9090&quot;</span><span class="p">,</span> <span class="n">TOKEN</span><span class="p">)</span>
 </pre></div>
 
-<div class="codehilite"><pre><span></span>/Users/maxalbert/work/code/flowminder/flowkit/flowclient/flowclient/client.py:159: UserWarning: Communications with this server are NOT SECURE.
+<div class="codehilite"><pre><span></span>/Users/jono/code/FlowKit../FlowKit/flowclient/flowclient/client.py:159: UserWarning: Communications with this server are NOT SECURE.
   return Connection(url, token, api_version, ssl_certificate)
 </pre></div>
 
@@ -1977,7 +1977,7 @@
 <div class="codehilite"><pre><span></span><span class="n">flowclient</span><span class="o">.</span><span class="n">query_is_ready</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="p">)</span>
 </pre></div>
 
-<div class="codehilite"><pre><span></span>(False, &amp;lt;Response [202]&amp;gt;)
+<div class="codehilite"><pre><span></span>(True, &amp;lt;Response [303]&amp;gt;)
 </pre></div>
 
 
@@ -1989,115 +1989,83 @@
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>total</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Dolpa</td>
-      <td>43</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Bajhang</td>
-      <td>17</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Kavrepalanchok</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Rolpa</td>
-      <td>12</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Rukum</td>
-      <td>14</td>
-    </tr>
-  </tbody>
+<table>
+<thead>
+<tr>
+<th align="right"></th>
+<th align="left">name</th>
+<th align="right">total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">0</td>
+<td align="left">Dolpa</td>
+<td align="right">43</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td align="left">Bajhang</td>
+<td align="right">17</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="left">Kavrepalanchok</td>
+<td align="right">14</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="left">Rolpa</td>
+<td align="right">12</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="left">Rukum</td>
+<td align="right">14</td>
+</tr>
+</tbody>
 </table>
-</div>
-
 <p>Alternative:</p>
 <div class="codehilite"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_spec</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>total</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Dolpa</td>
-      <td>43</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Bajhang</td>
-      <td>17</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Kavrepalanchok</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Rolpa</td>
-      <td>12</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Rukum</td>
-      <td>14</td>
-    </tr>
-  </tbody>
+<table>
+<thead>
+<tr>
+<th align="right"></th>
+<th align="left">name</th>
+<th align="right">total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">0</td>
+<td align="left">Dolpa</td>
+<td align="right">43</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td align="left">Bajhang</td>
+<td align="right">17</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="left">Kavrepalanchok</td>
+<td align="right">14</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="left">Rolpa</td>
+<td align="right">12</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="left">Rukum</td>
+<td align="right">14</td>
+</tr>
+</tbody>
 </table>
-</div>
-
 <h2 id="modal-location">Modal location<a class="headerlink" href="#modal-location" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><span class="n">dl1</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">daily_location</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span> <span class="n">daily_location_method</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 <span class="n">dl2</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">daily_location</span><span class="p">(</span><span class="n">date</span><span class="o">=</span><span class="s2">&quot;2016-01-02&quot;</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span> <span class="n">daily_location_method</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
@@ -2141,7 +2109,7 @@
 <div class="codehilite"><pre><span></span><span class="n">flowclient</span><span class="o">.</span><span class="n">query_is_ready</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="p">)</span>
 </pre></div>
 
-<div class="codehilite"><pre><span></span>(False, &amp;lt;Response [202]&amp;gt;)
+<div class="codehilite"><pre><span></span>(True, &amp;lt;Response [303]&amp;gt;)
 </pre></div>
 
 
@@ -2150,114 +2118,82 @@
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>total</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Dolpa</td>
-      <td>65</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Bajhang</td>
-      <td>13</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Kavrepalanchok</td>
-      <td>27</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Rolpa</td>
-      <td>17</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Rukum</td>
-      <td>12</td>
-    </tr>
-  </tbody>
+<table>
+<thead>
+<tr>
+<th align="right"></th>
+<th align="left">name</th>
+<th align="right">total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">0</td>
+<td align="left">Dolpa</td>
+<td align="right">65</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td align="left">Bajhang</td>
+<td align="right">13</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="left">Kavrepalanchok</td>
+<td align="right">27</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="left">Rolpa</td>
+<td align="right">17</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="left">Rukum</td>
+<td align="right">12</td>
+</tr>
+</tbody>
 </table>
-</div>
-
 <div class="codehilite"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">get_result</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">ml</span><span class="p">)</span>
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>total</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Dolpa</td>
-      <td>65</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Bajhang</td>
-      <td>13</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Kavrepalanchok</td>
-      <td>27</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Rolpa</td>
-      <td>17</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Rukum</td>
-      <td>12</td>
-    </tr>
-  </tbody>
+<table>
+<thead>
+<tr>
+<th align="right"></th>
+<th align="left">name</th>
+<th align="right">total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">0</td>
+<td align="left">Dolpa</td>
+<td align="right">65</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td align="left">Bajhang</td>
+<td align="right">13</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="left">Kavrepalanchok</td>
+<td align="right">27</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="left">Rolpa</td>
+<td align="right">17</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="left">Rukum</td>
+<td align="right">12</td>
+</tr>
+</tbody>
 </table>
-</div>
-
 <h2 id="flow">Flow<a class="headerlink" href="#flow" title="Permanent link">&para;</a></h2>
 <div class="codehilite"><pre><span></span><span class="n">aggregation_unit</span> <span class="o">=</span> <span class="s2">&quot;admin1&quot;</span>
 <span class="n">ml</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">modal_location_from_dates</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-04&quot;</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="o">=</span><span class="n">aggregation_unit</span><span class="p">,</span> <span class="n">daily_location_method</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
@@ -2278,7 +2214,7 @@
 <div class="codehilite"><pre><span></span><span class="n">flowclient</span><span class="o">.</span><span class="n">query_is_ready</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">query_id</span><span class="p">)</span>
 </pre></div>
 
-<div class="codehilite"><pre><span></span>(False, &amp;lt;Response [202]&amp;gt;)
+<div class="codehilite"><pre><span></span>(True, &amp;lt;Response [303]&amp;gt;)
 </pre></div>
 
 
@@ -2286,64 +2222,48 @@
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>count</th>
-      <th>name_from</th>
-      <th>name_to</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>7</td>
-      <td>Central Development Region</td>
-      <td>Western Development Region</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>10</td>
-      <td>Central Development Region</td>
-      <td>Mid-Western Development Region</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>5</td>
-      <td>Central Development Region</td>
-      <td>Far-Western Development Region</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>2</td>
-      <td>Central Development Region</td>
-      <td>Eastern Development Region</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>3</td>
-      <td>Central Development Region</td>
-      <td>Central Development Region</td>
-    </tr>
-  </tbody>
+<table>
+<thead>
+<tr>
+<th align="right"></th>
+<th align="right">count</th>
+<th align="left">name_from</th>
+<th align="left">name_to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">0</td>
+<td align="right">7</td>
+<td align="left">Central Development Region</td>
+<td align="left">Western Development Region</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="left">Central Development Region</td>
+<td align="left">Mid-Western Development Region</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="left">Central Development Region</td>
+<td align="left">Far-Western Development Region</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="left">Central Development Region</td>
+<td align="left">Eastern Development Region</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="left">Central Development Region</td>
+<td align="left">Central Development Region</td>
+</tr>
+</tbody>
 </table>
-</div>
-
 <div class="codehilite"><pre><span></span>
 </pre></div>
                 
