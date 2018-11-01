@@ -34,7 +34,7 @@ setup(
     author_email=__email__,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Flowminder/FlowKit/flowclient",
+    url="https://github.com/Flowminder/FlowKit",
     keywords="mobile telecommunications analysis",
     packages=["flowclient"],
     include_package_data=True,

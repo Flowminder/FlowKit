@@ -65,7 +65,7 @@ setup(
     py_module=["flowmachine"],
     author=__author__,
     author_email=__email__,
-    url="https://github.com/Flowminder/FlowKit/flowmachine",
+    url="https://github.com/Flowminder/FlowKit",
     keywords="mobile telecommunications analysis",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     install_requires=[
