@@ -523,7 +523,7 @@ jobs:
           path: /home/circleci/project/flowclient
           destination: wheel
 
-  docs_deploy:
+  deploy_docs:
     docker: *docs_build
     working_directory: /home/circleci/project/docs
     steps:
