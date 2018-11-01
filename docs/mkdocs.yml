@@ -1,6 +1,6 @@
 site_name: FlowKit
-repo_name: 'Flowminder/FlowKit'
-repo_url: https://github.com/Flowminder/flowkit
+repo_name: "Flowminder/FlowKit"
+repo_url: https://github.com/Flowminder/FlowKit
 docs_dir: source
 site_dir: flowkit-docs
 edit_uri: ""
@@ -9,16 +9,16 @@ plugins:
       modules:
         flowmachine:
           section: developer/api
-          source_repo: "https://github.com/Flowminder/flowkit/tree/$BRANCH/flowmachine"
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowmachine"
         flowclient:
           section: analyst/client
-          source_repo: "https://github.com/Flowminder/flowkit/tree/$BRANCH/flowclient"
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
   - mknotebooks:
       execute: false
       preamble: "pandas_to_markdown.py"
 
 theme:
-  name: 'material'
+  name: "material"
   # Don't include MkDocs' JavaScript
   include_search_page: false
   search_index_only: true
@@ -26,16 +26,16 @@ theme:
   # Default values, taken from mkdocs_theme.yml
   language: en
   feature:
-      tabs: true
+    tabs: true
   palette:
-      primary: "#095798"
-      accent: "#2977B8"
+    primary: "#095798"
+    accent: "#2977B8"
   font:
-      text: Roboto
-      code: Roboto Mono
+    text: Roboto
+    code: Roboto Mono
   favicon: assets/images/favicon.png
   logo:
-      icon: "\uE80C"
+    icon: "\uE80C"
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
@@ -69,14 +69,14 @@ markdown_extensions:
   - pymdownx.tilde
 
 extra_css:
-  - 'stylesheets/extra.css'
+  - "stylesheets/extra.css"
   - https://unpkg.com/mermaid@7.1.2/dist/mermaid.css
 extra_javascript:
   - https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js
 extra:
-  repo_icon: 'github'
+  repo_icon: "github"
   social:
-    - type: 'github'
-      link: 'https://github.com/Flowminder'
-    - type: 'twitter'
-      link: 'https://twitter.com/Flowminder'
+    - type: "github"
+      link: "https://github.com/Flowminder"
+    - type: "twitter"
+      link: "https://twitter.com/Flowminder"
