@@ -382,9 +382,11 @@ jobs:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH
-            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag" && \
-                docker tag flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowmachine && \
+            if [ "$CIRCLE_BRANCH" = "master" ]; then
+                echo "On master branch, pushing latest tag"
+                docker tag flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowmachine
                 docker push flowminder/flowmachine
+            fi
 
   build_flowauth:
     docker:
@@ -406,9 +408,11 @@ jobs:
           name: Push images to Docker cloud
           command: |
               docker push flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH
-              [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag" && \
-                  docker tag flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowauth && \
-                  docker push flowminder/flowauth
+              if [ "$CIRCLE_BRANCH" = "master" ]; then
+                echo "On master branch, pushing latest tag"
+                docker tag flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowauth
+                docker push flowminder/flowauth
+            fi
 
   build_flowapi:
     docker:
@@ -430,9 +434,11 @@ jobs:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH
-            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag" && \
-                docker tag flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowapi && \
+            if [ "$CIRCLE_BRANCH" = "master" ]; then
+                echo "On master branch, pushing latest tag"
+                docker tag flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowapi
                 docker push flowminder/flowapi
+            fi
 
   integration_tests:
     docker:
