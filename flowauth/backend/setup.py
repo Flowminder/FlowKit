@@ -16,7 +16,7 @@ setup(
     name="flowauth",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    url="http://github.com/Flowminder/flowkit",
+    url="http://github.com/Flowminder/FlowKit",
     license="MPLv2",
     maintainer="Flowminder",
     maintainer_email="flowkit@flowminder.org",
