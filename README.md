@@ -2,15 +2,15 @@
 
 FlowKit is a platform for analysis of CDR and other data. The system is designed to be deployed as a set of [Docker](https://docs.docker.com) containers on a server. The three main server components are:
 
--   [FlowDB](https://flowminder.github.io/flowkit/flowdb)
+-   [FlowDB](https://flowminder.github.io/FlowKit/flowdb)
 
     A [PostgreSQL](https://www.postgresql.org) database for storing and serving mobile operator data.
 
--   [FlowMachine](https://flowminder.github.io/flowkit/flowmachine)
+-   [FlowMachine](https://flowminder.github.io/FlowKit/flowmachine)
 
     A Python toolkit for the analysis of CDR data.
 
--   [FlowAPI](https://flowminder.github.io/flowkit/flowapi)
+-   [FlowAPI](https://flowminder.github.io/FlowKit/flowapi)
 
     An HTTP API which provides access to the functionality of FlowMachine, and handles access control.
 
@@ -18,15 +18,15 @@ In addition, [ZeroMQ](http://zeromq.org/) is used for communication between Flow
 
 There are two other components of FlowKit:
 
--   [FlowClient](https://flowminder.github.io/flowkit/flowclient)
+-   [FlowClient](https://flowminder.github.io/FlowKit/flowclient)
 
     A Python client to FlowAPI.
 
--   [FlowAuth](https://flowminder.github.io/flowkit/flowauth)
+-   [FlowAuth](https://flowminder.github.io/FlowKit/flowauth)
 
     An authentication management system used to generate access tokens for use with FlowClient.
 
-FlowKit is an open-source product. The source code can be found at https://github.com/Flowminder/flowkit, and documentation is available at https://flowminder.github.io/flowkit.
+FlowKit is an open-source product. The source code can be found at https://github.com/Flowminder/flowkit, and documentation is available at https://flowminder.github.io/FlowKit.
 
 ## Installation using docker cloud repositories
 
@@ -46,15 +46,15 @@ The FlowClient Python client may be installed using pip:
 pip install flowclient
 ```
 
-Details of FlowClient usage can be found [here](https://flowminder.github.io/flowkit/flowclient).
+Details of FlowClient usage can be found [here](https://flowminder.github.io/FlowKit/flowclient).
 
 ### FlowAuth
 
-The FlowAuth Docker container is provided in the docker cloud repository `flowminder/flowauth`. Deployment and usage instructions can be found [here](https://flowminder.github.io/flowkit/flowauth).
+The FlowAuth Docker container is provided in the docker cloud repository `flowminder/flowauth`. Deployment and usage instructions can be found [here](https://flowminder.github.io/FlowKit/flowauth).
 
 ## Installation for developers
 
-After cloning the [GitHub repository](https://github.com/Flowminder/flowkit), the FlowKit system can be started by running `make up` in the root directory. This requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose-dev.yml` file.
+After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `make up` in the root directory. This requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose-dev.yml` file.
 
 FlowKit uses [pipenv](https://pipenv.readthedocs.io/) to manage Python environments. To start a Python session in which you can use FlowClient:
 
