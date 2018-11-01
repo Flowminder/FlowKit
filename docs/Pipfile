@@ -18,7 +18,7 @@ cython = "*" # Required until pyproj provide a wheel for 3.7
 pyproj = {editable = true, git = "https://github.com/jswhit/pyproj.git"} # Required until pyproj provide a wheel for 3.7
 geopandas = "*"
 numpydoc = "*"
-black = "==18.6b4"
+black = "==18.9b0"
 click = "*"
 "d3609ea" = {editable = true, path = "./../flowmachine"}
 descartes = "*"
@@ -37,4 +37,5 @@ python_version = "3.7"
 
 [scripts]
 build = "bash build.sh"
-serve = "bash serve.sh"
+serve = "bash build.sh serve --dirtyreload"
+deploy = "bash build.sh gh-deploy"
