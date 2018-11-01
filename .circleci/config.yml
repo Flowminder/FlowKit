@@ -382,8 +382,8 @@ jobs:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH
-            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag"
-                docker tag flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowmachine
+            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag" && \
+                docker tag flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowmachine && \
                 docker push flowminder/flowmachine
 
   build_flowauth:
@@ -406,8 +406,8 @@ jobs:
           name: Push images to Docker cloud
           command: |
               docker push flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH
-              [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag"
-                  docker tag flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowauth
+              [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag" && \
+                  docker tag flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowauth && \
                   docker push flowminder/flowauth
 
   build_flowapi:
@@ -430,8 +430,8 @@ jobs:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH
-            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag"
-                docker tag flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowapi
+            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag" && \
+                docker tag flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowapi && \
                 docker push flowminder/flowapi
 
   integration_tests:
