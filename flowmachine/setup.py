@@ -65,7 +65,7 @@ setup(
     py_module=["flowmachine"],
     author=__author__,
     author_email=__email__,
-    url="https://github.com/Flowminder/flowmachine",
+    url="https://github.com/Flowminder/FlowKit/flowmachine",
     keywords="mobile telecommunications analysis",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     install_requires=[
@@ -92,8 +92,6 @@ setup(
     classifiers=[
         "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
         "Development Status :: 4 - Beta",
-        "Intended Audience :: Analysts",
-        "Topic :: Software Development :: Modeling and Analysis Tools",
         "Programming Language :: Python :: 3.7",
         "Natural Language :: English",
         "Operating System :: MacOS :: MacOS X",
