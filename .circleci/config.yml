@@ -93,6 +93,8 @@ defaults:
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: gh-pages
     - &tag_only_org_context
           context: org-global
           filters:
