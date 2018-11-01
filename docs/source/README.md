@@ -26,7 +26,7 @@ There are two other components of FlowKit:
 
     An authentication management system used to generate access tokens for use with FlowClient.
 
-FlowKit is an open-source product. The source code can be found at https://github.com/Flowminder/flowkit, and documentation is available at https://flowminder.github.io/flowkit.
+FlowKit is an open-source product. The source code can be found at https://github.com/Flowminder/FlowKit, and documentation is available at https://flowminder.github.io/FlowKit.
 
 ## Installation using docker cloud repositories
 
@@ -34,7 +34,7 @@ FlowKit is an open-source product. The source code can be found at https://githu
 
 Docker containers for FlowAPI, FlowMachine and FlowDB are provided in the docker cloud repositories `flowminder/flowapi`, `flowminder/flowmachine` and `flowminder/flowdb`, respectively. To set up FlowKit using the docker cloud repositories, you will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
-The file [`docker-compose.yml`](https://github.com/Flowminder/flowkit/blob/master/docker-compose.yml) can be used to start FlowKit and populate FlowDB with a test dataset. The compose file expects the `JWT_SECRET_KEY` environment variable to be set. This is used to sign and verify access tokens for the API.
+The file [`docker-compose.yml`](https://github.com/Flowminder/FlowKit/raw/master/docker-compose.yml) can be used to start FlowKit and populate FlowDB with a test dataset. The compose file expects the `JWT_SECRET_KEY` environment variable to be set. This is used to sign and verify access tokens for the API.
 
 The FlowKit test system can be started by running `JWT_SECRET_KEY=<secret> docker-compose up -d` in the same directory as the `docker-compose.yml` file. This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default.
 
@@ -54,7 +54,7 @@ The FlowAuth Docker container is provided in the docker cloud repository `flowmi
 
 ## Installation for developers
 
-After cloning the [GitHub repository](https://github.com/Flowminder/flowkit), the FlowKit system can be started by running `make up` in the root directory. This requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose-dev.yml` file.
+After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `make up` in the root directory. This requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose-dev.yml` file.
 
 FlowKit uses [pipenv](https://pipenv.readthedocs.io/) to manage Python environments. To start a Python session in which you can use FlowClient:
 
