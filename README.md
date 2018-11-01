@@ -1,5 +1,7 @@
 # FlowKit
 
+[![CircleCI](https://circleci.com/gh/Flowminder/FlowKit.svg?style=shield)](https://circleci.com/gh/Flowminder/FlowKit) [![codecov](https://codecov.io/gh/Flowminder/FlowKit/branch/master/graph/badge.svg)](https://codecov.io/gh/Flowminder/FlowKit) 
+
 FlowKit is a platform for analysis of CDR and other data. The system is designed to be deployed as a set of [Docker](https://docs.docker.com) containers on a server. The three main server components are:
 
 -   [FlowDB](https://flowminder.github.io/FlowKit/flowdb)
