@@ -1,0 +1,17 @@
+button[data-md-color-primary="indigo"] {
+  background-color: #095798; }
+
+.md-typeset a {
+  color: #095798; }
+
+.md-header {
+  background-color: #095798; }
+
+.md-hero, .md-tabs__list, .md-tabs {
+  background-color: #095798; }
+
+.md-nav__link:active, .md-nav__link--active {
+  color: #095798; }
+
+.md-nav__item--nested > .md-nav__link {
+  color: inherit; }
