@@ -288,10 +288,6 @@ jobs:
           name: Upload coverage
           command: bash <(curl -s https://codecov.io/bash)
           when: always
-      - run:
-          name: Build wheel
-          command: |
-            pipenv run python setup.py bdist_wheel sdist
       - persist_to_workspace:
           root: /home/circleci/project/flowmachine
           paths:
