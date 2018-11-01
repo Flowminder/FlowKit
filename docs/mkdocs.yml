@@ -14,7 +14,7 @@ plugins:
           section: analyst/client
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
   - mknotebooks:
-      execute: false
+      execute: true
       preamble: "pandas_to_markdown.py"
 
 theme:
