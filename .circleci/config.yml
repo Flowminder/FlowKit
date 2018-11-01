@@ -290,10 +290,6 @@ jobs:
           name: Upload coverage
           command: bash <(curl -s https://codecov.io/bash)
           when: always
-      - persist_to_workspace:
-          root: /home/circleci/project/flowmachine
-          paths:
-            - dist
 
   run_flowdbsynth_tests:
     docker: *flowdbsynth_docker
