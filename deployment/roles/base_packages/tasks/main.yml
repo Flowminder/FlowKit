@@ -39,23 +39,3 @@
     enabled: yes
     daemon_reload: yes
     state: restarted
-
-#- name: "Install IUS (Inline with Upstream Stable)"
-#  become: yes
-#  become_user: root
-#  yum:
-#    name: https://centos7.iuscommunity.org/ius-release.rpm
-#    update_cache: yes
-#
-#- name: "Install Python 3.6 and pip3 from IUS"
-#  become: yes
-#  become_user: root
-#  yum: name={{ item }} update_cache=yes
-#  with_items:
-#    - python36u
-#    - python36u-pip
-#
-#- name: "Install pipenv for Python 3.6"
-#  pip:
-#    name: pipenv
-#    executable: pip3.6
