@@ -1,0 +1,6 @@
+---
+- hosts: all
+  roles:
+    - base_packages
+    - docker
+    - user_accounts

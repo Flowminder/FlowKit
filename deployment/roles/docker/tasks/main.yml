@@ -1,0 +1,110 @@
+# This follows the instructions in the Docker documentation:
+#   https://docs.docker.com/engine/installation/linux/docker-ce/centos/
+
+# Note: The instructions on the docker homepage suggest to include `docker-selinux`
+#       in the list of packages to uninstall initially. However, this package is a
+#       prerequisite of Docker, which means that even if the latest Docker version
+#       is installed it will first uninstall and then reinstall Docker. Therefore
+#       we're omitting the packer `docker-selinux` below.
+- name: "Make sure no older versions of Docker are present."
+  yum:
+    name: ['docker', 'docker-common', 'docker-engine']
+    state: absent
+    update_cache: yes
+  become: yes
+
+- name: "Install prerequisites"
+  yum:
+    name: ['device-mapper-persistent-data', 'lvm2', 'yum-utils']
+    state: present
+  become: yes
+
+- name: "Add Docker yum repo"
+  command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  args:
+    creates: /etc/yum.repos.d/docker-ce.repo
+  become: yes
+
+- name: "Install Docker CE (version {{ DOCKER_VERSION }})"
+  yum: name=docker-ce-{{ DOCKER_VERSION }}.ce state=present update_cache=yes
+  become: yes
+
+- name: "Check whether pip is already installed"
+  shell: pip --version
+  register: pipcheck
+  ignore_errors: true
+  changed_when: false
+
+- name: "Download get-pip.py"
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /opt/get-pip.py
+  when: pipcheck.stdout == ''
+  become: yes
+
+- name: "Install pip"
+  shell: 'python /opt/get-pip.py'
+  when: pipcheck.stdout == ''
+  become: yes
+
+# Note: we used to install docker-compose by downloading the binary directly from
+#       the Github releases page and placing it into /usr/local/hin/docker-compose
+#       (as described here: https://docs.docker.com/compose/install/). However, this
+#       does not make the docker-compose Python module available to Ansible (which
+#       is needed for the docker_service ansible module). Therefore we're installing
+#       docker-compose now system-wide via pip. The docs warn that "many operating systems
+#       have python system packages that conflict with docker-compose dependencies".
+#       However, this seems to work fine for CentOS >=7.4 (which we're assuming).
+#- name: "Install docker-compose (version {{ DOCKER_COMPOSE_VERSION }})"
+#  pip:
+#    name: docker-compose
+#    version: "{{ DOCKER_COMPOSE_VERSION }}"
+#  become: yes
+
+- name: "Install docker-compose (version {{ DOCKER_COMPOSE_VERSION }})"
+  get_url:
+    url: https://github.com/docker/compose/releases/download/{{ DOCKER_COMPOSE_VERSION }}/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
+    dest: /usr/local/bin/docker-compose
+    mode: 'a+x'
+  become: yes
+
+- name: "Install bash completion for docker"
+  get_url:
+    url: https://raw.githubusercontent.com/docker/docker-ce/v{{ DOCKER_VERSION }}-ce/components/cli/contrib/completion/bash/docker
+    dest: /etc/bash_completion.d/docker-machine
+  become: yes
+
+- name: "Install bash completion for docker-compose"
+  get_url:
+    url: https://raw.githubusercontent.com/docker/compose/{{ DOCKER_COMPOSE_VERSION }}/contrib/completion/bash/docker-compose
+    dest: /etc/bash_completion.d/docker-compose
+  become: yes
+
+- name: "Start Docker daemon"
+  service: name=docker state=started enabled=yes
+  become: yes
+
+- name: "Create docker group"
+  group: name=docker state=present
+  become: yes
+
+- name: "Add user vagrant to docker group"
+  user: name=vagrant groups=docker append=yes
+  become: yes
+
+
+#
+# Install 'docker' python module (mainly to make it available for Ansible)
+#
+# Notes:
+#   - Only install the 'docker' python module, *not* install the legacy module 'docker-py',
+#     or else things will break (see https://github.com/docker/docker-py/issues/1353)
+#   - We install the slightly older version 2.7.0 because Ansible breaks with docker >= 3.0.0.
+#     Note that this also requires docker-compose <= 1.19.0 (otherwise it throws a runtime error).
+#
+
+#- name: "Install docker python module"
+#  pip:
+#    name: docker
+#    version: 2.7.0
+#  become: yes

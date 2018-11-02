@@ -1,0 +1,15 @@
+- name: "Create user 'flowkit'"
+  become: yes
+  user:
+    name: flowkit
+    state: present
+    groups: docker, wheel
+    password: "$6$YaOatFoRa91eOA06$cLJCvJCdd0sLKBEM01eQ2wJ7ZKkTZJz.YWGFK5r0bs4yqiwAz1Lw9pmExiS.PPBBJv13cuBpiHYU88ThX4TeG/"
+
+- name: "Enable ssh access for users defined above"
+  authorized_key:
+    user: "{{ item }}"
+    state: present
+    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+  with_items:
+    - flowkit
