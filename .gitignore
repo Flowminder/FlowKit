@@ -111,6 +111,7 @@ venv.bak/
 
 # vscode
 .vscode
+*.code-workspace
 
 # tag files
 tags
