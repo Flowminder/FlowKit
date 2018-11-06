@@ -987,6 +987,7 @@ export async function login(username, password) {
     headers: {
       "Content-Type": "application/json"
     },
+    credentials: "same-origin",
     body: JSON.stringify({ username: username, password: password })
   };
 
