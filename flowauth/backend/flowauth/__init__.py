@@ -35,7 +35,7 @@ def create_app(test_config=None):
     # Set up flask-login
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = "flowauth.login.signin"
+    login_manager.login_view = "/"
 
     # Set up flask-principal for roles management
     principals = Principal()
