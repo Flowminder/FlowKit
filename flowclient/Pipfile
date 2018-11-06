@@ -13,7 +13,7 @@ hyper = "*"
 pytest = "*"
 "pytest-cov" = "*"
 versioneer = "*"
-black = "==18.6b4"
+black = "==18.9b0"
 
 [requires]
 python_version = "3.7"
