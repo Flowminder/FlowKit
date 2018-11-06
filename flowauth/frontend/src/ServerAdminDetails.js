@@ -34,7 +34,7 @@ class ServerAdminDetails extends React.Component {
     rights: {},
     max_life: 1440,
     secret_key: "",
-    latest_expiry: new Date(),
+    latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
     edit_mode: false
   };
 
@@ -91,9 +91,9 @@ class ServerAdminDetails extends React.Component {
     if (event.target.checked) {
       rights[claim].spatial_aggregation.push(unit);
     } else {
-      rights[claim].spatial_aggregation = rights[claim].spatial_aggregation.filter(
-        u => u != unit
-      );
+      rights[claim].spatial_aggregation = rights[
+        claim
+      ].spatial_aggregation.filter(u => u != unit);
     }
     this.setState({ rights: rights });
   };
