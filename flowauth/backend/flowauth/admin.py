@@ -52,12 +52,22 @@ def list_all_capabilities():
     -----
     Responds with {<capability_name>: {"id":<capability_id>, "permissions":{<right>:False}}}
     """
+    default_capacity_setting = current_app.config["DEMO_MODE"]
+    aggregations = (
+        [agg.name for agg in SpatialAggregationUnit.query.all()]
+        if current_app.config["DEMO_MODE"]
+        else []
+    )
     return jsonify(
         {
             cap.name: {
                 "id": cap.id,
-                "permissions": {"get_result": False, "run": False, "poll": False},
-                "spatial_aggregation": [],
+                "permissions": {
+                    "get_result": default_capacity_setting,
+                    "run": default_capacity_setting,
+                    "poll": default_capacity_setting,
+                },
+                "spatial_aggregation": aggregations,
             }
             for cap in Capability.query.all()
         }
