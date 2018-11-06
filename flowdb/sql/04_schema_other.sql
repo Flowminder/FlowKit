@@ -60,3 +60,11 @@ Schema used by PGRouting for holding road networks.
 */
 
 CREATE SCHEMA IF NOT EXISTS routing;
+
+/*
+
+Schema used for temp storage during etl.
+
+*/
+
+CREATE SCHEMA IF NOT EXISTS etl;
