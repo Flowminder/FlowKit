@@ -5,6 +5,9 @@
 import pandas as pd
 import tabulate as tabulate
 import pprint
+import warnings
+
+warnings.filterwarnings("ignore")
 
 
 def to_md(self):
