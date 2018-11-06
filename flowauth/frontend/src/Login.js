@@ -38,7 +38,7 @@ const styles = theme => ({
   },
   avatar: {
     margin: theme.spacing.unit,
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: "white"
   },
   form: {
     width: "100%", // Fix IE11 issue.
@@ -79,9 +79,10 @@ class Login extends React.Component {
         <CssBaseline />
         <main className={classes.layout}>
           <Paper className={classes.paper}>
-            <Avatar className={classes.avatar}>
-              <LockIcon />
-            </Avatar>
+            <Avatar
+              className={classes.avatar}
+              src="/images/flowminder_logo.png"
+            />
             <Typography variant="headline">Sign in</Typography>
             <form className={classes.form} onSubmit={this.handleSubmit}>
               <FormControl margin="normal" required fullWidth>
