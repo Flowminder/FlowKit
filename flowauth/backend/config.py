@@ -39,3 +39,4 @@ SESSION_PROTECTION = "strong"
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 FERNET_KEY = getsecret("FERNET_KEY", os.getenv("FERNET_KEY", "")).encode()
 Fernet(FERNET_KEY)  # Error if fernet key is bad
+DEMO_MODE = True if os.getenv("DEMO_MODE") is not None else False

@@ -6,8 +6,8 @@ import pytest
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_list_capabilities(client, auth, app):
-
+def test_list_capabilities(client, auth):
+    """Capabilities and spatial aggregations should start disabled"""
     # Log in first
     response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
 
@@ -23,6 +23,29 @@ def test_list_capabilities(client, auth, app):
             "id": 2,
             "permissions": {"get_result": False, "run": False, "poll": False},
             "spatial_aggregation": [],
+        },
+    } == response.get_json()
+
+
+@pytest.mark.usefixtures("test_data_with_access_rights")
+def test_list_capabilities_demomode(client, auth, app):
+    """Capabilities and spatial aggregations should start enabled in demo mode"""
+    app.config["DEMO_MODE"] = True
+    # Log in first
+    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+
+    response = client.get("/admin/capabilities", headers={"X-CSRF-Token": csrf_cookie})
+    assert 200 == response.status_code  # Should get an OK
+    assert {
+        "DUMMY_ROUTE_A": {
+            "id": 1,
+            "permissions": {"get_result": True, "run": True, "poll": True},
+            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
+        },
+        "DUMMY_ROUTE_B": {
+            "id": 2,
+            "permissions": {"get_result": True, "run": True, "poll": True},
+            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
         },
     } == response.get_json()
 

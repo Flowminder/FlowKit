@@ -14,17 +14,6 @@ import pytest
 from flowmachine.features import LocationArea
 
 
-class LocationAreaTestCase(TestCase):
-    """
-    Tests for the LocationArea() class
-    """
-
-    def setUp(get_dataframe):
-        """
-        Method for instantiating test environment.
-        """
-
-
 n_sites = 30
 site_ids = ["o9yyxY", "B8OaG5", "DbWg4K", "0xqNDj"]
 

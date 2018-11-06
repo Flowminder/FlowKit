@@ -1,0 +1,45 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: "Add EPEL repo (provides useful extra packages for CentOS)"
+  when: ansible_os_family == "RedHat"
+  become: yes
+  become_user: root
+  yum: name=epel-release update_cache=yes
+
+- name: "Install git, tmux, ack and a few other useful packages"
+  when: ansible_os_family == "RedHat"
+  become: yes
+  become_user: root
+  yum:
+    name: ['ack', 'bash-completion-extras', 'colordiff', 'emacs', 'git', 'postgresql', 'tmux', 'tree', 'ufw', 'unzip', 'vim', 'wget']
+    update_cache: yes
+
+- name: "Ensure sshd always restarts"
+  when: ansible_os_family == "RedHat"
+  become: yes
+  become_user: root
+  lineinfile:
+    path: /usr/lib/systemd/system/sshd.service
+    regexp: '^Restart='
+    line: 'Restart=always'
+
+- name: "Set sshd restart interval"
+  when: ansible_os_family == "RedHat"
+  become: yes
+  become_user: root
+  lineinfile:
+    path: /usr/lib/systemd/system/sshd.service
+    regexp: '^RestartSec='
+    line: 'RestartSec=10s'
+
+- name: "Reload sshd config and restart daemon"
+  become: yes
+  become_user: root
+  changed_when: false
+  systemd:
+    name: sshd
+    enabled: yes
+    daemon_reload: yes
+    state: restarted
