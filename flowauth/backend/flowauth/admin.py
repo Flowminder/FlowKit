@@ -52,7 +52,7 @@ def list_all_capabilities():
     -----
     Responds with {<capability_name>: {"id":<capability_id>, "permissions":{<right>:False}}}
     """
-    default_permission_setting = current_app.config["DEMO_MODE"]
+    default_permission_setting: bool = current_app.config["DEMO_MODE"]
     aggregations = (
         [agg.name for agg in SpatialAggregationUnit.query.all()]
         if current_app.config["DEMO_MODE"]
