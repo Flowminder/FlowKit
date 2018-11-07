@@ -20,7 +20,8 @@
     "build": "react-scripts build",
     "test": "cypress run",
     "eject": "react-scripts eject",
-    "cypress:open": "cypress open"
+    "cy:open": "cypress open",
+    "cy:verify": "cypress verify"
   },
   "devDependencies": {
     "cypress": "^3.1.1"
