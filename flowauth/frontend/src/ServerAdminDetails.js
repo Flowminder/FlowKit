@@ -153,7 +153,8 @@ class ServerAdminDetails extends React.Component {
   }
 
   render() {
-    if (this.state.hasError) throw this.state.error;
+    if (this.state.hasError && this.state.error.code === 401)
+      throw this.state.error;
 
     const { rights, latest_expiry, name, secret_key, max_life } = this.state;
     const { classes, onClick } = this.props;
