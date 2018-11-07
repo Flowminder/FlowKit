@@ -81,7 +81,7 @@ class Login extends React.Component {
           <Paper className={classes.paper}>
             <Avatar
               className={classes.avatar}
-              src="/images/flowminder_logo.png"
+              src={require("./img/flowminder_logo.png")}
             />
             <Typography variant="headline">Sign in</Typography>
             <form className={classes.form} onSubmit={this.handleSubmit}>
