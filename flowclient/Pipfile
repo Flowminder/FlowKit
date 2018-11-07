@@ -14,6 +14,7 @@ pytest = "*"
 "pytest-cov" = "*"
 versioneer = "*"
 black = "==18.9b0"
+ipython = "*"
 
 [requires]
 python_version = "3.7"
