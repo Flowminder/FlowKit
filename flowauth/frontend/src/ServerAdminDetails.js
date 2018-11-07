@@ -77,6 +77,14 @@ class ServerAdminDetails extends React.Component {
       });
   };
 
+  fieldHasError = field => {
+    if (this.state.hasError && this.state.error.code === 400) {
+      return this.state.error.bad_field === field;
+    } else {
+      return false;
+    }
+  };
+
   generatePassword = event => {
     this.setState({
       secret_key: generate({ length: 16, numbers: true, symbols: true })
@@ -168,6 +176,7 @@ class ServerAdminDetails extends React.Component {
         </Grid>
         <Grid item xs={6}>
           <TextField
+            error={this.fieldHasError("name")}
             id="standard-name"
             label="Name"
             className={classes.textField}
