@@ -7,10 +7,10 @@
     "@material-ui/icons": "^3.0.1",
     "date-fns": "^2.0.0-alpha.16",
     "generate-password": "^1.4.0",
-    "material-ui-pickers": "^1.0.0-rc.17",
+    "material-ui-pickers": "^1.0.1",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
-    "react-scripts": "1.1.5",
+    "react-scripts": "^1.1.5",
     "zxcvbn": "^4.4.2"
   },
   "homepage": "http://site.com/static",
@@ -18,7 +18,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "test": "cypress run",
+    "eject": "react-scripts eject",
+    "cypress:open": "cypress open"
+  },
+  "devDependencies": {
+    "cypress": "^3.1.1"
   }
 }

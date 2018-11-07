@@ -308,7 +308,7 @@ jobs:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash)
 
-  run_flowauth_tests:
+  run_flowauth_backend_tests:
     docker:
       - image: circleci/python:3.7
     working_directory: /home/circleci/project/flowauth
@@ -324,6 +324,26 @@ jobs:
       - store_test_results:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash)
+
+  run_flowauth_frontend_tests:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowauth
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - restore_cache:
+          key: flowkit-flowauth-frontend-deps1-{{ checksum "Pipfile.lock" }}-{{ checksum "frontend/package-lock.json" }}
+      - save_cache:
+          key: flowkit-flowauth-frontend-deps1-{{ checksum "Pipfile.lock" }}-{{ checksum "frontend/package-lock.json" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
+            - /home/circleci/project/flowauth/frontend/node_modules
+      - run: pipenv install --deploy --dev
+      - run:
+          name: Run Cypress end-to-end tests
+          command: pipenv run test-frontend-with-record
+
 
   run_flowclient_tests:
     docker:
@@ -569,7 +589,9 @@ workflows:
           <<: *run_always_org_context
       - run_flowclient_tests:
           <<: *run_always_org_context
-      - run_flowauth_tests:
+      - run_flowauth_backend_tests:
+          <<: *run_always_org_context
+      - run_flowauth_frontend_tests:
           <<: *run_always_org_context
       - lint:
           requires:
@@ -594,7 +616,8 @@ workflows:
           <<: *run_always_org_context
       - build_flowauth:
           requires:
-            - run_flowauth_tests
+            - run_flowauth_frontend_tests
+            - run_flowauth_frontend_tests
           <<: *run_always_org_context
       - build_flowapi:
           requires:
