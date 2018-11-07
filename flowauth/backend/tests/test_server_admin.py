@@ -68,6 +68,87 @@ def test_create_server(client, auth, test_admin):
     assert [{"id": 1, "name": "DUMMY_SERVER_Z"}] == response.get_json()
 
 
+def test_create_server_errors_with_missing_name(client, auth, test_admin):
+    """Should block create of server with no name key and return error json."""
+    uid, username, password = test_admin
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/servers",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "latest_token_expiry": "2019-01-01T00:00:00.0Z",
+            "longest_token_life": 1440,
+            "secret_key": "DUMMY_SECRET_KEY",
+        },
+    )
+    assert 400 == response.status_code
+    assert {
+        "bad_field": "name",
+        "code": 400,
+        "message": "Must provide server name",
+    } == response.get_json()
+    response = client.get("/admin/servers", headers={"X-CSRF-Token": csrf_cookie})
+    assert [] == response.get_json()
+
+
+@pytest.mark.parametrize(
+    "name, expected_message",
+    [
+        ("", "Must provide server name"),
+        ("A" * 121, "Server name must be 120 characters or less."),
+    ],
+)
+def test_create_server_errors_with_bad_name(
+    name, expected_message, client, auth, test_admin
+):
+    """Should block create of server with zero length or too long name and return error json."""
+    uid, username, password = test_admin
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/servers",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "latest_token_expiry": "2019-01-01T00:00:00.0Z",
+            "longest_token_life": 1440,
+            "secret_key": "DUMMY_SECRET_KEY",
+            "name": name,
+        },
+    )
+    assert 400 == response.status_code
+    assert {
+        "bad_field": "name",
+        "code": 400,
+        "message": expected_message,
+    } == response.get_json()
+    response = client.get("/admin/servers", headers={"X-CSRF-Token": csrf_cookie})
+    assert [] == response.get_json()
+
+
+def test_create_server_errors_with_same_name(client, auth, test_admin):
+    """Should block create of server with same name as an existing one and return error json."""
+    uid, username, password = test_admin
+    response, csrf_cookie = auth.login(username, password)
+    for i in range(2):
+        response = client.post(
+            "/admin/servers",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json={
+                "latest_token_expiry": "2019-01-01T00:00:00.0Z",
+                "longest_token_life": 1440,
+                "secret_key": "DUMMY_SECRET_KEY",
+                "name": "TEST_SERVER",
+            },
+        )
+    assert 400 == response.status_code
+    assert {
+        "bad_field": "name",
+        "code": 400,
+        "message": "Server with this name already exists.",
+    } == response.get_json()
+    response = client.get("/admin/servers", headers={"X-CSRF-Token": csrf_cookie})
+    assert [{"id": 1, "name": "TEST_SERVER"}] == response.get_json()
+
+
 @pytest.mark.usefixtures("test_data_with_access_rights")
 def test_rm_server(client, auth):
     response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
