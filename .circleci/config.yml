@@ -330,11 +330,11 @@ jobs:
       - image: circleci/python:3.7
     working_directory: /home/circleci/project/flowauth
     steps:
+      - checkout:
+          path: /home/circleci/project/
       - run:
           name: Install cypress dependencies
           command: sudo apt-get install -y xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
-      - checkout:
-          path: /home/circleci/project/
       - restore_cache:
           key: flowkit-flowauth-frontend-deps1-{{ checksum "Pipfile.lock" }}-{{ checksum "frontend/package-lock.json" }}
       - run:
