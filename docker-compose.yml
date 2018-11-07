@@ -13,8 +13,8 @@ services:
     flowdb-testdata:
         container_name: flowdb_testdata
         image: flowminder/flowdb:testdata-master 
-        ports:
-            - 9000:5432
+        expose:
+            - 5432
         environment:
             - POSTGRES_DB=${POSTGRES_DB:-flowdb}
             - POSTGRES_USER=${POSTGRES_USER:-flowdb}
@@ -33,8 +33,8 @@ services:
     flowmachine:
         container_name: flowmachine
         image: flowminder/flowmachine:master
-        ports:
-            - 5555:5555
+        expose:
+            - 5555
         restart: always
         environment:
             - DB_PORT=${DB_PORT:-5432}
@@ -73,8 +73,8 @@ services:
     redis:
         container_name: redis_flowkit
         image: redis
-        ports:
-            - 6379:6379
+        expose:
+            - 6379
         networks:
             redis:
                 aliases:
