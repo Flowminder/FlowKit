@@ -171,6 +171,7 @@ class Dashboard extends React.Component {
               classes.appBar,
               this.state.open && classes.appBarShift
             )}
+            color={is_admin ? "secondary" : "primary"}
           >
             <Toolbar
               disableGutters={!this.state.open}
@@ -194,6 +195,7 @@ class Dashboard extends React.Component {
                 className={classes.title}
               >
                 FlowAuth
+                {is_admin ? ": Admin Mode" : ""}
               </Typography>
               <IconButton
                 color="inherit"
