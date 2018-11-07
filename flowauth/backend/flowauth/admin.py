@@ -9,6 +9,7 @@ from werkzeug.exceptions import abort
 from zxcvbn import zxcvbn
 
 from .models import *
+from .invalid_usage import InvalidUsage
 
 blueprint = Blueprint(__name__, __name__)
 admin_permission = Permission(RoleNeed("admin"))
@@ -235,6 +236,18 @@ def add_server():
     json["latest_token_expiry"] = datetime.datetime.strptime(
         json["latest_token_expiry"], "%Y-%m-%dT%H:%M:%S.%fZ"
     )
+    if "name" not in json:
+        raise InvalidUsage("Must provide server name", payload={"bad_field": "name"})
+    if len(json["name"]) == 0:
+        raise InvalidUsage("Must provide server name", payload={"bad_field": "name"})
+    if len(json["name"]) > 120:
+        raise InvalidUsage(
+            "Server name must be 120 characters or less.", payload={"bad_field": "name"}
+        )
+    if Server.query.filter(Server.name == json["name"]).first() is not None:
+        raise InvalidUsage(
+            "Server with this name already exists.", payload={"bad_field": "name"}
+        )
     server = Server(**json)
     db.session.add(server)
     db.session.commit()
@@ -499,9 +512,9 @@ def edit_group_servers(group_id):
             )
             limits.longest_life = server["max_life"]
         if limits.longest_life > server_obj.longest_token_life:
-            abort(400, "lifetime_too_long")
+            raise InvalidUsage("lifetime_too_long")
         if limits.latest_end > server_obj.latest_token_expiry:
-            abort(400, "end_date_too_late")
+            raise InvalidUsage("end_date_too_late")
         revised_limits.append(limits)
         db.session.add(limits)
         # Create permissions
@@ -527,7 +540,7 @@ def edit_group_servers(group_id):
                     for name, val in right["permissions"].items():
                         setattr(perm, name, val)
                         if val and not getattr(server_capability, name):
-                            abort(400, "capability_not_allowed_on_server")
+                            raise InvalidUsage("capability_not_allowed_on_server")
                 if "spatial_aggregation" in right:
                     print(right["spatial_aggregation"])
                     agg_units = [
@@ -619,7 +632,7 @@ def add_user():
     if zxcvbn(json["password"])["score"] > 3:
         user = User(**json)
     else:
-        raise abort(400, "bad_pass")
+        raise InvalidUsage("bad_pass")
     user_group = Group(name=user.username, user_group=True)
     user.groups.append(user_group)
     db.session.add(user)
@@ -646,7 +659,7 @@ def rm_user(user_id):
     """
     user = User.query.filter(User.id == user_id).first_or_404()
     if user.is_admin and len(User.query.filter(User.is_admin).all()) == 1:
-        raise abort(400, "no_admins")
+        raise InvalidUsage("no_admins")
     db.session.delete(user)
     db.session.commit()
     return jsonify({"poll": "OK"})
@@ -682,20 +695,20 @@ def edit_user(user_id):
         if len(edits["username"]) > 0:
             user.username = edits["username"]
         else:
-            raise abort(400, "bad_username")
+            raise InvalidUsage("bad_username")
     if "password" in edits:
         if len(edits["password"]) > 0:
             if zxcvbn(edits["password"])["score"] > 3:
                 user.password = edits["password"]
             else:
-                raise abort(400, "bad_pass")
+                raise InvalidUsage("bad_pass")
     if "is_admin" in edits:
         if (
             not edits["is_admin"]
             and user.is_admin
             and len(User.query.filter(User.is_admin).all()) == 1
         ):
-            raise abort(400, "no_admins")
+            raise InvalidUsage("no_admins")
         else:
             user.is_admin = edits["is_admin"]
     db.session.add(user)
