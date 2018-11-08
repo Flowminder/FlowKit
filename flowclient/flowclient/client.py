@@ -203,6 +203,30 @@ def query_is_ready(
         )
 
 
+def get_status(connection: Connection, query_id: str) -> str:
+    """
+    Check the status of a query.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection  to use
+    query_id : str
+        Identifier of the query to retrieve
+
+    Returns
+    -------
+    str
+        "Finished" or "Running"
+
+    """
+    ready, status_code = query_is_ready(connection, query_id)
+    if ready:
+        return "Finished"
+    else:
+        return "Running"
+
+
 def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFrame:
     """
     Get a query by id, and return it as a dataframe
