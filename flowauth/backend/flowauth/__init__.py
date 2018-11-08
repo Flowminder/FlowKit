@@ -10,6 +10,7 @@ from flask_principal import Principal, identity_loaded, UserNeed, RoleNeed
 from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
 from cryptography.fernet import Fernet
 
+from .invalid_usage import InvalidUsage
 from .models import *
 from .admin import blueprint as admin_blueprint
 from .token_management import blueprint as token_management_blueprint
@@ -69,15 +70,11 @@ def create_app(test_config=None):
         """
         return "CSRF error", 401
 
-    @app.errorhandler(400)
-    def custom400(error):
-        """
-        Catch 400 errors and return additional detail on the error instead
-        of just BAD REQUEST.
-        """
-        return make_response(
-            flask.jsonify({"message": error.description, "code": 400}), 400
-        )
+    @app.errorhandler(InvalidUsage)
+    def handle_invalid_usage(error):
+        response = flask.jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
 
     @app.before_request
     def before_request():

@@ -47,27 +47,42 @@ class ServerAdminDetails extends React.Component {
       rights,
       secret_key
     } = this.state;
-    const { item_id } = this.props;
-    (edit_mode &&
-      Promise.all([
-        editServer(
-          item_id,
-          name,
-          secret_key,
-          new Date(latest_expiry).toISOString(),
-          max_life
-        ),
-        editServerCapabilities(item_id, rights)
-      ])) ||
-      createServer(
+    const { item_id, onClick } = this.props;
+    var task;
+    if (edit_mode) {
+      task = editServer(
+        item_id,
         name,
         secret_key,
         new Date(latest_expiry).toISOString(),
         max_life
-      ).then(json => {
-        editServerCapabilities(json.id, rights);
+      );
+    } else {
+      task = createServer(
+        name,
+        secret_key,
+        new Date(latest_expiry).toISOString(),
+        max_life
+      );
+    }
+    task
+      .then(json => {
+        return editServerCapabilities(json.id, rights);
+      })
+      .then(json => {
+        onClick();
+      })
+      .catch(err => {
+        this.setState({ hasError: true, error: err });
       });
-    this.props.onClick();
+  };
+
+  fieldHasError = field => {
+    if (this.state.hasError && this.state.error.code === 400) {
+      return this.state.error.bad_field === field;
+    } else {
+      return false;
+    }
   };
 
   generatePassword = event => {
@@ -146,7 +161,8 @@ class ServerAdminDetails extends React.Component {
   }
 
   render() {
-    if (this.state.hasError) throw this.state.error;
+    if (this.state.hasError && this.state.error.code === 401)
+      throw this.state.error;
 
     const { rights, latest_expiry, name, secret_key, max_life } = this.state;
     const { classes, onClick } = this.props;
@@ -160,6 +176,7 @@ class ServerAdminDetails extends React.Component {
         </Grid>
         <Grid item xs={6}>
           <TextField
+            error={this.fieldHasError("name")}
             id="standard-name"
             label="Name"
             className={classes.textField}

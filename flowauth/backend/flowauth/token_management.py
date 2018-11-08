@@ -9,6 +9,7 @@ from flask_login import login_required, current_user, logout_user
 from werkzeug.exceptions import abort
 
 from .models import *
+from .invalid_usage import InvalidUsage
 from zxcvbn import zxcvbn
 
 blueprint = Blueprint(__name__, __name__)
@@ -31,17 +32,17 @@ def set_password():
         old_pass = edits["password"]
         new_pass = edits["newPassword"]
     except KeyError:
-        abort(400, "Missing old or new password")
+        raise InvalidUsage("Missing old or new password")
     if current_user.is_correct_password(old_pass):
         if len(new_pass) == 0 or zxcvbn(new_pass)["score"] < 4:
-            raise abort(400, description="bad_pass")
+            raise InvalidUsage("bad_pass")
         current_user.password = new_pass
         db.session.add(current_user)
         db.session.commit()
         logout_user()
         return jsonify({}), 200
     else:
-        raise abort(400, "incorrect_pass")
+        raise InvalidUsage("incorrect_pass")
 
 
 @blueprint.route("/groups")
@@ -176,12 +177,12 @@ def add_token(server):
     json = request.get_json()
     print(json)
     if "name" not in json:
-        abort(400, "No name.")
+        raise InvalidUsage("No name.")
     expiry = datetime.datetime.strptime(json["expiry"], "%Y-%m-%dT%H:%M:%S.%fZ")
     lifetime = expiry - datetime.datetime.now()
     latest_lifetime = current_user.latest_token_expiry(server)
     if expiry > latest_lifetime:
-        abort(400, "Token lifetime too long")
+        raise InvalidUsage("Token lifetime too long")
     allowed_claims = current_user.allowed_claims(server)
     print(allowed_claims)
     for claim, rights in json["claims"].items():
