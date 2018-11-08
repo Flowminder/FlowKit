@@ -260,7 +260,7 @@ class Server(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)
+    name = db.Column(db.String(120), unique=True, nullable=False)
     latest_token_expiry = db.Column(db.DateTime, nullable=False)
     longest_token_life = db.Column(db.Integer, nullable=False)
     _secret_key = db.Column(db.String(128), nullable=False)  # Encrypted in db

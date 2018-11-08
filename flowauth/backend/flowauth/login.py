@@ -8,6 +8,7 @@ from flask_principal import identity_changed, Identity, AnonymousIdentity
 from werkzeug.exceptions import abort
 
 from .models import *
+from .invalid_usage import InvalidUsage
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -17,7 +18,7 @@ blueprint = Blueprint(__name__, __name__)
 def signin():
     json = request.get_json()
     if "username" not in json or "password" not in json:
-        abort(400, "Must supply username or password.")
+        raise InvalidUsage("Must supply username or password.")
     user = User.query.filter(User.username == json["username"]).first()
     if user is not None:
         if user.is_correct_password(json["password"]):
