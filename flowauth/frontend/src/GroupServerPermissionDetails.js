@@ -8,8 +8,7 @@ import Divider from "@material-ui/core/Divider";
 import ServerCapability from "./ServerCapability";
 import ServerAggregationUnits from "./ServerAggregationUnits";
 import Grid from "@material-ui/core/Grid";
-import { DateTimePicker } from "material-ui-pickers";
-import MuiPickersUtilsProvider from "material-ui-pickers/utils/MuiPickersUtilsProvider";
+import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import DateFnsUtils from "material-ui-pickers/utils/date-fns-utils";
 import TextField from "@material-ui/core/TextField";
 import {
@@ -53,9 +52,9 @@ class GroupServerPermissionDetails extends React.Component {
     if (event.target.checked) {
       rights[claim].spatial_aggregation.push(unit);
     } else {
-      rights[claim].spatial_aggregation = rights[claim].spatial_aggregation.filter(
-        u => u != unit
-      );
+      rights[claim].spatial_aggregation = rights[
+        claim
+      ].spatial_aggregation.filter(u => u != unit);
     }
     this.setState({ rights: rights });
     server["rights"] = rights;

@@ -5,7 +5,7 @@
 FROM node as builder
 
 COPY frontend /
-RUN npm install
+RUN npm install --production
 RUN PUBLIC_URL=/static npm run-script build
 
 FROM tiangolo/uwsgi-nginx-flask:python3.7
