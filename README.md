@@ -134,11 +134,11 @@ cd secrets_quickstart
 docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
 ```
 
-After which, the API will be available via HTTPS (and no longer available via HTTP). Note that to access the API using FlowClient, you'll need to provide the path to the certificate as the `verify` argument when calling `flowclient.Connection` (much as you would if using a self-signed certificate with `requests`):
+After which, the API will be available via HTTPS (and no longer available via HTTP). Note that to access the API using FlowClient, you'll need to provide the path to the certificate as the `ssl_certificate` argument when calling `flowclient.Connection` (much as you would if using a self-signed certificate with `requests`):
 
 ```python
 import flowclient
-conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", verify="/home/username/flowkit/integration_tests/client_cert.pem")
+conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certificate="/home/username/flowkit/integration_tests/client_cert.pem")
 ```
 
 ### Secrets Quickstart
@@ -173,7 +173,7 @@ You can then provide the certificate to `flowclient`, and finally connect via ht
 
 ```python
 import flowclient
-conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", verify="<path_to_cert.pem>")
+conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certificate="<path_to_cert.pem>")
 ```
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
