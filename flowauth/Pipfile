@@ -24,3 +24,14 @@ pytest-cov = "*"
 
 [requires]
 python_version = "3.7"
+
+[scripts]
+build-frontend = "bash start.sh build"
+start-all = "bash start.sh start"
+start-backend = "flask run"
+start-frontend = "bash -c 'cd frontend && npm start'"
+test-frontend-with-record = "bash start.sh test --record"
+test-frontend = "bash start.sh test"
+test-backend = "pytest"
+
+
