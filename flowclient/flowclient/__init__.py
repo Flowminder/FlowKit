@@ -16,6 +16,7 @@ from .client import (
     flows,
     get_result,
     get_result_by_query_id,
+    get_status,
     query_is_ready,
     run_query,
 )
@@ -29,6 +30,7 @@ __all__ = [
     "flows",
     "get_result",
     "get_result_by_query_id",
+    "get_status",
     "query_is_ready",
     "run_query",
 ]
