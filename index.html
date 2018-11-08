@@ -2033,11 +2033,11 @@
 <p>An authentication management system used to generate access tokens for use with FlowClient.</p>
 </li>
 </ul>
-<p>FlowKit is an open-source product. The source code can be found at <a href="https://github.com/Flowminder/flowkit">https://github.com/Flowminder/flowkit</a>, and documentation is available at <a href="https://flowminder.github.io/flowkit">https://flowminder.github.io/flowkit</a>.</p>
+<p>FlowKit is an open-source product. The source code can be found at <a href="https://github.com/Flowminder/FlowKit">https://github.com/Flowminder/FlowKit</a>, and documentation is available at <a href="https://flowminder.github.io/FlowKit">https://flowminder.github.io/FlowKit</a>.</p>
 <h2 id="installation-using-docker-cloud-repositories">Installation using docker cloud repositories<a class="headerlink" href="#installation-using-docker-cloud-repositories" title="Permanent link">&para;</a></h2>
 <h3 id="server">Server<a class="headerlink" href="#server" title="Permanent link">&para;</a></h3>
 <p>Docker containers for FlowAPI, FlowMachine and FlowDB are provided in the docker cloud repositories <code>flowminder/flowapi</code>, <code>flowminder/flowmachine</code> and <code>flowminder/flowdb</code>, respectively. To set up FlowKit using the docker cloud repositories, you will need <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a>.</p>
-<p>The file <a href="https://github.com/Flowminder/flowkit/blob/master/docker-compose.yml"><code>docker-compose.yml</code></a> can be used to start FlowKit and populate FlowDB with a test dataset. The compose file expects the <code>JWT_SECRET_KEY</code> environment variable to be set. This is used to sign and verify access tokens for the API.</p>
+<p>The file <a href="https://github.com/Flowminder/FlowKit/raw/master/docker-compose.yml"><code>docker-compose.yml</code></a> can be used to start FlowKit and populate FlowDB with a test dataset. The compose file expects the <code>JWT_SECRET_KEY</code> environment variable to be set. This is used to sign and verify access tokens for the API.</p>
 <p>The FlowKit test system can be started by running <code>JWT_SECRET_KEY=&lt;secret&gt; docker-compose up -d</code> in the same directory as the <code>docker-compose.yml</code> file. This will pull any necessary docker containers, and start the system in the background with the API exposed on port <code>9090</code> by default.</p>
 <h3 id="client">Client<a class="headerlink" href="#client" title="Permanent link">&para;</a></h3>
 <p>The FlowClient Python client may be installed using pip:</p>
@@ -2048,7 +2048,7 @@
 <h3 id="flowauth">FlowAuth<a class="headerlink" href="#flowauth" title="Permanent link">&para;</a></h3>
 <p>The FlowAuth Docker container is provided in the docker cloud repository <code>flowminder/flowauth</code>. Deployment and usage instructions can be found <a href="./flowauth">here</a>.</p>
 <h2 id="installation-for-developers">Installation for developers<a class="headerlink" href="#installation-for-developers" title="Permanent link">&para;</a></h2>
-<p>After cloning the <a href="https://github.com/Flowminder/flowkit">GitHub repository</a>, the FlowKit system can be started by running <code>make up</code> in the root directory. This requires <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a> to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the <code>docker-compose-dev.yml</code> file.</p>
+<p>After cloning the <a href="https://github.com/Flowminder/FlowKit">GitHub repository</a>, the FlowKit system can be started by running <code>make up</code> in the root directory. This requires <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a> to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the <code>docker-compose-dev.yml</code> file.</p>
 <p>FlowKit uses <a href="https://pipenv.readthedocs.io/">pipenv</a> to manage Python environments. To start a Python session in which you can use FlowClient:</p>
 <div class="codehilite"><pre><span></span>cd flowclient
 pipenv install
@@ -2111,9 +2111,9 @@ pipenv run pytest
 docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
 </pre></div>
 
-<p>After which, the API will be available via HTTPS (and no longer available via HTTP). Note that to access the API using FlowClient, you'll need to provide the path to the certificate as the <code>verify</code> argument when calling <code>flowclient.Connection</code> (much as you would if using a self-signed certificate with <code>requests</code>):</p>
+<p>After which, the API will be available via HTTPS (and no longer available via HTTP). Note that to access the API using FlowClient, you'll need to provide the path to the certificate as the <code>ssl_certificate</code> argument when calling <code>flowclient.Connection</code> (much as you would if using a self-signed certificate with <code>requests</code>):</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">flowclient</span>
-<span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="s2">&quot;/home/username/flowkit/integration_tests/client_cert.pem&quot;</span><span class="p">)</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="o">=</span><span class="s2">&quot;/home/username/flowkit/integration_tests/client_cert.pem&quot;</span><span class="p">)</span>
 </pre></div>
 
 <h3 id="secrets-quickstart">Secrets Quickstart<a class="headerlink" href="#secrets-quickstart" title="Permanent link">&para;</a></h3>
@@ -2141,7 +2141,7 @@ docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
 <p>Note that if you wish to deploy a branch other than master, you should set the <code>CIRCLE_BRANCH</code> environment variable before running, to ensure that Docker pulls the correct tags.</p>
 <p>You can then provide the certificate to <code>flowclient</code>, and finally connect via https:</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">flowclient</span>
-<span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="s2">&quot;&lt;path_to_cert.pem&gt;&quot;</span><span class="p">)</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="o">=</span><span class="s2">&quot;&lt;path_to_cert.pem&gt;&quot;</span><span class="p">)</span>
 </pre></div>
 
 <p>(This generates a certificate valid for the <code>flow.api</code> domain as well, which you can use by adding a corresponding entry to your <code>/etc/hosts</code> file.)</p>
