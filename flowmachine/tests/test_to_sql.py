@@ -14,6 +14,10 @@ from flowmachine.features.utilities.sets import EventTableSubset
 
 @pytest.fixture(autouse=True)
 def test_table_schema(flowmachine_connect):
+    """
+    Fixture which creates a schema called 'tests' before every test
+    and destroys it again after the test has finished.
+    """
     flowmachine_connect.engine.execute("CREATE SCHEMA IF NOT EXISTS tests")
     yield
     flowmachine_connect.engine.execute("DROP SCHEMA tests CASCADE")
