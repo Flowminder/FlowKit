@@ -51,6 +51,6 @@ def test_can_force_rewrite(flowmachine_connect, get_length):
     # force a rewrite, and check that the table now has data.
     sql = """DELETE FROM tests.test_rewrite"""
     flowmachine_connect.engine.execute(sql)
+    assert 0 == get_length(Table("tests.test_rewrite"))
     query.to_sql(schema="tests", name="test_rewrite", force=True)
-    table_length = get_length(Table("tests.test_rewrite"))
-    assert table_length > 1
+    assert 1 < get_length(Table("tests.test_rewrite"))
