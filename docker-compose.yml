@@ -69,6 +69,7 @@ services:
     redis:
         container_name: redis_flowkit
         image: redis
+        restart: always
         networks:
             redis:
                 aliases:
