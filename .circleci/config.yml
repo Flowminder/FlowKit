@@ -141,20 +141,20 @@ jobs:
             flowdb/testdata
           background: true
       - run:
-          name: Build synthetic data image
-          command: |
-            echo Building synthetic testdata version $FLOWDB_VERSION.
-            echo Tagging as synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH
-            docker build --build-arg CODE_VERSION=$CIRCLE_TAG$CIRCLE_BRANCH -t flowminder/flowdb:synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH \
-              -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
-          background: true
-      - run:
           name: Build image with Oracle
           command: |
             echo Building Oracle_fdw version $FLOWDB_VERSION
             echo Tagging as oracle-$CIRCLE_TAG$CIRCLE_BRANCH
             docker build --build-arg CODE_VERSION=$CIRCLE_TAG$CIRCLE_BRANCH --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
              -t flowminder/flowdb:oracle-$CIRCLE_TAG$CIRCLE_BRANCH flowdb/oracle_fdw
+          background: true
+      - run:
+          name: Build synthetic data image
+          command: |
+            echo Building synthetic testdata version $FLOWDB_VERSION.
+            echo Tagging as synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH
+            docker build --build-arg CODE_VERSION=$CIRCLE_TAG$CIRCLE_BRANCH -t flowminder/flowdb:synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH \
+              -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
       - run:
           name: Create ingestion environment
           command: |
