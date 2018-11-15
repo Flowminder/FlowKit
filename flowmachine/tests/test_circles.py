@@ -154,10 +154,9 @@ def test_rastersum(get_dataframe):
     """
     Test that CircleRasterSum returns correct data 
     """
-    c_locs = [Circle(*vals) for vals in zip(lons, lats, radii, names)]
+    c_locs = [Circle(84.038, 28.309, 500, "test")]
     geoms = CircleGeometries(c_locs)
     crs = geoms.raster_sum("population.worldpop_2015_un")
     crs = get_dataframe(crs).set_index("name")
 
-    assert crs.loc["Kathmandu"]["statistic"] == 1_135_396.204_037_67
-    assert crs.loc["Pokhara"]["statistic"] == 405_240.399_796_441_02
+    assert crs.loc["test"]["statistic"] == 4610.0
