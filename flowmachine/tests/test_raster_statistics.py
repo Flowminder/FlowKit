@@ -65,14 +65,6 @@ def test_raises_valueerror_when_grouping_element_not_provided():
         )
 
 
-def test_failure_with_no_grouping_layer():
-    """
-    RasterStatistics() checks that we can get column names when grouping layer omitted.
-    """
-    r = RasterStatistics(raster="population.small_nepal_raster")
-    r.column_names
-
-
 def test_raster_statistics_column_names_novector(get_dataframe):
     """
     Test that column_names property matches head(0) for RasterStatistics
