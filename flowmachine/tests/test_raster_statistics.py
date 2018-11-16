@@ -49,7 +49,7 @@ def test_raises_notimplemented_when_wrong_statistic_requested():
             raster="population.small_nepal_raster",
             vector=vector,
             grouping_element=G,
-            statistic="mean",
+            statistic="foobar",
         )
 
 
