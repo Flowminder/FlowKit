@@ -156,7 +156,7 @@ def test_rastersum(get_dataframe):
     """
     c_locs = [Circle(84.038, 28.309, 500, "test")]
     geoms = CircleGeometries(c_locs)
-    crs = geoms.raster_sum("population.worldpop_2015_un")
+    crs = geoms.raster_sum("population.small_nepal_raster")
     crs = get_dataframe(crs).set_index("name")
 
     assert crs.loc["test"]["statistic"] == 4610.0

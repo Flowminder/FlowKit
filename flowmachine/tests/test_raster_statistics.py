@@ -19,7 +19,7 @@ def test_computes_expected_clipping_values(get_dataframe):
     G = "admin2pcod"
     vector = Table(schema="geography", name="admin2")
     r = RasterStatistics(
-        raster="population.worldpop_2015_un", vector=vector, grouping_element=G
+        raster="population.small_nepal_raster", vector=vector, grouping_element=G
     )
 
     result = get_dataframe(r)  # Should have only _one_ entry
@@ -32,7 +32,7 @@ def test_computes_expected_total_value(get_dataframe):
     """
     RasterStatistics() computes correct total value of raster.
     """
-    r = RasterStatistics(raster="population.worldpop_2015_un")
+    r = RasterStatistics(raster="population.small_nepal_raster")
     result = get_dataframe(r)
 
     assert result["statistic"].iloc[0] == 2500000
@@ -46,7 +46,7 @@ def test_raises_notimplemented_when_wrong_statistic_requested():
     vector = Table(schema="geography", name="admin2")
     with pytest.raises(NotImplementedError):
         r = RasterStatistics(
-            raster="population.worldpop_2015_un",
+            raster="population.small_nepal_raster",
             vector=vector,
             grouping_element=G,
             statistic="mean",
@@ -61,7 +61,7 @@ def test_raises_valueerror_when_grouping_element_not_provided():
     vector = Table(schema="geography", name="admin2")
     with pytest.raises(ValueError):
         r = RasterStatistics(
-            "population.worldpop_2015_un", vector=vector, grouping_element=None
+            "population.small_nepal_raster", vector=vector, grouping_element=None
         )
 
 
@@ -69,7 +69,7 @@ def test_failure_with_no_grouping_layer():
     """
     RasterStatistics() checks that we can get column names when grouping layer omitted.
     """
-    r = RasterStatistics(raster="population.worldpop_2015_un")
+    r = RasterStatistics(raster="population.small_nepal_raster")
     r.column_names
 
 
@@ -78,7 +78,7 @@ def test_raster_statistics_column_names_novector(get_dataframe):
     Test that column_names property matches head(0) for RasterStatistics
     when vector is None
     """
-    r = RasterStatistics(raster="population.worldpop_2015_un")
+    r = RasterStatistics(raster="population.small_nepal_raster")
     assert get_dataframe(r).columns.tolist() == r.column_names
 
 
@@ -89,7 +89,7 @@ def test_raster_statistics_column_names_vector(get_dataframe):
     """
     vector = Table(schema="geography", name="admin2")
     r = RasterStatistics(
-        raster="population.worldpop_2015_un",
+        raster="population.small_nepal_raster",
         vector=vector,
         grouping_element="admin2pcod",
     )

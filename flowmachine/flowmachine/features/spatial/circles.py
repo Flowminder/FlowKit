@@ -130,7 +130,7 @@ class CircleGeometries(GeoDataMixin, Query):
 
         >>> circles = [Circle(*vals) for vals in zip(lats,lons,radii,names)]
         >>> cp = CircleGeometries(circles)
-        >>> rs = cp.raster_sum('population.worldpop_2015_un')
+        >>> rs = cp.raster_sum('population.small_nepal_raster')
         >>> rs.get_dataframe()
 
         name     statistic
