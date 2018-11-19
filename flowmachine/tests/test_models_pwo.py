@@ -6,8 +6,6 @@
 Tests for the PopulationWeightedOpportunities() class.
 """
 
-from unittest import TestCase
-
 import pytest
 
 from flowmachine.models import PopulationWeightedOpportunities
