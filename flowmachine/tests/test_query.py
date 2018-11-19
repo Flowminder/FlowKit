@@ -8,13 +8,8 @@ pertain to any one particular query
 """
 
 import pytest
-from unittest import TestCase
-
-from flowmachine.core import CustomQuery, GeoTable
 from flowmachine.core.query import Query
-from flowmachine.core.table import Table
 from flowmachine.features import daily_location
-import pickle
 
 
 def test_method_not_implemented():

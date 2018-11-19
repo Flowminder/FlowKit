@@ -6,7 +6,6 @@
 Tests for flowmachine.FeatureCollection
 """
 
-from unittest import TestCase
 from flowmachine import FeatureCollection
 from flowmachine.core import CustomQuery
 from flowmachine.features import RadiusOfGyration, NocturnalCalls, SubscriberDegree
