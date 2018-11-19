@@ -13,6 +13,7 @@ import datetime
 import warnings
 import logging
 from functools import reduce
+from typing import Tuple, Union, Dict, List
 
 import sqlalchemy
 
@@ -329,8 +330,13 @@ class Connection:
     )  # Reasonable number of possible combinations, but fairly big output to cache
     # two minutes seems reasonable to balance db access against speed boost
     def available_dates(
-        self, start=None, stop=None, table="calls", strictness=0, schema="events"
-    ):
+        self,
+        start: Union[None, str] = None,
+        stop: Union[None, str] = None,
+        table: Union[str, Tuple[str]] = "calls",
+        strictness: int = 0,
+        schema: str = "events",
+    ) -> Dict[str, List[datetime.date]]:
         """
 
         Parameters
@@ -357,7 +363,7 @@ class Connection:
 
         if isinstance(table, str) and table.lower() == "all":
             table = self.subscriber_tables
-        tables = table if isinstance(table, list) else [table]
+        tables = table if isinstance(table, tuple) else [table]
         available = {}
         for table in tables:
             dates = self._known_dates(table, schema)
