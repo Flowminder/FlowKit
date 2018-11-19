@@ -5,7 +5,6 @@ defaults:
         DB_PORT: 5432
         MPLBACKEND: "agg"
   - &flowdb_env
-    PYENV_VERSION: 3.6.6
     DB_PORT: 9000
     ORACLE_DB_PORT: 9002
     SYNTHETIC_DATA_DB_PORT: 5432
@@ -49,7 +48,7 @@ defaults:
         API_PASSWORD: foo
     - image: redis
   - &flowdbsynth_docker
-    - image: circleci/python:3.6
+    - image: circleci/python:3.7
       environment:
         POSTGRES_PASSWORD: flowflow
         DB_PORT: 5432
@@ -90,29 +89,30 @@ defaults:
 version: 2
 jobs:
   build_flowdb:
-    machine: true
+    machine:
+      image: circleci/classic:201808-01
     working_directory: /home/circleci/project
     environment: *flowdb_env
     steps:
       - checkout
       - restore_cache:
-          key: flowdb-deps-1-{{ .Environment.PYENV_VERSION }}-{{ checksum "flowdb/Pipfile.lock"}}
+          key: flowdb-deps-1-{{ checksum "flowdb/Pipfile.lock"}}
       - run:
-          name: Install system dependencies
+          name: "Switch to Python v3.7"
           command: |
-            sudo apt-get install build-essential git libreadline-dev zlib1g-dev libssl-dev libbz2-dev libsqlite3-dev
-            git -C $(pyenv root) pull
-            pyenv install -s $PYENV_VERSION
-            pip install --upgrade pip pipenv
+            pyenv versions
+            pyenv global 3.7.0
+      - run:
+          name: Install pipenv
+          command: pip install --upgrade pip pipenv
       - run:
           name: Install python dependencies
           command: |
             PIPENV_PIPFILE=flowdb/Pipfile pipenv install --deploy --dev
       - save_cache:
-          key: flowdb-deps-1-{{ .Environment.PYENV_VERSION }}-{{ checksum "flowdb/Pipfile.lock" }}
+          key: flowdb-deps-1-{{ checksum "flowdb/Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/flowdb-NgQ6vyXW
-            - /opt/circleci/.pyenv
       - run:
           name: Set additional environment variables
           command: |
