@@ -5,7 +5,6 @@ defaults:
         DB_PORT: 5432
         MPLBACKEND: "agg"
   - &flowdb_env
-    PYENV_VERSION: 3.6.6
     DB_PORT: 9000
     ORACLE_DB_PORT: 9002
     SYNTHETIC_DATA_DB_PORT: 5432
