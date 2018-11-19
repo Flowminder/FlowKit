@@ -45,8 +45,8 @@ class DBConn:
         which ones want to establish.
     """
 
-    def __init__(self, request):
-        self.env = env()
+    def __init__(self, request, env):
+        self.env = env
         db_params = self._get_db_params(request)
         self.db_conn = pg.connect(
             f"postgresql://{db_params['usr']}:{db_params['pwd']}@localhost:{db_params['port']}/{db_params['db']}"
@@ -95,9 +95,9 @@ def _skip_usr(request):
     """Skip the usr is listed in the list provided to the `skip_usrs` mark."""
     # based on
     # https://stackoverflow.com/questions/28179026/how-to-skip-a-pytest-using-an-external-fixture
-    if request.node.get_marker("skip_usrs"):
+    if request.node.get_closest_marker("skip_usrs"):
         usr = request.getfixturevalue("usr")
-        if usr in request.node.get_marker("skip_usrs").args[0]:
+        if usr in request.node.get_closest_marker("skip_usrs").args[0]:
             pytest.skip("does not apply to: {}".format(usr))
 
 
@@ -150,7 +150,7 @@ def env():
 
 
 @pytest.fixture()
-def db_conn(request):
+def db_conn(request, env):
     """
     A connection instance. The user can specify db params (usr, pwd, port, db)
     as fixtures at the module level, and the appropriate connection will be
@@ -161,7 +161,7 @@ def db_conn(request):
     psycopg2.extensions.connection
         A connection to the database consistent with the request fixtures.
     """
-    db_conn = DBConn(request)
+    db_conn = DBConn(request, env)
     yield db_conn.get()
     db_conn.close()
 
