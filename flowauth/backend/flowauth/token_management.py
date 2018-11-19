@@ -32,11 +32,13 @@ def set_password():
     try:
         old_pass = edits["password"]
     except KeyError:
-        raise InvalidUsage("Missing old password", payload={"bad_field": "password"})
+        raise InvalidUsage("Missing old password.", payload={"bad_field": "password"})
     try:
         new_pass = edits["newPassword"]
     except KeyError:
-        raise InvalidUsage("Missing new password", payload={"bad_field": "newPassword"})
+        raise InvalidUsage(
+            "Missing new password.", payload={"bad_field": "newPassword"}
+        )
     if current_user.is_correct_password(old_pass):
         if len(new_pass) == 0 or zxcvbn(new_pass)["score"] < 4:
             raise InvalidUsage(

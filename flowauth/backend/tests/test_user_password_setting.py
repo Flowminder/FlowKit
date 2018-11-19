@@ -5,6 +5,46 @@
 from flask import session
 
 
+def test_new_password_required(client, auth, test_user):
+    """Test that a new password must be supplied."""
+    uid, username, password = test_user
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    with client:
+        response = client.patch(
+            "/user/password",
+            json={"password": "DUMMY_PASSWORDS"},
+            headers={"X-CSRF-Token": csrf_cookie},
+        )
+        assert 400 == response.status_code  # Should get an error
+
+        assert {
+            "message": "Missing new password.",
+            "bad_field": "newPassword",
+            "code": 400,
+        } == response.get_json()  # Should get a message about why it failed
+
+
+def test_old_password_required(client, auth, test_user):
+    """Test that the existing password must be supplied."""
+    uid, username, password = test_user
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    with client:
+        response = client.patch(
+            "/user/password",
+            json={"newPassword": "BAD"},
+            headers={"X-CSRF-Token": csrf_cookie},
+        )
+        assert 400 == response.status_code  # Should get an error
+
+        assert {
+            "message": "Missing old password.",
+            "bad_field": "password",
+            "code": 400,
+        } == response.get_json()  # Should get a message about why it failed
+
+
 def test_incorrect_old_password_rejected(client, auth, test_user):
     """Test that an incorrect old password doesn't permit a reset."""
     uid, username, password = test_user
