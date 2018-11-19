@@ -48,7 +48,7 @@ defaults:
         API_PASSWORD: foo
     - image: redis
   - &flowdbsynth_docker
-    - image: circleci/python:3.6
+    - image: circleci/python:3.7
       environment:
         POSTGRES_PASSWORD: flowflow
         DB_PORT: 5432
