@@ -13,6 +13,7 @@ import datetime
 import warnings
 import logging
 from functools import reduce
+from typing import Tuple, Union, Dict, List
 
 import sqlalchemy
 
@@ -329,8 +330,13 @@ class Connection:
     )  # Reasonable number of possible combinations, but fairly big output to cache
     # two minutes seems reasonable to balance db access against speed boost
     def available_dates(
-        self, start=None, stop=None, table="calls", strictness=0, schema="events"
-    ):
+        self,
+        start: Union[None, str] = None,
+        stop: Union[None, str] = None,
+        table: Union[str, Tuple[str]] = "calls",
+        strictness: int = 0,
+        schema: str = "events",
+    ) -> Dict[str, List[datetime.date]]:
         """
 
         Parameters
@@ -339,8 +345,8 @@ class Connection:
             If specified, list only available dates after this one (inclusive) as iso format date string
         stop : str, optional
             If specified, list only available dates before this one (inclusive) as iso format date string
-        table : str, or list of str, default 'calls'
-            Names of tables to check
+        table : str, or tuple of str, default 'calls'
+            Name(s) of tables to check, checks all tables listed under self.subscriber_tables if 'all' is passed.
         strictness : {0, 1, 2}
             Three levels of strictness are available - 0 checks only that the
             table _exists_. 1 checks the approximate number of rows in the table
@@ -356,8 +362,19 @@ class Connection:
         """
 
         if isinstance(table, str) and table.lower() == "all":
-            table = self.subscriber_tables
-        tables = table if isinstance(table, list) else [table]
+            table = tuple(self.subscriber_tables)
+        tables = table if isinstance(table, tuple) else [table]
+        try:
+            if not all(
+                isinstance(x, str) for x in table
+            ):  # Only strings or iterables of strings
+                raise TypeError
+        except (
+            TypeError
+        ):  # Capture of _tuples_ of strings is implicit because anything
+            raise TypeError(  # that got here has been wrapped in a list f it wasn't a tuple
+                f"Argument 'table' must be a string or tuple of strings. Got: {table}"
+            )
         available = {}
         for table in tables:
             dates = self._known_dates(table, schema)

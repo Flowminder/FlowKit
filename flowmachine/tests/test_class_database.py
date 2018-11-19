@@ -138,6 +138,23 @@ def test_strict_max_date(flowmachine_connect):
     )
 
 
+@pytest.mark.parametrize(
+    "tables", [("calls",), ("calls", "sms"), ("calls", "sms", "mds", "topups")]
+)
+def test_multitable_availability(tables, flowmachine_connect):
+    """Dict returned by available_dates should have keys for all requested tables."""
+    assert tables == tuple(flowmachine_connect.available_dates(table=tables).keys())
+
+
+@pytest.mark.parametrize(
+    "tables", [(1,), ("calls", 1), ["calls", "sms", "mds", "topups"], 0.1, 1]
+)
+def test_bad_table_inputs_to_available_dates(tables, flowmachine_connect):
+    """TypeError should be raised for bad inputs to available_dates."""
+    with pytest.raises(TypeError):
+        flowmachine_connect.available_dates(table=tables)
+
+
 def test_available_dates(flowmachine_connect):
     """Test that available dates returns correct ones."""
     assert "calls" in flowmachine_connect.available_dates()
