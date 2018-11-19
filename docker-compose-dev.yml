@@ -10,6 +10,28 @@ networks:
   zero:
 
 services:
+
+  flowdb:
+    container_name: flowdb
+    image: flowminder/flowdb:master
+    ports:
+      - ${FLOWDB_PORT:-9000}:5432
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-flowdb}
+      - POSTGRES_USER=${POSTGRES_USER:-flowdb}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
+      - FM_PASSWORD=${FM_PASSWORD:-foo}
+      - API_PASSWORD=${API_PASSWORD:-foo}
+    tty: true
+    stdin_open: true
+    restart: always
+    volumes:
+      - data_volume_flowdb:/var/lib/postgresql/data
+    networks:
+      db:
+        aliases:
+          - flowdb
+
   flowdb-testdata:
     container_name: flowdb_testdata
     image: flowminder/flowdb:testdata-master
