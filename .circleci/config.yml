@@ -60,7 +60,7 @@ defaults:
         username: $DOCKER_CLOUD_USER
         password: $DOCKER_CLOUD_PASSWORD
       environment:
-        N_DAYS: 7
+        N_DAYS: 3
         N_USERS: 400
         N_CELLS: 100
         N_CALLS: 2000

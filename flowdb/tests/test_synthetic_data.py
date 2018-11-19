@@ -28,15 +28,7 @@ def test_correct_dates(cursor):
     query = "SELECT DISTINCT(datetime::date) FROM events.calls"
     cursor.execute(query)
     results = set([str(x["datetime"]) for x in cursor.fetchall()])
-    expected = [
-        "2016-01-01",
-        "2016-01-02",
-        "2016-01-03",
-        "2016-01-04",
-        "2016-01-05",
-        "2016-01-06",
-        "2016-01-07",
-    ]
+    expected = ["2016-01-01", "2016-01-02", "2016-01-03"]
     assert results == set(expected)
 
 
