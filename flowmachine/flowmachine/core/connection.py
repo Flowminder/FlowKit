@@ -364,12 +364,15 @@ class Connection:
         if isinstance(table, str) and table.lower() == "all":
             table = tuple(self.subscriber_tables)
         tables = table if isinstance(table, tuple) else [table]
-        if (
-            not isinstance(table, str)
-            or not isinstance(table, tuple)
-            or not all([isinstance(x, str) for x in table])
-        ):
-            raise TypeError(
+        try:
+            assert all(
+                isinstance(x, str) for x in table
+            )  # Only strings or iterables of strings
+        except (
+            TypeError,
+            AssertionError,
+        ):  # Capture of _tuples_ of strings is implicit because anything
+            raise TypeError(  # that got here has been wrapped in a list f it wasn't a tuple
                 f"Argument 'table' must be a string or tuple of strings. Got: {table}"
             )
         available = {}
