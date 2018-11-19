@@ -17,8 +17,8 @@
 #
 
 DOCKER_COMPOSE_FILE_DEV ?= docker-compose-dev.yml
-FLOWDB_SERVICE ?= flowdb-testdata
-DOCKER_SERVICES ?= flowapi flowmachine redis $(FLOWDB_SERVICE)
+FLOWDB_SERVICES ?= flowdb-testdata
+DOCKER_SERVICES ?= flowapi flowmachine redis $(FLOWDB_SERVICES)
 
 all:
 
