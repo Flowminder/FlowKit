@@ -11,7 +11,6 @@ from pathlib import Path
 import pytest
 import pglast
 
-from flowmachine.core import Query
 from flowmachine.core.errors import BadLevelError
 from flowmachine.utils.utils import (
     parse_datestring,
@@ -24,8 +23,6 @@ from flowmachine.utils import time_period_add
 from flowmachine.features import daily_location, EventTableSubset
 
 from flowmachine.core.utils import _makesafe, pretty_sql
-
-from unittest import TestCase
 
 
 def test_time_period_add():
