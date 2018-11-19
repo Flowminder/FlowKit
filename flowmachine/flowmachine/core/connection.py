@@ -346,7 +346,7 @@ class Connection:
         stop : str, optional
             If specified, list only available dates before this one (inclusive) as iso format date string
         table : str, or tuple of str, default 'calls'
-            Name(s) of tables to check
+            Name(s) of tables to check, checks all tables listed under self.subscriber_tables if 'all' is passed.
         strictness : {0, 1, 2}
             Three levels of strictness are available - 0 checks only that the
             table _exists_. 1 checks the approximate number of rows in the table
