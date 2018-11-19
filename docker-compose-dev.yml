@@ -46,8 +46,6 @@ services:
     tty: true
     stdin_open: true
     restart: always
-    volumes:
-      - data_volume_flowdb:/var/lib/postgresql/data
     networks:
       db:
         aliases:
