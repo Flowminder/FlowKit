@@ -57,3 +57,6 @@ redis-up:
 
 redis-down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v redis
+
+remove-flowdb-volume:
+	docker volume rm flowkit_data_volume_flowdb
