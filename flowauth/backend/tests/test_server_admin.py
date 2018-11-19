@@ -442,6 +442,6 @@ def test_edit_group_server_rights_rejected_for_rights(client, auth):
     assert 400 == response.status_code
     assert {
         "code": 400,
-        "message": "poll not enabled for this server.",
+        "message": "Permission 'poll' not enabled for this server.",
         "bad_field": "poll",
     } == response.get_json()
