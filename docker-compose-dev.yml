@@ -28,9 +28,7 @@ services:
     volumes:
       - data_volume_flowdb:/var/lib/postgresql/data
     networks:
-      db:
-        aliases:
-          - flowdb
+      - db
 
   flowdb-testdata:
     container_name: flowdb_testdata
@@ -47,9 +45,7 @@ services:
     stdin_open: true
     restart: always
     networks:
-      db:
-        aliases:
-          - flowdb
+      - db
 
   flowdb-synthetic-data:
     container_name: flowdb_synthetic_data
@@ -72,9 +68,7 @@ services:
     stdin_open: true
     restart: always
     networks:
-      db:
-        aliases:
-          - flowdb
+      - db
 
   flowapi:
     container_name: flowapi
