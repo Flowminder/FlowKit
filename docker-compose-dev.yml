@@ -65,7 +65,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FM_PASSWORD=${FM_PASSWORD:-foo}
       - API_PASSWORD=${API_PASSWORD:-foo}
-      - N_DAYS=${N_DAYS:-3}
+      - N_DAYS=${N_DAYS:-7}
       - N_CELLS=${N_CELLS:-500}
       - N_CALLS=${N_CALLS:-2000}
     tty: true
