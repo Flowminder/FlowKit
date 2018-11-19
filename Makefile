@@ -17,8 +17,8 @@
 #
 
 DOCKER_COMPOSE_FILE_DEV ?= docker-compose-dev.yml
-FLOWDB_SERVICE ?= flowdb-testdata
-DOCKER_SERVICES ?= flowapi flowmachine redis $(FLOWDB_SERVICE)
+FLOWDB_SERVICES ?= flowdb-testdata
+DOCKER_SERVICES ?= flowapi flowmachine redis $(FLOWDB_SERVICES)
 
 all:
 
@@ -57,3 +57,6 @@ redis-up:
 
 redis-down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v redis
+
+remove-flowdb-volume:
+	docker volume rm flowkit_data_volume_flowdb
