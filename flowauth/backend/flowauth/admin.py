@@ -542,7 +542,7 @@ def edit_group_servers(group_id):
                         setattr(perm, name, val)
                         if val and not getattr(server_capability, name):
                             raise InvalidUsage(
-                                f"Permission '{name}' not enabled for this server",
+                                f"Permission '{name}' not enabled for this server.",
                                 payload={"bad_field": name},
                             )
                 if "spatial_aggregation" in right:
