@@ -18,4 +18,4 @@ descartes = "*"
 black = "==18.9b0"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
