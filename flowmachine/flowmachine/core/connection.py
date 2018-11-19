@@ -362,7 +362,7 @@ class Connection:
         """
 
         if isinstance(table, str) and table.lower() == "all":
-            table = self.subscriber_tables
+            table = tuple(self.subscriber_tables)
         tables = table if isinstance(table, tuple) else [table]
         available = {}
         for table in tables:
