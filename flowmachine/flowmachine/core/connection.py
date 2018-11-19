@@ -345,8 +345,8 @@ class Connection:
             If specified, list only available dates after this one (inclusive) as iso format date string
         stop : str, optional
             If specified, list only available dates before this one (inclusive) as iso format date string
-        table : str, or list of str, default 'calls'
-            Names of tables to check
+        table : str, or tuple of str, default 'calls'
+            Name(s) of tables to check
         strictness : {0, 1, 2}
             Three levels of strictness are available - 0 checks only that the
             table _exists_. 1 checks the approximate number of rows in the table
