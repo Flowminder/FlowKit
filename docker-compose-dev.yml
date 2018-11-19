@@ -36,7 +36,7 @@ services:
     container_name: flowdb_testdata
     image: flowminder/flowdb:testdata-master
     ports:
-      - 9000:5432
+      - ${FLOWDB_TESTDATA_PORT:-9000}:5432
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-flowdb}
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
@@ -58,7 +58,7 @@ services:
       context: ./flowdb/testdata
       dockerfile: Dockerfile.synthetic_data
     ports:
-      - 9000:5432
+      - ${FLOWDB_SYNTHDATA_PORT:-9000}:5432
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-flowdb}
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
@@ -75,6 +75,7 @@ services:
       db:
         aliases:
           - flowdb
+
   flowapi:
     container_name: flowapi
     image: flowminder/flowapi:master
