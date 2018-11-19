@@ -95,9 +95,9 @@ def _skip_usr(request):
     """Skip the usr is listed in the list provided to the `skip_usrs` mark."""
     # based on
     # https://stackoverflow.com/questions/28179026/how-to-skip-a-pytest-using-an-external-fixture
-    if request.node.get_marker("skip_usrs"):
+    if request.node.get_closest_marker("skip_usrs"):
         usr = request.getfixturevalue("usr")
-        if usr in request.node.get_marker("skip_usrs").args[0]:
+        if usr in request.node.get_closest_marker("skip_usrs").args[0]:
             pytest.skip("does not apply to: {}".format(usr))
 
 
