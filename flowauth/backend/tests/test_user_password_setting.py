@@ -19,7 +19,8 @@ def test_incorrect_old_password_rejected(client, auth, test_user):
         assert 400 == response.status_code  # Should get an error
 
         assert {
-            "message": "incorrect_pass",
+            "message": "Password incorrect.",
+            "bad_field": "password",
             "code": 400,
         } == response.get_json()  # Should get a message about why it failed
 
@@ -38,7 +39,8 @@ def test_weak_password_rejected(client, auth, test_user):
         assert 400 == response.status_code  # Should get an error
 
         assert {
-            "message": "bad_pass",
+            "message": "Password not complex enough.",
+            "bad_field": "newPassword",
             "code": 400,
         } == response.get_json()  # Should get a message about why it failed
 

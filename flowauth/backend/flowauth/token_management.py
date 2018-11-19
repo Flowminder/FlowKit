@@ -28,21 +28,27 @@ def set_password():
     the new password is strong.
     """
     edits = request.get_json()
+
     try:
         old_pass = edits["password"]
+    except KeyError:
+        raise InvalidUsage("Missing old password", payload={"bad_field": "password"})
+    try:
         new_pass = edits["newPassword"]
     except KeyError:
-        raise InvalidUsage("Missing old or new password")
+        raise InvalidUsage("Missing new password", payload={"bad_field": "newPassword"})
     if current_user.is_correct_password(old_pass):
         if len(new_pass) == 0 or zxcvbn(new_pass)["score"] < 4:
-            raise InvalidUsage("bad_pass")
+            raise InvalidUsage(
+                "Password not complex enough.", payload={"bad_field": "newPassword"}
+            )
         current_user.password = new_pass
         db.session.add(current_user)
         db.session.commit()
         logout_user()
         return jsonify({}), 200
     else:
-        raise InvalidUsage("incorrect_pass")
+        raise InvalidUsage("Password incorrect.", payload={"bad_field": "password"})
 
 
 @blueprint.route("/groups")
@@ -177,12 +183,12 @@ def add_token(server):
     json = request.get_json()
     print(json)
     if "name" not in json:
-        raise InvalidUsage("No name.")
+        raise InvalidUsage("No name.", payload={"bad_field": "name"})
     expiry = datetime.datetime.strptime(json["expiry"], "%Y-%m-%dT%H:%M:%S.%fZ")
     lifetime = expiry - datetime.datetime.now()
     latest_lifetime = current_user.latest_token_expiry(server)
     if expiry > latest_lifetime:
-        raise InvalidUsage("Token lifetime too long")
+        raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
     allowed_claims = current_user.allowed_claims(server)
     print(allowed_claims)
     for claim, rights in json["claims"].items():
