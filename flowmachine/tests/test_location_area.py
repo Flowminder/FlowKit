@@ -5,10 +5,6 @@
 """
 Tests for the LocationArea() class.
 """
-
-import pandas as pd
-from unittest import TestCase
-
 import pytest
 
 from flowmachine.features import LocationArea

@@ -5,22 +5,9 @@
 """
 Unit tests for Flows() division operations.
 """
-from unittest import TestCase
 
 import pytest
-
 from flowmachine.features import Flows, daily_location
-import pandas as pd
-import numpy as np
-
-
-class test_flow_division(TestCase):
-    def setUp(get_dataframe):
-        dl1 = daily_location("2016-01-01")
-        dl2 = daily_location("2016-01-02")
-        dl3 = daily_location("2016-01-07")
-        flowA = Flows(dl1, dl2)
-        flowB = Flows(dl1, dl3)
 
 
 def test_a_div_b(get_dataframe):

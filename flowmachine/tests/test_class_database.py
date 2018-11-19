@@ -7,14 +7,7 @@ Unit tests for the Connection() class.
 """
 import datetime
 from unittest.mock import Mock
-
-import psycopg2 as pg
-
-from unittest import TestCase
-
 import pytest
-
-from flowmachine.core import Connection, Query
 
 
 @pytest.fixture

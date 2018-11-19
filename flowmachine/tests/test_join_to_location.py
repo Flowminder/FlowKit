@@ -5,10 +5,7 @@
 import pytest
 
 from datetime import datetime, timezone
-from unittest import TestCase
 
-
-from pandas import DataFrame
 import numpy as np
 
 from flowmachine.features import subscriber_locations
