@@ -385,7 +385,11 @@ def test_edit_group_server_rights_rejected_for_max_life(client, auth):
         },
     )
     assert 400 == response.status_code
-    assert {"code": 400, "message": "lifetime_too_long"} == response.get_json()
+    assert {
+        "code": 400,
+        "message": "Lifetime too long",
+        "bad_field": "max_life",
+    } == response.get_json()
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -406,7 +410,11 @@ def test_edit_group_server_rights_rejected_for_expiry(client, auth):
         },
     )
     assert 400 == response.status_code
-    assert {"code": 400, "message": "end_date_too_late"} == response.get_json()
+    assert {
+        "code": 400,
+        "message": "End date too late",
+        "bad_field": "latest_expiry",
+    } == response.get_json()
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -434,5 +442,6 @@ def test_edit_group_server_rights_rejected_for_rights(client, auth):
     assert 400 == response.status_code
     assert {
         "code": 400,
-        "message": "capability_not_allowed_on_server",
+        "message": "Permission 'poll' not enabled for this server.",
+        "bad_field": "poll",
     } == response.get_json()

@@ -51,7 +51,11 @@ def test_edit_user_protects_last_admin(client, auth, test_admin):
         json={"is_admin": False},
     )
     assert 400 == response.status_code
-    assert {"code": 400, "message": "no_admins"} == response.get_json()
+    assert {
+        "code": 400,
+        "message": "Removing this user's admin rights would leave no admins.",
+        "bad_field": "is_admin",
+    } == response.get_json()
 
 
 def test_edit_user_requires_nonzero_length_username(client, auth, test_admin):
@@ -63,7 +67,11 @@ def test_edit_user_requires_nonzero_length_username(client, auth, test_admin):
         "/admin/users/1", headers={"X-CSRF-Token": csrf_cookie}, json={"username": ""}
     )
     assert 400 == response.status_code
-    assert {"code": 400, "message": "bad_username"} == response.get_json()
+    assert {
+        "code": 400,
+        "message": "Username too short.",
+        "bad_field": "username",
+    } == response.get_json()
 
 
 def test_edit_user_requires_enforces_passwword_strength(client, auth, test_admin):
@@ -75,7 +83,11 @@ def test_edit_user_requires_enforces_passwword_strength(client, auth, test_admin
         "/admin/users/1", headers={"X-CSRF-Token": csrf_cookie}, json={"password": "X"}
     )
     assert 400 == response.status_code
-    assert {"code": 400, "message": "bad_pass"} == response.get_json()
+    assert {
+        "code": 400,
+        "message": "Password not complex enough.",
+        "bad_field": "password",
+    } == response.get_json()
 
 
 def test_edit_user(client, auth, test_admin):

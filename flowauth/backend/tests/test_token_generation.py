@@ -91,7 +91,11 @@ def test_token_rejected_for_expiry(client, auth, app):
         "/user/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
     )
     assert 400 == response.status_code
-    assert {"code": 400, "message": "Token lifetime too long"} == response.get_json()
+    assert {
+        "code": 400,
+        "message": "Token lifetime too long",
+        "bad_field": "expiry",
+    } == response.get_json()
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
