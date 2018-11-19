@@ -5,7 +5,6 @@
 from flask import jsonify, Blueprint, request
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
-from werkzeug.exceptions import abort
 from zxcvbn import zxcvbn
 
 from .models import *
@@ -512,9 +511,11 @@ def edit_group_servers(group_id):
             )
             limits.longest_life = server["max_life"]
         if limits.longest_life > server_obj.longest_token_life:
-            raise InvalidUsage("lifetime_too_long")
+            raise InvalidUsage("Lifetime too long", payload={"bad_field": "max_life"})
         if limits.latest_end > server_obj.latest_token_expiry:
-            raise InvalidUsage("end_date_too_late")
+            raise InvalidUsage(
+                "End date too late", payload={"bad_field": "latest_expiry"}
+            )
         revised_limits.append(limits)
         db.session.add(limits)
         # Create permissions
@@ -540,7 +541,10 @@ def edit_group_servers(group_id):
                     for name, val in right["permissions"].items():
                         setattr(perm, name, val)
                         if val and not getattr(server_capability, name):
-                            raise InvalidUsage("capability_not_allowed_on_server")
+                            raise InvalidUsage(
+                                f"Permission '{name}' not enabled for this server.",
+                                payload={"bad_field": name},
+                            )
                 if "spatial_aggregation" in right:
                     print(right["spatial_aggregation"])
                     agg_units = [
@@ -632,7 +636,9 @@ def add_user():
     if zxcvbn(json["password"])["score"] > 3:
         user = User(**json)
     else:
-        raise InvalidUsage("bad_pass")
+        raise InvalidUsage(
+            "Password not complex enough.", payload={"bad_field": "password"}
+        )
     user_group = Group(name=user.username, user_group=True)
     user.groups.append(user_group)
     db.session.add(user)
@@ -659,7 +665,7 @@ def rm_user(user_id):
     """
     user = User.query.filter(User.id == user_id).first_or_404()
     if user.is_admin and len(User.query.filter(User.is_admin).all()) == 1:
-        raise InvalidUsage("no_admins")
+        raise InvalidUsage("Removing this user would leave no admins.")
     db.session.delete(user)
     db.session.commit()
     return jsonify({"poll": "OK"})
@@ -695,20 +701,25 @@ def edit_user(user_id):
         if len(edits["username"]) > 0:
             user.username = edits["username"]
         else:
-            raise InvalidUsage("bad_username")
+            raise InvalidUsage("Username too short.", payload={"bad_field": "username"})
     if "password" in edits:
         if len(edits["password"]) > 0:
             if zxcvbn(edits["password"])["score"] > 3:
                 user.password = edits["password"]
             else:
-                raise InvalidUsage("bad_pass")
+                raise InvalidUsage(
+                    "Password not complex enough.", payload={"bad_field": "password"}
+                )
     if "is_admin" in edits:
         if (
             not edits["is_admin"]
             and user.is_admin
             and len(User.query.filter(User.is_admin).all()) == 1
         ):
-            raise InvalidUsage("no_admins")
+            raise InvalidUsage(
+                "Removing this user's admin rights would leave no admins.",
+                payload={"bad_field": "is_admin"},
+            )
         else:
             user.is_admin = edits["is_admin"]
     db.session.add(user)
