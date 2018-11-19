@@ -138,6 +138,14 @@ def test_strict_max_date(flowmachine_connect):
     )
 
 
+@pytest.mark.parametrize(
+    "tables", [("calls",), ("calls", "sms"), ("calls", "sms", "mds", "topups")]
+)
+def test_multitable_availability(tables, flowmachine_connect):
+    """Dict returned by available_dates should have keys for all requested tables."""
+    assert tables == tuple(flowmachine_connect.available_dates(table=tables).keys())
+
+
 def test_available_dates(flowmachine_connect):
     """Test that available dates returns correct ones."""
     assert "calls" in flowmachine_connect.available_dates()
