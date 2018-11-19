@@ -364,8 +364,14 @@ class Connection:
         if isinstance(table, str) and table.lower() == "all":
             table = tuple(self.subscriber_tables)
         tables = table if isinstance(table, tuple) else [table]
-        if not isinstance(table, str) or not isinstance(table, tuple) or not all([isinstance(x, str) for x in table]):
-            raise TypeError(f"Argument 'table' must be a string or tuple of strings. Got: {table}")
+        if (
+            not isinstance(table, str)
+            or not isinstance(table, tuple)
+            or not all([isinstance(x, str) for x in table])
+        ):
+            raise TypeError(
+                f"Argument 'table' must be a string or tuple of strings. Got: {table}"
+            )
         available = {}
         for table in tables:
             dates = self._known_dates(table, schema)
