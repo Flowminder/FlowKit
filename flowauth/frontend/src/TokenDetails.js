@@ -9,7 +9,7 @@ import TokenPermission from "./TokenPermission";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import DateFnsUtils from "material-ui-pickers/utils/date-fns-utils";
+import DateFnsUtils from "@date-io/date-fns";
 import { getMyRightsForServer, createToken } from "./util/api";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
