@@ -6,7 +6,6 @@
 Tests for our custom join API
 """
 
-from unittest import TestCase
 
 import pytest
 
@@ -15,11 +14,10 @@ from flowmachine.core.join import Join
 from flowmachine.features import daily_location
 from flowmachine.core.query import Query
 from flowmachine.core.custom_query import CustomQuery
-from pandas import DataFrame
 
 
 # Define a class that gives us some sample data to join on
-class limit(Query):
+class TruncatedAndOffsetDailyLocation(Query):
     def __init__(self, date, offset=0, size=10):
         self.date = date
         self.size = size
@@ -50,108 +48,76 @@ def test_join_column_names(join_type):
     assert expected == joined.column_names
 
 
-class test_join(TestCase):
-    def setUp(self):
+def test_name_append():
+    """
+    Can append a custom name to a join.
+    """
 
-        self.dl1 = daily_location("2016-01-01")
-        self.dl2 = daily_location("2016-01-02")
+    dl1 = daily_location("2016-01-01")
+    dl2 = daily_location("2016-01-02")
 
-        self.stub1 = limit("2016-01-01")
-        self.stub2 = limit("2016-01-01", offset=5)
+    df = dl1.join(dl2, on_left="subscriber", left_append="_left", right_append="_right")
+    assert ["subscriber", "name_left", "name_right"] == df.column_names
 
-        self.subset_q = CustomQuery("SELECT msisdn FROM events.calls LIMIT 10")
 
-    def _query_has_values(self, Q, expected_values, column="subscriber"):
-        """
-        Test if the values of a dataframes columns are equal
-        to certain values.
-        """
-        value_set = set(Q.get_dataframe()[column])
-        self.assertEqual(set(expected_values), value_set)
+def test_value_of_join(get_dataframe):
+    """
+    One randomly chosen value is correct, and that the expected number of rows are returned
+    """
+    dl1 = daily_location("2016-01-01")
+    dl2 = daily_location("2016-01-02")
 
-    def test_can_join(self):
-        """
-        Two queries can be joined.
-        """
+    df = get_dataframe(
+        dl1.join(dl2, on_left="subscriber", left_append="_day1", right_append="_day2")
+    )
+    assert ["Rukum", "Baglung"] == list(
+        df.set_index("subscriber").ix["ye8jQ0ovnGd9GlJa"]
+    )
+    assert 490 == len(df)
 
-        df = self.dl1.join(self.dl2, on_left="subscriber").get_dataframe()
-        self.assertIs(type(df), DataFrame)
 
-    def test_name_append(self):
-        """
-        Can append a custom name to a join.
-        """
+def test_left_join(get_dataframe):
+    """
+    FlowMachine.Join can be done as a left join.
+    """
 
-        df = self.dl1.join(
-            self.dl2, on_left="subscriber", left_append="_left", right_append="_right"
-        ).get_dataframe()
-        self.assertEqual(list(df.columns), ["subscriber", "name_left", "name_right"])
+    stub1 = TruncatedAndOffsetDailyLocation("2016-01-01")
+    stub2 = TruncatedAndOffsetDailyLocation("2016-01-01", offset=5)
 
-    def test_value_of_join(self):
-        """
-        One randomly chosen value is correct
-        """
+    table = get_dataframe(stub1.join(stub2, on_left="subscriber", how="left"))
+    assert 10 == len(table)
+    assert 0 == table.subscriber.isnull().sum()
 
-        df = self.dl1.join(
-            self.dl2, on_left="subscriber", left_append="_day1", right_append="_day2"
-        ).get_dataframe()
-        self.assertEqual(
-            list(df.set_index("subscriber").ix["ye8jQ0ovnGd9GlJa"]),
-            ["Rukum", "Baglung"],
-        )
 
-    def test_left_join(self):
-        """
-        FlowMachine.Join can be done as a left join.
-        """
+def test_right_join(get_dataframe):
+    """
+    FlowMachine.Join can be done as a right join.
+    """
+    stub1 = TruncatedAndOffsetDailyLocation("2016-01-01")
+    stub2 = TruncatedAndOffsetDailyLocation("2016-01-01", offset=5)
 
-        table = self.stub1.join(
-            self.stub2, on_left="subscriber", how="left"
-        ).get_dataframe()
-        self.assertEqual(len(table), 10)
-        self.assertEqual(table.subscriber.isnull().sum(), 0)
+    table = get_dataframe(stub1.join(stub2, on_left="subscriber", how="right"))
+    assert 10 == len(table)
+    assert 0 == table.subscriber.isnull().sum()
 
-    def test_right_join(self):
-        """
-        FlowMachine.Join can be done as a right join.
-        """
 
-        table = self.stub1.join(
-            self.stub2, on_left="subscriber", how="right"
-        ).get_dataframe()
-        self.assertEqual(len(table), 10)
-        self.assertEqual(table.subscriber.isnull().sum(), 0)
+def test_raises_value_error():
+    """
+    flowmachine.Join raises value error when on_left and on_right are different lengths.
+    """
+    dl1 = daily_location("2016-01-01")
+    dl2 = daily_location("2016-01-02")
+    with pytest.raises(ValueError):
+        dl1.join(dl2, on_left=["subscriber", "location_id"], on_right="subscriber")
 
-    def test_left_join(self):
-        """
-        FlowMachine.Join can be done as a left join.
-        """
 
-        table = self.stub1.join(
-            self.stub2, on_left="subscriber", how="left"
-        ).get_dataframe()
-        self.assertEqual(len(table), 10)
-        self.assertEqual(table.subscriber.isnull().sum(), 0)
-
-    def test_join_multiple_columns(self):
-        """
-        flowmachine.Join can be done on more than one column
-        """
-        pass
-
-    def test_raises_value_error(self):
-        """
-        flowmachine.Join raises value error when on_left and on_right are different lengths.
-        """
-
-        with self.assertRaises(ValueError):
-            self.dl1.join(
-                self.dl2, on_left=["subscriber", "location_id"], on_right="subscriber"
-            )
-
-    def test_using_join_to_subset(self):
-        """
-        Can we use the join method to subset with a query
-        """
-        sub = self.dl1.join(self.subset_q, on_left=["subscriber"], on_right=["msisdn"])
-        self._query_has_values(sub, self.subset_q.get_dataframe()["msisdn"])
+def test_using_join_to_subset(get_dataframe):
+    """
+    Should be able to use the join method to subset one query by another
+    """
+    dl1 = daily_location("2016-01-01")
+    subset_q = CustomQuery("SELECT msisdn FROM events.calls LIMIT 10")
+    sub = dl1.join(subset_q, on_left=["subscriber"], on_right=["msisdn"])
+    value_set = set(get_dataframe(sub).subscriber)
+    assert set(get_dataframe(subset_q).msisdn) == value_set
+    assert 10 == len(value_set)
