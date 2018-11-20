@@ -396,7 +396,7 @@ def run_query(connection: Connection, query: dict) -> str:
     logger.info(
         f"Requesting run of {query} at {connection.url}/api/{connection.api_version}"
     )
-    r = connection.post_json("run", data=query)
+    r = connection.post_json(route="run", data=query)
     if r.status_code == 202:
         query_id = r.headers["Location"].split("/").pop()
         logger.info(
