@@ -256,8 +256,8 @@ def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFram
     )
     if response.status_code != 200:
         try:
-            reason = response.json()["reason"]
-            more_info = f" Reason: {reason}"
+            msg = response.json()["msg"]
+            more_info = f" Reason: {msg}"
         except Exception:
             more_info = ""
         raise FlowclientConnectionError(
