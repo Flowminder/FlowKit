@@ -68,4 +68,4 @@ def test_cache_is_returned():
     assert sd.cache
 
     sd.turn_off_caching()
-    assert sd.cache
+    assert not sd.cache
