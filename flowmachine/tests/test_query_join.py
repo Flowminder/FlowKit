@@ -17,7 +17,7 @@ from flowmachine.core.custom_query import CustomQuery
 
 
 # Define a class that gives us some sample data to join on
-class Limit(Query):
+class TruncatedAndOffsetDailyLocation(Query):
     def __init__(self, date, offset=0, size=10):
         self.date = date
         self.size = size
@@ -80,8 +80,8 @@ def test_left_join(get_dataframe):
     FlowMachine.Join can be done as a left join.
     """
 
-    stub1 = Limit("2016-01-01")
-    stub2 = Limit("2016-01-01", offset=5)
+    stub1 = TruncatedAndOffsetDailyLocation("2016-01-01")
+    stub2 = TruncatedAndOffsetDailyLocation("2016-01-01", offset=5)
 
     table = get_dataframe(stub1.join(stub2, on_left="subscriber", how="left"))
     assert 10 == len(table)
@@ -92,8 +92,8 @@ def test_right_join(get_dataframe):
     """
     FlowMachine.Join can be done as a right join.
     """
-    stub1 = Limit("2016-01-01")
-    stub2 = Limit("2016-01-01", offset=5)
+    stub1 = TruncatedAndOffsetDailyLocation("2016-01-01")
+    stub2 = TruncatedAndOffsetDailyLocation("2016-01-01", offset=5)
 
     table = get_dataframe(stub1.join(stub2, on_left="subscriber", how="right"))
     assert 10 == len(table)
