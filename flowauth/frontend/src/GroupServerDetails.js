@@ -10,7 +10,7 @@ import ServerCapability from "./ServerCapability";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker } from "material-ui-pickers";
 import MuiPickersUtilsProvider from "material-ui-pickers/utils/MuiPickersUtilsProvider";
-import DateFnsUtils from "material-ui-pickers/utils/date-fns-utils";
+import DateFnsUtils from "@date-io/date-fns";
 import TextField from "@material-ui/core/TextField";
 import SubmitButtons from "./SubmitButtons";
 import { generate } from "generate-password";
