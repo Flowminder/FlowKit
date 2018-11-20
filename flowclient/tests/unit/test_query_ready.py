@@ -13,7 +13,7 @@ from flowclient.client import FlowclientConnectionError
 def test_query_ready_reports_false():
     """ Test that status code 202 is interpreted as query running. """
     con_mock = Mock()
-    con_mock.session.get.return_value = Mock(status_code=202)
+    con_mock.get_url.return_value = Mock(status_code=202)
     is_ready, reply = query_is_ready(con_mock, "foo")
     assert not is_ready
 
@@ -21,6 +21,6 @@ def test_query_ready_reports_false():
 def test_query_ready_raises():
     """ Test that status codes other than 202, 300, 401, and 404 raise a generic error. """
     con_mock = Mock()
-    con_mock.session.get.return_value = Mock(status_code=999)
+    con_mock.get_url.return_value = Mock(status_code=999)
     with pytest.raises(FlowclientConnectionError):
         query_is_ready(con_mock, "foo")

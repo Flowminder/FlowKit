@@ -133,6 +133,100 @@ class Connection:
         self.session = _get_session(self.url, ssl_certificate)
         self.session.headers["Authorization"] = f"Bearer {self.token}"
 
+    def get_url(self, route: str) -> requests.Response:
+        """
+        Attempt to get something from the API, and return the raw
+        response object if an error response wasn't received.
+        If an error response was received, raises an error.
+
+        Parameters
+        ----------
+        route : str
+            Path relative to API host to get
+
+        Returns
+        -------
+        requests.Response
+
+        """
+        logger.debug(f"Getting {self.url}/api/{self.api_version}/{route}")
+        try:
+            response = self.session.get(
+                f"{self.url}/api/{self.api_version}/{route}", allow_redirects=False
+            )
+        except ConnectionError as e:
+            error_msg = f"Unable to connect to FlowKit API at {self.url}: {e}"
+            logger.info(error_msg)
+            raise FlowclientConnectionError(error_msg)
+        if response.status_code in {202, 200, 303}:
+            return response
+        elif response.status_code == 404:
+            raise FileNotFoundError(
+                f"{self.url}/api/{self.api_version}/{route} not found."
+            )
+        elif response.status_code == 401:
+            try:
+                error = response.json()["msg"]
+            except (ValueError, KeyError):
+                error = "Unknown access denied error"
+            raise FlowclientConnectionError(error)
+        else:
+            try:
+                error = response.json()["msg"]
+            except (ValueError, KeyError):
+                error = "Unknown error"
+            raise FlowclientConnectionError(
+                f"Something went wrong: {error}. API returned with status code: {response.status_code}"
+            )
+
+    def post_json(self, route: str, data: dict) -> requests.Response:
+        """
+        Attempt to post json to the API, and return the raw
+        response object if an error response wasn't received.
+        If an error response was received, raises an error.
+
+        Parameters
+        ----------
+        route : str
+            Path relative to API host to post_json to
+        data: dict
+            Dictionary of json-encodeable data to post_json
+
+        Returns
+        -------
+        requests.Response
+
+        """
+        logger.debug(f"Posting {data} to {self.url}/api/{self.api_version}/{route}")
+        try:
+            response = self.session.post(
+                f"{self.url}/api/{self.api_version}/{route}", json=data
+            )
+        except ConnectionError as e:
+            error_msg = f"Unable to connect to FlowKit API at {self.url}: {e}"
+            logger.info(error_msg)
+            raise FlowclientConnectionError(error_msg)
+        if response.status_code == 202:
+            return response
+        elif response.status_code == 404:
+            raise FileNotFoundError(
+                f"{self.url}/api/{self.api_version}/{route} not found."
+            )
+        elif response.status_code == 401:
+            try:
+                error = response.json()["msg"]
+            except (ValueError, KeyError):
+                error = "Unknown access denied error"
+            raise FlowclientConnectionError(error)
+        else:
+            try:
+                error = response.json()["msg"]
+            except (ValueError, KeyError):
+                error = "Unknown error"
+            raise FlowclientConnectionError(
+                f"Something went wrong: {error}. API returned with status code: {response.status_code}"
+            )
+
     def __repr__(self) -> str:
         return f"{self.user}@{self.url} v{self.api_version}"
 
@@ -181,20 +275,13 @@ def query_is_ready(
     logger.info(
         f"Polling server on {connection.url}/api/{connection.api_version}/poll/{query_id}"
     )
-    reply = connection.session.get(
-        f"{connection.url}/api/{connection.api_version}/poll/{query_id}",
-        allow_redirects=False,
-    )
+    reply = connection.get_url(f"poll/{query_id}")
 
     if reply.status_code == 303:
         logger.info(
             f"{connection.url}/api/{connection.api_version}/poll/{query_id} ready."
         )
         return True, reply  # Query is ready, so exit the loop
-    elif reply.status_code == 404:
-        raise FileNotFoundError()
-    elif reply.status_code == 401:
-        raise FlowclientConnectionError("You do not have access to this resource.")
     elif reply.status_code == 202:
         return False, reply
     else:
@@ -251,14 +338,16 @@ def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFram
         query_ready, reply = query_is_ready(connection, query_id)  # Poll the server
 
     logger.info(f"Getting {connection.url}/api/{connection.api_version}/get/{query_id}")
-    response = connection.session.get(
-        f"{connection.url}{reply.headers['Location']}", allow_redirects=False
-    )
+    result_location = reply.headers[
+        "Location"
+    ]  # Need to strip off the /api/<api_version>/
+    result_location = "/".join(result_location.split("/")[3:])
+    response = connection.get_url(result_location)
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
             more_info = f" Reason: {msg}"
-        except Exception:
+        except KeyError:
             more_info = ""
         raise FlowclientConnectionError(
             f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
@@ -307,27 +396,21 @@ def run_query(connection: Connection, query: dict) -> str:
     logger.info(
         f"Requesting run of {query} at {connection.url}/api/{connection.api_version}"
     )
-    try:
-        r = connection.session.post(
-            f"{connection.url}/api/{connection.api_version}/run", json=query
-        )
-    except ConnectionError:
-        error_msg = f"Unable to connect to FlowKit API at {connection.url}"
-        logger.info(error_msg)
-        raise FlowclientConnectionError(error_msg)
-
+    r = connection.post_json("run", data=query)
     if r.status_code == 202:
         query_id = r.headers["Location"].split("/").pop()
         logger.info(
             f"Accepted {query} at {connection.url}/api/{connection.api_version}with id {query_id}"
         )
         return query_id
-    elif r.status_code == 401:
-        raise FlowclientConnectionError("You do not have access to this resource.")
     else:
-        raise RuntimeError(f"Received status code {r.status_code}.")
-
-    raise ValueError(r.content)
+        try:
+            error = r.json()["msg"]
+        except (ValueError, KeyError):
+            error = "Unknown error."
+        raise FlowclientConnectionError(
+            f"Error running the query: {error}. Status code: {r.status_code}."
+        )
 
 
 def daily_location(
