@@ -341,7 +341,7 @@ def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFram
     result_location = reply.headers[
         "Location"
     ]  # Need to strip off the /api/<api_version>/
-    result_location = "/".join(result_location.split("/")[3:])
+    result_location = re.sub("^/api/[0-9]+/", "", result_location)  # strip off the /api/<api_version>/
     response = connection.get_url(result_location)
     if response.status_code != 200:
         try:
