@@ -62,7 +62,7 @@ def test_name_append():
 
 def test_value_of_join(get_dataframe):
     """
-    One randomly chosen value is correct
+    One randomly chosen value is correct, and that the expected number of rows are returned
     """
     dl1 = daily_location("2016-01-01")
     dl2 = daily_location("2016-01-02")
@@ -73,6 +73,7 @@ def test_value_of_join(get_dataframe):
     assert ["Rukum", "Baglung"] == list(
         df.set_index("subscriber").ix["ye8jQ0ovnGd9GlJa"]
     )
+    assert 490 == len(df)
 
 
 def test_left_join(get_dataframe):
@@ -112,10 +113,11 @@ def test_raises_value_error():
 
 def test_using_join_to_subset(get_dataframe):
     """
-    Can we use the join method to subset with a query
+    Should be able to use the join method to subset one query by another
     """
     dl1 = daily_location("2016-01-01")
     subset_q = CustomQuery("SELECT msisdn FROM events.calls LIMIT 10")
     sub = dl1.join(subset_q, on_left=["subscriber"], on_right=["msisdn"])
     value_set = set(get_dataframe(sub).subscriber)
     assert set(get_dataframe(subset_q).msisdn) == value_set
+    assert 10 == len(value_set)
