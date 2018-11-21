@@ -8,7 +8,7 @@ from flask_principal import identity_changed, Identity, AnonymousIdentity
 from werkzeug.exceptions import abort
 
 from .models import *
-from .invalid_usage import InvalidUsage
+from .invalid_usage import InvalidUsage, Unauthorized
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -27,7 +27,7 @@ def signin():
                 current_app._get_current_object(), identity=Identity(user.id)
             )
             return jsonify({"logged_in": True, "is_admin": user.is_admin})
-    abort(401, "Incorrect username or password.")
+    raise Unauthorized("Incorrect username or password.")
 
 
 @blueprint.route("/signout")
