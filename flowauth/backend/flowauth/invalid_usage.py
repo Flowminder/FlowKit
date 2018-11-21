@@ -19,5 +19,6 @@ class InvalidUsage(Exception):
         rv["code"] = self.status_code
         return rv
 
+
 class Unauthorized(InvalidUsage):
     status_code = 401
