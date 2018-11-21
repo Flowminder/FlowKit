@@ -8,7 +8,7 @@ import Divider from "@material-ui/core/Divider";
 import ServerCapability from "./ServerCapability";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import DateFnsUtils from "material-ui-pickers/utils/date-fns-utils";
+import DateFnsUtils from "@date-io/date-fns";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
