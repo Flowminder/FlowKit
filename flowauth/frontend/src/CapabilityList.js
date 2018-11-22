@@ -10,9 +10,13 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
-import CapabilityListItem from "./CapabilityListItem";
+import AdminListItem from "./AdminListItem";
 import TextField from "@material-ui/core/TextField";
-import { getAllCapabilities, newCapability } from "./util/api";
+import {
+  getAllCapabilities,
+  newCapability,
+  deleteCapability
+} from "./util/api";
 
 const styles = theme => ({
   root: {
@@ -45,11 +49,13 @@ class CapabilityList extends React.Component {
     });
   };
   rmCapability = capability_id => {
-    this.setState({
-      capabilities: this.state.capabilities.filter(
-        capability => capability.id !== capability_id
-      )
-    });
+    deleteCapability(capability_id).then(json =>
+      this.setState({
+        capabilities: this.state.capabilities.filter(
+          capability => capability.id !== capability_id
+        )
+      })
+    );
   };
   addCap = () => {
     const { new_cap, capabilities } = this.state;
@@ -68,11 +74,11 @@ class CapabilityList extends React.Component {
     const { capabilities } = this.state;
     return capabilities.map(object => {
       return (
-        <CapabilityListItem
+        <AdminListItem
           name={object.name}
           id={object.id}
           classes={classes}
-          rmCapability={this.rmCapability}
+          deleteAction={this.rmCapability}
         />
       );
     });
@@ -107,11 +113,16 @@ class CapabilityList extends React.Component {
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          <Grid item xs={5} />
-          <Grid item xs>
-            <IconButton color="inherit" aria-label="New" onClick={this.addCap}>
-              <AddIcon />
-            </IconButton>
+          <Grid item xs={12} container alignItems="center" justify="flex-end">
+            <Grid item>
+              <IconButton
+                color="inherit"
+                aria-label="New"
+                onClick={this.addCap}
+              >
+                <AddIcon />
+              </IconButton>
+            </Grid>
           </Grid>
         </Grid>
       </Paper>
