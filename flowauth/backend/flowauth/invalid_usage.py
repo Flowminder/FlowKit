@@ -18,3 +18,7 @@ class InvalidUsage(Exception):
         rv["message"] = self.message
         rv["code"] = self.status_code
         return rv
+
+
+class Unauthorized(InvalidUsage):
+    status_code = 401

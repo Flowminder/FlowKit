@@ -15,6 +15,7 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import { login } from "./util/api";
+import ErrorDialog from "./ErrorDialog";
 
 const styles = theme => ({
   layout: {
@@ -54,20 +55,28 @@ class Login extends React.Component {
     super(props);
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      hasError: false,
+      error: { message: "" }
     };
   }
 
   handleSubmit = async event => {
     event.preventDefault();
-    login(this.state.username, this.state.password).then(json => {
-      this.props.login(json.is_admin);
-    });
+    login(this.state.username, this.state.password)
+      .then(json => {
+        this.props.login(json.is_admin);
+      })
+      .catch(err => {
+        this.setState({ hasError: true, error: err });
+      });
   };
 
   handleChange = event => {
     this.setState({
-      [event.target.id]: event.target.value
+      [event.target.id]: event.target.value,
+      hasError: false,
+      error: { message: "" }
     });
   };
 
@@ -119,6 +128,7 @@ class Login extends React.Component {
             </form>
           </Paper>
         </main>
+        <ErrorDialog open={this.state.hasError} message={this.state.error.message} />
       </React.Fragment>
     );
   }

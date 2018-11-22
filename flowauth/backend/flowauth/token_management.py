@@ -9,7 +9,7 @@ from flask_login import login_required, current_user, logout_user
 from werkzeug.exceptions import abort
 
 from .models import *
-from .invalid_usage import InvalidUsage
+from .invalid_usage import InvalidUsage, Unauthorized
 from zxcvbn import zxcvbn
 
 blueprint = Blueprint(__name__, __name__)
@@ -195,17 +195,16 @@ def add_token(server):
     print(allowed_claims)
     for claim, rights in json["claims"].items():
         if claim not in allowed_claims:
-            abort(401, f"You do not have access to {claim} on {server.name}")
+            raise Unauthorized(f"You do not have access to {claim} on {server.name}")
         for right, setting in rights["permissions"].items():
             if setting and not allowed_claims[claim]["permissions"][right]:
-                abort(
-                    401, f"You do not have access to {claim}:{right} on {server.name}"
+                raise Unauthorized(
+                    f"You do not have access to {claim}:{right} on {server.name}"
                 )
         for agg_unit in rights["spatial_aggregation"]:
             if agg_unit not in allowed_claims[claim]["spatial_aggregation"]:
-                abort(
-                    401,
-                    f"You do not have access to {claim} at {agg_unit} on {server.name}",
+                raise Unauthorized(
+                    f"You do not have access to {claim} at {agg_unit} on {server.name}"
                 )
     token_string = encode_access_token(
         identity=current_user.username,
