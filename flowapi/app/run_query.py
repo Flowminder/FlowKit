@@ -58,7 +58,7 @@ def check_claims(claim_type):
                         jsonify(
                             {
                                 "status": "Error",
-                                "reason": "Expected 'query_kind' parameter.",
+                                "msg": "Expected 'query_kind' parameter.",
                             }
                         ),
                         400,
@@ -76,7 +76,7 @@ def check_claims(claim_type):
                     jsonify(
                         {
                             "status": "Error",
-                            "reason": f"'{claim_type}' access denied for '{query_kind}' query",
+                            "msg": f"'{claim_type}' access denied for '{query_kind}' query",
                         }
                     ),
                     401,
@@ -95,7 +95,7 @@ def check_claims(claim_type):
                         jsonify(
                             {
                                 "status": "Error",
-                                "reason": "Missing parameter: 'aggregation_unit'",
+                                "msg": "Missing parameter: 'aggregation_unit'",
                             }
                         ),
                         500,
@@ -107,7 +107,7 @@ def check_claims(claim_type):
                         jsonify(
                             {
                                 "status": "Error",
-                                "reason": f"'get_result' access denied for '{aggregation_unit}' "
+                                "msg": f"'get_result' access denied for '{aggregation_unit}' "
                                 f"aggregated result of '{query_kind}' query",
                             }
                         ),
@@ -145,7 +145,7 @@ async def run_query():
         d = {"Location": url_for(f"{__name__}.poll_query", query_id=message["id"])}
         return jsonify({}), 202, d
     elif "error" in message:
-        return jsonify({"status": "Error", "reason": message["error"]}), 403
+        return jsonify({"status": "Error", "msg": message["error"]}), 403
     else:
         return jsonify({}), 403
 
@@ -191,7 +191,7 @@ async def get_query(query_id):
     elif message["status"] == "running":
         return jsonify({}), 202
     elif message["status"] == "error":
-        return jsonify({"status": "Error", "reason": message["error"]}), 403
+        return jsonify({"status": "Error", "msg": message["error"]}), 403
     else:
         return jsonify({}), 404
 

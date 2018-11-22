@@ -249,11 +249,11 @@
         },
         "pytest-dotenv": {
             "hashes": [
-                "sha256:3410cb798a003d5ab84609823d390af26af6353cdb8c6fa64d6df97256fb04ae",
-                "sha256:89ec996f5b24b286da44b14b5d6911a4d0a984e2615368e54ec4d375b58bceb0"
+                "sha256:2165fda4a93140dced34b96005e767ab46982f88e1ffe5a1b198f8cca25bdbf1",
+                "sha256:b2f9deb6c0ba344a6418407dbc9901ee394ec1e042b3422167c02718548416c3"
             ],
             "index": "pypi",
-            "version": "==0.3.0"
+            "version": "==0.3.1"
         },
         "python-dotenv": {
             "hashes": [
