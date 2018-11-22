@@ -41,7 +41,7 @@ describe("Login_error_password", function () {
 });
 
 describe("Login_error_twice", function () {
-	it("Error dialog appears more than once", function () {
+	it("Error dialog re-appears after closing if password wasn't changed", function () {
 		cy.visit("/");
 		// Attempt to log in with incorrect username
 		cy.get("#username").type("WRONG_USER");
