@@ -14,57 +14,57 @@ from flowclient.client import (
 )
 
 
-def test_get_result_by_params(monkeypatch, api_mock, token):
+def test_get_result_by_params(monkeypatch, token):
     """
     Test requesting a query based on params makes the right calls.
     """
-    api_mock.post.return_value.status_code = 202
-    api_mock.post.return_value.headers = {"Location": "/99"}
-    c = Connection("foo", token)
+    connection_mock = Mock()
+    connection_mock.post_json.return_value.status_code = 202
+    connection_mock.post_json.return_value.headers = {"Location": "/99"}
     dummy_method = Mock()
     monkeypatch.setattr(flowclient.client, "get_result_by_query_id", dummy_method)
-    get_result(c, {"query_kind": "query_type", "params": {"param": "value"}})
+    get_result(
+        connection_mock, {"query_kind": "query_type", "params": {"param": "value"}}
+    )
     # Should request the query by id
-    dummy_method.assert_called_with(c, "99")
+    dummy_method.assert_called_with(connection_mock, "99")
 
 
-def test_get_result_by_id(api_response, api_mock, token):
+def test_get_result_by_id(token):
     """
     Test requesting a query by id makes the right calls.
     """
-    api_response.json.return_value = {
+    connection_mock = Mock()
+    connection_mock.get_url.return_value.json.return_value = {
         "query_id": "99",
         "query_result": [{"name": "foo"}],
     }
-    type(api_response).status_code = PropertyMock(side_effect=(303, 200))
-    api_response.headers = {"Location": "/Test"}
-    c = Connection("foo", token)
+    type(connection_mock.get_url.return_value).status_code = PropertyMock(
+        side_effect=(303, 200)
+    )
+    connection_mock.get_url.return_value.headers = {"Location": "/api/0/foo/Test"}
 
-    df = get_result_by_query_id(c, "99")
+    df = get_result_by_query_id(connection_mock, "99")
 
     # Query id should be requested
-    assert (
-        call("foo/api/0/poll/99", allow_redirects=False) in api_mock.get.call_args_list
-    )
+    assert call("poll/99") in connection_mock.get_url.call_args_list
 
     # Query json should be requested
-    assert call("foo/Test", allow_redirects=False) in api_mock.get.call_args_list
+    assert call("foo/Test") in connection_mock.get_url.call_args_list
     # Query result should contain the id, and the dataframe
     assert 1 == len(df)
     assert "foo" == df.name[0]
 
 
-@pytest.mark.parametrize(
-    "http_code, exception", [(401, FlowclientConnectionError), (404, FileNotFoundError)]
-)
-def test_get_result_by_id_error(http_code, exception, api_response, token):
+@pytest.mark.parametrize("http_code", [401, 404, 418, 400])
+def test_get_result_by_id_error(http_code, token):
     """
-    Test requesting a query by id raises appropriate exceptions.
+    Any unexpected http code should raise an exception.
     """
-    api_response.status_code = http_code
-    c = Connection("foo", token)
-    with pytest.raises(exception):
-        get_result_by_query_id(c, "99")
+    connection_mock = Mock()
+    connection_mock.get_url.return_value.status_code = http_code
+    with pytest.raises(FlowclientConnectionError):
+        get_result_by_query_id(connection_mock, "99")
 
 
 def test_get_result_by_id_poll_loop(monkeypatch):

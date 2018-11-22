@@ -39,4 +39,4 @@ async def test_post_query_error(app, dummy_zmq_server, access_token_builder):
     )
     json = await response.get_json()
     assert response.status_code == 403
-    assert "Broken" == json["reason"]
+    assert "Broken" == json["msg"]

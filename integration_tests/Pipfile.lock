@@ -249,11 +249,11 @@
         },
         "pytest-dotenv": {
             "hashes": [
-                "sha256:3410cb798a003d5ab84609823d390af26af6353cdb8c6fa64d6df97256fb04ae",
-                "sha256:89ec996f5b24b286da44b14b5d6911a4d0a984e2615368e54ec4d375b58bceb0"
+                "sha256:2165fda4a93140dced34b96005e767ab46982f88e1ffe5a1b198f8cca25bdbf1",
+                "sha256:b2f9deb6c0ba344a6418407dbc9901ee394ec1e042b3422167c02718548416c3"
             ],
             "index": "pypi",
-            "version": "==0.3.0"
+            "version": "==0.3.1"
         },
         "python-dotenv": {
             "hashes": [
@@ -270,19 +270,19 @@
         },
         "quart": {
             "hashes": [
-                "sha256:3b45f3c757a905d20d40e8e29c8ee0315fd27919d55f1ead0d4931aead0f22e8",
-                "sha256:dd82f76523a5cd5566e60b7dc0928def0d6dbafd94249effcc46d4a585ceb39c"
+                "sha256:0ce415d8618e5e1db0de3d09f108639c3353cd6b19e2dfb6f3260a31433853eb",
+                "sha256:f24b36c9a74c6584a72060f7a335efb8a6475d85a4a6218de17685f3a16cd4a4"
             ],
             "index": "pypi",
-            "version": "==0.6.8"
+            "version": "==0.6.10"
         },
         "requests": {
             "hashes": [
-                "sha256:99dcfdaaeb17caf6e526f32b6a7b780461512ab3f1d992187801694cba42770c",
-                "sha256:a84b8c9ab6239b578f22d1c21d51b696dcfe004032bb80ea832398d6909d7279"
+                "sha256:65b3a120e4329e33c9889db89c80976c5272f56ea92d3e74da8a463992e3ff54",
+                "sha256:ea881206e59f41dbd0bd445437d792e43906703fff75ca8ff43ccdb11f33f263"
             ],
             "index": "pypi",
-            "version": "==2.20.0"
+            "version": "==2.20.1"
         },
         "six": {
             "hashes": [
@@ -300,10 +300,10 @@
         },
         "sqlalchemy": {
             "hashes": [
-                "sha256:c5951d9ef1d5404ed04bae5a16b60a0779087378928f997a294d1229c6ca4d3e"
+                "sha256:9de7c7dabcf06319becdb7e15099c44e5e34ba7062f9ba10bc00e562f5db3d04"
             ],
             "index": "pypi",
-            "version": "==1.2.12"
+            "version": "==1.2.14"
         },
         "typing-extensions": {
             "hashes": [
