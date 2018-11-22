@@ -23,7 +23,7 @@ def test_turn_off_caching():
 
 def test_turn_off_caching_handles_error():
     """
-    *.turn_off_caching() handles AttributeError.
+    *.turn_off_caching() works even if ._df attribute is not present.
     """
     sd = EventTableSubset("2016-01-01", "2016-01-02")
     sd.get_dataframe()

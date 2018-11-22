@@ -76,7 +76,7 @@ def test_handles_mins(get_dataframe):
 
 def test_head_has_column_names(get_dataframe):
     """
-    Returning the head of the dataframe gives the expected column names.
+    Returning the dataframe gives the expected column names.
     """
     sd = EventTableSubset("2016-01-01", "2016-01-02")
     assert [
@@ -112,9 +112,9 @@ def test_can_subset_by_hour(get_dataframe):
     assert 1 in df.day
 
 
-def test_handles_backwards_dates(get_dataframe):
+def test_handles_backwards_hours(get_dataframe):
     """
-    If the subscriber passes dates that are 'backwards' this will be interpreted as spanning midnight.
+    If the subscriber passes hours that are 'backwards' this will be interpreted as spanning midnight.
     """
     sd = EventTableSubset("2016-01-01", "2016-01-04", hours=(20, 5))
     df = get_dataframe(sd)
