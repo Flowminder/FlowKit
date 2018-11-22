@@ -9,7 +9,7 @@ import ServerCapability from "./ServerCapability";
 import ServerAggregationUnits from "./ServerAggregationUnits";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import DateFnsUtils from "material-ui-pickers/utils/date-fns-utils";
+import DateFnsUtils from "@date-io/date-fns";
 import TextField from "@material-ui/core/TextField";
 import {
   getGroupCapabilities,
