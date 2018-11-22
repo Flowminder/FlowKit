@@ -10,24 +10,33 @@ import EditIcon from "@material-ui/icons/Edit";
 import IconButton from "@material-ui/core/IconButton";
 
 function AdminListItem(props) {
-  const { name, id, editAction, rmAction, deleteAction } = props;
+  const { name, id, editAction, deleteAction } = props;
   return (
-    <React.Fragment>
-      <Grid item xs={6}>
+    <Grid item container xs={12} alignItems="center" justify="space-between">
+      <Grid item xs>
         <Typography component="p">{name}</Typography>
       </Grid>
-      <Grid item xs={4} />
-      <Grid item xs>
-        <IconButton color="inherit" onClick={() => editAction(id)}>
-          <EditIcon />
-        </IconButton>
+      <Grid
+        item
+        container
+        xs={editAction ? 2 : 1}
+        alignItems="center"
+        justify="flex-end"
+      >
+        {editAction && (
+          <Grid item>
+            <IconButton color="inherit" onClick={() => editAction(id)}>
+              <EditIcon />
+            </IconButton>
+          </Grid>
+        )}
+        <Grid item>
+          <IconButton color="inherit" onClick={() => deleteAction(id)}>
+            <DeleteIcon />
+          </IconButton>
+        </Grid>
       </Grid>
-      <Grid item xs>
-        <IconButton color="inherit">
-          <DeleteIcon onClick={() => deleteAction(id) && rmAction(id)} />
-        </IconButton>
-      </Grid>
-    </React.Fragment>
+    </Grid>
   );
 }
 

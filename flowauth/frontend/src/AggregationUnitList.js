@@ -10,9 +10,13 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import AddIcon from "@material-ui/icons/Add";
-import AggregationUnitListItem from "./AggregationUnitListItem";
+import AdminListItem from "./AdminListItem";
 import TextField from "@material-ui/core/TextField";
-import { getAllAggregationUnits, newAggregationUnit } from "./util/api";
+import {
+  getAllAggregationUnits,
+  newAggregationUnit,
+  deleteAggregationUnit
+} from "./util/api";
 
 const styles = theme => ({
   root: {
@@ -41,9 +45,11 @@ class AggregationUnitList extends React.Component {
     });
   };
   rmUnit = unit_id => {
-    this.setState({
-      units: this.state.units.filter(unit => unit.id !== unit_id)
-    });
+    deleteAggregationUnit(unit_id).then(json =>
+      this.setState({
+        units: this.state.units.filter(unit => unit.id !== unit_id)
+      })
+    );
   };
   addCap = () => {
     const { new_unit, units } = this.state;
@@ -62,11 +68,11 @@ class AggregationUnitList extends React.Component {
     const { units } = this.state;
     return units.map(object => {
       return (
-        <AggregationUnitListItem
+        <AdminListItem
           name={object.name}
           id={object.id}
           classes={classes}
-          rmUnit={this.rmUnit}
+          deleteAction={this.rmUnit}
         />
       );
     });
@@ -90,22 +96,35 @@ class AggregationUnitList extends React.Component {
           </Grid>
           <Grid item xs={6} />
           {this.renderunits()}
-          <Grid item xs={6}>
-            <TextField
-              id="standard-name"
-              label="New Aggregation Unit"
-              className={classes.textField}
-              value={new_unit}
-              onChange={this.handleChange("new_unit")}
-              margin="normal"
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
-          <Grid item xs={5} />
-          <Grid item xs>
-            <IconButton color="inherit" aria-label="New" onClick={this.addCap}>
-              <AddIcon />
-            </IconButton>
+          <Grid
+            item
+            xs={12}
+            container
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid item xs>
+              <TextField
+                id="standard-name"
+                label="New Aggregation Unit"
+                className={classes.textField}
+                value={new_unit}
+                onChange={this.handleChange("new_unit")}
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={1} container alignItems="center" justify="flex-end">
+              <Grid item>
+                <IconButton
+                  color="inherit"
+                  aria-label="New"
+                  onClick={this.addCap}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Paper>
