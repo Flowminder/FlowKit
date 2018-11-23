@@ -14,6 +14,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { editPassword } from "./util/api";
+import ErrorDialog from "./ErrorDialog";
 var zxcvbn = require("zxcvbn");
 
 const styles = theme => ({
@@ -29,23 +30,40 @@ class UserDetails extends React.Component {
 		oldPassword: "",
 		newPasswordA: "",
 		newPasswordB: "",
-		password_strength: null
+		password_strength: null,
+		hasError: false,
+		error: { message: "" }
 	};
 
 	handleSubmit = () => {
 		if (this.state.newPasswordA === this.state.newPasswordB) {
-			editPassword(this.state.oldPassword, this.state.newPasswordA).then(
-				() => {
-					this.setState({ hasError: true, error: "Logged out" });
-				}
-			);
+			editPassword(this.state.oldPassword, this.state.newPasswordA)
+				.then(() => {
+					this.setState({
+						passwordChanged: true,
+						oldPassword: "",
+						newPasswordA: "",
+						newPasswordB: "",
+						password_strength: null,
+						hasError: false,
+						error: { message: "" }
+					});
+				})
+				.catch(err => {
+					this.setState({ hasError: true, error: err });
+				});
+		}
+		else {
+			this.setState({ hasError: true, error: { message: "Passwords do not match" } });
 		}
 	};
 
 	handleTextChange = name => event => {
 		var passStrength = zxcvbn(event.target.value);
 		var state = {
-			[name]: event.target.value
+			[name]: event.target.value,
+			hasError: false,
+			error: { message: "" }
 		};
 		if (name === "newPasswordA") {
 			state = Object.assign(state, {
@@ -56,7 +74,7 @@ class UserDetails extends React.Component {
 	};
 
 	render() {
-		if (this.state.hasError) throw this.state.error;
+		if (this.state.passwordChanged) throw "Logged out";
 
 		const { classes } = this.props;
 		const {
@@ -103,8 +121,8 @@ class UserDetails extends React.Component {
 											((password_strength > 3 && (
 												<LockIcon />
 											)) || (
-												<LockOpenIcon color="secondary" />
-											))}
+													<LockOpenIcon color="secondary" />
+												))}
 									</InputAdornment>
 								)
 							}}
@@ -138,6 +156,7 @@ class UserDetails extends React.Component {
 						</Grid>
 					</Grid>
 				</Grid>
+				<ErrorDialog open={this.state.hasError} message={this.state.error.message} />
 			</Paper>
 		);
 	}
