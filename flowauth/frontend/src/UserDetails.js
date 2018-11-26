@@ -7,6 +7,9 @@ import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
 import PropTypes from "prop-types";
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
@@ -35,7 +38,8 @@ class UserDetails extends React.Component {
 		error: { message: "" }
 	};
 
-	handleSubmit = () => {
+	handleSubmit = async event => {
+		event.preventDefault();
 		if (this.state.newPasswordA === this.state.newPasswordB) {
 			editPassword(this.state.oldPassword, this.state.newPasswordA)
 				.then(() => {
@@ -92,68 +96,80 @@ class UserDetails extends React.Component {
 							Reset password
 						</Typography>
 					</Grid>
-					<Grid xs={3}>
-						<TextField
-							id="standard-name"
-							className={classes.textField}
-							label="Old Password"
-							type="password"
-							value={oldPassword}
-							onChange={this.handleTextChange("oldPassword")}
-							margin="normal"
-						/>
-					</Grid>
-					<Grid xs={9} />
-					<Grid xs={3}>
-						<TextField
-							id="standard-name"
-							className={classes.textField}
-							label="New Password"
-							type="password"
-							value={newPasswordA}
-							onChange={this.handleTextChange("newPasswordA")}
-							margin="normal"
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position="end">
-										{(password_strength ||
-											password_strength === 0) &&
-											((password_strength > 3 && (
-												<LockIcon />
-											)) || (
-													<LockOpenIcon color="secondary" />
-												))}
-									</InputAdornment>
-								)
-							}}
-						/>
-					</Grid>
-					<Grid xs={9} />
-					<Grid xs={3}>
-						<TextField
-							error={newPasswordA !== newPasswordB}
-							id="standard-name"
-							className={classes.textField}
-							label="New Password"
-							type="password"
-							value={newPasswordB}
-							onChange={this.handleTextChange("newPasswordB")}
-							margin="normal"
-						/>
-					</Grid>
-					<Grid xs={9} />
-					<Grid item xs={12} container direction="row-reverse">
-						<Grid item>
-							<Button
-								type="submit"
-								fullWidth
-								variant="raised"
-								color="primary"
-								onClick={this.handleSubmit}
-							>
-								Save
+					<Grid item xs={12}>
+						<form className={classes.form} onSubmit={this.handleSubmit}>
+							<Grid xs={3}>
+								<FormControl margin="normal" required fullWidth>
+									<InputLabel htmlFor="oldPassword">Old Password</InputLabel>
+									<Input
+										id="oldPassword"
+										name="oldPassword"
+										type="password"
+										value={oldPassword}
+										onChange={this.handleTextChange("oldPassword")}
+										margin="normal"
+									/>
+								</FormControl>
+							</Grid>
+							<Grid xs={9} />
+							<Grid xs={3}>
+								<FormControl margin="normal" required fullWidth>
+									<InputLabel htmlFor="newPasswordA">New Password</InputLabel>
+									<Input
+										id="newPasswordA"
+										name="newPasswordA"
+										type="password"
+										value={newPasswordA}
+										onChange={this.handleTextChange("newPasswordA")}
+										margin="normal"
+										endAdornment={
+											<InputAdornment position="end">
+												{(password_strength ||
+													password_strength === 0) &&
+													((password_strength > 3 && (
+														<LockIcon />
+													)) || (
+															<LockOpenIcon color="secondary" />
+														))}
+											</InputAdornment>
+										}
+									/>
+								</FormControl>
+							</Grid>
+							<Grid xs={9} />
+							<Grid xs={3}>
+								<FormControl
+									margin="normal"
+									required
+									fullWidth
+									error={newPasswordA !== newPasswordB}
+								>
+									<InputLabel htmlFor="newPasswordB">New Password</InputLabel>
+									<Input
+										id="newPasswordB"
+										name="newPasswordB"
+										type="password"
+										value={newPasswordB}
+										onChange={this.handleTextChange("newPasswordB")}
+										margin="normal"
+									/>
+								</FormControl>
+							</Grid>
+							<Grid xs={9} />
+							<Grid item xs={12} container direction="row-reverse">
+								<Grid item>
+									<Button
+										type="submit"
+										fullWidth
+										variant="raised"
+										color="primary"
+										className={classes.submit}
+									>
+										Save
 							</Button>
-						</Grid>
+								</Grid>
+							</Grid>
+						</form>
 					</Grid>
 				</Grid>
 				<ErrorDialog open={this.state.hasError} message={this.state.error.message} />
@@ -166,3 +182,74 @@ UserDetails.propTypes = {
 };
 
 export default withStyles(styles)(UserDetails);
+
+{/* <Grid container spacing={16} alignItems="center">
+	<Grid item xs={12}>
+		<Typography variant="headline" component="h1">
+			Reset password
+		</Typography>
+	</Grid>
+	<Grid xs={3}>
+		<TextField
+			id="standard-name"
+			className={classes.textField}
+			label="Old Password"
+			type="password"
+			value={oldPassword}
+			onChange={this.handleTextChange("oldPassword")}
+			margin="normal"
+		/>
+	</Grid>
+	<Grid xs={9} />
+	<Grid xs={3}>
+		<TextField
+			id="standard-name"
+			className={classes.textField}
+			label="New Password"
+			type="password"
+			value={newPasswordA}
+			onChange={this.handleTextChange("newPasswordA")}
+			margin="normal"
+			InputProps={{
+				endAdornment: (
+					<InputAdornment position="end">
+						{(password_strength ||
+							password_strength === 0) &&
+							((password_strength > 3 && (
+								<LockIcon />
+							)) || (
+									<LockOpenIcon color="secondary" />
+								))}
+					</InputAdornment>
+				)
+			}}
+		/>
+	</Grid>
+	<Grid xs={9} />
+	<Grid xs={3}>
+		<TextField
+			error={newPasswordA !== newPasswordB}
+			id="standard-name"
+			className={classes.textField}
+			label="New Password"
+			type="password"
+			value={newPasswordB}
+			onChange={this.handleTextChange("newPasswordB")}
+			margin="normal"
+		/>
+	</Grid>
+	<Grid xs={9} />
+	<Grid item xs={12} container direction="row-reverse">
+		<Grid item>
+			<Button
+				type="submit"
+				fullWidth
+				variant="raised"
+				color="primary"
+				onClick={this.handleSubmit}
+			>
+				Save
+			</Button>
+		</Grid>
+	</Grid>
+</Grid> */}
