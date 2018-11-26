@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from unittest.mock import Mock
 
 import jwt
 import pytest
@@ -37,6 +38,17 @@ def test_login(token):
     assert token == c.token
     assert "bar" == c.user
     assert "Authorization" in c.session.headers
+    assert isinstance(
+        c.session.verify, Mock
+    )  # Shouldn't be set if no ssl_certificate passed
+
+
+def test_ssl_cert_path_set(token):
+    """
+    Test that if a path to certificate is given it gets set on the session object.
+    """
+    c = Connection("foo", token, ssl_certificate="DUMMY_CERT_PATH")
+    assert "DUMMY_CERT_PATH" == c.session.verify
 
 
 def test_connection_repr(token):
