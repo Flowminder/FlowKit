@@ -18,6 +18,7 @@ import Typography from "@material-ui/core/Typography";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { editPassword } from "./util/api";
 import ErrorDialog from "./ErrorDialog";
+import MessageSnackbar from "./MessageSnackbar";
 var zxcvbn = require("zxcvbn");
 
 const styles = theme => ({
@@ -34,6 +35,7 @@ class UserDetails extends React.Component {
 		newPasswordA: "",
 		newPasswordB: "",
 		password_strength: null,
+		passwordChanged: false,
 		hasError: false,
 		error: { message: "" }
 	};
@@ -54,11 +56,15 @@ class UserDetails extends React.Component {
 					});
 				})
 				.catch(err => {
-					this.setState({ hasError: true, error: err });
+					this.setState({ passwordChanged: false, hasError: true, error: err });
 				});
 		}
 		else {
-			this.setState({ hasError: true, error: { message: "Passwords do not match" } });
+			this.setState({
+				passwordChanged: false,
+				hasError: true,
+				error: { message: "Passwords do not match" }
+			});
 		}
 	};
 
@@ -66,6 +72,7 @@ class UserDetails extends React.Component {
 		var passStrength = zxcvbn(event.target.value);
 		var state = {
 			[name]: event.target.value,
+			passwordChanged: false,
 			hasError: false,
 			error: { message: "" }
 		};
@@ -78,8 +85,6 @@ class UserDetails extends React.Component {
 	};
 
 	render() {
-		if (this.state.passwordChanged) throw "Logged out";
-
 		const { classes } = this.props;
 		const {
 			oldPassword,
@@ -173,6 +178,11 @@ class UserDetails extends React.Component {
 					</Grid>
 				</Grid>
 				<ErrorDialog open={this.state.hasError} message={this.state.error.message} />
+				<MessageSnackbar
+					open={this.state.passwordChanged}
+					variant="success"
+					message="Password changed"
+				/>
 			</Paper>
 		);
 	}
