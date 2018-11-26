@@ -215,7 +215,7 @@ jobs:
       - checkout
       - restore_cache:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
-      - run: cd flowmachine && pip install --upgrade pip pipenv && pipenv install --dev --deploy && pipenv run pip install -e .
+      - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
       - run:
           name: Set port for flowmachine
           command: |
@@ -283,7 +283,7 @@ jobs:
           path: /home/circleci/project/
       - run:
           name: install deps
-          command: pip install pipenv && pipenv install --dev --deploy
+          command: pipenv install --dev --deploy
       - run: *wait_for_flowdb
       - run:
           name: Run tests
@@ -490,7 +490,7 @@ jobs:
             docker cp . testrunner:/tests
             docker cp ../flowclient testrunner:/
             docker cp ../flowmachine testrunner:/
-            docker exec testrunner bash -c "cd /tests && pip install pipenv && pipenv install --deploy && pipenv run pip install ../flowclient[http2] ../flowmachine"
+            docker exec testrunner bash -c "cd /tests && pipenv install --deploy && pipenv run pip install ../flowclient ../flowmachine"
       - run:
           name: Wait for API to be available
           command: docker exec testrunner bash -c "i=0;until [ \$i -ge 24 ] || (curl -k --fail http://flowapi:9090);do let i=i+1; echo Waiting 10s; sleep 10;done"
