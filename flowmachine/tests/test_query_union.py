@@ -12,15 +12,15 @@ def test_union_column_names():
     assert union.head(0).columns.tolist() == union.column_names
 
 
-def test_union_all(get_length):
+def test_union_all(get_dataframe):
     """
     Test default union behaviour keeps duplicates.
     """
     q1 = CustomQuery("SELECT * FROM events.calls LIMIT 10")
     union_all = q1.union(q1)
-    union_all_df = union_all.get_dataframe()
+    union_all_df = get_dataframe(union_all)
     single_id = union_all_df[union_all_df.id == "5wNJA-PdRJ4-jxEdG-yOXpZ"]
-    assert get_length(single_id) == 4
+    assert len(single_id) == 4
 
 
 def test_union(get_dataframe):
