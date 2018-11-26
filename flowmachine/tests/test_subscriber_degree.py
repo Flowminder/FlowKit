@@ -17,7 +17,9 @@ def test_returns_correct_column_names(get_dataframe):
     """
     SubscriberDegree has expected column names.
     """
-    assert ["subscriber", "degree"] == SubscriberDegree("2016-01-01", "2016-01-04")
+    assert ["subscriber", "degree"] == SubscriberDegree(
+        "2016-01-01", "2016-01-04"
+    ).column_names
 
 
 def test_returns_correct_values(get_dataframe):
