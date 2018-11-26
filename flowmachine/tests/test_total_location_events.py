@@ -10,16 +10,19 @@ import pytest
 from flowmachine.features import TotalLocationEvents
 
 
+@pytest.mark.usefixtures("skip_datecheck")
 @pytest.mark.parametrize("interval", TotalLocationEvents.allowed_levels)
-def test_total_location_events_column_names(exemplar_level_param, get_dataframe):
-    """
-    TotalLocationEvents() returns data at the level of the cell.
-    """
-
-    te = TotalLocationEvents("2016-01-01", "2016-01-04", **exemplar_level_param)
-    df = get_dataframe(te)
-
-    assert df.column.tolist() == te.column_names
+@pytest.mark.parametrize("direction", ["in", "out", "both"])
+def test_total_location_events_column_names(exemplar_level_param, interval, direction):
+    """ Test that column_names property of TotalLocationEvents matches head(0)"""
+    tle = TotalLocationEvents(
+        "2016-01-01",
+        "2016-01-04",
+        **exemplar_level_param,
+        interval=interval,
+        direction=direction
+    )
+    assert tle.head(0).columns.tolist() == tle.column_names
 
 
 def test_events_at_cell_level(get_dataframe):
