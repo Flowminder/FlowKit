@@ -1,31 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from unittest.mock import Mock
 
 import jwt
 import pytest
 
-import flowclient
 from flowclient.client import Connection, FlowclientConnectionError
 
 
-@pytest.fixture(autouse=True)
-def _get_session_mock(monkeypatch):
-    """
-    Fixture which replaces the client's `_get_session` method with a mock,
-    returning a mocked session object. Yields the session mock for use in
-    the test.
-
-    Yields
-    ------
-    unittests.Mock
-
-    """
-    mock = Mock()
-    mock.return_value.headers = {}
-    monkeypatch.setattr(flowclient.client, "_get_session", mock)
-    yield mock.return_value
+pytestmark = pytest.mark.usefixtures("session_mock")
 
 
 def test_https_warning(token):
@@ -40,7 +23,6 @@ def test_https_warning(token):
 
 def test_no_warning_for_https(token, monkeypatch):
     """ Test that no insecure warning is raised when connecting via https. """
-    monkeypatch.delattr("flowclient.client.HTTP20Adapter")  # Disable hyper
     with pytest.warns(None) as warnings_record:
         c = Connection("https://foo", token)
     assert not warnings_record.list

@@ -5,6 +5,7 @@ from unittest.mock import Mock
 
 import jwt
 import pytest
+import requests
 
 import flowclient
 
@@ -23,7 +24,7 @@ def session_mock(monkeypatch):
     """
     mock = Mock()
     mock.return_value.headers = {}
-    monkeypatch.setattr(flowclient.client, "_get_session", mock)
+    monkeypatch.setattr(requests, "Session", mock)
     yield mock.return_value
 
 
