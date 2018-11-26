@@ -5,7 +5,6 @@
 import logging
 import warnings
 import re
-from _ssl import SSLError
 from dataclasses import dataclass
 
 import jwt
@@ -17,59 +16,11 @@ from typing import Tuple, Union, Dict
 
 logger = logging.getLogger(__name__)
 
-http2mode = False
-try:
-    from hyper.contrib import HTTP20Adapter
-
-    logger.info("Hyper is installed, http2 available.")
-except ModuleNotFoundError:
-    logger.info("Hyper not installed, will use http1.")
-
 
 @dataclass
 class QueryResult:
     query_id: str
     dataframe: pd.DataFrame
-
-
-def _get_session(url: str, ssl_certificate: Union[str, None]) -> requests.Session:
-    """
-    Helper method for getting a session object to use for communicating
-    with the API. Will attempt to create a http2 compatible session if
-    possible.
-
-    Parameters
-    ----------
-    url : str
-        URL of the API
-    ssl_certificate: str or None
-        Provide a path to an ssl certificate to use, or None to use
-        default root certificates.
-
-    Returns
-    -------
-    requests.Session
-    """
-    try:
-        session = requests.Session()
-        adapter = HTTP20Adapter()
-        session.mount(url, adapter)
-        session.get(url)
-        return session
-    except (
-        SSLError,
-        ValueError,
-    ):  # Either of these may be raised by hyper if it fails to create an https connection
-        logger.error(
-            "Couldn't create SSL connection. Falling back to http1. (Self-signed certificates can't be used with hyper)"
-        )
-    except NameError:
-        logger.info("Hyper not installed, using http1.")
-
-    session = requests.Session()
-    if ssl_certificate is not None:
-        session.verify = ssl_certificate
-    return session
 
 
 class FlowclientConnectionError(Exception):
@@ -131,7 +82,9 @@ class Connection:
             raise FlowclientConnectionError(f"Unable to decode token: '{token}'")
         except KeyError:
             raise FlowclientConnectionError(f"Token does not contain user identity.")
-        self.session = _get_session(self.url, ssl_certificate)
+        self.session = requests.Session()
+        if ssl_certificate is not None:
+            self.session.verify = ssl_certificate
         self.session.headers["Authorization"] = f"Bearer {self.token}"
 
     def get_url(self, route: str) -> requests.Response:
