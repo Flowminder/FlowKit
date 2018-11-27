@@ -94,7 +94,7 @@ jobs:
       - run:
           name: Set a common docker tag
           command: |
-            echo "export SAFE_TAG=${CIRCLE_TAG:-$(echo -n $CIRCLE_BRANCH | md5 | cut -d" " -f1)}"| tee -a $BASH_ENV /home/circleci/.env
+            echo "export SAFE_TAG=${CIRCLE_TAG:-$(echo -n $CIRCLE_BRANCH | md5sum | cut -d" " -f1)}"| tee -a $BASH_ENV /home/circleci/.env
       - persist_to_workspace:
           root: /home/circleci/
           paths:
