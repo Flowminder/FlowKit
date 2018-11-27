@@ -128,10 +128,10 @@ jobs:
       - run:
           name: Set additional environment variables
           command: |
+            cat /home/circleci/.env >> $BASH_ENV
             echo "export FLOWDB_VERSION=$(git describe --tags --always)" | tee -a $BASH_ENV /home/circleci/.env
             echo 'export TAG_PREFIXES=(""  "testdata-" "synthetic-data-")' | tee -a $BASH_ENV /home/circleci/.env
             echo "export FLOWDB_RELEASE_DATE=$(git show -s --date=short-local --pretty=format:%cd -n1)"| tee -a $BASH_ENV /home/circleci/.env
-            echo "export SAFE_TAG=$(echo -n $CIRCLE_BRANCH | openssl md5)"| tee -a $BASH_ENV /home/circleci/.env
       - run:
           name: Log in to docker cloud
           command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
@@ -390,6 +390,7 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
+      - run: cat /home/circleci/.env >> $BASH_ENV
       - setup_remote_docker
       - run:
           name: Log in to docker cloud
@@ -419,6 +420,7 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
+      - run: cat /home/circleci/.env >> $BASH_ENV
       - setup_remote_docker
       - run:
           name: Log in to docker cloud
@@ -446,6 +448,7 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
+      - run: cat /home/circleci/.env >> $BASH_ENV
       - setup_remote_docker
       - run:
           name: Log in to docker cloud
