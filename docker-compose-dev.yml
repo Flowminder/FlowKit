@@ -77,7 +77,7 @@ services:
       context: ./flowapi
       dockerfile: Dockerfile
     ports:
-      - 9090:9090
+      - ${FLOWAPI_PORT:-9090}:9090
     environment:
       - SERVER=flowmachine
       - DB_USER=reporter
@@ -103,7 +103,7 @@ services:
       context: ./flowmachine
       dockerfile: Dockerfile
     ports:
-      - 5555:5555
+      - ${FLOWMACHINE_PORT:-5555}:5555
     volumes:
       - ./flowmachine/:/app
     tty: true
@@ -124,7 +124,7 @@ services:
     container_name: redis_flowkit
     image: redis
     ports:
-      - 6379:6379
+      - ${REDIS_PORT:-6379}:6379
     restart: always
     networks:
       redis:
