@@ -19,10 +19,14 @@ def test_can_numsubset_with_low_and_high(get_dataframe):
     rog = RadiusOfGyration("2016-01-01", "2016-01-02")
     low = 150
     high = 155
-    rog_df = get_dataframe(rog).query(
-        "{low} <= rog <= {high}".format(low=low, high=high)
+    rog_df = (
+        get_dataframe(rog)
+        .query("{low} <= rog <= {high}".format(low=low, high=high))
+        .set_index("subscriber")
     )
-    sub = get_dataframe(rog.numeric_subset(col="rog", low=low, high=high))
+    sub = get_dataframe(rog.numeric_subset(col="rog", low=low, high=high)).set_index(
+        "subscriber"
+    )
 
     pd.testing.assert_frame_equal(sub, rog_df)
 
@@ -75,7 +79,7 @@ def test_can_subset_with_list_of_subscribers(get_dataframe):
     """
     dl = daily_location("2016-01-03")
     subscriber_list = list(get_dataframe(dl).head(8).subscriber)
-    sub = dl.subset(col="subscriber", subset=subscriber_list)
+    sub = get_dataframe(dl.subset(col="subscriber", subset=subscriber_list))
     assert set(subscriber_list) == set(sub.subscriber)
 
 
@@ -85,7 +89,7 @@ def test_can_subset_with_single_subscriber(get_dataframe):
     """
     dl = daily_location("2016-01-03")
     single_subscriber = list(get_dataframe(dl).head(8).subscriber)[3]
-    sub = dl.subset(col="subscriber", subset=single_subscriber)
+    sub = get_dataframe(dl.subset(col="subscriber", subset=single_subscriber))
     assert set(sub.subscriber) == {single_subscriber}
 
 
@@ -95,7 +99,7 @@ def test_can_subset_with_list_containing_single_subscriber(get_dataframe):
     """
     dl = daily_location("2016-01-03")
     single_subscriber = list(get_dataframe(dl).head(8).subscriber)[3]
-    sub = dl.subset(col="subscriber", subset=[single_subscriber])
+    sub = get_dataframe(dl.subset(col="subscriber", subset=[single_subscriber]))
     assert set(sub.subscriber) == {single_subscriber}
 
 
@@ -105,7 +109,7 @@ def test_can_getitem_location(get_dataframe):
     """
     dl = daily_location("2016-01-03")
     single_subscriber = list(get_dataframe(dl).head(8).subscriber)[3]
-    sub = dl[single_subscriber]
+    sub = get_dataframe(dl[single_subscriber])
     assert set(sub.subscriber) == {single_subscriber}
 
 
@@ -129,7 +133,7 @@ def test_can_get_item_subscriber_metric(get_dataframe):
     rog = RadiusOfGyration("2016-01-01", "2016-01-03")
     dl = daily_location("2016-01-03")
     single_subscriber = list(get_dataframe(dl).head(8).subscriber)[3]
-    sub = rog[single_subscriber]
+    sub = get_dataframe(rog[single_subscriber])
     assert set(sub.subscriber) == {single_subscriber}
 
 
