@@ -172,8 +172,8 @@ def test_can_subset_by_sampler(get_dataframe):
     assert len(su_set) == 10
 
 
-def test_ommitted_subscriber_column(get_dataframe, subscriber_list):
-    """Test that a result is returned and warning is raised when ommitting a subscriber column."""
+def test_omitted_subscriber_column(get_dataframe, subscriber_list):
+    """Test that a result is returned and warning is raised when omitting a subscriber column."""
     with pytest.warns(UserWarning):
         su_omit_col = get_dataframe(
             EventTableSubset(
