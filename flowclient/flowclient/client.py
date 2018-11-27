@@ -5,7 +5,6 @@
 import logging
 import warnings
 import re
-from dataclasses import dataclass
 
 import jwt
 import pandas as pd
@@ -17,10 +16,13 @@ from typing import Tuple, Union, Dict
 logger = logging.getLogger(__name__)
 
 
-@dataclass
 class QueryResult:
     query_id: str
     dataframe: pd.DataFrame
+
+    def __init__(self, query_id: str, dataframe: pd.DataFrame) -> None:
+        self.query_id = query_id
+        self.dataframe = dataframe
 
 
 class FlowclientConnectionError(Exception):
