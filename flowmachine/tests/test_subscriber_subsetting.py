@@ -7,8 +7,6 @@ Tests for the subscriber subsetting functionality
 """
 
 
-from unittest import TestCase
-
 import pytest
 
 from flowmachine.core import Table
@@ -47,165 +45,151 @@ def test_events_table_subscriber_ident_substitutions(ident):
     assert ["subscriber"] == etu.column_names
 
 
-class test_subscriber_subset(TestCase):
-    def setUp(self):
-        #  This is a list of subscribers that I have pre selected
-        self.subscriber_list = [
-            "a7wRAnjb2znjOlxK",
-            "Q7lRVD4YY1xawymG",
-            "5Kgwy8Gp6DlN3Eq9",
-            "BKMy1nYEZpnoEA7G",
-            "NQV3J52PeYgbLm2w",
-            "pD0me6Do0dNE1nYZ",
-            "KyonmeOzDkEN40qP",
-            "vBR2gwl2B0nDJob5",
-            "AwQr1M3w8mMvV3p4",
+@pytest.fixture
+def subscriber_list():
+    return [
+        "a7wRAnjb2znjOlxK",
+        "Q7lRVD4YY1xawymG",
+        "5Kgwy8Gp6DlN3Eq9",
+        "BKMy1nYEZpnoEA7G",
+        "NQV3J52PeYgbLm2w",
+        "pD0me6Do0dNE1nYZ",
+        "KyonmeOzDkEN40qP",
+        "vBR2gwl2B0nDJob5",
+        "AwQr1M3w8mMvV3p4",
+    ]
+
+
+@pytest.fixture
+def subscriber_list_table(subscriber_list, flowmachine_connect):
+    engine = flowmachine_connect.engine
+    with engine.begin():
+        sql = """CREATE TABLE subscriber_list (subscriber TEXT)"""
+        engine.execute(sql)
+
+        formatted_subscribers = ",".join("('{}')".format(u) for u in subscriber_list)
+        sql = """INSERT INTO subscriber_list (subscriber) VALUES {}""".format(
+            formatted_subscribers
+        )
+        engine.execute(sql)
+    subs_table = Table("subscriber_list")
+    yield subs_table
+    subs_table.invalidate_db_cache(drop=True)
+
+
+def test_cdrs_can_be_subset_by_table(
+    subscriber_list_table, get_dataframe, subscriber_list
+):
+    """
+    We can subset CDRs by a table in the database.
+    """
+
+    su = EventTableSubset(
+        "2016-01-01", "2016-01-03", subscriber_subset=subscriber_list_table
+    )
+
+    df = get_dataframe(su)
+
+    # Get the set of subscribers present in the dataframe, we need to handle the logic
+    # of msisdn_from/msisdn_to
+    calculated_subscriber_set = set(df.subscriber)
+
+    assert calculated_subscriber_set == set(subscriber_list)
+
+
+def test_subset_correct(subscriber_list, get_dataframe):
+    """Test that pushed in subsetting matches .subset result"""
+    su = EventTableSubset("2016-01-01", "2016-01-03", subscriber_subset=subscriber_list)
+    subsu = EventTableSubset("2016-01-01", "2016-01-03").subset(
+        "subscriber", subscriber_list
+    )
+    assert all(get_dataframe(su) == get_dataframe(subsu))
+    su = HomeLocation(
+        *[
+            daily_location(d, subscriber_subset=subscriber_list)
+            for d in list_of_dates("2016-01-01", "2016-01-07")
         ]
+    )
+    subsu = HomeLocation(
+        *[daily_location(d) for d in list_of_dates("2016-01-01", "2016-01-03")]
+    ).subset("subscriber", subscriber_list)
+    assert all(get_dataframe(su) == get_dataframe(subsu))
 
-    def test_cdrs_can_be_subset_by_table(self):
-        """
-        We can subset CDRs by a table in the database.
-        """
 
-        # Create a temporary table in the DB
-        con = Table.connection.engine
+def test_query_can_be_subscriber_set_restricted(
+    subscriber_list_table, subscriber_list, get_dataframe
+):
+    """Test that some queries can be limited to only a subset of subscribers."""
 
-        sql = "DROP TABLE IF EXISTS subscriber_list"
-        con.execute(sql)
+    rog = RadiusOfGyration(
+        "2016-01-01", "2016-01-03", subscriber_subset=subscriber_list_table
+    )
+    hl = HomeLocation(
+        *[
+            daily_location(d, subscriber_subset=subscriber_list_table)
+            for d in list_of_dates("2016-01-01", "2016-01-03")
+        ]
+    )
+    rog_df = get_dataframe(rog)
+    hl_df = get_dataframe(hl)
 
-        sql = """CREATE TABLE subscriber_list (subscriber TEXT)"""
-        con.execute(sql)
+    # Get the set of subscribers present in the dataframe, we need to handle the logic
+    # of msisdn_from/msisdn_to
+    calculated_subscriber_set = set(rog_df.subscriber)
 
-        formatted_subscribers = ",".join(
-            "('{}')".format(u) for u in self.subscriber_list
-        )
-        sql = """INSERT INTO subscriber_list (subscriber) VALUES {}""".format(
-            formatted_subscribers
-        )
-        con.execute(sql)
-        su = EventTableSubset(
-            "2016-01-01", "2016-01-03", subscriber_subset=Table("subscriber_list")
-        )
+    assert calculated_subscriber_set == set(subscriber_list)
+    calculated_subscriber_set = set(hl_df.subscriber)
 
-        df = su.get_dataframe()
-        sql = "DROP TABLE IF EXISTS subscriber_list"
-        con.execute(sql)
-        # Get the set of subscribers present in the dataframe, we need to handle the logic
-        # of msisdn_from/msisdn_to
-        calculated_subscriber_set = set(df.subscriber)
+    assert calculated_subscriber_set == set(subscriber_list)
 
-        self.assertEqual(calculated_subscriber_set, set(self.subscriber_list))
 
-    def test_subset_correct(self):
-        """Test that pushed in subsetting matches .subset result"""
-        su = EventTableSubset(
-            "2016-01-01", "2016-01-03", subscriber_subset=self.subscriber_list
-        )
-        subsu = EventTableSubset("2016-01-01", "2016-01-03").subset(
-            "subscriber", self.subscriber_list
-        )
-        self.assertTrue(all(su.get_dataframe() == subsu.get_dataframe()))
-        su = HomeLocation(
-            *[
-                daily_location(d, subscriber_subset=self.subscriber_list)
-                for d in list_of_dates("2016-01-01", "2016-01-07")
-            ]
-        )
-        subsu = HomeLocation(
-            *[daily_location(d) for d in list_of_dates("2016-01-01", "2016-01-03")]
-        ).subset("subscriber", self.subscriber_list)
-        self.assertTrue(all(su.get_dataframe() == subsu.get_dataframe()))
+def test_cdrs_can_be_subset_by_list(get_dataframe, subscriber_list):
+    """
+    We can subset CDRs with a list.
+    """
 
-    def test_query_can_be_subscriber_set_restricted(self):
-        """Test that some queries can be limited to only a subset of subscribers."""
+    su = EventTableSubset("2016-01-01", "2016-01-03", subscriber_subset=subscriber_list)
+    df = get_dataframe(su)
 
-        # Create a temporary table in the DB
-        con = Table.connection.engine
+    # Get the set of subscribers present in the dataframe, we need to handle the logic
+    # of msisdn_from/msisdn_to
+    calculated_subscriber_set = set(df.subscriber)
 
-        sql = "DROP TABLE IF EXISTS subscriber_list"
-        con.execute(sql)
+    assert calculated_subscriber_set == set(subscriber_list)
 
-        sql = """CREATE TABLE subscriber_list (subscriber TEXT)"""
-        con.execute(sql)
 
-        formatted_subscribers = ",".join(
-            "('{}')".format(u) for u in self.subscriber_list
-        )
-        sql = """INSERT INTO subscriber_list (subscriber) VALUES {}""".format(
-            formatted_subscribers
-        )
-        con.execute(sql)
-        rog = RadiusOfGyration(
-            "2016-01-01", "2016-01-03", subscriber_subset=Table("subscriber_list")
-        )
-        hl = HomeLocation(
-            *[
-                daily_location(d, subscriber_subset=Table("subscriber_list"))
-                for d in list_of_dates("2016-01-01", "2016-01-03")
-            ]
-        )
-        rog_df = rog.get_dataframe()
-        hl_df = hl.get_dataframe()
-        sql = "DROP TABLE IF EXISTS subscriber_list"
-        con.execute(sql)
+def test_can_subset_by_sampler(get_dataframe):
+    """Test that we can use the output of another query to subset by."""
+    unique_subs_sample = UniqueSubscribers("2016-01-01", "2016-01-07").random_sample(
+        size=10, method="system", seed=0.1
+    )
+    su = EventTableSubset(
+        "2016-01-01", "2016-01-03", subscriber_subset=unique_subs_sample
+    )
+    su_set = set(get_dataframe(su).subscriber)
+    uu_set = set(get_dataframe(unique_subs_sample).subscriber)
+    assert su_set == uu_set
+    assert len(su_set) == 10
 
-        # Get the set of subscribers present in the dataframe, we need to handle the logic
-        # of msisdn_from/msisdn_to
-        calculated_subscriber_set = set(rog_df.subscriber)
 
-        self.assertEqual(calculated_subscriber_set, set(self.subscriber_list))
-        calculated_subscriber_set = set(hl_df.subscriber)
-
-        self.assertEqual(calculated_subscriber_set, set(self.subscriber_list))
-
-    def test_cdrs_can_be_subset_by_list(self):
-        """
-        We can subset CDRs with a list.
-        """
-
-        su = EventTableSubset(
-            "2016-01-01", "2016-01-03", subscriber_subset=self.subscriber_list
-        )
-        df = su.get_dataframe()
-
-        # Get the set of subscribers present in the dataframe, we need to handle the logic
-        # of msisdn_from/msisdn_to
-        calculated_subscriber_set = set(df.subscriber)
-
-        self.assertEqual(calculated_subscriber_set, set(self.subscriber_list))
-
-    def test_can_subset_by_sampler(self):
-        """Test that we can use the output of another query to subset by."""
-        unique_subs_sample = UniqueSubscribers(
-            "2016-01-01", "2016-01-07"
-        ).random_sample(size=10, method="system", seed=0.1)
-        su = EventTableSubset(
-            "2016-01-01", "2016-01-03", subscriber_subset=unique_subs_sample
-        )
-        su_set = set(su.get_dataframe().subscriber)
-        uu_set = set(unique_subs_sample.get_dataframe().subscriber)
-        self.assertSetEqual(su_set, uu_set)
-        self.assertEqual(len(su_set), 10)
-
-    def test_ommitted_subscriber_column(self):
-        """Test that a result is returned and warning is raised when ommitting a subscriber column."""
-        with self.assertWarns(UserWarning):
-            su_omit_col = EventTableSubset(
+def test_omitted_subscriber_column(get_dataframe, subscriber_list):
+    """Test that a result is returned and warning is raised when omitting a subscriber column."""
+    with pytest.warns(UserWarning):
+        su_omit_col = get_dataframe(
+            EventTableSubset(
                 "2016-01-01",
                 "2016-01-03",
-                subscriber_subset=self.subscriber_list,
+                subscriber_subset=subscriber_list,
                 columns=["duration"],
-            ).get_dataframe()
-        su_all_cols = EventTableSubset(
+            )
+        )
+    su_all_cols = get_dataframe(
+        EventTableSubset(
             "2016-01-01",
             "2016-01-03",
-            subscriber_subset=self.subscriber_list,
+            subscriber_subset=subscriber_list,
             columns=["msisdn", "duration"],
-        ).get_dataframe()
-        self.assertListEqual(
-            su_omit_col.duration.values.tolist(), su_all_cols.duration.values.tolist()
         )
-        self.assertListEqual(su_omit_col.columns.tolist(), ["duration"])
-
-    def tearDown(self):
-        UniqueSubscribers("2016-01-01", "2016-01-07").invalidate_db_cache()
+    )
+    assert su_omit_col.duration.values.tolist() == su_all_cols.duration.values.tolist()
+    assert su_omit_col.columns.tolist() == ["duration"]
