@@ -3514,7 +3514,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 
 <p><div class="codehilite"><pre><span></span><span class="n">circles</span> <span class="o">=</span> <span class="p">[</span><span class="n">Circle</span><span class="p">(</span><span class="o">*</span><span class="n">vals</span><span class="p">)</span> <span class="k">for</span> <span class="n">vals</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lats</span><span class="p">,</span><span class="n">lons</span><span class="p">,</span><span class="n">radii</span><span class="p">,</span><span class="n">names</span><span class="p">)]</span>
 <span class="n">cp</span> <span class="o">=</span> <span class="n">CircleGeometries</span><span class="p">(</span><span class="n">circles</span><span class="p">)</span>
-<span class="n">rs</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">raster_sum</span><span class="p">(</span><span class="s1">&#39;population.worldpop_2015_un&#39;</span><span class="p">)</span>
+<span class="n">rs</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">raster_sum</span><span class="p">(</span><span class="s1">&#39;population.small_nepal_raster&#39;</span><span class="p">)</span>
 <span class="n">rs</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">()</span>
 </pre></div>
 name     statistic Kathmandu  1.135396e+06 Pokhara  4.052404e+05 </p>
