@@ -88,6 +88,18 @@ defaults:
 
 version: 2
 jobs:
+  set_docker_tag_for_ci_images:
+    docker: *base_docker
+    steps:
+      - run:
+          name: Set a common docker tag
+          command: |
+            echo "export SAFE_TAG=$(echo -n $CIRCLE_BRANCH | md5sum | cut -d" " -f1)"| tee -a $BASH_ENV /home/circleci/.env
+      - persist_to_workspace:
+          root: /home/circleci/
+          paths:
+            - .env
+
   build_flowdb:
     machine:
       image: circleci/classic:201808-01
@@ -218,17 +230,6 @@ jobs:
       - restore_cache:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
       - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
-      - run:
-          name: Set port for flowmachine
-          command: |
-            echo "database:" > /home/circleci/flowmachine.yml
-            echo "  port: '5432'" >> /home/circleci/flowmachine.yml
-            echo "  host: 'localhost'" >> /home/circleci/flowmachine.yml
-            echo "  user: 'flowdb'" >> /home/circleci/flowmachine.yml
-            echo "  database: 'flowdb'" >> /home/circleci/flowmachine.yml
-            echo "  password: 'flowflow'" >> /home/circleci/flowmachine.yml
-            echo "  pool_size: 5" >> /home/circleci/flowmachine.yml
-            echo "  overflow: 10" >> /home/circleci/flowmachine.yml
       - save_cache:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:
@@ -480,7 +481,7 @@ jobs:
           name: Spin up containers
           command: |
             pip install --user docker-compose
-            CIRCLE_BRANCH=$SAFE_TAG docker-compose up -d
+            CIRCLE_BRANCH=$CIRCLE_WORKFLOW_ID docker-compose up -d
       # Have to do something a bit convoluted here, because we do not have
       # network access to the remote docker. So we must run the tests _inside_ another docker container,
       # then copy the results back out.
@@ -602,7 +603,11 @@ workflows:
   version: 2
   run_build_pipeline:
     jobs:
+      - set_docker_tag_for_ci_images:
+          <<: *run_always_org_context
       - build_flowdb:
+          requires:
+            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - install_flowmachine_deps:
           <<: *run_always_org_context
@@ -630,6 +635,7 @@ workflows:
       - build_flowmachine:
           requires:
             - run_flowmachine_tests
+            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_docs:
           requires:
@@ -639,10 +645,12 @@ workflows:
           requires:
             - run_flowauth_backend_tests
             - run_flowauth_frontend_tests
+            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_flowapi:
           requires:
             - run_flowkit_api_tests
+            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_client_wheel:
           requires:
