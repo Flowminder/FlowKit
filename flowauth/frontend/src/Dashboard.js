@@ -198,12 +198,13 @@ class Dashboard extends React.Component {
                 {is_admin ? ": Admin Mode" : ""}
               </Typography>
               <IconButton
+                id="user_details"
                 color="inherit"
                 onClick={() => this.setActivePage("user_details")}
               >
                 <AccountCircleIcon />
               </IconButton>
-              <IconButton color="inherit" onClick={logout}>
+              <IconButton id="logout" color="inherit" onClick={logout}>
                 <ExitToAppIcon />
               </IconButton>
             </Toolbar>

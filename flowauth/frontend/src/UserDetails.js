@@ -171,7 +171,7 @@ class UserDetails extends React.Component {
 										className={classes.submit}
 									>
 										Save
-							</Button>
+									</Button>
 								</Grid>
 							</Grid>
 						</form>
