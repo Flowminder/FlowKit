@@ -381,7 +381,7 @@ jobs:
 
   build_flowmachine:
     docker:
-      - image: docker:stable-git
+      - image: circleci/python:3.7
     working_directory: /home/circleci/project/
     steps:
       - checkout:
@@ -411,7 +411,7 @@ jobs:
 
   build_flowauth:
     docker:
-      - image: docker:stable-git
+      - image: circleci/python:3.7
     working_directory: /home/circleci/project/
     steps:
       - checkout:
@@ -439,7 +439,7 @@ jobs:
 
   build_flowapi:
     docker:
-      - image: docker:stable-git
+      - image: circleci/python:3.7
     working_directory: /home/circleci/project/
     steps:
       - checkout:
