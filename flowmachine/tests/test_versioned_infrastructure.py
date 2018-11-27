@@ -6,33 +6,22 @@
 Tests for the VersionedInfrastructure() class.
 """
 
-import pandas as pd
-from unittest import TestCase
+import pytest
 
 from flowmachine.features import VersionedInfrastructure
 
 
-class VersionedInfrastructureTestCase(TestCase):
+def test_returns_correct_results(get_length):
     """
-    Tests for the VersionedInfrastructure() class
+    VersionedInfrastructure() returns N-sized result set.
     """
+    result = VersionedInfrastructure()
+    assert 30 == len(result)
 
-    def setUp(self):
-        """
-        Method for instantiating test environment.
-        """
-        self.n_sites = 30
 
-    def test_returns_correct_results(self):
-        """
-        VersionedInfrastructure() returns N-sized result set.
-        """
-        result = VersionedInfrastructure()
-        self.assertIs(len(result), self.n_sites)
-
-    def test_raises_error_if_wrong_table_used(self):
-        """
-        VersionedInfrastructure() raises error if not using 'sites' or 'cells' tables.
-        """
-        with self.assertRaises(ValueError):
-            VersionedInfrastructure(table="xxx")
+def test_raises_error_if_wrong_table_used():
+    """
+    VersionedInfrastructure() raises error if not using 'sites' or 'cells' tables.
+    """
+    with pytest.raises(ValueError):
+        VersionedInfrastructure(table="xxx")
