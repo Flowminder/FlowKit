@@ -11,12 +11,21 @@ import pytest
 from flowmachine.features import VersionedInfrastructure
 
 
-def test_returns_correct_results(get_length):
+@pytest.mark.parametrize("table, expected_count", [("sites", 30), ("cells", 55)])
+def test_returns_correct_results(table, expected_count, get_length):
     """
     VersionedInfrastructure() returns N-sized result set.
     """
-    result = VersionedInfrastructure()
-    assert 30 == len(result)
+    result = VersionedInfrastructure(table=table)
+    assert expected_count == get_length(result)
+
+
+def test_returns_in_date_results(get_length):
+    """
+    VersionedInfrastructure doesn't include cells not active on a date.
+    """
+    result = VersionedInfrastructure(table="cells", date="2016-01-05")
+    assert 48 == get_length(result)
 
 
 def test_raises_error_if_wrong_table_used():
