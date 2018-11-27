@@ -402,7 +402,7 @@ jobs:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowmachine:$CIRCLE_WORKFLOW_ID
-            docker push flowminder/flowmachine:$CIRCLE_SAFE_TAG
+            docker push flowminder/flowmachine:$SAFE_TAG
             if [ "$CIRCLE_BRANCH" = "master" ]; then
                 echo "On master branch, pushing latest tag"
                 docker tag flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowmachine
