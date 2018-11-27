@@ -22,7 +22,7 @@ defaults:
         DB_PORT: 5432
         MPLBACKEND: "agg"
         REDIS_HOST: "localhost"
-    - image: flowminder/flowdb:testdata-$CIRCLE_TAG$CIRCLE_BRANCH
+    - image: flowminder/flowdb:testdata-$CIRCLE_WORKFLOW_ID
       environment:
         FM_PASSWORD: foo
         API_PASSWORD: foo
@@ -42,7 +42,7 @@ defaults:
         SERVER: localhost
         DB_HOST: localhost
         JWT_SECRET_KEY: secret
-    - image: "flowminder/flowdb:testdata-$CIRCLE_TAG$CIRCLE_BRANCH"
+    - image: flowminder/flowdb:testdata-$CIRCLE_WORKFLOW_ID
       environment:
         FM_PASSWORD: foo
         API_PASSWORD: foo
@@ -54,7 +54,7 @@ defaults:
         DB_PORT: 5432
         FM_PASSWORD: foo
         API_PASSWORD: foo
-    - image: flowminder/flowdb:synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH
+    - image: flowminder/flowdb:synthetic-data-$CIRCLE_WORKFLOW_ID
       auth:
         username: $DOCKER_CLOUD_USER
         password: $DOCKER_CLOUD_PASSWORD
@@ -119,6 +119,7 @@ jobs:
             echo "export FLOWDB_VERSION=$(git describe --tags --always)" | tee -a $BASH_ENV /home/circleci/.env
             echo 'export TAG_PREFIXES=(""  "testdata-" "synthetic-data-")' | tee -a $BASH_ENV /home/circleci/.env
             echo "export FLOWDB_RELEASE_DATE=$(git show -s --date=short-local --pretty=format:%cd -n1)"| tee -a $BASH_ENV /home/circleci/.env
+            echo "export SAFE_TAG=$(echo -n $CIRCLE_BRANCH | openssl md5)"| tee -a $BASH_ENV /home/circleci/.env
       - run:
           name: Log in to docker cloud
           command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
@@ -126,34 +127,34 @@ jobs:
           name: Build main image
           command: |
             echo Building version $FLOWDB_VERSION
-            echo Tagging as $CIRCLE_TAG$CIRCLE_BRANCH
+            echo Tagging as $SAFE_TAG and $CIRCLE_WORKFLOW_ID
             docker pull flowminder/flowdb:latest && export BUILD_CACHE_TAG=latest || true
-            docker pull flowminder/flowdb:$CIRCLE_TAG$CIRCLE_BRANCH && export BUILD_CACHE_TAG=$CIRCLE_TAG$CIRCLE_BRANCH || true
+            docker pull flowminder/flowdb:$SAFE_TAG && export BUILD_CACHE_TAG=$SAFE_TAG || true
             echo Using cache from $BUILD_CACHE_TAG
             docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
-              --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$CIRCLE_TAG$CIRCLE_BRANCH flowdb
+              --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_WORKFLOW_ID flowdb
       - run:
           name: Build testdata image
           command: |
             echo Building testdata version $FLOWDB_VERSION
-            echo Tagging as testdata-$CIRCLE_TAG$CIRCLE_BRANCH
-            docker build --build-arg CODE_VERSION=$CIRCLE_TAG$CIRCLE_BRANCH -t flowminder/flowdb:testdata-$CIRCLE_TAG$CIRCLE_BRANCH \
+            echo Tagging as testdata-$SAFE_TAG and testdata-$CIRCLE_WORKFLOW_ID
+            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb:testdata-$SAFE_TAG -t flowminder/flowdb:testdata-$CIRCLE_WORKFLOW_ID \
             flowdb/testdata
           background: true
       - run:
           name: Build image with Oracle
           command: |
             echo Building Oracle_fdw version $FLOWDB_VERSION
-            echo Tagging as oracle-$CIRCLE_TAG$CIRCLE_BRANCH
-            docker build --build-arg CODE_VERSION=$CIRCLE_TAG$CIRCLE_BRANCH --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-             -t flowminder/flowdb:oracle-$CIRCLE_TAG$CIRCLE_BRANCH flowdb/oracle_fdw
+            echo Tagging as oracle-$SAFE_TAG
+            docker build --build-arg CODE_VERSION=$SAFE_TAG --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
+             -t flowminder/flowdb:oracle-$SAFE_TAG flowdb/oracle_fdw
           background: true
       - run:
           name: Build synthetic data image
           command: |
             echo Building synthetic testdata version $FLOWDB_VERSION.
-            echo Tagging as synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH
-            docker build --build-arg CODE_VERSION=$CIRCLE_TAG$CIRCLE_BRANCH -t flowminder/flowdb:synthetic-data-$CIRCLE_TAG$CIRCLE_BRANCH \
+            echo Tagging as synthetic-data-$SAFE_TAG synthetic-data-$CIRCLE_WORKFLOW_ID
+            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb:synthetic-data-$SAFE_TAG -t flowminder/flowdb:synthetic-data-$CIRCLE_WORKFLOW_ID \
               -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
       - run:
           name: Create ingestion environment
@@ -170,11 +171,11 @@ jobs:
             docker run --name flowdb --publish $DB_PORT:5432 --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
               --volume=${FLOWDB_INGESTION_DIR}:/ingestion -e FM_PASSWORD=foo -e API_PASSWORD=foo \
               -e MAX_CPUS=2 -e MAX_WORKERS=2 -e MAX_WORKERS_PER_GATHER=2 \
-              --detach flowminder/flowdb:$CIRCLE_TAG$CIRCLE_BRANCH
+              --detach flowminder/flowdb:$SAFE_TAG
 
             echo "Waiting for flowdb to be ready.."
             docker run --name flowdb_oracle --publish $ORACLE_DB_PORT:5432 -e FM_PASSWORD=foo -e API_PASSWORD=foo \
-             --detach flowminder/flowdb:oracle-$CIRCLE_TAG$CIRCLE_BRANCH
+             --detach flowminder/flowdb:oracle-$SAFE_TAG
             docker exec flowdb bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
             echo "Waiting for flowdb with oracle_fdw to be ready.."
             docker exec flowdb_oracle bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
@@ -198,7 +199,8 @@ jobs:
           command: |
             [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag"
             for PREFIX in "${TAG_PREFIXES[@]}"; do
-              docker push flowminder/flowdb:${PREFIX}${CIRCLE_TAG}${CIRCLE_BRANCH}
+              docker push flowminder/flowdb:${PREFIX}${SAFE_TAG}
+              docker push flowminder/flowdb:${PREFIX}${CIRCLE_WORKFLOW_ID}
               [ "$CIRCLE_BRANCH" = "master" ] && docker tag flowminder/flowdb:${PREFIX}${CIRCLE_TAG}${CIRCLE_BRANCH} flowminder/flowdb:${PREFIX}latest \
               && docker push flowminder/flowdb:${PREFIX}latest
               echo "Done pushing flowminder/flowdb:${PREFIX}${CIRCLE_TAG}${CIRCLE_BRANCH}."
@@ -394,12 +396,13 @@ jobs:
       - run:
           name: Build flowmachine image
           command: |
-            echo Tagging as $CIRCLE_TAG$CIRCLE_BRANCH
-            docker build -t flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH ./flowmachine
+            echo Tagging as $SAFE_TAG & $CIRCLE_WORKFLOW_ID
+            docker build -t flowminder/flowmachine:$SAFE_TAG -t flowminder/flowmachine:$CIRCLE_WORKFLOW_ID ./flowmachine
       - run:
           name: Push images to Docker cloud
           command: |
-            docker push flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH
+            docker push flowminder/flowmachine:$CIRCLE_WORKFLOW_ID
+            docker push flowminder/flowmachine:$CIRCLE_SAFE_TAG
             if [ "$CIRCLE_BRANCH" = "master" ]; then
                 echo "On master branch, pushing latest tag"
                 docker tag flowminder/flowmachine:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowmachine
@@ -421,11 +424,12 @@ jobs:
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
       - run:
           name: Build flowauth image
-          command: docker build -t flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH ./flowauth
+          command: docker build -t flowminder/flowauth:$SAFE_TAG -t flowminder/flowauth:$CIRCLE_WORKFLOW_ID ./flowauth
       - run:
           name: Push images to Docker cloud
           command: |
-            docker push flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH
+            docker push flowminder/flowauth:$SAFE_TAG
+            docker push flowminder/flowauth:$CIRCLE_WORKFLOW_ID
             if [ "$CIRCLE_BRANCH" = "master" ]; then
               echo "On master branch, pushing latest tag"
               docker tag flowminder/flowauth:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowauth
@@ -447,11 +451,12 @@ jobs:
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
       - run:
           name: Build flowapi image
-          command: docker build -t flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH ./flowapi
+          command: docker build -t flowminder/flowapi:$CIRCLE_WORKFLOW_ID -t flowminder/flowapi:$SAFE_TAG ./flowapi
       - run:
           name: Push images to Docker cloud
           command: |
-            docker push flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH
+            docker push flowminder/flowapi:$CIRCLE_WORKFLOW_ID
+            docker push flowminder/flowapi:$SAFE_TAG
             if [ "$CIRCLE_BRANCH" = "master" ]; then
                 echo "On master branch, pushing latest tag"
                 docker tag flowminder/flowapi:$CIRCLE_TAG$CIRCLE_BRANCH flowminder/flowapi
@@ -475,7 +480,7 @@ jobs:
           name: Spin up containers
           command: |
             pip install --user docker-compose
-            docker-compose up -d
+            CIRCLE_BRANCH=$SAFE_TAG docker-compose up -d
       # Have to do something a bit convoluted here, because we do not have
       # network access to the remote docker. So we must run the tests _inside_ another docker container,
       # then copy the results back out.
