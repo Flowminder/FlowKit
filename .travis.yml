@@ -14,7 +14,5 @@ before_install:
 install:
   - pip install .
 # command to run tests
-before_script:
-  - cd flowclient
 script:
   - pytest
