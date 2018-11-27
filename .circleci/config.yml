@@ -396,7 +396,7 @@ jobs:
       - run:
           name: Build flowmachine image
           command: |
-            echo Tagging as $SAFE_TAG & $CIRCLE_WORKFLOW_ID
+            echo "Tagging as $SAFE_TAG and $CIRCLE_WORKFLOW_ID"
             docker build -t flowminder/flowmachine:$SAFE_TAG -t flowminder/flowmachine:$CIRCLE_WORKFLOW_ID ./flowmachine
       - run:
           name: Push images to Docker cloud
