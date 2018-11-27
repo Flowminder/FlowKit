@@ -107,6 +107,8 @@ jobs:
     environment: *flowdb_env
     steps:
       - checkout
+      - attach_workspace:
+          at: /home/circleci/
       - restore_cache:
           key: flowdb-deps-1-{{ checksum "flowdb/Pipfile.lock"}}
       - run:
@@ -234,10 +236,6 @@ jobs:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/flowmachine-caaCcVrN
-      - persist_to_workspace:
-          root: /home/circleci/
-          paths:
-            - flowmachine.yml
 
   lint:
     docker: *base_docker
