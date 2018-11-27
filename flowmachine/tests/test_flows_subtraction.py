@@ -7,6 +7,17 @@ import pytest
 from flowmachine.features import daily_location, Flows
 
 
+@pytest.fixture
+def flows(flowmachine_connect):
+    """Fixture providing two flows."""
+    dl1 = daily_location("2016-01-01")
+    dl2 = daily_location("2016-01-02")
+    dl3 = daily_location("2016-01-07")
+    flow_a = Flows(dl1, dl2)
+    flow_b = Flows(dl1, dl3)
+    yield flow_a, flow_b
+
+
 def test_flows_raise_error():
     """
     Flows() raises error if location levels are different.
@@ -17,16 +28,12 @@ def test_flows_raise_error():
         Flows(dl1, dl2)
 
 
-def test_a_sub_b(get_dataframe):
+def test_a_sub_b(flows, get_dataframe):
     """
     Flows() between two locations returns expected positive value.
     """
-    dl1 = daily_location("2016-01-01")
-    dl2 = daily_location("2016-01-02")
-    dl3 = daily_location("2016-01-07")
-    flowA = Flows(dl1, dl2)
-    flowB = Flows(dl1, dl3)
-    relfl = flowA - flowB
+    flow_a, flow_b = flows
+    relfl = flow_a - flow_b
     df_rel = get_dataframe(relfl)
     diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Dadeldhura")][
         "count"
@@ -34,16 +41,12 @@ def test_a_sub_b(get_dataframe):
     assert 1 == diff
 
 
-def test_a_sub_b_negative(get_dataframe):
+def test_a_sub_b_negative(flows, get_dataframe):
     """
     Flows() between two locations returns expected negattive value.
     """
-    dl1 = daily_location("2016-01-01")
-    dl2 = daily_location("2016-01-02")
-    dl3 = daily_location("2016-01-07")
-    flowA = Flows(dl1, dl2)
-    flowB = Flows(dl1, dl3)
-    relfl = flowA - flowB
+    flow_a, flow_b = flows
+    relfl = flow_a - flow_b
     df_rel = get_dataframe(relfl)
     # Bajhang    Myagdi  3   4.0
     diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Myagdi")][
@@ -52,48 +55,36 @@ def test_a_sub_b_negative(get_dataframe):
     assert -1 == diff
 
 
-def test_sub_commutative(get_dataframe):
+def test_sub_commutative(flows, get_dataframe):
     """
     Flows() subtraction is a noncommutative operation.
     """
-    dl1 = daily_location("2016-01-01")
-    dl2 = daily_location("2016-01-02")
-    dl3 = daily_location("2016-01-07")
-    flowA = Flows(dl1, dl2)
-    flowB = Flows(dl1, dl3)
-    diff = get_dataframe(flowA - (flowA - flowB))
+    flow_a, flow_b = flows
+    diff = get_dataframe(flow_a - (flow_a - flow_b))
     diff = diff[(diff.name_from == "Bajhang") & (diff.name_to == "Myagdi")][
         "count"
     ].values[0]
     assert 4 == diff
 
 
-def test_sub_scalar(get_dataframe):
+def test_sub_scalar(flows, get_dataframe):
     """
     Flows() subtraction of a scalar gives a known value.
     """
-    dl1 = daily_location("2016-01-01")
-    dl2 = daily_location("2016-01-02")
-    dl3 = daily_location("2016-01-07")
-    flowA = Flows(dl1, dl2)
-
-    diff = get_dataframe(flowA - 3)
+    flow_a, _ = flows
+    diff = get_dataframe(flow_a - 3)
     diff = diff[(diff.name_from == "Bajhang") & (diff.name_to == "Myagdi")][
         "count"
     ].values[0]
     assert 0 == diff
 
 
-def test_a_sub_b_no_b_flow(get_dataframe):
+def test_a_sub_b_no_b_flow(flows, get_dataframe):
     """
     Flows() between two locations where one location is NA should return the flow of the non NA location.
     """
-    dl1 = daily_location("2016-01-01")
-    dl2 = daily_location("2016-01-02")
-    dl3 = daily_location("2016-01-07")
-    flowA = Flows(dl1, dl2)
-    flowB = Flows(dl1, dl3)
-    relfl = flowA - flowB
+    flow_a, flow_b = flows
+    relfl = flow_a - flow_b
     df_rel = get_dataframe(relfl)
     # Humla  Kapilbastu  2   NaN
     diff = df_rel[(df_rel.name_from == "Humla") & (df_rel.name_to == "Kapilbastu")][
@@ -102,18 +93,14 @@ def test_a_sub_b_no_b_flow(get_dataframe):
     assert 2 == diff
 
 
-def test_abs_diff_equal(get_dataframe):
+def test_abs_diff_equal(flows, get_dataframe):
     """
     The absolute difference between flows A and B should be equal for A - B and B - A.
     """
-    dl1 = daily_location("2016-01-01")
-    dl2 = daily_location("2016-01-02")
-    dl3 = daily_location("2016-01-07")
-    flowA = Flows(dl1, dl2)
-    flowB = Flows(dl1, dl3)
-    relfl = flowA - flowB
+    flow_a, flow_b = flows
+    relfl = flow_a - flow_b
     df_rel = get_dataframe(relfl)
-    relfl_reverse = get_dataframe(flowB - flowA)
+    relfl_reverse = get_dataframe(flow_b - flow_a)
     compare = abs(
         relfl_reverse.set_index(["name_from", "name_to"]).sort_index()
     ) == abs(df_rel.set_index(["name_from", "name_to"]).sort_index())
