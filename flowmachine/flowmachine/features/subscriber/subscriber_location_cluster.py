@@ -9,11 +9,8 @@ by clustering a set of locations according to a specified methodology.
 
 These methods are great options for reducing the dimensionality of the
 problem in hand.
-
-
-
 """
-import re
+
 from typing import List
 
 from ...core.query import Query
@@ -117,10 +114,8 @@ def subscriber_location_cluster(
     if method == "hartigan":
         if "radius" not in kwargs:
             raise ValueError("`radius` must be defined when using method: `hartigan`")
-        if "call_threshold" not in kwargs:
-            kwargs["call_threshold"] = 0
-        if "buffer" not in kwargs:
-            kwargs["buffer"] = 0
+        call_threshold = kwargs.pop("call_threshold", 0)
+        buffer = kwargs.pop("buffer", 0)
 
         cd = CallDays(
             start=start,
@@ -135,8 +130,8 @@ def subscriber_location_cluster(
         return HartiganCluster(
             calldays=cd,
             radius=kwargs["radius"],
-            buffer=kwargs["buffer"],
-            call_threshold=kwargs["call_threshold"],
+            buffer=buffer,
+            call_threshold=call_threshold,
         )
 
 

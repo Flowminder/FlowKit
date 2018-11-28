@@ -236,3 +236,12 @@ def test_lack_of_radius_with_hartigan_raises_error():
         subscriber_location_cluster(
             method="hartigan", start="2016-01-01", stop="2016-01-04"
         )
+
+
+def test_subscriber_location_clusters_defaults():
+    """Test that minimal call to subscriber_location_cluster creates expected object."""
+    clus = subscriber_location_cluster(
+        method="hartigan", start="2016-01-01", stop="2016-01-04", radius=1
+    )
+    assert 0 == clus.buffer
+    assert 0 == clus.call_threshold
