@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import { logout } from "./util/api";
+import { isLoggedIn, logout } from "./util/api";
 
 class App extends Component {
   constructor(props) {
@@ -13,6 +13,7 @@ class App extends Component {
       loggedIn: false,
       is_admin: false
     };
+    this.updateLoginStatus();
   }
   login(is_admin) {
     this.setState({
@@ -20,8 +21,17 @@ class App extends Component {
       is_admin: is_admin
     });
   }
+  updateLoginStatus() {
+    isLoggedIn().then(json => {
+      this.setState({
+        loggedIn: json.is_authenticated,
+        is_admin: json.is_admin
+      });
+    });
+  }
   componentDidCatch(error, info) {
     console.log(error);
+    logout();
     this.setState({
       loggedIn: false,
       is_admin: false

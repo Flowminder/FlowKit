@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flask import request, jsonify, Blueprint, current_app, session
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from flask_principal import identity_changed, Identity, AnonymousIdentity
 from werkzeug.exceptions import abort
 
@@ -28,6 +28,18 @@ def signin():
             )
             return jsonify({"logged_in": True, "is_admin": user.is_admin})
     raise Unauthorized("Incorrect username or password.")
+
+
+@blueprint.route("/is_signed_in")
+def is_signed_in():
+    # This seems to be necessary because current_user.is_authenticated is a property,
+    # and Flask will complain about a method not being serializable if we try to jsonify it.
+    is_authenticated = True if current_user.is_authenticated else False
+    try:
+        is_admin = current_user.is_admin
+    except AttributeError:
+        is_admin = False
+    return jsonify({"is_authenticated": is_authenticated, "is_admin": is_admin})
 
 
 @blueprint.route("/signout")

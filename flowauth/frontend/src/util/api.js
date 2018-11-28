@@ -413,6 +413,10 @@ export async function login(username, password) {
   return await getResponse("/signin", dat);
 }
 
+export async function isLoggedIn() {
+  return await getResponseDefault("/is_signed_in");
+}
+
 export async function logout() {
   await fetch("/signout", {
     credentials: "same-origin"
