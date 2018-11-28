@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Test column_names property of TotalLocationEvents and _TotalCellEvents
+Test column_names property of  _TotalCellEvents
 """
 
 import pytest
@@ -23,18 +23,3 @@ def test_total_cell_events_column_names(interval, direction):
         "2016-01-01", "2016-01-04", interval=interval, direction=direction
     )
     assert tce.head(0).columns.tolist() == tce.column_names
-
-
-@pytest.mark.usefixtures("skip_datecheck")
-@pytest.mark.parametrize("interval", TotalLocationEvents.allowed_levels)
-@pytest.mark.parametrize("direction", ["in", "out", "both"])
-def test_total_location_events_column_names(exemplar_level_param, interval, direction):
-    """ Test that column_names property of TotalLocationEvents matches head(0)"""
-    tle = TotalLocationEvents(
-        "2016-01-01",
-        "2016-01-04",
-        **exemplar_level_param,
-        interval=interval,
-        direction=direction
-    )
-    assert tle.head(0).columns.tolist() == tle.column_names
