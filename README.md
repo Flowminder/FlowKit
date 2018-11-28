@@ -1,6 +1,6 @@
 # FlowKit
 
-[![CircleCI](https://circleci.com/gh/Flowminder/FlowKit.svg?style=shield)](https://circleci.com/gh/Flowminder/FlowKit) [![codecov](https://codecov.io/gh/Flowminder/FlowKit/branch/master/graph/badge.svg)](https://codecov.io/gh/Flowminder/FlowKit) [![Join the chat at https://gitter.im/Flowminder/FlowKit](https://badges.gitter.im/Flowminder/FlowKit.svg)](https://gitter.im/Flowminder/FlowKit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+[![CircleCI](https://circleci.com/gh/Flowminder/FlowKit.svg?style=shield)](https://circleci.com/gh/Flowminder/FlowKit) [![Build Status](https://travis-ci.com/Flowminder/FlowKit.svg?branch=master)](https://travis-ci.com/Flowminder/FlowKit) [![codecov](https://codecov.io/gh/Flowminder/FlowKit/branch/master/graph/badge.svg)](https://codecov.io/gh/Flowminder/FlowKit) [![Join the chat at https://gitter.im/Flowminder/FlowKit](https://badges.gitter.im/Flowminder/FlowKit.svg)](https://gitter.im/Flowminder/FlowKit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 
 FlowKit is a platform for analysis of call detail records (CDR) and other data. The system is designed to be deployed as a set of [Docker](https://docs.docker.com) containers on a server. The three main server components are:
 
