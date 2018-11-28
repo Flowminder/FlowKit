@@ -20,7 +20,7 @@ from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features import (
     CallDays,
     HartiganCluster,
-    SubscriberLocationCluster,
+    subscriber_location_cluster,
     EventScore,
 )
 
@@ -223,7 +223,7 @@ def test_unlisted_methods_raises_error():
     Test whether unlisted methods raise error
     """
     with pytest.raises(ValueError):
-        SubscriberLocationCluster(
+        subscriber_location_cluster(
             method="not_listed", start="2016-01-01", stop="2016-01-04"
         )
 
@@ -232,7 +232,7 @@ def test_lack_of_radius_with_hartigan_raises_error():
     """
     Test whether not passing a radius raises when choosing `hartigan` as a method raises an error
     """
-    with pytest.raises(NameError):
-        SubscriberLocationCluster(
+    with pytest.raises(ValueError):
+        subscriber_location_cluster(
             method="hartigan", start="2016-01-01", stop="2016-01-04"
         )

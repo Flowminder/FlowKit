@@ -32,7 +32,7 @@ class BaseCluster(GeoDataMixin, Query):
         )
 
 
-def SubscriberLocationCluster(
+def subscriber_location_cluster(
     method,
     start,
     stop,
@@ -95,7 +95,7 @@ def SubscriberLocationCluster(
 
     Examples
     --------
-        >>> har = SubscriberLocationCluster(method='hartigan', start='2016-01-01',
+        >>> har = subscriber_location_cluster(method='hartigan', start='2016-01-01',
                                             stop='2016-01-04', radius=2)
 
         >>> har.head(geom=['cluster'])
@@ -116,7 +116,7 @@ def SubscriberLocationCluster(
 
     if method == "hartigan":
         if "radius" not in kwargs:
-            raise NameError("`radius` must be defined when using method: `hartigan`")
+            raise ValueError("`radius` must be defined when using method: `hartigan`")
         if "call_threshold" not in kwargs:
             kwargs["call_threshold"] = 0
         if "buffer" not in kwargs:
