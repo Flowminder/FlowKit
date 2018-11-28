@@ -5,7 +5,6 @@
 import logging
 import warnings
 import re
-from dataclasses import dataclass
 
 import jwt
 import pandas as pd
@@ -15,12 +14,6 @@ from requests import ConnectionError
 from typing import Tuple, Union, Dict
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class QueryResult:
-    query_id: str
-    dataframe: pd.DataFrame
 
 
 class FlowclientConnectionError(Exception):
@@ -313,7 +306,7 @@ def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFram
     return pd.DataFrame.from_records(result["query_result"])
 
 
-def get_result(connection: Connection, query: dict) -> QueryResult:
+def get_result(connection: Connection, query: dict) -> pd.DataFrame:
     """
     Run and retrieve a query of a specified kind with parameters.
 
@@ -326,8 +319,8 @@ def get_result(connection: Connection, query: dict) -> QueryResult:
 
     Returns
     -------
-    QueryResult
-        Named tuple with query_id, dataframe, and kind fields.
+    pd.DataFrame
+       Pandas dataframe containing the results
 
     """
     return get_result_by_query_id(connection, run_query(connection, query))

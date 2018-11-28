@@ -23,7 +23,7 @@ __email__ = "flowkit@flowminder.org"
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-test_requirements = ["pytest"]
+test_requirements = ["pytest", "pytest-cov"]
 
 setup(
     name="flowclient",
