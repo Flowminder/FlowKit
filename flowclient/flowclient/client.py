@@ -16,15 +16,6 @@ from typing import Tuple, Union, Dict
 logger = logging.getLogger(__name__)
 
 
-class QueryResult:
-    query_id: str
-    dataframe: pd.DataFrame
-
-    def __init__(self, query_id: str, dataframe: pd.DataFrame) -> None:
-        self.query_id = query_id
-        self.dataframe = dataframe
-
-
 class FlowclientConnectionError(Exception):
     """
     Custom exception to indicate an error when connecting to a FlowKit API.
@@ -315,7 +306,7 @@ def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFram
     return pd.DataFrame.from_records(result["query_result"])
 
 
-def get_result(connection: Connection, query: dict) -> QueryResult:
+def get_result(connection: Connection, query: dict) -> pd.DataFrame:
     """
     Run and retrieve a query of a specified kind with parameters.
 
@@ -328,8 +319,8 @@ def get_result(connection: Connection, query: dict) -> QueryResult:
 
     Returns
     -------
-    QueryResult
-        Named tuple with query_id, dataframe, and kind fields.
+    pd.DataFrame
+       Pandas dataframe containing the results
 
     """
     return get_result_by_query_id(connection, run_query(connection, query))
