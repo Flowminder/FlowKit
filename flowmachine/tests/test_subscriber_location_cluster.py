@@ -7,12 +7,11 @@ Tests for Subscriber Location Clustering methods. Those methods cluster
 location based on different methods, offering good options for
 reducing the dimensionality of the problem.
 """
-import numpy as np
 import pandas as pd
 
-from unittest import TestCase
 
 import pytest
+from geopandas import GeoSeries
 from shapely.geometry import box, MultiPoint
 
 from flowmachine.core import Table, CustomQuery
@@ -78,203 +77,162 @@ class Sites(GeoDataMixin, Query):
 
 
 def get_geom_point(x, sites):
-    geom_points = []
-    for site_id, version in zip(*[x.site_id, x.version]):
-        geom_point = sites.query(
-            "site_id == @site_id & version == @version"
-        ).geometry.values[0]
-        geom_points.append(geom_point)
-    return MultiPoint(geom_points)
+    relevant_sites = sites.loc[zip(*[x.site_id, x.version])]
+    return box(*MultiPoint(relevant_sites.geometry).bounds)
 
 
-class TestHartiganCluster(TestCase):
-    def setUp(self):
-        self.cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
-        self.cd_df = self.cd.get_dataframe()
+def test_cluster_is_within_envelope(get_dataframe):
+    """
+    Test that all the clusters are within the enveloped formed by all the towers in the cluster.
+    """
+    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
 
-        self.hartigan = HartiganCluster(self.cd, 50)
-        self.har_df = self.hartigan.to_geopandas()
+    hartigan = HartiganCluster(cd, 50)
+    har_df = hartigan.to_geopandas()
+    sites = Sites().to_geopandas().set_index(["site_id", "version"])
+    towers = GeoSeries(har_df.apply(lambda x: get_geom_point(x, sites), 1))
+    s = har_df.intersects(towers)
+    assert all(s)
 
-    def tearDown(self):
-        [cd.invalidate_db_cache() for cd in CallDays.get_stored()]
 
-    def test_returns_dataframe(self):
-        """
-        Tests that it returns a dataframe with the correct columns
-        """
-        self.assertIsInstance(self.har_df, pd.DataFrame)
-        self.assertEquals(
-            set(self.har_df.columns),
-            set(
-                [
-                    "subscriber",
-                    "geometry",
-                    "rank",
-                    "calldays",
-                    "site_id",
-                    "version",
-                    "centroid",
-                ]
-            ),
+def test_first_call_day_in_first_cluster(get_dataframe):
+    """
+    Test that the first ranked call day of each subscriber is in the first cluster of each subscriber.
+    """
+    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd_df = get_dataframe(cd)
+
+    hartigan = HartiganCluster(cd, 50)
+    har_df = hartigan.to_geopandas()
+    cd_first = cd_df[["subscriber", "site_id", "version"]].groupby("subscriber").first()
+    har_first = (
+        har_df[["subscriber", "site_id", "version"]].groupby("subscriber").first()
+    )
+
+    joined = cd_first.join(har_first, lsuffix="_cd", rsuffix="_har")
+    s = joined.apply(
+        lambda x: (x.site_id_cd in x.site_id_har) and (x.version_cd in x.version_har),
+        axis=1,
+    )
+    assert all(s)
+
+
+def test_bigger_radius_yields_fewer_clusters(get_dataframe):
+    """
+    Test whether bigger radius yields fewer clusters per subscriber
+    """
+    radius = [1, 2, 5, 10, 50]
+    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+
+    h = HartiganCluster(cd, radius[0]).get_dataframe()
+    nclusters_small_radius = h.groupby("subscriber").size()
+
+    for r in radius[1:]:
+        h = HartiganCluster(cd, r).get_dataframe()
+        nclusters_big_radius = h.groupby("subscriber").size()
+        assert all(nclusters_small_radius >= nclusters_big_radius)
+        nclusters_small_radius = nclusters_big_radius
+
+
+def test_different_call_days_format(get_dataframe):
+    """
+    Test whether we can pass different call days format such as table name, SQL query and CallDays class.
+    """
+    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    har = HartiganCluster(cd, 50).get_dataframe()
+    assert isinstance(har, pd.DataFrame)
+
+    cd.store().result()
+
+    har = HartiganCluster(Table(cd.table_name), 50).get_dataframe()
+    assert isinstance(har, pd.DataFrame)
+
+    cd_query = cd.get_query()
+    har = HartiganCluster(CustomQuery(cd_query), 50).get_dataframe()
+    assert isinstance(har, pd.DataFrame)
+
+
+def test_call_threshold_works(get_dataframe):
+    """
+    Test whether a call threshold above 1 limits the number of clusters.
+    """
+    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+
+    hartigan = HartiganCluster(cd, 50)
+    har_df = hartigan.to_geopandas()
+    assert any(har_df.calldays == 1)
+    har_df = get_dataframe(HartiganCluster(cd, 50, call_threshold=2))
+    assert all(har_df.calldays > 1)
+
+
+def test_buffered_hartigan(get_dataframe):
+    """
+    Test whether Hartigan produces buffered clusters when buffer is larger than 0.
+    """
+    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+
+    har = HartiganCluster(cd, 50, buffer=2).to_geopandas()
+    areas = har.geometry.area
+    # since the mock data does not have geom_area in the site table we either
+    # get the clusters with area equivalent to 2km2 (areas below are in degrees) or None.
+    min_area = areas.min()
+    max_area = areas.max()
+    assert min_area == pytest.approx(0.0011327683603873115)
+    assert max_area == pytest.approx(0.001166624454009738)
+
+
+def test_all_options_hartigan(get_dataframe):
+    """
+    Test whether Hartigan works when changing all options.
+    """
+    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+
+    har = HartiganCluster(cd, 50, buffer=2, call_threshold=2).to_geopandas()
+    assert set(har.columns) == set(
+        ["subscriber", "geometry", "rank", "calldays", "site_id", "version", "centroid"]
+    )
+
+
+def test_join_returns_the_same_clusters(get_dataframe):
+    """
+    Test whether joining to another table for which the start and stop time are the same yields the same clusters.
+    """
+    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+
+    hartigan = HartiganCluster(cd, 50)
+    har_df = hartigan.to_geopandas()
+    es = EventScore(start="2016-01-01", stop="2016-01-04", level="versioned-site")
+
+    joined = (
+        hartigan.join_to_cluster_components(es)
+        .to_geopandas()
+        .sort_values(["subscriber", "rank", "calldays"])
+    )
+    joined.reset_index(inplace=True, drop=True)
+
+    har_df.sort_values(["subscriber", "rank", "calldays"], inplace=True)
+    har_df.reset_index(inplace=True, drop=True)
+
+    cols = ["subscriber", "geometry", "rank", "calldays"]
+    compare = joined[cols] == har_df[cols]
+    assert all(compare.all())
+
+
+def test_unlisted_methods_raises_error():
+    """
+    Test whether unlisted methods raise error
+    """
+    with pytest.raises(ValueError):
+        SubscriberLocationCluster(
+            method="not_listed", start="2016-01-01", stop="2016-01-04"
         )
 
-    def test_cluster_is_within_envelope(self):
-        """
-        Test that all the clusters are within the enveloped formed by all the towers in the cluster.
-        """
-        sites = Sites().to_geopandas()
-        self.har_df["towers"] = self.har_df.apply(lambda x: get_geom_point(x, sites), 1)
-        s = self.har_df.apply(
-            lambda x: x.geometry.intersects(box(*x.towers.bounds)), axis=1
+
+def test_lack_of_radius_with_hartigan_raises_error():
+    """
+    Test whether not passing a radius raises when choosing `hartigan` as a method raises an error
+    """
+    with pytest.raises(NameError):
+        SubscriberLocationCluster(
+            method="hartigan", start="2016-01-01", stop="2016-01-04"
         )
-        self.assertTrue(all(s))
-
-    def test_first_call_day_in_first_cluster(self):
-        """
-        Test that the first ranked call day of each subscriber is in the first cluster of each subscriber.
-        """
-        cd_first = (
-            self.cd_df[["subscriber", "site_id", "version"]]
-            .groupby("subscriber")
-            .first()
-        )
-        har_first = (
-            self.har_df[["subscriber", "site_id", "version"]]
-            .groupby("subscriber")
-            .first()
-        )
-
-        joined = cd_first.join(har_first, lsuffix="_cd", rsuffix="_har")
-        s = joined.apply(
-            lambda x: (x.site_id_cd in x.site_id_har)
-            and (x.version_cd in x.version_har),
-            axis=1,
-        )
-        self.assertTrue(all(s))
-
-    def test_bigger_radius_yields_fewer_clusters(self):
-        """
-        Test whether bigger radius yields fewer clusters per subscriber
-        """
-        radius = [1, 2, 5, 10, 50]
-
-        h = HartiganCluster(self.cd, radius[0]).get_dataframe()
-        nclusters_small_radius = h.groupby("subscriber").size()
-
-        for r in radius[1:]:
-            h = HartiganCluster(self.cd, r).get_dataframe()
-            nclusters_big_radius = h.groupby("subscriber").size()
-            self.assertTrue(all(nclusters_small_radius >= nclusters_big_radius))
-            nclusters_small_radius = nclusters_big_radius
-
-    def test_different_call_days_format(self):
-        """
-        Test whether we can pass different call days format such as table name, SQL query and CallDays class.
-        """
-        cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
-        har = HartiganCluster(cd, 50).get_dataframe()
-        self.assertIsInstance(har, pd.DataFrame)
-
-        cd.store().result()
-
-        har = HartiganCluster(Table(cd.table_name), 50).get_dataframe()
-        self.assertIsInstance(har, pd.DataFrame)
-
-        cd_query = cd.get_query()
-        har = HartiganCluster(CustomQuery(cd_query), 50).get_dataframe()
-        self.assertIsInstance(har, pd.DataFrame)
-
-    def test_call_threshold_works(self):
-        """
-        Test whether a call threshold above 1 limits the number of clusters.
-        """
-        self.assertTrue(any(self.har_df.calldays == 1))
-        har = HartiganCluster(self.cd, 50, call_threshold=2).get_dataframe()
-        self.assertFalse(all(self.har_df.calldays > 1))
-
-    def test_buffered_hartigan(self):
-        """
-        Test whether Hartigan produces buffered clusters when buffer is larger than 0.
-        """
-        har = HartiganCluster(self.cd, 50, buffer=2).to_geopandas()
-        areas = har.geometry.area
-        # since the mock data does not have geom_area in the site table we either
-        # get the clusters with area equivalent to 2km2 (areas below are in degrees) or None.
-        min_area = areas.min()
-        max_area = areas.max()
-        self.assertAlmostEquals(min_area, 0.001, 3)
-        self.assertAlmostEquals(max_area, 0.001, 3)
-
-    def test_all_options_hartigan(self):
-        """
-        Test whether Hartigan works when changing all options.
-        """
-        har = HartiganCluster(self.cd, 50, buffer=2, call_threshold=2).to_geopandas()
-        self.assertIsInstance(har, pd.DataFrame)
-        self.assertEquals(
-            set(har.columns),
-            set(
-                [
-                    "subscriber",
-                    "geometry",
-                    "rank",
-                    "calldays",
-                    "site_id",
-                    "version",
-                    "centroid",
-                ]
-            ),
-        )
-
-    def test_join_returns_the_same_clusters(self):
-        """
-        Test whether joining to another table for which the start and stop time are the same yields the same clusters.
-        """
-        es = EventScore(start="2016-01-01", stop="2016-01-04", level="versioned-site")
-
-        joined = (
-            self.hartigan.join_to_cluster_components(es)
-            .to_geopandas()
-            .sort_values(["subscriber", "rank", "calldays"])
-        )
-        joined.reset_index(inplace=True, drop=True)
-
-        self.har_df.sort_values(["subscriber", "rank", "calldays"], inplace=True)
-        self.har_df.reset_index(inplace=True, drop=True)
-
-        cols = ["subscriber", "geometry", "rank", "calldays"]
-        compare = joined[cols] == self.har_df[cols]
-        self.assertTrue(all(compare.all()))
-
-
-class TestSubscriberLocationCluster(TestCase):
-    def tearDown(self):
-        [cd.invalidate_db_cache() for cd in CallDays.get_stored()]
-
-    def test_unlisted_methods_raises_error(self):
-        """
-        Test whether unlisted methods raise error
-        """
-        with self.assertRaises(ValueError):
-            SubscriberLocationCluster(
-                method="not_listed", start="2016-01-01", stop="2016-01-04"
-            )
-
-    def test_lack_of_radius_with_hartigan_raises_error(self):
-        """
-        Test whether not passing a radius raises when choosing `hartigan` as a method raises an error
-        """
-        with self.assertRaises(NameError):
-            SubscriberLocationCluster(
-                method="hartigan", start="2016-01-01", stop="2016-01-04"
-            )
-
-    def test_hartigan_runs_without_error(self):
-        """
-        Test whether hartigan runs with correct arguments without failing.
-        """
-        har = SubscriberLocationCluster(
-            method="hartigan", start="2016-01-01", stop="2016-01-04", radius=2
-        )
-
-        self.assertIsInstance(har.get_dataframe(), pd.DataFrame)
