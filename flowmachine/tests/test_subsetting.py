@@ -137,7 +137,7 @@ def test_can_get_item_subscriber_metric(get_dataframe):
     assert set(sub.subscriber) == {single_subscriber}
 
 
-def test_calling_parent_does_break_subsetting(get_dataframe):
+def test_calling_parent_does_not_break_subsetting(get_dataframe):
     """
     flowmachine.Subset doesn't inherit dataframe from parent
     """
