@@ -55,7 +55,7 @@ def test_call_with_str_raises_error():
         rog.numeric_subset(col="rog", low=1, high="bar")
 
 
-def test_can_be_stored(get_dataframe):
+def test_num_subset_can_be_stored(get_dataframe):
     """
     Test that flowmachine.NumericSubset can be stored.
     """
