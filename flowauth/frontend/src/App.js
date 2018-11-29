@@ -6,27 +6,15 @@ import { isLoggedIn, logout } from "./util/api";
 class App extends Component {
   constructor(props) {
     super(props);
-
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
     this.state = {
       loggedIn: false,
       is_admin: false
     };
-    this.updateLoginStatus();
   }
-  login(is_admin) {
+  setLoggedIn = (is_admin) => {
     this.setState({
       loggedIn: true,
       is_admin: is_admin
-    });
-  }
-  updateLoginStatus() {
-    isLoggedIn().then(json => {
-      this.setState({
-        loggedIn: json.is_authenticated,
-        is_admin: json.is_admin
-      });
     });
   }
   componentDidCatch(error, info) {
@@ -37,11 +25,19 @@ class App extends Component {
       is_admin: false
     });
   }
-  async logout() {
+  logout = async () => {
     logout();
     this.setState({
       loggedIn: false,
       is_admin: false
+    });
+  }
+  componentDidMount() {
+    isLoggedIn().then(json => {
+      this.setState({
+        loggedIn: json.logged_in,
+        is_admin: json.is_admin
+      });
     });
   }
   render() {
@@ -51,7 +47,7 @@ class App extends Component {
     if (loggedIn) {
       return <Dashboard logout={this.logout} is_admin={is_admin} />;
     } else {
-      return <Login login={this.login} />;
+      return <Login setLoggedIn={this.setLoggedIn} />;
     }
   }
 }

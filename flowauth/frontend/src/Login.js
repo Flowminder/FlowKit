@@ -65,7 +65,7 @@ class Login extends React.Component {
     event.preventDefault();
     login(this.state.username, this.state.password)
       .then(json => {
-        this.props.login(json.is_admin);
+        this.props.setLoggedIn(json.is_admin);
       })
       .catch(err => {
         this.setState({ hasError: true, error: err });

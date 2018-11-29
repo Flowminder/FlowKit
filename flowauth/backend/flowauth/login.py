@@ -39,7 +39,7 @@ def is_signed_in():
         is_admin = current_user.is_admin
     except AttributeError:
         is_admin = False
-    return jsonify({"is_authenticated": is_authenticated, "is_admin": is_admin})
+    return jsonify({"logged_in": is_authenticated, "is_admin": is_admin})
 
 
 @blueprint.route("/signout")
