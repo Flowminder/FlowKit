@@ -103,7 +103,7 @@ class UserDetails extends React.Component {
 					</Grid>
 					<Grid item xs={12}>
 						<form className={classes.form} onSubmit={this.handleSubmit}>
-							<Grid xs={3}>
+							<Grid item xs={3}>
 								<FormControl margin="normal" required fullWidth>
 									<InputLabel htmlFor="oldPassword">Old Password</InputLabel>
 									<Input
@@ -112,12 +112,11 @@ class UserDetails extends React.Component {
 										type="password"
 										value={oldPassword}
 										onChange={this.handleTextChange("oldPassword")}
-										margin="normal"
 									/>
 								</FormControl>
 							</Grid>
-							<Grid xs={9} />
-							<Grid xs={3}>
+							<Grid item xs={9} />
+							<Grid item xs={3}>
 								<FormControl margin="normal" required fullWidth>
 									<InputLabel htmlFor="newPasswordA">New Password</InputLabel>
 									<Input
@@ -126,7 +125,6 @@ class UserDetails extends React.Component {
 										type="password"
 										value={newPasswordA}
 										onChange={this.handleTextChange("newPasswordA")}
-										margin="normal"
 										endAdornment={
 											<InputAdornment position="end">
 												{(password_strength ||
@@ -141,8 +139,8 @@ class UserDetails extends React.Component {
 									/>
 								</FormControl>
 							</Grid>
-							<Grid xs={9} />
-							<Grid xs={3}>
+							<Grid item xs={9} />
+							<Grid item xs={3}>
 								<FormControl
 									margin="normal"
 									required
@@ -156,11 +154,10 @@ class UserDetails extends React.Component {
 										type="password"
 										value={newPasswordB}
 										onChange={this.handleTextChange("newPasswordB")}
-										margin="normal"
 									/>
 								</FormControl>
 							</Grid>
-							<Grid xs={9} />
+							<Grid item xs={9} />
 							<Grid item xs={12} container direction="row-reverse">
 								<Grid item>
 									<Button
