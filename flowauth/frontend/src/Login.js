@@ -92,7 +92,7 @@ class Login extends React.Component {
               className={classes.avatar}
               src={require("./img/flowminder_logo.png")}
             />
-            <Typography variant="headline">Sign in</Typography>
+            <Typography variant="h5">Sign in</Typography>
             <form className={classes.form} onSubmit={this.handleSubmit}>
               <FormControl margin="normal" required fullWidth>
                 <InputLabel htmlFor="username">Username</InputLabel>
@@ -119,7 +119,7 @@ class Login extends React.Component {
               <Button
                 type="submit"
                 fullWidth
-                variant="raised"
+                variant="contained"
                 color="primary"
                 className={classes.submit}
               >

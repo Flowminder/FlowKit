@@ -87,7 +87,7 @@ class AggregationUnitList extends React.Component {
       <Paper className={classes.root}>
         <Grid container spacing={16} alignItems="center">
           <Grid item xs={12}>
-            <Typography variant="headline" component="h1">
+            <Typography variant="h5" component="h1">
               Aggregation Units
             </Typography>
           </Grid>

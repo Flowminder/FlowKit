@@ -26,7 +26,7 @@ class GroupServerPermissions extends React.Component {
     return (
       <React.Fragment>
         <Grid xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             Servers
           </Typography>
         </Grid>

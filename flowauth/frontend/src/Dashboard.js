@@ -189,7 +189,7 @@ class Dashboard extends React.Component {
                 <MenuIcon />
               </IconButton>
               <Typography
-                variant="title"
+                variant="h6"
                 color="inherit"
                 noWrap
                 className={classes.title}
@@ -230,7 +230,7 @@ class Dashboard extends React.Component {
           </Drawer>
           <main className={classes.content}>
             <div className={classes.appBarSpacer} />
-            <Typography variant="display1" gutterBottom>
+            <Typography variant="h4" gutterBottom>
               {this.page(activePage)}
             </Typography>
           </main>
