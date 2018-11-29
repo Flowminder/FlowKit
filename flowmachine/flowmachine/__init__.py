@@ -9,7 +9,7 @@ PostgreSQL CDR database: Flowdb.
 
 It provides a standardised way of interfacing with our postgres database. 
 FlowMachine provides SQL based queries that compute commonly used features and
-metrics to do with CDR data, such as `DailyLocations`, `HomeLocations`, 
+metrics to do with CDR data, such as `DailyLocations`, `ModalLocations`,
 `Flows` and `RadiusOfGyration`.
 
 The heart of flowmachine is the AbstractBaseClass Query, which defines how an

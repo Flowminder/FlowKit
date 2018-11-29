@@ -31,7 +31,7 @@ import pandas as pd
 
 from flowmachine.features import daily_location
 from flowmachine.utils.utils import get_columns_for_level, list_of_dates
-from ..features import HomeLocation
+from ..features import ModalLocation
 from ..core.query import Query
 from ..core.model import Model, model_result
 from ..features.spatial.distance_matrix import DistanceMatrix
@@ -203,7 +203,7 @@ class PopulationWeightedOpportunities(Model):
 
     **kwargs : arguments
         Used to pass custom arguments to the DistanceMatrix()
-        and HomeLocation() objects.
+        and ModalLocation() objects.
 
     Examples
     --------
@@ -263,7 +263,7 @@ class PopulationWeightedOpportunities(Model):
         )
 
         if self.method == "home-location":
-            self.population_object = HomeLocation(
+            self.population_object = ModalLocation(
                 *[
                     daily_location(d, level=self.level, **kwargs)
                     for d in list_of_dates(self.start, self.stop)
