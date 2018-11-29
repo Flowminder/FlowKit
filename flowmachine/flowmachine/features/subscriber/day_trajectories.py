@@ -52,7 +52,7 @@ class DayTrajectories(MultiLocation):
 
         # This query represents the concatenated locations of the
         # subscribers. Similar to the first step when calculating
-        # HomeLocations. See home_locations.py
+        # ModalLocations. See modal_locations.py
         all_locs = reduce(
             lambda x, y: x.union(y), (self._append_date(dl) for dl in self._all_dls)
         )
