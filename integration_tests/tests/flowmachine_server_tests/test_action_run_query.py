@@ -41,7 +41,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
             "subscriber_subset": "all",
         },
     }
-    expected_query_id = "4a12fae60ce647d01b2bd5902b8a48e7"
+    expected_query_id = "ddc61a04f608dee16fff0655f91c2057"
 
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
@@ -67,7 +67,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
     # and that it contains the expected number of rows.
     #
     output_cache_table = f"x{expected_query_id}"
-    implicit_cache_table = f"x8653bc8dbce32f8d093bf1d0ff4a0d95"
+    implicit_cache_table = f"x7ea3c788cb7f5829ee2a69494e502765"
     assert [output_cache_table, implicit_cache_table] == get_cache_tables(fm_conn)
     num_rows = fm_conn.engine.execute(
         f"SELECT COUNT(*) FROM cache.{output_cache_table}"
@@ -77,7 +77,11 @@ async def test_run_query(zmq_url, fm_conn, redis):
     #
     # In addition, check first few rows of the result are as expected.
     #
-    first_few_rows_expected = [("Dolpa", 43), ("Bajhang", 17), ("Kavrepalanchok", 14)]
+    first_few_rows_expected = [
+        ("524 4 12 62", 43),
+        ("524 5 13 67", 17),
+        ("524 2 05 24", 14),
+    ]
     first_few_rows = fm_conn.engine.execute(
         f"SELECT * FROM cache.{output_cache_table} LIMIT 3"
     ).fetchall()

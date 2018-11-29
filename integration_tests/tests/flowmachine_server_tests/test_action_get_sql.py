@@ -24,7 +24,7 @@ async def test_get_sql(zmq_url):
             "subscriber_subset": "all",
         },
     }
-    expected_query_id = "4a12fae60ce647d01b2bd5902b8a48e7"
+    expected_query_id = "ddc61a04f608dee16fff0655f91c2057"
 
     reply = send_message_and_get_reply(zmq_url, msg_run_query)
     assert {"status": "accepted", "id": expected_query_id} == reply
@@ -41,7 +41,7 @@ async def test_get_sql(zmq_url):
 
     reply = send_message_and_get_reply(zmq_url, msg_get_sql)
     assert (
-        "SELECT name,total FROM cache.x4a12fae60ce647d01b2bd5902b8a48e7" == reply["sql"]
+        "SELECT name,total FROM cache.xddc61a04f608dee16fff0655f91c2057" == reply["sql"]
     )
 
 
