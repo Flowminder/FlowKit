@@ -77,10 +77,11 @@ async def test_run_query(zmq_url, fm_conn, redis):
     #
     # In addition, check first few rows of the result are as expected.
     #
+
     first_few_rows_expected = [
-        ("524 4 12 62", 43),
-        ("524 5 13 67", 17),
-        ("524 2 05 24", 14),
+        ("524 1 01 04", 13),
+        ("524 1 02 09", 26),
+        ("524 1 03 13", 20),
     ]
     first_few_rows = fm_conn.engine.execute(
         f"SELECT * FROM cache.{output_cache_table} LIMIT 3"
