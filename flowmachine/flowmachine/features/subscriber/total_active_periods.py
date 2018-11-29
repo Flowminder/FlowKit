@@ -22,10 +22,8 @@ References
 """
 
 from .metaclasses import SubscriberFeature
-from ...utils.utils import parse_datestring, time_period_add
+from ...utils.utils import time_period_add
 from ..utilities.sets import UniqueSubscribers
-
-import datetime
 
 from functools import reduce
 
@@ -134,22 +132,6 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
             for start, stop in zip(self.starts, self.stops)
         ]
         return reduce(lambda x, y: x.union(y), all_subscribers)
-
-    def plot(self, **kwargs):
-        """
-        Makes a histogram of the resulting data.
-        kwargs passed to pandas.Dataframe.plot.hist
-
-        Returns
-        -------
-        Matplotlib axes object.
-        """
-
-        df = self.get_dataframe()
-        ax = df.active_periods.hist(**kwargs)
-        ax.set_xlabel("Total Active Periods")
-        ax.set_ylabel("Total Subscribers")
-        return ax
 
     def _make_query(self):
 
