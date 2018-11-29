@@ -20,7 +20,7 @@ def test_joined_aggregate(get_dataframe):
     mfl = MostFrequentLocation("2016-01-01", "2016-01-04", level="admin3")
     joined = mfl.join_aggregate(RadiusOfGyration("2016-01-01", "2016-01-04"))
     assert (
-        pytest.approx(199.956021886114)
+        pytest.approx(203.12391560786)
         == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].rog
     )
 
