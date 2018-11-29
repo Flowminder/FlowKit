@@ -12,7 +12,7 @@ import pytest
 from flowmachine.core import Table
 from flowmachine.features import (
     RadiusOfGyration,
-    HomeLocation,
+    ModalLocation,
     UniqueSubscribers,
     daily_location,
 )
@@ -104,13 +104,13 @@ def test_subset_correct(subscriber_list, get_dataframe):
         "subscriber", subscriber_list
     )
     assert all(get_dataframe(su) == get_dataframe(subsu))
-    su = HomeLocation(
+    su = ModalLocation(
         *[
             daily_location(d, subscriber_subset=subscriber_list)
             for d in list_of_dates("2016-01-01", "2016-01-07")
         ]
     )
-    subsu = HomeLocation(
+    subsu = ModalLocation(
         *[daily_location(d) for d in list_of_dates("2016-01-01", "2016-01-03")]
     ).subset("subscriber", subscriber_list)
     assert all(get_dataframe(su) == get_dataframe(subsu))
@@ -124,7 +124,7 @@ def test_query_can_be_subscriber_set_restricted(
     rog = RadiusOfGyration(
         "2016-01-01", "2016-01-03", subscriber_subset=subscriber_list_table
     )
-    hl = HomeLocation(
+    hl = ModalLocation(
         *[
             daily_location(d, subscriber_subset=subscriber_list_table)
             for d in list_of_dates("2016-01-01", "2016-01-03")
