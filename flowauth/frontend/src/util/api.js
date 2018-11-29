@@ -18,8 +18,16 @@ APIError.prototype = new Error();
 async function getResponse(path, dat) {
   // Send data 'dat' to path 'path'.
   // Return response json if response is OK, otherwise throw error.
+  var fullDat = {
+    credentials: "same-origin",
+    headers: {
+      "X-CSRF-Token": getCookieValue("X-CSRF"),
+      "Content-Type": "application/json"
+    },
+    ...dat
+  }
   var err;
-  var response = await fetch(path, dat);
+  var response = await fetch(path, fullDat);
   if (response.ok) {
     return await response.json();
   } else {
@@ -37,7 +45,6 @@ async function getResponse(path, dat) {
 async function getResponseDefault(path) {
   // Same as 'getResponse', but with default data.
   var dat = {
-    credentials: "same-origin",
     headers: {
       "X-CSRF-Token": getCookieValue("X-CSRF")
     }
@@ -60,11 +67,6 @@ export async function getUserGroup(user_id) {
 export async function editPassword(oldPassword, newPassword) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       password: oldPassword,
       newPassword: newPassword
@@ -76,11 +78,6 @@ export async function editPassword(oldPassword, newPassword) {
 export async function editUser(user_id, username, password, is_admin) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       username: username,
       password: password,
@@ -92,12 +89,7 @@ export async function editUser(user_id, username, password, is_admin) {
 
 export async function deleteAggregationUnit(unit_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
   return await getResponse("/spatial_aggregation/" + unit_id, dat);
 }
@@ -105,11 +97,6 @@ export async function deleteAggregationUnit(unit_id) {
 export async function newAggregationUnit(name) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: name })
   };
   return await getResponse("/spatial_aggregation", dat);
@@ -117,12 +104,7 @@ export async function newAggregationUnit(name) {
 
 export async function deleteCapability(capability_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
   return await getResponse("/admin/capabilities/" + capability_id, dat);
 }
@@ -130,11 +112,6 @@ export async function deleteCapability(capability_id) {
 export async function newCapability(name) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: name })
   };
   return await getResponse("/admin/capabilities", dat);
@@ -143,11 +120,6 @@ export async function newCapability(name) {
 export async function editGroupMemberships(user_id, group_ids) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ groups: group_ids })
   };
   return await getResponse("/admin/users/" + user_id + "/groups", dat);
@@ -224,11 +196,6 @@ export async function getTimeLimits(server_id) {
 export async function createUser(username, password, is_admin) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       username: username,
       password: password,
@@ -240,12 +207,7 @@ export async function createUser(username, password, is_admin) {
 
 export async function deleteUser(user_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
   return await getResponse("/admin/users/" + user_id, dat);
 }
@@ -253,11 +215,6 @@ export async function deleteUser(user_id) {
 export async function editServerCapabilities(server_id, rights) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify(rights)
   };
   return await getResponse(
@@ -274,11 +231,6 @@ export async function editServer(
 ) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       name: server_name,
       secret_key: secret_key,
@@ -297,11 +249,6 @@ export async function createServer(
 ) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       name: server_name,
       secret_key: secret_key,
@@ -314,12 +261,7 @@ export async function createServer(
 
 export async function deleteServer(server_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
   return await getResponse("/admin/servers/" + server_id, dat);
 }
@@ -327,11 +269,6 @@ export async function deleteServer(server_id) {
 export async function editMembers(group_id, member_ids) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ members: member_ids })
   };
   return await getResponse("/admin/groups/" + group_id + "/members", dat);
@@ -340,11 +277,6 @@ export async function editMembers(group_id, member_ids) {
 export async function editGroupServers(group_id, servers) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ servers: servers })
   };
   return await getResponse("/admin/groups/" + group_id + "/servers", dat);
@@ -353,11 +285,6 @@ export async function editGroupServers(group_id, servers) {
 export async function renameGroup(group_id, group_name) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: group_name })
   };
   return await getResponse("/admin/groups/" + group_id, dat);
@@ -365,12 +292,7 @@ export async function renameGroup(group_id, group_name) {
 
 export async function deleteGroup(group_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
   return await getResponse("/admin/groups/" + group_id, dat);
 }
@@ -378,11 +300,6 @@ export async function deleteGroup(group_id) {
 export async function createGroup(group_name) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: group_name })
   };
   return await getResponse("/admin/groups", dat);
@@ -391,11 +308,6 @@ export async function createGroup(group_name) {
 export async function createToken(name, server_id, expiry, claims) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: name, expiry: expiry, claims: claims })
   };
   return await getResponse("/user/tokens/" + server_id, dat);
@@ -404,10 +316,6 @@ export async function createToken(name, server_id, expiry, claims) {
 export async function login(username, password) {
   var dat = {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    credentials: "same-origin",
     body: JSON.stringify({ username: username, password: password })
   };
   return await getResponse("/signin", dat);
@@ -419,6 +327,6 @@ export async function isLoggedIn() {
 
 export async function logout() {
   await fetch("/signout", {
-    credentials: "same-origin"
+    headers: {}
   });
 }
