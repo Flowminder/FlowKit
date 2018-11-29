@@ -21,9 +21,9 @@ def test_nx_object():
     dl2 = daily_location("2016-01-02")
     flow = Flows(dl1, dl2)
     graph = flow.to_networkx()
-    assert graph.has_node("Arghakhanchi")
-    assert "Dadeldhura" in graph.neighbors("Arghakhanchi")
-    assert "Sankhuwasabha" not in graph.neighbors("Arghakhanchi")
+    assert graph.has_node("524 3 09 50")
+    assert "524 5 14 73" in graph.neighbors("524 3 09 50")
+    assert "524 1 02 09" not in graph.neighbors("524 3 09 50")
 
 
 def test_undirected():
@@ -35,7 +35,7 @@ def test_undirected():
     flow = Flows(dl1, dl2)
     with pytest.warns(UserWarning):
         graph = flow.to_networkx(directed_graph=False)
-    assert "Sankhuwasabha" in graph.neighbors("Arghakhanchi")
+    assert "524 1 02 09" in graph.neighbors("524 3 09 50")
 
 
 def test_directed_dupe():
@@ -66,7 +66,7 @@ def test_errors_with_one_param():
     dl2 = daily_location("2016-01-02")
     flow = Flows(dl1, dl2)
     with pytest.raises(ValueError):
-        flow.to_networkx(source="name_from")
+        flow.to_networkx(source="pcod_from")
 
     with pytest.raises(ValueError):
-        flow.to_networkx(target="name_from")
+        flow.to_networkx(target="pcod_from")

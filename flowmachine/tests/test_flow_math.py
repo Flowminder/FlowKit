@@ -37,8 +37,8 @@ def test_average_self(get_dataframe):
     avged = get_dataframe((flowA + flowA) / 2)
     orig = get_dataframe(flowA)
     compare = (
-        avged.set_index(["name_from", "name_to"]).sort_index()
-        == orig.set_index(["name_from", "name_to"]).sort_index()
+        avged.set_index(["pcod_from", "pcod_to"]).sort_index()
+        == orig.set_index(["pcod_from", "pcod_to"]).sort_index()
     )
     assert compare.all().values[0]
 
@@ -63,8 +63,10 @@ def test_stdev(get_dataframe):
     flow_list = [flowA, flowB]
     mean_fl = mean(flow_list)
     std_fl = stdev(flow_list)
-    std_fl = get_dataframe(std_fl).set_index(["name_from", "name_to"])
-    assert std_fl.loc["Mugu", "Rupandehi"][0] == pytest.approx(1.4142135623730951)
+    std_fl = get_dataframe(std_fl).set_index(["pcod_from", "pcod_to"])
+    assert std_fl.loc["524 4 12 65", "524 3 09 48"][0] == pytest.approx(
+        1.4142135623730951
+    )
 
 
 def test_average_self_v_sites(get_dataframe):
@@ -138,11 +140,11 @@ def test_edgelist(get_dataframe):
     query = daily_location("2016-01-01").aggregate()
     wrapped = EdgeList(query)
     df = get_dataframe(wrapped)
-    assert all(df.set_index(["name_from"]).loc["Rasuwa"]["count"] == 11)
+    assert all(df.set_index(["pcod_from"]).loc["524 2 05 29"]["count"] == 11)
     query = daily_location("2016-01-01").aggregate()
     wrapped = EdgeList(query, left_handed=False)
     df = get_dataframe(wrapped)
-    assert all(df.set_index(["name_to"]).loc["Rasuwa"]["count"] == 11)
+    assert all(df.set_index(["pcod_to"]).loc["524 2 05 29"]["count"] == 11)
 
 
 def test_edgelist_mul(get_dataframe):
@@ -155,10 +157,10 @@ def test_edgelist_mul(get_dataframe):
     query = daily_location("2016-01-01").aggregate()
     wrapped = EdgeList(query)
     mulled = flowA * wrapped
-    fl_df = get_dataframe(flowA).set_index(["name_from", "name_to"])
-    qur_df = get_dataframe(query).set_index("name")
-    mulled_df = get_dataframe(mulled).set_index(["name_from", "name_to"])
+    fl_df = get_dataframe(flowA).set_index(["pcod_from", "pcod_to"])
+    qur_df = get_dataframe(query).set_index("pcod")
+    mulled_df = get_dataframe(mulled).set_index(["pcod_from", "pcod_to"])
     dived = mulled_df / fl_df
-    grped = dived.groupby(level="name_from").mean()
-    relabled = qur_df.rename_axis("name_from").rename(columns={"total": "count"})
+    grped = dived.groupby(level="pcod_from").mean()
+    relabled = qur_df.rename_axis("pcod_from").rename(columns={"total": "count"})
     assert all(relabled.sort_index() == grped)

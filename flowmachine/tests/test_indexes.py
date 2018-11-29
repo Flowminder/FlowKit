@@ -10,7 +10,7 @@ def test_default_indexes():
     Check that default indexing columns are correct
     """
     assert daily_location("2016-01-01", "2016-01-02").index_cols == [
-        ["name"],
+        ["pcod"],
         '"subscriber"',
     ]
     assert daily_location("2016-01-01", "2016-01-02", level="lat-lon").index_cols == [

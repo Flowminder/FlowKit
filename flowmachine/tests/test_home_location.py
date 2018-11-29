@@ -54,7 +54,7 @@ def test_selected_values(get_dataframe):
         )
     ).set_index("subscriber")
 
-    assert "Dolpa" == hdf.ix["038OVABN11Ak4W5P"][0]
-    assert "Baglung" == hdf.ix["E1n7JoqxPBjvR5Ve"][0]
-    assert "Myagdi" == hdf.ix["gkBLe0mN5j3qmRpX"][0]
-    assert "Kapilbastu" == hdf.ix["5Kgwy8Gp6DlN3Eq9"][0]
+    assert "524 4 12 62" == hdf.ix["038OVABN11Ak4W5P"][0]
+    assert "524 3 08 43" == hdf.ix["E1n7JoqxPBjvR5Ve"][0]
+    assert "524 3 08 44" == hdf.ix["gkBLe0mN5j3qmRpX"][0]
+    assert "524 3 09 49" == hdf.ix["5Kgwy8Gp6DlN3Eq9"][0]

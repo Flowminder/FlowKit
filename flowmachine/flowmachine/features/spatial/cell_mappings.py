@@ -129,7 +129,7 @@ class CellToAdmin(Query):
         Pass a string of the column to use as the
         identifier of the admin region. By default
         this will be admin*name. But you may wish
-        to use something else, such as admin3pcode.
+        to use something else, such as admin3name.
     """
 
     def __init__(self, level, column_name=None, **kwargs):
@@ -151,17 +151,17 @@ class CellToAdmin(Query):
         the name of the region.
         """
 
-        return f"{self.level}name"
+        return f"{self.level}pcod"
 
     @property
     def column_names(self) -> List[str]:
         columns = self.mapping.column_names
         columns.remove(self.column_name)
         # If the user has asked for the standard column_name
-        # then we will alias this column as 'name', otherwise
+        # then we will alias this column as 'pcod', otherwise
         # we'll won't alias it at all.
         if self.column_name == self._get_standard_name():
-            col_name = "name"
+            col_name = "pcod"
         else:
             col_name = self.column_name
         return columns + [col_name]
@@ -173,10 +173,10 @@ class CellToAdmin(Query):
         other_cols = ", ".join(columns)
 
         # If the user has asked for the standard column_name
-        # then we will alias this column as 'name', otherwise
+        # then we will alias this column as 'pcod', otherwise
         # we'll won't alias it at all.
         if self.column_name == self._get_standard_name():
-            col_name = f"{self.column_name} AS name"
+            col_name = f"{self.column_name} AS pcod"
         else:
             col_name = self.column_name
 
