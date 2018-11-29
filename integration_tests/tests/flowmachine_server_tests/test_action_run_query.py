@@ -68,7 +68,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
     #
     output_cache_table = f"x{expected_query_id}"
     implicit_cache_table = f"x7ea3c788cb7f5829ee2a69494e502765"
-    assert [output_cache_table, implicit_cache_table] == get_cache_tables(fm_conn)
+    assert [implicit_cache_table, output_cache_table] == get_cache_tables(fm_conn)
     num_rows = fm_conn.engine.execute(
         f"SELECT COUNT(*) FROM cache.{output_cache_table}"
     ).fetchone()[0]
