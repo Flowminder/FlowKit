@@ -190,10 +190,10 @@ class Flows(GeoDataMixin, GraphMixin, BaseFlow):
 
     Parameters
     ----------
-    loc1 : daily_location, or HomeLocation object
+    loc1 : daily_location, or ModalLocation object
         Object representing the locations of people within the
         first time frame of interest
-    loc2 : daily_location, or HomeLocation object
+    loc2 : daily_location, or ModalLocation object
         As above for the second period
     """
 

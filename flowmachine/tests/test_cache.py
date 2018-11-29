@@ -9,7 +9,7 @@ Tests for query caching functions.
 import pytest
 
 from flowmachine.core.query import Query
-from flowmachine.features import daily_location, HomeLocation, Flows
+from flowmachine.features import daily_location, ModalLocation, Flows
 
 
 def test_do_cache_simple(flowmachine_connect):
@@ -32,7 +32,7 @@ def test_do_cache_multi(flowmachine_connect):
 
     """
 
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1._db_store_cache_metadata()
     in_cache = bool(
         flowmachine_connect.fetch(
@@ -48,8 +48,8 @@ def test_do_cache_nested(flowmachine_connect):
     Test that a query containing nested subqueries can be cached.
 
     """
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
-    hl2 = HomeLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow._db_store_cache_metadata()
     in_cache = bool(
@@ -84,7 +84,7 @@ def test_store_cache_multi(flowmachine_connect):
     Test that storing a query containing subqueries also caches it.
 
     """
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
     # Should be stored
     assert hl1.is_stored
@@ -102,8 +102,8 @@ def test_store_cache_nested(flowmachine_connect):
     Test that storing a query with nested subqueries also caches it.
 
     """
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
-    hl2 = HomeLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow.store().result()
     # Should be stored
@@ -144,7 +144,7 @@ def test_invalidate_cache_multi(flowmachine_connect):
     """
     dl1 = daily_location("2016-01-01")
     dl1.store().result()
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
     dl1.invalidate_db_cache()
     assert not dl1.is_stored
@@ -173,9 +173,9 @@ def test_invalidate_cache_midchain(flowmachine_connect):
     """
     dl1 = daily_location("2016-01-01")
     dl1.store().result()
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
-    hl2 = HomeLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
+    hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow.store().result()
     hl1.invalidate_db_cache()
@@ -213,7 +213,7 @@ def test_invalidate_cache_multi(flowmachine_connect):
     """
     dl1 = daily_location("2016-01-01")
     dl1.store().result()
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
     dl1.invalidate_db_cache()
     assert not dl1.is_stored
@@ -241,9 +241,9 @@ def test_invalidate_cascade(flowmachine_connect):
     """
     dl1 = daily_location("2016-01-01")
     dl1.store().result()
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
-    hl2 = HomeLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
+    hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow.store().result()
     dl1.invalidate_db_cache(cascade=False)
@@ -273,7 +273,7 @@ def test_deps_cache_multi():
     """
     dl1 = daily_location("2016-01-01")
     dl1.store().result()
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     dep = dl1.md5
     assert 3 == len(hl1._get_deps())
     assert dep in [x.md5 for x in hl1._get_deps()]
@@ -286,9 +286,9 @@ def test_deps_cache_chain():
 
     """
     dl1 = daily_location("2016-01-01")
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
-    hl2 = HomeLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
+    hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     bad_dep = dl1.md5
     good_dep = hl1.md5
@@ -305,8 +305,8 @@ def test_deps_cache_broken_chain():
     """
     dl1 = daily_location("2016-01-01")
     dl1.store().result()
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
-    hl2 = HomeLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     dep = dl1.md5
     assert 7 == len(flow._get_deps())
@@ -347,9 +347,9 @@ def test_retrieve_all():
     """
     dl1 = daily_location("2016-01-01")
     dl1.store().result()
-    hl1 = HomeLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
+    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
-    hl2 = HomeLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
+    hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow.store().result()
 

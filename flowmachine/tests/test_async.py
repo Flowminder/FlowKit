@@ -83,7 +83,7 @@ def test_blocks_on_store_cascades():
     dl2 = daily_location("2016-01-02", level="cell")
     store_future = dl.store()
     store_future.result()
-    hl = HomeLocation(dl, dl2)
+    hl = ModalLocation(dl, dl2)
     timer = []
 
     def unlock(timer):
