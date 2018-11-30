@@ -4,12 +4,11 @@
 
 describe("Login screen", function () {
 	beforeEach(function () {
-		// Reset demo data
-		cy.resetDB();
+		// Go to login screen
+		cy.visit("/");
 	});
 
 	it("Log in as a user", function () {
-		cy.visit("/");
 		cy.get("#username").type("TEST_USER");
 		cy.get("#password").type("DUMMY_PASSWORD");
 		cy.get("button").click();
@@ -19,7 +18,6 @@ describe("Login screen", function () {
 	});
 
 	it("Fail to log in with incorrect username", function () {
-		cy.visit("/");
 		// Attempt to log in with incorrect username
 		cy.get("#username").type("WRONG_USER");
 		cy.get("#password").type("DUMMY_PASSWORD");
@@ -30,7 +28,6 @@ describe("Login screen", function () {
 	});
 
 	it("Fail to log in with incorrect password", function () {
-		cy.visit("/");
 		// Attempt to log in with incorrect password
 		cy.get("#username").type("TEST_USER");
 		cy.get("#password").type("WRONG_PASSWORD");
@@ -41,7 +38,6 @@ describe("Login screen", function () {
 	});
 
 	it("Error dialog re-appears after closing if password wasn't changed", function () {
-		cy.visit("/");
 		// Attempt to log in with incorrect username
 		cy.get("#username").type("WRONG_USER");
 		cy.get("#password").type("DUMMY_PASSWORD");
@@ -54,7 +50,6 @@ describe("Login screen", function () {
 	});
 
 	it("Error dialog does not reappear when typing in input", function () {
-		cy.visit("/");
 		// Attempt to log in with incorrect username
 		cy.get("#username").type("WRONG_USER");
 		cy.get("#password").type("DUMMY_PASSWORD");

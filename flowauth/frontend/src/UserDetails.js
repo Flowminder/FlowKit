@@ -63,7 +63,7 @@ class UserDetails extends React.Component {
 			this.setState({
 				passwordChanged: false,
 				hasError: true,
-				error: { message: "Passwords do not match" }
+				error: { message: "Passwords do not match." }
 			});
 		}
 	};
