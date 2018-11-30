@@ -1,0 +1,14 @@
+dist: xenial
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8-dev"  # 3.8 development branch
+# command to install dependencies
+before_install:
+  - cd flowclient
+install:
+  - pip install .
+# command to run tests
+script:
+  - pytest

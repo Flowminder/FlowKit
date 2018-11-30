@@ -12,7 +12,7 @@ The maximum displacement of a user from its home location
 """
 from flowmachine.features.subscriber import daily_location
 from .metaclasses import SubscriberFeature
-from . import HomeLocation
+from . import ModalLocation
 from ..utilities.subscriber_locations import subscriber_locations
 from ...utils.utils import parse_datestring, get_dist_string, list_of_dates
 
@@ -28,7 +28,7 @@ class Displacement(SubscriberFeature):
 
     Class representing the displacement from their home location 
     for all subscribers within a certain time frame. This will 
-    return displacement from home for all subscribers in HomeLocation. 
+    return displacement from home for all subscribers in ModalLocation.
     If a user with a home location makes no calls between start and stop
     then a NaN value will be returned.
 
@@ -39,9 +39,9 @@ class Displacement(SubscriberFeature):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    home_locations : HomeLocation
+    modal_locations : ModalLocation
         The set of home locations from which to calculate displacement.
-        If not given then HomeLocation Query wil be created over period
+        If not given then ModalLocation Query wil be created over period
         start -> stop.
     statistic : str
         the statistic to calculate one of 'sum', 'avg', 'max', 'min', 
@@ -67,7 +67,7 @@ class Displacement(SubscriberFeature):
     """
 
     def __init__(
-        self, start, stop, home_locations=None, statistic="avg", unit="km", **kwargs
+        self, start, stop, modal_locations=None, statistic="avg", unit="km", **kwargs
     ):
 
         # need to subtract one day from hl end in order to be
@@ -78,18 +78,18 @@ class Displacement(SubscriberFeature):
         self.start = start
 
         allowed_levels = ["lat-lon", "versioned-cell", "versioned-site"]
-        if home_locations:
+        if modal_locations:
             if (
-                isinstance(home_locations, HomeLocation)
-                and home_locations.level in allowed_levels
+                isinstance(modal_locations, ModalLocation)
+                and modal_locations.level in allowed_levels
             ):
-                hl = home_locations
+                hl = modal_locations
             else:
                 raise ValueError(
-                    """home_locations should be an instance of HomeLocation class with level of lat-lon"""
+                    """modal_locations should be an instance of ModalLocation class with level of lat-lon"""
                 )
         else:
-            hl = HomeLocation(
+            hl = ModalLocation(
                 *[
                     daily_location(d, level="lat-lon", **kwargs)
                     for d in list_of_dates(self.start, self.stop_hl)

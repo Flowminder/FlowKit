@@ -6,26 +6,10 @@ from unittest.mock import Mock
 import jwt
 import pytest
 
-import flowclient
 from flowclient.client import Connection, FlowclientConnectionError
 
 
-@pytest.fixture(autouse=True)
-def _get_session_mock(monkeypatch):
-    """
-    Fixture which replaces the client's `_get_session` method with a mock,
-    returning a mocked session object. Yields the session mock for use in
-    the test.
-
-    Yields
-    ------
-    unittests.Mock
-
-    """
-    mock = Mock()
-    mock.return_value.headers = {}
-    monkeypatch.setattr(flowclient.client, "_get_session", mock)
-    yield mock.return_value
+pytestmark = pytest.mark.usefixtures("session_mock")
 
 
 def test_https_warning(token):
@@ -40,7 +24,6 @@ def test_https_warning(token):
 
 def test_no_warning_for_https(token, monkeypatch):
     """ Test that no insecure warning is raised when connecting via https. """
-    monkeypatch.delattr("flowclient.client.HTTP20Adapter")  # Disable hyper
     with pytest.warns(None) as warnings_record:
         c = Connection("https://foo", token)
     assert not warnings_record.list
@@ -55,6 +38,17 @@ def test_login(token):
     assert token == c.token
     assert "bar" == c.user
     assert "Authorization" in c.session.headers
+    assert isinstance(
+        c.session.verify, Mock
+    )  # Shouldn't be set if no ssl_certificate passed
+
+
+def test_ssl_cert_path_set(token):
+    """
+    Test that if a path to certificate is given it gets set on the session object.
+    """
+    c = Connection("foo", token, ssl_certificate="DUMMY_CERT_PATH")
+    assert "DUMMY_CERT_PATH" == c.session.verify
 
 
 def test_connection_repr(token):

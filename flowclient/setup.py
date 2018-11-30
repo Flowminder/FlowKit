@@ -23,7 +23,7 @@ __email__ = "flowkit@flowminder.org"
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-test_requirements = ["pytest"]
+test_requirements = ["pytest", "pytest-cov"]
 
 setup(
     name="flowclient",
@@ -39,7 +39,7 @@ setup(
     packages=["flowclient"],
     include_package_data=True,
     install_requires=["pandas", "requests", "pyjwt"],
-    extras_require={"test": test_requirements, "http2": ["hyper"]},
+    extras_require={"test": test_requirements},
     tests_require=test_requirements,
     setup_requires=["pytest-runner"],
     platforms=["MacOS X", "Linux"],

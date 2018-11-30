@@ -4,13 +4,13 @@ import redis_lock
 from json import dumps, loads, JSONDecodeError
 
 from flowmachine.core import Query, Table
-from flowmachine.features import daily_location, HomeLocation, Flows
+from flowmachine.features import daily_location, ModalLocation, Flows
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
 query_class_map = {
-    # "home_location": HomeLocation,
+    # "modal_location": ModalLocation,
     "daily_location": daily_location,
     # "flow": Flows,
     # "custom_query": CustomQuery,
@@ -158,7 +158,7 @@ def construct_query_object(query_kind, params):  # pragma: no cover
                 params = loc["params"]
                 dl = construct_query_object(query_kind, params)
                 location_objects.append(dl)
-            q = HomeLocation(*location_objects)
+            q = ModalLocation(*location_objects)
         except Exception as e:
             raise QueryProxyError(f"FIXME (modal_location): {e}")
 
