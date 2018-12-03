@@ -326,7 +326,5 @@ export async function isLoggedIn() {
 }
 
 export async function logout() {
-  await fetch("/signout", {
-    credentials: "same-origin"
-  });
+  return await getResponseDefault("/signout");
 }

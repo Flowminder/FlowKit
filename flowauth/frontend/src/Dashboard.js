@@ -25,6 +25,7 @@ import UserDetails from "./UserDetails";
 import CapabilityList from "./CapabilityList";
 import AggregationUnitList from "./AggregationUnitList";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import { logout } from "./util/api";
 
 const drawerWidth = 240;
 
@@ -118,6 +119,10 @@ class Dashboard extends React.Component {
     this.setState({ open: false });
   };
 
+  handleLogout = () => {
+    logout().then(this.props.setLoggedOut());
+  }
+
   setServer = (server_id, server_name) => {
     this.setState({
       activePage: "server",
@@ -158,7 +163,7 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    const { classes, logout, is_admin } = this.props;
+    const { classes, setLoggedOut, is_admin } = this.props;
     const { activePage } = this.state;
 
     return (
@@ -204,7 +209,7 @@ class Dashboard extends React.Component {
               >
                 <AccountCircleIcon />
               </IconButton>
-              <IconButton id="logout" color="inherit" onClick={logout}>
+              <IconButton id="logout" color="inherit" onClick={this.handleLogout}>
                 <ExitToAppIcon />
               </IconButton>
             </Toolbar>

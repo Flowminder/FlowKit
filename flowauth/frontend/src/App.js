@@ -19,10 +19,9 @@ class App extends Component {
   }
   componentDidCatch(error, info) {
     console.log(error);
-    this.logout();
+    logout().then(this.setLoggedOut());
   }
-  logout = async () => {
-    logout();
+  setLoggedOut = () => {
     this.setState({
       loggedIn: false,
       is_admin: false
@@ -33,7 +32,7 @@ class App extends Component {
 
     const { loggedIn, is_admin } = this.state;
     if (loggedIn) {
-      return <Dashboard logout={this.logout} is_admin={is_admin} />;
+      return <Dashboard setLoggedOut={this.setLoggedOut} is_admin={is_admin} />;
     } else {
       return <Login setLoggedIn={this.setLoggedIn} />;
     }
