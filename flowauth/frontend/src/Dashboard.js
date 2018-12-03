@@ -120,7 +120,7 @@ class Dashboard extends React.Component {
   };
 
   handleLogout = () => {
-    logout().then(setTimeout(this.props.setLoggedOut, 1000));
+    logout().then(setTimeout(this.props.setLoggedOut, 100));
   }
 
   setServer = (server_id, server_name) => {
