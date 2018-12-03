@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 describe("User details screen", function () {
+    Cypress.Cookies.debug(true)
+
     beforeEach(function () {
         // Log in and navigate to user details screen
         cy.login();
@@ -23,6 +25,7 @@ describe("User details screen", function () {
         cy.get("#newPasswordB").should("have.value", "");
         // Check that we can log in with new password
         cy.get("#logout").click();
+        cy.getCookie("session").should("not.exist");
         cy.get("#username").type("TEST_USER");
         cy.get("#password").type("ANOTHER_DUMMY_PASSWORD");
         cy.get("button").click();
