@@ -25,6 +25,7 @@ import UserDetails from "./UserDetails";
 import CapabilityList from "./CapabilityList";
 import AggregationUnitList from "./AggregationUnitList";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import { isLoggedIn } from "./util/api";
 
 const drawerWidth = 240;
 

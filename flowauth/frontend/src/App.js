@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import { isLoggedIn, logout } from "./util/api";
+import { logout } from "./util/api";
 
 class App extends Component {
   constructor(props) {
@@ -26,14 +26,6 @@ class App extends Component {
     this.setState({
       loggedIn: false,
       is_admin: false
-    });
-  }
-  componentDidMount() {
-    isLoggedIn().then(json => {
-      this.setState({
-        loggedIn: json.logged_in,
-        is_admin: json.is_admin
-      });
     });
   }
   render() {

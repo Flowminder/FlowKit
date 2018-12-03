@@ -31,15 +31,9 @@ def signin():
 
 
 @blueprint.route("/is_signed_in")
+@login_required
 def is_signed_in():
-    # This seems to be necessary because current_user.is_authenticated is a property,
-    # and Flask will complain about a method not being serializable if we try to jsonify it.
-    is_authenticated = True if current_user.is_authenticated else False
-    try:
-        is_admin = current_user.is_admin
-    except AttributeError:
-        is_admin = False
-    return jsonify({"logged_in": is_authenticated, "is_admin": is_admin})
+    return jsonify({"logged_in": True, "is_admin": current_user.is_admin})
 
 
 @blueprint.route("/signout")
