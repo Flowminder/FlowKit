@@ -16,9 +16,9 @@ from functools import reduce
 from ..utilities.multilocation import MultiLocation
 
 
-class HomeLocation(MultiLocation):
+class ModalLocation(MultiLocation):
     """
-    HomeLocation is the mode of multiple DailyLocations (or other similar
+    ModalLocation is the mode of multiple DailyLocations (or other similar
     location like objects.) It can be instantiated with either a date range
     or a list of DailyLocations (the former is more common). It gives each
     subscriber only one location.

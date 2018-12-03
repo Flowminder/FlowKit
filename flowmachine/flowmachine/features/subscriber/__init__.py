@@ -10,7 +10,7 @@ total events or radius of gyration.
 """
 from .call_days import CallDays
 from .new_subscribers import NewSubscribers
-from .home_location import HomeLocation
+from .modal_location import ModalLocation
 from .first_location import FirstLocation
 from .daily_location import daily_location
 from .nocturnal_calls import NocturnalCalls
@@ -54,7 +54,7 @@ __all__ = [
     "TotalSubscriberEvents",
     "FirstLocation",
     "CallDays",
-    "HomeLocation",
+    "ModalLocation",
     "daily_location",
     "DayTrajectories",
     "LocationVisits",

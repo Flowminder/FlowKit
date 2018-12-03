@@ -26,7 +26,7 @@ subs = [
     "TotalSubscriberEvents",
     "FirstLocation",
     "CallDays",
-    "HomeLocation",
+    "ModalLocation",
     "daily_location",
     "DayTrajectories",
     "LocationVisits",

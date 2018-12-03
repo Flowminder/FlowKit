@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-from flowmachine.features import Displacement, HomeLocation, daily_location
+from flowmachine.features import Displacement, ModalLocation, daily_location
 from numpy import isnan
 
 from flowmachine.utils import list_of_dates
@@ -43,12 +43,12 @@ def test_min_displacement_zero(get_dataframe):
     assert df.statistic.sum() == 0
 
 
-def test_pass_home_location(get_dataframe):
+def test_pass_modal_location(get_dataframe):
     """
     Test that we can pass a home location object to the class
     """
 
-    hl = HomeLocation(
+    hl = ModalLocation(
         *[
             daily_location(d, level="lat-lon")
             for d in list_of_dates("2016-01-01", "2016-01-06")
@@ -56,7 +56,7 @@ def test_pass_home_location(get_dataframe):
     )
 
     df = get_dataframe(
-        Displacement("2016-01-01", "2016-01-07", home_locations=hl, statistic="avg")
+        Displacement("2016-01-01", "2016-01-07", modal_locations=hl, statistic="avg")
     )
     df = df.set_index("subscriber")
 
@@ -64,21 +64,21 @@ def test_pass_home_location(get_dataframe):
     assert val == pytest.approx(169.926194)
 
 
-def test_error_when_home_location_not_latlong():
+def test_error_when_modal_location_not_latlong():
     """
     Test that error is raised if home location passed to class
     is not using level lat-lon
     """
 
-    hl = HomeLocation(
+    hl = ModalLocation(
         *[daily_location(d) for d in list_of_dates("2016-01-01", "2016-01-02")]
     )
 
     with pytest.raises(ValueError):
-        Displacement("2016-01-01", "2016-01-02", home_locations=hl, statistic="avg")
+        Displacement("2016-01-01", "2016-01-02", modal_locations=hl, statistic="avg")
 
 
-def test_get_all_users_in_home_location(get_dataframe):
+def test_get_all_users_in_modal_location(get_dataframe):
     """
     This tests that diplacement values are returned for all subscribers
     in the home location object.
@@ -87,13 +87,13 @@ def test_get_all_users_in_home_location(get_dataframe):
     p1 = ("2016-01-02 10:00:00", "2016-01-02 12:00:00")
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
 
-    hl = HomeLocation(
+    hl = ModalLocation(
         *[
             daily_location(d, level="lat-lon", hours=(12, 13))
             for d in list_of_dates(p1[0], p1[1])
         ]
     )
-    d = Displacement(p2[0], p2[1], home_locations=hl)
+    d = Displacement(p2[0], p2[1], modal_locations=hl)
 
     hl_subscribers = set(get_dataframe(hl).subscriber)
     d_subscribers = set(get_dataframe(d).subscriber)
@@ -111,13 +111,13 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
     subscriber = "OdM7np8LYEp1mkvP"
 
-    hl = HomeLocation(
+    hl = ModalLocation(
         *[
             daily_location(d, level="lat-lon", hours=(12, 13))
             for d in list_of_dates(p1[0], p1[1])
         ]
     )
-    d = Displacement(p2[0], p2[1], home_locations=hl)
+    d = Displacement(p2[0], p2[1], modal_locations=hl)
 
     df = get_dataframe(d).set_index("subscriber")
 
