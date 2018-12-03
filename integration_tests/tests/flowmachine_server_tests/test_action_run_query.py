@@ -80,7 +80,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
 
     first_few_rows_expected = [
         ("524 3 09 50", 18),
-        ("524 3 07 37", 14),
+        ("524 5 13 67", 17),
         ("524 1 03 13", 20),
     ]
     first_few_rows = fm_conn.engine.execute(
