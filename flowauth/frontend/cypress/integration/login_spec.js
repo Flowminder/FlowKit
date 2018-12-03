@@ -60,4 +60,18 @@ describe("Login screen", function () {
 		cy.get("#username").type("_CHANGED");
 		cy.get("#error-dialog").should("not.exist");
 	});
+
+	it("Render correct component according to login status", function () {
+		// Check that login screen renders initially
+		cy.visit("/");
+		cy.contains("Sign in");
+		// Log in, reload, and check that dashboard renders
+		cy.login();
+		cy.visit("/");
+		cy.contains("My Servers");
+		// Log out, reload, and check that login screen renders again
+		cy.request("/signout");
+		cy.visit("/");
+		cy.contains("Sign in");
+	});
 });

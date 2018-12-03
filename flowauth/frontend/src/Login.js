@@ -86,7 +86,9 @@ class Login extends React.Component {
         this.props.setLoggedIn(json.is_admin);
       })
       .catch(err => {
-        this.setState({ hasError: true, error: err });
+        if (err.code != 401) {
+          this.setState({ hasError: true, error: err });
+        }
       });
   }
 
