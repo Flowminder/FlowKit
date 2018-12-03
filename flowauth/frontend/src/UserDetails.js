@@ -21,6 +21,8 @@ import ErrorDialog from "./ErrorDialog";
 import MessageSnackbar from "./MessageSnackbar";
 var zxcvbn = require("zxcvbn");
 
+Cypress.Cookies.debug(true)
+
 const styles = theme => ({
 	root: {
 		...theme.mixins.gutters(),
