@@ -327,6 +327,6 @@ export async function isLoggedIn() {
 
 export async function logout() {
   await fetch("/signout", {
-    headers: {}
+    credentials: "same-origin"
   });
 }
