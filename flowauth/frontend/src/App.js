@@ -19,11 +19,7 @@ class App extends Component {
   }
   componentDidCatch(error, info) {
     console.log(error);
-    logout();
-    this.setState({
-      loggedIn: false,
-      is_admin: false
-    });
+    this.logout();
   }
   logout = async () => {
     logout();
