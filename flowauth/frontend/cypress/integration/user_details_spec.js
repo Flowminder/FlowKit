@@ -24,12 +24,16 @@ describe("User details screen", function () {
         cy.get("#newPasswordA").should("have.value", "");
         cy.get("#newPasswordB").should("have.value", "");
         // Check that we can log in with new password
-        cy.get("#logout").click();
-        cy.getCookie("session").should("not.exist");
+        cy.getCookie("session").then(($cookie) => {
+            const val = $cookie.value;
+            cy.get("#logout").click();
+            cy.getCookie("session").should("not.have.property", "value", val);
+        });
+        cy.visit("/");
         cy.get("#username").type("TEST_USER");
         cy.get("#password").type("ANOTHER_DUMMY_PASSWORD");
         cy.get("button").click();
-        cy.contains("Aruba").should("exist");
+        cy.contains("My Servers");
     });
 
     it("Display error when old password is incorrect", function () {
