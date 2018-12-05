@@ -48,7 +48,7 @@ class Listing extends React.Component {
     return (
       <React.Fragment>
         <Grid item xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             {kind}
           </Typography>
         </Grid>

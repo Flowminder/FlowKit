@@ -82,7 +82,7 @@ class ServerAdminDetails extends React.Component {
     return (
       <React.Fragment>
         <Grid item xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             New Server
           </Typography>
         </Grid>
@@ -108,7 +108,7 @@ class ServerAdminDetails extends React.Component {
         </Grid>
         <Divider />
         <Grid item xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             Token Lifetime Limits
           </Typography>
         </Grid>
@@ -136,7 +136,7 @@ class ServerAdminDetails extends React.Component {
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             API Permissions
           </Typography>
         </Grid>

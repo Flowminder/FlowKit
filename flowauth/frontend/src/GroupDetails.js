@@ -72,7 +72,7 @@ class GroupDetails extends React.Component {
     return (
       <React.Fragment>
         <Grid xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             {(this.state.edit_mode && "Edit Group") || "New Group"}
           </Typography>
         </Grid>
@@ -88,7 +88,7 @@ class GroupDetails extends React.Component {
         </Grid>
 
         <Grid xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             Members
           </Typography>
         </Grid>
