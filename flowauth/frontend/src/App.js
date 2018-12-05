@@ -19,7 +19,7 @@ class App extends Component {
   }
   componentDidCatch(error, info) {
     console.log(error);
-    logout().then(this.setLoggedOut());
+    logout().then(json => { this.setLoggedOut() });
   }
   setLoggedOut = () => {
     this.setState({
