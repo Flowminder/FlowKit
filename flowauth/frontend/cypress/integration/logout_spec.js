@@ -9,6 +9,7 @@ describe("Logout", function () {
         cy.login();
         cy.visit("/");
         cy.get("#logout").click();
+        cy.wait(500);
         cy.contains("Sign in");
     });
 });
