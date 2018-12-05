@@ -6,15 +6,12 @@ import { logout } from "./util/api";
 class App extends Component {
   constructor(props) {
     super(props);
-
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
     this.state = {
       loggedIn: false,
       is_admin: false
     };
   }
-  login(is_admin) {
+  setLoggedIn = (is_admin) => {
     this.setState({
       loggedIn: true,
       is_admin: is_admin
@@ -22,13 +19,9 @@ class App extends Component {
   }
   componentDidCatch(error, info) {
     console.log(error);
-    this.setState({
-      loggedIn: false,
-      is_admin: false
-    });
+    logout().then(json => { this.setLoggedOut() });
   }
-  async logout() {
-    logout();
+  setLoggedOut = () => {
     this.setState({
       loggedIn: false,
       is_admin: false
@@ -39,9 +32,9 @@ class App extends Component {
 
     const { loggedIn, is_admin } = this.state;
     if (loggedIn) {
-      return <Dashboard logout={this.logout} is_admin={is_admin} />;
+      return <Dashboard setLoggedOut={this.setLoggedOut} is_admin={is_admin} />;
     } else {
-      return <Login login={this.login} />;
+      return <Login setLoggedIn={this.setLoggedIn} />;
     }
   }
 }

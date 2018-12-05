@@ -15,14 +15,19 @@ function APIError(message, code) {
 
 APIError.prototype = new Error();
 
-export async function getUsers() {
-  var err;
-  var response = await fetch("/admin/users", {
+async function getResponse(path, dat) {
+  // Send data 'dat' to path 'path'.
+  // Return response json if response is OK, otherwise throw error.
+  var fullDat = {
     credentials: "same-origin",
     headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
+      "X-CSRF-Token": getCookieValue("X-CSRF"),
+      "Content-Type": "application/json"
+    },
+    ...dat
+  }
+  var err;
+  var response = await fetch(path, fullDat);
   if (response.ok) {
     return await response.json();
   } else {
@@ -37,686 +42,184 @@ export async function getUsers() {
   }
 }
 
-export async function getUser(user_id) {
-  var err;
-  var response = await fetch("/admin/users/" + user_id, {
-    credentials: "same-origin",
+async function getResponseDefault(path) {
+  // Same as 'getResponse', but with default data.
+  var dat = {
     headers: {
       "X-CSRF-Token": getCookieValue("X-CSRF")
     }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  };
+  return await getResponse(path, dat);
 }
+
+export async function getUsers() {
+  return await getResponseDefault("/admin/users");
+}
+
+export async function getUser(user_id) {
+  return await getResponseDefault("/admin/users/" + user_id);
+}
+
 export async function getUserGroup(user_id) {
-  var err;
-  var response = await fetch("/admin/users/" + user_id + "/user_group", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/users/" + user_id + "/user_group");
 }
 
 export async function editPassword(oldPassword, newPassword) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       password: oldPassword,
       newPassword: newPassword
     })
   };
-
-  var err;
-  var response = await fetch("/user/password", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("Trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/user/password", dat);
 }
 
 export async function editUser(user_id, username, password, is_admin) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       username: username,
       password: password,
       is_admin: is_admin
     })
   };
-
-  var err;
-  var response = await fetch("/admin/users/" + user_id, dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("Trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/users/" + user_id, dat);
 }
 
 export async function deleteAggregationUnit(unit_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
-
-  var err;
-  var response = await fetch("/spatial_aggregation/" + unit_id, dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/spatial_aggregation/" + unit_id, dat);
 }
 
 export async function newAggregationUnit(name) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: name })
   };
-
-  var err;
-  var response = await fetch("/spatial_aggregation", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/spatial_aggregation", dat);
 }
 
 export async function deleteCapability(capability_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
-
-  var err;
-  var response = await fetch("/admin/capabilities/" + capability_id, dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/capabilities/" + capability_id, dat);
 }
 
 export async function newCapability(name) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: name })
   };
-
-  var err;
-  var response = await fetch("/admin/capabilities", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/capabilities", dat);
 }
 
 export async function editGroupMemberships(user_id, group_ids) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ groups: group_ids })
   };
-
-  var err;
-  var response = await fetch("/admin/users/" + user_id + "/groups", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/users/" + user_id + "/groups", dat);
 }
 
 export async function getGroups() {
-  var err;
-  var response = await fetch("/admin/groups", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/groups");
 }
 
 export async function getGroupServers(group_id) {
-  var err;
-  var response = await fetch("/admin/groups/" + group_id + "/servers", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/groups/" + group_id + "/servers");
 }
 
 export async function getServers() {
-  var err;
-  var response = await fetch("/admin/servers", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/servers");
 }
 
 export async function getServer(server_id) {
-  var err;
-  var response = await fetch("/admin/servers/" + server_id, {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/servers/" + server_id);
 }
 
 export async function getGroup(group_id) {
-  var err;
-  var response = await fetch("/admin/groups/" + group_id, {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/groups/" + group_id);
 }
 
 export async function getGroupMembers(group_id) {
-  var err;
-  var response = await fetch("/admin/groups/" + group_id + "/members", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/groups/" + group_id + "/members");
 }
 
 export async function getGroupsForUser(user_id) {
-  var err;
-  var response = await fetch("/admin/users/" + user_id + "/groups", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/users/" + user_id + "/groups");
 }
 
 export async function getMyServers() {
-  var err;
-  var response = await fetch("/user/servers", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/user/servers");
 }
 
 export async function getMyTokensForServer(server_id) {
-  var err;
-  var response = await fetch("/user/tokens/" + server_id, {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/user/tokens/" + server_id);
 }
 
 export async function getMyRightsForServer(server_id) {
-  var err;
-  var response = await fetch("/user/servers/" + server_id, {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/user/servers/" + server_id);
 }
 
 export async function getCapabilities(server_id) {
-  var err;
-  var response = await fetch("/admin/servers/" + server_id + "/capabilities", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/servers/" + server_id + "/capabilities");
 }
 
 export async function getGroupCapabilities(server_id, group_id) {
-  var err;
-  var response = await fetch(
-    "/admin/groups/" + group_id + "/servers/" + server_id + "/capabilities",
-    {
-      credentials: "same-origin",
-      headers: {
-        "X-CSRF-Token": getCookieValue("X-CSRF")
-      }
-    }
+  return await getResponseDefault(
+    "/admin/groups/" + group_id + "/servers/" + server_id + "/capabilities"
   );
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
 }
 
 export async function getGroupTimeLimits(server_id, group_id) {
-  var err;
-  var response = await fetch(
-    "/admin/groups/" + group_id + "/servers/" + server_id + "/time_limits",
-    {
-      credentials: "same-origin",
-      headers: {
-        "X-CSRF-Token": getCookieValue("X-CSRF")
-      }
-    }
+  return await getResponseDefault(
+    "/admin/groups/" + group_id + "/servers/" + server_id + "/time_limits"
   );
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
 }
 
 export async function getAllCapabilities() {
-  var err;
-  var response = await fetch("/admin/capabilities", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/capabilities");
 }
 
 export async function getAllAggregationUnits() {
-  var err;
-  var response = await fetch("/spatial_aggregation", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/spatial_aggregation");
 }
 
 export async function getTimeLimits(server_id) {
-  var err;
-  var response = await fetch("/admin/servers/" + server_id + "/time_limits", {
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF")
-    }
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponseDefault("/admin/servers/" + server_id + "/time_limits");
 }
 
 export async function createUser(username, password, is_admin) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       username: username,
       password: password,
       is_admin: is_admin
     })
   };
-
-  var err;
-  var response = await fetch("/admin/users", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/users", dat);
 }
 
 export async function deleteUser(user_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
-
-  var err;
-  var response = await fetch("/admin/users/" + user_id, dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/users/" + user_id, dat);
 }
 
 export async function editServerCapabilities(server_id, rights) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify(rights)
   };
-
-  var err;
-  var response = await fetch(
-    "/admin/servers/" + server_id + "/capabilities",
-    dat
+  return await getResponse(
+    "/admin/servers/" + server_id + "/capabilities", dat
   );
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
 }
 
 export async function editServer(
@@ -728,11 +231,6 @@ export async function editServer(
 ) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       name: server_name,
       secret_key: secret_key,
@@ -740,21 +238,7 @@ export async function editServer(
       longest_token_life: longest_token_life
     })
   };
-
-  var err;
-  var response = await fetch("/admin/servers/" + server_id, dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/servers/" + server_id, dat);
 }
 
 export async function createServer(
@@ -765,11 +249,6 @@ export async function createServer(
 ) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       name: server_name,
       secret_key: secret_key,
@@ -777,238 +256,75 @@ export async function createServer(
       longest_token_life: longest_token_life
     })
   };
-
-  var err;
-  var response = await fetch("/admin/servers", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/servers", dat);
 }
 
 export async function deleteServer(server_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
-
-  var err;
-  var response = await fetch("/admin/servers/" + server_id, dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/servers/" + server_id, dat);
 }
 
 export async function editMembers(group_id, member_ids) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ members: member_ids })
   };
-
-  var err;
-  var response = await fetch("/admin/groups/" + group_id + "/members", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/groups/" + group_id + "/members", dat);
 }
 
 export async function editGroupServers(group_id, servers) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ servers: servers })
   };
-
-  var err;
-  var response = await fetch("/admin/groups/" + group_id + "/servers", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/groups/" + group_id + "/servers", dat);
 }
 
 export async function renameGroup(group_id, group_name) {
   var dat = {
     method: "PATCH",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: group_name })
   };
-
-  var err;
-  var response = await fetch("/admin/groups/" + group_id, dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/groups/" + group_id, dat);
 }
 
 export async function deleteGroup(group_id) {
   var dat = {
-    method: "DELETE",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    }
+    method: "DELETE"
   };
-
-  var err;
-  var response = await fetch("/admin/groups/" + group_id, dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/groups/" + group_id, dat);
 }
 
 export async function createGroup(group_name) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: group_name })
   };
-
-  var err;
-  var response = await fetch("/admin/groups", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/admin/groups", dat);
 }
 
 export async function createToken(name, server_id, expiry, claims) {
   var dat = {
     method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "X-CSRF-Token": getCookieValue("X-CSRF"),
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({ name: name, expiry: expiry, claims: claims })
   };
-
-  var err;
-  var response = await fetch("/user/tokens/" + server_id, dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+  return await getResponse("/user/tokens/" + server_id, dat);
 }
 
 export async function login(username, password) {
   var dat = {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    credentials: "same-origin",
     body: JSON.stringify({ username: username, password: password })
   };
+  return await getResponse("/signin", dat);
+}
 
-  var err;
-  var response = await fetch("/signin", dat);
-  if (response.ok) {
-    return await response.json();
-  } else {
-    try {
-      console.log("trying to throw..");
-      err = await response.json();
-    } catch (err) {
-      console.log(err);
-      throw new APIError(response.statusText, response.status);
-    }
-    throw err;
-  }
+export async function isLoggedIn() {
+  return await getResponseDefault("/is_signed_in");
 }
 
 export async function logout() {
-  await fetch("/signout", {
-    credentials: "same-origin"
-  });
+  return await getResponseDefault("/signout");
 }

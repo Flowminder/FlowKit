@@ -117,7 +117,7 @@ class UserAdminDetails extends React.Component {
     return (
       <React.Fragment>
         <Grid xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             {(edit_mode && "Edit User") || "New User"}
           </Typography>
         </Grid>
@@ -161,7 +161,7 @@ class UserAdminDetails extends React.Component {
           />
         </Grid>
         <Grid xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             Administrator Rights
           </Typography>
         </Grid>
@@ -180,7 +180,7 @@ class UserAdminDetails extends React.Component {
           />
         </Grid>
         <Grid xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             Group Memberships
           </Typography>
         </Grid>

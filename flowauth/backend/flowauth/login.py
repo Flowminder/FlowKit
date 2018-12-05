@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flask import request, jsonify, Blueprint, current_app, session
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from flask_principal import identity_changed, Identity, AnonymousIdentity
 from werkzeug.exceptions import abort
 
@@ -28,6 +28,12 @@ def signin():
             )
             return jsonify({"logged_in": True, "is_admin": user.is_admin})
     raise Unauthorized("Incorrect username or password.")
+
+
+@blueprint.route("/is_signed_in")
+@login_required
+def is_signed_in():
+    return jsonify({"logged_in": True, "is_admin": current_user.is_admin})
 
 
 @blueprint.route("/signout")

@@ -47,7 +47,6 @@ def set_password():
         current_user.password = new_pass
         db.session.add(current_user)
         db.session.commit()
-        logout_user()
         return jsonify({}), 200
     else:
         raise InvalidUsage("Password incorrect.", payload={"bad_field": "password"})
