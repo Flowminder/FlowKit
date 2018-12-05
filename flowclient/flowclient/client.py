@@ -11,7 +11,7 @@ import pandas as pd
 import requests
 import time
 from requests import ConnectionError
-from typing import Tuple, Union, Dict
+from typing import Tuple, Union, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -360,6 +360,58 @@ def run_query(connection: Connection, query: dict) -> str:
         raise FlowclientConnectionError(
             f"Error running the query: {error}. Status code: {r.status_code}."
         )
+
+
+def location_event_counts(
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    count_interval: str,
+    direction: str = "all",
+    event_types: Union[str, List[str]] = "all",
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for a location event counts query aggregated spatially and temporally.
+    Counts are taken over between 00:01 of start_date up until 00:00 of end_date (i.e. exclusive date range).
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    count_interval : {"day", "hour", "minute"}
+    direction : {"in", "out", "all"}
+        Optionally, include only ingoing or outbound calls/texts
+    event_types : {"all", "calls", "sms", "mds"}:
+        Optionally, include only a subset of events.
+    subscriber_subset : dict or None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    if subscriber_subset is None:
+        subscriber_subset = "all"
+    return {
+        "query_kind": "location_event_counts",
+        "params": {
+            "start_date": start_date,
+            "end_date": end_date,
+            "interval": count_interval,
+            "aggregation_unit": aggregation_unit,
+            "direction": direction,
+            "event_types": event_types,
+            "subscriber_subset": subscriber_subset,
+        },
+    }
 
 
 def daily_location(
