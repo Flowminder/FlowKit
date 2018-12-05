@@ -489,6 +489,10 @@ def make_demodata():
     db.drop_all()
     db.create_all()
     agg_units = [SpatialAggregationUnit(name=f"admin{x}") for x in range(4)]
+    agg_units += [
+        SpatialAggregationUnit(name="cell"),
+        SpatialAggregationUnit(name="site"),
+    ]
     db.session.add_all(agg_units)
     users = [User(username="TEST_USER"), User(username="TEST_ADMIN", is_admin=True)]
     for user in users:
@@ -508,7 +512,7 @@ def make_demodata():
         db.session.add(x)
     # Add some things that you can do
     caps = []
-    for c in ("daily_location", "flows", "modal_location"):
+    for c in ("daily_location", "flows", "modal_location", "location_event_counts"):
         c = Capability(name=c)
         db.session.add(c)
         caps.append(c)
