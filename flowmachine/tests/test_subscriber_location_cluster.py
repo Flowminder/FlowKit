@@ -161,8 +161,10 @@ def test_call_threshold_works(get_dataframe):
     hartigan = HartiganCluster(cd, 50)
     har_df = hartigan.to_geopandas()
     assert any(har_df.calldays == 1)
-    har_df = get_dataframe(HartiganCluster(cd, 50, call_threshold=2))
-    assert all(har_df.calldays > 1)
+    har_df_higher_call_threshold = get_dataframe(
+        HartiganCluster(cd, 50, call_threshold=2)
+    )
+    assert len(har_df) > len(har_df_higher_call_threshold)
 
 
 def test_buffered_hartigan(get_dataframe):
