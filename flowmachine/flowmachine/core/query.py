@@ -510,8 +510,12 @@ class Query(metaclass=ABCMeta):
                 with con.begin():
                     sql = """CREATE SCHEMA IF NOT EXISTS {}""".format(schema)
                     con.execute(sql)
-                    for Q in Qs:
-                        con.execute(Q)
+                    try:
+                        for Q in Qs:
+                            con.execute(Q)
+                    except Exception as e:
+                        logger.error(f"Error executing SQL: '{Q}'. Error was {e}")
+                        raise e
                     logger.debug("Executed queries.")
                     if not as_view and schema == "cache":
                         self._db_store_cache_metadata()
