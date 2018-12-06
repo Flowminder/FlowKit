@@ -14,7 +14,7 @@ during a specified time period.
 
 """
 from ...core import JoinToLocation
-from ..utilities.sets import EventTableSubset, EventsTablesUnion
+from ..utilities.sets import EventsTablesUnion
 
 from ...core import Query
 from ...core.mixins import GeoDataMixin

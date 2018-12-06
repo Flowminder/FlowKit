@@ -109,3 +109,23 @@ def test_events_min(get_dataframe):
         ].total
     )[0]
     assert val == 1
+
+
+def test_bad_direction_raises_error():
+    """Total location events raises an error for a bad direction."""
+    with pytest.raises(ValueError):
+        TotalLocationEvents(
+            "2016-01-01",
+            "2016-01-04",
+            level="versioned-site",
+            interval="min",
+            direction="BAD_DIRECTION",
+        )
+
+
+def test_bad_interval_raises_error():
+    """Total location events raises an error for a bad interval."""
+    with pytest.raises(ValueError):
+        TotalLocationEvents(
+            "2016-01-01", "2016-01-04", level="versioned-site", interval="BAD_INTERVAL"
+        )
