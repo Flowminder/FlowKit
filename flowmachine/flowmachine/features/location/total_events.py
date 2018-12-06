@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List
+from typing import List, Union
 
 """
 Calculates the number of events at a location
@@ -24,7 +24,13 @@ from ...utils.utils import get_columns_for_level
 
 class _TotalCellEvents(Query):
     def __init__(
-        self, start, stop, table="all", interval="hour", direction="both", **kwargs
+        self,
+        start: str,
+        stop: str,
+        table: Union[str, List[str]] = "all",
+        interval: str = "hour",
+        direction: str = "both",
+        **kwargs
     ):
         self.start = start
         self.stop = stop
@@ -52,6 +58,8 @@ class _TotalCellEvents(Query):
         # have this information.
         if self.direction != "both":
             self.cols += ["outgoing"]
+        if self.direction not in ["in", "out", "both"]:
+            raise ValueError("Unrecognised direction: {}".format(self.direction))
 
         # list of columns that we want to group by, these are all the time
         # columns, plus the cell column
@@ -163,13 +171,13 @@ class TotalLocationEvents(GeoDataMixin, Query):
 
     def __init__(
         self,
-        start,
-        stop,
-        table="all",
-        level="cell",
-        interval="hour",
-        direction="both",
-        column_name=None,
+        start: str,
+        stop: str,
+        table: Union[str, List[str]] = "all",
+        level: str = "cell",
+        interval: str = "hour",
+        direction: str = "both",
+        column_name: Union[str, None] = None,
         **kwargs
     ):
 

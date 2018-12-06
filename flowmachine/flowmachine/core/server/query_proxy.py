@@ -145,7 +145,7 @@ def construct_query_object(query_kind, params):  # pragma: no cover
         event_types = params["event_types"]
 
         error_msg_prefix = f"Error when constructing query of kind {query_kind} with parameters {params}"
-        allowed_intervals = ["day", "hour", "minute"]
+        allowed_intervals = TotalLocationEvents.allowed_levels
         allowed_directions = ["in", "out", "all"]
         allowed_levels = [
             "admin0",
@@ -174,6 +174,8 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             raise QueryProxyError(
                 f"{error_msg_prefix}: 'Unrecognised direction '{direction}', must be one of: {allowed_directions}'"
             )
+        if direction == "all":
+            direction = "both"
 
         if subscriber_subset == "all":
             subscriber_subset = None
@@ -194,6 +196,7 @@ def construct_query_object(query_kind, params):  # pragma: no cover
                 level=level,
                 subscriber_subset=subscriber_subset,
             )
+            logger.debug(f"Made TotalLocationEvents query. {q.__dict__}")
         except Exception as e:
             raise QueryProxyError(f"{error_msg_prefix}: '{e}'")
     elif "modal_location" == query_kind:
