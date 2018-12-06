@@ -9,11 +9,8 @@ by clustering a set of locations according to a specified methodology.
 
 These methods are great options for reducing the dimensionality of the
 problem in hand.
-
-
-
 """
-import re
+
 from typing import List
 
 from ...core.query import Query
@@ -32,7 +29,7 @@ class BaseCluster(GeoDataMixin, Query):
         )
 
 
-def SubscriberLocationCluster(
+def subscriber_location_cluster(
     method,
     start,
     stop,
@@ -95,7 +92,7 @@ def SubscriberLocationCluster(
 
     Examples
     --------
-        >>> har = SubscriberLocationCluster(method='hartigan', start='2016-01-01',
+        >>> har = subscriber_location_cluster(method='hartigan', start='2016-01-01',
                                             stop='2016-01-04', radius=2)
 
         >>> har.head(geom=['cluster'])
@@ -116,11 +113,9 @@ def SubscriberLocationCluster(
 
     if method == "hartigan":
         if "radius" not in kwargs:
-            raise NameError("`radius` must be defined when using method: `hartigan`")
-        if "call_threshold" not in kwargs:
-            kwargs["call_threshold"] = 0
-        if "buffer" not in kwargs:
-            kwargs["buffer"] = 0
+            raise ValueError("`radius` must be defined when using method: `hartigan`")
+        call_threshold = kwargs.pop("call_threshold", 0)
+        buffer = kwargs.pop("buffer", 0)
 
         cd = CallDays(
             start=start,
@@ -135,8 +130,8 @@ def SubscriberLocationCluster(
         return HartiganCluster(
             calldays=cd,
             radius=kwargs["radius"],
-            buffer=kwargs["buffer"],
-            call_threshold=kwargs["call_threshold"],
+            buffer=buffer,
+            call_threshold=call_threshold,
         )
 
 

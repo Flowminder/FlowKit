@@ -31,7 +31,7 @@ subs = [
     "DayTrajectories",
     "LocationVisits",
     "NewSubscribers",
-    "SubscriberLocationCluster",
+    "subscriber_location_cluster",
     "HartiganCluster",
     "UniqueLocationCounts",
     "SubscriberDegree",
