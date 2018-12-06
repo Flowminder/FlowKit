@@ -205,7 +205,7 @@ class GroupServerPermissionDetails extends React.Component {
     return (
       <React.Fragment>
         <Grid item xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             Token Lifetime Limits
           </Typography>
         </Grid>
@@ -234,14 +234,14 @@ class GroupServerPermissionDetails extends React.Component {
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             API Permissions
           </Typography>
         </Grid>
         <Divider />
         {this.renderRights()}
         <Grid item xs={12}>
-          <Typography variant="headline" component="h1">
+          <Typography variant="h5" component="h1">
             Aggregation Units
           </Typography>
         </Grid>

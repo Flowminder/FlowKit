@@ -32,6 +32,22 @@ def test_login_validate_input(auth, username, password):
     assert b"Incorrect username or password." in response.data
 
 
+def test_is_logged_in(client, auth, test_user):
+    """Test is_logged_in route returns True and correct 'is_admin'."""
+    uid, username, password = test_user
+    auth.login(username, password)
+
+    with client:
+        response = client.get("/is_signed_in")
+        assert {"logged_in": True, "is_admin": False} == response.get_json()
+
+
+def test_is_logged_in(client):
+    """Test is_logged_in route returns 401 when not logged in."""
+    with client:
+        assert client.get("/is_signed_in").status_code == 401
+
+
 def test_logout(client, auth, test_user):
     """Test that we can log out"""
     uid, username, password = test_user

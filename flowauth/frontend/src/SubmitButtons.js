@@ -14,7 +14,7 @@ function SubmitButtons(props) {
 				<Button
 					type="submit"
 					fullWidth
-					variant="raised"
+					variant="contained"
 					color="primary"
 					onClick={handleSubmit}
 				>
@@ -25,7 +25,7 @@ function SubmitButtons(props) {
 				<Button
 					type="submit"
 					fullWidth
-					variant="raised"
+					variant="contained"
 					color="secondary"
 					onClick={onClick}
 				>

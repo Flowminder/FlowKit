@@ -102,8 +102,7 @@ def test_password_reset(client, auth, test_user):
 
         assert {} == response.get_json()  # Should get nothing back
 
-        assert "user_id" not in session  # Should be logged out
-
+    auth.logout()
     response, _ = auth.login(
         username, new_password
     )  # Should be able to log with new password

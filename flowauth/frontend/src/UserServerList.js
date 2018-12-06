@@ -36,6 +36,7 @@ class UserServerList extends React.Component {
           <ListSubheader inset>My Servers</ListSubheader>
           {this.state.servers.map((object, i) => (
             <ServerButton
+              key={object.id}
               name={object.server_name}
               id={object.id}
               onClick={onClick}

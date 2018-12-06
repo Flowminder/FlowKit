@@ -23,3 +23,6 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("resetDB", () => cy.exec("pipenv run flask demodata"))
+Cypress.Commands.add("login", () => cy.request("POST", "/signin", { username: "TEST_USER", password: "DUMMY_PASSWORD" }))
