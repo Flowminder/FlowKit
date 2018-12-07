@@ -1381,18 +1381,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../home_location/" title="home_location" class="md-nav__link">
-      home_location
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../last_location/" title="last_location" class="md-nav__link">
       last_location
     </a>
@@ -1419,6 +1407,18 @@
   <li class="md-nav__item">
     <a href="../metaclasses/" title="metaclasses" class="md-nav__link">
       metaclasses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../modal_location/" title="modal_location" class="md-nav__link">
+      modal_location
     </a>
   </li>
 
@@ -1894,26 +1894,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#plot" title="plot" class="md-nav__link">
-    plot
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#returns_10" title="Returns" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#random_sample" title="random_sample" class="md-nav__link">
     random_sample
   </a>
@@ -1929,7 +1909,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_11" title="Returns" class="md-nav__link">
+  <a href="#returns_10" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -1956,7 +1936,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_12" title="Returns" class="md-nav__link">
+  <a href="#returns_11" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -1983,7 +1963,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_13" title="Returns" class="md-nav__link">
+  <a href="#returns_12" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -2030,7 +2010,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_14" title="Returns" class="md-nav__link">
+  <a href="#returns_13" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -2071,7 +2051,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_15" title="Returns" class="md-nav__link">
+  <a href="#returns_14" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -2751,26 +2731,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#plot" title="plot" class="md-nav__link">
-    plot
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#returns_10" title="Returns" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#random_sample" title="random_sample" class="md-nav__link">
     random_sample
   </a>
@@ -2786,7 +2746,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_11" title="Returns" class="md-nav__link">
+  <a href="#returns_10" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -2813,7 +2773,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_12" title="Returns" class="md-nav__link">
+  <a href="#returns_11" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -2840,7 +2800,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_13" title="Returns" class="md-nav__link">
+  <a href="#returns_12" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -2887,7 +2847,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_14" title="Returns" class="md-nav__link">
+  <a href="#returns_13" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -2928,7 +2888,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#returns_15" title="Returns" class="md-nav__link">
+  <a href="#returns_14" title="Returns" class="md-nav__link">
     Returns
   </a>
   
@@ -3030,7 +2990,7 @@
     <span class="n">start</span><span class="p">,</span> <span class="n">total_periods</span><span class="p">,</span> <span class="n">period_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">period_unit</span><span class="o">=</span><span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/total_active_periods.py#L33">flowmachine/features/subscriber/total_active_periods.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/total_active_periods.py#L31">flowmachine/features/subscriber/total_active_periods.py</a></p>
 <p>Breaks a time span into distinct time periods (currently integer number of days). For each subscriber counts the total number of time periods in which each subscriber was seen.
 For instance we might ask for a month worth of data, break down our month into 10 3 day chunks, and ask for each subscriber how many of these three day chunks each subscriber was present in the data in.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
@@ -3349,15 +3309,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <ul>
 <li><code>Numeric subset object</code></li>
 </ul>
-<h4 id="plot">plot<a class="headerlink" href="#plot" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/total_active_periods.py#L138">flowmachine/features/subscriber/total_active_periods.py</a></p>
-<p>Makes a histogram of the resulting data. kwargs passed to pandas.Dataframe.plot.hist</p>
-<h5 id="returns_10">Returns<a class="headerlink" href="#returns_10" title="Permanent link">&para;</a></h5>
-<ul>
-<li><code>Matplotlib axes object.</code></li>
-</ul>
 <h4 id="random_sample">random_sample<a class="headerlink" href="#random_sample" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">random_sample</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
@@ -3393,7 +3344,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p>Optionally provide a seed for repeatable random samples, which should be between -/+1. Not available in combination with the system_rows method.</p>
 </li>
 </ul>
-<h5 id="returns_11">Returns<a class="headerlink" href="#returns_11" title="Permanent link">&para;</a></h5>
+<h5 id="returns_10">Returns<a class="headerlink" href="#returns_10" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
 <p><code>Random</code></p>
@@ -3416,7 +3367,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p>Will overwrite an existing table if the name already exists</p>
 </li>
 </ul>
-<h5 id="returns_12">Returns<a class="headerlink" href="#returns_12" title="Permanent link">&para;</a></h5>
+<h5 id="returns_11">Returns<a class="headerlink" href="#returns_11" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
 <p><code>Future</code></p>
@@ -3439,7 +3390,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p>List of values to subset to</p>
 </li>
 </ul>
-<h5 id="returns_13">Returns<a class="headerlink" href="#returns_13" title="Permanent link">&para;</a></h5>
+<h5 id="returns_12">Returns<a class="headerlink" href="#returns_12" title="Permanent link">&para;</a></h5>
 <ul>
 <li><code>Subset object</code></li>
 </ul>
@@ -3505,7 +3456,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p>Will overwrite an existing table if the name already exists</p>
 </li>
 </ul>
-<h5 id="returns_14">Returns<a class="headerlink" href="#returns_14" title="Permanent link">&para;</a></h5>
+<h5 id="returns_13">Returns<a class="headerlink" href="#returns_13" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
 <p><code>Future</code></p>
@@ -3542,7 +3493,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p>If true returns sql UNION ALL else returns UNION</p>
 </li>
 </ul>
-<h5 id="returns_15">Returns<a class="headerlink" href="#returns_15" title="Permanent link">&para;</a></h5>
+<h5 id="returns_14">Returns<a class="headerlink" href="#returns_14" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
 <p><code>Union</code></p>

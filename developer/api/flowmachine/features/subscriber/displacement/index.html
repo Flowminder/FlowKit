@@ -1933,18 +1933,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../home_location/" title="home_location" class="md-nav__link">
-      home_location
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../last_location/" title="last_location" class="md-nav__link">
       last_location
     </a>
@@ -1971,6 +1959,18 @@
   <li class="md-nav__item">
     <a href="../metaclasses/" title="metaclasses" class="md-nav__link">
       metaclasses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../modal_location/" title="modal_location" class="md-nav__link">
+      modal_location
     </a>
   </li>
 
@@ -2947,12 +2947,12 @@
 <p>The maximum displacement of a user from its home location</p>
 <h2 id="class-displacement">Class <strong>Displacement</strong><a class="headerlink" href="#class-displacement" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">Displacement</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">home_locations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;km&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">modal_locations</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;km&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/displacement.py#L24">flowmachine/features/subscriber/displacement.py</a></p>
 <p>Calculates  statistics of a subscribers displacement from their home location.
-Class representing the displacement from their home location  for all subscribers within a certain time frame. This will  return displacement from home for all subscribers in HomeLocation.  If a user with a home location makes no calls between start and stop then a NaN value will be returned.</p>
+Class representing the displacement from their home location  for all subscribers within a certain time frame. This will  return displacement from home for all subscribers in ModalLocation. If a user with a home location makes no calls between start and stop then a NaN value will be returned.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -2988,8 +2988,8 @@ Class representing the displacement from their home location  for all subscriber
 <p>As above</p>
 </li>
 <li>
-<p><code>home_locations</code>: <code>HomeLocation</code></p>
-<p>The set of home locations from which to calculate displacement. If not given then HomeLocation Query wil be created over period start -&gt; stop.</p>
+<p><code>modal_locations</code>: <code>ModalLocation</code></p>
+<p>The set of home locations from which to calculate displacement. If not given then ModalLocation Query wil be created over period start -&gt; stop.</p>
 </li>
 <li>
 <p><code>statistic</code>: <code>str</code></p>

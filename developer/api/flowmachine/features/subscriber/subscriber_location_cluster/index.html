@@ -1381,18 +1381,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../home_location/" title="home_location" class="md-nav__link">
-      home_location
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../last_location/" title="last_location" class="md-nav__link">
       last_location
     </a>
@@ -1419,6 +1407,18 @@
   <li class="md-nav__item">
     <a href="../metaclasses/" title="metaclasses" class="md-nav__link">
       metaclasses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../modal_location/" title="modal_location" class="md-nav__link">
+      modal_location
     </a>
   </li>
 
@@ -2807,8 +2807,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#subscriberlocationcluster" title="SubscriberLocationCluster" class="md-nav__link">
-    SubscriberLocationCluster
+  <a href="#subscriber_location_cluster" title="subscriber_location_cluster" class="md-nav__link">
+    subscriber_location_cluster
   </a>
   
     <nav class="md-nav">
@@ -4397,8 +4397,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#subscriberlocationcluster" title="SubscriberLocationCluster" class="md-nav__link">
-    SubscriberLocationCluster
+  <a href="#subscriber_location_cluster" title="subscriber_location_cluster" class="md-nav__link">
+    subscriber_location_cluster
   </a>
   
     <nav class="md-nav">
@@ -4447,7 +4447,7 @@ These methods are great options for reducing the dimensionality of the problem i
 <h2 id="class-basecluster">Class <strong>BaseCluster</strong><a class="headerlink" href="#class-basecluster" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">BaseCluster</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L24">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L21">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Base query for cluster methods, providing a geo augmented query method.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
 <ul>
@@ -5004,7 +5004,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-hartigancluster">Class <strong>HartiganCluster</strong><a class="headerlink" href="#class-hartigancluster" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">HartiganCluster</span><span class="p">(</span><span class="n">calldays</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="nb">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">call_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L143">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L138">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Implements the Hartigan Clustering algorithm.
 The algorithm clusters locations based on a ranked listed of call days. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup>  The Hartigan clustering algorithm will pick up the site associated with the highest call days and form a cluster on that site. It will descend the ranked list of call days from the top. The second site associated with the highest call days will be incorporated into the the first cluster if it is within a certain radius of it. In such case, a new cluster centroid is calculated by taking a weighted average by the call days of all the sites in the cluster. Eventually, when the algorithm lands on a site which is not within the radius of all the available clusters, it will create a new cluster on that particular site.  The class will produce a table where each row lists a cluster for a given subscriber, the rank of that cluster, the total number of call days in that cluster (which is the sum of all call days constituting that cluster and not the actual call days of the cluster), and all the sites which constitute that cluster.</p>
 <h3 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h3>
@@ -5279,7 +5279,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="join_to_cluster_components">join_to_cluster_components<a class="headerlink" href="#join_to_cluster_components" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">join_to_cluster_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L255">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L250">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Join the versioned-sites composing the Hartigan cluster table with another table containing versioned-sites.</p>
 <h5 id="parameters_22">Parameters<a class="headerlink" href="#parameters_22" title="Permanent link">&para;</a></h5>
 <ul>
@@ -5620,7 +5620,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names_1">column_names<a class="headerlink" href="#column_names_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L251">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L246">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies_1">dependencies<a class="headerlink" href="#dependencies_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
@@ -5645,8 +5645,8 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L590">flowmachine/core/query.py</a></p>
 <p>Returns a unique name for the query to be stored under, based on a hash of the parameters, class, and subqueries.</p>
-<h2 id="subscriberlocationcluster">SubscriberLocationCluster<a class="headerlink" href="#subscriberlocationcluster" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">SubscriberLocationCluster</span><span class="p">(</span>
+<h2 id="subscriber_location_cluster">subscriber_location_cluster<a class="headerlink" href="#subscriber_location_cluster" title="Permanent link">&para;</a></h2>
+<p><div class="codehilite"><pre><span></span><span class="n">subscriber_location_cluster</span><span class="p">(</span>
     <span class="n">method</span><span class="p">,</span>
     <span class="n">start</span><span class="p">,</span>
     <span class="n">stop</span><span class="p">,</span>
@@ -5656,7 +5656,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L35">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L32">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Represents a location clustering class. This is a wrapper for all the location clustering methods available in <code>flowmachine</code>.
 This class allows the subscriber to produce location clusters just based on CDR parameters like start and stop dates, hours, etc without the need to pass method specific data formats.</p>
 <h3 id="parameters_34">Parameters<a class="headerlink" href="#parameters_34" title="Permanent link">&para;</a></h3>
@@ -5691,7 +5691,7 @@ This class allows the subscriber to produce location clusters just based on CDR 
 </li>
 </ul>
 <h3 id="examples_6">Examples<a class="headerlink" href="#examples_6" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span>&amp;gt;&amp;gt;&amp;gt; har = SubscriberLocationCluster(method=&#39;hartigan&#39;, start=&#39;2016-01-01&#39;,                                         stop=&#39;2016-01-04&#39;, radius=2)      &amp;gt;&amp;gt;&amp;gt; har.head(geom=[&#39;cluster&#39;])                 subscriber                                cluster  rank  calldays     038OVABN11Ak4W5P        POINT (82.60170958 29.81591927)     1         2     038OVABN11Ak4W5P    POINT (82.91428457000001 29.358975)     2         2     038OVABN11Ak4W5P  POINT (81.63916106000001 28.21192983)     3         1     038OVABN11Ak4W5P        POINT (87.26522455 27.58509554)     4         1     038OVABN11Ak4W5P  POINT (80.86633861999999 28.70767038)     5         1     ...
+<div class="codehilite"><pre><span></span>&amp;gt;&amp;gt;&amp;gt; har = subscriber_location_cluster(method=&#39;hartigan&#39;, start=&#39;2016-01-01&#39;,                                         stop=&#39;2016-01-04&#39;, radius=2)      &amp;gt;&amp;gt;&amp;gt; har.head(geom=[&#39;cluster&#39;])                 subscriber                                cluster  rank  calldays     038OVABN11Ak4W5P        POINT (82.60170958 29.81591927)     1         2     038OVABN11Ak4W5P    POINT (82.91428457000001 29.358975)     2         2     038OVABN11Ak4W5P  POINT (81.63916106000001 28.21192983)     3         1     038OVABN11Ak4W5P        POINT (87.26522455 27.58509554)     4         1     038OVABN11Ak4W5P  POINT (80.86633861999999 28.70767038)     5         1     ...
 </pre></div>
 
 
