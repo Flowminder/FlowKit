@@ -128,7 +128,7 @@ class CellToAdmin(Query):
     column_name : str, optional
         Pass a string of the column to use as the
         identifier of the admin region. By default
-        this will be admin*name. But you may wish
+        this will be admin*pcod. But you may wish
         to use something else, such as admin3name.
     """
 
