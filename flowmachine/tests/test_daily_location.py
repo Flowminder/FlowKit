@@ -36,14 +36,14 @@ def test_equivalent_to_locate_subscribers_with_time(get_dataframe):
     assert (dl_df == mfl_df).all().all()
 
 
-def test_works_with_pcods(get_dataframe):
+def test_works_with_admin_names(get_dataframe):
     """
-    We can get daily locations with p-codes rather than the standard names.
+    We can get daily locations with admin names rather than pcodes.
     """
 
-    dl = daily_location("2016-01-05", level="admin3", column_name="admin3pcod")
+    dl = daily_location("2016-01-05", level="admin3", column_name="admin3name")
     df = get_dataframe(dl)
-    assert df.admin3pcod[0].startswith("524")
+    assert "Lamjung" == df.admin3name[0]
 
 
 def test_hours(get_length):

@@ -8,8 +8,6 @@ import pytest
 import os
 
 import requests
-from flask_jwt_extended.tokens import encode_access_token
-from quart.json import JSONEncoder
 from .utils import make_token
 
 

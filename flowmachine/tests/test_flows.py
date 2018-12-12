@@ -1,11 +1,15 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
 import json
+import os
+
+import pytest
+
+from hashlib import md5
+
 from flowmachine.features import daily_location
 from flowmachine.features.location.flows import *
-import pytest, os
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 pytestmark = pytest.mark.usefixtures("skip_datecheck")
@@ -57,19 +61,19 @@ def test_calculates_flows(get_dataframe):
     flow = Flows(dl1, dl2)
     df = get_dataframe(flow)
     assert (
-        df[(df.name_from == "Arghakhanchi") & (df.name_to == "Dadeldhura")][
+        df[(df.pcod_from == "524 3 09 50") & (df.pcod_to == "524 5 14 73")][
             "count"
         ].values[0]
         == 2
     )
     assert (
-        df[(df.name_from == "Salyan") & (df.name_to == "Kavrepalanchok")][
+        df[(df.pcod_from == "524 4 10 53") & (df.pcod_to == "524 2 05 24")][
             "count"
         ].values[0]
         == 2
     )
     assert (
-        df[(df.name_from == "Sankhuwasabha") & (df.name_to == "Myagdi")][
+        df[(df.pcod_from == "524 1 02 09") & (df.pcod_to == "524 3 08 44")][
             "count"
         ].values[0]
         == 4
@@ -86,5 +90,6 @@ def test_flows_geojson_correct():
     fl_json = flow.to_geojson()
     directory = os.path.dirname(os.path.os.path.realpath(__file__))
     reference_file = os.path.join(directory, "./data/", "flows_reference.json")
-    with open(reference_file) as fin:
-        assert fl_json == json.load(fin)
+    with open(reference_file) as ref:
+        ref_json = json.load(ref)
+    assert ref_json == fl_json
