@@ -21,9 +21,9 @@ def test_a_squared(get_dataframe):
     flowA = Flows(dl1, dl2)
     relfl = flowA ** 2
     df_rel = get_dataframe(relfl)
-    diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Myagdi")][
-        "count"
-    ].values[0]
+    diff = df_rel[
+        (df_rel.pcod_from == "524 5 13 67") & (df_rel.pcod_to == "524 3 08 44")
+    ]["count"].values[0]
     assert 9 == diff
 
 
@@ -36,9 +36,9 @@ def test_a_negative_exp(get_dataframe):
     flowA = Flows(dl1, dl2)
     relfl = flowA ** -1
     df_rel = get_dataframe(relfl)
-    diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Myagdi")][
-        "count"
-    ].values[0]
+    diff = df_rel[
+        (df_rel.pcod_from == "524 5 13 67") & (df_rel.pcod_to == "524 3 08 44")
+    ]["count"].values[0]
     assert pytest.approx(1 / 3) == diff
 
 
@@ -51,9 +51,9 @@ def test_a_float_exp(get_dataframe):
     flowA = Flows(dl1, dl2)
     relfl = flowA ** 0.5
     df_rel = get_dataframe(relfl)
-    diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Myagdi")][
-        "count"
-    ].values[0]
+    diff = df_rel[
+        (df_rel.pcod_from == "524 5 13 67") & (df_rel.pcod_to == "524 3 08 44")
+    ]["count"].values[0]
     assert 3 ** 0.5 == diff
 
 

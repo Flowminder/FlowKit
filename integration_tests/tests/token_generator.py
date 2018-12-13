@@ -1,8 +1,6 @@
-from flask_jwt_extended.tokens import encode_access_token
-from quart.json import JSONEncoder
 from datetime import timedelta
 import click
-from utils import make_token, permissions_types, aggregation_types
+from .utils import make_token, permissions_types, aggregation_types
 
 
 @click.command()

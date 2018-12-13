@@ -12,6 +12,8 @@ requests = "*"
 pytest-dotenv = "*"
 sqlalchemy = "*"
 pytest-asyncio = "*"
+flowmachine = {editable = true,path = "./../flowmachine"}
+flowclient = {editable = true,path = "./../flowclient"}
 
 [requires]
 python_version = "3.7"

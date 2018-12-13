@@ -22,9 +22,9 @@ def test_a_mul_b(get_dataframe):
     flowB = Flows(dl1, dl3)
     relfl = flowA * flowB
     df_rel = get_dataframe(relfl)
-    diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Myagdi")][
-        "count"
-    ].values[0]
+    diff = df_rel[
+        (df_rel.pcod_from == "524 5 13 67") & (df_rel.pcod_to == "524 3 08 44")
+    ]["count"].values[0]
     assert 12 == diff
 
 
@@ -37,9 +37,9 @@ def test_a_mul_int(get_dataframe):
     flowA = Flows(dl1, dl2)
     relfl = flowA * 2
     df_rel = get_dataframe(relfl)
-    diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Myagdi")][
-        "count"
-    ].values[0]
+    diff = df_rel[
+        (df_rel.pcod_from == "524 5 13 67") & (df_rel.pcod_to == "524 3 08 44")
+    ]["count"].values[0]
     assert 6 == diff
 
 
@@ -52,9 +52,9 @@ def test_a_mul_float(get_dataframe):
     flowA = Flows(dl1, dl2)
     relfl = flowA * 6.5
     df_rel = get_dataframe(relfl)
-    diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Myagdi")][
-        "count"
-    ].values[0]
+    diff = df_rel[
+        (df_rel.pcod_from == "524 5 13 67") & (df_rel.pcod_to == "524 3 08 44")
+    ]["count"].values[0]
     assert 3 * 6.5 == diff
 
 
@@ -68,9 +68,9 @@ def test_a_mul_fraction(get_dataframe):
     flowA = Flows(dl1, dl2)
     relfl = flowA * 0.5
     df_rel = get_dataframe(relfl)
-    diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Myagdi")][
-        "count"
-    ].values[0]
+    diff = df_rel[
+        (df_rel.pcod_from == "524 5 13 67") & (df_rel.pcod_to == "524 3 08 44")
+    ]["count"].values[0]
     assert pytest.approx(3 / 2) == diff
 
 
@@ -97,6 +97,6 @@ def test_a_mul_b_no_b_flow(get_dataframe):
     relfl = flowA * flowB
     df_rel = get_dataframe(relfl)
     with pytest.raises(IndexError):
-        diff = df_rel[(df_rel.name_from == "Humla") & (df_rel.name_to == "Kapilbastu")][
-            "count"
-        ].values[0]
+        diff = df_rel[
+            (df_rel.pcod_from == "524 4 12 66") & (df_rel.pcod_to == "524 3 09 49")
+        ]["count"].values[0]
