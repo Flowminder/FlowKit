@@ -16,7 +16,7 @@ def test_can_be_aggregated_admin3(get_dataframe):
     )
     agg = mfl.aggregate()
     df = get_dataframe(agg)
-    assert ["name", "total"] == list(df.columns)
+    assert ["pcod", "total"] == list(df.columns)
 
 
 def test_can_be_aggregated_latlong(get_dataframe):

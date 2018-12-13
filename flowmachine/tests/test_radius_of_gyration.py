@@ -52,4 +52,4 @@ def test_can_be_joined(get_dataframe):
     rog_JA = RoG.join_aggregate(dl)
     df = get_dataframe(rog_JA)
     assert isinstance(df, pd.DataFrame)
-    assert rog_JA.column_names == ["name", "rog"]
+    assert rog_JA.column_names == ["pcod", "rog"]

@@ -32,7 +32,7 @@ subscriber_plus_levels = [
     ["subscriber", "lat", "lon"],
     ["subscriber", "grid_id"],
     ["subscriber", "admin3pcod"],
-    ["subscriber", "name"],
+    ["subscriber", "pcod"],
 ]
 
 levels_only = [
@@ -42,7 +42,7 @@ levels_only = [
     ["lat", "lon"],
     ["grid_id"],
     ["admin3pcod"],
-    ["name"],
+    ["pcod"],
 ]
 
 

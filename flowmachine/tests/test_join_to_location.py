@@ -110,7 +110,7 @@ def test_join_to_admin(get_dataframe, get_length):
     ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
     df = get_dataframe(JoinToLocation(ul, level="admin3"))
     assert len(df) == get_length(ul)
-    expected_cols = sorted(["subscriber", "time", "location_id", "name"])
+    expected_cols = sorted(["subscriber", "time", "location_id", "pcod"])
     assert sorted(df.columns) == expected_cols
 
 

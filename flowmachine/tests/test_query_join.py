@@ -57,7 +57,7 @@ def test_name_append():
     dl2 = daily_location("2016-01-02")
 
     df = dl1.join(dl2, on_left="subscriber", left_append="_left", right_append="_right")
-    assert ["subscriber", "name_left", "name_right"] == df.column_names
+    assert ["subscriber", "pcod_left", "pcod_right"] == df.column_names
 
 
 def test_value_of_join(get_dataframe):
@@ -70,7 +70,7 @@ def test_value_of_join(get_dataframe):
     df = get_dataframe(
         dl1.join(dl2, on_left="subscriber", left_append="_day1", right_append="_day2")
     )
-    assert ["Rukum", "Baglung"] == list(
+    assert ["524 4 10 52", "524 3 08 43"] == list(
         df.set_index("subscriber").ix["ye8jQ0ovnGd9GlJa"]
     )
     assert 490 == len(df)
