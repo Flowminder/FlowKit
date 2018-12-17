@@ -98,11 +98,11 @@
         },
         "pyjwt": {
             "hashes": [
-                "sha256:00414bfef802aaecd8cc0d5258b6cb87bd8f553c2986c2c5f29b19dd5633aeb7",
-                "sha256:ddec8409c57e9d371c6006e388f91daf3b0b43bdf9fcbf99451fb7cf5ce0a86d"
+                "sha256:5c6eca3c2940464d106b99ba83b00c6add741c9becaec087fb7ccdefea71350e",
+                "sha256:8d59a976fb773f3e6a39c85636357c4f0e242707394cadadd9814f5cbaa20e96"
             ],
             "index": "pypi",
-            "version": "==1.7.0"
+            "version": "==1.7.1"
         },
         "python-dateutil": {
             "hashes": [
