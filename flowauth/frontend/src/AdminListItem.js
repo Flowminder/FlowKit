@@ -25,13 +25,21 @@ function AdminListItem(props) {
       >
         {editAction && (
           <Grid item>
-            <IconButton color="inherit" onClick={() => editAction(id)}>
+            <IconButton
+              color="inherit"
+              onClick={() => editAction(id)}
+              id={"edit_" + id}
+            >
               <EditIcon />
             </IconButton>
           </Grid>
         )}
         <Grid item>
-          <IconButton color="inherit" onClick={() => deleteAction(id)}>
+          <IconButton
+            color="inherit"
+            onClick={() => deleteAction(id)}
+            id={"rm_" + id}
+          >
             <DeleteIcon />
           </IconButton>
         </Grid>
