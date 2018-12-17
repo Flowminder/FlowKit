@@ -33,7 +33,7 @@ class Listing extends React.Component {
   }
   rmObj = obj_id => {
     const { deleteAction } = this.props;
-    deleteAction.then(json =>
+    deleteAction(obj_id).then(json =>
       this.setState({
         objs: this.state.objs.filter(obj => obj.id !== obj_id)
       })

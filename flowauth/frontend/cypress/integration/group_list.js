@@ -23,7 +23,19 @@ describe("Group list screen", function() {
 
     it("Delete group", function() {
         cy.get("#rm_2").click();
-        // Check that new group appears
+        // Check that the group is gone
+        cy.contains("Test Group").should("not.be.visible");
+    });
+
+    it("Edit group", function() {
+        cy.get("#edit_2").click();
+        // Check that group is populated and window title is edit
+        cy.contains("Edit Group").should("be.visible");
+        cy.get("#group_name").should("have.value", "Test Group");
+        cy.get("#group_name").type("{selectall}DUMMY_GROUP");
+        cy.contains("Save").click();
+        // Check that group is renamed
+        cy.contains("DUMMY_GROUP").should("be.visible");
         cy.contains("Test Group").should("not.be.visible");
     });
 });
