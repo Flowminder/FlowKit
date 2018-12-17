@@ -23,6 +23,7 @@ describe("Group list screen", function() {
     });
 
     it("Delete group", function() {
+        cy.contains("Test Group").should("be.visible");
         cy.get("#rm_2").click();
         // Check that the group is gone
         cy.contains("Test Group").should("not.be.visible");
