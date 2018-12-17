@@ -78,7 +78,7 @@ class GroupDetails extends React.Component {
         </Grid>
         <Grid xs={12}>
           <TextField
-            id="standard-name"
+            id="group_name"
             label="Name"
             className={classes.textField}
             value={this.state.name}
