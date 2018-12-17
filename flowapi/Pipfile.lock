@@ -95,11 +95,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:3931144309c40341a46a2d054ac550bbd012a1f1a803774b5d6a3add90f52259",
-                "sha256:4df03fbc101efb4faf0b0883863ff7e620f94310e309311ceafaadb38ee1fa36"
+                "sha256:70e9bd94463a29063654f8cdb45697528c6755b7a812212c46d1c31d78951667",
+                "sha256:e6ad1c6c19b7eee74b47347f4b2d2924c5ea58790b2e921310b0306aa6095126"
             ],
             "index": "pypi",
-            "version": "==0.4.2"
+            "version": "==0.4.3"
         },
         "hyperframe": {
             "hashes": [
@@ -376,11 +376,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:1d131cc532be0023ef8ae265e2a779938d0619bb6c2510f52987ffcba7fa1ee4",
-                "sha256:ca4761407f1acc85ffd1609f464ca20bb71a767803505bd4127d0e45c5a50e23"
+                "sha256:f689bf2fc18c4585403348dd56f47d87780bf217c53ed9ae7a3e2d7faa45f8e9",
+                "sha256:f812ea39a0153566be53d88f8de94839db1e8a05352ed8a49525d7d7f37861e9"
             ],
             "index": "pypi",
-            "version": "==4.0.1"
+            "version": "==4.0.2"
         },
         "pytest-asyncio": {
             "hashes": [

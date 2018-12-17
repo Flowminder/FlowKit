@@ -1,0 +1,28 @@
+pull_request_rules:
+  - name: Automatic merge for approved PRs labelled as ready
+    conditions:
+      - base=master
+      - "#approved-reviews-by>=1"
+      - label=ready-to-merge
+      - status-success=codecov/project
+      - status-success=run_build_pipeline
+      - status-success=Travis CI - Pull Request
+    actions:
+      merge:
+        method: rebase
+        strict: true
+  - name: automatic merge for Dependabot pull requests on master
+    conditions:
+      - author=dependabot[bot]
+      - status-success=Travis CI - Pull Request
+      - status-success=run_build_pipeline
+      - base=master
+    actions:
+      merge:
+        method: rebase
+        strict: smart
+  - name: Delete branch after merge
+    actions:
+      delete_head_branch: {}
+    conditions:
+      - merged
