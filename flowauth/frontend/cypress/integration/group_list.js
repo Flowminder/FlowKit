@@ -14,6 +14,7 @@ describe("Group list screen", function() {
 
     it("Add group", function() {
         // Add a new group
+        cy.contains("DUMMY_GROUP").should('not.exist')
         cy.get("#new").click();
         cy.get("#group_name").type("DUMMY_GROUP");
         cy.contains("Save").click();
