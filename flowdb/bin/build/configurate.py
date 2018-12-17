@@ -14,7 +14,8 @@ with placeholder fields:
 - `effective_cache_size` (75% of total memory)
 - `shared_buffers` (25% of total memory up to a max of 16GB)
 - `gendate` (Run time stamp of this script)
-
+- `stats_target` (default_statistics_target)
+- `use_jit` (enable/disable jit)
 """
 
 import datetime
@@ -62,6 +63,10 @@ workers = int(os.getenv("MAX_WORKERS", ceil(cores / 2)))
 workers_per_gather = int(os.getenv("MAX_WORKERS_PER_GATHER", ceil(cores / 2)))
 effective_cache_size = _humansize(ceil(0.75 * total_mem))
 debugging = ",plugin_debugger" if bool_env("DEBUG") else ""
+use_jit = "on" if bool_env("JIT") else "off"
+stats_target = int(
+    os.getenv("STATS_TARGET", 10000)
+)  # Default to higher than pg default
 
 config_path = os.getenv(
     "AUTO_CONFIG_PATH", "/var/lib/postgresql/data/postgresql.configurator.conf"
@@ -80,6 +85,8 @@ with open("/docker-entrypoint-initdb.d/pg_config_template.conf") as fin:
         effective_cache_size=effective_cache_size,
         shared_buffers=shared_buffers,
         gendate=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        stats_target=stats_target,
+        use_jit=use_jit,
     )
 
 print("Writing config file to", config_path)
