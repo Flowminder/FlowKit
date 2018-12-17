@@ -28,10 +28,16 @@ def test_some_results(get_dataframe):
     LocationIntroversion() returns a dataframe that contains hand-picked results.
     """
     df = get_dataframe(LocationIntroversion("2016-01-01", "2016-01-07", level="admin3"))
-    set_df = df.set_index("name")
-    assert round(set_df.loc["Dolpa"]["introversion"], 6) == pytest.approx(0.108517)
-    assert round(set_df.loc["Myagdi"]["introversion"], 6) == pytest.approx(0.097884)
-    assert round(set_df.loc["Ramechhap"]["extroversion"], 6) == pytest.approx(0.936842)
+    set_df = df.set_index("pcod")
+    assert round(set_df.loc["524 4 12 62"]["introversion"], 6) == pytest.approx(
+        0.108517
+    )
+    assert round(set_df.loc["524 3 08 44"]["introversion"], 6) == pytest.approx(
+        0.097884
+    )
+    assert round(set_df.loc["524 2 04 21"]["extroversion"], 6) == pytest.approx(
+        0.936842
+    )
 
 
 def test_lat_lng_introversion(get_dataframe):

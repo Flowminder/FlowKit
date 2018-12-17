@@ -35,9 +35,9 @@ def test_a_sub_b(flows, get_dataframe):
     flow_a, flow_b = flows
     relfl = flow_a - flow_b
     df_rel = get_dataframe(relfl)
-    diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Dadeldhura")][
-        "count"
-    ].values[0]
+    diff = df_rel[
+        (df_rel.pcod_from == "524 5 13 67") & (df_rel.pcod_to == "524 5 14 73")
+    ]["count"].values[0]
     assert 1 == diff
 
 
@@ -48,10 +48,10 @@ def test_a_sub_b_negative(flows, get_dataframe):
     flow_a, flow_b = flows
     relfl = flow_a - flow_b
     df_rel = get_dataframe(relfl)
-    # Bajhang    Myagdi  3   4.0
-    diff = df_rel[(df_rel.name_from == "Bajhang") & (df_rel.name_to == "Myagdi")][
-        "count"
-    ].values[0]
+    # 524 5 13 67    524 3 08 44  3   4.0
+    diff = df_rel[
+        (df_rel.pcod_from == "524 5 13 67") & (df_rel.pcod_to == "524 3 08 44")
+    ]["count"].values[0]
     assert -1 == diff
 
 
@@ -61,7 +61,7 @@ def test_sub_commutative(flows, get_dataframe):
     """
     flow_a, flow_b = flows
     diff = get_dataframe(flow_a - (flow_a - flow_b))
-    diff = diff[(diff.name_from == "Bajhang") & (diff.name_to == "Myagdi")][
+    diff = diff[(diff.pcod_from == "524 5 13 67") & (diff.pcod_to == "524 3 08 44")][
         "count"
     ].values[0]
     assert 4 == diff
@@ -73,7 +73,7 @@ def test_sub_scalar(flows, get_dataframe):
     """
     flow_a, _ = flows
     diff = get_dataframe(flow_a - 3)
-    diff = diff[(diff.name_from == "Bajhang") & (diff.name_to == "Myagdi")][
+    diff = diff[(diff.pcod_from == "524 5 13 67") & (diff.pcod_to == "524 3 08 44")][
         "count"
     ].values[0]
     assert 0 == diff
@@ -86,10 +86,10 @@ def test_a_sub_b_no_b_flow(flows, get_dataframe):
     flow_a, flow_b = flows
     relfl = flow_a - flow_b
     df_rel = get_dataframe(relfl)
-    # Humla  Kapilbastu  2   NaN
-    diff = df_rel[(df_rel.name_from == "Humla") & (df_rel.name_to == "Kapilbastu")][
-        "count"
-    ].values[0]
+    # 524 4 12 66  524 3 09 49  2   NaN
+    diff = df_rel[
+        (df_rel.pcod_from == "524 4 12 66") & (df_rel.pcod_to == "524 3 09 49")
+    ]["count"].values[0]
     assert 2 == diff
 
 
@@ -102,6 +102,6 @@ def test_abs_diff_equal(flows, get_dataframe):
     df_rel = get_dataframe(relfl)
     relfl_reverse = get_dataframe(flow_b - flow_a)
     compare = abs(
-        relfl_reverse.set_index(["name_from", "name_to"]).sort_index()
-    ) == abs(df_rel.set_index(["name_from", "name_to"]).sort_index())
+        relfl_reverse.set_index(["pcod_from", "pcod_to"]).sort_index()
+    ) == abs(df_rel.set_index(["pcod_from", "pcod_to"]).sort_index())
     assert compare.all().values[0]

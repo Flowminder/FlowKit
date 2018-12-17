@@ -253,7 +253,7 @@ class Flows(GeoDataMixin, GraphMixin, BaseFlow):
             mapping = loc_join.right_query.mapping
             col_name = mapping.column_name[0]
             l_col_name = (
-                "name"
+                "pcod"
                 if ("admin" in level) and (self.column_name is None)
                 else col_name
             )
