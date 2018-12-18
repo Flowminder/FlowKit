@@ -52,6 +52,5 @@ INSERT INTO infrastructure.cells (
 
 CREATE INDEX ON infrastructure.cells (id);
 CREATE INDEX ON infrastructure.cells (site_id);
-CREATE INDEX ON infrastructure.cells USING GIST(geom_point);
     
 COMMIT;
