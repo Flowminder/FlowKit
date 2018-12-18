@@ -460,7 +460,7 @@ class Group(db.Model):
 
 @click.command("init-db")
 @with_appcontext
-def init_db_command():
+def init_db_command():  # pragma: no cover
     """Clear existing data and create new tables."""
     db.drop_all()
     db.create_all()
@@ -471,7 +471,7 @@ def init_db_command():
 @click.argument("username", envvar="ADMIN_USER")
 @click.argument("password", envvar="ADMIN_PASSWORD")
 @with_appcontext
-def add_admin(username, password):
+def add_admin(username, password):  # pragma: no cover
     """Add an administrator account."""
     u = User(username=username, password=password, is_admin=True)
     ug = Group(name=username, user_group=True)
@@ -482,10 +482,10 @@ def add_admin(username, password):
     click.echo(f"Added {username} as an admin.")
 
 
-def make_demodata():
+def make_demodata():  # pragma: no cover
     """
-        Generate some demo data.
-        """
+    Generate some demo data.
+    """
     db.drop_all()
     db.create_all()
     agg_units = [SpatialAggregationUnit(name=f"admin{x}") for x in range(4)]
