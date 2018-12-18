@@ -49,8 +49,5 @@ INSERT INTO infrastructure.cells (
             date_of_last_service::date,
             ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) AS geom_point
         FROM temp_cells;
-
-CREATE INDEX ON infrastructure.cells (id);
-CREATE INDEX ON infrastructure.cells (site_id);
     
 COMMIT;
