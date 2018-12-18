@@ -8,7 +8,7 @@ pertain to any one particular query
 """
 
 import pytest
-from psycopg2._psycopg import ProgrammingError
+from sqlalchemy.exc import ProgrammingError
 
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location
@@ -25,8 +25,10 @@ def test_bad_sql_logged_and_raised(caplog):
         def column_names(self):
             return []
 
-    fut = BadQuery().store()
-    assert isinstance(fut.exception(), ProgrammingError)
+    with pytest.raises(ProgrammingError):
+        fut = BadQuery().store()
+        exec = fut.exception()
+        raise exec
     assert "Error executing SQL" in caplog.messages[0]
 
 
