@@ -38,7 +38,7 @@ setup(
     keywords="mobile telecommunications analysis",
     packages=["flowclient"],
     include_package_data=True,
-    install_requires=["pandas", "requests", "pyjwt"],
+    install_requires=["pandas", "requests", "pyjwt", "ujson"],
     extras_require={"test": test_requirements},
     tests_require=test_requirements,
     setup_requires=["pytest-runner"],
