@@ -22,7 +22,11 @@ class AdminMenu extends React.Component {
           <ListItem button onClick={() => onClick("server_admin")}>
             <ListItemText primary="Servers" />
           </ListItem>
-          <ListItem button onClick={() => onClick("group_admin")}>
+          <ListItem
+            button
+            onClick={() => onClick("group_admin")}
+            id="group_admin"
+          >
             <ListItemText primary="Groups" />
           </ListItem>
           <ListItem button onClick={() => onClick("capability_admin")}>
