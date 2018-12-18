@@ -70,7 +70,7 @@ def test_correct_cell_indexes(cursor):
 
 
 def test_correct_site_indexes(cursor):
-    """Cells table should have four indexes - id, primary key
+    """Sites table should have four indexes - id, primary key
      and spatial ones on geom_point and geom_polygon.
     """
     expected_indexes = [
@@ -87,7 +87,7 @@ def test_correct_site_indexes(cursor):
             "index_definition": "CREATE UNIQUE INDEX sites_pkey ON infrastructure.sites USING btree (id, version)"
         },
     ]
-    query = "select pg_get_indexdef(indexrelid) from pg_index where indrelid = 'infrastructure.cells'::regclass;"
+    query = "select pg_get_indexdef(indexrelid) from pg_index where indrelid = 'infrastructure.sites'::regclass;"
     cursor.execute(query)
     results = cursor.fetchall()
     assert expected_indexes == results
