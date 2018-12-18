@@ -2,9 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import json
 from functools import wraps
-
+import ujson as json
 from flask_jwt_extended import jwt_required, get_jwt_claims, get_jwt_identity
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
 
