@@ -235,11 +235,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:b0a54a5c4dc84549f7fd36dde59f98b87e10d201bc6bd03717ed705327d42900",
-                "sha256:c9756aa09f0f981f41eaa3eb7f661b1c4cd2a9f6d6600382ba6b5d2a196d5d65"
+                "sha256:27bbfe09e388333c8e11bb4720ad3745f1b703c5ec8f961044a98bffb572ea4e",
+                "sha256:a197689aa1f898f23e84240f25bf15426a5edce8981d43b4eabc97feb1b39ae9"
             ],
             "index": "pypi",
-            "version": "==0.6.11"
+            "version": "==0.7.0"
         },
         "sortedcontainers": {
             "hashes": [
