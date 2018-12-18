@@ -45,7 +45,7 @@ class _TotalCellEvents(Query):
                 )
             )
 
-        self.time_cols = ["datetime::date AS date"]
+        self.time_cols = ["(datetime::date)::text AS date"]
         if self.interval == "hour" or self.interval == "min":
             self.time_cols.append("extract(hour FROM datetime) AS hour")
         if self.interval == "min":
