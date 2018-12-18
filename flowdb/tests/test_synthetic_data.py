@@ -63,7 +63,7 @@ def test_correct_cell_indexes(cursor):
             "index_definition": "CREATE UNIQUE INDEX cells_pkey ON infrastructure.cells USING btree (id, version)"
         },
     ]
-    query = "select pg_get_indexdef(indexrelid) from pg_index where indrelid = 'infrastructure.cells'::regclass;"
+    query = "select pg_get_indexdef(indexrelid) as index_definition from pg_index where indrelid = 'infrastructure.cells'::regclass;"
     cursor.execute(query)
     results = cursor.fetchall()
     assert expected_indexes == results
@@ -87,7 +87,7 @@ def test_correct_site_indexes(cursor):
             "index_definition": "CREATE UNIQUE INDEX sites_pkey ON infrastructure.sites USING btree (id, version)"
         },
     ]
-    query = "select pg_get_indexdef(indexrelid) from pg_index where indrelid = 'infrastructure.sites'::regclass;"
+    query = "select pg_get_indexdef(indexrelid) index_definition from pg_index where indrelid = 'infrastructure.sites'::regclass;"
     cursor.execute(query)
     results = cursor.fetchall()
     assert expected_indexes == results
