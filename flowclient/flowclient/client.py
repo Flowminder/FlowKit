@@ -384,11 +384,11 @@ def location_event_counts(
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     count_interval : {"day", "hour", "minute"}
-    direction : {"in", "out", "all"}
+    direction : {"in", "out", "all"}, default "all"
         Optionally, include only ingoing or outbound calls/texts
-    event_types : {"all", "calls", "sms", "mds"}:
+    event_types : {"all", "calls", "sms", "mds"}, default "all"
         Optionally, include only a subset of events.
-    subscriber_subset : dict or None
+    subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
