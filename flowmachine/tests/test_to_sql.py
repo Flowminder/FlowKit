@@ -28,7 +28,7 @@ def test_stores_table(flowmachine_connect):
     EventTableSubset().to_sql() can be stored as a TABLE.
     """
     query = EventTableSubset("2016-01-01", "2016-01-01 01:00:00")
-    query.to_sql(name="test_table", schema="tests")
+    query.to_sql(name="test_table", schema="tests").result()
     assert "test_table" in flowmachine_connect.inspector.get_table_names(schema="tests")
 
 
@@ -37,11 +37,11 @@ def test_can_force_rewrite(flowmachine_connect, get_length):
     Test that we can force the rewrite of a test to the database.
     """
     query = EventTableSubset("2016-01-01", "2016-01-01 01:00:00")
-    query.to_sql(name="test_rewrite", schema="tests")
+    query.to_sql(name="test_rewrite", schema="tests").result()
     # We're going to delete everything from the table, then
     # force a rewrite, and check that the table now has data.
     sql = """DELETE FROM tests.test_rewrite"""
     flowmachine_connect.engine.execute(sql)
     assert 0 == get_length(Table("tests.test_rewrite"))
-    query.to_sql(name="test_rewrite", schema="tests", force=True)
+    query.to_sql(name="test_rewrite", schema="tests", force=True).result()
     assert 1 < get_length(Table("tests.test_rewrite"))
