@@ -114,7 +114,7 @@ class ModelResult(Query):
         except AttributeError:
             return super().column_names
 
-    def to_sql_async(self, name=None, schema=None, force=False):
+    def to_sql(self, name, schema=None, force=False):
         """
         Store the result of the calculation back into the database.
 

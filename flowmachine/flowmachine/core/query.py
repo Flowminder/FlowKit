@@ -11,6 +11,7 @@ defines methods that returns the query as a string and as a pandas dataframe.
 import pickle
 import logging
 import weakref
+from concurrent.futures import Future
 from typing import List, Union
 
 import psycopg2
@@ -456,7 +457,9 @@ class Query(metaclass=ABCMeta):
             )
         return queries
 
-    def to_sql_async(self, name=None, schema=None, force=False):
+    def to_sql(
+        self, name: str, schema: Union[str, None] = None, force: bool = False
+    ) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -487,7 +490,7 @@ class Query(metaclass=ABCMeta):
             ).format(name, len(name), MAX_POSTGRES_NAME_LENGTH)
             raise NameTooLongError(err_msg)
 
-        def do_query():
+        def do_query() -> Query:
             logger.debug("Getting storage lock.")
             with rlock(self.redis, self.md5):
                 logger.debug("Obtained storage lock.")
@@ -523,31 +526,6 @@ class Query(metaclass=ABCMeta):
 
         store_future = self.tp.submit(do_query)
         return store_future
-
-    def to_sql(self, name=None, schema=None, force=False):
-        """
-        Store the result of the calculation back into the database.
-
-        Parameters
-        ----------
-        name : str
-            name of the table
-        schema : str, default None
-            Name of an existing schema. If none will use the postgres default,
-            see postgres docs for more info.
-        as_temp : bool, default False
-            Set to true to store this only for the duration of the
-            interpreter session
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
-
-        Notes
-        -----
-
-        This method will block until the store has completed.
-        """
-
-        return self.to_sql_async(name, schema=schema, force=force).result()
 
     def explain(self, format="text", analyse=False):
         """
@@ -637,7 +615,7 @@ class Query(metaclass=ABCMeta):
 
         schema, name = table_name.split(".")
 
-        store_future = self.to_sql_async(name, schema=schema, force=force)
+        store_future = self.to_sql(name, schema=schema, force=force)
         return store_future
 
     def _db_store_cache_metadata(self, compute_time=None):
