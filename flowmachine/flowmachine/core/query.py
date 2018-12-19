@@ -11,7 +11,7 @@ defines methods that returns the query as a string and as a pandas dataframe.
 import pickle
 import logging
 import weakref
-from typing import List
+from typing import List, Union
 
 import psycopg2
 import networkx as nx
@@ -412,7 +412,9 @@ class Query(metaclass=ABCMeta):
         subset_class = subset_numbers_factory(self.__class__)
         return subset_class(self, col, low, high)
 
-    def _make_sql(self, name=None, schema=None, as_view=False, force=False):
+    def _make_sql(
+        self, name: str, schema: Union[str, None] = None, force: bool = False
+    ) -> List[str]:
         """
         Create the SQL necessary to store the result of the calculation back
         into the database.
@@ -424,9 +426,6 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        as_view : bool, default False
-            Set to True to store as a view rather than a table. A view
-            is always up to date even if the underlying data changes.
         force : bool, default False
             Will overwrite an existing table if the name already exists
 
@@ -435,12 +434,6 @@ class Query(metaclass=ABCMeta):
         list
             Ordered list of SQL strings to execute.
         """
-
-        table_type = ""
-        if as_view:
-            table_type += "VIEW "
-        else:
-            table_type += "TABLE "
 
         if schema is not None:
             full_name = "{}.{}".format(schema, name)
@@ -452,20 +445,18 @@ class Query(metaclass=ABCMeta):
             logger.info("Table already exists")
             return []
 
-        Q = f"EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE {table_type} {full_name} AS ({self._make_query() if force else self.get_query()})"
+        Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
+            ({self._make_query() if force else self.get_query()})"""
         queries.append(Q)
-        if not as_view:  # Views can't be indexed
-            for ix in self.index_cols:
-                queries.append(
-                    "CREATE INDEX ON {tbl} ({ixen})".format(
-                        tbl=full_name, ixen=",".join(ix) if isinstance(ix, list) else ix
-                    )
+        for ix in self.index_cols:
+            queries.append(
+                "CREATE INDEX ON {tbl} ({ixen})".format(
+                    tbl=full_name, ixen=",".join(ix) if isinstance(ix, list) else ix
                 )
+            )
         return queries
 
-    def to_sql_async(
-        self, name=None, schema=None, as_view=False, as_temp=False, force=False
-    ):
+    def to_sql_async(self, name=None, schema=None, force=False):
         """
         Store the result of the calculation back into the database.
 
@@ -476,12 +467,6 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        as_view : bool, default False
-            Set to True to store as a view rather than a table. A view
-            is always up to date even if the underlying data changes.
-        as_temp : bool, default False
-            Set to true to store this only for the duration of the
-            interpreter session
         force : bool, default False
             Will overwrite an existing table if the name already exists
 
@@ -506,10 +491,10 @@ class Query(metaclass=ABCMeta):
             logger.debug("Getting storage lock.")
             with rlock(self.redis, self.md5):
                 logger.debug("Obtained storage lock.")
-                Qs = self._make_sql(name, schema=schema, as_view=as_view, force=force)
+                Qs = self._make_sql(name, schema=schema, force=force)
                 logger.debug("Made SQL.")
                 con = self.connection.engine
-                if force and not as_view:
+                if force:
                     self.invalidate_db_cache(name, schema=schema)
                 plan_time = 0
                 with con.begin():
@@ -531,7 +516,7 @@ class Query(metaclass=ABCMeta):
                             except (IndexError, KeyError):
                                 pass  # Not an explain result
                     logger.debug("Executed queries.")
-                    if not as_view and schema == "cache":
+                    if schema == "cache":
                         self._db_store_cache_metadata(compute_time=plan_time)
             logger.debug("Released storage lock.")
             return self
@@ -539,7 +524,7 @@ class Query(metaclass=ABCMeta):
         store_future = self.tp.submit(do_query)
         return store_future
 
-    def to_sql(self, name=None, schema=None, as_view=False, force=False):
+    def to_sql(self, name=None, schema=None, force=False):
         """
         Store the result of the calculation back into the database.
 
@@ -550,9 +535,6 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        as_view : bool, default False
-            Set to True to store as a view rather than a table. A view
-            is always up to date even if the underlying data changes.
         as_temp : bool, default False
             Set to true to store this only for the duration of the
             interpreter session
@@ -565,9 +547,7 @@ class Query(metaclass=ABCMeta):
         This method will block until the store has completed.
         """
 
-        return self.to_sql_async(
-            name, schema=schema, as_view=as_view, force=force
-        ).result()
+        return self.to_sql_async(name, schema=schema, force=force).result()
 
     def explain(self, format="text", analyse=False):
         """
