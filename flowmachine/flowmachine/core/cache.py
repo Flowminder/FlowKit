@@ -133,7 +133,8 @@ def size_of_cache(connection: Connection) -> int:
         INNER JOIN cache.cached ON
          relname=cached.tablename AND nspname=cached.schema 
         WHERE NOT cached.class='Table'"""
-    return connection.fetch(sql)[0][0]
+    cache_bytes = connection.fetch(sql)[0][0]
+    return 0 if cache_bytes is None else cache_bytes
 
 
 def compute_time(connection: Connection, query_id: str) -> float:
