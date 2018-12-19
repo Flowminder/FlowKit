@@ -10,26 +10,30 @@ Functions which deal with inspecting cached tables.
 import logging
 import pickle
 
-from flowmachine.core import Query, Connection
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .query import Query
+    from .connection import Connection
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
-def shrink_one(connection: Connection, dry_run: bool = False) -> Query:
+def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
     """
     Remove the lowest scoring cached query from cache and return it and size of it
     in bytes.
 
     Parameters
     ----------
-    connection : Connection
+    connection : "Connection"
     dry_run : bool, default False
         Set to true to just report the object that would be removed and not remove it
 
     Returns
     -------
-    Query
-        The Query object that was removed from cache
+    "Query"
+        The "Query" object that was removed from cache
     """
     qry = "SELECT tablename, schema, obj FROM cache.cached WHERE NOT class='Table' ORDER BY cache_score ASC LIMIT 1"
     tablename, schema, obj = connection.fetch(qry)[0]
@@ -51,14 +55,14 @@ def shrink_one(connection: Connection, dry_run: bool = False) -> Query:
 
 
 def shrink_below_size(
-    connection: Connection, size_threshold: int, dry_run: bool = False
-) -> Query:
+    connection: "Connection", size_threshold: int, dry_run: bool = False
+) -> "Query":
     """
     Remove queries from the cache until it is below a specified size threshold.
 
     Parameters
     ----------
-    connection : Connection
+    connection : "Connection"
     size_threshold : int
         Size (in bytes) to reduce the cache below
     dry_run : bool, default False
@@ -66,7 +70,7 @@ def shrink_below_size(
 
     Returns
     -------
-    list of Query
+    list of "Query"
         List of the queries that were removed
     """
     initial_cache_size = size_of_cache(connection)
@@ -85,13 +89,13 @@ def shrink_below_size(
     return removed
 
 
-def size_of_table(connection: Connection, table_name: str, table_schema: str) -> int:
+def size_of_table(connection: "Connection", table_name: str, table_schema: str) -> int:
     """
     Get the size on disk in bytes of a table in the database.
 
     Parameters
     ----------
-    connection : Connection
+    connection : "Connection"
     table_name : str
         Name of table to get size of
     table_schema : str
@@ -109,16 +113,21 @@ def size_of_table(connection: Connection, table_name: str, table_schema: str) ->
               LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
               WHERE relkind = 'r' AND relname='{table_name}' AND nspname='{table_schema}'
     """
-    return connection.fetch(sql)[0][0]
+    try:
+        return int(connection.fetch(sql)[0][0])
+    except IndexError:
+        raise ValueError(
+            f"Table '{table_schema}.{table_name}' does not exist on this connection."
+        )
 
 
-def size_of_cache(connection: Connection) -> int:
+def size_of_cache(connection: "Connection") -> int:
     """
     Get the total size in bytes of all cache tables.
 
     Parameters
     ----------
-    connection : Connection
+    connection : "Connection"
 
     Returns
     -------
@@ -134,16 +143,16 @@ def size_of_cache(connection: Connection) -> int:
          relname=cached.tablename AND nspname=cached.schema 
         WHERE NOT cached.class='Table'"""
     cache_bytes = connection.fetch(sql)[0][0]
-    return 0 if cache_bytes is None else cache_bytes
+    return 0 if cache_bytes is None else int(cache_bytes)
 
 
-def compute_time(connection: Connection, query_id: str) -> float:
+def compute_time(connection: "Connection", query_id: str) -> float:
     """
     Get the time in ms that a cached query took to compute.
 
     Parameters
     ----------
-    connection : Connection
+    connection : "Connection"
     query_id : str
         md5 identifier of the query
 
@@ -153,21 +162,24 @@ def compute_time(connection: Connection, query_id: str) -> float:
         Number of seconds the query took to compute
 
     """
-    return float(
-        connection.fetch(
-            f"SELECT compute_time FROM cache.cached WHERE query_id='{query_id}'"
-        )[0][0]
-        / 1000
-    )
+    try:
+        return float(
+            connection.fetch(
+                f"SELECT compute_time FROM cache.cached WHERE query_id='{query_id}'"
+            )[0][0]
+            / 1000
+        )
+    except IndexError:
+        raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def score(connection: Connection, query_id: str) -> float:
+def score(connection: "Connection", query_id: str) -> float:
     """
     Get the current cache score for a cached query.
 
     Parameters
     ----------
-    connection: Connection
+    connection: "Connection"
     query_id : str
         md5 id of the cached query
 
@@ -177,22 +189,25 @@ def score(connection: Connection, query_id: str) -> float:
         Current cache score of this query
 
     """
-    return float(
-        connection.fetch(
-            f"SELECT cache_score FROM cache.cached WHERE query_id='{query_id}'"
-        )[0][0]
-    )
+    try:
+        return float(
+            connection.fetch(
+                f"SELECT cache_score FROM cache.cached WHERE query_id='{query_id}'"
+            )[0][0]
+        )
+    except IndexError:
+        raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def rescore(connection: Connection, query: Query, half_life: float) -> float:
+def rescore(connection: "Connection", query: "Query", half_life: float) -> float:
     """
     Calculate a new cache score for a cached query object.
 
     Parameters
     ----------
-    connection : Connection
-    query : Query
-        Query object to score
+    connection : "Connection"
+    query : "Query"
+        "Query" object to score
     half_life : float
         Memory decay halflife. Smaller values will decay more slowly.
 

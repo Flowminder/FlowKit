@@ -8,6 +8,8 @@ This is the base class that defines any query on our database.  It simply
 defines methods that returns the query as a string and as a pandas dataframe.
 
 """
+
+import os
 import pickle
 import logging
 import weakref
@@ -22,6 +24,7 @@ from hashlib import md5
 
 from sqlalchemy.exc import ResourceClosedError
 
+from flowmachine.core.cache import rescore
 from flowmachine.utils.utils import rlock
 from abc import ABCMeta, abstractmethod
 
@@ -190,12 +193,12 @@ class Query(metaclass=ABCMeta):
             schema, name = table_name.split(".")
             with rlock(self.redis, self.md5):
                 if self.connection.has_table(schema=schema, name=name):
-                    with self.connection.engine.begin():
-                        self.connection.engine.execute(
-                            "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(
-                                self.md5
-                            )
-                        )
+                    new_score = rescore(
+                        self.connection, self, os.getenv("CACHE_HALF_LIFE", 1000)
+                    )
+                    self.connection.engine.execute(
+                        f"UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1, cache_score = {new_score} WHERE query_id ='{self.md5}'"
+                    )
                     return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass

@@ -7,6 +7,8 @@ Tests for cache management utilities.
 """
 from unittest.mock import Mock
 
+import pytest
+
 from flowmachine.core.cache import (
     rescore,
     compute_time,
@@ -14,6 +16,7 @@ from flowmachine.core.cache import (
     shrink_one,
     size_of_cache,
     size_of_table,
+    score,
 )
 from flowmachine.features import daily_location
 
@@ -136,3 +139,35 @@ def test_size_of_table(flowmachine_connect):
     total_cache_size = size_of_cache(flowmachine_connect)
     table_size = size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
     assert total_cache_size == table_size
+
+
+def test_cache_miss_value_error_rescore():
+    """ValueError should be raised if we try to rescore something not in cache."""
+    connection_mock = Mock()
+    connection_mock.fetch.return_value = []
+    with pytest.raises(ValueError):
+        rescore(connection_mock, daily_location("2016-01-01"), 10)
+
+
+def test_cache_miss_value_error_size_of_table():
+    """ValueError should be raised if we try to get the size of something not in cache."""
+    connection_mock = Mock()
+    connection_mock.fetch.return_value = []
+    with pytest.raises(ValueError):
+        size_of_table(connection_mock, "DUMMY_SCHEMA", "DUMMY_NAME")
+
+
+def test_cache_miss_value_error_compute_time():
+    """ValueError should be raised if we try to get the compute time of something not in cache."""
+    connection_mock = Mock()
+    connection_mock.fetch.return_value = []
+    with pytest.raises(ValueError):
+        compute_time(connection_mock, "DUMMY_ID")
+
+
+def test_cache_miss_value_error_scoer():
+    """ValueError should be raised if we try to get the score of something not in cache."""
+    connection_mock = Mock()
+    connection_mock.fetch.return_value = []
+    with pytest.raises(ValueError):
+        score(connection_mock, "DUMMY_ID")
