@@ -38,10 +38,10 @@ class _TotalCellEvents(Query):
         self.interval = interval
         self.direction = direction
 
-        if self.interval not in TotalLocationEvents.allowed_levels:
+        if self.interval not in TotalLocationEvents.allowed_intervals:
             raise ValueError(
                 "'Interval must be one of: {} got: {}".format(
-                    TotalLocationEvents.allowed_levels, self.interval
+                    TotalLocationEvents.allowed_intervals, self.interval
                 )
             )
 
@@ -167,7 +167,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
 
     """
 
-    allowed_levels = {"day", "hour", "min"}
+    allowed_intervals = {"day", "hour", "min"}
 
     def __init__(
         self,
@@ -189,10 +189,10 @@ class TotalLocationEvents(GeoDataMixin, Query):
         self.direction = direction
         self.column_name = column_name
 
-        if self.interval not in self.allowed_levels:
+        if self.interval not in self.allowed_intervals:
             raise ValueError(
                 "'Interval must be one of: {} got: {}".format(
-                    self.allowed_levels, self.interval
+                    self.allowed_intervals, self.interval
                 )
             )
         self._obj = _TotalCellEvents(
