@@ -17,7 +17,8 @@ logger = logging.getLogger("flowmachine").getChild(__name__)
 
 def shrink_one(connection: Connection, dry_run: bool = False) -> Query:
     """
-    Remove the lowest scoring cached query from cache and return it.
+    Remove the lowest scoring cached query from cache and return it and size of it
+    in bytes.
 
     Parameters
     ----------
@@ -32,14 +33,56 @@ def shrink_one(connection: Connection, dry_run: bool = False) -> Query:
     """
     qry = "SELECT tablename, schema, obj FROM cache.cached WHERE NOT class='Table' ORDER BY cache_score ASC LIMIT 1"
     tablename, schema, obj = connection.fetch(qry)[0]
+    table_size = size_of_table(connection, tablename, schema)
     obj_to_remove = pickle.loads(obj)
+
+    logger.info(
+        f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.md5} of type {obj_to_remove.__class__}"
+    )
+    logger.info(
+        f"Table {schema}.{tablename} ({table_size} bytes) {'would' if dry_run else 'will'} be removed."
+    )
+
     if not dry_run:
-        logger.info(
-            f"Removing cache record for {obj_to_remove.md5} of type {obj_to_remove.__cls__}"
+        obj_to_remove.invalidate_db_cache(
+            name=tablename, schema=schema, cascade=False, drop=True
         )
-        logger.info(f"Table {schema}.{tablename} will be removed.")
-        obj_to_remove.invalidate_db_cache(name=tablename, schema=schema, cascade=False)
-    return obj_to_remove
+    return obj_to_remove, table_size
+
+
+def shrink_below_size(
+    connection: Connection, size_threshold: int, dry_run: bool = False
+) -> Query:
+    """
+    Remove queries from the cache until it is below a specified size threshold.
+
+    Parameters
+    ----------
+    connection : Connection
+    size_threshold : int
+        Size (in bytes) to reduce the cache below
+    dry_run : bool, default False
+        Set to true to just report the objects that would be removed and not remove them
+
+    Returns
+    -------
+    list of Query
+        List of the queries that were removed
+    """
+    initial_cache_size = size_of_cache(connection)
+    removed = []
+    logger.info(
+        f"Shrinking cache from {initial_cache_size} to below {size_threshold}{'(dry run)' if dry_run else ''}."
+    )
+
+    while initial_cache_size > size_threshold:
+        obj_removed, cache_reduction = shrink_one(connection, dry_run)
+        removed.append(obj_removed)
+        initial_cache_size -= cache_reduction
+    logger.info(
+        f"New cache size {'would' if dry_run else 'will'} be {initial_cache_size}."
+    )
+    return removed
 
 
 def size_of_table(connection: Connection, table_name: str, table_schema: str) -> int:
