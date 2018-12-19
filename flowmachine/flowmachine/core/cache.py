@@ -19,6 +19,30 @@ if TYPE_CHECKING:
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
+def get_query_by_id(connection: "Connection", query_id: str) -> "Query":
+    """
+    Get a query object from cache by id.
+
+    Parameters
+    ----------
+    connection : Connection
+    query_id : str
+        md5 id of the query
+
+    Returns
+    -------
+    Query
+        The original query object.
+
+    """
+    qry = f"SELECT obj FROM cache.cached WHERE query_id='{query_id}'"
+    try:
+        obj = connection.fetch(qry)[0][0]
+        return pickle.loads(obj)
+    except IndexError:
+        raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
+
+
 def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
     """
     Remove the lowest scoring cached query from cache and return it and size of it

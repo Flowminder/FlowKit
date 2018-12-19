@@ -17,6 +17,7 @@ from flowmachine.core.cache import (
     size_of_cache,
     size_of_table,
     score,
+    get_query_by_id,
 )
 from flowmachine.features import daily_location
 
@@ -165,9 +166,17 @@ def test_cache_miss_value_error_compute_time():
         compute_time(connection_mock, "DUMMY_ID")
 
 
-def test_cache_miss_value_error_scoer():
+def test_cache_miss_value_error_score():
     """ValueError should be raised if we try to get the score of something not in cache."""
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
         score(connection_mock, "DUMMY_ID")
+
+
+def test_get_query_by_id(flowmachine_connect):
+    """Test that we can get a query object back out of the database by the md5 id"""
+    dl = daily_location("2016-01-01").store().result()
+    retrieved_query = get_query_by_id(flowmachine_connect, dl.md5)
+    assert dl.md5 == retrieved_query.md5
+    assert dl.get_query() == retrieved_query.get_query()
