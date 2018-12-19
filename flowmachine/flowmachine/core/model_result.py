@@ -165,7 +165,7 @@ class ModelResult(Query):
                         logger.debug("Using pandas to store.")
                         self._df.to_sql(name, con, schema=schema, index=False)
                         if not as_view and schema == "cache":
-                            self._db_store_cache_metadata()
+                            self._db_store_cache_metadata(compute_time=0)
                 except AttributeError:
                     logger.debug(
                         "No dataframe to store, presumably because this"

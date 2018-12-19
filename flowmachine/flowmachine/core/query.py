@@ -8,7 +8,6 @@ This is the base class that defines any query on our database.  It simply
 defines methods that returns the query as a string and as a pandas dataframe.
 
 """
-import csv
 import pickle
 import logging
 import weakref
@@ -19,6 +18,8 @@ import networkx as nx
 import pandas as pd
 
 from hashlib import md5
+
+from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.utils.utils import rlock
 from abc import ABCMeta, abstractmethod
@@ -188,6 +189,12 @@ class Query(metaclass=ABCMeta):
             schema, name = table_name.split(".")
             with rlock(self.redis, self.md5):
                 if self.connection.has_table(schema=schema, name=name):
+                    with self.connection.engine.begin():
+                        self.connection.engine.execute(
+                            "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(
+                                self.md5
+                            )
+                        )
                     return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
@@ -445,10 +452,7 @@ class Query(metaclass=ABCMeta):
             logger.info("Table already exists")
             return []
 
-        Q = "CREATE "
-        Q += table_type
-        Q += full_name
-        Q += " AS ({})".format(self._make_query() if force else self.get_query())
+        Q = f"EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE {table_type} {full_name} AS ({self._make_query() if force else self.get_query()})"
         queries.append(Q)
         if not as_view:  # Views can't be indexed
             for ix in self.index_cols:
@@ -507,18 +511,28 @@ class Query(metaclass=ABCMeta):
                 con = self.connection.engine
                 if force and not as_view:
                     self.invalidate_db_cache(name, schema=schema)
+                plan_time = 0
                 with con.begin():
-                    sql = """CREATE SCHEMA IF NOT EXISTS {}""".format(schema)
-                    con.execute(sql)
-                    try:
-                        for Q in Qs:
-                            con.execute(Q)
-                    except Exception as e:
-                        logger.error(f"Error executing SQL: '{Q}'. Error was {e}")
-                        raise e
+                    rs = []
+                    for Q in Qs:
+                        try:
+                            r = con.execute(Q)
+                        except Exception as e:
+                            logger.error(f"Error executing SQL: '{Q}'. Error was {e}")
+                            raise e
+                        try:
+                            rs.append(r.fetchall())
+                        except ResourceClosedError:
+                            pass  # Nothing to do here
+                        for r in rs:
+                            try:
+                                plan = r[0][0][0]
+                                plan_time += plan["Execution Time"]
+                            except (IndexError, KeyError):
+                                pass  # Not an explain result
                     logger.debug("Executed queries.")
                     if not as_view and schema == "cache":
-                        self._db_store_cache_metadata()
+                        self._db_store_cache_metadata(compute_time=plan_time)
             logger.debug("Released storage lock.")
             return self
 
@@ -615,12 +629,6 @@ class Query(metaclass=ABCMeta):
 
         try:
             schema, name = self.table_name.split(".")
-            with self.connection.engine.begin():
-                self.connection.engine.execute(
-                    "UPDATE cache.cached SET ts = NOW() WHERE query_id ='{}'".format(
-                        self.md5
-                    )
-                )
             return self.connection.has_table(name, schema)
         except NotImplementedError:
             return False
@@ -652,7 +660,7 @@ class Query(metaclass=ABCMeta):
         store_future = self.to_sql_async(name, schema=schema, force=force)
         return store_future
 
-    def _db_store_cache_metadata(self):
+    def _db_store_cache_metadata(self, compute_time=None):
         """
         Helper function for store, updates flowmachine metadata table to
         log that this query is stored, but does not actually store
@@ -676,14 +684,21 @@ class Query(metaclass=ABCMeta):
                     "SELECT * FROM cache.cached WHERE query_id='{}'".format(self.md5)
                 )
             )
+
             with con.begin():
+                cache_record_insert = """
+                INSERT INTO cache.cached 
+                (query_id, version, query, created, access_count, last_accessed, compute_time, 
+                cache_score, class, schema, tablename, obj) 
+                VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
+                 ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
                 con.execute(
-                    "INSERT INTO cache.cached values (%s, %s, %s, NOW(), %s, %s, %s, %s)"
-                    + " ON CONFLICT (query_id) DO UPDATE SET ts = NOW();",
+                    cache_record_insert,
                     (
                         self.md5,
                         __version__,
                         self._make_query(),
+                        compute_time,
                         self.__class__.__name__,
                         *self.table_name.split("."),
                         psycopg2.Binary(self_storage),
