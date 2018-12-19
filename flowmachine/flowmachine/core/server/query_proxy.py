@@ -145,7 +145,7 @@ def construct_query_object(query_kind, params):  # pragma: no cover
         event_types = params["event_types"]
 
         error_msg_prefix = f"Error when constructing query of kind {query_kind} with parameters {params}"
-        allowed_intervals = TotalLocationEvents.allowed_levels
+        allowed_intervals = TotalLocationEvents.allowed_intervals
         allowed_directions = ["in", "out", "all"]
         allowed_levels = [
             "admin0",
