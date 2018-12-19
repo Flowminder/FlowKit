@@ -94,6 +94,8 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
         ON infrastructure.sites
         USING GIST (geom_polygon);
 
+    CREATE INDEX ON infrastructure.sites (id);
+
     CREATE TABLE IF NOT EXISTS infrastructure.cells(
 
         id TEXT,
@@ -135,6 +137,9 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
     CREATE INDEX IF NOT EXISTS infrastructure_cells_geom_polygon_index
         ON infrastructure.cells
         USING GIST (geom_polygon);
+
+    CREATE INDEX ON infrastructure.cells (id);
+    CREATE INDEX ON infrastructure.cells (site_id);
     
     CREATE TABLE IF NOT EXISTS infrastructure.tacs(
 
