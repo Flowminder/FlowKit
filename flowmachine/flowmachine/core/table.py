@@ -127,6 +127,15 @@ class Table(Query):
             cols = "*"
         return "SELECT {cols} FROM {fqn}".format(fqn=self.fqn, cols=cols)
 
+    def get_query(self):
+        with self.connection.engine.begin():
+            self.connection.engine.execute(
+                "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(
+                    self.md5
+                )
+            )
+        return self._make_query()
+
     @property
     def is_stored(self):
         return self.connection.has_table(self.name, self.schema)
