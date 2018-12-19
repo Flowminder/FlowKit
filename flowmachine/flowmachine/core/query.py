@@ -863,6 +863,7 @@ class Query(metaclass=ABCMeta):
             "_query_object",
             "_cols",
             "_md5",
+            "_runtime",
         ]
         for k in bad_keys:
             try:
