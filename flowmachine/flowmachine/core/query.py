@@ -751,6 +751,14 @@ class Query(metaclass=ABCMeta):
         with rlock(self.redis, self.md5):
             con = self.connection.engine
             try:
+                table_form = self.get_table()
+                if table_form is not self:
+                    table_form.invalidate_db_cache(
+                        cascade=cascade, drop=drop
+                    )  # Remove any Table pointing as this query
+            except ValueError as e:
+                pass  # This cache record isn't actually stored
+            try:
                 deps = self.connection.fetch(
                     """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
                     ON cache.cached.query_id=cache.dependencies.query_id

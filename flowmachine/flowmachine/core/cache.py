@@ -7,9 +7,39 @@
 """
 Functions which deal with inspecting cached tables.
 """
-
+import logging
+import pickle
 
 from flowmachine.core import Query, Connection
+
+logger = logging.getLogger("flowmachine").getChild(__name__)
+
+
+def shrink_one(connection: Connection, dry_run: bool = False) -> Query:
+    """
+    Remove the lowest scoring cached query from cache and return it.
+
+    Parameters
+    ----------
+    connection : Connection
+    dry_run : bool, default False
+        Set to true to just report the object that would be removed and not remove it
+
+    Returns
+    -------
+    Query
+        The Query object that was removed from cache
+    """
+    qry = "SELECT tablename, schema, obj FROM cache.cached WHERE NOT class='Table' ORDER BY cache_score ASC LIMIT 1"
+    tablename, schema, obj = connection.fetch(qry)[0]
+    obj_to_remove = pickle.loads(obj)
+    if not dry_run:
+        logger.info(
+            f"Removing cache record for {obj_to_remove.md5} of type {obj_to_remove.__cls__}"
+        )
+        logger.info(f"Table {schema}.{tablename} will be removed.")
+        obj_to_remove.invalidate_db_cache(name=tablename, schema=schema, cascade=False)
+    return obj_to_remove
 
 
 def size_of_table(connection: Connection, table_name: str, table_schema: str) -> int:
