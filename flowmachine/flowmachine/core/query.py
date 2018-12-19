@@ -756,7 +756,7 @@ class Query(metaclass=ABCMeta):
                     table_form.invalidate_db_cache(
                         cascade=cascade, drop=drop
                     )  # Remove any Table pointing as this query
-            except ValueError as e:
+            except (ValueError, NotImplementedError) as e:
                 pass  # This cache record isn't actually stored
             try:
                 deps = self.connection.fetch(

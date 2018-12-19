@@ -183,7 +183,7 @@ def score(connection: Connection, query_id: str) -> float:
     )
 
 
-def rescore(connection: Connection, query: Query, halflife: float) -> float:
+def rescore(connection: Connection, query: Query, half_life: float) -> float:
     """
     Calculate a new cache score for a cached query object.
 
@@ -192,7 +192,7 @@ def rescore(connection: Connection, query: Query, halflife: float) -> float:
     connection : Connection
     query : Query
         Query object to score
-    halflife : float
+    half_life : float
         Memory decay halflife. Smaller values will decay more slowly.
 
     Returns
@@ -203,4 +203,4 @@ def rescore(connection: Connection, query: Query, halflife: float) -> float:
     byte_size = size_of_table(connection, *query.table_name.split(".")[::-1])
     runtime = compute_time(connection, query.md5)
     last_score = score(connection, query.md5)
-    return last_score + runtime / byte_size * (1 + halflife)
+    return last_score + runtime / byte_size * (1 + half_life)
