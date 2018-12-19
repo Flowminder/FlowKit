@@ -12,7 +12,8 @@ of postgres.
 """
 
 import logging
-from typing import List
+from concurrent.futures import Future
+from typing import List, Union
 
 import pandas as pd
 
@@ -114,7 +115,9 @@ class ModelResult(Query):
         except AttributeError:
             return super().column_names
 
-    def to_sql(self, name, schema=None, force=False):
+    def to_sql(
+        self, name: str, schema: Union[str, None] = None, force: bool = False
+    ) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -145,7 +148,7 @@ class ModelResult(Query):
             except AttributeError:
                 raise ValueError("Not computed yet.")
 
-        def do_query():
+        def do_query() -> ModelResult:
             logger.debug("Getting storage lock.")
             with rlock(self.redis, self.md5):
                 logger.debug("Obtained storage lock.")
