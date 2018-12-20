@@ -175,4 +175,4 @@ class ModelResult(Query):
     def _make_query(self):
         if not self.is_stored:
             self.store().result()
-        return f"SELECT * from {self.table_name}"
+        return self.get_query()
