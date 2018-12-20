@@ -19,7 +19,7 @@
 # flowmachine and flowapi will connected to the first flowdb service in the list.
 
 DOCKER_COMPOSE_FILE_DEV ?= docker-compose-dev.yml
-export FLOWDB_SERVICES ?= flowdb_testdata
+FLOWDB_SERVICES ?= flowdb_testdata
 DOCKER_SERVICES ?= flowapi flowmachine redis $(FLOWDB_SERVICES)
 export DB_HOST=$(word 1, $(FLOWDB_SERVICES))
 
