@@ -13,7 +13,7 @@
 # version or versions you'd like to use when running `make up`. Examples:
 #
  #     FLOWDB_SERVICES=flowdb_testdata make up
-#     FLOWDB_SERVICE=flowdb_synthetic_data make up
+#     FLOWDB_SERVICES=flowdb_synthetic_data make up
 #     FLOWDB_SERVICES="flowdb_testdata flowdb_synthetic_data" make up
 #
 # flowmachine and flowapi will connected to the first flowdb service in the list.
