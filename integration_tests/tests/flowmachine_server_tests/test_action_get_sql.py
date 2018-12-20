@@ -40,9 +40,7 @@ async def test_get_sql(zmq_url):
     msg_get_sql = {"action": "get_sql", "query_id": expected_query_id}
 
     reply = send_message_and_get_reply(zmq_url, msg_get_sql)
-    assert (
-        "SELECT pcod,total FROM cache.xddc61a04f608dee16fff0655f91c2057" == reply["sql"]
-    )
+    assert "SELECT * FROM cache.xddc61a04f608dee16fff0655f91c2057" == reply["sql"]
 
 
 @pytest.mark.asyncio
