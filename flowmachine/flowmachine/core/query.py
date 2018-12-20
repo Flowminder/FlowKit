@@ -195,7 +195,9 @@ class Query(metaclass=ABCMeta):
                 if self.connection.has_table(schema=schema, name=name):
                     try:
                         new_score = rescore(
-                            self.connection, self, os.getenv("CACHE_HALF_LIFE", 1000)
+                            self.connection,
+                            self,
+                            int(os.getenv("CACHE_HALF_LIFE", 1000)),
                         )
                         self.connection.engine.execute(
                             f"UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1, cache_score = {new_score} WHERE query_id ='{self.md5}'"
