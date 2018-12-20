@@ -12,7 +12,7 @@
  # By setting the variable FLOWDB_SERVICES you can choose which flowdb
 # version or versions you'd like to use when running `make up`. Examples:
 #
-#     FLOWDB_SERVICE=flowdb_testdata make up
+ #     FLOWDB_SERVICES=flowdb_testdata make up
 #     FLOWDB_SERVICE=flowdb_synthetic_data make up
 #     FLOWDB_SERVICE="flowdb_testdata flowdb_synthetic_data" make up
 #
