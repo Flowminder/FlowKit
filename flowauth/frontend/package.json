@@ -10,7 +10,7 @@
     "generate-password": "^1.4.0",
     "material-ui-pickers": "^2.0.4",
     "react": "^16.7.0",
-    "react-dom": "^16.5.2",
+    "react-dom": "^16.7.0",
     "react-scripts": "^2.1.2",
     "zxcvbn": "^4.4.2"
   },
