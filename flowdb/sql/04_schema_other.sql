@@ -75,6 +75,7 @@ CREATE TABLE etl.etl (
         id SERIAL NOT NULL,
         file_name VARCHAR,
         cdr_type cdrtype,
+	date DATE,
         status status,
         time_stamp TIMESTAMP WITHOUT TIME ZONE,
         PRIMARY KEY (id)
