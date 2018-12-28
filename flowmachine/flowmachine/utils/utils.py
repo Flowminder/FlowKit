@@ -82,7 +82,7 @@ def get_columns_for_level(level, column_name=None) -> List[str]:
         return relevant_columns
 
     if level.startswith("admin"):
-        return ["name"]
+        return ["pcod"]
 
     returns = {
         "cell": ["location_id"],

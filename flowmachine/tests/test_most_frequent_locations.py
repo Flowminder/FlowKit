@@ -53,7 +53,7 @@ def test_most_fequent_admin(get_dataframe):
     )
     df = get_dataframe(mfl)
     # A few hand picked values
-    df_set = df.set_index("subscriber")["name"]
-    assert "Dolpa" == df_set["0gmvwzMAYbz5We1E"]
-    assert "Rukum" == df_set["1QBlwRo4Kd5v3Ogz"]
-    assert "Arghakhanchi" == df_set["2Dq97XmPqvL6noGk"]
+    df_set = df.set_index("subscriber")["pcod"]
+    assert "524 4 12 62" == df_set["0gmvwzMAYbz5We1E"]
+    assert "524 4 10 52" == df_set["1QBlwRo4Kd5v3Ogz"]
+    assert "524 3 09 50" == df_set["2Dq97XmPqvL6noGk"]

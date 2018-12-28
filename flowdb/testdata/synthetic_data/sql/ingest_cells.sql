@@ -51,9 +51,4 @@ INSERT INTO infrastructure.cells (
         FROM temp_cells;
 INSERT INTO infrastructure.sites(id, version, date_of_first_service, date_of_last_service, geom_point) 
     SELECT site_id, version, date_of_first_service, date_of_last_service, geom_point FROM infrastructure.cells;
-CREATE INDEX ON infrastructure.cells (id);
-CREATE INDEX ON infrastructure.cells (site_id);
-CREATE INDEX ON infrastructure.cells USING GIST(geom_point);
-CREATE INDEX ON infrastructure.sites (id);
-CREATE INDEX ON infrastructure.cells USING GIST(geom_point);
 COMMIT;

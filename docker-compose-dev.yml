@@ -30,7 +30,7 @@ services:
     networks:
       - db
 
-  flowdb-testdata:
+  flowdb_testdata:
     container_name: flowdb_testdata
     image: flowminder/flowdb:testdata-master
     ports:
@@ -47,7 +47,7 @@ services:
     networks:
       - db
 
-  flowdb-synthetic-data:
+  flowdb_synthetic_data:
     container_name: flowdb_synthetic_data
     image: flowminder/flowdb:synthetic-data-latest
     build:

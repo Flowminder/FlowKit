@@ -46,7 +46,4 @@ INSERT INTO infrastructure.sites (
             ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) AS geom_point
         FROM temp_sites;
 
-CREATE INDEX ON infrastructure.sites (id);
-CREATE INDEX ON infrastructure.sites USING GIST(geom_point);
-
 COMMIT;

@@ -9,16 +9,20 @@
 # `make flowapi-down` to tear down the docker container for flowapi
 # only.
 #
-# By setting the variable FLOWDB_SERVICE you can choose which flowdb
-# version you'd like to use when running `make up`. Examples:
+ # By setting the variable FLOWDB_SERVICES you can choose which flowdb
+# version or versions you'd like to use when running `make up`. Examples:
 #
-#     FLOWDB=flowdb-testdata make up
-#     FLOWDB=flowdb-synthetic-data make up
+ #     FLOWDB_SERVICES=flowdb_testdata make up
+#     FLOWDB_SERVICES=flowdb_synthetic_data make up
+#     FLOWDB_SERVICES="flowdb_testdata flowdb_synthetic_data" make up
 #
+# flowmachine and flowapi will connected to the first flowdb service in the list.
 
 DOCKER_COMPOSE_FILE_DEV ?= docker-compose-dev.yml
-FLOWDB_SERVICES ?= flowdb-testdata
+FLOWDB_SERVICES ?= flowdb_testdata
 DOCKER_SERVICES ?= flowapi flowmachine redis $(FLOWDB_SERVICES)
+export DB_HOST=$(word 1, $(FLOWDB_SERVICES))
+
 
 all:
 
@@ -28,17 +32,17 @@ up:
 down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) down
 
-flowdb-testdata-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d flowdb-testdata
+flowdb_testdata-up:
+	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d flowdb_testdata
 
-flowdb-testdata-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v flowdb-testdata
+flowdb_testdata-down:
+	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v flowdb_testdata
 
-flowdb-synthetic-data-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build flowdb-synthetic-data
+flowdb_synthetic_data-up:
+	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build flowdb_synthetic_data
 
-flowdb-synthetic-data-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v flowdb-synthetic-data
+flowdb_synthetic_data-down:
+	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v flowdb_synthetic_data
 
 flowapi-up:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build flowapi

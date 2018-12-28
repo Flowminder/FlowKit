@@ -8,8 +8,28 @@ pertain to any one particular query
 """
 
 import pytest
+from sqlalchemy.exc import ProgrammingError
+
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location
+
+
+def test_bad_sql_logged_and_raised(caplog):
+    """SQL failures during a store should be logged, and raised."""
+
+    class BadQuery(Query):
+        def _make_query(self):
+            return "THIS IS NOT VALID SQL"
+
+        @property
+        def column_names(self):
+            return []
+
+    with pytest.raises(ProgrammingError):
+        fut = BadQuery().store()
+        exec = fut.exception()
+        raise exec
+    assert "Error executing SQL" in caplog.messages[0]
 
 
 def test_method_not_implemented():

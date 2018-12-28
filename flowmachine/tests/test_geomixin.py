@@ -76,7 +76,7 @@ def test_valid_geojson():
         daily_location("2016-01-01", "2016-01-02", level="versioned-cell").aggregate(),
         daily_location("2016-01-01", "2016-01-02", level="admin2").aggregate(),
         daily_location(
-            "2016-01-01", "2016-01-02", level="admin2", column_name="admin2pcod"
+            "2016-01-01", "2016-01-02", level="admin2", column_name="admin2name"
         ).aggregate(),
     ]
     for o in test_geojson:
@@ -88,9 +88,7 @@ def test_correct_geojson():
     Check that the geojson actually contains the right features. 
     """
     js = (
-        daily_location(
-            "2016-01-01", "2016-01-02", level="admin2", column_name="admin2pcod"
-        )
+        daily_location("2016-01-01", "2016-01-02", level="admin2")
         .aggregate()
         .to_geojson()
     )
@@ -98,7 +96,7 @@ def test_correct_geojson():
     count = 25
     found = False
     for feature in js["features"]:
-        if (feature["properties"]["admin2pcod"] == pcod) and (
+        if (feature["properties"]["pcod"] == pcod) and (
             feature["properties"]["total"] == count
         ):
             found = True
@@ -115,7 +113,7 @@ def test_geojson_file_output(tmpdir):
     js_file = tmpdir / "geojson_test.json"
 
     daily_location(
-        "2016-01-01", "2016-01-02", level="admin2", column_name="admin2pcod"
+        "2016-01-01", "2016-01-02", level="admin2"
     ).aggregate().to_geojson_file(js_file)
     with open(js_file) as fin:
         js = json.load(fin)
@@ -124,7 +122,7 @@ def test_geojson_file_output(tmpdir):
     count = 25
     found = False
     for feature in js["features"]:
-        if (feature["properties"]["admin2pcod"] == pcod) and (
+        if (feature["properties"]["pcod"] == pcod) and (
             feature["properties"]["total"] == count
         ):
             found = True
@@ -137,8 +135,8 @@ def test_flows_geojson(get_dataframe):
     Test geojson works for flows with non-standard column names.
     """
 
-    dl = daily_location("2016-01-01", level="admin2", column_name="admin2pcod")
-    dl2 = daily_location("2016-01-02", level="admin2", column_name="admin2pcod")
+    dl = daily_location("2016-01-01", level="admin2", column_name="admin2name")
+    dl2 = daily_location("2016-01-02", level="admin2", column_name="admin2name")
     fl = Flows(dl, dl2)
     js = fl.to_geojson()
     df = get_dataframe(fl)
@@ -146,8 +144,8 @@ def test_flows_geojson(get_dataframe):
     for feature in check_features:
         outflows = feature["properties"]["outflows"]
         df_src = df[
-            df.admin2pcod_from == feature["properties"]["admin2pcod"]
-        ].set_index("admin2pcod_to")
+            df.admin2name_from == feature["properties"]["admin2name"]
+        ].set_index("admin2name_to")
         for dest, tot in outflows.items():
             assert tot == df_src.loc[dest]["count"]
 

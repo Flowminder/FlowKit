@@ -4,7 +4,12 @@ import redis_lock
 from json import dumps, loads, JSONDecodeError
 
 from flowmachine.core import Query, Table
-from flowmachine.features import daily_location, ModalLocation, Flows
+from flowmachine.features import (
+    daily_location,
+    ModalLocation,
+    Flows,
+    TotalLocationEvents,
+)
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -91,15 +96,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
     -------
     flowmachine.core.query.Query
     """
-    # if query_kind == "flow":
-    #     source = query_class_map[params["location_a"]["query_kind"]]
-    #     sink = query_class_map[params["location_b"]["query_kind"]]
-    #     q = query_class_map[query_kind](
-    #         source(**params["location_a"]["params"]),
-    #         sink(**params["location_b"]["params"]),
-    #     )
-    # else:
-    #     q = query_class_map[query_kind](**params)
     if "daily_location" == query_kind:
         date = params["date"]
         method = params["daily_location_method"]
@@ -139,7 +135,70 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             )
         except Exception as e:
             raise QueryProxyError(f"{error_msg_prefix}: '{e}'")
+    elif "location_event_counts" == query_kind:
+        start_date = params["start_date"]
+        end_date = params["end_date"]
+        interval = params["interval"]
+        level = params["aggregation_unit"]
+        subscriber_subset = params["subscriber_subset"]
+        direction = params["direction"]
+        event_types = params["event_types"]
 
+        error_msg_prefix = f"Error when constructing query of kind {query_kind} with parameters {params}"
+        allowed_intervals = TotalLocationEvents.allowed_intervals
+        allowed_directions = ["in", "out", "all"]
+        allowed_levels = [
+            "admin0",
+            "admin1",
+            "admin2",
+            "admin3",
+            "admin4",
+            "site",
+            "cell",
+        ]
+
+        if interval not in allowed_intervals:
+            raise QueryProxyError(
+                f"{error_msg_prefix}: 'Unrecognised interval '{interval}', must be one of: {allowed_intervals}'"
+            )
+
+        if level not in allowed_levels:
+            raise QueryProxyError(
+                f"{error_msg_prefix}: 'Unrecognised level '{level}', must be one of: {allowed_levels}'"
+            )
+
+        if level in ["cell", "site"]:
+            level = f"versioned-{level}"
+
+        if direction not in allowed_directions:
+            raise QueryProxyError(
+                f"{error_msg_prefix}: 'Unrecognised direction '{direction}', must be one of: {allowed_directions}'"
+            )
+        if direction == "all":
+            direction = "both"
+
+        if subscriber_subset == "all":
+            subscriber_subset = None
+        else:
+            if isinstance(subscriber_subset, dict):
+                raise NotImplementedError("Proper subsetting not implemented yet.")
+            else:
+                raise QueryProxyError(
+                    f"{error_msg_prefix}: 'Cannot construct location event counts subset from given input: {subscriber_subset}'"
+                )
+
+        try:
+            q = TotalLocationEvents(
+                start=start_date,
+                stop=end_date,
+                direction=direction,
+                table=event_types,
+                level=level,
+                subscriber_subset=subscriber_subset,
+            )
+            logger.debug(f"Made TotalLocationEvents query. {q.__dict__}")
+        except Exception as e:
+            raise QueryProxyError(f"{error_msg_prefix}: '{e}'")
     elif "modal_location" == query_kind:
         locations = params["locations"]
         aggregation_unit = params["aggregation_unit"]

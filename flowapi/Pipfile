@@ -9,6 +9,7 @@ quart = "*"
 hypercorn = "*"
 asyncpg = "*"
 flask-jwt-extended = "*"
+ujson = "*"
 
 [dev-packages]
 pytest = "*"
