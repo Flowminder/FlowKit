@@ -77,6 +77,6 @@ CREATE TABLE etl.etl (
         cdr_type cdrtype,
       cdr_date DATE,
         status status,
-        time_stamp TIMESTAMP WITHOUT TIME ZONE,
+        time_stamp TIMESTAMP WITH TIME ZONE,
         PRIMARY KEY (id)
 );
