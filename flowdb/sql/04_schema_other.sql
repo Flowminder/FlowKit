@@ -72,11 +72,11 @@ CREATE SCHEMA IF NOT EXISTS etl;
 CREATE TYPE cdrtype AS ENUM ('voice', 'sms', 'mds');
 CREATE TYPE status AS ENUM ('in_process', 'done', 'quarantine');
 CREATE TABLE etl.etl (
-        id SERIAL NOT NULL,
-        file_name VARCHAR,
-        cdr_type cdrtype,
-      cdr_date DATE,
-        status status,
-        time_stamp TIMESTAMP WITH TIME ZONE,
-        PRIMARY KEY (id)
+	id SERIAL NOT NULL,
+	file_name VARCHAR,
+	cdr_type cdrtype,
+	cdr_date DATE,
+	status status,
+	time_stamp TIMESTAMP WITH TIME ZONE,
+	PRIMARY KEY (id)
 );
