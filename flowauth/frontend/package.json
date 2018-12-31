@@ -8,7 +8,7 @@
     "@material-ui/icons": "^3.0.1",
     "date-fns": "^2.0.0-alpha.26",
     "generate-password": "^1.4.0",
-    "material-ui-pickers": "^2.0.4",
+    "material-ui-pickers": "^2.0.5",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-scripts": "^2.1.2",
