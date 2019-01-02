@@ -130,7 +130,7 @@ def shrink_below_size(
     )
 
     if dry_run:
-        cached_queries = (x for x in get_cached_queries_by_size(connection))
+        cached_queries = iter(get_cached_queries_by_size(connection))
         shrink = lambda x: cached_queries.__next__()
     else:
         shrink = shrink_one
