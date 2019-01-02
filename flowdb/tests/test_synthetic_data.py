@@ -48,22 +48,22 @@ def test_correct_cell_indexes(cursor):
     """Cells table should have five indexes - id, site_id, primary key and spatial ones on geom_point and geom_polygon."""
     expected_indexes = [
         {
-            "index_definition": "CREATE INDEX cells_site_id_idx ON infrastructure.cells USING btree (site_id)"
-        },
-        {
             "index_definition": "CREATE INDEX cells_id_idx ON infrastructure.cells USING btree (id)"
         },
         {
-            "index_definition": "CREATE INDEX infrastructure_cells_geom_polygon_index ON infrastructure.cells USING gist (geom_polygon)"
+            "index_definition": "CREATE INDEX cells_site_id_idx ON infrastructure.cells USING btree (site_id)"
         },
         {
             "index_definition": "CREATE INDEX infrastructure_cells_geom_point_index ON infrastructure.cells USING gist (geom_point)"
         },
         {
+            "index_definition": "CREATE INDEX infrastructure_cells_geom_polygon_index ON infrastructure.cells USING gist (geom_polygon)"
+        },
+        {
             "index_definition": "CREATE UNIQUE INDEX cells_pkey ON infrastructure.cells USING btree (id, version)"
         },
     ]
-    query = "select pg_get_indexdef(indexrelid) as index_definition from pg_index where indrelid = 'infrastructure.cells'::regclass;"
+    query = "select pg_get_indexdef(indexrelid) as index_definition from pg_index where indrelid = 'infrastructure.cells'::regclass ORDER BY index_definition;;"
     cursor.execute(query)
     results = cursor.fetchall()
     assert expected_indexes == results
@@ -75,13 +75,13 @@ def test_correct_site_indexes(cursor):
     """
     expected_indexes = [
         {
-            "index_definition": "CREATE INDEX sites_id_idx ON infrastructure.sites USING btree (id)"
+            "index_definition": "CREATE INDEX infrastructure_sites_geom_point_index ON infrastructure.sites USING gist (geom_point)"
         },
         {
             "index_definition": "CREATE INDEX infrastructure_sites_geom_polygon_index ON infrastructure.sites USING gist (geom_polygon)"
         },
         {
-            "index_definition": "CREATE INDEX infrastructure_sites_geom_point_index ON infrastructure.sites USING gist (geom_point)"
+            "index_definition": "CREATE INDEX sites_id_idx ON infrastructure.sites USING btree (id)"
         },
         {
             "index_definition": "CREATE UNIQUE INDEX sites_pkey ON infrastructure.sites USING btree (id, version)"
