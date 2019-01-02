@@ -149,7 +149,7 @@ def test_data(app):
             GroupServerTokenLimits(
                 group=groups[0],
                 longest_life=2,
-                latest_end=datetime.datetime(2019, 1, 1),
+                latest_end=datetime.datetime(2020, 1, 1),
                 server=dummy_server_a,
             )
         )
