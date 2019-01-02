@@ -307,7 +307,7 @@ def test_group_server_time_limits(client, auth):
     assert 200 == response.status_code
     json = response.get_json()
     assert 2 == json["longest_token_life"]
-    assert "Tue, 01 Jan 2019 00:00:00 GMT" == json["latest_token_expiry"]
+    assert "Wed, 01 Jan 2020 00:00:00 GMT" == json["latest_token_expiry"]
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
