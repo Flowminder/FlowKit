@@ -9,8 +9,9 @@ Functions which deal with inspecting cached tables.
 """
 import logging
 import pickle
+from itertools import accumulate, takewhile
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple, List
 
 if TYPE_CHECKING:
     from .query import Query
@@ -41,6 +42,31 @@ def get_query_by_id(connection: "Connection", query_id: str) -> "Query":
         return pickle.loads(obj)
     except IndexError:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
+
+
+def get_cached_queries_by_size(connection: "Connection") -> List[Tuple["Query", int]]:
+    """
+    Get all cached queries in ascending disk size order.
+
+    Parameters
+    ----------
+    connection : Connection
+
+    Returns
+    -------
+    list of tuples
+        Returns a list of cached Query objects with their on disk sizes
+
+    """
+    qry = """SELECT obj, pg_total_relation_size(c.oid) as table_size 
+        FROM pg_class c 
+            LEFT JOIN pg_namespace n 
+        ON n.oid=c.relnamespace 
+        INNER JOIN cache.cached ON
+         relname=cached.tablename AND nspname=cached.schema 
+        WHERE NOT cached.class='Table'"""
+    cache_queries = connection.fetch(qry)
+    return [(pickle.loads(obj), table_size) for obj, table_size in cache_queries]
 
 
 def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
@@ -103,8 +129,14 @@ def shrink_below_size(
         f"Shrinking cache from {initial_cache_size} to below {size_threshold}{'(dry run)' if dry_run else ''}."
     )
 
+    if dry_run:
+        cached_queries = (x for x in get_cached_queries_by_size(connection))
+        shrink = lambda x: cached_queries.__next__()
+    else:
+        shrink = shrink_one
+
     while initial_cache_size > size_threshold:
-        obj_removed, cache_reduction = shrink_one(connection, dry_run)
+        obj_removed, cache_reduction = shrink(connection)
         removed.append(obj_removed)
         initial_cache_size -= cache_reduction
     logger.info(

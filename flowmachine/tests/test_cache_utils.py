@@ -18,6 +18,7 @@ from flowmachine.core.cache import (
     size_of_table,
     score,
     get_query_by_id,
+    get_cached_queries_by_size,
 )
 from flowmachine.features import daily_location
 
@@ -41,6 +42,18 @@ def test_compute_time():
     connection_mock = Mock()
     connection_mock.fetch.return_value = [[10]]
     assert 10 / 1000 == compute_time(connection_mock, "DUMMY_ID")
+
+
+def test_get_cached_queries_by_size(flowmachine_connect):
+    """Test that all records which are queries are returned in correct order."""
+    dl = daily_location("2016-01-01").store().result()
+    dl_big = daily_location("2016-01-01", level="lat-lon").store().result()
+    table = dl.get_table()
+    cached_queries = get_cached_queries_by_size(flowmachine_connect)
+    assert 2 == len(cached_queries)
+    assert dl.md5 == cached_queries[0][0].md5
+    assert dl_big.md5 == cached_queries[1][0].md5
+    assert 2 == len(cached_queries[0])
 
 
 def test_shrink_one(flowmachine_connect):
@@ -82,11 +95,11 @@ def test_shrink_to_size_removes_queries(flowmachine_connect):
 def test_shrink_to_size_respects_dry_run(flowmachine_connect):
     """Test that shrink_below_size doesn't remove anything during a dry run."""
     dl = daily_location("2016-01-01").store().result()
-    removed_queries = shrink_below_size(
-        flowmachine_connect, size_of_cache(flowmachine_connect) - 1, dry_run=True
-    )
-    assert 1 == len(removed_queries)
+    dl2 = daily_location("2016-01-02").store().result()
+    removed_queries = shrink_below_size(flowmachine_connect, 0, dry_run=True)
+    assert 2 == len(removed_queries)
     assert dl.is_stored
+    assert dl2.is_stored
 
 
 def test_shrink_to_size_uses_score(flowmachine_connect):
