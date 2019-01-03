@@ -237,4 +237,6 @@ $$
         AND cached.query_id=cached_query_id;
   RETURN score;
   END
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp;
