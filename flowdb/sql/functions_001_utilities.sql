@@ -217,7 +217,8 @@ SET search_path = public, pg_temp;
 /*********************************
 ### cache_score ###
 
-Returns
+Returns the cache score (https://github.com/dask/cachey) of a stored query.
+Cache score is calculated as (compute_time / num_bytes * (1 + memory_halflife))*(n_cache_retrievals+1)
 
 ***********************************/
 
