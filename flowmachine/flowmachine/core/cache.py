@@ -43,9 +43,11 @@ def get_query_by_id(connection: "Connection", query_id: str) -> "Query":
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def get_cached_queries_by_size(connection: "Connection") -> List[Tuple["Query", int]]:
+def get_cached_queries_by_score(
+    connection: "Connection", half_life: float
+) -> List[Tuple["Query", int]]:
     """
-    Get all cached queries in ascending disk size order.
+    Get all cached queries in ascending cache score order.
 
     Parameters
     ----------
@@ -57,18 +59,22 @@ def get_cached_queries_by_size(connection: "Connection") -> List[Tuple["Query", 
         Returns a list of cached Query objects with their on disk sizes
 
     """
-    qry = """SELECT obj, pg_total_relation_size(c.oid) as table_size 
+    qry = f"""SELECT obj, pg_total_relation_size(c.oid) as table_size 
         FROM pg_class c 
             LEFT JOIN pg_namespace n 
         ON n.oid=c.relnamespace 
         INNER JOIN cache.cached ON
          relname=cached.tablename AND nspname=cached.schema 
-        WHERE NOT cached.class='Table'"""
+        WHERE NOT cached.class='Table'
+        ORDER BY cache_score(query_id, {half_life})
+        """
     cache_queries = connection.fetch(qry)
     return [(pickle.loads(obj), table_size) for obj, table_size in cache_queries]
 
 
-def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
+def shrink_one(
+    connection: "Connection", half_life: float, dry_run: bool = False
+) -> "Query":
     """
     Remove the lowest scoring cached query from cache and return it and size of it
     in bytes.
@@ -84,7 +90,7 @@ def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
     "Query"
         The "Query" object that was removed from cache
     """
-    qry = "SELECT tablename, schema, obj FROM cache.cached WHERE NOT class='Table' ORDER BY cache_score ASC LIMIT 1"
+    qry = f"SELECT tablename, schema, obj FROM cache.cached WHERE NOT class='Table' ORDER BY cache_score(query_id, {half_life}) ASC LIMIT 1"
     tablename, schema, obj = connection.fetch(qry)[0]
     table_size = size_of_table(connection, tablename, schema)
     obj_to_remove = pickle.loads(obj)
@@ -104,7 +110,10 @@ def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
 
 
 def shrink_below_size(
-    connection: "Connection", size_threshold: int, dry_run: bool = False
+    connection: "Connection",
+    size_threshold: int,
+    half_life: float,
+    dry_run: bool = False,
 ) -> "Query":
     """
     Remove queries from the cache until it is below a specified size threshold.
@@ -129,13 +138,13 @@ def shrink_below_size(
     )
 
     if dry_run:
-        cached_queries = iter(get_cached_queries_by_size(connection))
-        shrink = lambda x: cached_queries.__next__()
+        cached_queries = iter(get_cached_queries_by_score(connection, half_life))
+        shrink = lambda *x: cached_queries.__next__()
     else:
         shrink = shrink_one
 
     while initial_cache_size > size_threshold:
-        obj_removed, cache_reduction = shrink(connection)
+        obj_removed, cache_reduction = shrink(connection, half_life)
         removed.append(obj_removed)
         initial_cache_size -= cache_reduction
     logger.info(
@@ -228,7 +237,7 @@ def compute_time(connection: "Connection", query_id: str) -> float:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def score(connection: "Connection", query_id: str) -> float:
+def score(connection: "Connection", query_id: str, half_life: float) -> float:
     """
     Get the current cache score for a cached query.
 
@@ -237,6 +246,8 @@ def score(connection: "Connection", query_id: str) -> float:
     connection: "Connection"
     query_id : str
         md5 id of the cached query
+    half_life : float
+        Memory decay halflife. Smaller values will decay more slowly.
 
     Returns
     -------
@@ -246,32 +257,7 @@ def score(connection: "Connection", query_id: str) -> float:
     """
     try:
         return float(
-            connection.fetch(
-                f"SELECT cache_score FROM cache.cached WHERE query_id='{query_id}'"
-            )[0][0]
+            connection.fetch(f"SELECT cache_score('{query_id}', {half_life})")[0][0]
         )
     except IndexError:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
-
-
-def rescore(connection: "Connection", query: "Query", half_life: float) -> float:
-    """
-    Calculate a new cache score for a cached query object.
-
-    Parameters
-    ----------
-    connection : "Connection"
-    query : "Query"
-        "Query" object to score
-    half_life : float
-        Memory decay halflife. Smaller values will decay more slowly.
-
-    Returns
-    -------
-    float
-        Updated cache score
-    """
-    byte_size = size_of_table(connection, *query.table_name.split(".")[::-1])
-    runtime = compute_time(connection, query.md5)
-    last_score = score(connection, query.md5)
-    return last_score + runtime / byte_size * (1 + half_life)

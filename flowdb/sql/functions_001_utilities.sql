@@ -213,3 +213,27 @@ END; $$
 
 LANGUAGE plpgsql
 SET search_path = public, pg_temp;
+
+/*********************************
+### cache_score ###
+
+Returns
+
+***********************************/
+
+CREATE OR REPLACE FUNCTION cache_score(IN cached_query_id TEXT, IN memory_halflife float)
+	RETURNS float AS
+$$
+  DECLARE score float;
+  BEGIN
+	SELECT ((compute_time/1000) /  pg_total_relation_size(c.oid) * (1 + memory_halflife))*(access_count+1) INTO score
+        FROM pg_class c
+            LEFT JOIN pg_namespace n
+        ON n.oid=c.relnamespace
+        INNER JOIN cache.cached ON
+         relname=cached.tablename AND nspname=cached.schema
+        WHERE NOT cached.class='Table'
+        AND cached.query_id=cached_query_id;
+  RETURN score;
+  END
+$$ LANGUAGE plpgsql;

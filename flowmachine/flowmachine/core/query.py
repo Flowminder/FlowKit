@@ -24,7 +24,6 @@ from hashlib import md5
 
 from sqlalchemy.exc import ResourceClosedError
 
-from flowmachine.core.cache import rescore
 from flowmachine.utils.utils import rlock
 from abc import ABCMeta, abstractmethod
 
@@ -194,13 +193,8 @@ class Query(metaclass=ABCMeta):
             with rlock(self.redis, self.md5):
                 if self.connection.has_table(schema=schema, name=name):
                     try:
-                        new_score = rescore(
-                            self.connection,
-                            self,
-                            int(os.getenv("CACHE_HALF_LIFE", 1000)),
-                        )
                         self.connection.engine.execute(
-                            f"UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1, cache_score = {new_score} WHERE query_id ='{self.md5}'"
+                            f"UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{self.md5}'"
                         )
                     except ValueError:
                         pass  # Cache record not written yet
