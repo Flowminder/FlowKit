@@ -9,7 +9,6 @@ Functions which deal with inspecting cached tables.
 """
 import logging
 import pickle
-from itertools import accumulate, takewhile
 
 from typing import TYPE_CHECKING, Tuple, List
 
