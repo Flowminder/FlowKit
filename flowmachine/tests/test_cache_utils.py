@@ -93,6 +93,22 @@ def test_shrink_to_size_respects_dry_run(flowmachine_connect):
     assert dl2.is_stored
 
 
+def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
+    """Test that shrink_below_size dry run is an accurate report."""
+    dl = daily_location("2016-01-01").store().result()
+    dl2 = daily_location("2016-01-02").store().result()
+    shrink_to = size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
+    queries_that_would_be_removed = shrink_below_size(
+        flowmachine_connect, shrink_to, 1000, dry_run=True
+    )
+    removed_queries = shrink_below_size(
+        flowmachine_connect, shrink_to, 1000, dry_run=False
+    )
+    assert [q.md5 for q in removed_queries] == [
+        q.md5 for q in queries_that_would_be_removed
+    ]
+
+
 def test_shrink_to_size_uses_score(flowmachine_connect):
     """Test that shrink_below_size removes cache records in ascending score order."""
     dl = daily_location("2016-01-01").store().result()

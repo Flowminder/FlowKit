@@ -52,6 +52,8 @@ def get_cached_queries_by_score(
     Parameters
     ----------
     connection : Connection
+    half_life : float
+        Memory decay halflife. Smaller values will decay more slowly.
 
     Returns
     -------
@@ -82,6 +84,8 @@ def shrink_one(
     Parameters
     ----------
     connection : "Connection"
+    half_life : float
+        Memory decay halflife. Smaller values will decay more slowly.
     dry_run : bool, default False
         Set to true to just report the object that would be removed and not remove it
 
@@ -123,6 +127,8 @@ def shrink_below_size(
     connection : "Connection"
     size_threshold : int
         Size (in bytes) to reduce the cache below
+    half_life : float
+        Memory decay halflife. Smaller values will decay more slowly.
     dry_run : bool, default False
         Set to true to just report the objects that would be removed and not remove them
 
