@@ -649,8 +649,8 @@ class Query(metaclass=ABCMeta):
                 cache_record_insert = """
                 INSERT INTO cache.cached 
                 (query_id, version, query, created, access_count, last_accessed, compute_time, 
-                cache_score, class, schema, tablename, obj) 
-                VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
+                class, schema, tablename, obj) 
+                VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, %s, %s, %s, %s)
                  ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
                 con.execute(
                     cache_record_insert,
