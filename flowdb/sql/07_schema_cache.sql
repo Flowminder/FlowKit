@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS cache.cached
                                 access_count INTEGER,
                                 last_accessed TIMESTAMP WITH TIME ZONE,
                                 compute_time NUMERIC,
-                                cache_score NUMERIC,
                                 class CHARACTER VARYING,
                                 schema CHARACTER VARYING,
                                 tablename CHARACTER VARYING,

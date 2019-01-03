@@ -221,7 +221,7 @@ Returns
 
 ***********************************/
 
-CREATE OR REPLACE FUNCTION cache_score(IN cached_query_id TEXT, IN memory_halflife float)
+CREATE OR REPLACE FUNCTION cache_score(IN cached_query_id CHARACTER(32), IN memory_halflife float)
 	RETURNS float AS
 $$
   DECLARE score float;
