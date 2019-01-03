@@ -14,8 +14,6 @@ tabulate = "*"
 pandas = "*"
 mkdocs-material = "*"
 ipykernel = "*"
-cython = "*" # Required until pyproj provide a wheel for 3.7
-pyproj = {editable = true, git = "https://github.com/jswhit/pyproj.git"} # Required until pyproj provide a wheel for 3.7
 geopandas = "*"
 numpydoc = "*"
 black = "==18.9b0"
