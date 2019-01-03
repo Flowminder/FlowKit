@@ -76,7 +76,7 @@ def get_cached_queries_by_score(
 
 def shrink_one(
     connection: "Connection", half_life: float, dry_run: bool = False
-) -> "Query":
+) -> Tuple["Query", int]:
     """
     Remove the lowest scoring cached query from cache and return it and size of it
     in bytes.
@@ -91,8 +91,8 @@ def shrink_one(
 
     Returns
     -------
-    "Query"
-        The "Query" object that was removed from cache
+    tuple of "Query", int
+        The "Query" object that was removed from cache and the size of it
     """
     qry = f"SELECT tablename, schema, obj FROM cache.cached WHERE NOT class='Table' ORDER BY cache_score(query_id, {half_life}) ASC LIMIT 1"
     tablename, schema, obj = connection.fetch(qry)[0]
