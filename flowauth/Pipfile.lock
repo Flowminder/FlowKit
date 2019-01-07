@@ -131,10 +131,10 @@
         },
         "flask-jwt-extended": {
             "hashes": [
-                "sha256:3a8d463b2e792f8e0b0099dc967fe935031b53eb4299b2b7a9620579b44c7a8c"
+                "sha256:070422d0dff7a47073414c945fcca4257d29b2f3c0f5234d8bdd0c1c60030433"
             ],
             "index": "pypi",
-            "version": "==3.14.0"
+            "version": "==3.15.0"
         },
         "flask-login": {
             "hashes": [
@@ -486,10 +486,10 @@
         },
         "flask-jwt-extended": {
             "hashes": [
-                "sha256:3a8d463b2e792f8e0b0099dc967fe935031b53eb4299b2b7a9620579b44c7a8c"
+                "sha256:070422d0dff7a47073414c945fcca4257d29b2f3c0f5234d8bdd0c1c60030433"
             ],
             "index": "pypi",
-            "version": "==3.14.0"
+            "version": "==3.15.0"
         },
         "flask-login": {
             "hashes": [
