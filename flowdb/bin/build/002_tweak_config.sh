@@ -22,6 +22,7 @@
 #  Generates config file using the configurate.py script
 #  and adds it to the PostgreSQL general configuration.
 #
+set -e
 
 python3 /docker-entrypoint-initdb.d/configurate.py
 echo "include 'postgresql.configurator.conf'" >> /var/lib/postgresql/data/postgresql.conf

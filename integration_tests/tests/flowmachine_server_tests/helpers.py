@@ -66,6 +66,7 @@ def get_cache_tables(fm_conn, exclude_internal_tables=True):
     if exclude_internal_tables:
         cache_tables.remove("cached")
         cache_tables.remove("dependencies")
+        cache_tables.remove("cache_config")
     return sorted(cache_tables)
 
 
@@ -81,7 +82,7 @@ def cache_schema_is_empty(fm_conn, check_internal_tables_are_empty=True):
     cache_tables = insp.get_table_names(schema="cache")
 
     # Check that there are no cached tables except the flowdb-internal ones
-    if cache_tables != ["cached", "dependencies"]:
+    if cache_tables != ["cache_config", "cached", "dependencies"]:
         return False
 
     if check_internal_tables_are_empty:

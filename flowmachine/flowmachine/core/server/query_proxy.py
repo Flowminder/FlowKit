@@ -3,7 +3,9 @@ import redis
 import redis_lock
 from json import dumps, loads, JSONDecodeError
 
-from flowmachine.core import Query, Table
+
+from flowmachine.core import Query
+from flowmachine.core.cache import get_query_by_id
 from flowmachine.features import (
     daily_location,
     ModalLocation,
@@ -267,9 +269,9 @@ def cache_table_exists(query_id):
     bool
     """
     try:
-        _ = Table(f"x{query_id}", "cache")
+        _ = get_query_by_id(Query.connection, query_id)
         return True
-    except (AttributeError, ValueError):
+    except ValueError:
         return False
 
 
@@ -287,7 +289,7 @@ def get_sql_for_query_id(query_id):
     -------
     str
     """
-    q = Table(f"x{query_id}", "cache")
+    q = get_query_by_id(Query.connection, query_id)
     sql = q.get_query()
     return sql
 

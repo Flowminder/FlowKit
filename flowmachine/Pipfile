@@ -32,6 +32,7 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 asynctest = "*"
 flowmachine = {editable = true,path = "."}
+cachey = "*"
 
 [requires]
 python_version = "3.7"

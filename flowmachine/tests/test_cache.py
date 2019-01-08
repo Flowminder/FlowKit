@@ -12,6 +12,25 @@ from flowmachine.core.query import Query
 from flowmachine.features import daily_location, ModalLocation, Flows
 
 
+def test_table_records_removed(flowmachine_connect):
+    """Test that removing a query from cache removes any Tables in cache that pointed to it."""
+    dl = daily_location("2016-01-01")
+    dl.store().result()
+    assert dl.is_stored
+    table = dl.get_table()
+    assert bool(
+        flowmachine_connect.fetch(
+            f"SELECT * FROM cache.cached WHERE query_id='{table.md5}'"
+        )
+    )
+    dl.invalidate_db_cache()
+    assert not bool(
+        flowmachine_connect.fetch(
+            f"SELECT * FROM cache.cached WHERE query_id='{table.md5}'"
+        )
+    )
+
+
 def test_do_cache_simple(flowmachine_connect):
     """
     Test that a simple object can be cached.
