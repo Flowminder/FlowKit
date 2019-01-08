@@ -12,3 +12,8 @@ FlowDB is database designed for storing, serving, and analysing mobile operator 
     -   [pgRouting](http://pgrouting.org) for advanced spatial analysis
     -   Utilities for connecting with Oracle databases ([oracle_fdw](https://github.com/laurenz/oracle_fdw))
     -   Scheduled tasks run in database ([pg_cron](https://github.com/citusdata/pg_cron))
+
+
+## Caveats
+
+You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting `shm_size` for the FlowDB container in your compose or stack file, or by passing the `--shm-size` argument to the `docker run` command.  
