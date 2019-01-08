@@ -169,6 +169,9 @@ def shrink_below_size(
     else:
         shrink = shrink_one
 
+    if size_threshold is None:
+        size_threshold = get_max_size_of_cache(connection)
+
     while initial_cache_size > size_threshold:
         obj_removed, cache_reduction = shrink(connection)
         removed.append(obj_removed)
