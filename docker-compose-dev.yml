@@ -22,6 +22,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FM_PASSWORD=${FM_PASSWORD:-foo}
       - API_PASSWORD=${API_PASSWORD:-foo}
+    shm_size: 1G
     tty: true
     stdin_open: true
     restart: always
@@ -42,6 +43,7 @@ services:
       - FM_PASSWORD=${FM_PASSWORD:-foo}
       - API_PASSWORD=${API_PASSWORD:-foo}
     tty: true
+    shm_size: 1G
     stdin_open: true
     restart: always
     networks:
@@ -65,6 +67,7 @@ services:
       - N_CELLS=${N_CELLS:-500}
       - N_CALLS=${N_CALLS:-2000}
     tty: true
+    shm_size: 1G
     stdin_open: true
     restart: always
     networks:
