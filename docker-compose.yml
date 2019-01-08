@@ -22,6 +22,7 @@ services:
         tty: true
         stdin_open: true
         restart: always
+        shm_size: 1G
         volumes:
             - data_volume_flowdb:/var/lib/postgresql/data
         networks:

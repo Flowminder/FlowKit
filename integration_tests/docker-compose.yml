@@ -20,6 +20,7 @@ services:
             - FM_PASSWORD=${FM_PASSWORD:-foo}
             - API_PASSWORD=${API_PASSWORD:-foo}
         tty: true
+        shm_size: 1G
         stdin_open: true
         restart: always
         networks:

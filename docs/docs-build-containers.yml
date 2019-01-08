@@ -15,6 +15,7 @@ services:
       - FM_PASSWORD=${FM_PASSWORD:-foo}
       - API_PASSWORD=${API_PASSWORD:-foo}
     tty: true
+    shm_size: 1G
     ports:
       - "$DB_PORT:5432"
     stdin_open: true

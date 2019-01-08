@@ -33,6 +33,7 @@ services:
           - FM_DB_USER
           - FM_DB_PASS
         tty: true
+        shm_size: 1G
         stdin_open: true
         networks:
           db:
