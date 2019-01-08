@@ -213,3 +213,90 @@ END; $$
 
 LANGUAGE plpgsql
 SET search_path = public, pg_temp;
+
+/*
+cache_half_life
+
+Returns the current setting for cache half-life, which governs how much priority is
+given to recency of access.
+ */
+
+CREATE OR REPLACE FUNCTION cache_half_life()
+	RETURNS float AS
+$$
+  DECLARE halflife float;
+  BEGIN
+  SELECT value INTO halflife FROM cache.cache_config WHERE key='half_life';
+  RETURN halflife;
+  END
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp;
+
+
+/*
+cache_max_size
+
+Returns the current setting for cache size in bytes.
+ */
+
+CREATE OR REPLACE FUNCTION cache_max_size()
+	RETURNS bigint AS
+$$
+  DECLARE cache_size float;
+  BEGIN
+  SELECT value INTO cache_size FROM cache.cache_config WHERE key='cache_size';
+  RETURN cache_size;
+  END
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp;
+
+/*********************************
+### table_size ###
+
+Get the size on disk in bytes of a table in the database.
+
+***********************************/
+
+CREATE OR REPLACE FUNCTION table_size(IN tablename TEXT, IN table_schema TEXT)
+	RETURNS float AS
+$$
+  DECLARE table_size float;
+  BEGIN
+  SELECT pg_total_relation_size(c.oid) INTO table_size
+              FROM pg_class c
+              LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
+              WHERE relkind = 'r' AND relname=tablename AND nspname=table_schema;
+  RETURN table_size;
+  END
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp;
+
+/*********************************
+### touch_cache ###
+
+Update the cache score, access count and most recent access time of a cached query and return
+the new cache score, or raise an error if no cached query with that id exists.
+
+***********************************/
+
+CREATE OR REPLACE FUNCTION touch_cache(IN cached_query_id TEXT)
+	RETURNS float AS
+$$
+  DECLARE score float;
+  BEGIN
+  UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1,
+        cache_score_multiplier = CASE WHEN class='Table' THEN 0 ELSE
+          cache_score_multiplier+POWER(1 + ln(2) / cache_half_life(), nextval('cache.cache_touches') - 2)
+        END
+        WHERE query_id=cached_query_id
+        RETURNING cache_score_multiplier*((compute_time/1000)/table_size(tablename, schema)) INTO score;
+        IF NOT FOUND THEN RAISE EXCEPTION 'Cache record % not found', cached_query_id;
+        END IF;
+  RETURN score;
+  END
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp;

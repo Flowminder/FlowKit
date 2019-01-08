@@ -140,6 +140,13 @@ do
         "
 done
 
+echo "Give $FM_USER role read and update access to cache_touches sequence"
+psql --dbname="$POSTGRES_DB" -c "
+    BEGIN;
+        GRANT USAGE, SELECT, UPDATE ON SEQUENCE cache.cache_touches TO $FM_USER;
+    COMMIT;
+    "
+
 echo "Give $API_USER role read access to tables created under cache schema."
 psql --dbname="$POSTGRES_DB" -c "
     BEGIN;

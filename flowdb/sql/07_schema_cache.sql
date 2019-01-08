@@ -17,13 +17,19 @@ CREATE TABLE IF NOT EXISTS cache.cached
                                 query_id CHARACTER(32) NOT NULL,
                                 version CHARACTER VARYING,
                                 query TEXT,
-                                ts TIMESTAMP WITH TIME ZONE,
+                                created TIMESTAMP WITH TIME ZONE,
+                                access_count INTEGER,
+                                last_accessed TIMESTAMP WITH TIME ZONE,
+                                compute_time NUMERIC,
+                                cache_score_multiplier NUMERIC,
                                 class CHARACTER VARYING,
                                 schema CHARACTER VARYING,
                                 tablename CHARACTER VARYING,
                                 obj BYTEA,
                                 CONSTRAINT cache_pkey PRIMARY KEY (query_id)
                             );
+/* Sequence counting total number of retrievals from cache */
+CREATE SEQUENCE cache.cache_touches START 1;
 CREATE TABLE IF NOT EXISTS cache.dependencies
                             (
                                 query_id CHARACTER(32) NOT NULL,
@@ -38,3 +44,7 @@ CREATE TABLE IF NOT EXISTS cache.dependencies
                                     ON UPDATE NO ACTION
                                     ON DELETE CASCADE
                             );
+
+CREATE TABLE cache.cache_config (key text, value text);
+INSERT INTO cache.cache_config (key, value) VALUES ('half_life', 1000);
+INSERT INTO cache.cache_config (key, value) VALUES ('cache_size', 4950307635);
