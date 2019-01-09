@@ -46,7 +46,11 @@ def check_claims(claim_type):
             current_app.query_run_logger.info("Received", **log_dict)
             try:  # Cross-check the query kind with the backend
                 request.socket.send_json(
-                    {"action": "get_query_kind", "query_id": kwargs["query_id"]}
+                    {
+                        "request_id": request.request_id,
+                        "action": "get_query_kind",
+                        "query_id": kwargs["query_id"],
+                    }
                 )
                 message = await request.socket.recv_json()
                 if "query_kind" in message:
@@ -72,7 +76,9 @@ def check_claims(claim_type):
             if (claim_type not in endpoint_claims) or (
                 endpoint_claims[claim_type] == False
             ):  # Check access claims
-                current_app.query_run_logger.error("UNAUTHORIZED", **log_dict)
+                current_app.query_run_logger.error(
+                    "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN", **log_dict
+                )
                 return (
                     jsonify(
                         {
@@ -84,7 +90,11 @@ def check_claims(claim_type):
                 )
             elif claim_type == "get_result":  # Check spatial aggregation claims
                 request.socket.send_json(
-                    {"action": "get_params", "query_id": kwargs["query_id"]}
+                    {
+                        "request_id": request.request_id,
+                        "action": "get_params",
+                        "query_id": kwargs["query_id"],
+                    }
                 )
                 message = await request.socket.recv_json()
                 if "params" not in message:
@@ -102,7 +112,9 @@ def check_claims(claim_type):
                         500,
                     )
                 if aggregation_unit not in spatial_claims:
-                    current_app.query_run_logger.error("UNAUTHORIZED", **log_dict)
+                    current_app.query_run_logger.error(
+                        "SPATIAL_AGGREGATION_LEVEL_NOT_ALLOWED_BY_TOKEN", **log_dict
+                    )
                     return (
                         jsonify(
                             {
@@ -131,6 +143,7 @@ async def run_query():
     json_data = await request.json
     request.socket.send_json(
         {
+            "request_id": request.request_id,
             "action": "run_query",
             "query_kind": json_data["query_kind"],
             "params": json_data["params"],
