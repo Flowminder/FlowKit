@@ -31,12 +31,11 @@ def check_claims(claim_type):
         @jwt_required
         async def wrapper(*args, **kwargs):
             json_payload = await request.json
-            request_id = str(uuid.uuid4())
             query_kind = (
                 "NA" if json_payload is None else json_payload.get("query_kind", "NA")
             )
             log_dict = dict(
-                request_id=request_id,
+                request_id=request.request_id,
                 query_kind=query_kind.upper(),
                 route=request.path,
                 user=get_jwt_identity(),
@@ -155,7 +154,9 @@ async def run_query():
 @blueprint.route("/poll/<query_id>")
 @check_claims("poll")
 async def poll_query(query_id):
-    request.socket.send_json({"action": "poll", "query_id": query_id})
+    request.socket.send_json(
+        {"request_id": request.request_id, "action": "poll", "query_id": query_id}
+    )
     message = await request.socket.recv_json()
 
     if message["status"] == "done":
@@ -173,7 +174,9 @@ async def poll_query(query_id):
 @blueprint.route("/get/<query_id>")
 @check_claims("get_result")
 async def get_query(query_id):
-    request.socket.send_json({"action": "get_sql", "query_id": query_id})
+    request.socket.send_json(
+        {"request_id": request.request_id, "action": "get_sql", "query_id": query_id}
+    )
     message = await request.socket.recv_json()
     current_app.logger.debug(f"Got message: {message}")
     if message["status"] == "done":

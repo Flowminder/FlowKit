@@ -1,6 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import uuid
+
 from pathlib import Path
 
 import quart.flask_patch
@@ -113,6 +115,10 @@ def create_app():
         socket.connect(f"tcp://{os.getenv('SERVER')}:5555")
         request.socket = socket
         app.logger.debug("Connected.")
+
+    @app.before_request
+    async def add_uuid():
+        request.request_id = str(uuid.uuid4())
 
     @app.teardown_request
     def close_zmq(exc):

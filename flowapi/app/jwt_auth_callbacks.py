@@ -41,6 +41,7 @@ def register_logging_callbacks(jwt: JWTManager):
     async def default_user_identity_callback(userdata):
         current_app.access_logger.info(
             "AUTHENTICATED",
+            request_id=request.request_id,
             route=request.path,
             user=get_jwt_identity(),
             src_ip=request.headers.get("Remote-Addr"),
@@ -61,6 +62,7 @@ def register_logging_callbacks(jwt: JWTManager):
         current_app.access_logger.error(
             "EXPIRED_TOKEN",
             route=request.path,
+            request_id=request.request_id,
             user=get_jwt_identity(),
             src_ip=request.headers.get("Remote-Addr"),
             json_payload=await request.json,
@@ -80,6 +82,7 @@ def register_logging_callbacks(jwt: JWTManager):
         current_app.access_logger.error(
             "CLAIMS_VERIFICATION_FAILED",
             route=request.path,
+            request_id=request.request_id,
             user=str(get_jwt_identity()),
             src_ip=request.headers.get("Remote-Addr"),
             json_payload=await request.json,
@@ -105,6 +108,7 @@ def register_logging_callbacks(jwt: JWTManager):
             "INVALID_TOKEN",
             error_string=error_string,
             route=request.path,
+            request_id=request.request_id,
             user=str(get_jwt_identity()),
             src_ip=request.headers.get("Remote-Addr"),
             json_payload=await request.json,
@@ -123,6 +127,7 @@ def register_logging_callbacks(jwt: JWTManager):
         current_app.access_logger.error(
             "REVOKED_TOKEN",
             route=request.path,
+            request_id=request.request_id,
             user=str(get_jwt_identity()),
             src_ip=request.headers.get("Remote-Addr"),
             json_payload=await request.json,
@@ -142,6 +147,7 @@ def register_logging_callbacks(jwt: JWTManager):
             "UNAUTHORISED",
             error_string=error_string,
             route=request.path,
+            request_id=request.request_id,
             user=str(get_jwt_identity()),
             src_ip=request.headers.get("Remote-Addr"),
             json_payload=await request.json,
