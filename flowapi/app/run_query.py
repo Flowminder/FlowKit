@@ -33,17 +33,6 @@ def check_claims(claim_type):
             query_kind = (
                 "NA" if json_payload is None else json_payload.get("query_kind", "NA")
             )
-            log_dict = dict(
-                request_id=request.request_id,
-                query_kind=query_kind.upper(),
-                route=request.path,
-                user=get_jwt_identity(),
-                src_ip=request.headers.get("Remote-Addr"),
-                json_payload=json_payload,
-                query_id=kwargs.get("query_id", "NA"),
-            )
-
-            current_app.query_run_logger.info("Received", **log_dict)
             try:  # Cross-check the query kind with the backend
                 request.socket.send_json(
                     {
@@ -55,7 +44,6 @@ def check_claims(claim_type):
                 message = await request.socket.recv_json()
                 if "query_kind" in message:
                     query_kind = message["query_kind"]
-                    log_dict["query_kind"] = query_kind.upper()
                 else:
                     return jsonify({}), 404
             except KeyError:
@@ -71,6 +59,18 @@ def check_claims(claim_type):
                     )
 
             claims = get_jwt_claims().get(query_kind, {})
+            log_dict = dict(
+                request_id=request.request_id,
+                query_kind=query_kind.upper(),
+                route=request.path,
+                user=get_jwt_identity(),
+                src_ip=request.headers.get("Remote-Addr"),
+                json_payload=json_payload,
+                query_id=kwargs.get("query_id", "NA"),
+                claims=claims,
+            )
+
+            current_app.query_run_logger.info("Received", **log_dict)
             endpoint_claims = claims.get("permissions", {})
             spatial_claims = claims.get("spatial_aggregation", {})
             if (claim_type not in endpoint_claims) or (
