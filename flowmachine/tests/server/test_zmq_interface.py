@@ -7,12 +7,13 @@ def test_create_zmq_msg_from_multipart_message():
     """
     Can construct a ZMQMultipartMessage and its public attributes contain the expected values.
     """
-    msg_contents = b'{"action": "dummy_action", "query_kind": "foobar", "param1": "some_value", "param2": "another_value"}'
+    msg_contents = b'{"action": "dummy_action", "request_id": "DUMMY_API_REQUEST_ID", "query_kind": "foobar", "param1": "some_value", "param2": "another_value"}'
     multipart_msg = (b"DUMMY_RETURN_ADDRESS", b"", msg_contents)
     zmq_msg = ZMQMultipartMessage(multipart_msg)
 
     # Check that the resulting zmq_msg has the expected
     assert zmq_msg.action == "dummy_action"
+    assert zmq_msg.api_request_id == "DUMMY_API_REQUEST_ID"
     assert zmq_msg.action_params == {
         "query_kind": "foobar",
         "param1": "some_value",
@@ -79,5 +80,20 @@ def test_missing_action_key_in_message_contents():
     multipart_msg = (b"DUMMY_RETURN_ADDRESS", b"", b'{"param1": "some_value"}')
     with pytest.raises(
         ZMQInterfaceError, match="Message does not contain expected key 'action'"
+    ):
+        _ = ZMQMultipartMessage(multipart_msg)
+
+
+def test_missing_request_id_key_in_message_contents():
+    """
+    Missing 'request_id' key in message contents raises an error.
+    """
+    multipart_msg = (
+        b"DUMMY_RETURN_ADDRESS",
+        b"",
+        b'{"action": "dummy_action", "query_kind": "foobar", "param1": "some_value"}',
+    )
+    with pytest.raises(
+        ZMQInterfaceError, match="Message does not contain expected key 'request_id'"
     ):
         _ = ZMQMultipartMessage(multipart_msg)

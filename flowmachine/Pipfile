@@ -16,6 +16,7 @@ python-louvain = "*"
 pyzmq = "*"
 "python-redis-lock" = "*"
 "psycopg2-binary" = "*"
+structlog = "*"
 
 [dev-packages]
 scipy = "*"
@@ -30,7 +31,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 asynctest = "*"
-"flowmachine" = {editable = true, path = "."}
+flowmachine = {editable = true,path = "."}
 
 [requires]
 python_version = "3.7"

@@ -25,7 +25,9 @@ class ZMQMultipartMessage:
     def __init__(self, multipart_msg):
         # Deconstruct multipart message into return address and the actual message
         self.return_address, self.msg_str = self._get_parts(multipart_msg)
-        self.action, self.action_params = self._deconstruct_message_string(self.msg_str)
+        self.action, self.action_params, self.api_request_id = self._deconstruct_message_string(
+            self.msg_str
+        )
 
     def send_reply_async(self, socket, reply_coroutine):
         asyncio.create_task(send_reply(socket, self.return_address, reply_coroutine))
@@ -66,14 +68,17 @@ class ZMQMultipartMessage:
             raise ZMQInterfaceError(error_msg)
 
         try:
-            action = msg.pop("action")
+            key = "action"
+            action = msg.pop(key)
+            key = "request_id"
+            api_request_id = msg.pop(key)
             action_params = msg  # everything except "actions" is considered a parameter
         except KeyError:
-            error_msg = f"Message does not contain expected key 'action': {msg_str}"
+            error_msg = f"Message does not contain expected key '{key}': {msg_str}"
             logger.debug(error_msg)
             raise ZMQInterfaceError(error_msg)
 
-        return action, action_params
+        return action, action_params, api_request_id
 
 
 async def send_reply(socket, return_address, reply_coroutine):

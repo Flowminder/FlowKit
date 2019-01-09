@@ -8,13 +8,45 @@
 import asyncio
 import logging
 import os
+from logging.handlers import TimedRotatingFileHandler
+
 import zmq
 from zmq.asyncio import Context
 from flowmachine.core import connect
 from .query_proxy import QueryProxy, MissingQueryError, QueryProxyError
 from .zmq_interface import ZMQMultipartMessage, ZMQInterfaceError
 
+import structlog
+
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(),
+    ],
+    context_class=dict,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
+)
+
 logger = logging.getLogger("flowmachine").getChild(__name__)
+# Logger for all queries run or accessed
+query_run_log = logging.getLogger("flowmachine-server")
+query_run_log.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+logger.addHandler(ch)
+log_root = os.getenv("LOG_DIRECTORY", "/var/log/flowmachine-server/")
+fh = TimedRotatingFileHandler(os.path.join(log_root, "query-runs.log"), when="midnight")
+fh.setLevel(logging.INFO)
+logger.addHandler(fh)
+logger = structlog.wrap_logger()
 
 
 async def get_reply_for_message(  # pragma: no cover
