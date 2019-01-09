@@ -1,6 +1,8 @@
-import csv
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from io import StringIO
+import uuid
 from flask_jwt_extended import JWTManager, get_jwt_identity
 from flask_jwt_extended.default_callbacks import (
     default_expired_token_callback,
@@ -34,6 +36,17 @@ def register_logging_callbacks(jwt: JWTManager):
         The JWT manager wth the registered callbacks
 
     """
+
+    @jwt.user_identity_loader
+    async def default_user_identity_callback(userdata):
+        current_app.access_logger.info(
+            "AUTHENTICATED",
+            route=request.path,
+            user=get_jwt_identity(),
+            src_ip=request.headers.get("Remote-Addr"),
+            json_payload=await request.json,
+        )
+        return default_user_identity_callback(userdata)
 
     @jwt.expired_token_loader
     async def expired_token_callback() -> Response:

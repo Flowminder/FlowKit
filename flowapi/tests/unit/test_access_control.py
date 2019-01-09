@@ -172,6 +172,9 @@ async def test_access_logs_gets(
     assert "UNAUTHORIZED" in log_lines[1]
     assert "test" in log_lines[0]
     assert "test" in log_lines[1]
+    assert (
+        json.loads(log_lines[0])["request_id"] == json.loads(log_lines[1])["request_id"]
+    )
 
 
 @pytest.mark.asyncio

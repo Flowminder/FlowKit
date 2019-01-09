@@ -34,10 +34,10 @@ def check_claims(claim_type):
             request_id = str(uuid.uuid4())
             query_kind = (
                 "NA" if json_payload is None else json_payload.get("query_kind", "NA")
-            ).upper()
+            )
             log_dict = dict(
                 request_id=request_id,
-                query_kind=query_kind,
+                query_kind=query_kind.upper(),
                 route=request.path,
                 user=get_jwt_identity(),
                 src_ip=request.headers.get("Remote-Addr"),
@@ -119,7 +119,7 @@ def check_claims(claim_type):
                     pass
             else:
                 pass
-            current_app.query_run_logger.info(f"{func.__name__.upper()}", **log_dict)
+            current_app.query_run_logger.info("Authorised", **log_dict)
             return await func(*args, **kwargs)
 
         return wrapper
