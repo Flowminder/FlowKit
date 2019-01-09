@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+import json
 import os
 import pytest
 from asynctest import return_once
@@ -168,7 +168,7 @@ async def test_access_logs_gets(
     with open(os.path.join(log_dir, "query-runs.log")) as log_file:
         log_lines = log_file.readlines()
     assert 2 == len(log_lines)
-    assert query_kind.upper() in log_lines[0]
+    assert query_kind.upper() == json.loads(log_lines[0])["query_kind"]
     assert "UNAUTHORIZED" in log_lines[1]
     assert "test" in log_lines[0]
     assert "test" in log_lines[1]

@@ -1,7 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
 from pathlib import Path
 
 import quart.flask_patch
@@ -12,8 +11,29 @@ import os
 import zmq
 from logging.handlers import TimedRotatingFileHandler
 from zmq.asyncio import Context
+
+from app.jwt_auth_callbacks import register_logging_callbacks
 from .run_query import blueprint as run_query_blueprint
 from flask_jwt_extended import JWTManager
+
+import structlog
+
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(),
+    ],
+    context_class=dict,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
+)
 
 
 def getsecret(key: str, default: str) -> str:
@@ -54,24 +74,20 @@ def create_app():
         log_level = logging.getLevelName(os.getenv("LOG_LEVEL", "error").upper())
         app.logger.setLevel(logging.getLevelName(log_level))
 
-        formatter = logging.Formatter("%(name)s:%(asctime)s:%(levelname)s:%(message)s")
-
         # Logger for authentication
 
         logger = logging.getLogger("flowkit-access")
         logger.setLevel(logging.INFO)
         ch = logging.StreamHandler()
         ch.setLevel(log_level)
-        ch.setFormatter(formatter)
         logger.addHandler(ch)
 
         fh = TimedRotatingFileHandler(
             os.path.join(log_root, "flowkit-access.log"), when="midnight"
         )
         fh.setLevel(logging.INFO)
-        fh.setFormatter(formatter)
         logger.addHandler(fh)
-        app.access_logger = logger
+        app.access_logger = structlog.wrap_logger(logger)
 
         # Logger for all queries run or accessed
 
@@ -79,16 +95,14 @@ def create_app():
         logger.setLevel(logging.INFO)
         ch = logging.StreamHandler()
         ch.setLevel(log_level)
-        ch.setFormatter(formatter)
         logger.addHandler(ch)
 
         fh = TimedRotatingFileHandler(
             os.path.join(log_root, "query-runs.log"), when="midnight"
         )
         fh.setLevel(logging.INFO)
-        fh.setFormatter(formatter)
         logger.addHandler(fh)
-        app.query_run_logger = logger
+        app.query_run_logger = structlog.wrap_logger(logger)
 
     @app.before_request
     async def connect_zmq():
@@ -119,5 +133,7 @@ def create_app():
         return ""
 
     app.register_blueprint(run_query_blueprint, url_prefix="/api/0")
+
+    register_logging_callbacks(jwt)
 
     return app

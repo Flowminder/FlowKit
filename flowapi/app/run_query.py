@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import uuid
 
 from functools import wraps
 import ujson as json
@@ -29,18 +30,22 @@ def check_claims(claim_type):
         @wraps(func)
         @jwt_required
         async def wrapper(*args, **kwargs):
-            json = await request.json
-            query_kind = "NA" if json is None else json.get("query_kind", "NA")
-            log_elements = [
-                "",
-                f"{func.__name__.upper()}",
-                query_kind.upper(),
-                get_jwt_identity(),
-                request.headers.get("Remote-Addr"),
-                kwargs.get("query_id", "NA"),
-            ]
+            json_payload = await request.json
+            request_id = str(uuid.uuid4())
+            query_kind = (
+                "NA" if json_payload is None else json_payload.get("query_kind", "NA")
+            ).upper()
+            log_dict = dict(
+                request_id=request_id,
+                query_kind=query_kind,
+                route=request.path,
+                user=get_jwt_identity(),
+                src_ip=request.headers.get("Remote-Addr"),
+                json_payload=json_payload,
+                query_id=kwargs.get("query_id", "NA"),
+            )
 
-            current_app.query_run_logger.info(":".join(log_elements))
+            current_app.query_run_logger.info("Received", **log_dict)
             try:  # Cross-check the query kind with the backend
                 request.socket.send_json(
                     {"action": "get_query_kind", "query_id": kwargs["query_id"]}
@@ -48,7 +53,7 @@ def check_claims(claim_type):
                 message = await request.socket.recv_json()
                 if "query_kind" in message:
                     query_kind = message["query_kind"]
-                    log_elements[2] = query_kind.upper()
+                    log_dict["query_kind"] = query_kind.upper()
                 else:
                     return jsonify({}), 404
             except KeyError:
@@ -69,8 +74,7 @@ def check_claims(claim_type):
             if (claim_type not in endpoint_claims) or (
                 endpoint_claims[claim_type] == False
             ):  # Check access claims
-                log_elements[0] = "UNAUTHORIZED"
-                current_app.query_run_logger.error(":".join(log_elements))
+                current_app.query_run_logger.error("UNAUTHORIZED", **log_dict)
                 return (
                     jsonify(
                         {
@@ -100,8 +104,7 @@ def check_claims(claim_type):
                         500,
                     )
                 if aggregation_unit not in spatial_claims:
-                    log_elements[0] = "UNAUTHORIZED"
-                    current_app.query_run_logger.error(":".join(log_elements))
+                    current_app.query_run_logger.error("UNAUTHORIZED", **log_dict)
                     return (
                         jsonify(
                             {
@@ -116,7 +119,7 @@ def check_claims(claim_type):
                     pass
             else:
                 pass
-
+            current_app.query_run_logger.info(f"{func.__name__.upper()}", **log_dict)
             return await func(*args, **kwargs)
 
         return wrapper

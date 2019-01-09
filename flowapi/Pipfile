@@ -10,6 +10,7 @@ hypercorn = "*"
 asyncpg = "*"
 flask-jwt-extended = "*"
 ujson = "*"
+structlog = "*"
 
 [dev-packages]
 pytest = "*"
