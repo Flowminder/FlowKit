@@ -5,7 +5,7 @@ import json
 import os
 import pytest
 from asynctest import return_once
-from .utils import query_kinds, aggregation_types
+from .utils import query_kinds
 
 
 @pytest.mark.asyncio

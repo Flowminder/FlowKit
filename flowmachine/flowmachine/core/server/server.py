@@ -41,11 +41,11 @@ query_run_log = logging.getLogger("flowmachine-server")
 query_run_log.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
-logger.addHandler(ch)
+query_run_log.addHandler(ch)
 log_root = os.getenv("LOG_DIRECTORY", "/var/log/flowmachine-server/")
 fh = TimedRotatingFileHandler(os.path.join(log_root, "query-runs.log"), when="midnight")
 fh.setLevel(logging.INFO)
-logger.addHandler(fh)
+query_run_log.addHandler(fh)
 query_run_log = structlog.wrap_logger(query_run_log)
 
 
@@ -119,7 +119,7 @@ async def get_reply_for_message(  # pragma: no cover
             query_run_log.info(
                 "get_query_kind",
                 query_id=query_id,
-                query_knd=query_proxy.query_kind,
+                query_kind=query_proxy.query_kind,
                 **run_log_dict,
             )
             reply = {"id": query_id, "query_kind": query_proxy.query_kind}
