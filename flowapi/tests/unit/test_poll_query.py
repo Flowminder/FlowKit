@@ -16,7 +16,7 @@ async def test_poll_query(
     """
     Test that correct status code and any redirect is returned when polling a running query
     """
-    client, db, log_dir = app
+    client, db, log_dir, app = app
 
     token = access_token_builder({"modal_location": {"permissions": {"poll": True}}})
     dummy_zmq_server.side_effect = return_once(

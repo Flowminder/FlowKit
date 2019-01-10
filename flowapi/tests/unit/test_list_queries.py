@@ -8,7 +8,7 @@ import pytest
 @pytest.mark.asyncio
 async def test_unknown_query_type(app, dummy_zmq_server, access_token_builder):
     """Test that a query type which doesn't exist returns a 404."""
-    client, db, log_dir = app
+    client, db, log_dir, app = app
 
     token = access_token_builder({"read_queries": ["nosuchquery"]})
     dummy_zmq_server.return_value = {"status": "awol", "query_kind": "nosuchquery"}

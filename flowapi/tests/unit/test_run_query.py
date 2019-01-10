@@ -10,7 +10,7 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
     """
     Test that correct status of 202 & redirect is returned when sending a query.
     """
-    client, db, log_dir = app
+    client, db, log_dir, app = app
 
     token = access_token_builder({"daily_location": {"permissions": {"run": True}}})
     dummy_zmq_server.return_value = {"id": 0}
@@ -28,7 +28,7 @@ async def test_post_query_error(app, dummy_zmq_server, access_token_builder):
     """
     Test that correct status of 403 is returned for a broken query.
     """
-    client, db, log_dir = app
+    client, db, log_dir, app = app
 
     token = access_token_builder({"daily_location": {"permissions": {"run": True}}})
     dummy_zmq_server.return_value = {"error": "Broken"}
