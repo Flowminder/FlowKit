@@ -23,6 +23,7 @@ async def test_get_sql(zmq_url):
             "aggregation_unit": "admin3",
             "subscriber_subset": "all",
         },
+        "request_id": "DUMMY_ID",
     }
     expected_query_id = "ddc61a04f608dee16fff0655f91c2057"
 
@@ -37,7 +38,11 @@ async def test_get_sql(zmq_url):
     #
     # Get query result.
     #
-    msg_get_sql = {"action": "get_sql", "query_id": expected_query_id}
+    msg_get_sql = {
+        "action": "get_sql",
+        "query_id": expected_query_id,
+        "request_id": "DUMMY_ID",
+    }
 
     reply = send_message_and_get_reply(zmq_url, msg_get_sql)
     assert (
@@ -53,7 +58,7 @@ async def test_get_sql_for_nonexistent_query_id(zmq_url):
     #
     # Try getting query result for nonexistent ID.
     #
-    msg_get_sql = {"action": "get_sql", "query_id": "FOOBAR"}
+    msg_get_sql = {"action": "get_sql", "query_id": "FOOBAR", "request_id": "DUMMY_ID"}
 
     reply = send_message_and_get_reply(zmq_url, msg_get_sql)
     assert {"status": "awol", "id": "FOOBAR"} == reply

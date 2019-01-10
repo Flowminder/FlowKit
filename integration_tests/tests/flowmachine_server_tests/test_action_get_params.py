@@ -35,6 +35,7 @@ async def test_get_params(params, zmq_url):
         "action": "run_query",
         "query_kind": "daily_location",
         "params": params,
+        "request_id": "DUMMY_ID",
     }
 
     reply = send_message_and_get_reply(zmq_url, msg_run_query)
@@ -49,7 +50,11 @@ async def test_get_params(params, zmq_url):
     #
     # Get query result.
     #
-    msg_get_params = {"action": "get_params", "query_id": query_id}
+    msg_get_params = {
+        "action": "get_params",
+        "query_id": query_id,
+        "request_id": "DUMMY_ID",
+    }
 
     reply = send_message_and_get_reply(zmq_url, msg_get_params)
     assert {"id": query_id, "params": params} == reply
@@ -63,7 +68,11 @@ async def test_get_params_for_nonexistent_query_id(zmq_url):
     #
     # Try getting query result for nonexistent ID.
     #
-    msg_get_sql = {"action": "get_params", "query_id": "FOOBAR"}
+    msg_get_sql = {
+        "action": "get_params",
+        "query_id": "FOOBAR",
+        "request_id": "DUMMY_ID",
+    }
 
     reply = send_message_and_get_reply(zmq_url, msg_get_sql)
     assert {"status": "awol", "id": "FOOBAR"} == reply
