@@ -10,6 +10,7 @@ from flask_jwt_extended.default_callbacks import (
     default_invalid_token_callback,
     default_revoked_token_callback,
     default_unauthorized_callback,
+    default_user_identity_callback,
 )
 from quart import current_app, request, Response
 
@@ -23,7 +24,6 @@ def register_logging_callbacks(jwt: JWTManager):
     - revoked tokens
     - blacklisted tokens
     - unauthorised access
-    - successful authentication
 
     Parameters
     ----------
@@ -36,18 +36,6 @@ def register_logging_callbacks(jwt: JWTManager):
         The JWT manager wth the registered callbacks
 
     """
-
-    @jwt.user_identity_loader
-    async def default_user_identity_callback(userdata):
-        current_app.access_logger.info(
-            "AUTHENTICATED",
-            request_id=request.request_id,
-            route=request.path,
-            user=get_jwt_identity(),
-            src_ip=request.headers.get("Remote-Addr"),
-            json_payload=await request.json,
-        )
-        return default_user_identity_callback(userdata)
 
     @jwt.expired_token_loader
     async def expired_token_callback() -> Response:

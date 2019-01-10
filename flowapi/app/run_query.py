@@ -30,6 +30,14 @@ def check_claims(claim_type):
         @jwt_required
         async def wrapper(*args, **kwargs):
             json_payload = await request.json
+            current_app.access_logger.info(
+                "AUTHENTICATED",
+                request_id=request.request_id,
+                route=request.path,
+                user=get_jwt_identity(),
+                src_ip=request.headers.get("Remote-Addr"),
+                json_payload=json_payload,
+            )
             query_kind = (
                 "NA" if json_payload is None else json_payload.get("query_kind", "NA")
             )
