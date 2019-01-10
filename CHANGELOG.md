@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Fixed being unable to delete groups in FlowAuth
-- Fixed make up not working with defaults
+- Fixed `make up` not working with defaults
 - 
 
 ### Removed
