@@ -12,7 +12,26 @@ FlowAPI logs all access attempts whether successful or not to stdout, and to a r
 Where authentication succeeds, the log message will have a `level` field of `info`, and an `event` type of `AUTHENTICATED`:
 
 ```json
-{"request_id": "fe1d5dd2-ddfb-4b34-9d1e-4ebfc205d64c", "route": "/api/0/run", "user": "TEST_USER", "src_ip": "127.0.0.1", "json_payload": {"params": {"date": "2016-01-01", "level": "admin3", "daily_location_method": "last", "aggregation_unit": "admin3", "subscriber_subset": "all"}, "query_kind": "daily_location"}, "event": "AUTHENTICATED", "logger": "flowkit-access", "level": "info", "timestamp": "2019-01-10T13:57:35.262214Z"}
+{
+	"request_id": "fe1d5dd2-ddfb-4b34-9d1e-4ebfc205d64c",
+	"route": "/api/0/run",
+	"user": "TEST_USER",
+	"src_ip": "127.0.0.1",
+	"json_payload": {
+		"params": {
+			"date": "2016-01-01",
+			"level": "admin3",
+			"daily_location_method": "last",
+			"aggregation_unit": "admin3",
+			"subscriber_subset": "all"
+		},
+		"query_kind": "daily_location"
+	},
+	"event": "AUTHENTICATED",
+	"logger": "flowkit-access",
+	"level": "info",
+	"timestamp": "2019-01-10T13:57:35.262214Z"
+}
 ```
 
 In general, access log messages contain at a minimum the route that access was requested to, any json payload, source IP address for the request, and a timestamp. Every request _also_ has a _unique id_, which will be the same across all log entries related to that request.
@@ -38,22 +57,116 @@ A complete logging cycle for a successful request to retrieve a previously run q
 FlowAPI access log:
 
 ```json
-{"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226", "route": "/api/0/get/ddc61a04f608dee16fff0655f91c2057", "user": "TEST_USER", "src_ip": "127.0.0.1", "json_payload": null, "event": "AUTHENTICATED", "logger": "flowkit-access", "level": "info", "timestamp": "2019-01-10T14:11:03.331967Z"}
+{
+	"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226",
+	"route": "/api/0/get/ddc61a04f608dee16fff0655f91c2057",
+	"user": "TEST_USER",
+	"src_ip": "127.0.0.1",
+	"json_payload": null,
+	"event": "AUTHENTICATED",
+	"logger": "flowkit-access",
+	"level": "info",
+	"timestamp": "2019-01-10T14:11:03.331967Z"
+}
 ```
 
 FlowAPI usage log:
 
 ```json
-{"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226", "query_kind": "DAILY_LOCATION", "route": "/api/0/get/ddc61a04f608dee16fff0655f91c2057", "user": "TEST_USER", "src_ip": "127.0.0.1", "json_payload": null, "query_id": "ddc61a04f608dee16fff0655f91c2057", "claims": {"permissions": {"get_result": true, "poll": true, "run": true}, "spatial_aggregation": ["admin2", "admin0", "admin3", "admin1", "cell", "site"]}, "event": "Received", "logger": "flowkit-query", "level": "info", "timestamp": "2019-01-10T14:11:03.337052Z"}
-{"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226", "query_kind": "DAILY_LOCATION", "route": "/api/0/get/ddc61a04f608dee16fff0655f91c2057", "user": "TEST_USER", "src_ip": "127.0.0.1", "json_payload": null, "query_id": "ddc61a04f608dee16fff0655f91c2057", "claims": {"permissions": {"get_result": true, "poll": true, "run": true}, "spatial_aggregation": ["admin2", "admin0", "admin3", "admin1", "cell", "site"]}, "event": "Authorised", "logger": "flowkit-query", "level": "info", "timestamp": "2019-01-10T14:11:03.341010Z"}
+{
+	"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226",
+	"query_kind": "DAILY_LOCATION",
+	"route": "/api/0/get/ddc61a04f608dee16fff0655f91c2057",
+	"user": "TEST_USER",
+	"src_ip": "127.0.0.1",
+	"json_payload": null,
+	"query_id": "ddc61a04f608dee16fff0655f91c2057",
+	"claims": {
+		"permissions": { "get_result": true, "poll": true, "run": true },
+		"spatial_aggregation": [
+			"admin2",
+			"admin0",
+			"admin3",
+			"admin1",
+			"cell",
+			"site"
+		]
+	},
+	"event": "Received",
+	"logger": "flowkit-query",
+	"level": "info",
+	"timestamp": "2019-01-10T14:11:03.337052Z"
+}
+
+{
+	"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226",
+	"query_kind": "DAILY_LOCATION",
+	"route": "/api/0/get/ddc61a04f608dee16fff0655f91c2057",
+	"user": "TEST_USER",
+	"src_ip": "127.0.0.1",
+	"json_payload": null,
+	"query_id": "ddc61a04f608dee16fff0655f91c2057",
+	"claims": {
+		"permissions": { "get_result": true, "poll": true, "run": true },
+		"spatial_aggregation": [
+			"admin2",
+			"admin0",
+			"admin3",
+			"admin1",
+			"cell",
+			"site"
+		]
+	},
+	"event": "Authorised",
+	"logger": "flowkit-query",
+	"level": "info",
+	"timestamp": "2019-01-10T14:11:03.341010Z"
+}
 ```
 
 FlowMachine usage log:
 
 ```json
-{"query_id": "ddc61a04f608dee16fff0655f91c2057", "query_kind": "daily_location", "message": "b'{\"request_id\":\"d2892489-8fb8-40ec-94e6-2467266a0226\",\"action\":\"get_query_kind\",\"query_id\":\"ddc61a04f608dee16fff0655f91c2057\"}'", "request_id": "d2892489-8fb8-40ec-94e6-2467266a0226", "params": {"query_id": "ddc61a04f608dee16fff0655f91c2057"}, "event": "get_query_kind", "logger": "flowmachine-server", "level": "info", "timestamp": "2019-01-10T14:11:03.335437Z"}
-{"query_id": "ddc61a04f608dee16fff0655f91c2057", "retrieved_params": {"aggregation_unit": "admin3", "daily_location_method": "last", "date": "2016-01-01", "level": "admin3", "subscriber_subset": "all"}, "message": "b'{\"request_id\":\"d2892489-8fb8-40ec-94e6-2467266a0226\",\"action\":\"get_params\",\"query_id\":\"ddc61a04f608dee16fff0655f91c2057\"}'", "request_id": "d2892489-8fb8-40ec-94e6-2467266a0226", "params": {"query_id": "ddc61a04f608dee16fff0655f91c2057"}, "event": "get_params", "logger": "flowmachine-server", "level": "info", "timestamp": "2019-01-10T14:11:03.339602Z"}
-{"query_id": "ddc61a04f608dee16fff0655f91c2057", "message": "b'{\"request_id\":\"d2892489-8fb8-40ec-94e6-2467266a0226\",\"action\":\"get_sql\",\"query_id\":\"ddc61a04f608dee16fff0655f91c2057\"}'", "request_id": "d2892489-8fb8-40ec-94e6-2467266a0226", "params": {"query_id": "ddc61a04f608dee16fff0655f91c2057"}, "event": "get_sql", "logger": "flowmachine-server", "level": "info", "timestamp": "2019-01-10T14:11:03.358644Z"}
+{
+	"query_id": "ddc61a04f608dee16fff0655f91c2057",
+	"query_kind": "daily_location",
+	"message": "b'{\"request_id\":\"d2892489-8fb8-40ec-94e6-2467266a0226\",\"action\":\"get_query_kind\",\"query_id\":\"ddc61a04f608dee16fff0655f91c2057\"}'",
+	"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226",
+	"params": { "query_id": "ddc61a04f608dee16fff0655f91c2057" },
+	"event": "get_query_kind",
+	"logger": "flowmachine-server",
+	"level": "info",
+	"timestamp": "2019-01-10T14:11:03.335437Z"
+}
+
+{
+	"query_id": "ddc61a04f608dee16fff0655f91c2057",
+	"retrieved_params": {
+		"aggregation_unit": "admin3",
+		"daily_location_method": "last",
+		"date": "2016-01-01",
+		"level": "admin3",
+		"subscriber_subset": "all"
+	},
+	"message": "b'{\"request_id\":\"d2892489-8fb8-40ec-94e6-2467266a0226\",\"action\":\"get_params\",\"query_id\":\"ddc61a04f608dee16fff0655f91c2057\"}'",
+	"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226",
+	"params": { "query_id": "ddc61a04f608dee16fff0655f91c2057" },
+	"event": "get_params",
+	"logger": "flowmachine-server",
+	"level": "info",
+	"timestamp": "2019-01-10T14:11:03.339602Z"
+}
+
+{
+	"query_id": "ddc61a04f608dee16fff0655f91c2057",
+	"message": "b'{\"request_id\":\"d2892489-8fb8-40ec-94e6-2467266a0226\",\"action\":\"get_sql\",\"query_id\":\"ddc61a04f608dee16fff0655f91c2057\"}'",
+	"request_id": "d2892489-8fb8-40ec-94e6-2467266a0226",
+	"params": { "query_id": "ddc61a04f608dee16fff0655f91c2057" },
+	"event": "get_sql",
+	"logger": "flowmachine-server",
+	"level": "info",
+	"timestamp": "2019-01-10T14:11:03.358644Z"
+}
 ```
 
 Note that the `request_id` field is identical across the five log entries, which lets you match the request across the multiple services.
