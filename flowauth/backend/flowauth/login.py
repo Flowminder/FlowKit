@@ -22,7 +22,7 @@ def signin():
     user = User.query.filter(User.username == json["username"]).first()
     if user is not None:
         if user.is_correct_password(json["password"]):
-            login_user(user)
+            login_user(user, remember=False)
             identity_changed.send(
                 current_app._get_current_object(), identity=Identity(user.id)
             )
