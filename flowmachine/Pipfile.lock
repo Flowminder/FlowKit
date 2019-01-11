@@ -622,18 +622,18 @@
         },
         "pluggy": {
             "hashes": [
-                "sha256:447ba94990e8014ee25ec853339faf7b0fc8050cdc3289d4d71f7f410fb90095",
-                "sha256:bde19360a8ec4dfd8a20dcb811780a30998101f078fc7ded6162f0076f50508f"
+                "sha256:8ddc32f03971bfdf900a81961a48ccf2fb677cf7715108f85295c67405798616",
+                "sha256:980710797ff6a041e9a73a5787804f848996ecaa6f8a1b1e08224a5894f2074a"
             ],
-            "version": "==0.8.0"
+            "version": "==0.8.1"
         },
         "pre-commit": {
             "hashes": [
-                "sha256:1c1d0b64b3ceb8c688033847825cc9be19c2b3e2e58bf00b850487d3083dff6f",
-                "sha256:8cc5c3475a38dc50d700b079733f0d0754c50fb1a6fb1ec7ed16784c1e145d5b"
+                "sha256:2cb7a588fdc78e4ec4e624932765e65d285159f4b3425121106cbd9060e40e04",
+                "sha256:74ee5779a17ef540efdf9a832911fe9057b1bb57d5d0152eace6534a228a863b"
             ],
             "index": "pypi",
-            "version": "==1.14.0"
+            "version": "==1.14.2"
         },
         "prompt-toolkit": {
             "hashes": [
