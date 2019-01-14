@@ -58,7 +58,7 @@ async def expired_token_callback() -> Response:
         "EXPIRED_TOKEN",
         route=request.path,
         request_id=request.request_id,
-        user=get_jwt_identity(),
+        user=str(get_jwt_identity()),
         src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
