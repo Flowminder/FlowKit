@@ -26,6 +26,10 @@ async def test_protected_get_routes(route, app):
 
     response = await client.get(route)
     assert 401 == response.status_code
+    with open(os.path.join(log_dir, "flowkit-access.log")) as log_file:
+        log_lines = log_file.readlines()
+    assert 1 == len(log_lines)
+    assert "UNAUTHORISED" in log_lines[0]
 
 
 @pytest.mark.asyncio
