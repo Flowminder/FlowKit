@@ -26,8 +26,8 @@ def test_last_loc_vsite(get_dataframe):
 
     df = get_dataframe(last_loc)
     df.set_index("subscriber", inplace=True)
-    assert "QeBRM8" == df.ix["038OVABN11Ak4W5P"].site_id
-    assert "dJb0Wd" == df.ix["zGWn8opVmOQAD6xY"].site_id
+    assert "QeBRM8" == df.loc["038OVABN11Ak4W5P"].site_id
+    assert "dJb0Wd" == df.loc["zGWn8opVmOQAD6xY"].site_id
 
 
 def test_last_loc_lat_lon(get_dataframe):
@@ -38,5 +38,5 @@ def test_last_loc_lat_lon(get_dataframe):
     last_loc = LastLocation("2016-01-01", "2016-01-02", level="lat-lon")
     df = get_dataframe(last_loc)
     df.set_index("subscriber", inplace=True)
-    assert pytest.approx(29.135638957790576) == float(df.ix["yqw50eNyEwOxNDGL"].lat)
-    assert pytest.approx(83.09669810947962) == float(df.ix["yqw50eNyEwOxNDGL"].lon)
+    assert pytest.approx(29.135638957790576) == float(df.loc["yqw50eNyEwOxNDGL"].lat)
+    assert pytest.approx(83.09669810947962) == float(df.loc["yqw50eNyEwOxNDGL"].lon)

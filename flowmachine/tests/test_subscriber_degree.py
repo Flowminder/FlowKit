@@ -38,8 +38,8 @@ def test_returns_correct_values(get_dataframe):
     df1 = get_dataframe(ud1).set_index("subscriber")
     df2 = get_dataframe(ud2).set_index("subscriber")
 
-    assert df1.ix["2Dq97XmPqvL6noGk"]["degree"] == 1
-    assert df2.ix["2Dq97XmPqvL6noGk"]["degree"] == 2
+    assert df1.loc["2Dq97XmPqvL6noGk"]["degree"] == 1
+    assert df2.loc["2Dq97XmPqvL6noGk"]["degree"] == 2
 
 
 def test_returns_correct_in_out_values(get_dataframe):
@@ -60,4 +60,4 @@ def test_returns_correct_in_out_values(get_dataframe):
     df2 = get_dataframe(ud2).set_index("subscriber")
 
     assert "2Dq97XmPqvL6noGk" not in df1.subscriber.values
-    assert df2.ix["2Dq97XmPqvL6noGk"]["degree"] == 1
+    assert df2.loc["2Dq97XmPqvL6noGk"]["degree"] == 1
