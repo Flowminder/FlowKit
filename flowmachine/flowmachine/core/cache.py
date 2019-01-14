@@ -291,7 +291,7 @@ def set_cache_half_life(connection: "Connection", cache_half_life: float) -> Non
 
 def set_max_size_of_cache(connection: "Connection", cache_size_limit: int) -> None:
     """
-    Get the upper limit set in FlowDB for the cache size, in bytes.
+    Set the upper limit set in FlowDB for the cache size, in bytes.
 
     Parameters
     ----------
