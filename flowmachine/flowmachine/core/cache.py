@@ -5,7 +5,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Functions which deal with inspecting cached tables.
+Functions which deal with inspecting and managing the query cache.
 """
 import logging
 import pickle
