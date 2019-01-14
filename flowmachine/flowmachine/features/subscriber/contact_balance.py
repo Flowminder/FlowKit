@@ -76,7 +76,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
     ):
         """
         """
-        logger.warn(
+        logger.warning(
             "The the ContactBalance() feature uses CDRs "
             + "IDs for calculating an subscriber's graph. "
             + "If IDs are not generated correctly, this "
