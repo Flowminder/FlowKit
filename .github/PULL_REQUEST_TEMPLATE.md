@@ -9,10 +9,9 @@ Closes #ISSUE_NUMBER
 - [ ] Added tests for any new additions
 - [ ] Added or updated any relevant documentation
 - [ ] Added an Architectural Decision Record (ADR), if appropriate
-- [ ] Added an [MPLv2 License Header](https://www.mozilla.org/en-US/MPL/headers/) if appropriate 
+- [ ] Added an [MPLv2 License Header](https://www.mozilla.org/en-US/MPL/headers/) if appropriate
+- [ ] Updated the [Changelog](https://github.com/Flowminder/FlowKit/blob/master/CHANGELOG.md) 
 
 ### Description
 
 Description of what this PR _does_, and what it _changes_.
-
-@greenape

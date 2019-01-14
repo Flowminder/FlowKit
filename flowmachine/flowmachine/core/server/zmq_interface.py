@@ -72,7 +72,9 @@ class ZMQMultipartMessage:
             action = msg.pop(key)
             key = "request_id"
             api_request_id = msg.pop(key)
-            action_params = msg  # everything except "action" and "request_id" is considered a parameter
+            action_params = (
+                msg
+            )  # everything except "action" and "request_id" is considered a parameter
         except KeyError:
             error_msg = f"Message does not contain expected key '{key}': {msg_str}"
             logger.debug(error_msg)
