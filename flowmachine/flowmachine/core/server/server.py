@@ -8,13 +8,45 @@
 import asyncio
 import logging
 import os
+from logging.handlers import TimedRotatingFileHandler
+
 import zmq
 from zmq.asyncio import Context
 from flowmachine.core import connect
 from .query_proxy import QueryProxy, MissingQueryError, QueryProxyError
 from .zmq_interface import ZMQMultipartMessage, ZMQInterfaceError
 
+import structlog
+
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(),
+    ],
+    context_class=dict,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
+)
+
 logger = logging.getLogger("flowmachine").getChild(__name__)
+# Logger for all queries run or accessed
+query_run_log = logging.getLogger("flowmachine-server")
+query_run_log.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+query_run_log.addHandler(ch)
+log_root = os.getenv("LOG_DIRECTORY", "/var/log/flowmachine-server/")
+fh = TimedRotatingFileHandler(os.path.join(log_root, "query-runs.log"), when="midnight")
+fh.setLevel(logging.INFO)
+query_run_log.addHandler(fh)
+query_run_log = structlog.wrap_logger(query_run_log)
 
 
 async def get_reply_for_message(  # pragma: no cover
@@ -37,13 +69,19 @@ async def get_reply_for_message(  # pragma: no cover
 
     try:
         action = zmq_msg.action
-
+        run_log_dict = dict(
+            message=zmq_msg.msg_str,
+            request_id=zmq_msg.api_request_id,
+            params=zmq_msg.action_params,
+        )
         if "run_query" == action:
             logger.debug(f"Trying to run query.  Message: {zmq_msg.msg_str}")
+
             query_proxy = QueryProxy(
                 zmq_msg.action_params["query_kind"], zmq_msg.action_params["params"]
             )
             query_id = query_proxy.run_query_async()
+            query_run_log.info("run_query", query_id=query_id, **run_log_dict)
             reply = {"status": "accepted", "id": query_id}
 
         elif "poll" == action:
@@ -51,6 +89,7 @@ async def get_reply_for_message(  # pragma: no cover
             query_id = zmq_msg.action_params["query_id"]
             query_proxy = QueryProxy.from_query_id(query_id)
             status = query_proxy.poll()
+            query_run_log.info("poll", query_id=query_id, status=status, **run_log_dict)
             reply = {"status": status, "id": query_id}
 
         elif "get_sql" == action:
@@ -58,18 +97,31 @@ async def get_reply_for_message(  # pragma: no cover
             query_id = zmq_msg.action_params["query_id"]
             query_proxy = QueryProxy.from_query_id(query_id)
             sql = query_proxy.get_sql()
+            query_run_log.info("get_sql", query_id=query_id, **run_log_dict)
             reply = {"status": "done", "sql": sql}
 
         elif "get_params" == action:
             logger.debug(f"Trying to get query parameters. Message: {zmq_msg.msg_str}")
             query_id = zmq_msg.action_params["query_id"]
             query_proxy = QueryProxy.from_query_id(query_id)
+            query_run_log.info(
+                "get_params",
+                query_id=query_id,
+                retrieved_params=query_proxy.params,
+                **run_log_dict,
+            )
             reply = {"id": query_id, "params": query_proxy.params}
 
         elif "get_query_kind" == action:
             logger.debug(f"Trying to get query kind. Message: {zmq_msg.msg_str}")
             query_id = zmq_msg.action_params["query_id"]
             query_proxy = QueryProxy.from_query_id(query_id)
+            query_run_log.info(
+                "get_query_kind",
+                query_id=query_id,
+                query_kind=query_proxy.query_kind,
+                **run_log_dict,
+            )
             reply = {"id": query_id, "query_kind": query_proxy.query_kind}
 
         else:

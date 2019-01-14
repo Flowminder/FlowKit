@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Added structured logging of access attempts, query running, and data access
 - Added CHANGELOG.md
 - Added support for Postgres JIT in FlowDB
 - Added total location events metric to FlowAPI and FlowClient
@@ -17,7 +18,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Fixed being unable to delete groups in FlowAuth
 - Fixed `make up` not working with defaults
-- 
 
 ### Removed
 

@@ -8,7 +8,7 @@ async def test_poll_query_with_nonexistent_query_id_fails(zmq_url):
     """
     Polling a query with non-existent query id returns expected error.
     """
-    msg = {"action": "poll", "query_id": "FOOBAR"}
+    msg = {"action": "poll", "query_id": "FOOBAR", "request_id": "DUMMY_ID"}
 
     reply = send_message_and_get_reply(zmq_url, msg)
     assert {"status": "awol", "id": "FOOBAR"} == reply

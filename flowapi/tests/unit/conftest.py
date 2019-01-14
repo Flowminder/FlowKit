@@ -96,4 +96,4 @@ def app(monkeypatch, tmpdir, dummy_db_pool):
     monkeypatch.setenv("JWT_SECRET_KEY", "secret")
     monkeypatch.setenv("CONFIG", "test")
     current_app = create_app()
-    yield current_app.test_client(), dummy_db_pool, tmpdir
+    yield current_app.test_client(), dummy_db_pool, tmpdir, current_app

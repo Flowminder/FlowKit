@@ -40,6 +40,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
             "aggregation_unit": "admin3",
             "subscriber_subset": "all",
         },
+        "request_id": "DUMMY_ID",
     }
     expected_query_id = "ddc61a04f608dee16fff0655f91c2057"
 
@@ -141,6 +142,7 @@ async def test_run_query_with_wrong_parameters(
         "action": "run_query",
         "query_kind": "daily_location",
         "params": params,
+        "request_id": "DUMMY_ID",
     }
 
     reply = send_message_and_get_reply(zmq_url, msg_run_query)

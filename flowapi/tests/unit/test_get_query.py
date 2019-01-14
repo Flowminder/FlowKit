@@ -13,7 +13,7 @@ async def test_get_query(app, dummy_zmq_server, access_token_builder):
     """
     Test that JSON is returned when getting a query.
     """
-    client, db, log_dir = app
+    client, db, log_dir, app = app
     # Set the rows returned by iterating over the rows from the db
     # This is a long chain of mocks corresponding to getting a connection using
     # the pool's context manager, getting the cursor on that, and then looping
@@ -56,7 +56,7 @@ async def test_get_json_status(
     """
     Test that correct status code and any redirect is returned when getting json.
     """
-    client, db, log_dir = app
+    client, db, log_dir, app = app
 
     token = access_token_builder(
         {

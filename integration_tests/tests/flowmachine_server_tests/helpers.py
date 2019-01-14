@@ -15,6 +15,7 @@ def poll_until_done(port, query_id, max_tries=100):
         "action": "poll",
         "query_kind": "daily_location",
         "query_id": query_id,
+        "request_id": "DUMMY_ID",
     }
 
     for i in itertools.count():

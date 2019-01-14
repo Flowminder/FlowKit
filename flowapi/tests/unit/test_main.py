@@ -15,7 +15,7 @@ async def test_app(app):
     app: tuple
         Pytest fixture providing the app, with a mock for the db
     """
-    client, db, log_dir = app
+    client, db, log_dir, app = app
 
     response = await client.get("/")
     assert response.status_code == 200

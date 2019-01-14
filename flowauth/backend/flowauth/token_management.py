@@ -5,8 +5,7 @@
 from flask import jsonify, Blueprint, request
 from flask.json import JSONEncoder
 from flask_jwt_extended.tokens import encode_access_token
-from flask_login import login_required, current_user, logout_user
-from werkzeug.exceptions import abort
+from flask_login import login_required, current_user
 
 from .models import *
 from .invalid_usage import InvalidUsage, Unauthorized
