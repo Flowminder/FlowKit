@@ -37,6 +37,7 @@ async def test_invalid_token(app):
             log_lines = log_file.readlines()
         assert len(log_lines) == 1
         assert json.loads(log_lines[0])["event"] == "INVALID_TOKEN"
+        assert json.loads(log_lines[0])["request_id"] == "DUMMY_REQUEST_ID"
 
 
 @pytest.mark.asyncio
@@ -59,6 +60,7 @@ async def test_expired_token(app):
             log_lines = log_file.readlines()
         assert len(log_lines) == 1
         assert json.loads(log_lines[0])["event"] == "EXPIRED_TOKEN"
+        assert json.loads(log_lines[0])["request_id"] == "DUMMY_REQUEST_ID"
 
 
 @pytest.mark.asyncio
@@ -81,6 +83,7 @@ async def test_claims_verify_fail(app):
             log_lines = log_file.readlines()
         assert len(log_lines) == 1
         assert json.loads(log_lines[0])["event"] == "CLAIMS_VERIFICATION_FAILED"
+        assert json.loads(log_lines[0])["request_id"] == "DUMMY_REQUEST_ID"
 
 
 @pytest.mark.asyncio
@@ -103,3 +106,4 @@ async def test_revoked_token(app):
             log_lines = log_file.readlines()
         assert len(log_lines) == 1
         assert json.loads(log_lines[0])["event"] == "REVOKED_TOKEN"
+        assert json.loads(log_lines[0])["request_id"] == "DUMMY_REQUEST_ID"

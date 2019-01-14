@@ -21,7 +21,7 @@ def register_logging_callbacks(jwt: JWTManager):
     the result from the default callback.
 
     Registers callbacks for:
-    
+
     - expired tokens
     - tampered tokens
     - invalid tokens
