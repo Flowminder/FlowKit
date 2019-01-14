@@ -17,7 +17,11 @@ from quart import current_app, request, Response
 
 def register_logging_callbacks(jwt: JWTManager):
     """
-    Register callbacks which emit logs to the app's access log for:
+    Register callbacks which emit logs to the app's access log and return
+    the result from the default callback.
+
+    Registers callbacks for:
+    
     - expired tokens
     - tampered tokens
     - invalid tokens
@@ -47,7 +51,8 @@ def register_logging_callbacks(jwt: JWTManager):
 
 async def expired_token_callback() -> Response:
     """
-    Log that an access attempt was made with an expired token.
+    Log that an access attempt was made with an expired token and return
+    the result from the default callback.
 
     Returns
     -------
@@ -68,7 +73,8 @@ async def expired_token_callback() -> Response:
 
 async def claims_verification_failed_callback() -> Response:
     """
-    Log that an access attempt was made with claims that failed verification.
+    Log that an access attempt was made with claims that failed verification and return
+    the result from the default callback.
 
     Returns
     -------
@@ -87,7 +93,8 @@ async def claims_verification_failed_callback() -> Response:
 
 async def invalid_token_callback(error_string) -> Response:
     """
-    Log that an access attempt was made with a token that was invalid.
+    Log that an access attempt was made with a token that was invalid and return
+    the result from the default callback.
 
     Parameters
     ----------
@@ -113,7 +120,8 @@ async def invalid_token_callback(error_string) -> Response:
 
 async def revoked_token_callback() -> Response:
     """
-    Log that an access attempt was made with a revoked token.
+    Log that an access attempt was made with a revoked token and return
+    the result from the default callback.
 
     Returns
     -------
@@ -132,7 +140,8 @@ async def revoked_token_callback() -> Response:
 
 async def unauthorized_callback(error_string) -> Response:
     """
-    Log that an access attempt was made without a token.
+    Log that an access attempt was made without a token and return
+    the result from the default callback.
 
     Returns
     -------
