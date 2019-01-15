@@ -196,7 +196,10 @@ class Query(metaclass=ABCMeta):
                     try:
                         touch_cache(self.connection, self.md5)
                     except ValueError:
-                        pass  # Cache record not written yet
+                        pass  # Cache record not written yet, which can happen for Models
+                        # which will call through to this method from their `_make_query` method while writing metadata.
+                    # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
+                    # as the cache metadata transaction isn't complete!
                     return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
