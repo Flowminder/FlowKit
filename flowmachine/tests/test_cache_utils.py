@@ -96,7 +96,7 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     """
     table = Table("events.calls_20160101")
     flowmachine_connect.engine.execute(
-        f"UPDATE cache.cached SET get_compute_time = 1 WHERE query_id=%s", table.md5
+        f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%s", table.md5
     )  # Compute time for tables is zero, so set to 1 to avoid zeroing out
     assert 0 == get_score(flowmachine_connect, table.md5)
     assert (

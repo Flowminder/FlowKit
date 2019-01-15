@@ -132,7 +132,7 @@ def test_poll(dummy_redis, monkeypatch):
 
 def test_get_sql(dummy_redis, monkeypatch):
     """
-    Running poll() returns the expected status.
+    Running get_sql returns the expected sql.
     """
     # Define mock query object and a function which returns it when called.
     # This serves as a drop-in replacement for 'construct_query_object' in
@@ -154,7 +154,8 @@ def test_get_sql(dummy_redis, monkeypatch):
 
     # Set conditions for this test
     monkeypatch.setattr(
-        "flowmachine.core.server.query_proxy.cache_table_exists", lambda query_id: True
+        "flowmachine.core.server.query_proxy.cache_table_exists",
+        lambda connection, query_id: True,
     )
     query_proxy.redis_interface.has_lock = lambda query_id: False
     monkeypatch.setattr(
