@@ -332,7 +332,7 @@ def set_max_size_of_cache(connection: "Connection", cache_size_limit: int) -> No
 
 def compute_time(connection: "Connection", query_id: str) -> float:
     """
-    Get the time in ms that a cached query took to compute.
+    Get the time in seconds that a cached query took to compute.
 
     Parameters
     ----------
