@@ -81,7 +81,7 @@ def invalidate_cache_by_id(
         The original query object.
 
     """
-    query_obj = get_query_by_id(connection, query_id)
+    query_obj = get_query_object_by_id(connection, query_id)
     query_obj.invalidate_db_cache(cascade=cascade)
     return query_obj
 
@@ -151,7 +151,7 @@ def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
     tuple of "Query", int
         The "Query" object that was removed from cache and the size of it
     """
-    obj_to_remove, obj_size = get_cached_queries_by_score(connection)[0]
+    obj_to_remove, obj_size = get_cached_query_objects_ordered_by_score(connection)[0]
 
     logger.info(
         f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.md5} of type {obj_to_remove.__class__}"
@@ -191,7 +191,7 @@ def shrink_below_size(
     )
 
     if dry_run:
-        cached_queries = iter(get_cached_queries_by_score(connection))
+        cached_queries = iter(get_cached_query_objects_ordered_by_score(connection))
         shrink = lambda x: cached_queries.__next__()
     else:
         shrink = shrink_one
