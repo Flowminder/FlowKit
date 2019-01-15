@@ -185,7 +185,7 @@ def shrink_below_size(
     initial_cache_size = size_of_cache(connection)
     removed = []
     logger.info(
-        f"Shrinking cache from {initial_cache_size} to below {size_threshold}{'(dry run)' if dry_run else ''}."
+        f"Shrinking cache from {initial_cache_size} to below {size_threshold}{' (dry run)' if dry_run else ''}."
     )
 
     if dry_run:
