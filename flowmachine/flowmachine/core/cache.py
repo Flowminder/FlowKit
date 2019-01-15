@@ -61,6 +61,31 @@ def reset_cache(connection: "Connection") -> None:
         trans.execute("TRUNCATE cache.dependencies CASCADE")
 
 
+def invalidate_cache_by_id(
+    connection: "Connection", query_id: str, cascade=False
+) -> "Query":
+    """
+    Remove a query object from cache by id.
+
+    Parameters
+    ----------
+    connection : Connection
+    query_id : str
+        md5 id of the query
+    cascade : bool, default False
+        Set to true to remove any queries that depend on the one being removed
+
+    Returns
+    -------
+    Query
+        The original query object.
+
+    """
+    query_obj = get_query_by_id(connection, query_id)
+    query_obj.invalidate_db_cache(cascade=cascade)
+    return query_obj
+
+
 def get_query_by_id(connection: "Connection", query_id: str) -> "Query":
     """
     Get a query object from cache by id.
