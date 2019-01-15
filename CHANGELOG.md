@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.1.0]
+### Added
 - Added structured logging of access attempts, query running, and data access
 - Added CHANGELOG.md
 - Added support for Postgres JIT in FlowDB
@@ -32,5 +41,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.0.5...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.1.0...master
+[0.1.0]: https://github.com/Flowminder/FlowKit/compare/0.0.5...0.1.0
 [0.0.5]: https://github.com/Flowminder/FlowKit/compare/0.0.4...0.0.5
