@@ -110,7 +110,9 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def get_cached_query_objects_ordered_by_score(connection: "Connection") -> List[Tuple["Query", int]]:
+def get_cached_query_objects_ordered_by_score(
+    connection: "Connection"
+) -> List[Tuple["Query", int]]:
     """
     Get all cached query objects in ascending cache score order.
 
