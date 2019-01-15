@@ -45,6 +45,7 @@ def test_scoring(flowmachine_connect):
     new_score = touch_cache(flowmachine_connect, dl.md5)
     updated_cache_score = cachey_scorer.touch("dl")
     assert updated_cache_score == pytest.approx(new_score)
+
     # Add another unrelated cache record, which should have a higher initial score
     dl_2 = daily_location("2016-01-02").store().result()
     dl_time = get_compute_time(flowmachine_connect, dl_2.md5)
