@@ -184,7 +184,7 @@ def shrink_below_size(
     list of "Query"
         List of the queries that were removed
     """
-    initial_cache_size = size_of_cache(connection)
+    initial_cache_size = get_size_of_cache(connection)
     removed = []
     logger.info(
         f"Shrinking cache from {initial_cache_size} to below {size_threshold}{' (dry run)' if dry_run else ''}."
@@ -209,7 +209,9 @@ def shrink_below_size(
     return removed
 
 
-def size_of_table(connection: "Connection", table_name: str, table_schema: str) -> int:
+def get_size_of_table(
+    connection: "Connection", table_name: str, table_schema: str
+) -> int:
     """
     Get the size on disk in bytes of a table in the database.
 
@@ -236,7 +238,7 @@ def size_of_table(connection: "Connection", table_name: str, table_schema: str) 
         )
 
 
-def size_of_cache(connection: "Connection") -> int:
+def get_size_of_cache(connection: "Connection") -> int:
     """
     Get the total size in bytes of all cache tables.
 
@@ -331,7 +333,7 @@ def set_max_size_of_cache(connection: "Connection", cache_size_limit: int) -> No
         trans.execute(sql)
 
 
-def compute_time(connection: "Connection", query_id: str) -> float:
+def get_compute_time(connection: "Connection", query_id: str) -> float:
     """
     Get the time in seconds that a cached query took to compute.
 
@@ -358,7 +360,7 @@ def compute_time(connection: "Connection", query_id: str) -> float:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def score(connection: "Connection", query_id: str) -> float:
+def get_score(connection: "Connection", query_id: str) -> float:
     """
     Get the current cache score for a cached query.
 
