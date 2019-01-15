@@ -25,6 +25,7 @@ from flowmachine.core.cache import (
     set_max_size_of_cache,
     get_cache_half_life,
     set_cache_half_life,
+    invalidate_cache_by_id,
 )
 from flowmachine.features import daily_location
 
@@ -289,6 +290,34 @@ def test_get_query_by_id(flowmachine_connect):
     retrieved_query = get_query_by_id(flowmachine_connect, dl.md5)
     assert dl.md5 == retrieved_query.md5
     assert dl.get_query() == retrieved_query.get_query()
+
+
+def test_delete_query_by_id(flowmachine_connect):
+    """Test that we can remove a query from cache by the md5 id"""
+    dl = daily_location("2016-01-01").store().result()
+    retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.md5)
+    assert dl.md5 == retrieved_query.md5
+    assert not dl.is_stored
+
+
+def test_delete_query_by_id_does_not_cascade_by_default(flowmachine_connect):
+    """Test that removing a query by id doesn't cascade by default"""
+    dl = daily_location("2016-01-01").store().result()
+    dl_agg = dl.aggregate().store().result()
+    retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.md5)
+    assert dl.md5 == retrieved_query.md5
+    assert not dl.is_stored
+    assert dl_agg.is_stored
+
+
+def test_delete_query_by_id_can_cascade(flowmachine_connect):
+    """Test that removing a query by id can cascade"""
+    dl = daily_location("2016-01-01").store().result()
+    dl_agg = dl.aggregate().store().result()
+    retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.md5, cascade=True)
+    assert dl.md5 == retrieved_query.md5
+    assert not dl.is_stored
+    assert not dl_agg.is_stored
 
 
 @pytest.fixture
