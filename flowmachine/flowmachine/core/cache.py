@@ -309,9 +309,8 @@ def set_cache_half_life(connection: "Connection", cache_half_life: float) -> Non
     Changing this setting without flushing the cache first may have unpredictable consequences
     and should be avoided.
     """
-    sql = (
-        f"UPDATE cache.cache_config SET value='{cache_half_life}' WHERE key='half_life'"
-    )
+
+    sql = f"UPDATE cache.cache_config SET value='{float(cache_half_life)}' WHERE key='half_life'"
     with connection.engine.begin() as trans:
         trans.execute(sql)
 
@@ -327,7 +326,7 @@ def set_max_size_of_cache(connection: "Connection", cache_size_limit: int) -> No
         Size in bytes to set as the cache limit
 
     """
-    sql = f"UPDATE cache.cache_config SET value='{cache_size_limit}' WHERE key='cache_size'"
+    sql = f"UPDATE cache.cache_config SET value='{int(cache_size_limit)}' WHERE key='cache_size'"
     with connection.engine.begin() as trans:
         trans.execute(sql)
 
