@@ -86,7 +86,7 @@ def invalidate_cache_by_id(
     return query_obj
 
 
-def get_query_by_id(connection: "Connection", query_id: str) -> "Query":
+def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
     """
     Get a query object from cache by id.
 
