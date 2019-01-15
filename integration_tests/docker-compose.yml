@@ -37,6 +37,7 @@ services:
             - LOG_LEVEL=${LOG_LEVEL:-error}
             - DEBUG=${FM_DEBUG:-False}
             - REDIS_HOST=${REDIS_HOST:-redis}
+            - REDIS_PASSWORD=${REDIS_PASSWORD:-fm_redis}
         networks:
           - db
           - redis
@@ -61,7 +62,9 @@ services:
           - api
     query_locker:
         container_name: flowmachine_redis
-        image: redis
+        image: bitnami/redis:latest
+        environment:
+          - REDIS_PASSWORD=${REDIS_PASSWORD:-fm_redis}
         networks:
           redis:
             aliases:
