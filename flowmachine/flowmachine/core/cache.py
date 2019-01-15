@@ -192,7 +192,16 @@ def shrink_below_size(
 
     if dry_run:
         cached_queries = iter(get_cached_query_objects_ordered_by_score(connection))
-        shrink = lambda x: cached_queries.__next__()
+
+        def dry_run_shrink(connection):
+            obj, obj_size = cached_queries.__next__()
+            logger.info(
+                f"Would remove cache record for {obj.md5} of type {obj.__class__}"
+            )
+            logger.info(f"Table {obj.table_name} ({obj_size} bytes) would be removed.")
+            return obj, obj_size
+
+        shrink = dry_run_shrink
     else:
         shrink = shrink_one
 
