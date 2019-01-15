@@ -18,8 +18,8 @@ from flowmachine.core.cache import (
     size_of_cache,
     size_of_table,
     score,
-    get_query_by_id,
-    get_cached_queries_by_score,
+    get_query_object_by_id,
+    get_cached_query_objects_ordered_by_score,
     touch_cache,
     get_max_size_of_cache,
     set_max_size_of_cache,
@@ -126,13 +126,13 @@ def test_compute_time():
     assert 10 / 1000 == compute_time(connection_mock, "DUMMY_ID")
 
 
-def test_get_cached_queries_by_score(flowmachine_connect):
+def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
     """Test that all records which are queries are returned in correct order."""
     dl = daily_location("2016-01-01").store().result()
     dl_agg = dl.aggregate().store().result()
     table = dl.get_table()
     # Should prefer the larger, but slower to calculate and more used dl over the aggregation
-    cached_queries = get_cached_queries_by_score(flowmachine_connect)
+    cached_queries = get_cached_query_objects_ordered_by_score(flowmachine_connect)
     assert 2 == len(cached_queries)
     assert dl_agg.md5 == cached_queries[0][0].md5
     assert dl.md5 == cached_queries[1][0].md5
@@ -284,10 +284,10 @@ def test_cache_miss_value_error_score():
         score(connection_mock, "DUMMY_ID")
 
 
-def test_get_query_by_id(flowmachine_connect):
+def test_get_query_object_by_id(flowmachine_connect):
     """Test that we can get a query object back out of the database by the md5 id"""
     dl = daily_location("2016-01-01").store().result()
-    retrieved_query = get_query_by_id(flowmachine_connect, dl.md5)
+    retrieved_query = get_query_object_by_id(flowmachine_connect, dl.md5)
     assert dl.md5 == retrieved_query.md5
     assert dl.get_query() == retrieved_query.get_query()
 
