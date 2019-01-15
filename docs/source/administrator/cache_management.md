@@ -23,11 +23,13 @@ Each cache table has a cache score, with a higher score indicating that the tabl
 
 FlowMachine provides two functions which make use of this cache score to reduce the size of the cache - [`shrink_below_size`](../../developer/api/flowmachine/core/cache/#shrink_below_size), and [`shrink_one`](../../developer/api/flowmachine/core/cache/#shrink_one). `shrink_one` flushes the table with the _lowest_ cache score. `shrink_below_size` flushes tables until the disk space used by the cache falls below a threshold[^1] by calling `shrink_one` repeatedly.
 
+If necessary, the cache can also be completely reset using the [`reset_cache`](../../developer/api/flowmachine/core/cache/#reset_cache) function.
+
 ### Removing a Specific Query from Cache
 
-If a specific query must be removed from the cache, then an administrator can retrieve the query's _object_ from FlowDB by using the [`get_query_by_id`](../../developer/api/flowmachine/core/cache/#get_query_by_id) function of the `cache` submodule, and calling the object's [`invalidate_db_cache`](../../developer/api/flowmachine/core/query/#invalidate_db_cache) method.
+If a specific query must be removed from the cache, then an administrator can use the [`invalidate_cache_by_id`](../../developer/api/flowmachine/core/cache/#invalidate_cache_by_id) function of the `cache` submodule.
 
-By default, calling this method will also flush from the cache any cached queries which used that query in their calculation. This will also cascade to any queries which used _those_ queries, and so on. Setting the `cascade` argument to `False` will remove only the one query.
+By default, this function only removes that specific query from cache. However, setting the `cascade` argument to `True` will also flush from the cache any cached queries which used that query in their calculation. This will also cascade to any queries which used _those_ queries, and so on.
 
 ### Configuring the Cache
 
