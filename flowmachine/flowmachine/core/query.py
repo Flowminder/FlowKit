@@ -520,7 +520,7 @@ class Query(metaclass=ABCMeta):
                             pass  # Nothing to do here
                         for ddl_op_result in ddl_op_results:
                             try:
-                                plan = ddl_op_result[0][0][0]
+                                plan = ddl_op_result[0][0][0]  # Should be a query plan
                                 plan_time += plan["Execution Time"]
                             except (IndexError, KeyError):
                                 pass  # Not an explain result
