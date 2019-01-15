@@ -31,7 +31,9 @@ from flowmachine.features import daily_location
 
 
 def test_scoring(flowmachine_connect):
-    """Test that score updating algorithm is correct by comparing to cachey as reference implementation"""
+    """
+    Test that score updating algorithm is correct by comparing to cachey as reference implementation
+    """
     dl = daily_location("2016-01-01").store().result()
     dl_time = compute_time(flowmachine_connect, dl.md5)
     dl_size = size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
@@ -52,7 +54,9 @@ def test_scoring(flowmachine_connect):
 
 
 def test_touch_cache_record_for_query(flowmachine_connect):
-    """Touching a cache record for a query should update access count, last accessed, & counter."""
+    """
+    Touching a cache record for a query should update access count, last accessed, & counter.
+    """
     table = daily_location("2016-01-01").store().result()
 
     assert (
@@ -84,7 +88,9 @@ def test_touch_cache_record_for_query(flowmachine_connect):
 
 
 def test_touch_cache_record_for_table(flowmachine_connect):
-    """Touching a cache record for a table should update access count and last accessed but not touch score, or counter."""
+    """
+    Touching a cache record for a table should update access count and last accessed but not touch score, or counter.
+    """
     table = Table("events.calls_20160101")
     flowmachine_connect.engine.execute(
         f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%s", table.md5
@@ -120,14 +126,16 @@ def test_touch_cache_record_for_table(flowmachine_connect):
 
 
 def test_compute_time():
-    """Compute time should take value returned in ms and turn it into seconds."""
+    """
+    Compute time should take value returned in ms and turn it into seconds."""
     connection_mock = Mock()
     connection_mock.fetch.return_value = [[10]]
     assert 10 / 1000 == compute_time(connection_mock, "DUMMY_ID")
 
 
 def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
-    """Test that all records which are queries are returned in correct order."""
+    """
+    Test that all records which are queries are returned in correct order."""
     dl = daily_location("2016-01-01").store().result()
     dl_agg = dl.aggregate().store().result()
     table = dl.get_table()
@@ -140,7 +148,8 @@ def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
 
 
 def test_shrink_one(flowmachine_connect):
-    """Test that shrink_one removes a cache record."""
+    """
+    Test that shrink_one removes a cache record."""
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     flowmachine_connect.engine.execute(
@@ -156,7 +165,8 @@ def test_shrink_one(flowmachine_connect):
 
 
 def test_shrink_to_size_does_nothing_when_cache_ok(flowmachine_connect):
-    """Test that shrink_below_size doesn't remove anything if cache size is within limit."""
+    """
+    Test that shrink_below_size doesn't remove anything if cache size is within limit."""
     dl = daily_location("2016-01-01").store().result()
     removed_queries = shrink_below_size(
         flowmachine_connect, size_of_cache(flowmachine_connect)
@@ -166,7 +176,8 @@ def test_shrink_to_size_does_nothing_when_cache_ok(flowmachine_connect):
 
 
 def test_shrink_to_size_removes_queries(flowmachine_connect):
-    """Test that shrink_below_size removes queries when cache limit is breached."""
+    """
+    Test that shrink_below_size removes queries when cache limit is breached."""
     dl = daily_location("2016-01-01").store().result()
     removed_queries = shrink_below_size(
         flowmachine_connect, size_of_cache(flowmachine_connect) - 1
@@ -176,7 +187,8 @@ def test_shrink_to_size_removes_queries(flowmachine_connect):
 
 
 def test_shrink_to_size_respects_dry_run(flowmachine_connect):
-    """Test that shrink_below_size doesn't remove anything during a dry run."""
+    """
+    Test that shrink_below_size doesn't remove anything during a dry run."""
     dl = daily_location("2016-01-01").store().result()
     dl2 = daily_location("2016-01-02").store().result()
     removed_queries = shrink_below_size(flowmachine_connect, 0, dry_run=True)
@@ -186,7 +198,8 @@ def test_shrink_to_size_respects_dry_run(flowmachine_connect):
 
 
 def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
-    """Test that shrink_below_size dry run is an accurate report."""
+    """
+    Test that shrink_below_size dry run is an accurate report."""
     dl = daily_location("2016-01-01").store().result()
     dl2 = daily_location("2016-01-02").store().result()
     shrink_to = size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
@@ -200,7 +213,8 @@ def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
 
 
 def test_shrink_to_size_uses_score(flowmachine_connect):
-    """Test that shrink_below_size removes cache records in ascending score order."""
+    """
+    Test that shrink_below_size removes cache records in ascending score order."""
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     flowmachine_connect.engine.execute(
@@ -217,7 +231,8 @@ def test_shrink_to_size_uses_score(flowmachine_connect):
 
 
 def test_shrink_one(flowmachine_connect):
-    """Test that shrink_one removes a cache record."""
+    """
+    Test that shrink_one removes a cache record."""
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     flowmachine_connect.engine.execute(
@@ -233,7 +248,8 @@ def test_shrink_one(flowmachine_connect):
 
 
 def test_size_of_cache(flowmachine_connect):
-    """Test that cache size is reported correctly."""
+    """
+    Test that cache size is reported correctly."""
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     total_cache_size = size_of_cache(flowmachine_connect)
@@ -244,7 +260,8 @@ def test_size_of_cache(flowmachine_connect):
 
 
 def test_size_of_table(flowmachine_connect):
-    """Test that table size is reported correctly."""
+    """
+    Test that table size is reported correctly."""
     dl = daily_location("2016-01-01").store().result()
 
     total_cache_size = size_of_cache(flowmachine_connect)
@@ -253,7 +270,8 @@ def test_size_of_table(flowmachine_connect):
 
 
 def test_cache_miss_value_error_rescore():
-    """ValueError should be raised if we try to rescore something not in cache."""
+    """
+    ValueError should be raised if we try to rescore something not in cache."""
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
@@ -261,7 +279,8 @@ def test_cache_miss_value_error_rescore():
 
 
 def test_cache_miss_value_error_size_of_table():
-    """ValueError should be raised if we try to get the size of something not in cache."""
+    """
+    ValueError should be raised if we try to get the size of something not in cache."""
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
@@ -269,7 +288,8 @@ def test_cache_miss_value_error_size_of_table():
 
 
 def test_cache_miss_value_error_compute_time():
-    """ValueError should be raised if we try to get the compute time of something not in cache."""
+    """
+    ValueError should be raised if we try to get the compute time of something not in cache."""
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
@@ -277,7 +297,8 @@ def test_cache_miss_value_error_compute_time():
 
 
 def test_cache_miss_value_error_score():
-    """ValueError should be raised if we try to get the score of something not in cache."""
+    """
+    ValueError should be raised if we try to get the score of something not in cache."""
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
@@ -285,7 +306,9 @@ def test_cache_miss_value_error_score():
 
 
 def test_get_query_object_by_id(flowmachine_connect):
-    """Test that we can get a query object back out of the database by the md5 id"""
+    """
+    Test that we can get a query object back out of the database by the md5 id
+    """
     dl = daily_location("2016-01-01").store().result()
     retrieved_query = get_query_object_by_id(flowmachine_connect, dl.md5)
     assert dl.md5 == retrieved_query.md5
@@ -293,7 +316,9 @@ def test_get_query_object_by_id(flowmachine_connect):
 
 
 def test_delete_query_by_id(flowmachine_connect):
-    """Test that we can remove a query from cache by the md5 id"""
+    """
+    Test that we can remove a query from cache by the md5 id
+    """
     dl = daily_location("2016-01-01").store().result()
     retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.md5)
     assert dl.md5 == retrieved_query.md5
@@ -301,7 +326,9 @@ def test_delete_query_by_id(flowmachine_connect):
 
 
 def test_delete_query_by_id_does_not_cascade_by_default(flowmachine_connect):
-    """Test that removing a query by id doesn't cascade by default"""
+    """
+    Test that removing a query by id doesn't cascade by default
+    """
     dl = daily_location("2016-01-01").store().result()
     dl_agg = dl.aggregate().store().result()
     retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.md5)
@@ -311,7 +338,9 @@ def test_delete_query_by_id_does_not_cascade_by_default(flowmachine_connect):
 
 
 def test_delete_query_by_id_can_cascade(flowmachine_connect):
-    """Test that removing a query by id can cascade"""
+    """
+    Test that removing a query by id can cascade
+    """
     dl = daily_location("2016-01-01").store().result()
     dl_agg = dl.aggregate().store().result()
     retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.md5, cascade=True)
@@ -334,7 +363,9 @@ def reset_cache_settings(flowmachine_connect):
 
 
 def test_get_set_cache_size_limit(reset_cache_settings):
-    """Test that cache size can be got and set"""
+    """
+    Test that cache size can be got and set
+    """
     # Initial setting depends on the disk space of the FlowDB container so just check it is nonzero
     assert get_max_size_of_cache(reset_cache_settings) > 0
     # Now set it to something
@@ -343,7 +374,9 @@ def test_get_set_cache_size_limit(reset_cache_settings):
 
 
 def test_get_set_cache_half_life(reset_cache_settings):
-    """Test that cache halflife can be got and set"""
+    """
+    Test that cache halflife can be got and set
+    """
     assert 1000 == get_cache_half_life(reset_cache_settings)
     # Now set it to something
     set_cache_half_life(reset_cache_settings, 10)
