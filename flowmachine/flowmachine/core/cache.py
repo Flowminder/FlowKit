@@ -14,6 +14,8 @@ from typing import TYPE_CHECKING, Tuple, List
 
 from psycopg2 import InternalError
 
+from flowmachine.core import Query
+
 if TYPE_CHECKING:
     from .query import Query
     from .connection import Connection
@@ -399,3 +401,25 @@ def get_score(connection: "Connection", query_id: str) -> float:
         )
     except IndexError:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
+
+
+def cache_table_exists(connection: "Connection", query_id: str) -> bool:
+    """
+    Return True if a cache table for the query with
+    id `query_id` exist, otherwise return False.
+
+    Parameters
+    ----------
+    connection: "Connection"
+    query_id : str
+        md5 id of the cached query
+
+    Returns
+    -------
+    bool
+    """
+    try:
+        _ = get_query_object_by_id(connection, query_id)
+        return True
+    except ValueError:
+        return False
