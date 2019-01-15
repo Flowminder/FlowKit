@@ -18,6 +18,8 @@ secrets:
     external: true
   JWT_SECRET_KEY: # Secret used to sign api tokens
     external: true
+  REDIS_PASSWORD_FILE: # Redis password
+    external: true
 networks:
   db:
   redis:
@@ -49,6 +51,7 @@ services:
         secrets:
           - FM_DB_USER
           - FM_DB_PASS
+          - REDIS_PASSWORD_FILE
         networks:
           - db
           - redis
@@ -71,7 +74,9 @@ services:
           - db
           - api
     query_locker:
-        image: redis
+        image: bitnami/redis:latest
+        secrets:
+          - REDIS_PASSWORD_FILE
         networks:
           redis:
             aliases:
