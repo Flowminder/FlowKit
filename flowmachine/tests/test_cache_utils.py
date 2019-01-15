@@ -12,12 +12,12 @@ import pytest
 
 from flowmachine.core import Table
 from flowmachine.core.cache import (
-    compute_time,
+    get_compute_time,
     shrink_below_size,
     shrink_one,
-    size_of_cache,
-    size_of_table,
-    score,
+    get_size_of_cache,
+    get_size_of_table,
+    get_score,
     get_query_object_by_id,
     get_cached_query_objects_ordered_by_score,
     touch_cache,
@@ -35,9 +35,9 @@ def test_scoring(flowmachine_connect):
     Test that score updating algorithm is correct by comparing to cachey as reference implementation
     """
     dl = daily_location("2016-01-01").store().result()
-    dl_time = compute_time(flowmachine_connect, dl.md5)
-    dl_size = size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
-    initial_score = score(flowmachine_connect, dl.md5)
+    dl_time = get_compute_time(flowmachine_connect, dl.md5)
+    dl_size = get_size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
+    initial_score = get_score(flowmachine_connect, dl.md5)
     cachey_scorer = Scorer(1000)
     cache_score = cachey_scorer.touch("dl", dl_time / dl_size)
     assert cache_score == pytest.approx(initial_score)
@@ -47,10 +47,10 @@ def test_scoring(flowmachine_connect):
     assert updated_cache_score == pytest.approx(new_score)
     # Add another unrelated cache record, which should have a higher initial score
     dl_2 = daily_location("2016-01-02").store().result()
-    dl_time = compute_time(flowmachine_connect, dl_2.md5)
-    dl_size = size_of_table(flowmachine_connect, *dl_2.table_name.split(".")[::-1])
+    dl_time = get_compute_time(flowmachine_connect, dl_2.md5)
+    dl_size = get_size_of_table(flowmachine_connect, *dl_2.table_name.split(".")[::-1])
     cache_score = cachey_scorer.touch("dl_2", dl_time / dl_size)
-    assert cache_score == pytest.approx(score(flowmachine_connect, dl_2.md5))
+    assert cache_score == pytest.approx(get_score(flowmachine_connect, dl_2.md5))
 
 
 def test_touch_cache_record_for_query(flowmachine_connect):
@@ -93,9 +93,9 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     """
     table = Table("events.calls_20160101")
     flowmachine_connect.engine.execute(
-        f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%s", table.md5
+        f"UPDATE cache.cached SET get_compute_time = 1 WHERE query_id=%s", table.md5
     )  # Compute time for tables is zero, so set to 1 to avoid zeroing out
-    assert 0 == score(flowmachine_connect, table.md5)
+    assert 0 == get_score(flowmachine_connect, table.md5)
     assert (
         1
         == flowmachine_connect.fetch(
@@ -106,7 +106,7 @@ def test_touch_cache_record_for_table(flowmachine_connect):
         f"SELECT last_accessed FROM cache.cached WHERE query_id='{table.md5}'"
     )[0][0]
     touch_cache(flowmachine_connect, table.md5)
-    assert 0 == score(flowmachine_connect, table.md5)
+    assert 0 == get_score(flowmachine_connect, table.md5)
     assert (
         2
         == flowmachine_connect.fetch(
@@ -130,7 +130,7 @@ def test_compute_time():
     Compute time should take value returned in ms and turn it into seconds."""
     connection_mock = Mock()
     connection_mock.fetch.return_value = [[10]]
-    assert 10 / 1000 == compute_time(connection_mock, "DUMMY_ID")
+    assert 10 / 1000 == get_compute_time(connection_mock, "DUMMY_ID")
 
 
 def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
@@ -169,7 +169,7 @@ def test_shrink_to_size_does_nothing_when_cache_ok(flowmachine_connect):
     Test that shrink_below_size doesn't remove anything if cache size is within limit."""
     dl = daily_location("2016-01-01").store().result()
     removed_queries = shrink_below_size(
-        flowmachine_connect, size_of_cache(flowmachine_connect)
+        flowmachine_connect, get_size_of_cache(flowmachine_connect)
     )
     assert 0 == len(removed_queries)
     assert dl.is_stored
@@ -180,7 +180,7 @@ def test_shrink_to_size_removes_queries(flowmachine_connect):
     Test that shrink_below_size removes queries when cache limit is breached."""
     dl = daily_location("2016-01-01").store().result()
     removed_queries = shrink_below_size(
-        flowmachine_connect, size_of_cache(flowmachine_connect) - 1
+        flowmachine_connect, get_size_of_cache(flowmachine_connect) - 1
     )
     assert 1 == len(removed_queries)
     assert not dl.is_stored
@@ -202,7 +202,7 @@ def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
     Test that shrink_below_size dry run is an accurate report."""
     dl = daily_location("2016-01-01").store().result()
     dl2 = daily_location("2016-01-02").store().result()
-    shrink_to = size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
+    shrink_to = get_size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
     queries_that_would_be_removed = shrink_below_size(
         flowmachine_connect, shrink_to, dry_run=True
     )
@@ -223,7 +223,7 @@ def test_shrink_to_size_uses_score(flowmachine_connect):
     flowmachine_connect.engine.execute(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.md5}'"
     )
-    table_size = size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
+    table_size = get_size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
     removed_queries = shrink_below_size(flowmachine_connect, table_size)
     assert 1 == len(removed_queries)
     assert not dl.is_stored
@@ -252,11 +252,11 @@ def test_size_of_cache(flowmachine_connect):
     Test that cache size is reported correctly."""
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
-    total_cache_size = size_of_cache(flowmachine_connect)
+    total_cache_size = get_size_of_cache(flowmachine_connect)
     removed_query, table_size_a = shrink_one(flowmachine_connect)
     removed_query, table_size_b = shrink_one(flowmachine_connect)
     assert total_cache_size == table_size_a + table_size_b
-    assert 0 == size_of_cache(flowmachine_connect)
+    assert 0 == get_size_of_cache(flowmachine_connect)
 
 
 def test_size_of_table(flowmachine_connect):
@@ -264,8 +264,8 @@ def test_size_of_table(flowmachine_connect):
     Test that table size is reported correctly."""
     dl = daily_location("2016-01-01").store().result()
 
-    total_cache_size = size_of_cache(flowmachine_connect)
-    table_size = size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
+    total_cache_size = get_size_of_cache(flowmachine_connect)
+    table_size = get_size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
     assert total_cache_size == table_size
 
 
@@ -284,7 +284,7 @@ def test_cache_miss_value_error_size_of_table():
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
-        size_of_table(connection_mock, "DUMMY_SCHEMA", "DUMMY_NAME")
+        get_size_of_table(connection_mock, "DUMMY_SCHEMA", "DUMMY_NAME")
 
 
 def test_cache_miss_value_error_compute_time():
@@ -293,7 +293,7 @@ def test_cache_miss_value_error_compute_time():
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
-        compute_time(connection_mock, "DUMMY_ID")
+        get_compute_time(connection_mock, "DUMMY_ID")
 
 
 def test_cache_miss_value_error_score():
@@ -302,7 +302,7 @@ def test_cache_miss_value_error_score():
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
-        score(connection_mock, "DUMMY_ID")
+        get_score(connection_mock, "DUMMY_ID")
 
 
 def test_get_query_object_by_id(flowmachine_connect):
