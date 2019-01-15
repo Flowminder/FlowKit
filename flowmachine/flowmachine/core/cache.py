@@ -51,6 +51,11 @@ def reset_cache(connection: "Connection") -> None:
     ----------
     connection : Connection
     """
+    # For deletion purposes, we ignore Table objects. These either point to something
+    # outside the cache schema and hence shouldn't be removed by calling this, or
+    # they point to a cache table and hence are a duplicate of a Query entry which
+    # will also point to that table.
+
     qry = f"SELECT tablename FROM cache.cached WHERE NOT class='Table'"
     tables = connection.fetch(qry)
     with connection.engine.begin() as trans:
