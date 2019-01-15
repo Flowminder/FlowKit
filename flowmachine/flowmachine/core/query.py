@@ -498,27 +498,29 @@ class Query(metaclass=ABCMeta):
             logger.debug("Getting storage lock.")
             with rlock(self.redis, self.md5):
                 logger.debug("Obtained storage lock.")
-                Qs = self._make_sql(name, schema=schema, force=force)
+                query_ddl_ops = self._make_sql(name, schema=schema, force=force)
                 logger.debug("Made SQL.")
                 con = self.connection.engine
                 if force:
                     self.invalidate_db_cache(name, schema=schema)
                 plan_time = 0
                 with con.begin():
-                    rs = []
-                    for Q in Qs:
+                    ddl_op_results = []
+                    for ddl_op in query_ddl_ops:
                         try:
-                            r = con.execute(Q)
+                            ddl_op_result = con.execute(ddl_op)
                         except Exception as e:
-                            logger.error(f"Error executing SQL: '{Q}'. Error was {e}")
+                            logger.error(
+                                f"Error executing SQL: '{ddl_op}'. Error was {e}"
+                            )
                             raise e
                         try:
-                            rs.append(r.fetchall())
+                            ddl_op_results.append(ddl_op_result.fetchall())
                         except ResourceClosedError:
                             pass  # Nothing to do here
-                        for r in rs:
+                        for ddl_op_result in ddl_op_results:
                             try:
-                                plan = r[0][0][0]
+                                plan = ddl_op_result[0][0][0]
                                 plan_time += plan["Execution Time"]
                             except (IndexError, KeyError):
                                 pass  # Not an explain result
