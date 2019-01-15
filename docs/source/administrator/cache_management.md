@@ -31,7 +31,19 @@ By default, calling this method will also flush from the cache any cached querie
 
 ### Configuring the Cache
 
-There are two parameters which control FlowKit's cache, both of which are in the `cache.cache_config` table. `half_life` controls how much weight is given to recency of access when updating the cache score. `cache_size` is the maximum size in bytes that the cache tables should occupy on disk. These settings default to 1000, and 10% of available space on the drive where `/var/lib/postgresql/data` is located.
+There are two parameters which control FlowKit's cache, both of which are in the `cache.cache_config` table. `half_life` controls how much weight is given to recency of access when updating the cache score. `half_life` is in units of number of cache retrievals, so a larger value for `half_life` will give less weight to recency and frequency of access. 
+
+!!! example
+    `big_query` and `small_query` both took 100 seconds to calculate. `big_query` takes 100 bytes to store, and `small_query` takes 10 bytes.
+    Their _costs_ are `compute_time/storage_size`, or 1 for `big_query` and 10 for `small_query`. `small_query` is stored first and has an initial cache score of 10.
+    If query `big_query` is stored next, with a `half_life` of 2, it will get an initial cache score of 1.35. 
+    
+    Just in terms of the balance between compute time and storage cost, `small_query` is more valuable in cache because it is relatively cheaper to store.  However, after only four retrievals of `big_query` from cache, `big_query` will have a cache score of 13.3, meaning it is more valuable in cache because it is so frequently used.
+    
+    If `half_life` was instead set to 10, `big_query` would need to be retrieved _seven_ times to exceed the cache score of `small_query`. 
+     
+ 
+`cache_size` is the maximum size in bytes that the cache tables should occupy on disk. These settings default to 1000, and 10% of available space on the drive where `/var/lib/postgresql/data` is located.
 
 These values can be overridden when creating a new FlowDB container by setting the `CACHE_SIZE` and `CACHE_HALF_LIFE` environment variables for the container, set by updating the `cache.cache_config` table after connecting directly to FlowDB, or modified using the cache submodule.
 
