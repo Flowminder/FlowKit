@@ -41,6 +41,7 @@ def test_scoring(flowmachine_connect):
     cachey_scorer = Scorer(1000)
     cache_score = cachey_scorer.touch("dl", dl_time / dl_size)
     assert cache_score == pytest.approx(initial_score)
+
     # Touch again
     new_score = touch_cache(flowmachine_connect, dl.md5)
     updated_cache_score = cachey_scorer.touch("dl")
