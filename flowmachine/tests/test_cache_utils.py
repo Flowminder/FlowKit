@@ -26,6 +26,7 @@ from flowmachine.core.cache import (
     get_cache_half_life,
     set_cache_half_life,
     invalidate_cache_by_id,
+    cache_table_exists,
 )
 from flowmachine.features import daily_location
 
@@ -383,3 +384,13 @@ def test_get_set_cache_half_life(reset_cache_settings):
     # Now set it to something
     set_cache_half_life(reset_cache_settings, 10)
     assert 10 == get_cache_half_life(reset_cache_settings)
+
+
+def test_cache_table_exists(flowmachine_connect):
+    """
+    Test that cache_table_exists reports accurately.
+    """
+    assert not cache_table_exists(flowmachine_connect, "NONEXISTENT_CACHE_ID")
+    assert cache_table_exists(
+        flowmachine_connect, daily_location("2016-01-01").store().result().md5
+    )
