@@ -266,7 +266,7 @@ def get_max_size_of_cache(connection: "Connection") -> int:
     Returns
     -------
     int
-        Number of bytes in total available cache tables
+        Number of bytes in total available to cache tables
 
     """
     sql = "SELECT cache_max_size()"
