@@ -5,7 +5,7 @@ from json import dumps, loads, JSONDecodeError
 
 
 from flowmachine.core import Query
-from flowmachine.core.cache import get_query_by_id
+from flowmachine.core.cache import get_query_object_by_id
 from flowmachine.features import (
     daily_location,
     ModalLocation,
@@ -269,7 +269,7 @@ def cache_table_exists(query_id):
     bool
     """
     try:
-        _ = get_query_by_id(Query.connection, query_id)
+        _ = get_query_object_by_id(Query.connection, query_id)
         return True
     except ValueError:
         return False
@@ -289,7 +289,7 @@ def get_sql_for_query_id(query_id):
     -------
     str
     """
-    q = get_query_by_id(Query.connection, query_id)
+    q = get_query_object_by_id(Query.connection, query_id)
     sql = q.get_query()
     return sql
 
