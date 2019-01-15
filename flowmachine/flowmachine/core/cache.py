@@ -14,8 +14,6 @@ from typing import TYPE_CHECKING, Tuple, List
 
 from psycopg2 import InternalError
 
-from flowmachine.core import Query
-
 if TYPE_CHECKING:
     from .query import Query
     from .connection import Connection
