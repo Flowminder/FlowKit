@@ -42,11 +42,6 @@ ADD ./synthetic_data/sql/* /docker-entrypoint-initdb.d/sql/syntheticdata/
 ADD ./test_data/sql/admin*.sql /docker-entrypoint-initdb.d/sql/syntheticdata/
 ADD ./synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson /opt/synthetic_data/
 
-RUN chown $POSTGRES_UID:$POSTGRES_GID -R \
-        /docker-entrypoint-initdb.d/sql/syntheticdata \
-        /docker-entrypoint-initdb.d/data/records/calls \
-        /opt/synthetic_data/ \
-        /docker-entrypoint-initdb.d/data/infrastructure
 
 ENV N_DAYS=7
 ENV N_SUBSCRIBERS=4000
