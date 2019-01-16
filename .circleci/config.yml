@@ -26,6 +26,7 @@ defaults:
       environment:
         FM_PASSWORD: foo
         API_PASSWORD: foo
+        POSTGRES_PASSWORD: flowflow
       auth:
         username: $DOCKER_CLOUD_USER
         password: $DOCKER_CLOUD_PASSWORD
@@ -46,6 +47,7 @@ defaults:
       environment:
         FM_PASSWORD: foo
         API_PASSWORD: foo
+        POSTGRES_PASSWORD: flowflow
     - image: redis
   - &flowdbsynth_docker
     - image: circleci/python:3.7
@@ -65,6 +67,7 @@ defaults:
         N_CALLS: 2000
         FM_PASSWORD: foo
         API_PASSWORD: foo
+        POSTGRES_PASSWORD: flowflow
   - &wait_for_flowdb
     name: Wait for flowdb to start
     command: |
@@ -179,16 +182,26 @@ jobs:
             mkdir $FLOWDB_DATA_DIR
             sudo chown -R ingestion:ingestion $FLOWDB_DATA_DIR $FLOWDB_INGESTION_DIR
             sudo chmod -R a+rw $FLOWDB_INGESTION_DIR
+      -run:
+         name: Test that not providing a superuser password causes the container to exit
+         command: |
+           if docker run flowminder/flowdb:$SAFE_TAG; then
+               exit 1
+           else
+               echo "Correctly failed with no superuser password"
+           fi
       - run:
           name: Launch flowdb
           command: |
             docker run --name flowdb --publish $DB_PORT:5432 --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
               --volume=${FLOWDB_INGESTION_DIR}:/ingestion -e FM_PASSWORD=foo -e API_PASSWORD=foo \
               -e MAX_CPUS=2 -e MAX_WORKERS=2 -e MAX_WORKERS_PER_GATHER=2 \
+              -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
               --detach flowminder/flowdb:$SAFE_TAG
 
             echo "Waiting for flowdb to be ready.."
             docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
              --detach flowminder/flowdb:oracle-$SAFE_TAG
             docker exec flowdb bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
             echo "Waiting for flowdb with oracle_fdw to be ready.."
