@@ -966,8 +966,8 @@
 
 
   <li class="md-nav__item">
-    <a href="developer/api/flowmachine/core/server/" title="server" class="md-nav__link">
-      server
+    <a href="developer/api/flowmachine/core/server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
     </a>
   </li>
 
@@ -978,8 +978,8 @@
 
 
   <li class="md-nav__item">
-    <a href="developer/api/flowmachine/core/server/query_proxy/" title="query_proxy" class="md-nav__link">
-      query_proxy
+    <a href="developer/api/flowmachine/core/server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
     </a>
   </li>
 
@@ -2121,6 +2121,10 @@ pipenv run pytest
 <p>JWT_SECRET_KEY</p>
 <p>The secret key used to sign API access tokens</p>
 </li>
+<li>
+<p>REDIS_PASSWORD_FILE</p>
+<p>The password protecting the redis instance</p>
+</li>
 </ul>
 <p>To make use of secrets you will need to use docker swarm. For testing purposes, you can set up a single node swarm by running <code>docker swarm init</code>.</p>
 <p>Once you have created a swarm, you can add secrets to it using the <a href="https://docs.docker.com/engine/reference/commandline/secret_create/">docker secret</a> command. For example, to add a randomly generated password for the <code>FM_DB_PASS</code> secret:</p>
@@ -2144,26 +2148,10 @@ docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
 
 <h3 id="secrets-quickstart">Secrets Quickstart<a class="headerlink" href="#secrets-quickstart" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><span class="nb">cd</span> secrets_quickstart
-docker login
-docker swarm init
-openssl rand -base64 <span class="m">16</span> <span class="p">|</span> docker secret create FM_DB_PASS -
-<span class="nb">echo</span> <span class="s2">&quot;fm&quot;</span> <span class="p">|</span> docker secret create FM_DB_USER -
-<span class="nb">echo</span> <span class="s2">&quot;api&quot;</span> <span class="p">|</span> docker secret create API_DB_USER -
-openssl rand -base64 <span class="m">16</span> <span class="p">|</span> docker secret create API_DB_PASS -
-openssl rand -base64 <span class="m">16</span> <span class="p">|</span> docker secret create POSTGRES_PASSWORD_FILE -
-openssl req -newkey rsa:4096 -days <span class="m">3650</span> -nodes -x509 -subj <span class="s2">&quot;/CN=flow.api&quot;</span> <span class="se">\</span>
-    -extensions SAN <span class="se">\</span>
-    -config &lt;<span class="o">(</span> cat <span class="k">$(</span> <span class="o">[[</span> <span class="s2">&quot;Darwin&quot;</span> -eq <span class="s2">&quot;</span><span class="k">$(</span>uname -s<span class="k">)</span><span class="s2">&quot;</span> <span class="o">]]</span>  <span class="o">&amp;&amp;</span> <span class="nb">echo</span> /System/Library/OpenSSL/openssl.cnf <span class="o">||</span> <span class="nb">echo</span> /etc/ssl/openssl.cnf  <span class="k">)</span> <span class="se">\</span>
-    &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s2">&quot;[SAN]\nsubjectAltName=&#39;DNS.1:localhost,DNS.2:flow.api&#39;&quot;</span><span class="o">))</span> <span class="se">\</span>
-    -keyout cert.key -out cert.pem
-cat client_cert.key cert.pem &gt; cert-flowkit.pem
-docker secret create cert-flowkit.pem cert-flowkit.pem
-<span class="nb">echo</span> <span class="s2">&quot;secret&quot;</span> <span class="p">|</span> docker secret create JWT_SECRET_KEY -
-docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
+pipenv run secrets_quickstart
 </pre></div>
 
 <p>This will bring up a single node swarm, create random 16 character passwords for the database users, generate a certificate valid for the <code>flowkit.api</code> domain (and point that to <code>localhost</code> using <code>/etc/hosts</code>), pull all necessary containers, and bring up the API with <code>secret</code> as the JWT secret key.</p>
-<p>For convenience, you can also do <code>pipenv run secrets_quickstart</code> from the <code>secrets_quickstart</code> directory.</p>
 <p>Note that if you wish to deploy a branch other than master, you should set the <code>CIRCLE_BRANCH</code> environment variable before running, to ensure that Docker pulls the correct tags.</p>
 <p>You can then provide the certificate to <code>flowclient</code>, and finally connect via https:</p>
 <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">flowclient</span>
