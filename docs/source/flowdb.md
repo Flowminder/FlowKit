@@ -38,7 +38,10 @@ services:
           - /path/to/consume/data/from/host:/etl:ro
 ```
 
-This creates two bind mounts, the first is FlowDB's internal storage, and the second is a *read only* mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified, and if the bind mounted directories do no exist, docker will create them.
+This creates two bind mounts, the first is FlowDB's internal storage, and the second is a *read only* mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified. 
+
+!!! warning
+    If the bind mounted directories do not exist, docker will create them and you will need to `chown` them to the correct user.
 
 And similarly when using `docker run`:
 
