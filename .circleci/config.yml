@@ -178,15 +178,6 @@ jobs:
             docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb:synthetic-data-$SAFE_TAG -t flowminder/flowdb:synthetic-data-$CIRCLE_WORKFLOW_ID \
               -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
       - run:
-          name: Create ingestion environment
-          command: |
-            echo "User ID ($POSTGRES_UID) and Group ID ($POSTGRES_GID)"
-            sudo groupadd --gid $POSTGRES_UID ingestion
-            sudo useradd -g ingestion -u $POSTGRES_GID ingestion
-            mkdir $FLOWDB_DATA_DIR
-            sudo chown -R ingestion:ingestion $FLOWDB_DATA_DIR $FLOWDB_INGESTION_DIR
-            sudo chmod -R a+rw $FLOWDB_INGESTION_DIR
-      - run:
          name: Test that not providing a superuser password causes the container to exit
          command: |
            if docker run flowminder/flowdb:$SAFE_TAG; then
@@ -197,7 +188,7 @@ jobs:
       - run:
           name: Launch flowdb
           command: |
-            docker run --name flowdb --publish $DB_PORT:5432 --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
+            docker run --name flowdb --publish $DB_PORT:5432 --user $(id -u):$(id -g) --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
               --volume=${FLOWDB_INGESTION_DIR}:/ingestion -e FM_PASSWORD=foo -e API_PASSWORD=foo \
               -e MAX_CPUS=2 -e MAX_WORKERS=2 -e MAX_WORKERS_PER_GATHER=2 \
               -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
