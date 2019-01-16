@@ -128,7 +128,7 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     )
 
 
-def test_compute_time():
+def test_get_compute_time():
     """
     Compute time should take value returned in ms and turn it into seconds."""
     connection_mock = Mock()
