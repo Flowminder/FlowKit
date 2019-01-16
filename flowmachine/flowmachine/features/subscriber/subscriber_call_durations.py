@@ -69,6 +69,9 @@ class SubscriberCallDurations(SubscriberFeature):
         subscriber_identifier="msisdn",
         direction="out",
         statistic="sum",
+        *,
+        hours="all",
+        subscriber_subset=None,
         **kwargs,
     ):
         self.start = start
@@ -96,8 +99,9 @@ class SubscriberCallDurations(SubscriberFeature):
             self.stop,
             tables="events.calls",
             columns=column_list,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=subscriber_identifier,
-            **kwargs,
         )
         super().__init__()
 
