@@ -184,10 +184,9 @@ jobs:
                echo "Correctly failed with no superuser password"
            fi
       - run:
-          name: Create ingestion environment
+          name: Create data dir
           command: |
             mkdir $FLOWDB_DATA_DIR
-            mkdir $FLOWDB_INGESTION_DIR
       - run:
           name: Launch flowdb
           command: |
