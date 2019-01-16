@@ -39,7 +39,7 @@ def test_scoring(flowmachine_connect):
     dl_time = get_compute_time(flowmachine_connect, dl.md5)
     dl_size = get_size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
     initial_score = get_score(flowmachine_connect, dl.md5)
-    cachey_scorer = Scorer(1000)
+    cachey_scorer = Scorer(halflife=1000.0)
     cache_score = cachey_scorer.touch("dl", dl_time / dl_size)
     assert cache_score == pytest.approx(initial_score)
 
