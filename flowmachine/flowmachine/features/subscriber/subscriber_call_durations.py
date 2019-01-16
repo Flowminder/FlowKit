@@ -194,6 +194,9 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         level="admin3",
         statistic="sum",
         column_name=None,
+        *,
+        hours="all",
+        subscriber_subset=None,
         **kwargs,
     ):
         self.start = start
@@ -212,11 +215,6 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         if direction not in {"in", "out", "both"}:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "all"
-
         column_list = [
             self.subscriber_identifier,
             "msisdn_counterpart",
@@ -229,8 +227,9 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
             self.stop,
             tables="events.calls",
             columns=column_list,
-            subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
         )
         if self.level != "cell":
             etu = EventsTablesUnion(
@@ -238,8 +237,9 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
                 self.stop,
                 tables="events.calls",
                 columns=column_list + ["datetime"],
+                hours=hours,
+                subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
-                **kwargs,
             )
             self.unioned_query = JoinToLocation(
                 etu,
