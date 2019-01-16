@@ -197,6 +197,9 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         *,
         hours="all",
         subscriber_subset=None,
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
         **kwargs,
     ):
         self.start = start
@@ -241,12 +244,15 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
                 subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
             )
+
             self.unioned_query = JoinToLocation(
                 etu,
                 level=self.level,
                 column_name=self.column_name,
                 time_col="datetime",
-                **kwargs,
+                size=size,
+                polygon_table=polygon_table,
+                geom_col=geom_col,
             )
         super().__init__()
 
