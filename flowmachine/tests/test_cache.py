@@ -125,6 +125,8 @@ def test_invalidate_cache_multi(flowmachine_connect):
     dl1.store().result()
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
+    assert dl1.is_stored
+    assert hl1.is_stored
     dl1.invalidate_db_cache()
     assert not dl1.is_stored
     assert not hl1.is_stored
@@ -147,6 +149,9 @@ def test_invalidate_cache_midchain(flowmachine_connect):
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow.store().result()
+    assert dl1.is_stored
+    assert hl1.is_stored
+    assert flow.is_stored
     hl1.invalidate_db_cache()
     assert dl1.is_stored
     assert not hl1.is_stored
@@ -169,6 +174,8 @@ def test_invalidate_cache_multi(flowmachine_connect):
     dl1.store().result()
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
+    assert dl1.is_stored
+    assert hl1.is_stored
     dl1.invalidate_db_cache()
     assert not dl1.is_stored
     assert not hl1.is_stored
@@ -190,6 +197,9 @@ def test_invalidate_cascade(flowmachine_connect):
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow.store().result()
+    assert dl1.is_stored
+    assert hl1.is_stored
+    assert flow.is_stored
     dl1.invalidate_db_cache(cascade=False)
     assert not dl1.is_stored
     assert hl1.is_stored
