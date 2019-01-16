@@ -35,9 +35,6 @@ class _SubscriberCells(Query):
         ignore_nulls=True,
         *,
         subscriber_subset=None,
-        polygon_table=None,
-        size=None,
-        radius=None,
     ):
 
         self.start = start
@@ -226,7 +223,6 @@ def subscriber_locations(
         subscriber_subset=subscriber_subset,
         subscriber_identifier=subscriber_identifier,
         ignore_nulls=ignore_nulls,
-        **kwargs_subscriber_cells,
     )
 
     if level == "cell":
