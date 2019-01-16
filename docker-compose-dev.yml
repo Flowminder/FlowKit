@@ -117,6 +117,7 @@ services:
       - DB_PORT=${DB_PORT:-5432}
       - DB_HOST=${DB_HOST:-flowdb}
       - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-fm_redis}
     restart: always
     networks:
       - zero
@@ -125,9 +126,11 @@ services:
 
   redis:
     container_name: redis_flowkit
-    image: redis
+    image: bitnami/redis
     ports:
       - ${REDIS_PORT:-6379}:6379
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-fm_redis}
     restart: always
     networks:
       redis:
