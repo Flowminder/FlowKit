@@ -308,7 +308,7 @@ Calculate a cache score from a multiplier, compute time in ms and the size of th
 
 ***********************************/
 
-CREATE OR REPLACE FUNCTION cache_score(IN cache_score_multiplier FLOAT, IN compute_time FLOAT, IN tablesize INT)
+CREATE OR REPLACE FUNCTION cache_score(IN cache_score_multiplier numeric, IN compute_time numeric, IN tablesize double precision)
 	RETURNS float AS
 $$
   BEGIN
