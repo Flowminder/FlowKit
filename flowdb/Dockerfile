@@ -136,15 +136,15 @@ ENV DEBUG=False
 #
 #  Copy file spinup build scripts to be execed.
 #
-COPY --chown postgres ./bin/build/* /docker-entrypoint-initdb.d/
+COPY --chown=postgres ./bin/build/* /docker-entrypoint-initdb.d/
 
 #
 #  Add local data to PostgreSQL data ingestion
 #  directory. Files in that directory will be
 #  ingested by PostgreSQL on build-time.
 #
-ADD --chown postgres ./sql/* /docker-entrypoint-initdb.d/
-ADD --chown postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
+ADD --chown=postgres ./sql/* /docker-entrypoint-initdb.d/
+ADD --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
 
 EXPOSE 5432
 
