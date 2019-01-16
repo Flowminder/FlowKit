@@ -437,6 +437,12 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         level="admin3",
         column_name=None,
         statistic="sum",
+        *,
+        hours="all",
+        subscriber_subset=None,
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
         **kwargs,
     ):
         self.start = start
@@ -452,11 +458,6 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
                 )
             )
 
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "all"
-
         column_list = [
             "id",
             self.subscriber_identifier,
@@ -470,8 +471,9 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
             self.stop,
             tables="events.calls",
             columns=column_list,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         )
         if self.level != "cell":
             etu = EventsTablesUnion(
@@ -479,15 +481,18 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
                 self.stop,
                 tables="events.calls",
                 columns=column_list + ["datetime"],
+                hours=hours,
+                subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
-                **kwargs,
             )
             unioned_query = JoinToLocation(
                 etu,
                 level=self.level,
                 column_name=self.column_name,
                 time_col="datetime",
-                **kwargs,
+                size=size,
+                polygon_table=polygon_table,
+                geom_col=geom_col,
             )
         self.joined = unioned_query.subset("outgoing", "t").join(
             unioned_query.subset("outgoing", "f"),
