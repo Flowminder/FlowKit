@@ -34,10 +34,10 @@ class _SubscriberCells(Query):
         subscriber_identifier="msisdn",
         ignore_nulls=True,
         *,
+        subscriber_subset=None,
         polygon_table=None,
         size=None,
         radius=None,
-        **kwargs,
     ):
 
         self.start = start
@@ -57,8 +57,8 @@ class _SubscriberCells(Query):
             columns=cols,
             tables=self.table,
             hours=self.hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         )
         super().__init__()
 
