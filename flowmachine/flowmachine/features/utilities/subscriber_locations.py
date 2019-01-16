@@ -231,4 +231,3 @@ def subscriber_locations(
         return JoinToLocation(
             subscriber_cells, level=level, column_name=column_name, polygon_table=polygon_table, size=size,
         )
-    super().__init__()
