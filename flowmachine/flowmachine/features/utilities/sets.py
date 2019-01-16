@@ -249,7 +249,7 @@ class EventsTablesUnion(Query):
 
     """
 
-    def __init__(self, start, stop, columns, tables="all", *, polygon_table=None, size=None, radius=None, column_name=None, **kwargs):
+    def __init__(self, start, stop, columns, tables="all", *, polygon_table=None, size=None, radius=None, column_name=None, hours="all", subscriber_subset=None, subscriber_identifier="msisdn"):
         """
 
         """
@@ -262,7 +262,7 @@ class EventsTablesUnion(Query):
             )
         self.columns = columns
         self.tables = self._parse_tables(tables)
-        self.date_subsets = self._make_table_list(**kwargs)
+        self.date_subsets = self._make_table_list(hours=hours, subscriber_subset=subscriber_subset, subscriber_identifier=subscriber_identifier)
 
         super().__init__()
 
@@ -281,7 +281,7 @@ class EventsTablesUnion(Query):
         else:
             return tables
 
-    def _make_table_list(self, **kwargs):
+    def _make_table_list(self, *, hours, subscriber_subset, subscriber_identifier):
         """
         Makes a list of EventTableSubset queries.
         """
@@ -290,7 +290,7 @@ class EventsTablesUnion(Query):
         for table in self.tables:
             try:
                 sql = EventTableSubset(
-                    self.start, self.stop, table=table, columns=self.columns, **kwargs
+                    self.start, self.stop, table=table, columns=self.columns, hours=hours, subscriber_subset=subscriber_subset, subscriber_identifier=subscriber_identifier
                 )
                 date_subsets.append(sql)
             except MissingDateError:
