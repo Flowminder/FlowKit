@@ -313,7 +313,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
     """
 
     def __init__(
-        self, start, stop, subscriber_identifier="msisdn", statistic="sum", **kwargs
+        self, start, stop, *, subscriber_identifier="msisdn", statistic="sum", hours="all", subscriber_subset=None,
     ):
         self.start = start
         self.stop = stop
@@ -327,24 +327,21 @@ class PairedSubscriberCallDurations(SubscriberFeature):
                 )
             )
 
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "all"
-
         column_list = [
             self.subscriber_identifier,
             "outgoing",
             "duration",
             "msisdn_counterpart",
         ]
+
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
             tables="events.calls",
             columns=column_list,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         )
         super().__init__()
 
