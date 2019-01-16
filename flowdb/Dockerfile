@@ -31,7 +31,7 @@ ENV LC_CTYPE=en_US.UTF-8
 
 RUN apt-get update \
         && apt-get install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR postgis postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
-                postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts gdal-bin postgresql-$PG_MAJOR-pgrouting \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts gdal-bin postgresql-$PG_MAJOR-pgrouting \
         && rm -rf /var/lib/apt/lists/* \
         && apt-get purge -y --auto-remove
 
@@ -56,10 +56,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends locales locales
 #
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
-            unzip curl make postgresql-plpython-$PG_MAJOR \
-                postgresql-$PG_MAJOR-cron \
-                libaio1  \
-            parallel nano vim python3-pip wget python3-setuptools\
+        unzip curl make postgresql-plpython-$PG_MAJOR \
+        postgresql-$PG_MAJOR-cron \
+        libaio1  \
+        parallel nano vim python3-pip wget python3-setuptools\
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
 
@@ -71,7 +71,7 @@ RUN apt-get update \
         postgresql-server-dev-$PG_MAJOR \
         build-essential \
         git \
-        && git -c http.sslVerify=false clone git://git.postgresql.org/git/pldebugger.git \
+        && git -c http.sslVerify=false clone https://git.postgresql.org/git/pldebugger.git \
         && mv pldebugger /usr/local/src \
         && make -C /usr/local/src/pldebugger \
         && make -C /usr/local/src/pldebugger install \
@@ -137,13 +137,13 @@ RUN chown $POSTGRES_UID:$POSTGRES_GID -R /var/run/postgresql
 #
 COPY ./Pipfile* /tmp/
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev \
-    && pip3 install pgxnclient \
-    && pip3 install pipenv \
-    && PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
-    && apt-get remove -y python3-dev gcc m4 libxml2-dev libaio-dev \
-    && apt purge -y --auto-remove \
-    && rm -rf /var/lib/apt/lists/*
+        && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev \
+        && pip3 install pgxnclient \
+        && pip3 install pipenv \
+        && PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
+        && apt-get remove -y python3-dev gcc m4 libxml2-dev libaio-dev \
+        && apt purge -y --auto-remove \
+        && rm -rf /var/lib/apt/lists/*
 
 # Version Information
 # Set the version & release date
