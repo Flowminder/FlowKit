@@ -758,9 +758,9 @@ class Query(metaclass=ABCMeta):
         with rlock(self.redis, self.md5):
             con = self.connection.engine
             try:
-                table_form = self.get_table()
-                if table_form is not self:
-                    table_form.invalidate_db_cache(
+                table_reference_to_this_query = self.get_table()
+                if table_reference_to_this_query is not self:
+                    table_reference_to_this_query.invalidate_db_cache(
                         cascade=cascade, drop=drop
                     )  # Remove any Table pointing as this query
             except (ValueError, NotImplementedError) as e:
