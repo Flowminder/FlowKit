@@ -182,7 +182,7 @@ jobs:
             mkdir $FLOWDB_DATA_DIR
             sudo chown -R ingestion:ingestion $FLOWDB_DATA_DIR $FLOWDB_INGESTION_DIR
             sudo chmod -R a+rw $FLOWDB_INGESTION_DIR
-      -run:
+      - run:
          name: Test that not providing a superuser password causes the container to exit
          command: |
            if docker run flowminder/flowdb:$SAFE_TAG; then
