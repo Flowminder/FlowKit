@@ -39,6 +39,7 @@ def connect(
     pool_overflow=None,
     redis_host=None,
     redis_port=None,
+    redis_password=None,
     conn=None,
 ):
     """
@@ -138,6 +139,11 @@ def connect(
         if redis_port is None
         else redis_port
     )
+    redis_pw = (
+        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD", "fm_redis"))
+        if redis_password is None
+        else redis_password
+    )
 
     try:
         Query.connection
@@ -150,7 +156,9 @@ def connect(
             )
         Query.connection = conn
 
-        Query.redis = redis.StrictRedis(host=redis_host, port=redis_port)
+        Query.redis = redis.StrictRedis(
+            host=redis_host, port=redis_port, password=redis_pw
+        )
         _start_threadpool(pool_size)
 
         print(f"FlowMachine version: {flowmachine.__version__}")

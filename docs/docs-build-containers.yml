@@ -22,6 +22,8 @@ services:
     restart: always
   query_locker:
     container_name: flowkit_docs_redis
-    image: redis
+    image: bitnami/redis:latest
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-fm_redis}
     ports:
       - "$REDIS_PORT:6379"
