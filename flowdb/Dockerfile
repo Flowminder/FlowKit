@@ -12,7 +12,7 @@
 #  on the official Debian Stretch (9) image.
 #
 ARG POSTGRES_RELEASE=11
-ARG POSTGRES_DIGEST=40b48cf04185e69c5a9183a986fcbbfd105e5991a70b1980e9a641b53ba5ead7
+ARG POSTGRES_DIGEST=e33ab1e8a206c54f66913812f0edb524959917a2fb5f2cf233d46083394a99ef
 
 FROM postgres:$POSTGRES_RELEASE@sha256:$POSTGRES_DIGEST
 
@@ -95,36 +95,6 @@ RUN apt-get update \
 #  do that.
 #
 RUN mkdir -p /docker-entrypoint-initdb.d
-
-# Default uid & gid
-ARG POSTGRES_UID=1180
-ARG POSTGRES_GID=1180
-ENV POSTGRES_UID=$POSTGRES_UID
-ENV POSTGRES_GID=$POSTGRES_GID
-
-#
-#  The postgres image sets the UID and GID of the
-#  postgres user to 999, but they need to be changed in order
-#  to agree with the host system specifications
-#
-RUN groupmod -g $POSTGRES_GID postgres \
-        && usermod -u $POSTGRES_UID -g $POSTGRES_GID postgres
-
-RUN chown $POSTGRES_UID:$POSTGRES_GID -R /docker-entrypoint-initdb.d/
-
-#
-#  As per issue below we have to change the ownership
-#  of the postgres binaries directory because it
-#  uses that directory to create temporary *.lock
-#  files. The database will refuse to start without
-#  this line.
-#
-#    https://github.com/docker-library/postgres/issues/264
-#
-#  We should keep this line until that issue
-#  is solved.
-#
-RUN chown $POSTGRES_UID:$POSTGRES_GID -R /var/run/postgresql
 
 #
 #  Let's now install the `flowdb-cli` program
