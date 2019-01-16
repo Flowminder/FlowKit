@@ -141,8 +141,8 @@ def connect(
     )
     redis_pw = (
         getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD", "fm_redis"))
-        if db_pw is None
-        else db_pw
+        if redis_password is None
+        else redis_password
     )
 
     try:

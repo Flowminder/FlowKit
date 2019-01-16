@@ -124,6 +124,7 @@ def clean_env(monkeypatch):
     monkeypatch.delenv("POOL_OVERFLOW", raising=False)
     monkeypatch.delenv("REDIS_HOST", raising=False)
     monkeypatch.delenv("REDIS_PORT", raising=False)
+    monkeypatch.delenv("REDIS_PASSWORD", raising=False)
 
 
 @pytest.fixture
