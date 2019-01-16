@@ -132,11 +132,11 @@ class JoinToLocation(Query):
         # The logic here finds a query that represents the mapping
         # of cells to an region of interest.
         if self.level.startswith("admin"):
-            return CellToAdmin(level=self.level, column_name=self.column_name, **kwargs)
+            return CellToAdmin(level=self.level, column_name=self.column_name)
         elif self.level == "polygon":
-            return CellToPolygon(column_name=self.column_name, **kwargs)
+            return CellToPolygon(column_name=self.column_name)
         elif self.level == "grid":
-            return CellToGrid(**kwargs)
+            return CellToGrid()
         elif self.level == "lat-lon":
             sql = f"""
                    SELECT
