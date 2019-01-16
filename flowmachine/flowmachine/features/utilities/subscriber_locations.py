@@ -210,10 +210,6 @@ def subscriber_locations(
         "size": size,
         "radius": radius,
     }
-    kwargs_join_to_location = {
-        "polygon_table": polygon_table,
-        "size": size,
-    }
 
     # Here we call the hidden class _SubscriberCells which is every spotting
     # of all subscribers. We then join to the appropriate level if necessary.
@@ -231,6 +227,6 @@ def subscriber_locations(
         return subscriber_cells
     else:
         return JoinToLocation(
-            subscriber_cells, level=level, column_name=column_name, **kwargs_join_to_location
+            subscriber_cells, level=level, column_name=column_name, polygon_table=polygon_table, size=size,
         )
     super().__init__()
