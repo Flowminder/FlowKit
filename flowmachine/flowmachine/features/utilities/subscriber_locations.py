@@ -33,6 +33,10 @@ class _SubscriberCells(Query):
         table="all",
         subscriber_identifier="msisdn",
         ignore_nulls=True,
+        *,
+        polygon_table=None,
+        size=None,
+        radius=None,
         **kwargs,
     ):
 

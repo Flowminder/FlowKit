@@ -249,7 +249,7 @@ class EventsTablesUnion(Query):
 
     """
 
-    def __init__(self, start, stop, columns, tables="all", *, polygon_table=None, size=None, radius=None, column_name=None, hours="all", subscriber_subset=None, subscriber_identifier="msisdn"):
+    def __init__(self, start, stop, columns, tables="all", *, hours="all", subscriber_subset=None, subscriber_identifier="msisdn"):
         """
 
         """
