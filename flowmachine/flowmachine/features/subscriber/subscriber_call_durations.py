@@ -72,11 +72,11 @@ class SubscriberCallDurations(SubscriberFeature):
         *,
         hours="all",
         subscriber_subset=None,
-        **kwargs,
     ):
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
+        self.hours = hours
         self.direction = direction
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
@@ -87,11 +87,6 @@ class SubscriberCallDurations(SubscriberFeature):
             )
         if direction not in {"in", "out", "both"}:
             raise ValueError("{} is not a valid direction.".format(self.direction))
-
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "all"
 
         column_list = [self.subscriber_identifier, "outgoing", "duration"]
         self.unioned_query = EventsTablesUnion(
