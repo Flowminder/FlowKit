@@ -196,7 +196,6 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         size=None,
         polygon_table=None,
         geom_col="geom",
-        **kwargs,
     ):
         self.start = start
         self.stop = stop
@@ -404,8 +403,6 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         Optionally specify a non-default column name. Required if level is 'polygon'.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to 'sum', aggregation statistic over the durations.
-    kwargs :
-        Passed to flowmachine.EventTableSubset
 
 
     Examples
@@ -443,7 +440,6 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         size=None,
         polygon_table=None,
         geom_col="geom",
-        **kwargs,
     ):
         self.start = start
         self.stop = stop
