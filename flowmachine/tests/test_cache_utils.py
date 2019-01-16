@@ -130,7 +130,8 @@ def test_touch_cache_record_for_table(flowmachine_connect):
 
 def test_get_compute_time():
     """
-    Compute time should take value returned in ms and turn it into seconds."""
+    Compute time should take value returned in ms and turn it into seconds.
+    """
     connection_mock = Mock()
     connection_mock.fetch.return_value = [[10]]
     assert 10 / 1000 == get_compute_time(connection_mock, "DUMMY_ID")
@@ -138,10 +139,12 @@ def test_get_compute_time():
 
 def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
     """
-    Test that all records which are queries are returned in correct order."""
+    Test that all records which are queries are returned in correct order.
+    """
     dl = daily_location("2016-01-01").store().result()
     dl_agg = dl.aggregate().store().result()
     table = dl.get_table()
+
     # Should prefer the larger, but slower to calculate and more used dl over the aggregation
     cached_queries = get_cached_query_objects_ordered_by_score(flowmachine_connect)
     assert 2 == len(cached_queries)
@@ -152,7 +155,8 @@ def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
 
 def test_shrink_one(flowmachine_connect):
     """
-    Test that shrink_one removes a cache record."""
+    Test that shrink_one removes a cache record.
+    """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     flowmachine_connect.engine.execute(
@@ -169,7 +173,8 @@ def test_shrink_one(flowmachine_connect):
 
 def test_shrink_to_size_does_nothing_when_cache_ok(flowmachine_connect):
     """
-    Test that shrink_below_size doesn't remove anything if cache size is within limit."""
+    Test that shrink_below_size doesn't remove anything if cache size is within limit.
+    """
     dl = daily_location("2016-01-01").store().result()
     removed_queries = shrink_below_size(
         flowmachine_connect, get_size_of_cache(flowmachine_connect)
@@ -180,7 +185,8 @@ def test_shrink_to_size_does_nothing_when_cache_ok(flowmachine_connect):
 
 def test_shrink_to_size_removes_queries(flowmachine_connect):
     """
-    Test that shrink_below_size removes queries when cache limit is breached."""
+    Test that shrink_below_size removes queries when cache limit is breached.
+    """
     dl = daily_location("2016-01-01").store().result()
     removed_queries = shrink_below_size(
         flowmachine_connect, get_size_of_cache(flowmachine_connect) - 1
@@ -191,7 +197,8 @@ def test_shrink_to_size_removes_queries(flowmachine_connect):
 
 def test_shrink_to_size_respects_dry_run(flowmachine_connect):
     """
-    Test that shrink_below_size doesn't remove anything during a dry run."""
+    Test that shrink_below_size doesn't remove anything during a dry run.
+    """
     dl = daily_location("2016-01-01").store().result()
     dl2 = daily_location("2016-01-02").store().result()
     removed_queries = shrink_below_size(flowmachine_connect, 0, dry_run=True)
@@ -202,7 +209,8 @@ def test_shrink_to_size_respects_dry_run(flowmachine_connect):
 
 def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
     """
-    Test that shrink_below_size dry run is an accurate report."""
+    Test that shrink_below_size dry run is an accurate report.
+    """
     dl = daily_location("2016-01-01").store().result()
     dl2 = daily_location("2016-01-02").store().result()
     shrink_to = get_size_of_table(flowmachine_connect, dl.table_name, "cache")
@@ -217,7 +225,8 @@ def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
 
 def test_shrink_to_size_uses_score(flowmachine_connect):
     """
-    Test that shrink_below_size removes cache records in ascending score order."""
+    Test that shrink_below_size removes cache records in ascending score order.
+    """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     flowmachine_connect.engine.execute(
@@ -235,7 +244,8 @@ def test_shrink_to_size_uses_score(flowmachine_connect):
 
 def test_shrink_one(flowmachine_connect):
     """
-    Test that shrink_one removes a cache record."""
+    Test that shrink_one removes a cache record.
+    """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     flowmachine_connect.engine.execute(
@@ -252,7 +262,8 @@ def test_shrink_one(flowmachine_connect):
 
 def test_size_of_cache(flowmachine_connect):
     """
-    Test that cache size is reported correctly."""
+    Test that cache size is reported correctly.
+    """
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     total_cache_size = get_size_of_cache(flowmachine_connect)
@@ -264,7 +275,8 @@ def test_size_of_cache(flowmachine_connect):
 
 def test_size_of_table(flowmachine_connect):
     """
-    Test that table size is reported correctly."""
+    Test that table size is reported correctly.
+    """
     dl = daily_location("2016-01-01").store().result()
 
     total_cache_size = get_size_of_cache(flowmachine_connect)
@@ -274,7 +286,8 @@ def test_size_of_table(flowmachine_connect):
 
 def test_cache_miss_value_error_rescore():
     """
-    ValueError should be raised if we try to rescore something not in cache."""
+    ValueError should be raised if we try to rescore something not in cache.
+    """
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
@@ -283,7 +296,8 @@ def test_cache_miss_value_error_rescore():
 
 def test_cache_miss_value_error_size_of_table():
     """
-    ValueError should be raised if we try to get the size of something not in cache."""
+    ValueError should be raised if we try to get the size of something not in cache.
+    """
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
@@ -292,7 +306,8 @@ def test_cache_miss_value_error_size_of_table():
 
 def test_cache_miss_value_error_compute_time():
     """
-    ValueError should be raised if we try to get the compute time of something not in cache."""
+    ValueError should be raised if we try to get the compute time of something not in cache.
+    """
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
@@ -301,7 +316,8 @@ def test_cache_miss_value_error_compute_time():
 
 def test_cache_miss_value_error_score():
     """
-    ValueError should be raised if we try to get the score of something not in cache."""
+    ValueError should be raised if we try to get the score of something not in cache.
+    """
     connection_mock = Mock()
     connection_mock.fetch.return_value = []
     with pytest.raises(ValueError):
