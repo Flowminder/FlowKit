@@ -563,7 +563,7 @@ class LocationArea(GeoDataMixin, Query):
             GROUP BY location_id, geom_point
 
         """.format(
-            table_name=self.viewshedslopes.table_name
+            table_name=self.viewshedslopes.fully_qualified_table_name
         )
 
         return sql

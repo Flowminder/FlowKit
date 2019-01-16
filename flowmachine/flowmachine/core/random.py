@@ -262,7 +262,7 @@ def random_factory(parent_class):
             """
 
             self.query = query
-            self.table = self.query.table_name
+            self.table = self.query.fully_qualified_table_name
             self.size = size
             self.fraction = fraction
             self.method = method
@@ -301,14 +301,14 @@ def random_factory(parent_class):
                 raise AttributeError
             return self.query.__getattribute__(name)
 
-        # Overwrite the get_table_name method so that it cannot
+        # Overwrite the table_name method so that it cannot
         # be stored by accident.
         @property
         def table_name(self):
             if self.seed is None or self.method == "system_rows":
                 raise NotImplementedError
             else:
-                return "cache.x{}".format(self.md5)
+                return f"x{self.md5}"
 
         # Overwrite to call on parent instead
         def get_column_names(self):

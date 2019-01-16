@@ -1,10 +1,11 @@
 import logging
 import os
 import pytest
-from sqlalchemy import inspect
 
 import flowmachine
 from flowmachine.core import Connection, Query
+from flowmachine.core.cache import reset_cache
+
 
 from .helpers import (
     create_flowdb_version_table,
@@ -88,11 +89,5 @@ def reset_cache_schema(fm_conn):
     so that they are empty.
     """
     print("[DDD] Recreating cache schema... ", end="", flush=True)
-    insp = inspect(fm_conn.engine)
-    cache_tables = insp.get_table_names(schema="cache")
-    for table in cache_tables:
-        if table in ["dependencies", "cached"]:
-            fm_conn.engine.execute(f"TRUNCATE cache.{table} CASCADE")
-        else:
-            fm_conn.engine.execute(f"DROP TABLE cache.{table}")
+    reset_cache(fm_conn)
     print("Done.")

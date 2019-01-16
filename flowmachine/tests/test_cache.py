@@ -8,8 +8,21 @@ Tests for query caching functions.
 
 import pytest
 
+from flowmachine.core.cache import cache_table_exists
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location, ModalLocation, Flows
+
+
+def test_table_records_removed(flowmachine_connect):
+    """Test that removing a query from cache removes any Tables in cache that pointed to it."""
+    dl = daily_location("2016-01-01")
+    dl.store().result()
+    assert dl.is_stored
+    table = dl.get_table()
+    assert cache_table_exists(flowmachine_connect, table.md5)
+
+    dl.invalidate_db_cache()
+    assert not cache_table_exists(flowmachine_connect, table.md5)
 
 
 def test_do_cache_simple(flowmachine_connect):
@@ -19,11 +32,7 @@ def test_do_cache_simple(flowmachine_connect):
     """
     dl1 = daily_location("2016-01-01")
     dl1._db_store_cache_metadata()
-    assert bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{dl1.md5}'"
-        )
-    )
+    assert cache_table_exists(flowmachine_connect, dl1.md5)
 
 
 def test_do_cache_multi(flowmachine_connect):
@@ -34,13 +43,8 @@ def test_do_cache_multi(flowmachine_connect):
 
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1._db_store_cache_metadata()
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{hl1.md5}'"
-        )
-    )
 
-    assert in_cache
+    assert cache_table_exists(flowmachine_connect, hl1.md5)
 
 
 def test_do_cache_nested(flowmachine_connect):
@@ -52,13 +56,8 @@ def test_do_cache_nested(flowmachine_connect):
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow._db_store_cache_metadata()
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{flow.md5}'"
-        )
-    )
 
-    assert in_cache
+    assert cache_table_exists(flowmachine_connect, flow.md5)
 
 
 def test_store_cache_simple(flowmachine_connect):
@@ -70,13 +69,8 @@ def test_store_cache_simple(flowmachine_connect):
     dl1.store().result()
     # Should be stored
     assert dl1.is_stored
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{dl1.md5}'"
-        )
-    )
 
-    assert in_cache
+    assert cache_table_exists(flowmachine_connect, dl1.md5)
 
 
 def test_store_cache_multi(flowmachine_connect):
@@ -88,13 +82,8 @@ def test_store_cache_multi(flowmachine_connect):
     hl1.store().result()
     # Should be stored
     assert hl1.is_stored
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{hl1.md5}'"
-        )
-    )
 
-    assert in_cache
+    assert cache_table_exists(flowmachine_connect, hl1.md5)
 
 
 def test_store_cache_nested(flowmachine_connect):
@@ -108,12 +97,7 @@ def test_store_cache_nested(flowmachine_connect):
     flow.store().result()
     # Should be stored
     assert flow.is_stored
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{flow.md5}'"
-        )
-    )
-    assert in_cache
+    assert cache_table_exists(flowmachine_connect, flow.md5)
 
 
 def test_invalidate_cache_simple(flowmachine_connect):
@@ -127,12 +111,7 @@ def test_invalidate_cache_simple(flowmachine_connect):
     assert dl1.is_stored
     dl1.invalidate_db_cache()
     assert not dl1.is_stored
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{dl1.md5}'"
-        )
-    )
-    assert not in_cache
+    assert not cache_table_exists(flowmachine_connect, dl1.md5)
 
 
 def test_invalidate_cache_multi(flowmachine_connect):
@@ -146,21 +125,13 @@ def test_invalidate_cache_multi(flowmachine_connect):
     dl1.store().result()
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
+    assert dl1.is_stored
+    assert hl1.is_stored
     dl1.invalidate_db_cache()
     assert not dl1.is_stored
     assert not hl1.is_stored
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{dl1.md5}'"
-        )
-    )
-    assert not in_cache
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{hl1.md5}'"
-        )
-    )
-    assert not in_cache
+    assert not cache_table_exists(flowmachine_connect, dl1.md5)
+    assert not cache_table_exists(flowmachine_connect, hl1.md5)
     has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
     assert not has_deps
 
@@ -178,28 +149,16 @@ def test_invalidate_cache_midchain(flowmachine_connect):
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow.store().result()
+    assert dl1.is_stored
+    assert hl1.is_stored
+    assert flow.is_stored
     hl1.invalidate_db_cache()
     assert dl1.is_stored
     assert not hl1.is_stored
     assert not flow.is_stored
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{dl1.md5}'"
-        )
-    )
-    assert in_cache
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{hl1.md5}'"
-        )
-    )
-    assert not in_cache
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{flow.md5}'"
-        )
-    )
-    assert not in_cache
+    assert cache_table_exists(flowmachine_connect, dl1.md5)
+    assert not cache_table_exists(flowmachine_connect, hl1.md5)
+    assert not cache_table_exists(flowmachine_connect, flow.md5)
     has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
     assert has_deps  # Daily location deps should remain
 
@@ -215,21 +174,13 @@ def test_invalidate_cache_multi(flowmachine_connect):
     dl1.store().result()
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1.store().result()
+    assert dl1.is_stored
+    assert hl1.is_stored
     dl1.invalidate_db_cache()
     assert not dl1.is_stored
     assert not hl1.is_stored
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{dl1.md5}'"
-        )
-    )
-    assert not in_cache
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{hl1.md5}'"
-        )
-    )
-    assert not in_cache
+    assert not cache_table_exists(flowmachine_connect, dl1.md5)
+    assert not cache_table_exists(flowmachine_connect, hl1.md5)
     has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
     assert has_deps
 
@@ -246,22 +197,15 @@ def test_invalidate_cascade(flowmachine_connect):
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow.store().result()
+    assert dl1.is_stored
+    assert hl1.is_stored
+    assert flow.is_stored
     dl1.invalidate_db_cache(cascade=False)
     assert not dl1.is_stored
     assert hl1.is_stored
     assert flow.is_stored
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{dl1.md5}'"
-        )
-    )
-    assert not in_cache
-    in_cache = bool(
-        flowmachine_connect.fetch(
-            f"SELECT * FROM cache.cached WHERE query_id='{hl1.md5}'"
-        )
-    )
-    assert in_cache
+    assert not cache_table_exists(flowmachine_connect, dl1.md5)
+    assert cache_table_exists(flowmachine_connect, hl1.md5)
     has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
     assert has_deps
 

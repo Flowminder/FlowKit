@@ -114,7 +114,7 @@ class Table(Query):
         # Recorded provided columns to ensure that md5 differs with different columns
         self.columns = columns
         super().__init__()
-        self._db_store_cache_metadata()
+        self._db_store_cache_metadata(compute_time=0)
 
     @property
     def column_names(self) -> List[str]:
@@ -128,6 +128,12 @@ class Table(Query):
         return "SELECT {cols} FROM {fqn}".format(fqn=self.fqn, cols=cols)
 
     def get_query(self):
+        with self.connection.engine.begin():
+            self.connection.engine.execute(
+                "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(
+                    self.md5
+                )
+            )
         return self._make_query()
 
     @property
@@ -135,7 +141,7 @@ class Table(Query):
         return self.connection.has_table(self.name, self.schema)
 
     @property
-    def table_name(self):
+    def fully_qualified_table_name(self):
         return self.fqn
 
     def get_table(self):

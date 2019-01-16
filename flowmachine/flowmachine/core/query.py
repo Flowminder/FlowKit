@@ -8,11 +8,13 @@ This is the base class that defines any query on our database.  It simply
 defines methods that returns the query as a string and as a pandas dataframe.
 
 """
-import csv
+
+import os
 import pickle
 import logging
 import weakref
-from typing import List
+from concurrent.futures import Future
+from typing import List, Union
 
 import psycopg2
 import networkx as nx
@@ -20,6 +22,9 @@ import pandas as pd
 
 from hashlib import md5
 
+from sqlalchemy.exc import ResourceClosedError
+
+from flowmachine.core.cache import touch_cache
 from flowmachine.utils.utils import rlock
 from abc import ABCMeta, abstractmethod
 
@@ -184,10 +189,17 @@ class Query(metaclass=ABCMeta):
 
         """
         try:
-            table_name = self.table_name
+            table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
             with rlock(self.redis, self.md5):
                 if self.connection.has_table(schema=schema, name=name):
+                    try:
+                        touch_cache(self.connection, self.md5)
+                    except ValueError:
+                        pass  # Cache record not written yet, which can happen for Models
+                        # which will call through to this method from their `_make_query` method while writing metadata.
+                    # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
+                    # as the cache metadata transaction isn't complete!
                     return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
@@ -292,7 +304,7 @@ class Query(metaclass=ABCMeta):
         flowmachine.core.Table
             The stored version of this Query as a Table object
         """
-        return flowmachine.core.Table(self.table_name)
+        return flowmachine.core.Table(self.fully_qualified_table_name)
 
     def union(self, other, all=True):
         """
@@ -405,7 +417,9 @@ class Query(metaclass=ABCMeta):
         subset_class = subset_numbers_factory(self.__class__)
         return subset_class(self, col, low, high)
 
-    def _make_sql(self, name=None, schema=None, as_view=False, force=False):
+    def _make_sql(
+        self, name: str, schema: Union[str, None] = None, force: bool = False
+    ) -> List[str]:
         """
         Create the SQL necessary to store the result of the calculation back
         into the database.
@@ -417,9 +431,6 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        as_view : bool, default False
-            Set to True to store as a view rather than a table. A view
-            is always up to date even if the underlying data changes.
         force : bool, default False
             Will overwrite an existing table if the name already exists
 
@@ -428,12 +439,6 @@ class Query(metaclass=ABCMeta):
         list
             Ordered list of SQL strings to execute.
         """
-
-        table_type = ""
-        if as_view:
-            table_type += "VIEW "
-        else:
-            table_type += "TABLE "
 
         if schema is not None:
             full_name = "{}.{}".format(schema, name)
@@ -445,23 +450,20 @@ class Query(metaclass=ABCMeta):
             logger.info("Table already exists")
             return []
 
-        Q = "CREATE "
-        Q += table_type
-        Q += full_name
-        Q += " AS ({})".format(self._make_query() if force else self.get_query())
+        Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
+            ({self._make_query() if force else self.get_query()})"""
         queries.append(Q)
-        if not as_view:  # Views can't be indexed
-            for ix in self.index_cols:
-                queries.append(
-                    "CREATE INDEX ON {tbl} ({ixen})".format(
-                        tbl=full_name, ixen=",".join(ix) if isinstance(ix, list) else ix
-                    )
+        for ix in self.index_cols:
+            queries.append(
+                "CREATE INDEX ON {tbl} ({ixen})".format(
+                    tbl=full_name, ixen=",".join(ix) if isinstance(ix, list) else ix
                 )
+            )
         return queries
 
-    def to_sql_async(
-        self, name=None, schema=None, as_view=False, as_temp=False, force=False
-    ):
+    def to_sql(
+        self, name: str, schema: Union[str, None] = None, force: bool = False
+    ) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -472,12 +474,6 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        as_view : bool, default False
-            Set to True to store as a view rather than a table. A view
-            is always up to date even if the underlying data changes.
-        as_temp : bool, default False
-            Set to true to store this only for the duration of the
-            interpreter session
         force : bool, default False
             Will overwrite an existing table if the name already exists
 
@@ -498,62 +494,44 @@ class Query(metaclass=ABCMeta):
             ).format(name, len(name), MAX_POSTGRES_NAME_LENGTH)
             raise NameTooLongError(err_msg)
 
-        def do_query():
+        def do_query() -> Query:
             logger.debug("Getting storage lock.")
             with rlock(self.redis, self.md5):
                 logger.debug("Obtained storage lock.")
-                Qs = self._make_sql(name, schema=schema, as_view=as_view, force=force)
+                query_ddl_ops = self._make_sql(name, schema=schema, force=force)
                 logger.debug("Made SQL.")
                 con = self.connection.engine
-                if force and not as_view:
+                if force:
                     self.invalidate_db_cache(name, schema=schema)
+                plan_time = 0
                 with con.begin():
-                    sql = """CREATE SCHEMA IF NOT EXISTS {}""".format(schema)
-                    con.execute(sql)
-                    try:
-                        for Q in Qs:
-                            con.execute(Q)
-                    except Exception as e:
-                        logger.error(f"Error executing SQL: '{Q}'. Error was {e}")
-                        raise e
+                    ddl_op_results = []
+                    for ddl_op in query_ddl_ops:
+                        try:
+                            ddl_op_result = con.execute(ddl_op)
+                        except Exception as e:
+                            logger.error(
+                                f"Error executing SQL: '{ddl_op}'. Error was {e}"
+                            )
+                            raise e
+                        try:
+                            ddl_op_results.append(ddl_op_result.fetchall())
+                        except ResourceClosedError:
+                            pass  # Nothing to do here
+                        for ddl_op_result in ddl_op_results:
+                            try:
+                                plan = ddl_op_result[0][0][0]  # Should be a query plan
+                                plan_time += plan["Execution Time"]
+                            except (IndexError, KeyError):
+                                pass  # Not an explain result
                     logger.debug("Executed queries.")
-                    if not as_view and schema == "cache":
-                        self._db_store_cache_metadata()
+                    if schema == "cache":
+                        self._db_store_cache_metadata(compute_time=plan_time)
             logger.debug("Released storage lock.")
             return self
 
         store_future = self.tp.submit(do_query)
         return store_future
-
-    def to_sql(self, name=None, schema=None, as_view=False, force=False):
-        """
-        Store the result of the calculation back into the database.
-
-        Parameters
-        ----------
-        name : str
-            name of the table
-        schema : str, default None
-            Name of an existing schema. If none will use the postgres default,
-            see postgres docs for more info.
-        as_view : bool, default False
-            Set to True to store as a view rather than a table. A view
-            is always up to date even if the underlying data changes.
-        as_temp : bool, default False
-            Set to true to store this only for the duration of the
-            interpreter session
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
-
-        Notes
-        -----
-
-        This method will block until the store has completed.
-        """
-
-        return self.to_sql_async(
-            name, schema=schema, as_view=as_view, force=force
-        ).result()
 
     def explain(self, format="text", analyse=False):
         """
@@ -592,9 +570,9 @@ class Query(metaclass=ABCMeta):
         return exp[0][0]  # Everything else comes as one
 
     @property
-    def table_name(self):
+    def fully_qualified_table_name(self):
         """
-        Returns a unique name for the query to be stored under, based on
+        Returns a unique fully qualified name for the query to be stored as under the cache schema, based on
         a hash of the parameters, class, and subqueries.
 
         Returns
@@ -602,7 +580,20 @@ class Query(metaclass=ABCMeta):
         str
             String form of the table's fqn
         """
-        return "cache.x{}".format(self.md5)
+        return f"cache.{self.table_name}"
+
+    @property
+    def table_name(self):
+        """
+        Returns a uniquename for the query to be stored as, based on
+        a hash of the parameters, class, and subqueries.
+
+        Returns
+        -------
+        str
+            String form of the table's fqn
+        """
+        return f"x{self.md5}"
 
     @property
     def is_stored(self):
@@ -614,13 +605,7 @@ class Query(metaclass=ABCMeta):
         """
 
         try:
-            schema, name = self.table_name.split(".")
-            with self.connection.engine.begin():
-                self.connection.engine.execute(
-                    "UPDATE cache.cached SET ts = NOW() WHERE query_id ='{}'".format(
-                        self.md5
-                    )
-                )
+            schema, name = self.fully_qualified_table_name.split(".")
             return self.connection.has_table(name, schema)
         except NotImplementedError:
             return False
@@ -643,16 +628,16 @@ class Query(metaclass=ABCMeta):
         """
 
         try:
-            table_name = self.table_name
+            table_name = self.fully_qualified_table_name
         except NotImplementedError:
             raise ValueError("Cannot store an object of this type with these params")
 
         schema, name = table_name.split(".")
 
-        store_future = self.to_sql_async(name, schema=schema, force=force)
+        store_future = self.to_sql(name, schema=schema, force=force)
         return store_future
 
-    def _db_store_cache_metadata(self):
+    def _db_store_cache_metadata(self, compute_time=None):
         """
         Helper function for store, updates flowmachine metadata table to
         log that this query is stored, but does not actually store
@@ -676,20 +661,30 @@ class Query(metaclass=ABCMeta):
                     "SELECT * FROM cache.cached WHERE query_id='{}'".format(self.md5)
                 )
             )
+
             with con.begin():
+                cache_record_insert = """
+                INSERT INTO cache.cached 
+                (query_id, version, query, created, access_count, last_accessed, compute_time, 
+                cache_score_multiplier, class, schema, tablename, obj) 
+                VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
+                 ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
                 con.execute(
-                    "INSERT INTO cache.cached values (%s, %s, %s, NOW(), %s, %s, %s, %s)"
-                    + " ON CONFLICT (query_id) DO UPDATE SET ts = NOW();",
+                    cache_record_insert,
                     (
                         self.md5,
                         __version__,
                         self._make_query(),
+                        compute_time,
                         self.__class__.__name__,
-                        *self.table_name.split("."),
+                        *self.fully_qualified_table_name.split("."),
                         psycopg2.Binary(self_storage),
                     ),
                 )
-                logger.debug("{} added to cache.".format(self.table_name))
+                con.execute("SELECT touch_cache(%s);", self.md5)
+                logger.debug(
+                    "{} added to cache.".format(self.fully_qualified_table_name)
+                )
                 if not in_cache:
                     for dep in self._get_deps(root=True):
                         con.execute(
@@ -778,6 +773,14 @@ class Query(metaclass=ABCMeta):
         with rlock(self.redis, self.md5):
             con = self.connection.engine
             try:
+                table_reference_to_this_query = self.get_table()
+                if table_reference_to_this_query is not self:
+                    table_reference_to_this_query.invalidate_db_cache(
+                        cascade=cascade, drop=drop
+                    )  # Remove any Table pointing as this query
+            except (ValueError, NotImplementedError) as e:
+                pass  # This cache record isn't actually stored
+            try:
                 deps = self.connection.fetch(
                     """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
                     ON cache.cached.query_id=cache.dependencies.query_id
@@ -789,11 +792,21 @@ class Query(metaclass=ABCMeta):
                     con.execute(
                         "DELETE FROM cache.cached WHERE query_id=%s", (self.md5,)
                     )
-                    logger.debug("Deleted cache record for {}.".format(self.table_name))
+                    logger.debug(
+                        "Deleted cache record for {}.".format(
+                            self.fully_qualified_table_name
+                        )
+                    )
                     if drop:
-                        con.execute("DROP TABLE IF EXISTS {}".format(self.table_name))
+                        con.execute(
+                            "DROP TABLE IF EXISTS {}".format(
+                                self.fully_qualified_table_name
+                            )
+                        )
                         logger.debug(
-                            "Dropped cache for for {}.".format(self.table_name)
+                            "Dropped cache for for {}.".format(
+                                self.fully_qualified_table_name
+                            )
                         )
 
                 if cascade:
@@ -801,7 +814,8 @@ class Query(metaclass=ABCMeta):
                         dep = pickle.loads(rec[0])
                         logger.debug(
                             "Cascading to {} from cache record for {}.".format(
-                                dep.table_name, self.table_name
+                                dep.fully_qualified_table_name,
+                                self.fully_qualified_table_name,
                             )
                         )
                         dep.invalidate_db_cache()
@@ -879,6 +893,7 @@ class Query(metaclass=ABCMeta):
             "_query_object",
             "_cols",
             "_md5",
+            "_runtime",
         ]
         for k in bad_keys:
             try:

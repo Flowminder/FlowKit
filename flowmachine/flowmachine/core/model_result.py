@@ -12,7 +12,8 @@ of postgres.
 """
 
 import logging
-from typing import List
+from concurrent.futures import Future
+from typing import List, Union
 
 import pandas as pd
 
@@ -114,9 +115,9 @@ class ModelResult(Query):
         except AttributeError:
             return super().column_names
 
-    def to_sql_async(
-        self, name=None, schema=None, as_view=False, as_temp=False, force=False
-    ):
+    def to_sql(
+        self, name: str, schema: Union[str, None] = None, force: bool = False
+    ) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -127,12 +128,6 @@ class ModelResult(Query):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        as_view : bool, default False
-            Set to True to store as a view rather than a table. A view
-            is always up to date even if the underlying data changes.
-        as_temp : bool, default False
-            Set to true to store this only for the duration of the
-            interpreter session
         force : bool, default False
             Will overwrite an existing table if the name already exists
 
@@ -153,19 +148,19 @@ class ModelResult(Query):
             except AttributeError:
                 raise ValueError("Not computed yet.")
 
-        def do_query():
+        def do_query() -> ModelResult:
             logger.debug("Getting storage lock.")
             with rlock(self.redis, self.md5):
                 logger.debug("Obtained storage lock.")
                 con = self.connection.engine
-                if force and not as_view:
+                if force:
                     self.invalidate_db_cache(name, schema=schema)
                 try:
                     with con.begin():
                         logger.debug("Using pandas to store.")
                         self._df.to_sql(name, con, schema=schema, index=False)
-                        if not as_view and schema == "cache":
-                            self._db_store_cache_metadata()
+                        if schema == "cache":
+                            self._db_store_cache_metadata(compute_time=self._runtime)
                 except AttributeError:
                     logger.debug(
                         "No dataframe to store, presumably because this"

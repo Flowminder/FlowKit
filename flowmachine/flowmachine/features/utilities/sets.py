@@ -123,16 +123,16 @@ class EventTableSubset(Query):
         # If the subscriber does not pass a start or stop date, then we take
         # the min/max date in the events.calls table
         if self.start is None:
-            d1 = self.connection.min_date(self.table.table_name.split(".")[1]).strftime(
-                "%Y-%m-%d"
-            )
+            d1 = self.connection.min_date(
+                self.table.fully_qualified_table_name.split(".")[1]
+            ).strftime("%Y-%m-%d")
         else:
             d1 = self.start.split()[0]
 
         if self.stop is None:
-            d2 = self.connection.max_date(self.table.table_name.split(".")[1]).strftime(
-                "%Y-%m-%d"
-            )
+            d2 = self.connection.max_date(
+                self.table.fully_qualified_table_name.split(".")[1]
+            ).strftime("%Y-%m-%d")
         else:
             d2 = self.stop.split()[0]
 
@@ -182,7 +182,7 @@ class EventTableSubset(Query):
 
         sql = f"""
         SELECT {", ".join(self.columns)}
-        FROM {self.table.table_name}
+        FROM {self.table.fully_qualified_table_name}
         {where_clause}
         """
 
@@ -215,7 +215,7 @@ class EventTableSubset(Query):
         return sql
 
     @property
-    def table_name(self):
+    def fully_qualified_table_name(self):
         # EventTableSubset are a simple select from events, and should not be cached
         raise NotImplementedError
 
@@ -310,7 +310,7 @@ class EventsTablesUnion(Query):
         return sql
 
     @property
-    def table_name(self):
+    def fully_qualified_table_name(self):
         # EventTableSubset are a simple select from events, and should not be cached
         raise NotImplementedError
 
