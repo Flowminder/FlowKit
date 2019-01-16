@@ -10,10 +10,9 @@ on a scoring dictionary.
 
 import re
 import datetime as dt
-from _md5 import md5
 from typing import List
 
-from ..utilities.sets import EventTableSubset, EventsTablesUnion
+from ..utilities.sets import EventsTablesUnion
 from ...core import Query
 from ...core import JoinToLocation
 from ...utils.utils import get_columns_for_level
