@@ -189,7 +189,7 @@ class Query(metaclass=ABCMeta):
 
         """
         try:
-            table_name = self.table_name
+            table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
             with rlock(self.redis, self.md5):
                 if self.connection.has_table(schema=schema, name=name):
@@ -304,7 +304,7 @@ class Query(metaclass=ABCMeta):
         flowmachine.core.Table
             The stored version of this Query as a Table object
         """
-        return flowmachine.core.Table(self.table_name)
+        return flowmachine.core.Table(self.fully_qualified_table_name)
 
     def union(self, other, all=True):
         """
@@ -570,7 +570,7 @@ class Query(metaclass=ABCMeta):
         return exp[0][0]  # Everything else comes as one
 
     @property
-    def table_name(self):
+    def fully_qualified_table_name(self):
         """
         Returns a unique name for the query to be stored under, based on
         a hash of the parameters, class, and subqueries.
@@ -592,7 +592,7 @@ class Query(metaclass=ABCMeta):
         """
 
         try:
-            schema, name = self.table_name.split(".")
+            schema, name = self.fully_qualified_table_name.split(".")
             return self.connection.has_table(name, schema)
         except NotImplementedError:
             return False
@@ -615,7 +615,7 @@ class Query(metaclass=ABCMeta):
         """
 
         try:
-            table_name = self.table_name
+            table_name = self.fully_qualified_table_name
         except NotImplementedError:
             raise ValueError("Cannot store an object of this type with these params")
 
@@ -664,12 +664,14 @@ class Query(metaclass=ABCMeta):
                         self._make_query(),
                         compute_time,
                         self.__class__.__name__,
-                        *self.table_name.split("."),
+                        *self.fully_qualified_table_name.split("."),
                         psycopg2.Binary(self_storage),
                     ),
                 )
                 con.execute("SELECT touch_cache(%s);", self.md5)
-                logger.debug("{} added to cache.".format(self.table_name))
+                logger.debug(
+                    "{} added to cache.".format(self.fully_qualified_table_name)
+                )
                 if not in_cache:
                     for dep in self._get_deps(root=True):
                         con.execute(
@@ -777,11 +779,21 @@ class Query(metaclass=ABCMeta):
                     con.execute(
                         "DELETE FROM cache.cached WHERE query_id=%s", (self.md5,)
                     )
-                    logger.debug("Deleted cache record for {}.".format(self.table_name))
+                    logger.debug(
+                        "Deleted cache record for {}.".format(
+                            self.fully_qualified_table_name
+                        )
+                    )
                     if drop:
-                        con.execute("DROP TABLE IF EXISTS {}".format(self.table_name))
+                        con.execute(
+                            "DROP TABLE IF EXISTS {}".format(
+                                self.fully_qualified_table_name
+                            )
+                        )
                         logger.debug(
-                            "Dropped cache for for {}.".format(self.table_name)
+                            "Dropped cache for for {}.".format(
+                                self.fully_qualified_table_name
+                            )
                         )
 
                 if cascade:
@@ -789,7 +801,8 @@ class Query(metaclass=ABCMeta):
                         dep = pickle.loads(rec[0])
                         logger.debug(
                             "Cascading to {} from cache record for {}.".format(
-                                dep.table_name, self.table_name
+                                dep.fully_qualified_table_name,
+                                self.fully_qualified_table_name,
                             )
                         )
                         dep.invalidate_db_cache()

@@ -162,7 +162,7 @@ def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
         f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.md5} of type {obj_to_remove.__class__}"
     )
     logger.info(
-        f"Table {obj_to_remove.table_name} ({obj_size} bytes) {'would' if dry_run else 'will'} be removed."
+        f"Table {obj_to_remove.fully_qualified_table_name} ({obj_size} bytes) {'would' if dry_run else 'will'} be removed."
     )
 
     if not dry_run:
@@ -203,7 +203,9 @@ def shrink_below_size(
             logger.info(
                 f"Would remove cache record for {obj.md5} of type {obj.__class__}"
             )
-            logger.info(f"Table {obj.table_name} ({obj_size} bytes) would be removed.")
+            logger.info(
+                f"Table {obj.fully_qualified_table_name} ({obj_size} bytes) would be removed."
+            )
             return obj, obj_size
 
         shrink = dry_run_shrink

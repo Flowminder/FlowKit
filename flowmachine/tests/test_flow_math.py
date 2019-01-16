@@ -22,7 +22,9 @@ def test_flow_math_store(op, exemplar_level_param, flowmachine_connect):
     dl2 = daily_location("2016-01-02", **exemplar_level_param)
     fl = op(Flows(dl1, dl2), Flows(dl1, dl2))
     fl.store().result()
-    assert flowmachine_connect.has_table(*fl.table_name.split(".")[::-1])
+    assert flowmachine_connect.has_table(
+        *fl.fully_qualified_table_name.split(".")[::-1]
+    )
 
 
 def test_average_self(get_dataframe):

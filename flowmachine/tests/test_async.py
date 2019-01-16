@@ -46,7 +46,7 @@ def test_store_async():
 
     schema = "cache"
     dl = daily_location("2016-01-01", level="cell")
-    table_name = dl.table_name.split(".")[1]
+    table_name = dl.fully_qualified_table_name.split(".")[1]
     store_future = dl.store()
     store_future.result()
     assert dl.connection.has_table(table_name, schema=schema)
