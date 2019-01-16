@@ -69,6 +69,7 @@ class EventTableSubset(Query):
         self,
         start=None,
         stop=None,
+        *,
         hours="all",
         table="events.calls",
         subscriber_subset=None,
