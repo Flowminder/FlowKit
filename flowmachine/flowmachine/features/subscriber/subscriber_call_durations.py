@@ -42,8 +42,6 @@ class SubscriberCallDurations(SubscriberFeature):
         Whether to consider calls made, received, or both. Defaults to 'out'.
     statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
-    kwargs :
-        Passed to flowmachine.EventTableSubset
 
 
     Examples
@@ -167,8 +165,6 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         Optionally specify a non-default column name. Required if level is 'polygon'.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
-    kwargs :
-        Passed to flowmachine.EventTableSubset
 
 
     Examples
@@ -299,8 +295,6 @@ class PairedSubscriberCallDurations(SubscriberFeature):
         subscriber_identifier (typically, msisdn), to limit results to.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
-    kwargs :
-        Passed to flowmachine.EventTableSubset
 
 
     Examples
