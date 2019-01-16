@@ -191,8 +191,8 @@ jobs:
       - run:
           name: Launch flowdb
           command: |
-            docker run --name flowdb --publish $DB_PORT:5432 --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
-              --volume=${FLOWDB_INGESTION_DIR}:/ingestion -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+            docker run --name flowdb --publish $DB_PORT:5432 --user $(id -u):$(id -g) --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
+              --volume=${FLOWDB_INGESTION_DIR}:/ingestion:ro -e FM_PASSWORD=foo -e API_PASSWORD=foo \
               -e MAX_CPUS=2 -e MAX_WORKERS=2 -e MAX_WORKERS_PER_GATHER=2 \
               -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
               --detach flowminder/flowdb:$SAFE_TAG
