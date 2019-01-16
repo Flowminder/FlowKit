@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+Use `https://` protocol instead of `git://` to clone postgres pldebugger repository in flowdb Dockerfile
 
 ### Fixed
 
