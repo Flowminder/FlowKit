@@ -37,7 +37,9 @@ def test_scoring(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl_time = get_compute_time(flowmachine_connect, dl.md5)
-    dl_size = get_size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
+    dl_size = get_size_of_table(
+        flowmachine_connect, *dl.fully_qualified_table_name.split(".")[::-1]
+    )
     initial_score = get_score(flowmachine_connect, dl.md5)
     cachey_scorer = Scorer(halflife=1000.0)
     cache_score = cachey_scorer.touch("dl", dl_time / dl_size)
@@ -51,7 +53,9 @@ def test_scoring(flowmachine_connect):
     # Add another unrelated cache record, which should have a higher initial score
     dl_2 = daily_location("2016-01-02").store().result()
     dl_time = get_compute_time(flowmachine_connect, dl_2.md5)
-    dl_size = get_size_of_table(flowmachine_connect, *dl_2.table_name.split(".")[::-1])
+    dl_size = get_size_of_table(
+        flowmachine_connect, *dl_2.fully_qualified_table_name.split(".")[::-1]
+    )
     cache_score = cachey_scorer.touch("dl_2", dl_time / dl_size)
     assert cache_score == pytest.approx(get_score(flowmachine_connect, dl_2.md5))
 
@@ -205,7 +209,9 @@ def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
     Test that shrink_below_size dry run is an accurate report."""
     dl = daily_location("2016-01-01").store().result()
     dl2 = daily_location("2016-01-02").store().result()
-    shrink_to = get_size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
+    shrink_to = get_size_of_table(
+        flowmachine_connect, *dl.fully_qualified_table_name.split(".")[::-1]
+    )
     queries_that_would_be_removed = shrink_below_size(
         flowmachine_connect, shrink_to, dry_run=True
     )
@@ -226,7 +232,9 @@ def test_shrink_to_size_uses_score(flowmachine_connect):
     flowmachine_connect.engine.execute(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.md5}'"
     )
-    table_size = get_size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
+    table_size = get_size_of_table(
+        flowmachine_connect, *dl.fully_qualified_table_name.split(".")[::-1]
+    )
     removed_queries = shrink_below_size(flowmachine_connect, table_size)
     assert 1 == len(removed_queries)
     assert not dl.is_stored
@@ -268,7 +276,9 @@ def test_size_of_table(flowmachine_connect):
     dl = daily_location("2016-01-01").store().result()
 
     total_cache_size = get_size_of_cache(flowmachine_connect)
-    table_size = get_size_of_table(flowmachine_connect, *dl.table_name.split(".")[::-1])
+    table_size = get_size_of_table(
+        flowmachine_connect, *dl.fully_qualified_table_name.split(".")[::-1]
+    )
     assert total_cache_size == table_size
 
 

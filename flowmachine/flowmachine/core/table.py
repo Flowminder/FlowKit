@@ -141,7 +141,7 @@ class Table(Query):
         return self.connection.has_table(self.name, self.schema)
 
     @property
-    def table_name(self):
+    def fully_qualified_table_name(self):
         return self.fqn
 
     def get_table(self):

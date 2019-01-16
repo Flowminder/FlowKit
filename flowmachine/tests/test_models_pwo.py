@@ -119,7 +119,7 @@ def test_model_result_make_query():
     mr = p.run(departure_rate_vector={"0xqNDj": 0.9}, ignore_missing=True)
     qur = mr._make_query()
     assert mr.is_stored
-    assert mr.table_name in qur
+    assert mr.fully_qualified_table_name in qur
 
 
 def test_model_result_cols():
