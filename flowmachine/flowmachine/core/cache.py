@@ -134,7 +134,7 @@ def get_cached_query_objects_ordered_by_score(
     qry = """SELECT obj, table_size(tablename, schema) as table_size
         FROM cache.cached
         WHERE NOT cached.class='Table'
-        ORDER BY cache_score_multiplier*((compute_time/1000)/table_size(tablename, schema)) ASC
+        ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
     cache_queries = connection.fetch(qry)
     return [(pickle.loads(obj), table_size) for obj, table_size in cache_queries]
@@ -393,7 +393,7 @@ def get_score(connection: "Connection", query_id: str) -> float:
     try:
         return float(
             connection.fetch(
-                f"""SELECT cache_score_multiplier*((compute_time/1000)/table_size(tablename, schema))
+                f"""SELECT cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema))
                  FROM cache.cached WHERE query_id='{query_id}'"""
             )[0][0]
         )

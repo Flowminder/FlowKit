@@ -292,10 +292,27 @@ $$
           cache_score_multiplier+POWER(1 + ln(2) / cache_half_life(), nextval('cache.cache_touches') - 2)
         END
         WHERE query_id=cached_query_id
-        RETURNING cache_score_multiplier*((compute_time/1000)/table_size(tablename, schema)) INTO score;
+        RETURNING cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) INTO score;
         IF NOT FOUND THEN RAISE EXCEPTION 'Cache record % not found', cached_query_id;
         END IF;
   RETURN score;
+  END
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp;
+
+/*********************************
+### cache_score ###
+
+Calculate a cache score from a multiplier, compute time in ms and the size of the table.
+
+***********************************/
+
+CREATE OR REPLACE FUNCTION cache_score(IN cache_score_multiplier FLOAT, IN compute_time FLOAT, IN tablesize INT)
+	RETURNS float AS
+$$
+  BEGIN
+  RETURN cache_score_multiplier*((compute_time/1000)/tablesize);
   END
 $$ LANGUAGE plpgsql
 SECURITY DEFINER
