@@ -124,7 +124,10 @@ def subscriber_locations(
     subscriber_identifier="msisdn",
     ignore_nulls=True,
     column_name=None,
-    **kwargs,
+    *,
+    polygon_table=None,
+    size=None,
+    radius=None,
 ):
     """
     Class representing all the locations for which a subscriber has been found.
@@ -202,6 +205,15 @@ def subscriber_locations(
     ...
 
     """
+    kwargs_subscriber_cells = {
+        "polygon_table": polygon_table,
+        "size": size,
+        "radius": radius,
+    }
+    kwargs_join_to_location = {
+        "polygon_table": polygon_table,
+        "size": size,
+    }
 
     # Here we call the hidden class _SubscriberCells which is every spotting
     # of all subscribers. We then join to the appropriate level if necessary.
@@ -212,13 +224,13 @@ def subscriber_locations(
         table=table,
         subscriber_identifier=subscriber_identifier,
         ignore_nulls=ignore_nulls,
-        **kwargs,
+        **kwargs_subscriber_cells,
     )
 
     if level == "cell":
         return subscriber_cells
     else:
         return JoinToLocation(
-            subscriber_cells, level=level, column_name=column_name, **kwargs
+            subscriber_cells, level=level, column_name=column_name, **kwargs_join_to_location
         )
     super().__init__()
