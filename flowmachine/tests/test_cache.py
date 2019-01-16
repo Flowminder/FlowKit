@@ -43,9 +43,8 @@ def test_do_cache_multi(flowmachine_connect):
 
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl1._db_store_cache_metadata()
-    in_cache = cache_table_exists(flowmachine_connect, hl1.md5)
 
-    assert in_cache
+    assert cache_table_exists(flowmachine_connect, hl1.md5)
 
 
 def test_do_cache_nested(flowmachine_connect):
@@ -57,9 +56,8 @@ def test_do_cache_nested(flowmachine_connect):
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     flow._db_store_cache_metadata()
-    in_cache = cache_table_exists(flowmachine_connect, flow.md5)
 
-    assert in_cache
+    assert cache_table_exists(flowmachine_connect, flow.md5)
 
 
 def test_store_cache_simple(flowmachine_connect):
@@ -71,9 +69,8 @@ def test_store_cache_simple(flowmachine_connect):
     dl1.store().result()
     # Should be stored
     assert dl1.is_stored
-    in_cache = cache_table_exists(flowmachine_connect, dl1.md5)
 
-    assert in_cache
+    assert cache_table_exists(flowmachine_connect, dl1.md5)
 
 
 def test_store_cache_multi(flowmachine_connect):
@@ -85,9 +82,8 @@ def test_store_cache_multi(flowmachine_connect):
     hl1.store().result()
     # Should be stored
     assert hl1.is_stored
-    in_cache = cache_table_exists(flowmachine_connect, hl1.md5)
 
-    assert in_cache
+    assert cache_table_exists(flowmachine_connect, hl1.md5)
 
 
 def test_store_cache_nested(flowmachine_connect):
