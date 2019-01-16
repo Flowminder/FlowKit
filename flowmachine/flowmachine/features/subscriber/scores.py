@@ -122,6 +122,8 @@ class EventScore(Query):
         score_dow={(1, 5): 1, (5, 5): 0, (6, 1): -1},
         subscriber_identifier="msisdn",
         column_name=None,
+        *,
+        subscriber_subset=None,
         **kwargs,
     ):
 
@@ -136,11 +138,11 @@ class EventScore(Query):
         self.sds = EventsTablesUnion(
             start,
             stop,
-            [subscriber_identifier, "location_id", "datetime"],
+            columns=[subscriber_identifier, "location_id", "datetime"],
             tables=table,
             hours=self.hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         ).date_subsets
         self.schema = "event_score"
         self.kwargs = kwargs
