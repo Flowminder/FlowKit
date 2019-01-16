@@ -31,7 +31,7 @@ class CellToPolygon(Query):
         column that defines the geography.
     """
 
-    def __init__(self, column_name, polygon_table, geom_col="geom", **kwargs):
+    def __init__(self, *, column_name, polygon_table, geom_col="geom", **kwargs):
 
         if type(column_name) is str:
             self.column_name = [column_name]
@@ -141,7 +141,7 @@ class CellToAdmin(Query):
         else:
             self.column_name = column_name
         table = f"geography.{self.level}"
-        self.mapping = CellToPolygon(self.column_name, table)
+        self.mapping = CellToPolygon(column_name=self.column_name, polygon_table=table)
 
         super().__init__()
 
@@ -202,7 +202,7 @@ class CellToGrid(Query):
         Size of the grid in kilometres
     """
 
-    def __init__(self, size, **kwargs):
+    def __init__(self, *, size, **kwargs):
         """
 
         """
