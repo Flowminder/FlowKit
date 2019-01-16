@@ -30,7 +30,9 @@ defaults:
       auth:
         username: $DOCKER_CLOUD_USER
         password: $DOCKER_CLOUD_PASSWORD
-    - image: redis
+    - image: bitnami/redis:latest
+      environment:
+        - REDIS_PASSWORD: "fm_redis"
   - &docs_build
     - image: circleci/python:3.7
       environment:
@@ -48,7 +50,9 @@ defaults:
         FM_PASSWORD: foo
         API_PASSWORD: foo
         POSTGRES_PASSWORD: flowflow
-    - image: redis
+    - image: bitnami/redis:latest
+      environment:
+        - REDIS_PASSWORD: "fm_redis"
   - &flowdbsynth_docker
     - image: circleci/python:3.7
       environment:

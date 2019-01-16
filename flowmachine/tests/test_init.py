@@ -69,6 +69,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("POOL_OVERFLOW", 7777)
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
     monkeypatch.setenv("REDIS_PORT", 7777)
+    monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
     )
@@ -84,6 +85,7 @@ def test_param_priority(mocked_connections, monkeypatch):
         pool_overflow=1011,
         redis_host="dummy_redis_host",
         redis_port=1213,
+        redis_password="dummy_redis_password",
     )
     core_init_logging_mock.assert_called_with("dummy_log_level", "dummy_log_file")
     core_init_Connection_mock.assert_called_with(
@@ -95,7 +97,9 @@ def test_param_priority(mocked_connections, monkeypatch):
         6789,
         1011,
     )
-    core_init_StrictRedis_mock.assert_called_with(host="dummy_redis_host", port=1213)
+    core_init_StrictRedis_mock.assert_called_with(
+        host="dummy_redis_host", port=1213, password="dummy_redis_password"
+    )
 
 
 def test_env_priority(mocked_connections, monkeypatch):
@@ -112,6 +116,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("POOL_OVERFLOW", 2020)
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
     monkeypatch.setenv("REDIS_PORT", 5050)
+    monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
     )
@@ -129,7 +134,7 @@ def test_env_priority(mocked_connections, monkeypatch):
         2020,
     )
     core_init_StrictRedis_mock.assert_called_with(
-        host="DUMMY_ENV_REDIS_HOST", port=5050
+        host="DUMMY_ENV_REDIS_HOST", port=5050, password="DUMMY_ENV_REDIS_PASSWORD"
     )
 
 
@@ -144,4 +149,6 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_Connection_mock.assert_called_with(
         9000, "analyst", "foo", "localhost", "flowdb", 5, 1
     )
-    core_init_StrictRedis_mock.assert_called_with(host="localhost", port=6379)
+    core_init_StrictRedis_mock.assert_called_with(
+        host="localhost", port=6379, password="fm_redis"
+    )

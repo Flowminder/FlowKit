@@ -109,6 +109,10 @@ The stack expects you to provide seven secrets:
  - JWT_SECRET_KEY
  
     The secret key used to sign API access tokens
+ 
+ - REDIS_PASSWORD_FILE
+ 
+    The password protecting the redis instance
     
 
 To make use of secrets you will need to use docker swarm. For testing purposes, you can set up a single node swarm by running `docker swarm init`.
@@ -145,27 +149,10 @@ conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certifi
 
 ```bash
 cd secrets_quickstart
-docker login
-docker swarm init
-openssl rand -base64 16 | docker secret create FM_DB_PASS -
-echo "fm" | docker secret create FM_DB_USER -
-echo "api" | docker secret create API_DB_USER -
-openssl rand -base64 16 | docker secret create API_DB_PASS -
-openssl rand -base64 16 | docker secret create POSTGRES_PASSWORD_FILE -
-openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
-    -extensions SAN \
-    -config <( cat $( [[ "Darwin" -eq "$(uname -s)" ]]  && echo /System/Library/OpenSSL/openssl.cnf || echo /etc/ssl/openssl.cnf  ) \
-    <(printf "[SAN]\nsubjectAltName='DNS.1:localhost,DNS.2:flow.api'")) \
-    -keyout cert.key -out cert.pem
-cat client_cert.key cert.pem > cert-flowkit.pem
-docker secret create cert-flowkit.pem cert-flowkit.pem
-echo "secret" | docker secret create JWT_SECRET_KEY -
-docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
+pipenv run secrets_quickstart
 ```
 
 This will bring up a single node swarm, create random 16 character passwords for the database users, generate a certificate valid for the `flowkit.api` domain (and point that to `localhost` using `/etc/hosts`), pull all necessary containers, and bring up the API with `secret` as the JWT secret key.
-
-For convenience, you can also do `pipenv run secrets_quickstart` from the `secrets_quickstart` directory.
 
 Note that if you wish to deploy a branch other than master, you should set the `CIRCLE_BRANCH` environment variable before running, to ensure that Docker pulls the correct tags.
 

@@ -13,6 +13,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
+## [0.1.1]
+### Added
+- Support for password protected redis
+
+### Changed
+- Changed the default redis image to bitnami's redis (to enable password protection)
+
+### Fixed
+
+### Removed
+
 ## [0.1.0]
 ### Added
 - Added structured logging of access attempts, query running, and data access
@@ -42,6 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.1.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.1.1...master
+[0.1.1]: https://github.com/Flowminder/FlowKit/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/Flowminder/FlowKit/compare/0.0.5...0.1.0
 [0.0.5]: https://github.com/Flowminder/FlowKit/compare/0.0.4...0.0.5

@@ -39,6 +39,7 @@ services:
             - LOG_LEVEL=${LOG_LEVEL:-error}
             - DEBUG=${FM_DEBUG:-False}
             - REDIS_HOST=${REDIS_HOST:-redis}
+            - REDIS_PASSWORD={REDIS_PASSWORD:-fm_redis}
         tty: true
         stdin_open: true
         networks:
@@ -69,7 +70,9 @@ services:
           - api
     redis:
         container_name: redis_flowkit
-        image: redis
+        image: bitnami/redis:latest
+        environment:
+            - REDIS_PASSWORD={REDIS_PASSWORD:-fm_redis}
         restart: always
         networks:
             redis:
