@@ -74,7 +74,6 @@ class EventTableSubset(Query):
         subscriber_subset=None,
         columns=["*"],
         subscriber_identifier="msisdn",
-        **kwargs,  # Allows the class to discard any extra kwargs without erroring
     ):
 
         self.start = start
@@ -249,7 +248,7 @@ class EventsTablesUnion(Query):
 
     """
 
-    def __init__(self, start, stop, columns, tables="all", **kwargs):
+    def __init__(self, start, stop, columns, tables="all", *, polygon_table=None, size=None, radius=None, column_name=None, **kwargs):
         """
 
         """
