@@ -353,7 +353,7 @@ def test_delete_query_by_id_can_cascade(flowmachine_connect):
 
 
 @pytest.fixture
-def reset_cache_settings(flowmachine_connect):
+def flowmachine_connect_with_cache_settings_reset(flowmachine_connect):
     """
     Fixture which ensures cache settings go back to what they were after
     they're manipulated.
@@ -365,25 +365,25 @@ def reset_cache_settings(flowmachine_connect):
     set_cache_half_life(flowmachine_connect, cache_half_life)
 
 
-def test_get_set_cache_size_limit(reset_cache_settings):
+def test_get_set_cache_size_limit(flowmachine_connect_with_cache_settings_reset):
     """
     Test that cache size can be got and set
     """
     # Initial setting depends on the disk space of the FlowDB container so just check it is nonzero
-    assert get_max_size_of_cache(reset_cache_settings) > 0
+    assert get_max_size_of_cache(flowmachine_connect_with_cache_settings_reset) > 0
     # Now set it to something
-    set_max_size_of_cache(reset_cache_settings, 10)
-    assert 10 == get_max_size_of_cache(reset_cache_settings)
+    set_max_size_of_cache(flowmachine_connect_with_cache_settings_reset, 10)
+    assert 10 == get_max_size_of_cache(flowmachine_connect_with_cache_settings_reset)
 
 
-def test_get_set_cache_half_life(reset_cache_settings):
+def test_get_set_cache_half_life(flowmachine_connect_with_cache_settings_reset):
     """
     Test that cache halflife can be got and set
     """
-    assert 1000 == get_cache_half_life(reset_cache_settings)
+    assert 1000 == get_cache_half_life(flowmachine_connect_with_cache_settings_reset)
     # Now set it to something
-    set_cache_half_life(reset_cache_settings, 10)
-    assert 10 == get_cache_half_life(reset_cache_settings)
+    set_cache_half_life(flowmachine_connect_with_cache_settings_reset, 10)
+    assert 10 == get_cache_half_life(flowmachine_connect_with_cache_settings_reset)
 
 
 def test_cache_table_exists(flowmachine_connect):
