@@ -572,7 +572,7 @@ class Query(metaclass=ABCMeta):
     @property
     def fully_qualified_table_name(self):
         """
-        Returns a unique name for the query to be stored under, based on
+        Returns a unique fully qualified name for the query to be stored as under the cache schema, based on
         a hash of the parameters, class, and subqueries.
 
         Returns
@@ -580,7 +580,20 @@ class Query(metaclass=ABCMeta):
         str
             String form of the table's fqn
         """
-        return "cache.x{}".format(self.md5)
+        return f"cache.{self.table_name}"
+
+    @property
+    def table_name(self):
+        """
+        Returns a uniquename for the query to be stored as, based on
+        a hash of the parameters, class, and subqueries.
+
+        Returns
+        -------
+        str
+            String form of the table's fqn
+        """
+        return f"x{self.md5}"
 
     @property
     def is_stored(self):
