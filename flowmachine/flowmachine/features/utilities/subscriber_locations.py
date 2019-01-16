@@ -207,12 +207,6 @@ def subscriber_locations(
     ...
 
     """
-    kwargs_subscriber_cells = {
-        "polygon_table": polygon_table,
-        "size": size,
-        "radius": radius,
-    }
-
     # Here we call the hidden class _SubscriberCells which is every spotting
     # of all subscribers. We then join to the appropriate level if necessary.
     subscriber_cells = _SubscriberCells(
