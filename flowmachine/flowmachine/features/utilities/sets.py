@@ -244,9 +244,6 @@ class EventsTablesUnion(Query):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    kwargs :
-        passed to flowmachine.SubsetDates
-
     """
 
     def __init__(self, start, stop, *, columns, tables="all", hours="all", subscriber_subset=None, subscriber_identifier="msisdn"):
