@@ -132,7 +132,7 @@ class CellToAdmin(Query):
         to use something else, such as admin3name.
     """
 
-    def __init__(self, level, column_name=None, **kwargs):
+    def __init__(self, *, level, column_name=None, **kwargs):
         self.level = level
         # If there is no column_name passed then we can use
         # the default, which is of the form admin3name.
