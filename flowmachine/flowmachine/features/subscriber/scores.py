@@ -135,8 +135,8 @@ class EventScore(Query):
         self.subscriber_identifier = subscriber_identifier
         self.column_name = column_name
         self.sds = EventsTablesUnion(
-            start,
-            stop,
+            start=start,
+            stop=stop,
             columns=[subscriber_identifier, "location_id", "datetime"],
             tables=table,
             hours=self.hours,
