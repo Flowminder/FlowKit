@@ -88,10 +88,10 @@ class JoinToLocation(Query):
     def __init__(
         self,
         left,
+        *,
         level,
         time_col="time",
         column_name=None,
-        *,
         size=None,
         polygon_table=None,
         geom_col="geom",
