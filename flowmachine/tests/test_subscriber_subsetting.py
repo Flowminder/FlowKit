@@ -26,7 +26,7 @@ from flowmachine.utils import list_of_dates
 def test_events_table_subset_column_names(columns):
     """Test that EventTableSubset column_names property is accurate."""
     etu = EventTableSubset(
-        "2016-01-01", "2016-01-02", columns=columns, tables=["events.calls"]
+        "2016-01-01", "2016-01-02", columns=columns, table="events.calls"
     )
     assert etu.head(0).columns.tolist() == etu.column_names
 
@@ -38,7 +38,7 @@ def test_events_table_subscriber_ident_substitutions(ident):
         "2016-01-01",
         "2016-01-02",
         columns=[ident],
-        tables=["events.calls"],
+        table="events.calls",
         subscriber_identifier=ident,
     )
     assert "subscriber" == etu.head(0).columns[0]
