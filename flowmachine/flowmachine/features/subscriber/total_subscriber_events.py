@@ -67,7 +67,6 @@ class TotalSubscriberEvents(SubscriberFeature):
         direction="both",
         event_type="ALL",
         subscriber_identifier="msisdn",
-        *args,
         **kwargs,
     ):
         """
