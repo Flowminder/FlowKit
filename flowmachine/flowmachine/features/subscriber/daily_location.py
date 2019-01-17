@@ -113,7 +113,7 @@ def locate_subscribers(
                                 '2016-01-02 16:25:00'
                                  level = 'cell'
                                  method='last')
-    >>> subscriber_locs.head()
+    >>> last_locs.head()
                 subscriber    |    cell
                 subscriberA   |   233241
                 subscriberB   |   234111
