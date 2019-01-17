@@ -70,8 +70,6 @@ class LocationIntroversion(GeoDataMixin, Query):
     direction : str, default 'both'.
         Determines if query should filter only outgoing
         events ('out'), incoming events ('in'), or both ('both').
-    kwargs :
-        Passed to flowmachine.JoinToLocation
 
     Notes
     -----
@@ -106,7 +104,6 @@ class LocationIntroversion(GeoDataMixin, Query):
         polygon_table=None,
         geom_col="geom",
         column_name=None,
-        **kwargs
     ):
 
         self.query_columns = ["id", "outgoing", "location_id", "datetime"]
@@ -115,7 +112,6 @@ class LocationIntroversion(GeoDataMixin, Query):
         self.table = table
         self.level = level
         self.direction = direction
-        self._kwargs = kwargs
 
         if self.level == "versioned-site":
             raise NotImplementedError(
