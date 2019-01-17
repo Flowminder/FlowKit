@@ -189,10 +189,16 @@ class SubscriberLocationSubset(Query):
         start,
         stop,
         min_calls,
+        *,
         subscriber_identifier="msisdn",
         direction="both",
         level="admin3",
         column_name=None,
+        hours="all",
+        subscriber_subset=None,
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
         **kwargs,
     ):
 
@@ -214,7 +220,11 @@ class SubscriberLocationSubset(Query):
             level=self.level,
             statistic="count",
             column_name=self.column_name,
-            **kwargs,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
+            size=size,
+            polygon_table=polygon_table,
+            geom_col=geom_col,
         )
 
         self.pslds_subset = self.pslds.numeric_subset(
