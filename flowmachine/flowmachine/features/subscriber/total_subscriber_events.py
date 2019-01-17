@@ -64,10 +64,12 @@ class TotalSubscriberEvents(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         direction="both",
         event_type="ALL",
         subscriber_identifier="msisdn",
-        **kwargs,
+        hours="all",
+        subscriber_subset=None,
     ):
         """
         """
@@ -93,7 +95,8 @@ class TotalSubscriberEvents(SubscriberFeature):
             tables=tables,
             columns=cols,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
         )
 
         super().__init__()
