@@ -245,7 +245,7 @@ class SubscriberHandsets(SubscriberFeature):
         hours="all",
         table="all",
         subscriber_identifier="msisdn",
-        **kwargs,
+        subscriber_subset=None,
     ):
         """
 
@@ -262,7 +262,7 @@ class SubscriberHandsets(SubscriberFeature):
             hours=hours,
             table=table,
             subscriber_identifier=subscriber_identifier,
-            **kwargs,
+            subscriber_subset=subscriber_subset,
         )
         self.tacs = Table("infrastructure.tacs")
         self.joined = self.subscriber_tacs.join(self.tacs, "tac", "id", how="left")
