@@ -140,6 +140,17 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         if self.period not in valid_periods:
             raise ValueError("{} is not a valid period.".format(self.period))
 
+        # FIXME: we are only storing these here so that they can be accessed by
+        #        AggregateNetworkObjects.from_total_network_objects() below. This
+        #        should be refactored soon.
+        self.column_name = column_name
+        self.size = size
+        self.polygon_table = polygon_table
+        self.geom_col = geom_col
+        self.hours = hours
+        self.subscriber_subset = subscriber_subset
+        self.subscriber_identifier = subscriber_identifier
+
         super().__init__()
 
     def _make_query(self):
@@ -239,8 +250,13 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
         by=None,
         network_object="cell",
         level="admin0",
-        *args,
-        **kwargs,
+        column_name=None,
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
+        hours="all",
+        subscriber_subset=None,
+        subscriber_identifier="msisdn",
     ):
         self.total_objs = TotalNetworkObjects(
             start=start,
@@ -249,8 +265,13 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             period=period,
             network_object=network_object,
             level=level,
-            *args,
-            **kwargs,
+            column_name=column_name,
+            size=size,
+            polygon_table=polygon_table,
+            geom_col=geom_col,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
         )
         statistic = statistic.lower()
         if statistic in valid_stats:
@@ -310,8 +331,13 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             statistic=statistic,
             by=by,
             level=total_objs.level,
-            *total_objs.args,
-            **total_objs.kwargs,
+            column_name=total_objs.column_name,
+            size=total_objs.size,
+            polygon_table=total_objs.polygon_table,
+            geom_col=total_objs.geom_col,
+            hours=total_objs.hours,
+            subscriber_subset=total_objs.subscriber_subset,
+            subscriber_identifier=total_objs.subscriber_identifier,
         )
 
     def _make_query(self):
