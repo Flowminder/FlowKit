@@ -312,7 +312,15 @@ class PairedSubscriberCallDurations(SubscriberFeature):
     """
 
     def __init__(
-        self, start, stop, *, level=None, subscriber_identifier="msisdn", statistic="sum", hours="all", subscriber_subset=None,
+        self,
+        start,
+        stop,
+        *,
+        level=None,
+        subscriber_identifier="msisdn",
+        statistic="sum",
+        hours="all",
+        subscriber_subset=None,
     ):
         self.start = start
         self.stop = stop

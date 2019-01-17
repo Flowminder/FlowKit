@@ -222,5 +222,9 @@ def subscriber_locations(
         return subscriber_cells
     else:
         return JoinToLocation(
-            subscriber_cells, level=level, column_name=column_name, polygon_table=polygon_table, size=size,
+            subscriber_cells,
+            level=level,
+            column_name=column_name,
+            polygon_table=polygon_table,
+            size=size,
         )

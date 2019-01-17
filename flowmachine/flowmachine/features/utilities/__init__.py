@@ -10,9 +10,5 @@ from .subscriber_locations import subscriber_locations
 from .feature_collection import FeatureCollection
 
 
-from .sets import (
-    UniqueSubscribers,
-    EventsTablesUnion,
-    SubscriberLocationSubset,
-)
+from .sets import UniqueSubscribers, EventsTablesUnion, SubscriberLocationSubset
 from .event_table_subset import EventTableSubset

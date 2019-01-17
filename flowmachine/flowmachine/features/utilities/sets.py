@@ -47,7 +47,17 @@ class EventsTablesUnion(Query):
         subscriber_identifier (typically, msisdn), to limit results to.
     """
 
-    def __init__(self, start, stop, *, columns, tables="all", hours="all", subscriber_subset=None, subscriber_identifier="msisdn"):
+    def __init__(
+        self,
+        start,
+        stop,
+        *,
+        columns,
+        tables="all",
+        hours="all",
+        subscriber_subset=None,
+        subscriber_identifier="msisdn",
+    ):
         """
 
         """
@@ -60,7 +70,11 @@ class EventsTablesUnion(Query):
             )
         self.columns = columns
         self.tables = self._parse_tables(tables)
-        self.date_subsets = self._make_table_list(hours=hours, subscriber_subset=subscriber_subset, subscriber_identifier=subscriber_identifier)
+        self.date_subsets = self._make_table_list(
+            hours=hours,
+            subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
+        )
 
         super().__init__()
 
@@ -88,7 +102,13 @@ class EventsTablesUnion(Query):
         for table in self.tables:
             try:
                 sql = EventTableSubset(
-                    self.start, self.stop, table=table, columns=self.columns, hours=hours, subscriber_subset=subscriber_subset, subscriber_identifier=subscriber_identifier
+                    self.start,
+                    self.stop,
+                    table=table,
+                    columns=self.columns,
+                    hours=hours,
+                    subscriber_subset=subscriber_subset,
+                    subscriber_identifier=subscriber_identifier,
                 )
                 date_subsets.append(sql)
             except MissingDateError:
