@@ -1398,6 +1398,54 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-1-2-15" type="checkbox" id="nav-10-1-1-2-15">
+    
+    <label class="md-nav__link" for="nav-10-1-1-2-15">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-1-2-15">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../subset/" title="subset" class="md-nav__link">
       subset
@@ -2138,6 +2186,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../features/utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../features/utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../features/utilities/feature_collection/" title="feature_collection" class="md-nav__link">
       feature_collection
     </a>
@@ -2852,7 +2924,7 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/join_to_location.py#L0">flowmachine/core/join_to_location.py</a></p>
 <p>Core class definition JoinToLocation, which facilitates the joining of any query with cell/site information to another spatial level, such as a grid or an admin region.</p>
 <h2 id="class-jointolocation">Class <strong>JoinToLocation</strong><a class="headerlink" href="#class-jointolocation" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">JoinToLocation</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">time_col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">JoinToLocation</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">time_col</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">geom_col</span><span class="o">=</span><span class="s1">&#39;geom&#39;</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/join_to_location.py#L20">flowmachine/core/join_to_location.py</a></p>
 <p>Intermediate class which joins any query object, or python string representing a query object, to some geographical level. This can be simply the site with a version a lat-lon value, an admin region, a gridded map, or any arbitrary polygon. This will return everything in the original query, plus an additional  column or columns representing the spatial region that the infrastructure element lies within.</p>
@@ -3261,7 +3333,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/join_to_location.py#L195">flowmachine/core/join_to_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/join_to_location.py#L211">flowmachine/core/join_to_location.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies">dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>

@@ -383,6 +383,26 @@
     Caveats
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared-memory" title="Shared Memory" class="md-nav__link">
+    Shared Memory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bind-mounts-and-user-permissions" title="Bind Mounts and User Permissions" class="md-nav__link">
+    Bind Mounts and User Permissions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
       
@@ -913,6 +933,54 @@
     <a href="../developer/api/flowmachine/core/random/" title="random" class="md-nav__link">
       random
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-1-2-15" type="checkbox" id="nav-10-1-1-2-15">
+    
+    <label class="md-nav__link" for="nav-10-1-1-2-15">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-1-2-15">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../developer/api/flowmachine/core/server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../developer/api/flowmachine/core/server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
         
@@ -1661,6 +1729,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../developer/api/flowmachine/features/utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../developer/api/flowmachine/features/utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../developer/api/flowmachine/features/utilities/feature_collection/" title="feature_collection" class="md-nav__link">
       feature_collection
     </a>
@@ -1885,6 +1977,26 @@
     Caveats
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared-memory" title="Shared Memory" class="md-nav__link">
+    Shared Memory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bind-mounts-and-user-permissions" title="Bind Mounts and User Permissions" class="md-nav__link">
+    Bind Mounts and User Permissions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
       
@@ -1921,7 +2033,45 @@
 </li>
 </ul>
 <h2 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h2>
-<p>You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting <code>shm_size</code> for the FlowDB container in your compose or stack file, or by passing the <code>--shm-size</code> argument to the <code>docker run</code> command.  </p>
+<h3 id="shared-memory">Shared Memory<a class="headerlink" href="#shared-memory" title="Permanent link">&para;</a></h3>
+<p>You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting <code>shm_size</code> for the FlowDB container in your compose or stack file, or by passing the <code>--shm-size</code> argument to the <code>docker run</code> command.</p>
+<h3 id="bind-mounts-and-user-permissions">Bind Mounts and User Permissions<a class="headerlink" href="#bind-mounts-and-user-permissions" title="Permanent link">&para;</a></h3>
+<p>By default, FlowDB will create and attach a docker volume that contains all data. In some cases, this will be sufficient for use.</p>
+<p>However, you will often wish to set up bind mounts to hold the data and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.</p>
+<p>Adding a bind mount using <code>docker-compose</code> is simple:</p>
+<div class="codehilite"><pre><span></span><span class="nt">services</span><span class="p">:</span>
+    <span class="nt">flowdb</span><span class="p">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">...</span>
+        <span class="l l-Scalar l-Scalar-Plain">user</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">HOST_USER_ID:HOST_GROUP_ID</span>
+        <span class="l l-Scalar l-Scalar-Plain">volumes</span><span class="p p-Indicator">:</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/path/to/store/data/on/host:/var/lib/postgresql/data</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/path/to/consume/data/from/host:/etl:ro</span>
+</pre></div>
+
+<p>This creates two bind mounts, the first is FlowDB's internal storage, and the second is a <em>read only</em> mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified. </p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If the bind mounted directories do not exist, docker will create them and you will need to <code>chown</code> them to the correct user.</p>
+</div>
+<p>And similarly when using <code>docker run</code>:</p>
+<div class="codehilite"><pre><span></span>docker run --name flowdb_testdata -e <span class="nv">FM_PASSWORD</span><span class="o">=</span>foo -e <span class="nv">API_PASSWORD</span><span class="o">=</span>foo <span class="se">\</span>
+ --publish <span class="m">9000</span>:5432 <span class="se">\</span>
+ --user HOST_USER_ID:HOST_GROUP_ID <span class="se">\</span>
+ -v /path/to/store/data/on/host:/var/lib/postgresql/data <span class="se">\</span>
+ -v /path/to/consume/data/from/host:/etl:ro <span class="se">\</span>
+ --detach flowminder/flowdb:latest
+</pre></div>
+
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To run as the current user, you can simply replace <code>HOST_USER_ID:HOST_GROUP_ID</code> with <code>$(id -u):$(id -g)</code>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Using the <code>--user</code> flag without a bind mount specified will not work, and you will see an error
+like this: <code>initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted</code>.</p>
+<p>When using docker volumes, docker will manage the permissions for you.</p>
+</div>
                 
                   
                 

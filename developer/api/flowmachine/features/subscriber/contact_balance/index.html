@@ -891,6 +891,54 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-1-2-15" type="checkbox" id="nav-10-1-1-2-15">
+    
+    <label class="md-nav__link" for="nav-10-1-1-2-15">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-1-2-15">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../../../core/subset/" title="subset" class="md-nav__link">
       subset
@@ -2201,6 +2249,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/feature_collection/" title="feature_collection" class="md-nav__link">
       feature_collection
     </a>
@@ -2976,16 +3048,7 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/contact_balance.py#L0">flowmachine/features/subscriber/contact_balance.py</a></p>
 <p>The total number of events that a subscriber interacts with a counterpart, and the proportion of events  that a given contact participates out of the  subscriber's total event count.</p>
 <h2 id="class-contactbalance">Class <strong>ContactBalance</strong><a class="headerlink" href="#class-contactbalance" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">ContactBalance</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">,</span>
-    <span class="n">stop</span><span class="p">,</span>
-    <span class="n">hours</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">table</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
-    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
-    <span class="n">exclude_self_calls</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">ContactBalance</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">exclude_self_calls</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/contact_balance.py#L22">flowmachine/features/subscriber/contact_balance.py</a></p>
 <p>This class calculates the total number of events  that a subscriber interacts with a counterpart, and the proportion of events that a given contact participates out of the subscriber's total event count. This can be used to calculate a subscriber's contact network graph and the respective weighted edges  for each contact.</p>

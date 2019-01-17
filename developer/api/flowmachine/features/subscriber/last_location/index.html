@@ -891,6 +891,54 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-1-2-15" type="checkbox" id="nav-10-1-1-2-15">
+    
+    <label class="md-nav__link" for="nav-10-1-1-2-15">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-1-2-15">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../../../core/subset/" title="subset" class="md-nav__link">
       subset
@@ -2174,6 +2222,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/feature_collection/" title="feature_collection" class="md-nav__link">
       feature_collection
     </a>
@@ -2922,16 +2994,7 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/last_location.py#L0">flowmachine/features/subscriber/last_location.py</a></p>
 <p>Computes the last location an subscriber was identified at during a specified time period.</p>
 <h2 id="class-lastlocation">Class <strong>LastLocation</strong><a class="headerlink" href="#class-lastlocation" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">LastLocation</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">,</span>
-    <span class="n">stop</span><span class="p">,</span>
-    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
-    <span class="n">hours</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">table</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
-    <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">LastLocation</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;admin3&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ignore_nulls</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/last_location.py#L18">flowmachine/features/subscriber/last_location.py</a></p>
 <p>Class representing a subscribers last location within a certain time frame</p>
@@ -2999,10 +3062,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li>
 <p><code>column_name</code>: <code>optional</code>, <code>str</code></p>
 <p>Option, none-standard, name of the column that identifies the spatial level, i.e. could pass admin3pcod to use the admin 3 pcode as opposed to the name of the region.</p>
-</li>
-<li>
-<p><code>kwargs</code></p>
-<p>Eventually passed to flowmachine.spatial_metrics.spatial_helpers. JoinToLocation. Here you can specify a non standard set of polygons. See the doc string of JoinToLocation for more details.</p>
 </li>
 </ul>
 <div class="admonition note">

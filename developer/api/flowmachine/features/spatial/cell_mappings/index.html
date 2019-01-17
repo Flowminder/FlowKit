@@ -891,6 +891,54 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-1-2-15" type="checkbox" id="nav-10-1-1-2-15">
+    
+    <label class="md-nav__link" for="nav-10-1-1-2-15">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-1-2-15">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../../../core/subset/" title="subset" class="md-nav__link">
       subset
@@ -3088,6 +3136,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/feature_collection/" title="feature_collection" class="md-nav__link">
       feature_collection
     </a>
@@ -4750,7 +4822,7 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/spatial/cell_mappings.py#L0">flowmachine/features/spatial/cell_mappings.py</a></p>
 <p>Classes that deal with mapping cells (or towers or sites) to a spatial level, mostly be performing a spatial join. Examples of this include CellToAdmin or CellToGrid.</p>
 <h2 id="class-celltoadmin">Class <strong>CellToAdmin</strong><a class="headerlink" href="#class-celltoadmin" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">CellToAdmin</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">CellToAdmin</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/spatial/cell_mappings.py#L118">flowmachine/features/spatial/cell_mappings.py</a></p>
 <p>Maps all cells (aka sites) to a admin region. This is a thin wrapper to the more general class CellToPolygon, which assumes that you have the standard set-up.</p>
@@ -5182,7 +5254,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h2 id="class-celltogrid">Class <strong>CellToGrid</strong><a class="headerlink" href="#class-celltogrid" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">CellToGrid</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">CellToGrid</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/spatial/cell_mappings.py#L194">flowmachine/features/spatial/cell_mappings.py</a></p>
 <p>Query representing a mapping between all the sites in the database and a grid of arbitrary size.</p>
@@ -5610,7 +5682,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h2 id="class-celltopolygon">Class <strong>CellToPolygon</strong><a class="headerlink" href="#class-celltopolygon" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">CellToPolygon</span><span class="p">(</span><span class="n">column_name</span><span class="p">,</span> <span class="n">polygon_table</span><span class="p">,</span> <span class="n">geom_col</span><span class="o">=</span><span class="s2">&quot;geom&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">CellToPolygon</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">column_name</span><span class="p">,</span> <span class="n">polygon_table</span><span class="p">,</span> <span class="n">geom_col</span><span class="o">=</span><span class="s1">&#39;geom&#39;</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/spatial/cell_mappings.py#L16">flowmachine/features/spatial/cell_mappings.py</a></p>
 <p>Class that maps a cell with a lat-lon to a geographical region.</p>

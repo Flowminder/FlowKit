@@ -891,6 +891,54 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-1-2-15" type="checkbox" id="nav-10-1-1-2-15">
+    
+    <label class="md-nav__link" for="nav-10-1-1-2-15">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-1-2-15">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../../../core/subset/" title="subset" class="md-nav__link">
       subset
@@ -2621,6 +2669,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/feature_collection/" title="feature_collection" class="md-nav__link">
       feature_collection
     </a>
@@ -3816,20 +3888,9 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/scores.py#L0">flowmachine/features/subscriber/scores.py</a></p>
 <p>Calculates an event score for each event based on a scoring dictionary.</p>
 <h2 id="class-eventscore">Class <strong>EventScore</strong><a class="headerlink" href="#class-eventscore" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">EventScore</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">,</span>
-    <span class="n">stop</span><span class="p">,</span>
-    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
-    <span class="n">hours</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">table</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">score_hour</span><span class="o">=</span><span class="p">{(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">):</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
-    <span class="n">score_dow</span><span class="o">=</span><span class="p">{(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
-    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
-    <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">EventScore</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;admin3&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">score_hour</span><span class="o">=</span><span class="p">{(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">):</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span> <span class="n">score_dow</span><span class="o">=</span><span class="p">{(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/scores.py#L22">flowmachine/features/subscriber/scores.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/scores.py#L21">flowmachine/features/subscriber/scores.py</a></p>
 <p>Represents an event score class.
 This class assigns a score to each event based on the hour of the day and the day of the week. The scores can be useful to cluster a set of events based on its signature. Such type of analysis reduces the dimensionality of the problem by projecting a given event pattern onto the real line.  This class returns a table with scores averaged across the requested level per subscriber.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
@@ -4274,7 +4335,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/scores.py#L254">flowmachine/features/subscriber/scores.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/scores.py#L255">flowmachine/features/subscriber/scores.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies">dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
@@ -4307,7 +4368,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-labeleventscore">Class <strong>LabelEventScore</strong><a class="headerlink" href="#class-labeleventscore" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">LabelEventScore</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">enum_type</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/scores.py#L263">flowmachine/features/subscriber/scores.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/scores.py#L264">flowmachine/features/subscriber/scores.py</a></p>
 <p>Represents a label event score class.
 This class will label a table containing scores based on a labelling dictionary. It allows one to specify labels which every subscriber must have. This class is used to label locations based on scoring signatures in the absence of other automated labelling mechanisms.</p>
 <h3 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h3>
@@ -4715,7 +4776,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names_1">column_names<a class="headerlink" href="#column_names_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/scores.py#L398">flowmachine/features/subscriber/scores.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/scores.py#L399">flowmachine/features/subscriber/scores.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies_1">dependencies<a class="headerlink" href="#dependencies_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>

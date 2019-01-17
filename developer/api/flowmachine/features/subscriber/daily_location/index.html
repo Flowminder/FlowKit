@@ -891,6 +891,54 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-1-2-15" type="checkbox" id="nav-10-1-1-2-15">
+    
+    <label class="md-nav__link" for="nav-10-1-1-2-15">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-1-2-15">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../../../core/subset/" title="subset" class="md-nav__link">
       subset
@@ -1713,6 +1761,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/feature_collection/" title="feature_collection" class="md-nav__link">
       feature_collection
     </a>
@@ -2000,19 +2072,9 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/daily_location.py#L0">flowmachine/features/subscriber/daily_location.py</a></p>
 <p>Calculates an subscriber daily location using different methods. A daily location is a statistic  representing where an subscriber is on a given day.</p>
 <h2 id="daily_location">daily_location<a class="headerlink" href="#daily_location" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">daily_location</span><span class="p">(</span>
-    <span class="n">date</span><span class="p">,</span>
-    <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
-    <span class="n">hours</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span>
-    <span class="n">table</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
-    <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">daily_location</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;admin3&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ignore_nulls</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/daily_location.py#L151">flowmachine/features/subscriber/daily_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/daily_location.py#L164">flowmachine/features/subscriber/daily_location.py</a></p>
 <p>Return a query for locating all subscribers on a single day of data.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2060,17 +2122,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </ul>
 </div>
 <h2 id="locate_subscribers">locate_subscribers<a class="headerlink" href="#locate_subscribers" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">locate_subscribers</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">,</span>
-    <span class="n">stop</span><span class="p">,</span>
-    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
-    <span class="n">hours</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span>
-    <span class="n">table</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
-    <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">locate_subscribers</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;admin3&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ignore_nulls</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/daily_location.py#L20">flowmachine/features/subscriber/daily_location.py</a></p>
 <p>Return a class representing the location of an individual. This can be called with a number of different methods.
@@ -2119,7 +2171,7 @@ Find the last/most-frequent location for every subscriber within the given time 
                             <span class="s1">&#39;2016-01-02 16:25:00&#39;</span>
                              <span class="n">level</span> <span class="o">=</span> <span class="s1">&#39;cell&#39;</span>
                              <span class="n">method</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">)</span>
-<span class="n">subscriber_locs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">last_locs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
             <span class="n">subscriber</span>    <span class="o">|</span>    <span class="n">cell</span>
             <span class="n">subscriberA</span>   <span class="o">|</span>   <span class="mi">233241</span>
             <span class="n">subscriberB</span>   <span class="o">|</span>   <span class="mi">234111</span>

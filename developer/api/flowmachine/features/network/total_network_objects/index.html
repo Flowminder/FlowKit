@@ -891,6 +891,54 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-1-2-15" type="checkbox" id="nav-10-1-1-2-15">
+    
+    <label class="md-nav__link" for="nav-10-1-1-2-15">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-1-2-15">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../../../core/subset/" title="subset" class="md-nav__link">
       subset
@@ -2897,6 +2945,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/feature_collection/" title="feature_collection" class="md-nav__link">
       feature_collection
     </a>
@@ -4377,11 +4449,16 @@
     <span class="n">by</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
     <span class="n">network_object</span><span class="o">=</span><span class="s2">&quot;cell&quot;</span><span class="p">,</span>
     <span class="n">level</span><span class="o">=</span><span class="s2">&quot;admin0&quot;</span><span class="p">,</span>
-    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
+    <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">geom_col</span><span class="o">=</span><span class="s2">&quot;geom&quot;</span><span class="p">,</span>
+    <span class="n">hours</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L166">flowmachine/features/network/total_network_objects.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L197">flowmachine/features/network/total_network_objects.py</a></p>
 <p>Class for calculating statistics about unique cells/sites and aggregate it by period.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4949,16 +5026,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h2 id="class-totalnetworkobjects">Class <strong>TotalNetworkObjects</strong><a class="headerlink" href="#class-totalnetworkobjects" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">TotalNetworkObjects</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">table</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">period</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span>
-    <span class="n">network_object</span><span class="o">=</span><span class="s2">&quot;cell&quot;</span><span class="p">,</span>
-    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;admin0&quot;</span><span class="p">,</span>
-    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">TotalNetworkObjects</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="n">network_object</span><span class="o">=</span><span class="s1">&#39;cell&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;admin0&#39;</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">geom_col</span><span class="o">=</span><span class="s1">&#39;geom&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L23">flowmachine/features/network/total_network_objects.py</a></p>
 <p>Class for calculating unique cells/sites per location and aggregate it by period.</p>
@@ -5029,7 +5097,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="aggregate">aggregate<a class="headerlink" href="#aggregate" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L147">flowmachine/features/network/total_network_objects.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L178">flowmachine/features/network/total_network_objects.py</a></p>
 <h5 id="parameters_17">Parameters<a class="headerlink" href="#parameters_17" title="Permanent link">&para;</a></h5>
 <ul>
 <li>

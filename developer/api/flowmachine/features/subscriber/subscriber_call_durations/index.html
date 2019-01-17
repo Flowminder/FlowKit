@@ -891,6 +891,54 @@
           
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-1-2-15" type="checkbox" id="nav-10-1-1-2-15">
+    
+    <label class="md-nav__link" for="nav-10-1-1-2-15">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-1-2-15">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_proxy/" title="query_proxy" class="md-nav__link">
+      query_proxy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/zmq_interface/" title="zmq_interface" class="md-nav__link">
+      zmq_interface
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../../../core/subset/" title="subset" class="md-nav__link">
       subset
@@ -3778,6 +3826,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../../utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../utilities/feature_collection/" title="feature_collection" class="md-nav__link">
       feature_collection
     </a>
@@ -6130,17 +6202,9 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L0">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
 <p>Total and per-counterpart call durations for subscribers.</p>
 <h2 id="class-pairedperlocationsubscribercalldurations">Class <strong>PairedPerLocationSubscriberCallDurations</strong><a class="headerlink" href="#class-pairedperlocationsubscribercalldurations" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">PairedPerLocationSubscriberCallDurations</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">,</span>
-    <span class="n">stop</span><span class="p">,</span>
-    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
-    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
-    <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">PairedPerLocationSubscriberCallDurations</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;admin3&#39;</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">geom_col</span><span class="o">=</span><span class="s1">&#39;geom&#39;</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L364">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L374">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
 <p>This class returns the total amount of time a subscriber spent calling each other subscriber within the period, faceted by their respective locations at the time.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6198,10 +6262,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li>
 <p><code>statistic</code>: <code>{'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}</code>, default <code>'sum'</code></p>
 <p>Defaults to 'sum', aggregation statistic over the durations.</p>
-</li>
-<li>
-<p><code>kwargs</code></p>
-<p>Passed to flowmachine.EventTableSubset</p>
 </li>
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
@@ -6626,7 +6686,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L505">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L517">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies">dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
@@ -6657,11 +6717,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h2 id="class-pairedsubscribercalldurations">Class <strong>PairedSubscriberCallDurations</strong><a class="headerlink" href="#class-pairedsubscribercalldurations" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">PairedSubscriberCallDurations</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">PairedSubscriberCallDurations</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L276">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L280">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
 <p>This class returns the total amount of time a subscriber spent calling each other subscriber within the period.</p>
 <h3 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -6711,10 +6769,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li>
 <p><code>statistic</code>: <code>{'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}</code>, default <code>'sum'</code></p>
 <p>Defaults to sum, aggregation statistic over the durations.</p>
-</li>
-<li>
-<p><code>kwargs</code></p>
-<p>Passed to flowmachine.EventTableSubset</p>
 </li>
 </ul>
 <h3 id="examples_3">Examples<a class="headerlink" href="#examples_3" title="Permanent link">&para;</a></h3>
@@ -7135,7 +7189,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names_1">column_names<a class="headerlink" href="#column_names_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L351">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L361">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies_1">dependencies<a class="headerlink" href="#dependencies_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
@@ -7166,18 +7220,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h2 id="class-perlocationsubscribercalldurations">Class <strong>PerLocationSubscriberCallDurations</strong><a class="headerlink" href="#class-perlocationsubscribercalldurations" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">PerLocationSubscriberCallDurations</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">,</span>
-    <span class="n">stop</span><span class="p">,</span>
-    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
-    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">,</span>
-    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;admin3&quot;</span><span class="p">,</span>
-    <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-    <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">PerLocationSubscriberCallDurations</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;out&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;admin3&#39;</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">geom_col</span><span class="o">=</span><span class="s1">&#39;geom&#39;</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L122">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L123">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
 <p>This class returns the total amount of time a subscriber spent calling within the period, optionally limited to only calls they made, or received, faceted by their location at the time.</p>
 <h3 id="attributes_2">Attributes<a class="headerlink" href="#attributes_2" title="Permanent link">&para;</a></h3>
 <ul>
@@ -7239,10 +7284,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li>
 <p><code>statistic</code>: <code>{'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}</code>, default <code>'sum'</code></p>
 <p>Defaults to sum, aggregation statistic over the durations.</p>
-</li>
-<li>
-<p><code>kwargs</code></p>
-<p>Passed to flowmachine.EventTableSubset</p>
 </li>
 </ul>
 <h3 id="examples_6">Examples<a class="headerlink" href="#examples_6" title="Permanent link">&para;</a></h3>
@@ -7663,7 +7704,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names_2">column_names<a class="headerlink" href="#column_names_2" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L253">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L257">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies_2">dependencies<a class="headerlink" href="#dependencies_2" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
@@ -7694,14 +7735,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h2 id="class-subscribercalldurations">Class <strong>SubscriberCallDurations</strong><a class="headerlink" href="#class-subscribercalldurations" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">SubscriberCallDurations</span><span class="p">(</span>
-    <span class="n">start</span><span class="p">,</span>
-    <span class="n">stop</span><span class="p">,</span>
-    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
-    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">,</span>
-    <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">SubscriberCallDurations</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;out&#39;</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L23">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
 <p>This class returns the total amount of time a subscriber spent calling within the period, optionally limited to only calls they made, or received.</p>
@@ -7757,10 +7791,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <li>
 <p><code>statistic</code>: <code>{'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}</code>, default <code>'sum'</code></p>
 <p>Defaults to sum, aggregation statistic over the durations.</p>
-</li>
-<li>
-<p><code>kwargs</code></p>
-<p>Passed to flowmachine.EventTableSubset</p>
 </li>
 </ul>
 <h3 id="examples_9">Examples<a class="headerlink" href="#examples_9" title="Permanent link">&para;</a></h3>
@@ -8181,7 +8211,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names_3">column_names<a class="headerlink" href="#column_names_3" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L104">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_call_durations.py#L105">flowmachine/features/subscriber/subscriber_call_durations.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies_3">dependencies<a class="headerlink" href="#dependencies_3" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
