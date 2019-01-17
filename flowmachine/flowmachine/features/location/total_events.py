@@ -182,12 +182,18 @@ class TotalLocationEvents(GeoDataMixin, Query):
         self,
         start: str,
         stop: str,
+        *,
         table: Union[str, List[str]] = "all",
         level: str = "cell",
         interval: str = "hour",
         direction: str = "both",
         column_name: Union[str, None] = None,
-        **kwargs,
+        hours="all",
+        subscriber_subset=None,
+        subscriber_identifier="msisdn",
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
     ):
 
         self.start = start
@@ -205,7 +211,14 @@ class TotalLocationEvents(GeoDataMixin, Query):
                 )
             )
         self._obj = _TotalCellEvents(
-            start, stop, table=table, interval=interval, direction=direction, **kwargs
+            start,
+            stop,
+            table=table,
+            interval=interval,
+            direction=direction,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
         )
         if level != "cell":
             self._obj = JoinToLocation(
@@ -213,7 +226,9 @@ class TotalLocationEvents(GeoDataMixin, Query):
                 level=self.level,
                 time_col="date",
                 column_name=column_name,
-                **kwargs,
+                size=size,
+                polygon_table=polygon_table,
+                geom_col=geom_col,
             )
         super().__init__()
 
