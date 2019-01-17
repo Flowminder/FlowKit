@@ -68,7 +68,13 @@ class _TotalCellEvents(Query):
         # columns, plus the cell column
         self.groups = [x.split(" AS ")[0] for x in self.time_cols + ["location_id"]]
         self.unioned = EventsTablesUnion(
-            self.start, self.stop, tables=self.table, columns=self.cols, hours=hours, subscriber_subset=subscriber_subset, subscriber_identifier=subscriber_identifier,
+            self.start,
+            self.stop,
+            tables=self.table,
+            columns=self.cols,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
         )
 
         super().__init__()
@@ -181,7 +187,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         interval: str = "hour",
         direction: str = "both",
         column_name: Union[str, None] = None,
-        **kwargs
+        **kwargs,
     ):
 
         self.start = start
@@ -207,7 +213,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
                 level=self.level,
                 time_col="date",
                 column_name=column_name,
-                **kwargs
+                **kwargs,
             )
         super().__init__()
 

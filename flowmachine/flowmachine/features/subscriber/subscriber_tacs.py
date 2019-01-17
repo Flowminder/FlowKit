@@ -193,7 +193,9 @@ class SubscriberTAC(SubscriberFeature):
                 self.subscriber_tacs.get_query()
             )
         else:
-            raise ValueError(f"Unsupported method. Valid values are: 'last', 'most-common'")
+            raise ValueError(
+                f"Unsupported method. Valid values are: 'last', 'most-common'"
+            )
         return query
 
 
