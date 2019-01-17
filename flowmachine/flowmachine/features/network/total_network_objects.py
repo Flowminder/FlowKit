@@ -66,10 +66,12 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         period="day",
         network_object="cell",
         level="admin0",
-        *args,
+        column_name=None,
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
         **kwargs
     ):
-        self.args = args
         self.kwargs = kwargs
         self.table = table.lower()
         self.start = (
@@ -102,7 +104,13 @@ class TotalNetworkObjects(GeoDataMixin, Query):
                 **kwargs
             )
             events = JoinToLocation(
-                events, level=self.network_object, time_col="datetime"
+                events,
+                level=self.network_object,
+                time_col="datetime",
+                column_name=column_name,
+                size=size,
+                polygon_table=polygon_table,
+                geom_col=geom_col,
             )
         else:
             raise ValueError("{} is not a valid network object.".format(network_object))
@@ -114,7 +122,13 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         }:  # No sense in aggregating network object to
             raise ValueError("{} is not a valid level".format(level))  # network object
         self.joined = JoinToLocation(
-            events, level=level, time_col="datetime", *args, **kwargs
+            events,
+            level=level,
+            time_col="datetime",
+            column_name=column_name,
+            size=size,
+            polygon_table=polygon_table,
+            geom_col=geom_col,
         )
         self.period = period.lower()
         if self.period not in valid_periods:
