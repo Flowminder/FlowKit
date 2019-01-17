@@ -36,8 +36,6 @@ class SubscriberTACs(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
@@ -114,8 +112,6 @@ class SubscriberTAC(SubscriberFeature):
         'msisdn', 'imei'
     method : {'most-common', 'last'}
         Method for choosing a TAC to associate.
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
@@ -216,8 +212,6 @@ class SubscriberHandsets(SubscriberFeature):
     subscriber_identifier : str, default 'msisdn'
         The focus of the analysis, usually either
         'msisdn', 'imei'
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
@@ -300,8 +294,6 @@ class SubscriberHandset(SubscriberFeature):
         'msisdn', 'imei'
     method : {'most-common', 'last'}
         Method for choosing a handset to associate.
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
@@ -381,8 +373,6 @@ class SubscriberPhoneType(SubscriberFeature):
         'msisdn', 'imei'
     method : {'most-common', 'last'}
         Method for choosing a handset to associate.
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
