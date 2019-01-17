@@ -9,7 +9,6 @@ have done over a certain time period.
 
 
 """
-import flowmachine
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
