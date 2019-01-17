@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -27,6 +28,8 @@
 #               data). This user is designed mainly 
 #               for visualization applications.
 #
+
+export PGUSER="$POSTGRES_USER"
 
 if [ ! -e /run/secrets/POSTGRES_PASSWORD_FILE -a -z "$POSTGRES_PASSWORD" ];
 then

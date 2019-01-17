@@ -6,7 +6,7 @@
 
 
 set -e
-
+export PGUSER="$POSTGRES_USER"
 #
 #  Ingest all files available in the data/sql
 #  folders. Those were created using PostGIS
