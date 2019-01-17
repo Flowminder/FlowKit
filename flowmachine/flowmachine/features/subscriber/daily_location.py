@@ -26,7 +26,12 @@ def locate_subscribers(
     table="all",
     subscriber_identifier="msisdn",
     column_name=None,
-    **kwargs,
+    *,
+    ignore_nulls=True,
+    subscriber_subset=None,
+    polygon_table=None,
+    size=None,
+    radius=None,
 ):
     """
     Return a class representing the location of an individual. This can be called
@@ -127,7 +132,11 @@ def locate_subscribers(
             table=table,
             subscriber_identifier=subscriber_identifier,
             column_name=column_name,
-            **kwargs,
+            ignore_nulls=ignore_nulls,
+            subscriber_subset=subscriber_subset,
+            polygon_table=polygon_table,
+            size=size,
+            radius=radius,
         )
     elif method == "most-common":
         return MostFrequentLocation(
@@ -138,7 +147,11 @@ def locate_subscribers(
             table=table,
             column_name=column_name,
             subscriber_identifier=subscriber_identifier,
-            **kwargs,
+            ignore_nulls=ignore_nulls,
+            subscriber_subset=subscriber_subset,
+            polygon_table=polygon_table,
+            size=size,
+            radius=radius,
         )
     # elif self.method == 'first':
     #     _obj = FirstLocation(start, stop, level, hours)
