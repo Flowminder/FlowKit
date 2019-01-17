@@ -15,8 +15,7 @@ from flowmachine.features import (
     ModalLocation,
     UniqueSubscribers,
     daily_location,
-)
-from flowmachine.features.utilities.sets import EventTableSubset
+    EventTableSubset)
 from flowmachine.utils import list_of_dates
 
 

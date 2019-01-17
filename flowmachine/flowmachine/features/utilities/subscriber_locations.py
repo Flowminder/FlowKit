@@ -11,9 +11,8 @@ later used for computing subscriber features.
 
 """
 import logging
-import warnings
 
-from .sets import EventTableSubset, EventsTablesUnion
+from .sets import EventsTablesUnion
 from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 
 from ...core.query import Query

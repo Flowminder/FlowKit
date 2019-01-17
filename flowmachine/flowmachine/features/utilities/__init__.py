@@ -11,8 +11,8 @@ from .feature_collection import FeatureCollection
 
 
 from .sets import (
-    EventTableSubset,
     UniqueSubscribers,
     EventsTablesUnion,
     SubscriberLocationSubset,
 )
+from .event_table_subset import EventTableSubset
