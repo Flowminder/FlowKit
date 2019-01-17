@@ -86,7 +86,7 @@ class Displacement(SubscriberFeature):
                 hl = modal_locations
             else:
                 raise ValueError(
-                    """modal_locations should be an instance of ModalLocation class with level of lat-lon"""
+                    f"Argument 'modal_locations' should be an instance of ModalLocation class with level in {allowed_levels}"
                 )
         else:
             hl = ModalLocation(
