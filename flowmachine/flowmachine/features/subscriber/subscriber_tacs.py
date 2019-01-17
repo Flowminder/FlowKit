@@ -242,6 +242,7 @@ class SubscriberHandsets(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
         subscriber_identifier="msisdn",
