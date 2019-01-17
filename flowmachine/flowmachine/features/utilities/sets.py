@@ -199,7 +199,6 @@ class SubscriberLocationSubset(Query):
         size=None,
         polygon_table=None,
         geom_col="geom",
-        **kwargs,
     ):
 
         from ...features import PerLocationSubscriberCallDurations
