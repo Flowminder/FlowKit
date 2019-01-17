@@ -13,6 +13,7 @@ problem in hand.
 
 from typing import List
 
+from ..utilities import subscriber_locations
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
 from .call_days import CallDays
@@ -118,13 +119,15 @@ def subscriber_location_cluster(
         buffer = kwargs.pop("buffer", 0)
 
         cd = CallDays(
-            start=start,
-            stop=stop,
-            hours=hours,
-            level="versioned-site",
-            table=table,
-            subscriber_identifier=subscriber_identifier,
-            **kwargs,
+            subscriber_locations(
+                start=start,
+                stop=stop,
+                hours=hours,
+                level="versioned-site",
+                table=table,
+                subscriber_identifier=subscriber_identifier,
+                **kwargs,
+            )
         )
 
         return HartiganCluster(

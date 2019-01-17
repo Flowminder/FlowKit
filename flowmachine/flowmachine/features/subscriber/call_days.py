@@ -12,10 +12,10 @@ specified time period.
 """
 from typing import List, Union
 
-from flowmachine.core import JoinToLocation
-from flowmachine.utils.utils import get_columns_for_level
+from ...core import JoinToLocation
+from ...utils.utils import get_columns_for_level
 from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import subscriber_locations, _SubscriberCells
+from ..utilities.subscriber_locations import _SubscriberCells
 
 
 class CallDays(SubscriberFeature):

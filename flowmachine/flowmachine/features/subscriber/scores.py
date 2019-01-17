@@ -11,7 +11,7 @@ on a scoring dictionary.
 import re
 import datetime as dt
 from _md5 import md5
-from typing import List
+from typing import List, Dict, Union
 
 from ..utilities.sets import EventTableSubset, EventsTablesUnion
 from ...core import Query
@@ -33,22 +33,12 @@ class EventScore(Query):
 
     Parameters
     ----------
-    work_hour : dict
-      A dictionary whose keys is a tuple that indicates the time window which
-      the scores, which is represented by the dictionary value, refers to. The
-      first value of the key is included in the window and the last value is
-      not. Each value of the tuple can be an integer representing an hour, a
-      string representing a given time (eg `09:30`) or a `datetime.time`
-      instance. If the first value of the tuple is higher than the second one,
-      it indicates a window running across mid-night.
-    work_day : dict
-      A dictionary whose keys is a tuple that indicates the day of the week
-      window which the scores, which is represented by the dictionary value,
-      refers to. The first value of the key is included in the window and the
-      last value is not. Each value of the tuple must be an integer where 0
-      represents Sunday and 6 represents Friday. If the first value of the
-      tuple is higher than the second one, it indicates a window running
-      across Sunday.
+    score_hour : dict
+      A dictionary containing a key for every hour of the day, and a numerical score between
+      zero and 1.
+    score_dow : dict
+      A dictionary containing a key for every day of the week, and a numerical score between
+      zero and 1. Keys should be the lowercase, full name of the day.
     start : str
         iso format date range for the beginning of the time frame,
         e.g. 2016-01-01 or 2016-01-01 14:03:01
@@ -113,18 +103,70 @@ class EventScore(Query):
 
     def __init__(
         self,
-        start,
-        stop,
-        level="admin3",
-        hours="all",
-        table="all",
-        score_hour={(7, 9): 0, (9, 16): 1, (16, 20): 0, (20, 7): -1},
-        score_dow={(1, 5): 1, (5, 5): 0, (6, 1): -1},
-        subscriber_identifier="msisdn",
-        column_name=None,
+        start: str,
+        stop: str,
+        level: str = "admin3",
+        hours: str = "all",
+        table: str = "all",
+        score_hour: Dict[int, float] = {
+            0: -1,
+            1: -1,
+            2: -1,
+            3: -1,
+            4: -1,
+            5: -1,
+            6: -1,
+            7: 0,
+            8: 0,
+            9: 1,
+            10: 1,
+            11: 1,
+            12: 1,
+            13: 1,
+            14: 1,
+            15: 1,
+            16: 1,
+            17: 0,
+            18: 0,
+            19: 0,
+            20: 0,
+            21: -1,
+            22: -1,
+            23: -1,
+        },
+        score_dow: Dict[str, float] = {
+            "monday": 1,
+            "tuesday": 1,
+            "wednesday": 1,
+            "thursday": 0,
+            "friday": -1,
+            "saturday": -1,
+            "sunday": -1,
+        },
+        subscriber_identifier: str = "msisdn",
+        column_name: Union[str, List[str]] = None,
         **kwargs,
     ):
-
+        if set(score_dow.keys()) != {
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+        }:
+            raise ValueError(
+                f"Day of week score dictionary must have values for all days. Only got {set(score_dow.keys())}"
+            )
+        if set(score_hour.keys()) != set(range(24)):
+            raise ValueError(
+                f"Hour of day score dictionary must have values for all hours. Only got {set(score_hour.keys())}"
+            )
+        if not all([-1 <= float(x) <= 1 for x in score_hour.values()]):
+            raise ValueError(f"Hour of day scores must be floats between -1 and 1.")
+        if not all([-1 <= float(x) <= 1 for x in score_dow.values()]):
+            raise ValueError(f"Day of week scores must be floats between -1 and 1.")
         self.score_hour = score_hour
         self.score_dow = score_dow
         self.level = level
@@ -133,108 +175,50 @@ class EventScore(Query):
         self.hours = hours
         self.subscriber_identifier = subscriber_identifier
         self.column_name = column_name
-        self.sds = EventsTablesUnion(
-            start,
-            stop,
-            [subscriber_identifier, "location_id", "datetime"],
-            tables=table,
-            hours=self.hours,
-            subscriber_identifier=self.subscriber_identifier,
+        self.sds = JoinToLocation(
+            EventsTablesUnion(
+                start,
+                stop,
+                [subscriber_identifier, "location_id", "datetime"],
+                tables=table,
+                hours=self.hours,
+                subscriber_identifier=self.subscriber_identifier,
+                **kwargs,
+            ),
+            level=self.level,
+            time_col="datetime",
+            column_name=self.column_name,
             **kwargs,
-        ).date_subsets
-        self.schema = "event_score"
-        self.kwargs = kwargs
+        )
 
         super().__init__()
 
     def _make_query(self):
 
-        interpolate_hour = "CASE "
+        # to_char('2016-01-01'::date, 'day');
+        # select extract(hour from timestamp '2001-02-16 20:38:40');
 
-        for window, score in self.score_hour.items():
-            start, stop = window
-            if type(start) == int:
-                if start == 24:
-                    start = "23:59:59"
-                else:
-                    start = str(start) + ":00:00"
-            if type(stop) == int:
-                if stop == 24:
-                    stop = "23:59:59"
-                else:
-                    stop = str(stop) + ":00:00"
-            if type(start) == str:
-                if len(start) == 5:
-                    start = start + ":00"
-                start = dt.datetime.strptime(start, "%H:%M:%S").time()
-            if type(stop) == str:
-                if len(stop) == 5:
-                    stop = stop + ":00"
-                stop = dt.datetime.strptime(stop, "%H:%M:%S").time()
+        day_of_week_and_hour_added = f"""SELECT *, 
+        trim(to_char(datetime, 'day')) as dow, extract(hour from datetime) as hour 
+        FROM ({self.sds.get_query()}) _"""
 
-            if stop > start:
-                interpolate_hour += f"""
-                WHEN datetime::time >= '{start.strftime("%H:%M:%S")}'::time AND
-                     datetime::time < '{stop.strftime("%H:%M:%S")}'::time THEN {score}
-                """
+        hour_score_case = f"""(CASE 
+        {" ".join(f"WHEN hour={hour} THEN {score}" for hour, score in self.score_hour.items())}
+        END)"""
 
-            elif start > stop:
-                interpolate_hour += f"""
-                WHEN datetime::time >= '{start.strftime("%H:%M:%S")}'::time OR
-                     datetime::time < '{stop.strftime("%H:%M:%S")}'::time THEN {score}
-                """
-
-            else:
-                interpolate_hour += f"""
-                WHEN datetime::time = '{start.strftime("%H:%M:%S")}'::time THEN {score}
-                """
-
-        interpolate_hour += " END"
-
-        interpolate_dow = "CASE "
-
-        for window, score in self.score_dow.items():
-            start, stop = window
-
-            if stop > start:
-                interpolate_dow += f"""
-                WHEN EXTRACT(DOW from datetime) >= {start} AND
-                     EXTRACT(DOW from datetime) < {stop} THEN {score}
-                """
-
-            elif start > stop:
-                interpolate_dow += f"""
-                WHEN EXTRACT(DOW from datetime) >= {start} OR
-                     EXTRACT(DOW FROM datetime) < {stop} THEN {score}
-                """
-
-            else:
-                interpolate_dow += f"""
-                WHEN EXTRACT(DOW from datetime) = {start} THEN {score}
-                """
-
-        interpolate_dow += " END"
-
-        sub_queries = []
-        for sd in self.sds:
-            query = f"""
-            SELECT subscriber, location_id, datetime,
-                   {interpolate_hour} AS score_hour,
-                   {interpolate_dow} AS score_dow
-            FROM ({sd.get_query()}) AS subset_dates
-            """
-            sub_queries.append(query)
-
-        query = "\nUNION ALL\n".join(f"({sq})" for sq in sub_queries)
-        query = JoinToLocation(
-            query,
-            level=self.level,
-            time_col="datetime",
-            column_name=self.column_name,
-            **self.kwargs,
-        )
+        day_score_case = f"""(CASE 
+                {" ".join(f"WHEN dow='{dow}' THEN {score}" for dow, score in self.score_dow.items())}
+                END)"""
 
         location_cols = get_columns_for_level(self.level, self.column_name)
+
+        query = f"""
+        SELECT subscriber, {", ".join(location_cols)}, datetime,
+               {hour_score_case} AS score_hour,
+               {day_score_case} AS score_dow
+        FROM ({day_of_week_and_hour_added}) AS subset_dates
+        """
+
         location_cols = ", ".join([f"scores.{c}" for c in location_cols])
 
         sql = f"""
@@ -243,7 +227,7 @@ class EventScore(Query):
                 {location_cols},
                 SUM(score_hour)::float / COUNT(*) AS score_hour,
                 SUM(score_dow)::float / COUNT(*) AS score_dow
-            FROM ({query.get_query()}) AS scores
+            FROM ({query}) AS scores
             GROUP BY scores.subscriber,
                     {location_cols}
 

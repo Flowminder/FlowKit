@@ -51,6 +51,34 @@ def test_whether_scores_are_within_score_bounds(get_dataframe):
     assert all(min_score >= [-1, -1])
 
 
+@pytest.mark.parametrize("scorer", ["score_hour", "score_dow"])
+@pytest.mark.parametrize("out_of_bounds_val", [-1.5, 2, "NOT_A_NUMBER"])
+def test_out_of_bounds_score_raises(scorer, out_of_bounds_val, flowmachine_connect):
+    """
+    Test whether passing a scoring rule which is out of bounds errors.
+    """
+    scorers = dict(
+        score_hour=dict.fromkeys(range(24), 0),
+        score_dow=dict.fromkeys(
+            {
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+            },
+            0,
+        ),
+    )
+    scorers[scorer][scorers[scorer].popitem()[0]] = out_of_bounds_val
+    with pytest.raises(ValueError):
+        es = EventScore(
+            start="2016-01-01", stop="2016-01-05", level="versioned-site", **scorers
+        )
+
+
 def test_whether_zero_score_returns_only_zero(get_dataframe):
     """
     Test whether passing a scoring rule where all events are scored with 0 returns only 0 scores.
@@ -58,8 +86,19 @@ def test_whether_zero_score_returns_only_zero(get_dataframe):
     es = EventScore(
         start="2016-01-01",
         stop="2016-01-05",
-        score_hour={(0, 24): 0},
-        score_dow={(0, 7): 0},
+        score_hour=dict.fromkeys(range(24), 0),
+        score_dow=dict.fromkeys(
+            {
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+            },
+            0,
+        ),
         level="versioned-site",
     )
     df = get_dataframe(es)
@@ -68,19 +107,14 @@ def test_whether_zero_score_returns_only_zero(get_dataframe):
     assert all(valid.all())
 
 
-def test_whether_score_that_do_not_cover_domain_return_null(get_dataframe):
+def test_whether_score_that_do_not_cover_domain_raises(get_dataframe):
     """
-    Test whether scoring rules that do not cover the whole domain return null values.
+    Test whether scoring rules that do not cover the whole domain is an error.
     """
-    es = EventScore(
-        start="2016-01-01",
-        stop="2016-01-05",
-        score_hour={(7, 9): 0},
-        score_dow={(1, 2): 0},
-    )
-    df = get_dataframe(es)
-    valid = df[["score_hour", "score_dow"]].apply(lambda x: (x.isnull()) | (x == 0))
-    assert all(valid.all())
+    with pytest.raises(ValueError):
+        es = EventScore(start="2016-01-01", stop="2016-01-05", score_hour={0: 0})
+    with pytest.raises(ValueError):
+        es = EventScore(start="2016-01-01", stop="2016-01-05", score_dow={"monday": 0})
 
 
 def test_existing_enumerated_type_initialization_fails():
