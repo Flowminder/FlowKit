@@ -61,8 +61,8 @@ class SubscriberTACs(SubscriberFeature):
         stop,
         hours="all",
         table="all",
+        subscriber_subset=None,
         subscriber_identifier="msisdn",
-        **kwargs,
     ):
         """
 
@@ -76,10 +76,11 @@ class SubscriberTACs(SubscriberFeature):
         self.tbl = EventsTablesUnion(
             start,
             stop,
-            [subscriber_identifier, "tac", "datetime"],
+            columns=[subscriber_identifier, "tac", "datetime"],
             tables=table,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         )
 
         super().__init__()
