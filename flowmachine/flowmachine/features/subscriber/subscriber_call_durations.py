@@ -71,6 +71,7 @@ class SubscriberCallDurations(SubscriberFeature):
         hours="all",
         subscriber_subset=None,
         level=None,
+        size=None,
     ):
         self.start = start
         self.stop = stop
