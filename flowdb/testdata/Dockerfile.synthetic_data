@@ -41,6 +41,8 @@ COPY --chown=postgres bin/generate_synthetic_data.py /opt/synthetic_data/
 ADD --chown=postgres ./synthetic_data/sql/* /docker-entrypoint-initdb.d/sql/syntheticdata/
 ADD --chown=postgres ./test_data/sql/admin*.sql /docker-entrypoint-initdb.d/sql/syntheticdata/
 ADD --chown=postgres ./synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson /opt/synthetic_data/
+# Need to make postgres is owner of any subdirectrories
+RUN chown -R postgres /docker-entrypoint-initdb.d
 
 ENV N_DAYS=7
 ENV N_SUBSCRIBERS=4000
