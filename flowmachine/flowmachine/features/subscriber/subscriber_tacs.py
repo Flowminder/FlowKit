@@ -415,7 +415,7 @@ class SubscriberPhoneType(SubscriberFeature):
         table="all",
         subscriber_identifier="msisdn",
         method="most-common",
-        **kwargs,
+        subscriber_subset=None,
     ):
         """
 
@@ -433,7 +433,7 @@ class SubscriberPhoneType(SubscriberFeature):
                 hours=hours,
                 table=table,
                 subscriber_identifier=subscriber_identifier,
-                **kwargs,
+                subscriber_subset=subscriber_subset,
             )
         else:
             self.subscriber_handsets = SubscriberHandset(
@@ -442,8 +442,8 @@ class SubscriberPhoneType(SubscriberFeature):
                 hours=hours,
                 table=table,
                 subscriber_identifier=subscriber_identifier,
+                subscriber_subset=subscriber_subset,
                 method=method,
-                **kwargs,
             )
         self.method = method
         super().__init__()
