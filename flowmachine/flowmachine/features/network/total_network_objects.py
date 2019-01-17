@@ -240,7 +240,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
         network_object="cell",
         level="admin0",
         *args,
-        **kwargs
+        **kwargs,
     ):
         self.total_objs = TotalNetworkObjects(
             start=start,
@@ -250,7 +250,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             network_object=network_object,
             level=level,
             *args,
-            **kwargs
+            **kwargs,
         )
         statistic = statistic.lower()
         if statistic in valid_stats:
@@ -311,7 +311,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             by=by,
             level=total_objs.level,
             *total_objs.args,
-            **total_objs.kwargs
+            **total_objs.kwargs,
         )
 
     def _make_query(self):
