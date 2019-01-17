@@ -67,12 +67,13 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
         subscriber_identifier="msisdn",
         direction="both",
         exclude_self_calls=True,
-        **kwargs,
+        subscriber_subset=None,
     ):
         """
         """
@@ -101,7 +102,8 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             columns=cols,
             tables=self.table,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
         ).get_query()
         self._cols = ["subscriber", "msisdn_counterpart", "events", "proportion"]
         super().__init__()
