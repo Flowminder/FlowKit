@@ -111,10 +111,10 @@ class LastLocation(BaseLocation):
         self.subscriber_identifier = subscriber_identifier
         self.column_name = column_name
         self.subscriber_locs = subscriber_locations(
-            self.start,
-            self.stop,
-            self.level,
-            self.hours,
+            start=self.start,
+            stop=self.stop,
+            level=self.level,
+            hours=self.hours,
             table=self.table,
             subscriber_identifier=self.subscriber_identifier,
             column_name=self.column_name,
