@@ -12,7 +12,7 @@ import re
 import datetime as dt
 from typing import List
 
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 from ...core import Query
 from ...core import JoinToLocation
 from ...utils.utils import get_columns_for_level

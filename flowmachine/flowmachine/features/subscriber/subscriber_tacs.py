@@ -13,7 +13,7 @@ a subscriber.
 import warnings
 from typing import List
 
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ...core import Table
 

@@ -12,7 +12,7 @@ later used for computing subscriber features.
 """
 import logging
 
-from .sets import EventsTablesUnion
+from .events_tables_union import EventsTablesUnion
 from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 
 from ...core.query import Query

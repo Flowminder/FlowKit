@@ -10,7 +10,7 @@ have done over a certain time period.
 
 """
 from .metaclasses import SubscriberFeature
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 
 
 class SubscriberDegree(SubscriberFeature):

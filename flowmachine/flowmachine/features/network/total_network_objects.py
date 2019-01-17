@@ -14,7 +14,7 @@ from ...core.mixins import GeoDataMixin
 from ...core import JoinToLocation
 from ...utils.utils import get_columns_for_level
 from ...core.query import Query
-from ...features.utilities import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 
 valid_stats = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
 valid_periods = ["second", "minute", "hour", "day", "month", "year"]

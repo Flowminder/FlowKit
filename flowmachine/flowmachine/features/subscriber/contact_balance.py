@@ -13,7 +13,7 @@ subscriber's total event count.
 import logging
 
 from .metaclasses import SubscriberFeature
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
 
 logger = logging.getLogger("flowmachine").getChild(__name__)

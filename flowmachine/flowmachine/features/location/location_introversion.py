@@ -24,7 +24,7 @@ from ...core.mixins import GeoDataMixin
 
 
 from ...core import JoinToLocation
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 
 
 class LocationIntroversion(GeoDataMixin, Query):
