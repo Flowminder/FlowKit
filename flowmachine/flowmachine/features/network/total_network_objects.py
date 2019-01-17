@@ -62,6 +62,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         self,
         start=None,
         stop=None,
+        *,
         table="all",
         period="day",
         network_object="cell",
@@ -70,9 +71,10 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         size=None,
         polygon_table=None,
         geom_col="geom",
-        **kwargs
+        hours="all",
+        subscriber_subset=None,
+        subscriber_identifier="msisdn",
     ):
-        self.kwargs = kwargs
         self.table = table.lower()
         self.start = (
             self.connection.min_date(table=table).strftime("%Y-%m-%d")
@@ -93,7 +95,9 @@ class TotalNetworkObjects(GeoDataMixin, Query):
                 self.stop,
                 tables=self.table,
                 columns=["location_id", "datetime"],
-                **kwargs
+                hours=hours,
+                subscriber_subset=subscriber_subset,
+                subscriber_identifier=subscriber_identifier,
             )
         elif self.network_object in {"versioned-cell", "versioned-site"}:
             events = EventsTablesUnion(
@@ -101,7 +105,9 @@ class TotalNetworkObjects(GeoDataMixin, Query):
                 self.stop,
                 tables=self.table,
                 columns=["location_id", "datetime"],
-                **kwargs
+                hours=hours,
+                subscriber_subset=subscriber_subset,
+                subscriber_identifier=subscriber_identifier,
             )
             events = JoinToLocation(
                 events,
