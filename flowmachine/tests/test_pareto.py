@@ -30,7 +30,7 @@ def paretos(df):
     df = df.set_index("subscriber")
     ps = []
     for u in subscribers:
-        counts = df.ix[u][["msisdn_counterpart", "events"]].values
+        counts = df.loc[u][["msisdn_counterpart", "events"]].values
         if counts.shape == (2,):
             ps.append(1)
         else:
@@ -42,7 +42,7 @@ def paretos(df):
 def test_pareto(get_dataframe):
     """Test pareto proportion is correct for some hand picked subscribers."""
     p = ParetoInteractions("2016-01-01", "2016-01-02")
-    assert all(get_dataframe(p).set_index("subscriber").ix["VkzMxYjv7mYn53oK"] == 0.75)
+    assert all(get_dataframe(p).set_index("subscriber").loc["VkzMxYjv7mYn53oK"] == 0.75)
 
 
 def test_pareto_nepal(get_dataframe):

@@ -17,9 +17,9 @@ def test_total_subscriber_events_correct(get_dataframe):
     te = TotalSubscriberEvents("2016-01-01", "2016-01-04")
     df = get_dataframe(te)
     set_df = df.set_index("subscriber")
-    assert set_df.ix["1d29oEA95KEzAKlW"][0] == 16
-    assert set_df.ix["x8o7D2Ax8Lg5Y0MB"][0] == 18
-    assert set_df.ix["yObw75JkAZ0vKRlz"][0] == 5
+    assert set_df.loc["1d29oEA95KEzAKlW"][0] == 16
+    assert set_df.loc["x8o7D2Ax8Lg5Y0MB"][0] == 18
+    assert set_df.loc["yObw75JkAZ0vKRlz"][0] == 5
 
 
 def test_total_subscriber_events_calls_only(get_dataframe):
@@ -29,7 +29,7 @@ def test_total_subscriber_events_calls_only(get_dataframe):
     df = get_dataframe(
         TotalSubscriberEvents("2016-01-01", "2016-01-04", event_type="calls")
     ).set_index("subscriber")
-    assert df.ix["038OVABN11Ak4W5P"][0] == 9
+    assert df.loc["038OVABN11Ak4W5P"][0] == 9
 
 
 def test_total_subscriber_events_outgoing_only(get_dataframe):
@@ -39,7 +39,7 @@ def test_total_subscriber_events_outgoing_only(get_dataframe):
     df = get_dataframe(
         TotalSubscriberEvents("2016-01-01", "2016-01-04", direction="out")
     ).set_index("subscriber")
-    assert df.ix["038OVABN11Ak4W5P"][0] == 4
+    assert df.loc["038OVABN11Ak4W5P"][0] == 4
 
 
 def test_total_subscriber_events_type_direction(get_dataframe):
@@ -51,4 +51,4 @@ def test_total_subscriber_events_type_direction(get_dataframe):
             "2016-01-01", "2016-01-04", event_type="sms", direction="in"
         )
     ).set_index("subscriber")
-    assert df.ix["038OVABN11Ak4W5P"][0] == 3
+    assert df.loc["038OVABN11Ak4W5P"][0] == 3

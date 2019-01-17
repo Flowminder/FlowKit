@@ -48,7 +48,7 @@ def test_pass_modal_location(get_dataframe):
     Test that we can pass a home location object to the class
     """
 
-    hl = ModalLocation(
+    ml = ModalLocation(
         *[
             daily_location(d, level="lat-lon")
             for d in list_of_dates("2016-01-01", "2016-01-06")
@@ -56,7 +56,7 @@ def test_pass_modal_location(get_dataframe):
     )
 
     df = get_dataframe(
-        Displacement("2016-01-01", "2016-01-07", modal_locations=hl, statistic="avg")
+        Displacement("2016-01-01", "2016-01-07", modal_locations=ml, statistic="avg")
     )
     df = df.set_index("subscriber")
 
@@ -70,12 +70,12 @@ def test_error_when_modal_location_not_latlong():
     is not using level lat-lon
     """
 
-    hl = ModalLocation(
+    ml = ModalLocation(
         *[daily_location(d) for d in list_of_dates("2016-01-01", "2016-01-02")]
     )
 
     with pytest.raises(ValueError):
-        Displacement("2016-01-01", "2016-01-02", modal_locations=hl, statistic="avg")
+        Displacement("2016-01-01", "2016-01-02", modal_locations=ml, statistic="avg")
 
 
 def test_get_all_users_in_modal_location(get_dataframe):
@@ -87,18 +87,18 @@ def test_get_all_users_in_modal_location(get_dataframe):
     p1 = ("2016-01-02 10:00:00", "2016-01-02 12:00:00")
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
 
-    hl = ModalLocation(
+    ml = ModalLocation(
         *[
             daily_location(d, level="lat-lon", hours=(12, 13))
             for d in list_of_dates(p1[0], p1[1])
         ]
     )
-    d = Displacement(p2[0], p2[1], modal_locations=hl)
+    d = Displacement(p2[0], p2[1], modal_locations=ml)
 
-    hl_subscribers = set(get_dataframe(hl).subscriber)
+    ml_subscribers = set(get_dataframe(ml).subscriber)
     d_subscribers = set(get_dataframe(d).subscriber)
 
-    assert not (hl_subscribers - d_subscribers)
+    assert not (ml_subscribers - d_subscribers)
 
 
 def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
@@ -111,13 +111,13 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
     subscriber = "OdM7np8LYEp1mkvP"
 
-    hl = ModalLocation(
+    ml = ModalLocation(
         *[
             daily_location(d, level="lat-lon", hours=(12, 13))
             for d in list_of_dates(p1[0], p1[1])
         ]
     )
-    d = Displacement(p2[0], p2[1], modal_locations=hl)
+    d = Displacement(p2[0], p2[1], modal_locations=ml)
 
     df = get_dataframe(d).set_index("subscriber")
 

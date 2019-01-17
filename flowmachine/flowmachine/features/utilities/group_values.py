@@ -8,7 +8,7 @@ Utility class that allows the subscriber to iterate through arbitrary groups of 
 and apply a python function to the results.
 """
 from ...core.query import Query
-from .sets import EventTableSubset
+from .event_table_subset import EventTableSubset
 
 
 class GroupValues(Query):

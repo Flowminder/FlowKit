@@ -43,7 +43,7 @@ def test_subscriber_tacs(get_dataframe):
     tacs = sorted(
         [42188591.0, 40909697.0, 48693702.0, 42188591.0, 92380772.0, 42188591.0]
     )
-    assert sorted(tc.ix["1p4MYbA1Y4bZzBQa"].tac.tolist()) == tacs
+    assert sorted(tc.loc["1p4MYbA1Y4bZzBQa"].tac.tolist()) == tacs
 
 
 def test_modal_tac(get_dataframe):
@@ -55,10 +55,10 @@ def test_modal_tac(get_dataframe):
         "subscriber"
     )
     assert (
-        tc.ix["0DB8zw67E9mZAPK2"].tac.mode()[0]
+        tc.loc["0DB8zw67E9mZAPK2"].tac.mode()[0]
         == get_dataframe(SubscriberTAC("2016-01-01", "2016-01-02"))
         .set_index("subscriber")
-        .ix["0DB8zw67E9mZAPK2"]
+        .loc["0DB8zw67E9mZAPK2"]
         .tac
     )
 
@@ -71,10 +71,10 @@ def test_last_tac(get_dataframe):
         .set_index("subscriber")
     )
     assert (
-        tc.ix["zvaOknzKbEVD2eME"].tac.tolist()[-1]
+        tc.loc["zvaOknzKbEVD2eME"].tac.tolist()[-1]
         == get_dataframe(SubscriberTAC("2016-01-01", "2016-01-02", method="last"))
         .set_index("subscriber")
-        .ix["zvaOknzKbEVD2eME"]
+        .loc["zvaOknzKbEVD2eME"]
         .tac
     )
 
@@ -93,7 +93,7 @@ def test_subscriber_handsets(get_dataframe):
         "subscriber"
     )
     tacs = sorted(["LB-01", "GK-00", "VY-01", "LB-01", "LM-34", "LB-01"])
-    assert sorted(tc.ix["1p4MYbA1Y4bZzBQa"].model.tolist()) == tacs
+    assert sorted(tc.loc["1p4MYbA1Y4bZzBQa"].model.tolist()) == tacs
 
 
 def test_subscriber_handset(get_dataframe):
@@ -103,7 +103,7 @@ def test_subscriber_handset(get_dataframe):
     tc = get_dataframe(SubscriberHandset("2016-01-01", "2016-01-02")).set_index(
         "subscriber"
     )
-    assert tc.ix["1p4MYbA1Y4bZzBQa"].model == "LB-01"
+    assert tc.loc["1p4MYbA1Y4bZzBQa"].model == "LB-01"
 
 
 def test_subscriber_phonetype(get_dataframe):
@@ -111,7 +111,7 @@ def test_subscriber_phonetype(get_dataframe):
     assert (
         get_dataframe(SubscriberPhoneType("2016-01-01", "2016-01-07"))
         .set_index("subscriber")
-        .ix["038OVABN11Ak4W5P"]
+        .loc["038OVABN11Ak4W5P"]
         .handset_type
         == "Smart"
     )
@@ -119,7 +119,7 @@ def test_subscriber_phonetype(get_dataframe):
     assert (
         get_dataframe(SubscriberPhoneType("2016-01-01", "2016-01-07", method="last"))
         .set_index("subscriber")
-        .ix["YMBqRkzbbxGkX3zA"]
+        .loc["YMBqRkzbbxGkX3zA"]
         .handset_type
         == "Feature"
     )

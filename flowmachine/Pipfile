@@ -30,6 +30,7 @@ black = "==18.9b0"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
+pytest-testmon = "*"
 asynctest = "*"
 flowmachine = {editable = true,path = "."}
 cachey = "*"

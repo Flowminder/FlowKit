@@ -24,7 +24,7 @@ from ...core.mixins import GeoDataMixin
 
 
 from ...core import JoinToLocation
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 
 
 class LocationIntroversion(GeoDataMixin, Query):
@@ -70,8 +70,6 @@ class LocationIntroversion(GeoDataMixin, Query):
     direction : str, default 'both'.
         Determines if query should filter only outgoing
         events ('out'), incoming events ('in'), or both ('both').
-    kwargs :
-        Passed to flowmachine.JoinToLocation
 
     Notes
     -----
@@ -92,7 +90,20 @@ class LocationIntroversion(GeoDataMixin, Query):
     """
 
     def __init__(
-        self, start, stop, table="all", level="cell", direction="both", **kwargs
+        self,
+        start,
+        stop,
+        *,
+        table="all",
+        level="cell",
+        direction="both",
+        hours="all",
+        subscriber_subset=None,
+        subscriber_identifier="msisdn",
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
+        column_name=None,
     ):
 
         self.query_columns = ["id", "outgoing", "location_id", "datetime"]
@@ -101,7 +112,6 @@ class LocationIntroversion(GeoDataMixin, Query):
         self.table = table
         self.level = level
         self.direction = direction
-        self._kwargs = kwargs
 
         if self.level == "versioned-site":
             raise NotImplementedError(
@@ -114,7 +124,9 @@ class LocationIntroversion(GeoDataMixin, Query):
             self.stop,
             columns=self.query_columns,
             tables=self.table,
-            **kwargs,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
         )
         self.level_columns = ["location_id"]
 
@@ -123,7 +135,10 @@ class LocationIntroversion(GeoDataMixin, Query):
                 self.unioned_query,
                 level=self.level,
                 time_col="datetime",
-                **self._kwargs,
+                column_name=column_name,
+                size=size,
+                polygon_table=polygon_table,
+                geom_col=geom_col,
             )
             cols = set(self.join_to_location.column_names)
             if self.level != "lat-lon":

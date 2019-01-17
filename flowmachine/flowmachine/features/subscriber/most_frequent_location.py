@@ -73,10 +73,6 @@ class MostFrequentLocation(BaseLocation):
         Option, none-standard, name of the column that identifies the
         spatial level, i.e. could pass admin3pcod to use the admin 3 pcode
         as opposed to the name of the region.
-    kwargs :
-        Eventually passed to flowmachine.spatial_metrics.spatial_helpers.
-        JoinToLocation. Here you can specify a non standard set of polygons.
-        See the doc string of JoinToLocation for more details.
 
     Notes
     -----
@@ -97,7 +93,12 @@ class MostFrequentLocation(BaseLocation):
         table="all",
         subscriber_identifier="msisdn",
         column_name=None,
-        **kwargs
+        *,
+        ignore_nulls=True,
+        subscriber_subset=None,
+        polygon_table=None,
+        size=None,
+        radius=None,
     ):
         """
 
@@ -112,15 +113,20 @@ class MostFrequentLocation(BaseLocation):
         self.subscriber_identifier = subscriber_identifier
         self.column_name = column_name
         self.subscriber_locs = subscriber_locations(
-            self.start,
-            self.stop,
-            self.level,
-            self.hours,
+            start=self.start,
+            stop=self.stop,
+            level=self.level,
+            hours=self.hours,
             table=self.table,
             subscriber_identifier=self.subscriber_identifier,
             column_name=self.column_name,
-            **kwargs
+            ignore_nulls=ignore_nulls,
+            subscriber_subset=subscriber_subset,
+            polygon_table=polygon_table,
+            size=size,
+            radius=radius,
         )
+
         super().__init__()
 
     def _make_query(self):

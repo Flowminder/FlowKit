@@ -17,7 +17,9 @@ import pytest
 )
 @pytest.mark.parametrize("stat", valid_stats)
 def test_subscriber_call_durations_column_names(query, exemplar_level_param, stat):
-    """ Test that column_names property matches head(0)"""
+    """
+    Test that column_names property matches head(0)
+    """
     query_instance = query(
         "2016-01-01", "2016-01-07", **exemplar_level_param, statistic=stat
     )
@@ -25,7 +27,9 @@ def test_subscriber_call_durations_column_names(query, exemplar_level_param, sta
 
 
 def test_polygon_tables(get_dataframe):
-    """Test that custom polygons can be used."""
+    """
+    Test that custom polygons can be used.
+    """
     per_location_durations = PerLocationSubscriberCallDurations(
         "2016-01-01",
         "2016-01-07",
@@ -65,7 +69,9 @@ def test_polygon_tables(get_dataframe):
 
 
 def test_durations(get_dataframe):
-    """Test some hand picked durations"""
+    """
+    Test some hand picked durations
+    """
     out_durations = SubscriberCallDurations("2016-01-01", "2016-01-07")
     df = get_dataframe(out_durations).set_index("subscriber")
     assert df.loc["nL9KYGXpz2G5mvDa"].duration_sum == 12281
@@ -80,7 +86,9 @@ def test_durations(get_dataframe):
 
 
 def test_paired_durations(get_dataframe):
-    """Test paired durations sum to the same as in/out durations"""
+    """
+    Test paired durations sum to the same as in/out durations
+    """
     paired_durations = PairedSubscriberCallDurations("2016-01-01", "2016-01-07")
     df = get_dataframe(paired_durations)
     assert df.groupby("subscriber").sum().loc["nL9KYGXpz2G5mvDa"].duration_sum == 12281
@@ -91,7 +99,9 @@ def test_paired_durations(get_dataframe):
 
 
 def test_per_location_durations(get_dataframe):
-    """Test per location durations sums to the same as in/out durations"""
+    """
+    Test per location durations sums to the same as in/out durations
+    """
     per_location_durations = PerLocationSubscriberCallDurations(
         "2016-01-01", "2016-01-07"
     )
@@ -111,7 +121,9 @@ def test_per_location_durations(get_dataframe):
 
 
 def test_paired_per_location_durations(get_dataframe):
-    """Test paired per location durations sum to the same as in/out durations"""
+    """
+    Test paired per location durations sum to the same as in/out durations
+    """
     paired_per_location_durations = PairedPerLocationSubscriberCallDurations(
         "2016-01-01", "2016-01-07"
     )
@@ -124,7 +136,9 @@ def test_paired_per_location_durations(get_dataframe):
 
 
 def test_direction_checks():
-    """Test that bad direction params are rejected"""
+    """
+    Test that bad direction params are rejected
+    """
     with pytest.raises(ValueError):
         PerLocationSubscriberCallDurations("2016-01-01", "2016-01-07", direction="alf")
     with pytest.raises(ValueError):
@@ -132,6 +146,8 @@ def test_direction_checks():
 
 
 def test_long_runtime_warning():
-    """Test that a warning about potentially long runtime is raised."""
+    """
+    Test that a warning about potentially long runtime is raised.
+    """
     with pytest.warns(UserWarning):
         PairedPerLocationSubscriberCallDurations("2016-01-01", "2016-01-07")
