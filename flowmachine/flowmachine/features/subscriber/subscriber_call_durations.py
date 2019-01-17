@@ -73,6 +73,7 @@ class SubscriberCallDurations(SubscriberFeature):
         level=None,
         size=None,
         column_name=None,
+        polygon_table=None,
     ):
         self.start = start
         self.stop = stop
@@ -321,6 +322,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
         level=None,
         size=None,
         column_name=None,
+        polygon_table=None,
         subscriber_identifier="msisdn",
         statistic="sum",
         hours="all",
