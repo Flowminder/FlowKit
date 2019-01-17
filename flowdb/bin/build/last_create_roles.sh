@@ -28,6 +28,13 @@
 #               for visualization applications.
 #
 
+if [ ! -e /run/secrets/POSTGRES_PASSWORD_FILE -a -z "$POSTGRES_PASSWORD" ];
+then
+    echo "No password supplied for superuser!"
+    echo "Set the POSTGRES_PASSWORD environment variable, or provide the POSTGRES_PASSWORD_FILE secret"
+    exit 1
+fi
+
 if [ -e /run/secrets/FM_DB_USER ];
 then
     echo "Using secrets for analyst user."
@@ -139,6 +146,13 @@ do
         END;
         "
 done
+
+echo "Give $FM_USER role read and update access to cache_touches sequence"
+psql --dbname="$POSTGRES_DB" -c "
+    BEGIN;
+        GRANT USAGE, SELECT, UPDATE ON SEQUENCE cache.cache_touches TO $FM_USER;
+    COMMIT;
+    "
 
 echo "Give $API_USER role read access to tables created under cache schema."
 psql --dbname="$POSTGRES_DB" -c "

@@ -113,6 +113,6 @@ class EventsTablesUnion(Query):
         return sql
 
     @property
-    def table_name(self):
+    def fully_qualified_table_name(self):
         # EventTableSubset are a simple select from events, and should not be cached
         raise NotImplementedError

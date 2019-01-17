@@ -14,6 +14,7 @@ running the model.
 
 
 """
+import time
 from abc import ABCMeta, abstractmethod
 from functools import wraps
 
@@ -72,7 +73,9 @@ def model_result(f):
         mr = ModelResult(self, run_args=args, run_kwargs=kwargs)
         if mr.is_stored:
             return mr
+        start_time = time.process_time()
         mr._df = f(self, *args, **kwargs)
+        mr._runtime = time.process_time() - start_time
         return mr
 
     return new_f

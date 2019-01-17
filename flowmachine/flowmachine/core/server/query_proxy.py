@@ -3,7 +3,9 @@ import redis
 import redis_lock
 from json import dumps, loads, JSONDecodeError
 
-from flowmachine.core import Query, Table
+
+from flowmachine.core import Query
+from flowmachine.core.cache import get_query_object_by_id, cache_table_exists
 from flowmachine.features import (
     daily_location,
     ModalLocation,
@@ -252,27 +254,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
     return q
 
 
-def cache_table_exists(query_id):
-    """
-    Return True if a cache table for the query with
-    id `query_id` exist, otherwise return False.
-
-    Parameters
-    ----------
-    query_id : str
-        The query id to check.
-
-    Returns
-    -------
-    bool
-    """
-    try:
-        _ = Table(f"x{query_id}", "cache")
-        return True
-    except (AttributeError, ValueError):
-        return False
-
-
 def get_sql_for_query_id(query_id):
     """
     Return the SQL which, when run against flowdb, will
@@ -287,7 +268,7 @@ def get_sql_for_query_id(query_id):
     -------
     str
     """
-    q = Table(f"x{query_id}", "cache")
+    q = get_query_object_by_id(Query.connection, query_id)
     sql = q.get_query()
     return sql
 
@@ -414,7 +395,7 @@ class QueryProxy:
         if self.redis_interface.has_lock(query_id):
             status = "running"
         else:
-            if cache_table_exists(query_id):
+            if cache_table_exists(Query.connection, query_id):
                 status = "done"
             else:
                 status = "awol"

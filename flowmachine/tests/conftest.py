@@ -14,6 +14,7 @@ import pytest
 import logging
 import flowmachine
 from flowmachine.core import Query
+from flowmachine.core.cache import reset_cache
 from flowmachine.features import EventTableSubset
 
 logger = logging.getLogger()
@@ -74,8 +75,7 @@ def skip_datecheck(monkeypatch):
 def flowmachine_connect():
     con = flowmachine.connect()
     yield con
-    for q in Query.get_stored():  # Remove any cached queries
-        q.invalidate_db_cache()
+    reset_cache(con)
     con.engine.dispose()  # Close the connection
     Query.redis.flushdb()  # Empty the redis
     del Query.connection  # Ensure we recreate everything at next use
@@ -123,6 +123,7 @@ def clean_env(monkeypatch):
     monkeypatch.delenv("POOL_OVERFLOW", raising=False)
     monkeypatch.delenv("REDIS_HOST", raising=False)
     monkeypatch.delenv("REDIS_PORT", raising=False)
+    monkeypatch.delenv("REDIS_PASSWORD", raising=False)
 
 
 @pytest.fixture

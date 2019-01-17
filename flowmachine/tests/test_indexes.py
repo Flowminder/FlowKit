@@ -27,6 +27,6 @@ def test_index_created(flowmachine_connect):
     dl = daily_location("2016-01-01", "2016-01-02")
     dl.store().result()
     ix_qur = "SELECT * FROM pg_indexes WHERE tablename='{}'".format(
-        dl.table_name.split(".")[1]
+        dl.fully_qualified_table_name.split(".")[1]
     )
     assert len(flowmachine_connect.fetch(ix_qur)) == 2

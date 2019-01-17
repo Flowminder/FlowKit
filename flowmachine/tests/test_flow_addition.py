@@ -83,4 +83,6 @@ def test_flow_scalar_addition_store(flowmachine_connect):
     rel = 1 + fl
     rel.store().result()
 
-    assert flowmachine_connect.has_table(*rel.table_name.split(".")[::-1])
+    assert flowmachine_connect.has_table(
+        *rel.fully_qualified_table_name.split(".")[::-1]
+    )

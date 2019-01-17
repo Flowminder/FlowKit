@@ -12,6 +12,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
+## [0.2.1]
+### Fixed
+- Fixed being unable to build if the port used by `git://` is not open
+
+## [0.2.0]
+### Added
+- Added utilities for managing and inspecting the query cache
+
+## [0.1.2]
+### Changed
+- FlowDB now requires a password to be set for the flowdb superuser
+
+## [0.1.1]
+### Added
+- Support for password protected redis
+
+### Changed
+- Changed the default redis image to bitnami's redis (to enable password protection)
+
 ## [0.1.0]
 ### Added
 - Added structured logging of access attempts, query running, and data access
@@ -28,19 +47,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed being unable to delete groups in FlowAuth
 - Fixed `make up` not working with defaults
 
-### Removed
-
 ## [0.0.5]
 ### Added
 - Added Python 3.6 support for FlowClient
 
-### Changed
 
-### Fixed
-
-### Removed
-
-
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.1.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.2.1...master
+[0.2.1]: https://github.com/Flowminder/FlowKit/compare/0.2.0...0.2.1
+[0.2.0]: https://github.com/Flowminder/FlowKit/compare/0.1.2...0.2.0
+[0.1.2]: https://github.com/Flowminder/FlowKit/compare/0.1.1...0.1.2
+[0.1.1]: https://github.com/Flowminder/FlowKit/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/Flowminder/FlowKit/compare/0.0.5...0.1.0
 [0.0.5]: https://github.com/Flowminder/FlowKit/compare/0.0.4...0.0.5
