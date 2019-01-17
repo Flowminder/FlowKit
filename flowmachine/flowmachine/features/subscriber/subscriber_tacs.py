@@ -150,7 +150,6 @@ class SubscriberTAC(SubscriberFeature):
         subscriber_subset=None,
         subscriber_identifier="msisdn",
         method="most-common",
-        **kwargs,
     ):
         """
 
