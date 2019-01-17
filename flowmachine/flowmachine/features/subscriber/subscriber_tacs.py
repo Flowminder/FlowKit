@@ -325,11 +325,12 @@ class SubscriberHandset(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
         subscriber_identifier="msisdn",
         method="most-common",
-        **kwargs,
+        subscriber_subset=None,
     ):
         """
 
@@ -347,7 +348,7 @@ class SubscriberHandset(SubscriberFeature):
             table=table,
             subscriber_identifier=subscriber_identifier,
             method=method,
-            **kwargs,
+            subscriber_subset=subscriber_subset,
         )
         self.method = method
         self.tacs = Table("infrastructure.tacs")
