@@ -59,6 +59,7 @@ class SubscriberTACs(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
         subscriber_subset=None,
@@ -143,8 +144,10 @@ class SubscriberTAC(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
+        subscriber_subset=None,
         subscriber_identifier="msisdn",
         method="most-common",
         **kwargs,
@@ -167,7 +170,7 @@ class SubscriberTAC(SubscriberFeature):
             hours=hours,
             table=table,
             subscriber_identifier=subscriber_identifier,
-            **kwargs,
+            subscriber_subset=subscriber_subset,
         )
         self.method = method
         if self.method not in ("most-common", "last"):
