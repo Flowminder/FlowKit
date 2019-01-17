@@ -31,22 +31,48 @@ class CallDays(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    args, kwargs :
-        Passed to subscriber_locations
 
     See Also
     --------
     flowmachine.features.subscriber_locations
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        start,
+        stop,
+        *,
+        level="cell",
+        hours="all",
+        table="all",
+        subscriber_identifier="msisdn",
+        ignore_nulls=True,
+        column_name=None,
+        subscriber_subset=None,
+        polygon_table=None,
+        size=None,
+        radius=None,
+    ):
         """
 
 
         """
         # the call days class just need the distinct subscriber-location
         # per day
-        self.ul = subscriber_locations(*args, **kwargs)
+        self.ul = subscriber_locations(
+            start=start,
+            stop=stop,
+            level=level,
+            hours=hours,
+            table=table,
+            subscriber_identifier=subscriber_identifier,
+            ignore_nulls=ignore_nulls,
+            column_name=column_name,
+            subscriber_subset=subscriber_subset,
+            polygon_table=polygon_table,
+            size=size,
+            radius=radius,
+        )
         self.level = self.ul.level
         self.column_name = self.ul.column_name
 
