@@ -22,13 +22,16 @@ from flowmachine.features import (
     HartiganCluster,
     subscriber_location_cluster,
     EventScore,
+    subscriber_locations,
 )
 
 
 @pytest.mark.usefixtures("skip_datecheck")
 def test_hartigan_column_names():
     """Test that Hartigan has correct column_names property."""
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
     hartigan = HartiganCluster(cd, 50)
     assert hartigan.head(0).columns.tolist() == hartigan.column_names
 
@@ -36,7 +39,9 @@ def test_hartigan_column_names():
 @pytest.mark.usefixtures("skip_datecheck")
 def test_joined_hartigan_column_names():
     """Test that Hartigan has correct column_names property."""
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
     hartigan = HartiganCluster(cd, 50)
     es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
     joined = hartigan.join_to_cluster_components(es)
@@ -52,7 +57,9 @@ def test_hartigan_type_error():
 @pytest.mark.usefixtures("skip_datecheck")
 def test_joined_hartigan_type_error():
     """Test that joining hartigan to something which isn't query like raises a type error."""
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
     hartigan = HartiganCluster(cd, 50)
     with pytest.raises(TypeError):
         hartigan.join_to_cluster_components("banana")
@@ -85,7 +92,9 @@ def test_cluster_is_within_envelope(get_dataframe):
     """
     Test that all the clusters are within the enveloped formed by all the towers in the cluster.
     """
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
 
     hartigan = HartiganCluster(cd, 50)
     har_df = hartigan.to_geopandas()
@@ -99,7 +108,9 @@ def test_first_call_day_in_first_cluster(get_dataframe):
     """
     Test that the first ranked call day of each subscriber is in the first cluster of each subscriber.
     """
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
     cd_df = get_dataframe(cd)
 
     hartigan = HartiganCluster(cd, 50)
@@ -122,7 +133,9 @@ def test_bigger_radius_yields_fewer_clusters(get_dataframe):
     Test whether bigger radius yields fewer clusters per subscriber
     """
     radius = [1, 2, 5, 10, 50]
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
 
     h = HartiganCluster(cd, radius[0]).get_dataframe()
     nclusters_small_radius = h.groupby("subscriber").size()
@@ -138,7 +151,9 @@ def test_different_call_days_format(get_dataframe):
     """
     Test whether we can pass different call days format such as table name, SQL query and CallDays class.
     """
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
     har = HartiganCluster(cd, 50).get_dataframe()
     assert isinstance(har, pd.DataFrame)
 
@@ -156,7 +171,9 @@ def test_call_threshold_works(get_dataframe):
     """
     Test whether a call threshold above 1 limits the number of clusters.
     """
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
 
     hartigan = HartiganCluster(cd, 50)
     har_df = hartigan.to_geopandas()
@@ -171,7 +188,9 @@ def test_buffered_hartigan(get_dataframe):
     """
     Test whether Hartigan produces buffered clusters when buffer is larger than 0.
     """
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
 
     har = HartiganCluster(cd, 50, buffer=2).to_geopandas()
     areas = har.geometry.area
@@ -187,7 +206,9 @@ def test_all_options_hartigan(get_dataframe):
     """
     Test whether Hartigan works when changing all options.
     """
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
 
     har = HartiganCluster(cd, 50, buffer=2, call_threshold=2).to_geopandas()
     assert set(har.columns) == set(
@@ -199,7 +220,9 @@ def test_join_returns_the_same_clusters(get_dataframe):
     """
     Test whether joining to another table for which the start and stop time are the same yields the same clusters.
     """
-    cd = CallDays("2016-01-01", "2016-01-04", level="versioned-site")
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-04", level="versioned-site")
+    )
 
     hartigan = HartiganCluster(cd, 50)
     har_df = hartigan.to_geopandas()

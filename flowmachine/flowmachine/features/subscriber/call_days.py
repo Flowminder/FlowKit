@@ -10,11 +10,12 @@ represent the number of days that a subscriber
 is connected to a given tower within a
 specified time period.
 """
-from typing import List
+from typing import List, Union
 
+from flowmachine.core import JoinToLocation
 from flowmachine.utils.utils import get_columns_for_level
 from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import subscriber_locations
+from ..utilities.subscriber_locations import subscriber_locations, _SubscriberCells
 
 
 class CallDays(SubscriberFeature):
@@ -25,30 +26,22 @@ class CallDays(SubscriberFeature):
 
     Parameters
     ----------
-    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
-        Either msisdn, or imei, the column that identifies the subscriber.
-    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
-        If provided, string or list of string which are msisdn or imeis to limit
-        results to; or, a query or table which has a column with a name matching
-        subscriber_identifier (typically, msisdn), to limit results to.
-    args, kwargs :
-        Passed to subscriber_locations
+    subscriber_locations : JoinToLocation, _SubscriberCells
+        Locations of subscribers' interactions
 
     See Also
     --------
     flowmachine.features.subscriber_locations
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, subscriber_locations: Union[JoinToLocation, _SubscriberCells]):
         """
 
 
         """
         # the call days class just need the distinct subscriber-location
         # per day
-        self.ul = subscriber_locations(*args, **kwargs)
-        self.level = self.ul.level
-        self.column_name = self.ul.column_name
+        self.ul = subscriber_locations
 
         super().__init__()
 
@@ -56,7 +49,7 @@ class CallDays(SubscriberFeature):
     def column_names(self) -> List[str]:
         return (
             ["subscriber"]
-            + get_columns_for_level(self.level, self.column_name)
+            + get_columns_for_level(self.ul.level, self.ul.column_name)
             + ["calldays"]
         )
 
@@ -67,7 +60,7 @@ class CallDays(SubscriberFeature):
         Returns a sorted calldays table.
         """
         relevant_columns = ", ".join(
-            get_columns_for_level(self.level, self.column_name)
+            get_columns_for_level(self.ul.level, self.ul.column_name)
         )
 
         sql = f"""
