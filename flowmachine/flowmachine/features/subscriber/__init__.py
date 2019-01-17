@@ -28,7 +28,8 @@ from .proportion_outgoing import ProportionOutgoing
 from .unique_location_counts import UniqueLocationCounts
 from .total_active_periods import TotalActivePeriodsSubscriber
 from .contact_balance import ContactBalance
-from .scores import EventScore, LabelEventScore
+from .scores import EventScore
+from .label_event_score import LabelEventScore
 
 from .pareto_interactions import ParetoInteractions
 

@@ -8,12 +8,9 @@ Calculates an event score for each event based
 on a scoring dictionary.
 """
 
-import re
-import datetime as dt
-from _md5 import md5
 from typing import List, Dict, Union
 
-from ..utilities.sets import EventTableSubset, EventsTablesUnion
+from ..utilities.sets import EventsTablesUnion
 from ...core import Query
 from ...core import JoinToLocation
 from ...utils.utils import get_columns_for_level
@@ -202,11 +199,11 @@ class EventScore(Query):
         trim(to_char(datetime, 'day')) as dow, extract(hour from datetime) as hour 
         FROM ({self.sds.get_query()}) _"""
 
-        hour_score_case = f"""(CASE 
+        hour_case = f"""(CASE 
         {" ".join(f"WHEN hour={hour} THEN {score}" for hour, score in self.score_hour.items())}
         END)"""
 
-        day_score_case = f"""(CASE 
+        day_case = f"""(CASE 
                 {" ".join(f"WHEN dow='{dow}' THEN {score}" for dow, score in self.score_dow.items())}
                 END)"""
 
@@ -214,8 +211,8 @@ class EventScore(Query):
 
         query = f"""
         SELECT subscriber, {", ".join(location_cols)}, datetime,
-               {hour_score_case} AS score_hour,
-               {day_score_case} AS score_dow
+               {hour_case} AS score_hour,
+               {day_case} AS score_dow
         FROM ({day_of_week_and_hour_added}) AS subset_dates
         """
 
@@ -242,143 +239,3 @@ class EventScore(Query):
             + get_columns_for_level(self.level, self.column_name)
             + ["score_hour", "score_dow"]
         )
-
-
-class LabelEventScore(Query):
-    """
-    Represents a label event score class.
-
-    This class will label a table containing scores based on a labelling
-    dictionary. It allows one to specify labels which every subscriber must have.
-    This class is used to label locations based on scoring signatures in the
-    absence of other automated labelling mechanisms.
-
-    Parameters
-    ----------
-    scores : flowmachine.Query
-        A flowmachine.Query object.
-        This represents a table that contains scores which are used to label
-        a given location. This table must have a subscriber column (called subscriber).
-    labels : dict
-        A dictionary whose keys are the label names and the values are
-        strings specifying which observations should be labelled with the
-        given label. Those rules should be written in the same way as one
-        would write a `WHERE` clause in SQL.  Observations which do not
-        match any of the criteria are given the reserved label 'unknown'.
-        Eg.: \`{'evening': '(score_hour > 0) AND (score_dow > 0.5 OR
-        score_dow < -0.5)' , 'daytime': '(score_hour < 0) AND (score_dow <
-        0.5 AND score_dow > -0.5)'}\`
-    enum_type : str
-        The name of the Enumerated type in the database used to represent
-        the labels. It is important to ensure that this type does not yet
-        exist in the database in case you want to redefine it.
-    required :
-        Specifies a label which every subscriber must possess independently of
-        the score.  This is used in cases where, for instance, we require
-        that all subscribers must have an evening/home location.
-    """
-
-    def __init__(self, scores, labels, enum_type, required=None):
-
-        self.scores = scores
-        if not isinstance(scores, Query):
-            raise TypeError(
-                "Scores must be of type Query, e.g. EventScores, Table, CustomQuery"
-            )
-        self.labels = labels
-        self.enum_type = enum_type
-        self.required = required
-
-        injection_attempt = re.compile(r"(THEN|END|WHEN|ELSE)", re.I)
-        for l, r in self.labels.items():
-            if injection_attempt.search(r) is not None:
-                raise ValueError(
-                    "Rules with keywords 'THEN', 'END', 'WHEN' and 'ELSE' are not valid"
-                )
-
-        self.label_names = list(labels.keys())
-        if "unknown" in self.label_names:
-            raise ValueError(
-                "'unknown' is a reserved label name, please use another name"
-            )
-        else:
-            self.label_names = ["unknown"] + self.label_names
-
-        super().__init__()
-
-    def _create_enum_type(self):
-        """
-        Creates the `Enumerate` type in the database based with labels
-        initialized in this class.
-        """
-        with self.connection.engine.begin():
-            type_exists = self.connection.engine.execute(
-                f"""
-            SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname='{self.enum_type}')
-            """
-            ).fetchall()[0][0]
-
-            if type_exists:
-                label_names = self.connection.engine.execute(
-                    f"""
-                SELECT UNNEST(ENUM_RANGE(ENUM_FIRST(null::{self.enum_type}),null::{self.enum_type}))
-                """
-                ).fetchall()
-                label_names = [l[0] for l in label_names]
-
-                if not all([l in label_names for l in self.label_names]):
-                    raise ValueError(
-                        "`labels_set` is already defined in "
-                        + "the database and does not include the labels defined in `labels`. "
-                        + "Please choose another `label_sets` or remove this Enumerate type from the database."
-                    )
-
-            else:
-                label_names_string = ", ".join([f"'{l}'" for l in self.label_names])
-                self.connection.engine.execute(
-                    f"""
-                CREATE TYPE {self.enum_type} AS ENUM ({label_names_string})
-                """
-                )
-
-    def _make_query(self):
-
-        scores_cols = self.scores.column_names
-        scores = f"({self.scores.get_query()}) AS scores"
-
-        self._create_enum_type()
-
-        rules = "CASE WHEN "
-        rules += " WHEN ".join([f"{r} THEN '{l}'" for l, r in self.labels.items()])
-        rules += " ELSE 'unknown' END"
-
-        sql = f"""
-        SELECT *, ({rules})::{self.enum_type} AS label FROM {scores}
-        """
-
-        if self.required is not None:
-            scores_cols = ", ".join([f"labelled.{c}" for c in scores_cols])
-            sql = f"""
-
-                WITH labelled AS ({sql}),
-                    filtered AS (SELECT l.subscriber AS subscriber FROM labelled l
-                                GROUP BY l.subscriber, label HAVING label = '{self.required}')
-
-                SELECT {scores_cols}, '{self.required}'::{self.enum_type} AS label
-                FROM labelled
-                LEFT JOIN filtered
-                ON labelled.subscriber = filtered.subscriber
-                WHERE filtered.subscriber IS NULL
-                UNION ALL
-                SELECT {scores_cols}, label
-                FROM labelled
-                RIGHT JOIN filtered
-                ON labelled.subscriber = filtered.subscriber
-
-            """
-
-        return sql
-
-    @property
-    def column_names(self) -> List[str]:
-        return self.scores.column_names + ["label"]
