@@ -9,7 +9,7 @@ Unit tests for the Query() base class.
 import pytest
 
 from flowmachine.core import Table
-from flowmachine.features.utilities.sets import EventTableSubset
+from flowmachine.features.utilities.event_table_subset import EventTableSubset
 
 
 @pytest.fixture(autouse=True)

@@ -6,6 +6,7 @@
 
 
 set -e
+export PGUSER="$POSTGRES_USER"
 
 #
 #  Generate synthetic data

@@ -86,13 +86,13 @@ class Displacement(SubscriberFeature):
                 hl = modal_locations
             else:
                 raise ValueError(
-                    """modal_locations should be an instance of ModalLocation class with level of lat-lon"""
+                    f"Argument 'modal_locations' should be an instance of ModalLocation class with level in {allowed_levels}"
                 )
         else:
             hl = ModalLocation(
                 *[
-                    daily_location(d, level="lat-lon", **kwargs)
-                    for d in list_of_dates(self.start, self.stop_hl)
+                    daily_location(date, level="lat-lon", **kwargs)
+                    for date in list_of_dates(self.start, self.stop_hl)
                 ]
             )
 

@@ -13,7 +13,7 @@ subscriber's total event count.
 import logging
 
 from .metaclasses import SubscriberFeature
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
@@ -67,16 +67,17 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
         subscriber_identifier="msisdn",
         direction="both",
         exclude_self_calls=True,
-        **kwargs,
+        subscriber_subset=None,
     ):
         """
         """
-        logger.warn(
+        logger.warning(
             "The the ContactBalance() feature uses CDRs "
             + "IDs for calculating an subscriber's graph. "
             + "If IDs are not generated correctly, this "
@@ -101,7 +102,8 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             columns=cols,
             tables=self.table,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
         ).get_query()
         self._cols = ["subscriber", "msisdn_counterpart", "events", "proportion"]
         super().__init__()

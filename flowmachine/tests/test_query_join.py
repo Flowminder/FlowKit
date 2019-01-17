@@ -71,7 +71,7 @@ def test_value_of_join(get_dataframe):
         dl1.join(dl2, on_left="subscriber", left_append="_day1", right_append="_day2")
     )
     assert ["524 4 10 52", "524 3 08 43"] == list(
-        df.set_index("subscriber").ix["ye8jQ0ovnGd9GlJa"]
+        df.set_index("subscriber").loc["ye8jQ0ovnGd9GlJa"]
     )
     assert 490 == len(df)
 

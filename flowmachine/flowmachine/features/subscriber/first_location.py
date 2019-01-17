@@ -44,31 +44,57 @@ class FirstLocation(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    *args, **kwargs
-        passed to subscriber_locations
 
     See Also
     --------
     flowmachine.features.subscriber_locations
     """
 
-    def __init__(self, start, stop, location, *args, **kwargs):
+    def __init__(
+        self,
+        start,
+        stop,
+        *,
+        location,
+        level="cell",
+        hours="all",
+        table="all",
+        subscriber_identifier="msisdn",
+        ignore_nulls=True,
+        column_name=None,
+        subscriber_subset=None,
+        polygon_table=None,
+        size=None,
+        radius=None,
+    ):
         """
 
 
         """
+
+        if location == "any" and level != "cell":
+            raise ValueError(
+                "Invalid parameter combination: location='any' can only be used with level='cell'."
+            )
 
         self.start = start
         self.stop = stop
         self.location = location
 
-        if self.location == "any":
-            level = "cell"
-            self.ul = subscriber_locations(
-                self.start, self.stop, level=level, *args, **kwargs
-            )
-        else:
-            self.ul = subscriber_locations(self.start, self.stop, *args, **kwargs)
+        self.ul = subscriber_locations(
+            self.start,
+            self.stop,
+            level=level,
+            hours=hours,
+            table=table,
+            subscriber_identifier=subscriber_identifier,
+            ignore_nulls=ignore_nulls,
+            column_name=column_name,
+            subscriber_subset=subscriber_subset,
+            polygon_table=polygon_table,
+            size=size,
+            radius=radius,
+        )
 
         self.table = self.ul.table
         self.subscriber_identifier = self.ul.subscriber_identifier

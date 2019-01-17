@@ -11,9 +11,8 @@ later used for computing subscriber features.
 
 """
 import logging
-import warnings
 
-from .sets import EventTableSubset, EventsTablesUnion
+from .events_tables_union import EventsTablesUnion
 from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 
 from ...core.query import Query
@@ -33,7 +32,8 @@ class _SubscriberCells(Query):
         table="all",
         subscriber_identifier="msisdn",
         ignore_nulls=True,
-        **kwargs,
+        *,
+        subscriber_subset=None,
     ):
 
         self.start = start
@@ -53,8 +53,8 @@ class _SubscriberCells(Query):
             columns=cols,
             tables=self.table,
             hours=self.hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         )
         super().__init__()
 
@@ -118,13 +118,17 @@ class BaseLocation(Query):
 def subscriber_locations(
     start,
     stop,
+    *,
     level="cell",
     hours="all",
     table="all",
     subscriber_identifier="msisdn",
     ignore_nulls=True,
     column_name=None,
-    **kwargs,
+    subscriber_subset=None,
+    polygon_table=None,
+    size=None,
+    radius=None,
 ):
     """
     Class representing all the locations for which a subscriber has been found.
@@ -202,7 +206,6 @@ def subscriber_locations(
     ...
 
     """
-
     # Here we call the hidden class _SubscriberCells which is every spotting
     # of all subscribers. We then join to the appropriate level if necessary.
     subscriber_cells = _SubscriberCells(
@@ -210,15 +213,18 @@ def subscriber_locations(
         stop,
         hours,
         table=table,
+        subscriber_subset=subscriber_subset,
         subscriber_identifier=subscriber_identifier,
         ignore_nulls=ignore_nulls,
-        **kwargs,
     )
 
     if level == "cell":
         return subscriber_cells
     else:
         return JoinToLocation(
-            subscriber_cells, level=level, column_name=column_name, **kwargs
+            subscriber_cells,
+            level=level,
+            column_name=column_name,
+            polygon_table=polygon_table,
+            size=size,
         )
-    super().__init__()

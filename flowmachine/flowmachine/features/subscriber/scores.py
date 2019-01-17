@@ -8,9 +8,12 @@ Calculates an event score for each event based
 on a scoring dictionary.
 """
 
-from typing import List, Dict, Union
+from typing import Dict, Union
 
-from ..utilities.sets import EventsTablesUnion
+
+from typing import List
+
+from ..utilities import EventsTablesUnion
 from ...core import Query
 from ...core import JoinToLocation
 from ...utils.utils import get_columns_for_level
@@ -142,7 +145,10 @@ class EventScore(Query):
         },
         subscriber_identifier: str = "msisdn",
         column_name: Union[str, List[str]] = None,
-        **kwargs,
+        *,
+        subscriber_subset=None,
+        polygon_table=None,
+        size=None,
     ):
         if set(score_dow.keys()) != {
             "monday",
@@ -174,18 +180,19 @@ class EventScore(Query):
         self.column_name = column_name
         self.sds = JoinToLocation(
             EventsTablesUnion(
-                start,
-                stop,
-                [subscriber_identifier, "location_id", "datetime"],
+                start=start,
+                stop=stop,
+                columns=[subscriber_identifier, "location_id", "datetime"],
                 tables=table,
                 hours=self.hours,
+                subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
-                **kwargs,
             ),
             level=self.level,
             time_col="datetime",
             column_name=self.column_name,
-            **kwargs,
+            polygon_table=polygon_table,
+            size=size,
         )
 
         super().__init__()

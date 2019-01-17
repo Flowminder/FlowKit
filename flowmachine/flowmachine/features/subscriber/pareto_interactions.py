@@ -12,7 +12,7 @@ that fraction of their contacts who account for 80% of their interactions.
 """
 from .contact_balance import ContactBalance
 from .subscriber_degree import SubscriberDegree
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
 

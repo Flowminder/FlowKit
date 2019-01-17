@@ -35,14 +35,7 @@ class CallDays(SubscriberFeature):
     """
 
     def __init__(self, subscriber_locations: Union[JoinToLocation, _SubscriberCells]):
-        """
-
-
-        """
-        # the call days class just need the distinct subscriber-location
-        # per day
         self.ul = subscriber_locations
-
         super().__init__()
 
     @property

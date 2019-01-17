@@ -44,7 +44,7 @@ def test_wrong_number_of_parts(multipart_msg):
     """
     with pytest.raises(
         ZMQInterfaceError,
-        match="Multipart message is not of the form \(<return_address>, <empty_delimiter>, <message>\)",
+        match=r"Multipart message is not of the form \(<return_address>, <empty_delimiter>, <message>\)",
     ):
         _ = ZMQMultipartMessage(multipart_msg)
 

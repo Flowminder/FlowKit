@@ -14,7 +14,7 @@ from typing import List
 
 from ...core import JoinToLocation
 from ...utils.utils import get_columns_for_level
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
@@ -42,8 +42,6 @@ class SubscriberCallDurations(SubscriberFeature):
         Whether to consider calls made, received, or both. Defaults to 'out'.
     statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
-    kwargs :
-        Passed to flowmachine.EventTableSubset
 
 
     Examples
@@ -69,11 +67,18 @@ class SubscriberCallDurations(SubscriberFeature):
         subscriber_identifier="msisdn",
         direction="out",
         statistic="sum",
-        **kwargs,
+        *,
+        hours="all",
+        subscriber_subset=None,
+        level=None,
+        size=None,
+        column_name=None,
+        polygon_table=None,
     ):
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
+        self.hours = hours
         self.direction = direction
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
@@ -85,19 +90,15 @@ class SubscriberCallDurations(SubscriberFeature):
         if direction not in {"in", "out", "both"}:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "all"
-
         column_list = [self.subscriber_identifier, "outgoing", "duration"]
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
             tables="events.calls",
             columns=column_list,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=subscriber_identifier,
-            **kwargs,
         )
         super().__init__()
 
@@ -167,8 +168,6 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         Optionally specify a non-default column name. Required if level is 'polygon'.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
-    kwargs :
-        Passed to flowmachine.EventTableSubset
 
 
     Examples
@@ -194,7 +193,12 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         level="admin3",
         statistic="sum",
         column_name=None,
-        **kwargs,
+        *,
+        hours="all",
+        subscriber_subset=None,
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
     ):
         self.start = start
         self.stop = stop
@@ -212,11 +216,6 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         if direction not in {"in", "out", "both"}:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "all"
-
         column_list = [
             self.subscriber_identifier,
             "msisdn_counterpart",
@@ -229,8 +228,9 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
             self.stop,
             tables="events.calls",
             columns=column_list,
-            subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
         )
         if self.level != "cell":
             etu = EventsTablesUnion(
@@ -238,15 +238,19 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
                 self.stop,
                 tables="events.calls",
                 columns=column_list + ["datetime"],
+                hours=hours,
+                subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
-                **kwargs,
             )
+
             self.unioned_query = JoinToLocation(
                 etu,
                 level=self.level,
                 column_name=self.column_name,
                 time_col="datetime",
-                **kwargs,
+                size=size,
+                polygon_table=polygon_table,
+                geom_col=geom_col,
             )
         super().__init__()
 
@@ -293,8 +297,6 @@ class PairedSubscriberCallDurations(SubscriberFeature):
         subscriber_identifier (typically, msisdn), to limit results to.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
-    kwargs :
-        Passed to flowmachine.EventTableSubset
 
 
     Examples
@@ -313,7 +315,18 @@ class PairedSubscriberCallDurations(SubscriberFeature):
     """
 
     def __init__(
-        self, start, stop, subscriber_identifier="msisdn", statistic="sum", **kwargs
+        self,
+        start,
+        stop,
+        *,
+        level=None,
+        size=None,
+        column_name=None,
+        polygon_table=None,
+        subscriber_identifier="msisdn",
+        statistic="sum",
+        hours="all",
+        subscriber_subset=None,
     ):
         self.start = start
         self.stop = stop
@@ -327,24 +340,21 @@ class PairedSubscriberCallDurations(SubscriberFeature):
                 )
             )
 
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "all"
-
         column_list = [
             self.subscriber_identifier,
             "outgoing",
             "duration",
             "msisdn_counterpart",
         ]
+
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
             tables="events.calls",
             columns=column_list,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         )
         super().__init__()
 
@@ -407,8 +417,6 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         Optionally specify a non-default column name. Required if level is 'polygon'.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to 'sum', aggregation statistic over the durations.
-    kwargs :
-        Passed to flowmachine.EventTableSubset
 
 
     Examples
@@ -440,7 +448,12 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         level="admin3",
         column_name=None,
         statistic="sum",
-        **kwargs,
+        *,
+        hours="all",
+        subscriber_subset=None,
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
     ):
         self.start = start
         self.stop = stop
@@ -455,11 +468,6 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
                 )
             )
 
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "all"
-
         column_list = [
             "id",
             self.subscriber_identifier,
@@ -473,8 +481,9 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
             self.stop,
             tables="events.calls",
             columns=column_list,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         )
         if self.level != "cell":
             etu = EventsTablesUnion(
@@ -482,15 +491,18 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
                 self.stop,
                 tables="events.calls",
                 columns=column_list + ["datetime"],
+                hours=hours,
+                subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
-                **kwargs,
             )
             unioned_query = JoinToLocation(
                 etu,
                 level=self.level,
                 column_name=self.column_name,
                 time_col="datetime",
-                **kwargs,
+                size=size,
+                polygon_table=polygon_table,
+                geom_col=geom_col,
             )
         self.joined = unioned_query.subset("outgoing", "t").join(
             unioned_query.subset("outgoing", "f"),

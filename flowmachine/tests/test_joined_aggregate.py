@@ -37,12 +37,12 @@ def test_joined_modal_aggregate(get_dataframe):
         .set_index("subscriber")
         .join(get_dataframe(mfl).set_index("subscriber"))
         .set_index("pcod")
-        .ix["524 2 05 29"]
+        .loc["524 2 05 29"]
         .degree.mode()[0]
     )
     assert (
         pytest.approx(rawus_mode)
-        == get_dataframe(joined).set_index("pcod").ix["524 2 05 29"].degree
+        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].degree
     )
 
 
@@ -58,12 +58,12 @@ def test_joined_median_aggregate(get_dataframe):
         .set_index("subscriber")
         .join(get_dataframe(mfl).set_index("subscriber"))
         .set_index("pcod")
-        .ix["524 2 05 29"]
+        .loc["524 2 05 29"]
         .rog.median()
     )
     assert (
         pytest.approx(rawus_avg)
-        == get_dataframe(joined).set_index("pcod").ix["524 2 05 29"].rog
+        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].rog
     ), rawus_avg
 
 

@@ -361,7 +361,7 @@ class PopulationWeightedOpportunities(Model):
         """
 
         if "population_buffer" not in self.__dict__.keys():
-            logger.warn(
+            logger.warning(
                 " Computing Population() and DistanceMatrix() "
                 + "objects. This can take a few minutes."
             )
@@ -380,7 +380,7 @@ class PopulationWeightedOpportunities(Model):
             population_df.set_index(get_columns_for_level(self.level), inplace=True)
 
         if not departure_rate_vector:
-            logger.warn(
+            logger.warning(
                 " Using an uniform departure "
                 + "rate of {} for ".format(uniform_departure_rate)
                 + "all locations."

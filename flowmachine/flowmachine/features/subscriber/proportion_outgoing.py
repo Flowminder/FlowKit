@@ -10,7 +10,7 @@ incoming per subscriber.
 
 
 """
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
 

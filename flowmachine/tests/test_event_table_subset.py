@@ -11,8 +11,7 @@ import pytz
 from datetime import datetime
 
 from flowmachine.core.errors import MissingDateError
-
-from flowmachine.features.utilities.sets import EventTableSubset
+from flowmachine.features.utilities.event_table_subset import EventTableSubset
 
 
 def test_error_on_start_is_stop(get_dataframe):

@@ -34,8 +34,8 @@ def test_returns_correct_values(get_dataframe):
     """
     ud = ProportionOutgoing("2016-01-01", "2016-01-04")
     df1 = get_dataframe(ud).set_index("subscriber")
-    assert 0.600000 == df1.ix["ZM3zYAPqx95Rw15J"]["proportion_outgoing"]
-    assert 0.400000 == df1.ix["ZM3zYAPqx95Rw15J"]["proportion_incoming"]
+    assert 0.600000 == df1.loc["ZM3zYAPqx95Rw15J"]["proportion_outgoing"]
+    assert 0.400000 == df1.loc["ZM3zYAPqx95Rw15J"]["proportion_incoming"]
 
 
 def test_passing_not_known_subscriber_identifier_raises_error():

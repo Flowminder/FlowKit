@@ -23,7 +23,7 @@ RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.l
         && rm -rf /var/lib/apt/lists/*
 
 # Install python dependencies
-COPY ./Pipfile* /tmp/
+COPY --chown=postgres ./Pipfile* /tmp/
 RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
     && rm /tmp/Pipfile*
 
@@ -35,18 +35,16 @@ RUN mkdir -p /docker-entrypoint-initdb.d/sql/syntheticdata/ && \
     mkdir -p /docker-entrypoint-initdb.d/data/records/calls && \
     mkdir -p /docker-entrypoint-initdb.d/data/infrastructure
 
-COPY ./bin/z_ingest_synthetic_data.sh /docker-entrypoint-initdb.d/
+COPY --chown=postgres ./bin/z_ingest_synthetic_data.sh /docker-entrypoint-initdb.d/
 
-COPY bin/generate_synthetic_data.py /opt/synthetic_data/
-ADD ./synthetic_data/sql/* /docker-entrypoint-initdb.d/sql/syntheticdata/
-ADD ./test_data/sql/admin*.sql /docker-entrypoint-initdb.d/sql/syntheticdata/
-ADD ./synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson /opt/synthetic_data/
-
-RUN chown $POSTGRES_UID:$POSTGRES_GID -R \
-        /docker-entrypoint-initdb.d/sql/syntheticdata \
-        /docker-entrypoint-initdb.d/data/records/calls \
-        /opt/synthetic_data/ \
-        /docker-entrypoint-initdb.d/data/infrastructure
+COPY --chown=postgres bin/generate_synthetic_data.py /opt/synthetic_data/
+ADD --chown=postgres ./synthetic_data/sql/* /docker-entrypoint-initdb.d/sql/syntheticdata/
+ADD --chown=postgres ./test_data/sql/admin*.sql /docker-entrypoint-initdb.d/sql/syntheticdata/
+ADD --chown=postgres ./synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson /opt/synthetic_data/
+# Need to make postgres is owner of any subdirectrories
+RUN chown -R postgres /docker-entrypoint-initdb.d
+# Need to relax the permissions in case the container is running as an arbitrary user with a bind mount
+RUN chmod -R 777 /docker-entrypoint-initdb.d
 
 ENV N_DAYS=7
 ENV N_SUBSCRIBERS=4000
