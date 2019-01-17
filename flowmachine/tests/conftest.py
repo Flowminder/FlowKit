@@ -7,7 +7,6 @@
 Commonly used testing fixtures for flowmachine.
 """
 
-import os
 from unittest.mock import Mock
 
 import pandas as pd
