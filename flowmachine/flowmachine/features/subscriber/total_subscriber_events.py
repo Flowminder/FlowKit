@@ -51,8 +51,7 @@ class TotalSubscriberEvents(SubscriberFeature):
 
     Examples
     --------
-    >>> total_calls = TotalEvents('2016-01-01', '2016-01-02',
-    ...                           direction='both', types='calls')
+    >>> total_calls = TotalSubscriberEvents('2016-01-01', '2016-01-02', direction='both', types='calls')
        subscriber  total_calls
     0 subscriberA           13
     1 subscriberB            6
