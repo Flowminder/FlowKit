@@ -76,10 +76,11 @@ class UniqueSubscribers(Query):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
         subscriber_identifier="msisdn",
-        **kwargs,
+        subscriber_subset=None,
     ):
         """
 
@@ -97,8 +98,9 @@ class UniqueSubscribers(Query):
             self.stop,
             columns=cols,
             tables=self.tables,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         )
 
         super().__init__()
