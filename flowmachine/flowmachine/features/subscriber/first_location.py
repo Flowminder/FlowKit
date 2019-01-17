@@ -73,7 +73,9 @@ class FirstLocation(SubscriberFeature):
         """
 
         if location == "any" and level != "cell":
-            raise ValueError("Invalid parameter combination: location='any' can only be used with level='cell'.")
+            raise ValueError(
+                "Invalid parameter combination: location='any' can only be used with level='cell'."
+            )
 
         self.start = start
         self.stop = stop
