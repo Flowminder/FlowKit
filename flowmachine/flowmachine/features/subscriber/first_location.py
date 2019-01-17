@@ -44,8 +44,6 @@ class FirstLocation(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    *args, **kwargs
-        passed to subscriber_locations
 
     See Also
     --------
