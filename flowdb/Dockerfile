@@ -145,6 +145,8 @@ COPY --chown=postgres ./bin/build/* /docker-entrypoint-initdb.d/
 #
 ADD --chown=postgres ./sql/* /docker-entrypoint-initdb.d/
 ADD --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
+# Need to make postgres owner
+RUN chown -R postgres /docker-entrypoint-initdb.d
 
 EXPOSE 5432
 
