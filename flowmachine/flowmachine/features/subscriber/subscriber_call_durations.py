@@ -318,6 +318,7 @@ class PairedSubscriberCallDurations(SubscriberFeature):
         stop,
         *,
         level=None,
+        size=None,
         subscriber_identifier="msisdn",
         statistic="sum",
         hours="all",
