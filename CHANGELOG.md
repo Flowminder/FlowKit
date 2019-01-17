@@ -5,12 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Support for running FlowDB as an arbitrary user via docker's `--user` flag
 
 ### Changed
 
 ### Fixed
 
 ### Removed
+- Support for setting the uid and gid of the postgres user when building FlowDB
 
 ## [0.2.0]
 ### Added
