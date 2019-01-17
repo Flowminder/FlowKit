@@ -21,10 +21,10 @@ def test_certain_results(get_dataframe):
     subscriber_with_3 = "dXogRAnyg1Q9lE3J"
 
     df = get_dataframe(tap).set_index("subscriber")
-    assert df.ix[subscriber_with_2].active_periods == 2
-    assert df.ix[subscriber_with_3].active_periods == 3
-    assert df.ix[subscriber_with_2].inactive_periods == 1
-    assert df.ix[subscriber_with_3].inactive_periods == 0
+    assert df.loc[subscriber_with_2].active_periods == 2
+    assert df.loc[subscriber_with_3].active_periods == 3
+    assert df.loc[subscriber_with_2].inactive_periods == 1
+    assert df.loc[subscriber_with_3].inactive_periods == 0
 
 
 def test_multiple_day_periods(get_dataframe):
@@ -68,7 +68,7 @@ def test_non_standard_units(get_dataframe):
         .set_index("subscriber")
     )
 
-    assert df.ix["VkzMxYjv7mYn53oK"].active_periods == 3
-    assert df.ix["DzpZJ2EaVQo2X5vM"].active_periods == 1
-    assert df.ix["VkzMxYjv7mYn53oK"].inactive_periods == 2
-    assert df.ix["DzpZJ2EaVQo2X5vM"].inactive_periods == 4
+    assert df.loc["VkzMxYjv7mYn53oK"].active_periods == 3
+    assert df.loc["DzpZJ2EaVQo2X5vM"].active_periods == 1
+    assert df.loc["VkzMxYjv7mYn53oK"].inactive_periods == 2
+    assert df.loc["DzpZJ2EaVQo2X5vM"].inactive_periods == 4

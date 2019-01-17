@@ -10,10 +10,9 @@ on a scoring dictionary.
 
 import re
 import datetime as dt
-from _md5 import md5
 from typing import List
 
-from ..utilities.sets import EventTableSubset, EventsTablesUnion
+from ..utilities import EventsTablesUnion
 from ...core import Query
 from ...core import JoinToLocation
 from ...utils.utils import get_columns_for_level
@@ -122,6 +121,8 @@ class EventScore(Query):
         score_dow={(1, 5): 1, (5, 5): 0, (6, 1): -1},
         subscriber_identifier="msisdn",
         column_name=None,
+        *,
+        subscriber_subset=None,
         **kwargs,
     ):
 
@@ -134,13 +135,13 @@ class EventScore(Query):
         self.subscriber_identifier = subscriber_identifier
         self.column_name = column_name
         self.sds = EventsTablesUnion(
-            start,
-            stop,
-            [subscriber_identifier, "location_id", "datetime"],
+            start=start,
+            stop=stop,
+            columns=[subscriber_identifier, "location_id", "datetime"],
             tables=table,
             hours=self.hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         ).date_subsets
         self.schema = "event_score"
         self.kwargs = kwargs

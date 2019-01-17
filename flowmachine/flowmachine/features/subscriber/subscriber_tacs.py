@@ -13,7 +13,7 @@ a subscriber.
 import warnings
 from typing import List
 
-from ..utilities.sets import EventsTablesUnion
+from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ...core import Table
 
@@ -36,8 +36,6 @@ class SubscriberTACs(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
@@ -59,10 +57,11 @@ class SubscriberTACs(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
+        subscriber_subset=None,
         subscriber_identifier="msisdn",
-        **kwargs,
     ):
         """
 
@@ -76,10 +75,11 @@ class SubscriberTACs(SubscriberFeature):
         self.tbl = EventsTablesUnion(
             start,
             stop,
-            [subscriber_identifier, "tac", "datetime"],
+            columns=[subscriber_identifier, "tac", "datetime"],
             tables=table,
+            hours=hours,
+            subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs,
         )
 
         super().__init__()
@@ -112,8 +112,6 @@ class SubscriberTAC(SubscriberFeature):
         'msisdn', 'imei'
     method : {'most-common', 'last'}
         Method for choosing a TAC to associate.
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
@@ -142,11 +140,12 @@ class SubscriberTAC(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
+        subscriber_subset=None,
         subscriber_identifier="msisdn",
         method="most-common",
-        **kwargs,
     ):
         """
 
@@ -166,7 +165,7 @@ class SubscriberTAC(SubscriberFeature):
             hours=hours,
             table=table,
             subscriber_identifier=subscriber_identifier,
-            **kwargs,
+            subscriber_subset=subscriber_subset,
         )
         self.method = method
         if self.method not in ("most-common", "last"):
@@ -193,6 +192,10 @@ class SubscriberTAC(SubscriberFeature):
             """.format(
                 self.subscriber_tacs.get_query()
             )
+        else:
+            raise ValueError(
+                f"Unsupported method. Valid values are: 'last', 'most-common'"
+            )
         return query
 
 
@@ -211,8 +214,6 @@ class SubscriberHandsets(SubscriberFeature):
     subscriber_identifier : str, default 'msisdn'
         The focus of the analysis, usually either
         'msisdn', 'imei'
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
@@ -237,10 +238,11 @@ class SubscriberHandsets(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
         subscriber_identifier="msisdn",
-        **kwargs,
+        subscriber_subset=None,
     ):
         """
 
@@ -257,7 +259,7 @@ class SubscriberHandsets(SubscriberFeature):
             hours=hours,
             table=table,
             subscriber_identifier=subscriber_identifier,
-            **kwargs,
+            subscriber_subset=subscriber_subset,
         )
         self.tacs = Table("infrastructure.tacs")
         self.joined = self.subscriber_tacs.join(self.tacs, "tac", "id", how="left")
@@ -294,8 +296,6 @@ class SubscriberHandset(SubscriberFeature):
         'msisdn', 'imei'
     method : {'most-common', 'last'}
         Method for choosing a handset to associate.
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
@@ -319,11 +319,12 @@ class SubscriberHandset(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         hours="all",
         table="all",
         subscriber_identifier="msisdn",
         method="most-common",
-        **kwargs,
+        subscriber_subset=None,
     ):
         """
 
@@ -341,7 +342,7 @@ class SubscriberHandset(SubscriberFeature):
             table=table,
             subscriber_identifier=subscriber_identifier,
             method=method,
-            **kwargs,
+            subscriber_subset=subscriber_subset,
         )
         self.method = method
         self.tacs = Table("infrastructure.tacs")
@@ -374,8 +375,6 @@ class SubscriberPhoneType(SubscriberFeature):
         'msisdn', 'imei'
     method : {'most-common', 'last'}
         Method for choosing a handset to associate.
-    kwargs :
-        Passed to flowmachine.EventsTablesUnion
 
 
     Examples
@@ -408,7 +407,7 @@ class SubscriberPhoneType(SubscriberFeature):
         table="all",
         subscriber_identifier="msisdn",
         method="most-common",
-        **kwargs,
+        subscriber_subset=None,
     ):
         """
 
@@ -426,7 +425,7 @@ class SubscriberPhoneType(SubscriberFeature):
                 hours=hours,
                 table=table,
                 subscriber_identifier=subscriber_identifier,
-                **kwargs,
+                subscriber_subset=subscriber_subset,
             )
         else:
             self.subscriber_handsets = SubscriberHandset(
@@ -435,8 +434,8 @@ class SubscriberPhoneType(SubscriberFeature):
                 hours=hours,
                 table=table,
                 subscriber_identifier=subscriber_identifier,
+                subscriber_subset=subscriber_subset,
                 method=method,
-                **kwargs,
             )
         self.method = method
         super().__init__()

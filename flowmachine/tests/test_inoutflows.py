@@ -36,7 +36,7 @@ def test_outflow_value(get_dataframe):
     flow = Flows(dl1, dl2)
     outflow = flow.outflow()
     df = get_dataframe(outflow)
-    assert df.set_index("pcod_from").ix["524 1 02 09"][0] == 24
+    assert df.set_index("pcod_from").loc["524 1 02 09"][0] == 24
 
 
 def test_inflow_value(get_dataframe):
@@ -48,4 +48,4 @@ def test_inflow_value(get_dataframe):
     flow = Flows(dl1, dl2)
     inflow = flow.inflow()
     df = get_dataframe(inflow)
-    assert df.set_index("pcod_to").ix["524 1 03 13"][0] == 20
+    assert df.set_index("pcod_to").loc["524 1 03 13"][0] == 20

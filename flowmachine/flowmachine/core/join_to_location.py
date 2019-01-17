@@ -85,7 +85,17 @@ class JoinToLocation(Query):
         "versioned-cell",
     ]
 
-    def __init__(self, left, level, time_col="time", column_name=None, **kwargs):
+    def __init__(
+        self,
+        left,
+        *,
+        level,
+        time_col="time",
+        column_name=None,
+        size=None,
+        polygon_table=None,
+        geom_col="geom",
+    ):
         """
 
         """
@@ -105,7 +115,9 @@ class JoinToLocation(Query):
         self.time_col = time_col
         self.column_name = column_name
         self.location_table_fqn = self.connection.location_table
-        self.right_query = self._get_site_query(**kwargs)
+        self.right_query = self._get_site_query(
+            size=size, polygon_table=polygon_table, geom_col=geom_col
+        )
         super().__init__()
 
     def __getattr__(self, name):
@@ -118,7 +130,7 @@ class JoinToLocation(Query):
         except AttributeError:
             return self.right_query.__getattribute__(name)
 
-    def _get_site_query(self, **kwargs):
+    def _get_site_query(self, *, size, polygon_table, geom_col):
         """
         Returns the appropriate object to join on
         to the right.
@@ -132,11 +144,15 @@ class JoinToLocation(Query):
         # The logic here finds a query that represents the mapping
         # of cells to an region of interest.
         if self.level.startswith("admin"):
-            return CellToAdmin(self.level, column_name=self.column_name, **kwargs)
+            return CellToAdmin(level=self.level, column_name=self.column_name)
         elif self.level == "polygon":
-            return CellToPolygon(column_name=self.column_name, **kwargs)
+            return CellToPolygon(
+                column_name=self.column_name,
+                polygon_table=polygon_table,
+                geom_col=geom_col,
+            )
         elif self.level == "grid":
-            return CellToGrid(**kwargs)
+            return CellToGrid(size=size)
         elif self.level == "lat-lon":
             sql = f"""
                    SELECT

@@ -234,7 +234,7 @@ class Louvain(Model):
             self.reduction_statistics["input"]["edges"]
             != self.reduction_statistics["output"]["edges"]
         ):
-            logger.warn(
+            logger.warning(
                 "\n" + "\n" + "REDUCTION STATISTICS"
                 "\n"
                 + "-------------------------------"
