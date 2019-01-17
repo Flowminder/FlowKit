@@ -171,8 +171,6 @@ class TotalLocationEvents(GeoDataMixin, Query):
         Option, none-standard, name of the column that identifies the
         spatial level, i.e. could pass admin3pcod to use the admin 3 pcode
         as opposed to the name of the region.
-    kwargs :
-        passed to flowmachine.JoinToLocation
 
     """
 
