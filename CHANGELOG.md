@@ -12,7 +12,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed being unable to build if the port used by `git://` is not open
 
 ### Removed
-- Removed `-c http.sslVerify=false` option from the command to clone postgres pldebugger repository in flowdb Dockerfile
 
 ## [0.2.0]
 ### Added
