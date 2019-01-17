@@ -27,10 +27,13 @@ class _TotalCellEvents(Query):
         self,
         start: str,
         stop: str,
+        *,
         table: Union[str, List[str]] = "all",
         interval: str = "hour",
         direction: str = "both",
-        **kwargs
+        hours="all",
+        subscriber_subset=None,
+        subscriber_identifier="msisdn",
     ):
         self.start = start
         self.stop = stop
@@ -65,7 +68,7 @@ class _TotalCellEvents(Query):
         # columns, plus the cell column
         self.groups = [x.split(" AS ")[0] for x in self.time_cols + ["location_id"]]
         self.unioned = EventsTablesUnion(
-            self.start, self.stop, tables=self.table, columns=self.cols, **kwargs
+            self.start, self.stop, tables=self.table, columns=self.cols, hours=hours, subscriber_subset=subscriber_subset, subscriber_identifier=subscriber_identifier,
         )
 
         super().__init__()
