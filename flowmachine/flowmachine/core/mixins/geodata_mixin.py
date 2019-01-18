@@ -192,7 +192,7 @@ class GeoDataMixin:
                     'id',         gid,
                     'geometry',   ST_AsGeoJSON({crs_trans})::json,
                     'properties', json_build_object({", ".join(properties)})
-                ) FROM (
+                ) AS feature FROM (
                             SELECT * 
                             FROM ({joined_query}) AS J) AS row
         """
@@ -252,6 +252,33 @@ class GeoDataMixin:
             "features": features,
         }
         return js
+
+    def get_geojson_query(self, crs=None):
+        """
+        Create a query which will return this as a GeoJson FeatureCollection (as a single row, single column).
+
+        Parameters
+        ----------
+        crs : int or str
+            Optionally give an integer srid, or valid proj4 string to transform output to
+        
+        Returns
+        -------
+        str
+            A json aggregation query string
+        """
+        # TODO: This method essentially duplicates the functionality of _get_geojson, but as a query string.
+        # It is used by flowmachine-server to send a SQL string back to the API, but is not used by to_geojson here.
+        # This method should probably be combined with _geo_json_query, and should replace _get_geojson.
+        proj4_string = proj4string(self.connection, crs)
+        json_query = f"""
+            SELECT json_build_object(
+                'properties',   json_build_object('crs', '{proj4_string}'),
+                'type',         'FeatureCollection',
+                'features',     json_agg(feature)
+            ) FROM ({self._geo_json_query(crs=proj4_string)}) AS fc
+        """
+        return json_query
 
     def to_geojson(self, crs=None):
         """
