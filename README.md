@@ -30,6 +30,8 @@ There are two other components of FlowKit:
 
 FlowKit is an open-source product. The source code can be found at https://github.com/Flowminder/FlowKit, and documentation is available at https://flowminder.github.io/FlowKit.
 
+FlowKit is in active development, visit the project's  [roadmap](https://flowminder.github.io/FlowKit/developer/roadmap) to get a sense about upcoming developments.
+
 ## Installation using docker cloud repositories
 
 ### Server
