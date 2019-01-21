@@ -82,6 +82,7 @@ setup(
         "python-redis-lock",
         "redis",
         "pyzmq",
+        "shapely",
     ],
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,
