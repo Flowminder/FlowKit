@@ -27,14 +27,10 @@ def test_locations_are_labelled_correctly(get_dataframe):
     ls = LabelEventScore(
         es,
         {
-            "daytime": [
-                {
-                    "hour_lower_bound": -1.1,
-                    "hour_upper_bound": 1.1,
-                    "day_of_week_upper_bound": 1.1,
-                    "day_of_week_lower_bound": -1.1,
-                }
-            ]
+            "daytime": {
+                "type": "Polygon",
+                "coordinates": [[[-1.1, -1.1], [-1, 1.1], [1.1, 1.1], [1.1, -1.1]]],
+            }
         },
     )
     df = get_dataframe(ls)
@@ -60,14 +56,12 @@ def test_whether_required_label_relabels(get_dataframe):
     ls = LabelEventScore(
         es,
         {
-            "daytime": [
-                {
-                    "hour_lower_bound": -1.1,
-                    "hour_upper_bound": 1.1,
-                    "day_of_week_upper_bound": 1.1,
-                    "day_of_week_lower_bound": -1.1,
-                }
-            ]
+            "daytime": {
+                "type": "Polygon",
+                "coordinates": [
+                    [[-1.1, -1.1], [-1.0, 1.1], [1.1, 1.1], [1.1, -1.1], [-1.1, -1.1]]
+                ],
+            }
         },
         "evening",
     )
@@ -75,75 +69,26 @@ def test_whether_required_label_relabels(get_dataframe):
     assert list(df["label"].unique()) == ["evening"]
 
 
-def test_check_overlap_no_overlap():
-    """
-    Should return False with no overlap.
-    """
-    assert not LabelEventScore.has_overlap(
-        {
-            "hour_lower_bound": 0.00001,
-            "hour_upper_bound": 1,
-            "day_of_week_upper_bound": 1,
-            "day_of_week_lower_bound": 0.5,
-        },
-        {
-            "hour_lower_bound": -1,
-            "hour_upper_bound": 0,
-            "day_of_week_upper_bound": 0.5,
-            "day_of_week_lower_bound": -0.5,
-        },
-    )
-
-
-def test_check_overlap():
-    """
-    Should return True with an overlap.
-    """
-    assert LabelEventScore.has_overlap(
-        {
-            "hour_lower_bound": 0,
-            "hour_upper_bound": 1,
-            "day_of_week_upper_bound": 1,
-            "day_of_week_lower_bound": 0.5,
-        },
-        {
-            "hour_lower_bound": -1,
-            "hour_upper_bound": 0,
-            "day_of_week_upper_bound": 0.5,
-            "day_of_week_lower_bound": -0.5,
-        },
-    )
-
-
 def test_overlaps_bounds_dict():
     """
     Should return False if there are no overlaps in the labels dict.
     """
     bounds_dict = {
-        "evening": [
-            {
-                "hour_lower_bound": 0.00001,
-                "hour_upper_bound": 1,
-                "day_of_week_upper_bound": 1,
-                "day_of_week_lower_bound": 0.5,
-            },
-            {
-                "hour_lower_bound": 0.00001,
-                "hour_upper_bound": 1,
-                "day_of_week_upper_bound": -0.5,
-                "day_of_week_lower_bound": -1,
-            },
-        ],
-        "day": [
-            {
-                "hour_lower_bound": -1,
-                "hour_upper_bound": 0,
-                "day_of_week_upper_bound": 0.5,
-                "day_of_week_lower_bound": -0.5,
-            }
-        ],
+        "evening": {
+            "type": "MultiPolygon",
+            "coordinates": [
+                [[[0.000_001, 0.5], [0.000_001, 1], [1, 1], [1, 0.5]]],
+                [[[0.000_001, -1], [0.000_001, -0.5], [1, -0.5], [1, -1]]],
+            ],
+        },
+        "day": {
+            "type": "Polygon",
+            "coordinates": [[[-1, -0.5], [-1, 0.5], [0, 0.5], [0, -0.5]]],
+        },
     }
-    assert not LabelEventScore.bounds_dict_has_overlaps(bounds_dict)
+    assert not LabelEventScore.bounds_dict_has_overlaps(
+        LabelEventScore._make_bounds_dict(bounds_dict)
+    )
 
 
 def test_overlaps_bounds_dict_raises():
@@ -151,31 +96,22 @@ def test_overlaps_bounds_dict_raises():
     Should raise an error if an overlap is found.
     """
     bounds_dict = {
-        "evening": [
-            {
-                "hour_lower_bound": 0,
-                "hour_upper_bound": 1,
-                "day_of_week_upper_bound": 1,
-                "day_of_week_lower_bound": 0.5,
-            },
-            {
-                "hour_lower_bound": 0.00001,
-                "hour_upper_bound": 1,
-                "day_of_week_upper_bound": -0.5,
-                "day_of_week_lower_bound": -1,
-            },
-        ],
-        "day": [
-            {
-                "hour_lower_bound": -1,
-                "hour_upper_bound": 0,
-                "day_of_week_upper_bound": 0.5,
-                "day_of_week_lower_bound": -0.5,
-            }
-        ],
+        "evening": {
+            "type": "MultiPolygon",
+            "coordinates": [
+                [[[0.000_001, 0.5], [0.000_001, 1], [1, 1], [1, 0.5]]],
+                [[[0.000_001, -1], [0.000_001, -0.5], [1, -0.5], [1, -1]]],
+            ],
+        },
+        "day": {
+            "type": "Polygon",
+            "coordinates": [[[-1, -0.5], [-1, 0.75], [0, 0.5], [0.1, -0.75]]],
+        },
     }
     with pytest.raises(ValueError):
-        LabelEventScore.bounds_dict_has_overlaps(bounds_dict)
+        LabelEventScore.bounds_dict_has_overlaps(
+            LabelEventScore._make_bounds_dict(bounds_dict)
+        )
 
 
 def test_constructor_overlaps_bounds_dict_raises():
@@ -213,56 +149,32 @@ def test_constructor_overlaps_bounds_dict_raises():
 # Test bad bounds error handling
 
 bad_bounds = [
+    ({}, ValueError),
+    ("BAD", ValueError),
     (
         {
-            "hour_lower_bound": 0,
-            "hour_upper_bound": 0,
-            "day_of_week_upper_bound": 0.5,
-            "day_of_week_lower_bound": -0.5,
+            "type": "NOT_A_TYPE_OF_SHAPE",
+            "coordinates": [
+                [[[0.000_001, 0.5], [0.000_001, 1], [1, 1], [1, 0.5]]],
+                [[[0.000_001, -1], [0.000_001, -0.5], [1, -0.5], [1, -1]]],
+            ],
         },
         ValueError,
     ),
     (
         {
-            "hour_lower_bound": 1,
-            "hour_upper_bound": 0,
-            "day_of_week_upper_bound": 0.5,
-            "day_of_week_lower_bound": -0.5,
+            "type": "NOT_A_TYPE_OF_SHAPE",
+            "coordinates": [
+                [0.000_001, 0.5],
+                [0.000_001, 1],
+                [1, 1],
+                [1, 0.5],
+                [[[0.000_001, -1], [0.000_001, -0.5], [1, -0.5], [1, -1]]],
+            ],
         },
         ValueError,
-    ),
-    (
-        {
-            "hour_lower_bound": -1,
-            "hour_upper_bound": 0,
-            "day_of_week_upper_bound": -0.5,
-            "day_of_week_lower_bound": -0.5,
-        },
-        ValueError,
-    ),
-    (
-        {
-            "hour_lower_bound": -1,
-            "hour_upper_bound": 0,
-            "day_of_week_upper_bound": 0.5,
-            "day_of_week_lower_bound": 0.75,
-        },
-        ValueError,
-    ),
-    (
-        {"hour_lower_bound": -1, "hour_upper_bound": 0, "day_of_week_upper_bound": 0.5},
-        KeyError,
     ),
 ]
-
-
-@pytest.mark.parametrize("bad_bound, expected_error", bad_bounds)
-def test_check_bad_bound_raises_error(bad_bound, expected_error):
-    """
-    Should raise an error if the bounds dict has mistakes.
-    """
-    with pytest.raises(expected_error):
-        LabelEventScore.check_bound_is_valid(bad_bound)
 
 
 @pytest.mark.parametrize("bad_bound", next(zip(*bad_bounds)))

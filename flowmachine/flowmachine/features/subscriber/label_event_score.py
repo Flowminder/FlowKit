@@ -1,8 +1,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-from typing import List, Dict, Union
+from shapely.geometry import Polygon, shape
+from shapely.geometry.base import BaseGeometry
+from typing import List, Dict, Union, Any
 
 from .scores import EventScore
 from .subscriber_location_cluster import _JoinedHartiganCluster
@@ -25,18 +26,9 @@ class LabelEventScore(Query):
         This represents a table that contains scores which are used to label
         a given location. This table must have a subscriber column (called subscriber).
     labels : dict
-        A dictionary whose keys are the label names and the values are
-        strings specifying which observations should be labelled with the
-        given label. Those rules should be written in the same way as one
-        would write a `WHERE` clause in SQL.  Observations which do not
-        match any of the criteria are given the reserved label 'unknown'.
-        Eg.: \`{'evening': '(score_hour > 0) AND (score_dow > 0.5 OR
-        score_dow < -0.5)' , 'daytime': '(score_hour < 0) AND (score_dow <
-        0.5 AND score_dow > -0.5)'}\`
-    enum_type : str
-        The name of the Enumerated type in the database used to represent
-        the labels. It is important to ensure that this type does not yet
-        exist in the database in case you want to redefine it.
+        A dictionary whose keys are the label names and the values geojson shapes,
+        specified hour of day, and day of week score, with hour of day score on the x axis
+        and day of week score on the y axis, where all values are in the range [-1, 1]
     required :
         Specifies a label which every subscriber must possess independently of
         the score.  This is used in cases where, for instance, we require
@@ -46,29 +38,18 @@ class LabelEventScore(Query):
     def __init__(
         self,
         scores: Union[EventScore, _JoinedHartiganCluster],
-        labels={
-            "evening": [
-                {
-                    "hour_lower_bound": 0.00001,
-                    "hour_upper_bound": 1,
-                    "day_of_week_upper_bound": 1,
-                    "day_of_week_lower_bound": 0.5,
-                },
-                {
-                    "hour_lower_bound": 0.00001,
-                    "hour_upper_bound": 1,
-                    "day_of_week_upper_bound": -0.5,
-                    "day_of_week_lower_bound": -1,
-                },
-            ],
-            "day": [
-                {
-                    "hour_lower_bound": -1,
-                    "hour_upper_bound": 0,
-                    "day_of_week_upper_bound": 0.5,
-                    "day_of_week_lower_bound": -0.5,
-                }
-            ],
+        labels: Dict[str, Dict[str, Any]] = {
+            "evening": {
+                "type": "MultiPolygon",
+                "coordinates": [
+                    [[[0.000_001, 0.5], [0.000_001, 1], [1, 1], [1, 0.5]]],
+                    [[[0.000_001, -1], [0.000_001, -0.5], [1, -0.5], [1, -1]]],
+                ],
+            },
+            "day": {
+                "type": "Polygon",
+                "coordinates": [[[-1, -0.5], [-1, 0.5], [0, 0.5], [0, -0.5]]],
+            },
         },
         required: Union[str, None] = None,
     ):
@@ -79,14 +60,7 @@ class LabelEventScore(Query):
                 "Scores must be of type Query, e.g. EventScores, Table, CustomQuery"
             )
 
-        for label, bounds in labels.items():
-            for bound_ix, bound in enumerate(bounds):
-                try:
-                    LabelEventScore.check_bound_is_valid(bound)
-                except (ValueError, KeyError) as e:
-                    raise ValueError(
-                        f"Label {label} bound score bound {bound_ix} invalid: {e}"
-                    )
+        labels = LabelEventScore._make_bounds_dict(labels)
         LabelEventScore.bounds_dict_has_overlaps(labels)
         self.labels = labels
 
@@ -101,13 +75,41 @@ class LabelEventScore(Query):
 
         super().__init__()
 
+    @staticmethod
+    def _make_bounds_dict(
+        geojson_labels: Dict[str, Dict[str, Any]]
+    ) -> Dict[str, BaseGeometry]:
+        """
+        Takes a dictionary of labels and bounds expressed as lists of geojson shapes
+        and returns a dictionary of labels and bounds expressed as Shapely polygons.
+
+        Parameters
+        ----------
+        geojson_labels : dict
+            String -> geojson mappings
+        Returns
+        -------
+        dict
+            Dict of labels mapped to lists of shapely polygons
+
+        """
+        bounds_dict = {}
+        for label, geom in geojson_labels.items():
+            try:
+                bounds_dict[label] = shape(geom)
+            except (AttributeError, IndexError, ValueError) as e:
+                raise ValueError(f"Geometry for {label} is not valid: {e}")
+        return bounds_dict
+
     def _make_query(self):
 
         scores_cols = self.scores.column_names
         scores = f"({self.scores.get_query()}) AS scores"
 
         sql = f"""
-        SELECT *, ({LabelEventScore._get_sql_bound(self.labels)}) AS label FROM {scores}
+        SELECT score_bounds.label, scores.* FROM {scores}
+        LEFT JOIN {LabelEventScore._get_sql_bound(self.labels)}
+        ON st_intersects(st_point(scores.score_hour, scores.score_dow), score_bounds.geom)
         """
 
         if self.required is not None:
@@ -155,48 +157,13 @@ class LabelEventScore(Query):
             SQL case statement
 
         """
-        cases = []
+        table_rows = []
         for label, label_bounds in bounds.items():
-            bound_conditions = " OR ".join(
-                f"""(score_hour::numeric <@ numrange({b['hour_lower_bound']}, {b['hour_upper_bound']})
-                AND 
-                score_dow::numeric <@ numrange({b['day_of_week_lower_bound']}, {b['day_of_week_upper_bound']}))"""
-                for b in label_bounds
-            )
-            cases.append(f"WHEN ({bound_conditions}) THEN '{label}'")
-        return f"CASE {' '.join(cases)} END"
+            table_rows.append(f"('{label}', '{label_bounds.to_wkt()}'::geometry)")
+        return f"(VALUES {', '.join(table_rows)}) as score_bounds(label, geom)"
 
     @staticmethod
-    def check_bound_is_valid(bounds: Dict[str, float]) -> bool:
-        """
-        Check a boundary is valid (upper threshold greater than lower, all expected keys).
-        Raise a ValueError thresholds are wrong, and a KeyError if a key is missing.
-
-        Returns
-        -------
-        bool
-            True if the bound is valid
-
-        """
-        for bound_kind in ("day_of_week", "hour"):
-            if (
-                bounds[f"{bound_kind}_lower_bound"]
-                > bounds[f"{bound_kind}_upper_bound"]
-            ):
-                raise ValueError(
-                    f"{bound_kind}_lower_bound is greater than {bound_kind}_upper_bound"
-                )
-            elif (
-                bounds[f"{bound_kind}_lower_bound"]
-                == bounds[f"{bound_kind}_upper_bound"]
-            ):
-                raise ValueError(
-                    f"{bound_kind}_lower_bound is the same as {bound_kind}_upper_bound"
-                )
-        return True
-
-    @staticmethod
-    def bounds_dict_has_overlaps(bounds: Dict[str, List[Dict[str, float]]]) -> bool:
+    def bounds_dict_has_overlaps(bounds: Dict[str, BaseGeometry]) -> bool:
         """
         Check if any score boundaries overlap one another, and raise
         an exception identifying the ones that do.
@@ -204,67 +171,21 @@ class LabelEventScore(Query):
         Parameters
         ----------
         bounds : dict
-            Dict mapping labels to lists of score boundaries
+            Dict mapping labels to lists of score boundaries expressed as shapely polygons
 
         Returns
         -------
         bool
             True if any bounds overlap
         """
-        bounds_checked = {}
 
-        # Need to compare all bounds with one another, but would like to
-        # only check each _pair_ of bounds once
         flattened_bounds = [
-            (k, ix) for k, v in bounds.items() for ix, b in enumerate(v)
+            (ix, *label_and_bound) for ix, label_and_bound in enumerate(bounds.items())
         ]
-        for label, bound_ix in flattened_bounds:
-            cross_checks = [
-                (k, ix)
-                for k, ix in flattened_bounds
-                if k is not label
-                and frozenset(((k, ix), (label, bound_ix))) not in bounds_checked
-            ]
-            overlaps = [
-                (k, ix)
-                for k, ix in cross_checks
-                if LabelEventScore.has_overlap(bounds[label][bound_ix], bounds[k][ix])
-            ]
-            if len(overlaps) != 0:
-                error = f"Labels overlap. Label {label} score bound {bound_ix} overlaps with {' and '.join(f'{k} score bound {ix}' for k, ix in overlaps)}"
-                raise ValueError(error)
-            bounds_checked.update(
-                set(frozenset(((k, ix), (label, bound_ix))) for k, ix in cross_checks)
-            )
+
+        for ix, label, bound in flattened_bounds:
+            for ix_b, label_b, bound_b in flattened_bounds[ix + 1 :]:
+                if bound.intersects(bound_b):
+                    error = f"Labels overlap. Label '{label}' bounds overlaps with that of '{label_b}'."
+                    raise ValueError(error)
         return False
-
-    @staticmethod
-    def has_overlap(bounds_a: Dict[str, float], bounds_b: Dict[str, float]) -> bool:
-        """
-        Check that two score boundaries do not overlap.
-
-        Parameters
-        ----------
-        bounds_a, bounds_b : dict
-            Dicts of the form {"hour_lower_bound": -1,
-                "hour_upper_bound": 0,
-                "day_of_week_upper_bound": 0.5,
-                "day_of_week_lower_bound": -0.5}
-
-        Returns
-        -------
-        bool
-            True if the score boundaries overlap one another
-
-        """
-        if (bounds_a["hour_lower_bound"] > bounds_b["hour_upper_bound"]) or (
-            bounds_b["hour_lower_bound"] > bounds_a["hour_upper_bound"]
-        ):
-            return False
-        if (
-            bounds_a["day_of_week_upper_bound"] < bounds_b["day_of_week_lower_bound"]
-        ) or (
-            bounds_b["day_of_week_upper_bound"] < bounds_a["day_of_week_lower_bound"]
-        ):
-            return False
-        return True
