@@ -38,10 +38,17 @@ def check_claims(claim_type):
                 src_ip=request.headers.get("Remote-Addr"),
                 json_payload=json_payload,
             )
-            query_kind = (
-                "NA" if json_payload is None else json_payload.get("query_kind", "NA")
-            )
-            try:  # Cross-check the query kind with the backend
+
+            # Get query kind
+            if request.path.split("/")[1] == "geography":
+                query_kind = "geography"
+            else:
+                query_kind = (
+                    "NA"
+                    if json_payload is None
+                    else json_payload.get("query_kind", "NA")
+                )
+            try:  # Get the query kind from the backend
                 request.socket.send_json(
                     {
                         "request_id": request.request_id,
@@ -66,7 +73,10 @@ def check_claims(claim_type):
                         400,
                     )
 
+            # Get claims
             claims = get_jwt_claims().get(query_kind, {})
+            endpoint_claims = claims.get("permissions", {})
+            aggregation_claims = claims.get("spatial_aggregation", {})
             log_dict = dict(
                 request_id=request.request_id,
                 query_kind=query_kind.upper(),
@@ -77,13 +87,12 @@ def check_claims(claim_type):
                 query_id=kwargs.get("query_id", "NA"),
                 claims=claims,
             )
-
             current_app.query_run_logger.info("Received", **log_dict)
-            endpoint_claims = claims.get("permissions", {})
-            spatial_claims = claims.get("spatial_aggregation", {})
+
+            # Check claims
             if (claim_type not in endpoint_claims) or (
                 endpoint_claims[claim_type] == False
-            ):  # Check access claims
+            ):  # Check endpoint claims
                 current_app.query_run_logger.error(
                     "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN", **log_dict
                 )
@@ -96,30 +105,35 @@ def check_claims(claim_type):
                     ),
                     401,
                 )
-            elif claim_type == "get_result":  # Check spatial aggregation claims
-                request.socket.send_json(
-                    {
-                        "request_id": request.request_id,
-                        "action": "get_params",
-                        "query_id": kwargs["query_id"],
-                    }
-                )
-                message = await request.socket.recv_json()
-                if "params" not in message:
-                    return jsonify({}), 404
-                try:
-                    aggregation_unit = message["params"]["aggregation_unit"]
-                except KeyError:
-                    return (
-                        jsonify(
-                            {
-                                "status": "Error",
-                                "msg": "Missing parameter: 'aggregation_unit'",
-                            }
-                        ),
-                        500,
+            elif claim_type == "get_result":
+                # Get aggregation unit
+                if query_kind == "geography":
+                    aggregation_unit = kwargs["aggregation_unit"]
+                else:
+                    request.socket.send_json(
+                        {
+                            "request_id": request.request_id,
+                            "action": "get_params",
+                            "query_id": kwargs["query_id"],
+                        }
                     )
-                if aggregation_unit not in spatial_claims:
+                    message = await request.socket.recv_json()
+                    if "params" not in message:
+                        return jsonify({}), 404
+                    try:
+                        aggregation_unit = message["params"]["aggregation_unit"]
+                    except KeyError:
+                        return (
+                            jsonify(
+                                {
+                                    "status": "Error",
+                                    "msg": "Missing parameter: 'aggregation_unit'",
+                                }
+                            ),
+                            500,
+                        )
+                # Check aggregation claims
+                if aggregation_unit not in aggregation_claims:
                     current_app.query_run_logger.error(
                         "SPATIAL_AGGREGATION_LEVEL_NOT_ALLOWED_BY_TOKEN", **log_dict
                     )
@@ -219,6 +233,79 @@ async def get_query(query_id):
         return jsonify({"status": "Error", "msg": message["error"]}), 403
     else:
         return jsonify({}), 404
+
+
+@blueprint.route("/geography/<aggregation_unit>")
+@check_claims("get_result")
+async def get_geography(aggregation_unit):
+    request.socket.send_json(
+        {
+            "request_id": request.request_id,
+            "action": "get_geography",
+            "params": {"aggregation_unit": aggregation_unit},
+        }
+    )
+    #  Get the reply.
+    message = await request.socket.recv_json()
+    current_app.logger.debug(f"Got message: {message}")
+    if message["status"] == "done":
+        results_streamer = stream_with_context(assemble_geojson_feature_collection)(
+            message["sql"], message["crs"]
+        )
+        mimetype = "application/geo+json"
+
+        current_app.logger.debug("Returning.")
+        return (
+            results_streamer,
+            200,
+            {
+                "Transfer-Encoding": "chunked",
+                "Content-Disposition": f"attachment;filename={aggregation_unit}.geojson",
+                "Content-type": mimetype,
+            },
+        )
+    elif message["status"] == "error":
+        return jsonify({"status": "Error", "msg": message["error"]}), 403
+    else:
+        return jsonify({}), 404
+
+
+async def assemble_geojson_feature_collection(sql_query, crs):
+    """
+    Assemble the GeoJSON "Feature" objects from the query response into a
+    "FeatureCollection" object.
+
+    Parameters
+    ----------
+    sql_query : str
+        SQL query to stream output of
+    crs : str
+        Coordinate reference system
+
+    Yields
+    ------
+    bytes
+        Encoded lines of JSON
+
+    """
+    logger = current_app.logger
+    pool = current_app.pool
+    yield f'{{"properties":{{"crs":{crs}}}, "type":"FeatureCollection", "features":['.encode()
+    prepend = ""
+    logger.debug("Starting generator.")
+    async with pool.acquire() as connection:
+        logger.debug("Connected.")
+        async with connection.transaction():
+            logger.debug("Got transaction.")
+            logger.debug(f"Running {sql_query}")
+            try:
+                async for row in connection.cursor(sql_query):
+                    yield f"{prepend}{json.dumps(row[0])}".encode()
+                    prepend = ", "
+                logger.debug("Finishing up.")
+                yield b"]}"
+            except Exception as e:
+                logger.error(e)
 
 
 async def generate_json(sql_query, query_id):

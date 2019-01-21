@@ -162,10 +162,10 @@ class GeoDataMixin:
         cols = list(set(self.column_names + ["gid", "geom"]))
         return joined_query, cols
 
-    def _geo_json_query(self, crs=None):
+    def geojson_query(self, crs=None):
         """
-        Create a query which will transform this one into a geojson
-        featurecollection.
+        Create a query which will transform each row into a geojson
+        feature.
         
         Parameters
         ----------
@@ -230,7 +230,8 @@ class GeoDataMixin:
     def _get_geojson(self, proj4):
         """
         Helper function that actually retrieves geojson from the
-        database, and sets a proj4 string on it.
+        database, combines into a geojson featurecollection, and
+        sets a proj4 string on it.
 
 
         Parameters
@@ -243,9 +244,7 @@ class GeoDataMixin:
         dict
 
         """
-        features = [
-            x[0] for x in self.connection.fetch(self._geo_json_query(crs=proj4))
-        ]
+        features = [x[0] for x in self.connection.fetch(self.geojson_query(crs=proj4))]
         js = {
             "properties": {"crs": proj4},
             "type": "FeatureCollection",
@@ -253,32 +252,23 @@ class GeoDataMixin:
         }
         return js
 
-    def get_geojson_query(self, crs=None):
+    def get_proj4_string(self, crs=None):
         """
-        Create a query which will return this as a GeoJson FeatureCollection (as a single row, single column).
+        Get the proj4 string corresponding to crs, or the default proj4 string if crs is None.
 
         Parameters
         ----------
         crs : int or str
-            Optionally give an integer srid, or valid proj4 string to transform output to
+            Optionally give an integer srid, or valid proj4 string
         
         Returns
         -------
         str
-            A json aggregation query string
+            proj4 string
         """
-        # TODO: This method essentially duplicates the functionality of _get_geojson, but as a query string.
-        # It is used by flowmachine-server to send a SQL string back to the API, but is not used by to_geojson here.
-        # This method should probably be combined with _geo_json_query, and should replace _get_geojson.
+        # TODO: Some refactoring would be beneficial here.
         proj4_string = proj4string(self.connection, crs)
-        json_query = f"""
-            SELECT json_build_object(
-                'properties',   json_build_object('crs', '{proj4_string}'),
-                'type',         'FeatureCollection',
-                'features',     json_agg(feature)
-            ) FROM ({self._geo_json_query(crs=proj4_string)}) AS fc
-        """
-        return json_query
+        return proj4_string
 
     def to_geojson(self, crs=None):
         """

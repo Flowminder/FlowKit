@@ -4,7 +4,7 @@ import redis_lock
 from json import dumps, loads, JSONDecodeError
 
 
-from flowmachine.core import Query
+from flowmachine.core import Query, GeoTable
 from flowmachine.core.cache import get_query_object_by_id, cache_table_exists
 from flowmachine.features import (
     daily_location,
@@ -244,6 +244,27 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             q = Flows(from_location_object, to_location_object)
         except Exception as e:
             raise QueryProxyError(f"FIXME (modal_location): {e}")
+    elif "geography" == query_kind:
+        aggregation_unit = params["aggregation_unit"]
+
+        error_msg_prefix = f"Error when constructing query of kind {query_kind} with parameters {params}"
+        allowed_aggregation_units = ["admin0", "admin1", "admin2", "admin3", "admin4"]
+
+        if aggregation_unit not in allowed_levels:
+            raise QueryProxyError(
+                f"{error_msg_prefix}: 'Unrecognised aggregation unit '{aggregation_unit}', "
+                f"must be one of: {allowed_aggregation_units}'"
+            )
+
+        try:
+            q = GeoTable(
+                name=aggregation_unit,
+                schema="geography",
+                columns=[f"{aggregation_unit}name", f"{aggregation_unit}pcod", "geom"],
+            )
+            # FIXME: The sql string we need is q.get_geojson_query(), not q.get_query()
+        except Exception as e:
+            raise QueryProxyError(f"{error_msg_prefix}: '{e}'")
 
     else:
         error_msg = f"Unsupported query kind: '{query_kind}'"

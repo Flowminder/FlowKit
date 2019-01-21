@@ -13,7 +13,12 @@ from logging.handlers import TimedRotatingFileHandler
 import zmq
 from zmq.asyncio import Context
 from flowmachine.core import connect
-from .query_proxy import QueryProxy, MissingQueryError, QueryProxyError
+from .query_proxy import (
+    QueryProxy,
+    MissingQueryError,
+    QueryProxyError,
+    construct_query_object,
+)
 from .zmq_interface import ZMQMultipartMessage, ZMQInterfaceError
 
 import structlog
@@ -124,14 +129,25 @@ async def get_reply_for_message(  # pragma: no cover
             )
             reply = {"id": query_id, "query_kind": query_proxy.query_kind}
 
+        elif "get_geography" == action:
+            logger.debug(f"Trying to get geography. Message: {zmq_msg.msg_str}")
+            aggregation_unit = zmq_msg.action_params["aggregation_unit"]
+            # TODO: Once we have refactored QueryProxy, we won't want to
+            # directly import 'construct_query_object' here.
+            q = construct_query_object("geography", zmq.action_params["params"])
+            crs = q.get_proj4_string()
+            sql = q.geojson_query(crs=crs)
+            query_run_log.info("get_geography", **run_log_dict)
+            reply = {"status": "done", "crs": crs, "sql": sql}
+
         else:
             logger.debug(f"Unknown action: '{action}'")
-            reply = {"status": "rejected", "error": f"Unknown action: '{action}'"}
+            reply = {"status": "error", "error": f"Unknown action: '{action}'"}
 
     except KeyError as e:
-        reply = {"status": "rejected", "error": f"Missing key {e}"}
+        reply = {"status": "error", "error": f"Missing key {e}"}
     except QueryProxyError as e:
-        reply = {"status": "rejected", "reason": f"{e}"}
+        reply = {"status": "error", "error": f"{e}"}
     except MissingQueryError as e:
         reply = {"status": "awol", "id": e.missing_query_id}
 
