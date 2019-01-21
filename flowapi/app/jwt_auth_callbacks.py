@@ -13,6 +13,7 @@ from flask_jwt_extended.default_callbacks import (
     default_user_identity_callback,
 )
 from quart import current_app, request, Response
+from typing import Any, Dict
 
 
 def register_logging_callbacks(jwt: JWTManager):
@@ -49,7 +50,7 @@ def register_logging_callbacks(jwt: JWTManager):
     return jwt
 
 
-async def expired_token_callback() -> Response:
+async def expired_token_callback(expired_token: Dict[str, Any]) -> Response:
     """
     Log that an access attempt was made with an expired token and return
     the result from the default callback.
@@ -63,12 +64,13 @@ async def expired_token_callback() -> Response:
         "EXPIRED_TOKEN",
         route=request.path,
         request_id=request.request_id,
-        user=str(get_jwt_identity()),
+        identity=expired_token["identity"],
+        expired_token=expired_token,
         src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
 
-    return default_expired_token_callback()
+    return default_expired_token_callback(expired_token)
 
 
 async def claims_verification_failed_callback() -> Response:
