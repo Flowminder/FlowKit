@@ -2,7 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import uuid
 from flask_jwt_extended import JWTManager, get_jwt_identity
 from flask_jwt_extended.default_callbacks import (
     default_expired_token_callback,
@@ -10,7 +9,6 @@ from flask_jwt_extended.default_callbacks import (
     default_invalid_token_callback,
     default_revoked_token_callback,
     default_unauthorized_callback,
-    default_user_identity_callback,
 )
 from quart import current_app, request, Response
 from typing import Any, Dict
