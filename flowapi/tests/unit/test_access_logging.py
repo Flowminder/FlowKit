@@ -53,9 +53,24 @@ async def test_expired_token(app):
     client, db, log_dir, app = app
     await client.get("/")  # Need to trigger setup
 
+    # As of v3.16.0, flask-jwt-extended passes the decoded expired token to the callback
+    # (see https://github.com/vimalloc/flask-jwt-extended/releases/tag/3.16.0), so we
+    # construct a dummy JSON object here that has the same structure. The details of this
+    # structure may or may not be used internally but it can't hurt to have a realistic example.
+    dummy_decoded_expired_token = {
+        "iat": 1548061881,
+        "nbf": 1548061881,
+        "jti": "bada4e8a-bf33-4b2f-b02d-88a2c5fad180",
+        "exp": 1548061920,
+        "identity": "TEST_USER",
+        "fresh": True,
+        "type": "access",
+        "user_claims": {},
+    }
+
     async with app.test_request_context("GET", "/"):
         request.request_id = "DUMMY_REQUEST_ID"
-        await expired_token_callback()
+        await expired_token_callback(dummy_decoded_expired_token)
         with open(os.path.join(log_dir, "flowkit-access.log")) as log_file:
             log_lines = log_file.readlines()
         assert len(log_lines) == 1
