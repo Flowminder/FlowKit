@@ -221,7 +221,9 @@ class MeaningfulLocationsOD(Query):
             )
         elif level == "polygon":
             self.aggregator = GeoTable(
-                polygon_table, geom_column=geom_column, columns=["geom"] + level_cols
+                polygon_table,
+                geom_column=geom_column,
+                columns=[geom_column] + level_cols,
             )
         elif level == "grid":
             self.aggregator = Grid(size=size)
