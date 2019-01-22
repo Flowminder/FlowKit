@@ -15,7 +15,7 @@ class MeaningfulLocations(Query):
     Infer 'meaningful' locations for individual subscribers (for example, home and work) based on
     a clustering of the cell towers they use, and their usage patterns for those towers.
 
-    Extension of work by Isaacman et al.[1]_ to scenarios where ground truth data is not available.
+    This is an extension of work by Isaacman et al.[1]_ by Flowminder in collaboration with the IDB[2]_.
 
     Parameters
     ----------
@@ -31,6 +31,7 @@ class MeaningfulLocations(Query):
     References
     ----------
     .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
+    .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
 
     def __init__(
