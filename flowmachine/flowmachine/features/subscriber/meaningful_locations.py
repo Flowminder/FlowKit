@@ -15,7 +15,7 @@ class MeaningfulLocations(Query):
     Infer 'meaningful' locations for individual subscribers (for example, home and work) based on
     a clustering of the cell towers they use, and their usage patterns for those towers.
 
-    This is an extension of work by Isaacman et al.[1]_ by Flowminder in collaboration with the IDB[2]_.
+    This is an extension of work by Isaacman et al.[1]_ by Flowminder in collaboration with the World Bank[2]_.
 
     Parameters
     ----------
