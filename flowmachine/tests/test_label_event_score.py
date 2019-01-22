@@ -207,3 +207,27 @@ def test_constructor_raises_value_error(bad_bound):
             scores=EventScore(start="2016-01-01", stop="2016-01-05"),
             labels={"DUMMY_LABEL": [bad_bound]},
         )
+
+
+def test_non_query_scores_obj_raises():
+    """
+    Passing a scores object which is not a query type should raise an error.
+    """
+    with pytest.raises(TypeError):
+        LabelEventScore(
+            scores="NOT_A_QUERY",
+            labels={
+                "DUMMY_LABEL": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [-1.1, -1.1],
+                            [-1.0, 1.1],
+                            [1.1, 1.1],
+                            [1.1, -1.1],
+                            [-1.1, -1.1],
+                        ]
+                    ],
+                }
+            },
+        )

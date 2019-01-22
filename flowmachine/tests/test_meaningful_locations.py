@@ -75,7 +75,7 @@ def test_column_names_meaningful_locations_aggregate(
     assert get_column_names_from_run(mfl_agg) == mfl_agg.column_names
 
 
-def test_column_names_meaningful_locations_aggregate(
+def test_column_names_meaningful_locations_od(
     exemplar_level_param, get_column_names_from_run
 ):
     """ Test that column_names property matches head(0) for an od matrix between meaningful locations"""
