@@ -37,6 +37,7 @@ def test_handles_dates(get_dataframe):
     assert maximum.timestamp() < max_comparison.timestamp()
 
 
+@pytest.mark.check_available_dates
 def test_warns_on_missing():
     """
     Date subsetter should warn on missing dates.
@@ -46,6 +47,7 @@ def test_warns_on_missing():
         EventTableSubset("2016-01-01", "2016-05-02")
 
 
+@pytest.mark.check_available_dates
 def test_error_on_all_missing():
     """
     Date subsetter should error when all dates are missing.

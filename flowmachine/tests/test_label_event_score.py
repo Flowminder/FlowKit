@@ -10,12 +10,14 @@ from flowmachine.features.subscriber.label_event_score import LabelEventScore
 
 
 @pytest.mark.usefixtures("skip_datecheck")
-def test_labelled_event_score_column_names(exemplar_level_param):
+def test_labelled_event_score_column_names(
+    exemplar_level_param, get_column_names_from_run
+):
     if exemplar_level_param["level"] not in JoinToLocation.allowed_levels:
         pytest.skip(f'{exemplar_level_param["level"]} not valid for this test')
     es = EventScore(start="2016-01-01", stop="2016-01-05", **exemplar_level_param)
     labelled = LabelEventScore(scores=es, required="evening")
-    assert labelled.head(0).columns.tolist() == labelled.column_names
+    assert get_column_names_from_run(labelled) == labelled.column_names
 
 
 def test_locations_are_labelled_correctly(get_dataframe):
