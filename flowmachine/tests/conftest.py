@@ -134,6 +134,13 @@ def get_dataframe(flowmachine_connect):
 
 
 @pytest.fixture
+def get_column_names_from_run(flowmachine_connect):
+    yield lambda query: pd.read_sql_query(
+        f"{query.get_query()} LIMIT 0;", con=flowmachine_connect.engine
+    ).columns.tolist()
+
+
+@pytest.fixture
 def get_length(flowmachine_connect):
     yield lambda query: len(
         pd.read_sql_query(query.get_query(), con=flowmachine_connect.engine)

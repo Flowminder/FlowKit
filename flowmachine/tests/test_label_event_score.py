@@ -14,7 +14,7 @@ def test_labelled_event_score_column_names(exemplar_level_param):
     if exemplar_level_param["level"] not in JoinToLocation.allowed_levels:
         pytest.skip(f'{exemplar_level_param["level"]} not valid for this test')
     es = EventScore(start="2016-01-01", stop="2016-01-05", **exemplar_level_param)
-    labelled = LabelEventScore(es, required="evening")
+    labelled = LabelEventScore(scores=es, required="evening")
     assert labelled.head(0).columns.tolist() == labelled.column_names
 
 
@@ -25,8 +25,8 @@ def test_locations_are_labelled_correctly(get_dataframe):
     es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
 
     ls = LabelEventScore(
-        es,
-        {
+        scores=es,
+        labels={
             "daytime": {
                 "type": "Polygon",
                 "coordinates": [[[-1.1, -1.1], [-1, 1.1], [1.1, 1.1], [1.1, -1.1]]],
@@ -54,8 +54,8 @@ def test_whether_required_label_relabels(get_dataframe):
     es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
 
     ls = LabelEventScore(
-        es,
-        {
+        scores=es,
+        labels={
             "daytime": {
                 "type": "Polygon",
                 "coordinates": [
@@ -63,7 +63,7 @@ def test_whether_required_label_relabels(get_dataframe):
                 ],
             }
         },
-        "evening",
+        required="evening",
     )
     df = get_dataframe(ls)
     assert list(df["label"].unique()) == ["evening"]
@@ -143,7 +143,9 @@ def test_constructor_overlaps_bounds_dict_raises():
         ],
     }
     with pytest.raises(ValueError):
-        LabelEventScore(EventScore(start="2016-01-01", stop="2016-01-05"), bounds_dict)
+        LabelEventScore(
+            scores=EventScore(start="2016-01-01", stop="2016-01-05"), labels=bounds_dict
+        )
 
 
 # Test bad bounds error handling
@@ -184,6 +186,6 @@ def test_constructor_raises_value_error(bad_bound):
     """
     with pytest.raises(ValueError):
         LabelEventScore(
-            EventScore(start="2016-01-01", stop="2016-01-05"),
-            {"DUMMY_LABEL": [bad_bound]},
+            scores=EventScore(start="2016-01-01", stop="2016-01-05"),
+            labels={"DUMMY_LABEL": [bad_bound]},
         )

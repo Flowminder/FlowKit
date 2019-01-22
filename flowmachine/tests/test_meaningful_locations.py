@@ -27,7 +27,7 @@ labels = {
 }
 
 
-def test_column_names_meaningful_locations():
+def test_column_names_meaningful_locations(get_column_names_from_run):
     """ Test that column_names property matches head(0) for meaningfullocations"""
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
@@ -45,10 +45,12 @@ def test_column_names_meaningful_locations():
         label="evening",
     )
 
-    assert mfl.head(0).columns.tolist() == mfl.column_names
+    assert get_column_names_from_run(mfl) == mfl.column_names
 
 
-def test_column_names_meaningful_locations_aggregate(exemplar_level_param):
+def test_column_names_meaningful_locations_aggregate(
+    exemplar_level_param, get_column_names_from_run
+):
     """ Test that column_names property matches head(0) for aggregated meaningful locations"""
     if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
         pytest.skip(
@@ -70,10 +72,12 @@ def test_column_names_meaningful_locations_aggregate(exemplar_level_param):
         label="evening",
     ).aggregate(**exemplar_level_param)
 
-    assert mfl_agg.head(0).columns.tolist() == mfl_agg.column_names
+    assert get_column_names_from_run(mfl_agg) == mfl_agg.column_names
 
 
-def test_column_names_meaningful_locations_aggregate(exemplar_level_param):
+def test_column_names_meaningful_locations_aggregate(
+    exemplar_level_param, get_column_names_from_run
+):
     """ Test that column_names property matches head(0) for an od matrix between meaningful locations"""
     if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
         pytest.skip(
@@ -116,4 +120,27 @@ def test_column_names_meaningful_locations_aggregate(exemplar_level_param):
         **exemplar_level_param,
     )
 
-    assert mfl_od.head(0).columns.tolist() == mfl_od.column_names
+    assert get_column_names_from_run(mfl_od) == mfl_od.column_names
+
+
+@pytest.mark.parametrize("label, expected_number_of_clusters", [("evening", 702)])
+def test_meaningful_locations_results(
+    label, expected_number_of_clusters, get_dataframe
+):
+    mfl = MeaningfulLocations(
+        clusters=HartiganCluster(
+            calldays=CallDays(
+                subscriber_locations=subscriber_locations(
+                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                )
+            ),
+            radius=1,
+        ),
+        scores=EventScore(
+            start="2016-01-01", stop="2016-01-02", level="versioned-site"
+        ),
+        labels=labels,
+        label=label,
+    )
+    mfl_df = get_dataframe(mfl)
+    assert len(mfl_df) == expected_number_of_clusters
