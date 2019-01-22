@@ -118,16 +118,16 @@ class LabelEventScore(Query):
             sql = f"""
 
                 WITH labelled AS ({sql}),
-                    filtered AS (SELECT l.subscriber AS subscriber FROM labelled l
-                                GROUP BY l.subscriber, label HAVING label = '{self.required}')
+                    filtered AS (SELECT subscriber AS subscriber FROM labelled
+                                GROUP BY subscriber, label HAVING label = '{self.required}')
 
-                SELECT '{self.required}' AS label, {scores_cols},
+                SELECT '{self.required}' AS label, {scores_cols}
                 FROM labelled
                 LEFT JOIN filtered
                 ON labelled.subscriber = filtered.subscriber
                 WHERE filtered.subscriber IS NULL
                 UNION ALL
-                SELECT {scores_cols}, label
+                SELECT label, {scores_cols}
                 FROM labelled
                 RIGHT JOIN filtered
                 ON labelled.subscriber = filtered.subscriber
