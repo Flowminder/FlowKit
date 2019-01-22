@@ -46,7 +46,23 @@ def test_whether_passing_reserved_label_fails():
     es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
 
     with pytest.raises(ValueError):
-        ls = LabelEventScore(scores=es, labels={"unknown": []})
+        ls = LabelEventScore(
+            scores=es,
+            labels={
+                "unknown": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [-1.1, -1.1],
+                            [-1.0, 1.1],
+                            [1.1, 1.1],
+                            [1.1, -1.1],
+                            [-1.1, -1.1],
+                        ]
+                    ],
+                }
+            },
+        )
 
 
 def test_whether_required_label_relabels(get_dataframe):
