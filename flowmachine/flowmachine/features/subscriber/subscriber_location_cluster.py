@@ -223,18 +223,21 @@ class HartiganCluster(BaseCluster):
         """
 
         self.calldays = calldays
-        if (
-            "site_id" not in calldays.column_names
-            or "version" not in calldays.column_names
-        ):
-            raise ValueError("calldays must include 'site_id' and 'version' columns.")
-        self.radius = radius
-        self.call_threshold = call_threshold
-        self.buffer = buffer
-        if not isinstance(calldays, Query):
+        try:
+            if (
+                "site_id" not in calldays.column_names
+                or "version" not in calldays.column_names
+            ):
+                raise ValueError(
+                    "calldays must include 'site_id' and 'version' columns."
+                )
+        except AttributeError:
             raise TypeError(
                 "calldays must be a subclass of Query (e.g. CallDays, Table, CustomQuery"
             )
+        self.radius = radius
+        self.call_threshold = call_threshold
+        self.buffer = buffer
         super().__init__()
 
     def _make_query(self):

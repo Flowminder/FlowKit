@@ -141,7 +141,7 @@ def test_bigger_radius_yields_fewer_clusters(get_dataframe):
     nclusters_small_radius = h.groupby("subscriber").size()
 
     for r in radius[1:]:
-        h = get_dataframe(HartiganCluster(cd, r))
+        h = get_dataframe(HartiganCluster(calldays=cd, radius=r))
         nclusters_big_radius = h.groupby("subscriber").size()
         assert all(nclusters_small_radius >= nclusters_big_radius)
         nclusters_small_radius = nclusters_big_radius
@@ -159,11 +159,13 @@ def test_different_call_days_format(get_dataframe):
 
     cd.store().result()
 
-    har = get_dataframe(HartiganCluster(Table(cd.fully_qualified_table_name), 50))
+    har = get_dataframe(
+        HartiganCluster(calldays=Table(cd.fully_qualified_table_name), radius=50)
+    )
     assert isinstance(har, pd.DataFrame)
 
     cd_query = cd.get_query()
-    har = get_dataframe(HartiganCluster(CustomQuery(cd_query), 50))
+    har = get_dataframe(HartiganCluster(calldays=CustomQuery(cd_query), radius=50))
     assert isinstance(har, pd.DataFrame)
 
 
