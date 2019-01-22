@@ -282,7 +282,7 @@ class GeoDataMixin:
         dict
             This query as a GeoJson FeatureCollection in dict form. 
         """
-        proj4_string = proj4string(self.connection, crs)
+        proj4_string = get_proj4_string(crs)
         try:
             js = self._geojson.get(proj4_string, self._get_geojson(proj4_string))
         except AttributeError:
