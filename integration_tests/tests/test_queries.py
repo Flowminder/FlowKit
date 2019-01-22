@@ -47,3 +47,20 @@ def test_run_query(query_kind, params, access_token_builder, api_host):
     )
     result_dataframe = get_result(con, getattr(flowclient, query_kind)(**params))
     assert 0 < len(result_dataframe)
+
+
+def test_get_geography(access_token_builder, api_host):
+    """Test that queries can be run, and return a QueryResult object."""
+    con = flowclient.Connection(
+        api_host,
+        access_token_builder(
+            {
+                "geography": {
+                    "permissions": permissions_types,
+                    "spatial_aggregation": aggregation_types,
+                }
+            }
+        ),
+    )
+    result_geodataframe = flowclient.get_geography(con, "admin3")
+    assert 0 < len(result_geodataframe)

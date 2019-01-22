@@ -16,7 +16,7 @@ from utils import make_token, permissions_types, aggregation_types
 @click.option(
     "--permission",
     "-p",
-    type=(str, click.Choice(permissions_types)),
+    type=(str, click.Choice(permissions_types.keys())),
     multiple=True,
     help="Query kinds this token will allow access to, and type of access allowed.",
 )
@@ -35,15 +35,15 @@ def print_token(username, secret_key, lifetime, permission, aggregation):
         else:
             claims[query_kind] = {
                 "permissions": {permission_type: True},
-                "spatial_aggregation": {},
+                "spatial_aggregation": [],
             }
     for query_kind, aggregation_type in aggregation:
         if query_kind in claims.keys():
-            claims[query_kind]["spatial_aggregation"][aggregation_type] = True
+            claims[query_kind]["spatial_aggregation"].append(aggregation_type)
         else:
             claims[query_kind] = {
                 "permissions": {},
-                "spatial_aggregation": {aggregation_type: True},
+                "spatial_aggregation": [aggregation_type],
             }
     print(make_token(username, secret_key, timedelta(days=lifetime), claims))
 
