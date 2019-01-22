@@ -42,7 +42,7 @@ class MeaningfulLocations(Query):
         label: str,
     ) -> None:
         labelled_clusters = LabelEventScore(
-            clusters.join_to_cluster_components(scores), labels=labels
+            scores=clusters.join_to_cluster_components(scores), labels=labels
         )
         self.subset = labelled_clusters.subset("label", label)
 
@@ -65,7 +65,7 @@ class MeaningfulLocations(Query):
         level="admin3",
         column_name=None,
         polygon_table=None,
-        geom_column=None,
+        geom_column="geom",
         size=None,
     ) -> "MeaningfulLocationsAggregate":
         return MeaningfulLocationsAggregate(
@@ -95,7 +95,7 @@ class MeaningfulLocationsAggregate(Query):
     polygon_table : str, default None
         When using the "polygon" level, you must specify the fully qualified name of a table
         containing polygons.
-    geom_column : str, default None
+    geom_column : str, default "geom"
         When using the "polygon" level, you must specify the name of column containing geometry
     size : int, default None
         When using the "grid" level, you must specify the size of the grid to use in KM
@@ -110,7 +110,7 @@ class MeaningfulLocationsAggregate(Query):
         level: str = "admin3",
         column_name: Union[str, None, List[str]] = None,
         polygon_table: str = None,
-        geom_column: str = None,
+        geom_column: str = "geom",
         size: int = None,
     ) -> None:
         self.meaningful_locations = meaningful_locations
@@ -129,7 +129,9 @@ class MeaningfulLocationsAggregate(Query):
             )
         elif level == "polygon":
             self.aggregator = GeoTable(
-                polygon_table, geom_column=geom_column, columns=["geom"] + level_cols
+                polygon_table,
+                geom_column=geom_column,
+                columns=[geom_column] + level_cols,
             )
         elif level == "grid":
             self.aggregator = Grid(size=size)
@@ -141,6 +143,7 @@ class MeaningfulLocationsAggregate(Query):
         )
 
     def _make_query(self):
+        agg_query, agg_cols = self.aggregator._geo_augmented_query()
         level_cols = get_columns_for_level(self.level, self.column_name)
         level_cols_aliased = level_cols
         if level_cols == ["pcod"]:
@@ -152,8 +155,8 @@ class MeaningfulLocationsAggregate(Query):
         SELECT label, {level_cols_aliased}, sum(1./n_clusters) as total FROM
         ({self.meaningful_locations.get_query()}) meaningful_locations
         LEFT JOIN 
-        ({self.aggregator.get_query()}) agg
-        ON st_contains(agg.{self.aggregator.geom_column}::geometry, meaningful_locations.cluster::geometry)
+        ({agg_query}) agg
+        ON st_contains(agg.geom::geometry, meaningful_locations.cluster::geometry)
         GROUP BY label, {level_cols}
         HAVING sum(1./n_clusters) > 15
         ORDER BY {level_cols}
@@ -178,7 +181,7 @@ class MeaningfulLocationsOD(Query):
     polygon_table : str, default None
         When using the "polygon" level, you must specify the fully qualified name of a table
         containing polygons.
-    geom_column : str, default None
+    geom_column : str, default "geom"
         When using the "polygon" level, you must specify the name of column containing geometry
     size : int, default None
         When using the "grid" level, you must specify the size of the grid to use in KM
@@ -194,7 +197,7 @@ class MeaningfulLocationsOD(Query):
         level: str = "admin3",
         column_name: Union[str, None, List[str]] = None,
         polygon_table: str = None,
-        geom_column: str = None,
+        geom_column: str = "geom",
         size: int = None,
     ) -> None:
         self.flow = meaningful_locations_a.join(
@@ -232,6 +235,7 @@ class MeaningfulLocationsOD(Query):
         ] + ["total"]
 
     def _make_query(self):
+        agg_query, agg_cols = self.aggregator._geo_augmented_query()
         level_cols = [
             f"{col}_{direction}"
             for col in get_columns_for_level(self.level, self.column_name)
@@ -254,11 +258,11 @@ class MeaningfulLocationsOD(Query):
         SELECT label_from, label_to, {level_cols_aliased}, sum(1./(n_clusters_from*n_clusters_to)) as total FROM
         ({self.flow.get_query()}) meaningful_locations
         LEFT JOIN 
-        ({self.aggregator.get_query()}) from_q
-        ON st_contains(from_q.{self.aggregator.geom_column}::geometry, meaningful_locations.cluster_from::geometry)
+        ({agg_query}) from_q
+        ON st_contains(from_q.geom::geometry, meaningful_locations.cluster_from::geometry)
         LEFT JOIN 
-        ({self.aggregator.get_query()}) to_q
-        ON st_contains(to_q.{self.aggregator.geom_column}::geometry, meaningful_locations.cluster_to::geometry)
+        ({agg_query}) to_q
+        ON st_contains(to_q.geom::geometry, meaningful_locations.cluster_to::geometry)
         GROUP BY label_from, label_to, {level_cols}
         HAVING sum(1./(n_clusters_from*n_clusters_to)) > 15
         ORDER BY {level_cols}
