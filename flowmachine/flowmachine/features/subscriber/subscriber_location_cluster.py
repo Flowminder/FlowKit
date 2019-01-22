@@ -223,6 +223,11 @@ class HartiganCluster(BaseCluster):
         """
 
         self.calldays = calldays
+        if (
+            "site_id" not in calldays.column_names
+            or "version" not in calldays.column_names
+        ):
+            raise ValueError("calldays must include 'site_id' and 'version' columns.")
         self.radius = radius
         self.call_threshold = call_threshold
         self.buffer = buffer
@@ -328,6 +333,10 @@ class _JoinedHartiganCluster(BaseCluster):
         if not isinstance(query, Query):
             raise TypeError(
                 f"{query} is not a valid type of object. Should be a Query type object."
+            )
+        if "site_id" not in query.column_names or "version" not in query.column_names:
+            raise ValueError(
+                "scores query must include 'site_id' and 'version' columns."
             )
         super().__init__()
 
