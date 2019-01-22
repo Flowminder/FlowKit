@@ -123,10 +123,16 @@ def test_column_names_meaningful_locations_aggregate(
     assert get_column_names_from_run(mfl_od) == mfl_od.column_names
 
 
-@pytest.mark.parametrize("label, expected_number_of_clusters", [("evening", 702)])
+@pytest.mark.parametrize(
+    "label, expected_number_of_clusters",
+    [("evening", 702), ("day", 0), ("unknown", 1615)],
+)
 def test_meaningful_locations_results(
     label, expected_number_of_clusters, get_dataframe
 ):
+    """
+    Test that MeaningfulLocations returns expected results and counts clusters per subscriber correctly.
+    """
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
@@ -144,3 +150,8 @@ def test_meaningful_locations_results(
     )
     mfl_df = get_dataframe(mfl)
     assert len(mfl_df) == expected_number_of_clusters
+    count_clusters = mfl_df.groupby(
+        ["subscriber", "label", "n_clusters"], as_index=False
+    ).count()
+    # Check that query has correctly counted the number of clusters per subscriber
+    assert all(count_clusters.n_clusters == count_clusters.cluster)
