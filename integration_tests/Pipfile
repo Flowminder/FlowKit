@@ -12,6 +12,7 @@ requests = "*"
 pytest-dotenv = "*"
 sqlalchemy = "*"
 pytest-asyncio = "*"
+geopandas = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 flowclient = {editable = true,path = "./../flowclient"}
 
