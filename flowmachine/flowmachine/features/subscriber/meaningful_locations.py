@@ -136,6 +136,7 @@ class MeaningfulLocationsAggregate(Query):
             )
         elif level == "grid":
             self.aggregator = Grid(size=size)
+        super().__init__()
 
     @property
     def column_names(self) -> List[str]:
@@ -228,6 +229,7 @@ class MeaningfulLocationsOD(Query):
             )
         elif level == "grid":
             self.aggregator = Grid(size=size)
+        super().__init__()
 
     @property
     def column_names(self) -> List[str]:
