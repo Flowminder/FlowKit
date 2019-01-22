@@ -31,6 +31,7 @@ __all__ = [
     "modal_location_from_dates",
     "location_event_counts",
     "flows",
+    "get_geography",
     "get_result",
     "get_result_by_query_id",
     "get_status",
