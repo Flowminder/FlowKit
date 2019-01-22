@@ -72,21 +72,3 @@ class CallDays(SubscriberFeature):
         """
 
         return sql
-
-    def _get_timestamp(self, date):
-        """
-        Gets the POSTGRES `timestamptz` representation of a given date. This
-        function ensures that all dates passed to the function will have a
-        uniform format.
-
-        Parameters
-        ----------
-        date : str
-            A string representing a date.
-        """
-        con = self.connection.engine
-        with con.begin():
-            date = con.execute("SELECT '{}'::timestamptz".format(date))
-            date = date.fetchone()[0]
-        date = date.strftime("%Y%m%d%H%M%S")
-        return date
