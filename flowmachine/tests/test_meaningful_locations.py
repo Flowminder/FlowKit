@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import pytest
 
+from flowmachine.core.errors import BadLevelError
 from flowmachine.features import (
     HartiganCluster,
     CallDays,
@@ -76,9 +77,9 @@ def test_column_names_meaningful_locations_aggregate(
 
 
 def test_meaningful_locations_aggregate_disallowed_level_raises():
-    """ Test that a bad level raises a ValueError"""
+    """ Test that a bad level raises a BadLevelError"""
 
-    with pytest.raises(ValueError):
+    with pytest.raises(BadLevelError):
         mfl_agg = MeaningfulLocations(
             clusters=HartiganCluster(
                 calldays=CallDays(
@@ -246,7 +247,7 @@ def test_meaningful_locations_od_raises_for_bad_level(
     exemplar_level_param, get_dataframe
 ):
     """
-    Test that od on meaningful locations raises a ValueError for a bad level.
+    Test that od on meaningful locations raises a BadLevelError for a bad level.
     """
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
@@ -264,7 +265,7 @@ def test_meaningful_locations_od_raises_for_bad_level(
         label="evening",
     )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(BadLevelError):
         mfl_od = MeaningfulLocationsOD(
             meaningful_locations_a=mfl, meaningful_locations_b=mfl, level="NOT_A_LEVEL"
         )

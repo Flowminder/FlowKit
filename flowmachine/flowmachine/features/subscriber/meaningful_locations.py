@@ -4,6 +4,7 @@
 
 from typing import Dict, Any, List, Union
 
+from flowmachine.core.errors import BadLevelError
 from ...core import GeoTable, Query
 from . import LabelEventScore, HartiganCluster, EventScore
 from ..spatial import Grid
@@ -117,10 +118,6 @@ class MeaningfulLocationsAggregate(Query):
         self.meaningful_locations = meaningful_locations
         level_cols = get_columns_for_level(level, column_name)
         self.column_name = column_name
-        if level not in MeaningfulLocationsAggregate.allowed_levels:
-            raise ValueError(
-                f"'{level}' is not an allowed level for meaningful locations, must be one of {MeaningfulLocationsAggregate.allowed_levels}'"
-            )
         self.level = level
         if level.startswith("admin"):
             if level_cols == ["pcod"]:
@@ -136,6 +133,10 @@ class MeaningfulLocationsAggregate(Query):
             )
         elif level == "grid":
             self.aggregator = Grid(size=size)
+        else:
+            raise BadLevelError(
+                f"'{level}' is not an allowed level for meaningful locations, must be one of {MeaningfulLocationsOD.allowed_levels}'"
+            )
         super().__init__()
 
     @property
@@ -210,10 +211,7 @@ class MeaningfulLocationsOD(Query):
         )
         level_cols = get_columns_for_level(level, column_name)
         self.column_name = column_name
-        if level not in MeaningfulLocationsOD.allowed_levels:
-            raise ValueError(
-                f"'{level}' is not an allowed level for meaningful locations, must be one of {MeaningfulLocationsOD.allowed_levels}'"
-            )
+
         self.level = level
         if level.startswith("admin"):
             if level_cols == ["pcod"]:
@@ -229,6 +227,10 @@ class MeaningfulLocationsOD(Query):
             )
         elif level == "grid":
             self.aggregator = Grid(size=size)
+        else:
+            raise BadLevelError(
+                f"'{level}' is not an allowed level for meaningful locations, must be one of {MeaningfulLocationsOD.allowed_levels}'"
+            )
         super().__init__()
 
     @property
