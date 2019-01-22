@@ -53,7 +53,7 @@ def test_column_names_meaningful_locations_aggregate(
 ):
     """ Test that column_names property matches head(0) for aggregated meaningful locations"""
     if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
-        pytest.skip(
+        pytest.xfail(
             f'The level "{exemplar_level_param["level"]}" is not supported as an aggregation unit for MeaningfulLocations.'
         )
     mfl_agg = MeaningfulLocations(
@@ -80,7 +80,7 @@ def test_column_names_meaningful_locations_od(
 ):
     """ Test that column_names property matches head(0) for an od matrix between meaningful locations"""
     if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
-        pytest.skip(
+        pytest.xfail(
             f'The level "{exemplar_level_param["level"]}" is not supported as an aggregation unit for ODs between MeaningfulLocations.'
         )
     mfl_a = MeaningfulLocations(
