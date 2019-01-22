@@ -11,7 +11,7 @@ These methods are great options for reducing the dimensionality of the
 problem in hand.
 """
 
-from typing import List
+from typing import List, Union
 
 from ..utilities import subscriber_locations
 from ...core.query import Query
@@ -211,7 +211,14 @@ class HartiganCluster(BaseCluster):
 
     """
 
-    def __init__(self, calldays, radius, buffer=0, call_threshold=0):
+    def __init__(
+        self,
+        *,
+        calldays: CallDays,
+        radius: Union[float, str],
+        buffer: float = 0,
+        call_threshold: int = 0,
+    ):
         """
         """
 

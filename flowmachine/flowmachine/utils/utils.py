@@ -12,7 +12,7 @@ import logging
 from contextlib import contextmanager
 from pathlib import Path
 from threading import get_ident
-from typing import List
+from typing import List, Union
 
 import redis_lock
 from redis_lock import AlreadyAcquired
@@ -46,7 +46,9 @@ def getsecret(key: str, default: str) -> str:
         return default
 
 
-def get_columns_for_level(level, column_name=None) -> List[str]:
+def get_columns_for_level(
+    level: str, column_name: Union[str, List[str]] = None
+) -> List[str]:
     """
     Get a list of the location related columns
 

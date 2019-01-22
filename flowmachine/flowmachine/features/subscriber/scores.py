@@ -103,6 +103,7 @@ class EventScore(Query):
 
     def __init__(
         self,
+        *,
         start: str,
         stop: str,
         level: str = "admin3",
@@ -145,7 +146,6 @@ class EventScore(Query):
         },
         subscriber_identifier: str = "msisdn",
         column_name: Union[str, List[str]] = None,
-        *,
         subscriber_subset=None,
         polygon_table=None,
         size=None,

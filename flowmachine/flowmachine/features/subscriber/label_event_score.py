@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from shapely.geometry import Polygon, shape
+# # License, v. 2.0. If a copy of the MPL was not distributed with this
+# # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from shapely.geometry import shape
 from shapely.geometry.base import BaseGeometry
 from typing import List, Dict, Union, Any
 
@@ -37,6 +37,7 @@ class LabelEventScore(Query):
 
     def __init__(
         self,
+        *,
         scores: Union[EventScore, _JoinedHartiganCluster],
         labels: Dict[str, Dict[str, Any]] = {
             "evening": {
@@ -107,9 +108,9 @@ class LabelEventScore(Query):
         scores = f"({self.scores.get_query()}) AS scores"
 
         sql = f"""
-        SELECT score_bounds.label, scores.* FROM {scores}
+        SELECT COALESCE(score_bounds.label, 'unknown') as label, scores.* FROM {scores}
         LEFT JOIN {LabelEventScore._get_sql_bound(self.labels)}
-        ON st_intersects(st_point(scores.score_hour, scores.score_dow), score_bounds.geom)
+        ON st_contains(score_bounds.geom, st_point(scores.score_hour, scores.score_dow))
         """
 
         if self.required is not None:
@@ -120,7 +121,7 @@ class LabelEventScore(Query):
                     filtered AS (SELECT l.subscriber AS subscriber FROM labelled l
                                 GROUP BY l.subscriber, label HAVING label = '{self.required}')
 
-                SELECT {scores_cols}, '{self.required}' AS label
+                SELECT '{self.required}' AS label, {scores_cols},
                 FROM labelled
                 LEFT JOIN filtered
                 ON labelled.subscriber = filtered.subscriber
@@ -137,7 +138,7 @@ class LabelEventScore(Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.scores.column_names + ["label"]
+        return ["label"] + self.scores.column_names
 
     @staticmethod
     def _get_sql_bound(bounds: Dict[str, List[Dict[str, float]]]) -> str:
