@@ -67,10 +67,10 @@
         },
         "flask-jwt-extended": {
             "hashes": [
-                "sha256:070422d0dff7a47073414c945fcca4257d29b2f3c0f5234d8bdd0c1c60030433"
+                "sha256:8941a0f7cfe44795d3ce14d400186f7dbc0f5fb1b0015b34c83e49e1ef8dd288"
             ],
             "index": "pypi",
-            "version": "==3.15.0"
+            "version": "==3.16.0"
         },
         "h11": {
             "hashes": [
@@ -103,10 +103,10 @@
         },
         "hyperframe": {
             "hashes": [
-                "sha256:87567c9eb1540de1e7f48805adf00e87856409342fdebd0cd20cf5d381c38b69",
-                "sha256:a25944539db36d6a2e47689e7915dcee562b3f8d10c6cdfa0d53c91ed692fb04"
+                "sha256:5187962cb16dcc078f23cb5a4b110098d546c3f41ff2d4038a9896893bbd0b40",
+                "sha256:a9f5c17f2cc3c719b917c4f33ed1c61bd1f8dfac4b1bd23b7c80b3400971b41f"
             ],
-            "version": "==5.1.0"
+            "version": "==5.2.0"
         },
         "itsdangerous": {
             "hashes": [
