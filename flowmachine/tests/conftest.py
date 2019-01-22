@@ -23,6 +23,7 @@ logger = logging.getLogger()
 @pytest.fixture(
     params=[
         {"level": "admin2"},
+        {"level": "admin2", "column_name": "admin2pcod"},
         {"level": "versioned-site"},
         {"level": "versioned-cell"},
         {"level": "cell"},
