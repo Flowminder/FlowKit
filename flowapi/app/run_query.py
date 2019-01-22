@@ -40,7 +40,7 @@ def check_claims(claim_type):
             )
 
             # Get query kind
-            if request.path.split("/")[1] == "geography":
+            if request.path.split("/")[3] == "geography":
                 query_kind = "geography"
             else:
                 query_kind = (
@@ -290,7 +290,7 @@ async def assemble_geojson_feature_collection(sql_query, crs):
     """
     logger = current_app.logger
     pool = current_app.pool
-    yield f'{{"properties":{{"crs":{crs}}}, "type":"FeatureCollection", "features":['.encode()
+    yield f'{{"properties":{{"crs":"{crs}"}}, "type":"FeatureCollection", "features":['.encode()
     prepend = ""
     logger.debug("Starting generator.")
     async with pool.acquire() as connection:
@@ -300,7 +300,7 @@ async def assemble_geojson_feature_collection(sql_query, crs):
             logger.debug(f"Running {sql_query}")
             try:
                 async for row in connection.cursor(sql_query):
-                    yield f"{prepend}{json.dumps(row[0])}".encode()
+                    yield f"{prepend}{row[0]}".encode()
                     prepend = ", "
                 logger.debug("Finishing up.")
                 yield b"]}"

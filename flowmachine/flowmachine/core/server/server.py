@@ -131,10 +131,9 @@ async def get_reply_for_message(  # pragma: no cover
 
         elif "get_geography" == action:
             logger.debug(f"Trying to get geography. Message: {zmq_msg.msg_str}")
-            aggregation_unit = zmq_msg.action_params["aggregation_unit"]
             # TODO: Once we have refactored QueryProxy, we won't want to
             # directly import 'construct_query_object' here.
-            q = construct_query_object("geography", zmq.action_params["params"])
+            q = construct_query_object("geography", zmq_msg.action_params["params"])
             crs = q.get_proj4_string()
             sql = q.geojson_query(crs=crs)
             query_run_log.info("get_geography", **run_log_dict)

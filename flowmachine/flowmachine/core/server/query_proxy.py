@@ -250,7 +250,7 @@ def construct_query_object(query_kind, params):  # pragma: no cover
         error_msg_prefix = f"Error when constructing query of kind {query_kind} with parameters {params}"
         allowed_aggregation_units = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 
-        if aggregation_unit not in allowed_levels:
+        if aggregation_unit not in allowed_aggregation_units:
             raise QueryProxyError(
                 f"{error_msg_prefix}: 'Unrecognised aggregation unit '{aggregation_unit}', "
                 f"must be one of: {allowed_aggregation_units}'"
@@ -262,7 +262,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
                 schema="geography",
                 columns=[f"{aggregation_unit}name", f"{aggregation_unit}pcod", "geom"],
             )
-            # FIXME: The sql string we need is q.get_geojson_query(), not q.get_query()
         except Exception as e:
             raise QueryProxyError(f"{error_msg_prefix}: '{e}'")
 

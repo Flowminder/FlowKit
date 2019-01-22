@@ -8,6 +8,7 @@ import re
 
 import jwt
 import pandas as pd
+import geopandas
 import requests
 import time
 from requests import ConnectionError
@@ -324,6 +325,48 @@ def get_result(connection: Connection, query: dict) -> pd.DataFrame:
 
     """
     return get_result_by_query_id(connection, run_query(connection, query))
+
+
+def get_geography(
+    connection: Connection, aggregation_unit: str
+) -> geopandas.GeoDataFrame:
+    """
+    Get geography data from the database.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    aggregation_unit : str
+        aggregation unit, e.g. 'admin3'
+    
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        GeoPandas GeoDataFrame containing the results
+    
+    """
+    response = connection.get_url(f"geography/{aggregation_unit}")
+    logger.info(
+        f"Getting {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
+    )
+    if response.status_code != 200:
+        try:
+            msg = response.json()["msg"]
+            more_info = f" Reason: {msg}"
+        except KeyError:
+            more_info = ""
+        raise FlowclientConnectionError(
+            f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
+        )
+    result = response.json()
+    logger.info(
+        f"Got {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
+    )
+
+    gdf = geopandas.GeoDataFrame.from_features(result["features"])
+    gdf.crs = result["properties"]["crs"]
+    return gdf
 
 
 def run_query(connection: Connection, query: dict) -> str:
