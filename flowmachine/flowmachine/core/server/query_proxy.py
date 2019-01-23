@@ -1,4 +1,6 @@
 import logging
+from copy import deepcopy
+
 import redis
 import redis_lock
 from json import dumps, loads, JSONDecodeError
@@ -105,6 +107,7 @@ def construct_query_object(query_kind, params):  # pragma: no cover
     -------
     flowmachine.core.query.Query
     """
+    params = deepcopy(params)
     if "daily_location" == query_kind:
         date = params["date"]
         method = params["daily_location_method"]
