@@ -68,7 +68,7 @@ def test_whether_zero_score_returns_only_zero(get_dataframe):
     es = EventScore(
         start="2016-01-01",
         stop="2016-01-05",
-        score_hour=dict.fromkeys(range(24), 0),
+        score_hour=[0] * 24,
         score_dow=dict.fromkeys(
             {
                 "monday",

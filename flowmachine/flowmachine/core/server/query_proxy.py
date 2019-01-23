@@ -16,6 +16,7 @@ from flowmachine.features import (
     CallDays,
     EventScore,
     MeaningfulLocationsOD,
+    MeaningfulLocationsAggregate,
 )
 from flowmachine.features.utilities.subscriber_locations import subscriber_locations
 
@@ -255,7 +256,10 @@ def construct_query_object(query_kind, params):  # pragma: no cover
         aggregation_unit = params["aggregation_unit"]
         mfl = params["meaningful_locations"]
         try:
-            q = construct_query_object(**mfl).aggregate(level=aggregation_unit)
+            q = MeaningfulLocationsAggregate(
+                meaningful_locations=construct_query_object(**mfl),
+                level=aggregation_unit,
+            )
         except Exception as e:
             raise QueryProxyError(f"FIXME (meaningful_location_aggregate): {e}")
 
@@ -274,14 +278,14 @@ def construct_query_object(query_kind, params):  # pragma: no cover
 
     elif "meaningful_locations" == query_kind:
         label = params["label"]
-        scoring = params["scoring"]
+        scores = params["scores"]
         labels = params["labels"]
         clusters = params["clusters"]
         try:
             q = MeaningfulLocations(
                 clusters=construct_query_object(**clusters),
-                labels=construct_query_object(**labels),
-                scoring=construct_query_object(**scoring),
+                labels=labels,
+                scores=construct_query_object(**scores),
                 label=label,
             )
         except Exception as e:
@@ -317,6 +321,7 @@ def construct_query_object(query_kind, params):  # pragma: no cover
         raise QueryProxyError(error_msg)
 
     logger.debug(f"Made {query_kind}: {params}")
+    q.store()
     return q
 
 

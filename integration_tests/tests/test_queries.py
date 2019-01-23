@@ -30,6 +30,29 @@ from .utils import permissions_types, aggregation_types
                 "subscriber_subset": None,
             },
         ),
+        (
+            "meaningful_locations_aggregate",
+            {
+                "start_date": "2016-01-01",
+                "stop_date": "2016-01-02",
+                "aggregation_unit": "admin1",
+                "label": "unknown",
+                "labels": {
+                    "evening": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]
+                        ],
+                    },
+                    "day": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]
+                        ],
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_run_query(query_kind, params, access_token_builder, api_host):
@@ -45,5 +68,6 @@ def test_run_query(query_kind, params, access_token_builder, api_host):
             }
         ),
     )
-    result_dataframe = get_result(con, getattr(flowclient, query_kind)(**params))
+    query_spec = getattr(flowclient, query_kind)(**params)
+    result_dataframe = get_result(con, query_spec)
     assert 0 < len(result_dataframe)
