@@ -48,6 +48,11 @@ from .subscriber_call_durations import (
     PairedPerLocationSubscriberCallDurations,
 )
 
+from .meaningful_locations import (
+    MeaningfulLocations,
+    MeaningfulLocationsAggregate,
+    MeaningfulLocationsOD,
+)
 
 __all__ = [
     "RadiusOfGyration",
@@ -84,4 +89,7 @@ __all__ = [
     "Displacement",
     "MostFrequentLocation",
     "LastLocation",
+    "MeaningfulLocations",
+    "MeaningfulLocationsAggregate",
+    "MeaningfulLocationsOD",
 ]
