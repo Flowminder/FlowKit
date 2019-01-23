@@ -57,30 +57,8 @@ def test_column_names_meaningful_locations_aggregate(
         pytest.xfail(
             f'The level "{exemplar_level_param["level"]}" is not supported as an aggregation unit for MeaningfulLocations.'
         )
-    mfl_agg = MeaningfulLocations(
-        clusters=HartiganCluster(
-            calldays=CallDays(
-                subscriber_locations=subscriber_locations(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
-                )
-            ),
-            radius=1,
-        ),
-        scores=EventScore(
-            start="2016-01-01", stop="2016-01-02", level="versioned-site"
-        ),
-        labels=labels,
-        label="evening",
-    ).aggregate(**exemplar_level_param)
-
-    assert get_column_names_from_run(mfl_agg) == mfl_agg.column_names
-
-
-def test_meaningful_locations_aggregate_disallowed_level_raises():
-    """ Test that a bad level raises a BadLevelError"""
-
-    with pytest.raises(BadLevelError):
-        mfl_agg = MeaningfulLocations(
+    mfl_agg = MeaningfulLocationsAggregate(
+        meaningful_locations=MeaningfulLocations(
             clusters=HartiganCluster(
                 calldays=CallDays(
                     subscriber_locations=subscriber_locations(
@@ -94,7 +72,37 @@ def test_meaningful_locations_aggregate_disallowed_level_raises():
             ),
             labels=labels,
             label="evening",
-        ).aggregate(level="NOT_A_LEVEL")
+        ),
+        **exemplar_level_param,
+    )
+
+    assert get_column_names_from_run(mfl_agg) == mfl_agg.column_names
+
+
+def test_meaningful_locations_aggregate_disallowed_level_raises():
+    """ Test that a bad level raises a BadLevelError"""
+
+    with pytest.raises(BadLevelError):
+        mfl_agg = MeaningfulLocationsAggregate(
+            meaningful_locations=MeaningfulLocations(
+                clusters=HartiganCluster(
+                    calldays=CallDays(
+                        subscriber_locations=subscriber_locations(
+                            start="2016-01-01",
+                            stop="2016-01-02",
+                            level="versioned-site",
+                        )
+                    ),
+                    radius=1,
+                ),
+                scores=EventScore(
+                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                ),
+                labels=labels,
+                label="evening",
+            ),
+            level="NOT_A_LEVEL",
+        )
 
 
 def test_column_names_meaningful_locations_od(
@@ -234,7 +242,9 @@ def test_meaningful_locations_aggregation_results(exemplar_level_param, get_data
         labels=labels,
         label="evening",
     )
-    mfl_agg = mfl.aggregate(**exemplar_level_param)
+    mfl_agg = MeaningfulLocationsAggregate(
+        meaningful_locations=mfl, **exemplar_level_param
+    )
     mfl_df = get_dataframe(mfl)
     mfl_agg_df = get_dataframe(mfl_agg)
     # Aggregate should not include any counts below 15

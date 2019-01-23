@@ -11,7 +11,13 @@ from flowmachine.features import (
     ModalLocation,
     Flows,
     TotalLocationEvents,
+    MeaningfulLocations,
+    HartiganCluster,
+    CallDays,
+    EventScore,
+    MeaningfulLocationsOD,
 )
+from flowmachine.features.utilities.subscriber_locations import subscriber_locations
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -243,7 +249,67 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             )
             q = Flows(from_location_object, to_location_object)
         except Exception as e:
-            raise QueryProxyError(f"FIXME (modal_location): {e}")
+            raise QueryProxyError(f"FIXME (flows): {e}")
+
+    elif "meaningful_locations_aggregate" == query_kind:
+        aggregation_unit = params["aggregation_unit"]
+        mfl = params["meaningful_locations"]
+        try:
+            q = construct_query_object(**mfl).aggregate(level=aggregation_unit)
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (meaningful_location_aggregate): {e}")
+
+    elif "meaningful_locations_od_matrix" == query_kind:
+        aggregation_unit = params["aggregation_unit"]
+        mfl_a = params["meaningful_locations_a"]
+        mfl_b = params["meaningful_locations_b"]
+        try:
+            q = MeaningfulLocationsOD(
+                meaningful_locations_a=construct_query_object(**mfl_a),
+                meaningful_locations_b=construct_query_object(**mfl_b),
+                level=aggregation_unit,
+            )
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (meaningful_location_od_matrix): {e}")
+
+    elif "meaningful_locations" == query_kind:
+        label = params["label"]
+        scoring = params["scoring"]
+        labels = params["labels"]
+        clusters = params["clusters"]
+        try:
+            q = MeaningfulLocations(
+                clusters=construct_query_object(**clusters),
+                labels=construct_query_object(**labels),
+                scoring=construct_query_object(**scoring),
+                label=label,
+            )
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (meaningful_locations): {e}")
+    elif "event_score" == query_kind:
+        try:
+            q = EventScore(**params)
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (event_score): {e}")
+
+    elif "hartigan_cluster" == query_kind:
+        call_days = params.pop("call_days")
+        try:
+            q = HartiganCluster(calldays=construct_query_object(**call_days), **params)
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (hartigan_cluster): {e}")
+
+    elif "call_days" == query_kind:
+        sls = params.pop("subscriber_locations")
+        try:
+            q = CallDays(subscriber_locations=construct_query_object(**sls))
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (call_days): {e}")
+    elif "subscriber_locations" == query_kind:
+        try:
+            q = subscriber_locations(**params)
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (subscriber_locations): {e}")
 
     else:
         error_msg = f"Unsupported query kind: '{query_kind}'"

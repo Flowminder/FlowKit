@@ -62,48 +62,6 @@ class MeaningfulLocations(Query):
         ORDER BY subscriber
         """
 
-    def aggregate(
-        self,
-        level="admin3",
-        column_name=None,
-        polygon_table=None,
-        geom_column="geom",
-        size=None,
-    ) -> "MeaningfulLocationsAggregate":
-        """
-        Aggregates this meaningful location query to a spatial unit by assigning
-        subscribers with clusters in that unit to it. For subscribers with more than one cluster,
-        assigns `1/n_clusters` to each spatial unit that the cluster lies in.
-
-        Parameters
-        ----------
-        level : {"admin3", "admin2", "admin1", "grid", "polygon"}, default "admin3"
-            Spatial unit to aggregate to
-        column_name : str or list of str, default None
-            Optionally specify a non-default column name or names from the spatial unit table
-        polygon_table : str, default None
-            When using the "polygon" level, you must specify the fully qualified name of a table
-            containing polygons.
-        geom_column : str, default "geom"
-            When using the "polygon" level, you must specify the name of column containing geometry
-        size : int, default None
-            When using the "grid" level, you must specify the size of the grid to use in KM
-
-
-        Returns
-        -------
-        MeaningfulLocationsAggregate
-
-        """
-        return MeaningfulLocationsAggregate(
-            meaningful_locations=self,
-            level=level,
-            column_name=column_name,
-            polygon_table=polygon_table,
-            geom_column=geom_column,
-            size=size,
-        )
-
 
 class MeaningfulLocationsAggregate(Query):
     """
