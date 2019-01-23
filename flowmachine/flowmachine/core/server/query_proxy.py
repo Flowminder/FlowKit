@@ -108,13 +108,28 @@ def construct_query_object(query_kind, params):  # pragma: no cover
     flowmachine.core.query.Query
     """
     params = deepcopy(params)
+    error_msg_prefix = (
+        f"Error when constructing query of kind {query_kind} with parameters {params}"
+    )
+    try:
+        subscriber_subset = params["subscriber_subset"]
+        if subscriber_subset == "all":
+            params["subscriber_subset"] = None
+        else:
+            if isinstance(subscriber_subset, dict):
+                raise NotImplementedError("Proper subsetting not implemented yet.")
+            else:
+                raise QueryProxyError(
+                    f"{error_msg_prefix}: 'Cannot construct {query_kind} subset from given input: {subscriber_subset}'"
+                )
+    except KeyError:
+        pass  # No subset param
     if "daily_location" == query_kind:
         date = params["date"]
         method = params["daily_location_method"]
         level = params["aggregation_unit"]
         subscriber_subset = params["subscriber_subset"]
 
-        error_msg_prefix = f"Error when constructing query of kind {query_kind} with parameters {params}"
         allowed_methods = ["last", "most-common"]
         allowed_levels = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 
@@ -127,16 +142,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             raise QueryProxyError(
                 f"{error_msg_prefix}: 'Unrecognised level '{level}', must be one of: {allowed_levels}'"
             )
-
-        if subscriber_subset == "all":
-            subscriber_subset = None
-        else:
-            if isinstance(subscriber_subset, dict):
-                raise NotImplementedError("Proper subsetting not implemented yet.")
-            else:
-                raise QueryProxyError(
-                    f"{error_msg_prefix}: 'Cannot construct daily location subset from given input: {subscriber_subset}'"
-                )
 
         try:
             q = daily_location(
@@ -156,7 +161,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
         direction = params["direction"]
         event_types = params["event_types"]
 
-        error_msg_prefix = f"Error when constructing query of kind {query_kind} with parameters {params}"
         allowed_intervals = TotalLocationEvents.allowed_intervals
         allowed_directions = ["in", "out", "all"]
         allowed_levels = [
@@ -188,16 +192,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             )
         if direction == "all":
             direction = "both"
-
-        if subscriber_subset == "all":
-            subscriber_subset = None
-        else:
-            if isinstance(subscriber_subset, dict):
-                raise NotImplementedError("Proper subsetting not implemented yet.")
-            else:
-                raise QueryProxyError(
-                    f"{error_msg_prefix}: 'Cannot construct location event counts subset from given input: {subscriber_subset}'"
-                )
 
         try:
             q = TotalLocationEvents(
@@ -324,7 +318,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
         raise QueryProxyError(error_msg)
 
     logger.debug(f"Made {query_kind}: {params}")
-    q.store()
     return q
 
 

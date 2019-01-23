@@ -462,7 +462,7 @@ def _meaningful_locations(
     labels: Dict[str, Dict[str, dict]],
     tower_cluster_radius: float = 1.0,
     tower_cluster_buffer: float = 0.0,
-    tower_cluster_call_threshold: int = 2,
+    tower_cluster_call_threshold: int = 0,
     tower_dow_scores: Dict[str, float] = {
         "monday": 1,
         "tuesday": 1,
@@ -552,7 +552,7 @@ def meaningful_locations_aggregate(
     aggregation_unit: str,
     tower_cluster_radius: float = 1.0,
     tower_cluster_buffer: float = 0.0,
-    tower_cluster_call_threshold: int = 2,
+    tower_cluster_call_threshold: int = 0,
     tower_dow_scores: Dict[str, float] = {
         "monday": 1,
         "tuesday": 1,
@@ -619,7 +619,7 @@ def meaningful_locations_between_label_od_matrix(
     aggregation_unit: str,
     tower_cluster_radius: float = 1.0,
     tower_cluster_buffer: float = 0.0,
-    tower_cluster_call_threshold: int = 2,
+    tower_cluster_call_threshold: int = 0,
     tower_dow_scores: Dict[str, float] = {
         "monday": 1,
         "tuesday": 1,
