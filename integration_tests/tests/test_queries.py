@@ -53,21 +53,71 @@ from .utils import permissions_types, aggregation_types
                 },
             },
         ),
+        (
+            "meaningful_locations_between_label_od_matrix",
+            {
+                "start_date": "2016-01-01",
+                "stop_date": "2016-01-02",
+                "aggregation_unit": "admin1",
+                "label_a": "unknown",
+                "label_b": "evening",
+                "labels": {
+                    "evening": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]
+                        ],
+                    },
+                    "day": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]
+                        ],
+                    },
+                },
+            },
+        ),
+        (
+            "meaningful_locations_between_dates_od_matrix",
+            {
+                "start_date_a": "2016-01-01",
+                "stop_date_a": "2016-01-02",
+                "start_date_b": "2016-01-01",
+                "stop_date_b": "2016-01-05",
+                "aggregation_unit": "admin1",
+                "label": "unknown",
+                "labels": {
+                    "evening": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]
+                        ],
+                    },
+                    "day": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]
+                        ],
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_run_query(query_kind, params, access_token_builder, api_host):
     """Test that queries can be run, and return a QueryResult object."""
+    query_spec = getattr(flowclient, query_kind)(**params)
     con = flowclient.Connection(
         api_host,
         access_token_builder(
             {
-                query_kind: {
+                query_spec["query_kind"]: {
                     "permissions": permissions_types,
                     "spatial_aggregation": aggregation_types,
                 }
             }
         ),
     )
-    query_spec = getattr(flowclient, query_kind)(**params)
+
     result_dataframe = get_result(con, query_spec)
     assert 0 < len(result_dataframe)
