@@ -189,7 +189,7 @@ def test_meaningful_locations_results(
 
 def test_meaningful_locations_aggregation_results(exemplar_level_param, get_dataframe):
     """
-    Test that aggregating MeaningfulLocations returns expected results redacts values below 15.
+    Test that aggregating MeaningfulLocations returns expected results and redacts values below 15.
     """
     if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
         pytest.xfail(
