@@ -189,38 +189,6 @@ def test_meaningful_locations_results(
 
 def test_meaningful_locations_aggregation_results(exemplar_level_param, get_dataframe):
     """
-    Test that MeaningfulLocations returns expected results and counts clusters per subscriber correctly.
-    """
-    if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
-        pytest.xfail(
-            f'The level "{exemplar_level_param["level"]}" is not supported as an aggregation unit for MeaningfulLocations.'
-        )
-    mfl = MeaningfulLocations(
-        clusters=HartiganCluster(
-            calldays=CallDays(
-                subscriber_locations=subscriber_locations(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
-                )
-            ),
-            radius=1,
-        ),
-        scores=EventScore(
-            start="2016-01-01", stop="2016-01-02", level="versioned-site"
-        ),
-        labels=labels,
-        label="evening",
-    )
-    mfl_agg = mfl.aggregate(**exemplar_level_param)
-    mfl_df = get_dataframe(mfl)
-    mfl_agg_df = get_dataframe(mfl_agg)
-    # Aggregate should not include any counts below 15
-    assert all(mfl_agg_df.total > 15)
-    # Sum of aggregate should be less than the number of unique subscribers
-    assert mfl_agg_df.total.sum() < mfl_df.subscriber.nunique()
-
-
-def test_meaningful_locations_aggregation_results(exemplar_level_param, get_dataframe):
-    """
     Test that aggregating MeaningfulLocations returns expected results redacts values below 15.
     """
     if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
