@@ -512,7 +512,14 @@ def make_demodata():  # pragma: no cover
         db.session.add(x)
     # Add some things that you can do
     caps = []
-    for c in ("daily_location", "flows", "modal_location", "location_event_counts"):
+    for c in (
+        "daily_location",
+        "flows",
+        "modal_location",
+        "location_event_counts",
+        "meaningful_locations_aggregate",
+        "meaningful_locations_od_matrix",
+    ):
         c = Capability(name=c)
         db.session.add(c)
         caps.append(c)
@@ -520,7 +527,7 @@ def make_demodata():  # pragma: no cover
     test_server = Server(
         name="Aruba",
         longest_token_life=2880,
-        latest_token_expiry=datetime.datetime(2020, 1, 1),
+        latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
         secret_key="a_very_secret_key",
     )
 
@@ -551,7 +558,7 @@ def make_demodata():  # pragma: no cover
         GroupServerTokenLimits(
             group=groups[0],
             longest_life=1440,
-            latest_end=datetime.datetime(2019, 1, 1),
+            latest_end=datetime.datetime.now() + datetime.timedelta(days=28),
             server=test_server,
         )
     )
