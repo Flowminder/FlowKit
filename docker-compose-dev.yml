@@ -33,7 +33,7 @@ services:
 
   flowdb_testdata:
     container_name: flowdb_testdata
-    image: flowminder/flowdb:testdata-master
+    image: flowminder/flowdb:testdata-latest
     ports:
       - ${FLOWDB_TESTDATA_PORT:-9001}:5432
     environment:
