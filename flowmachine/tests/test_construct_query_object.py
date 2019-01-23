@@ -373,7 +373,7 @@ from flowmachine.core.server.query_proxy import construct_query_object
             },
         ),
         (
-            "d1b0964408a2d6ca40cb7b8052d68f1f",
+            "43e6ef83a64f598fc61c7c630884cc9f",
             {
                 "query_kind": "meaningful_locations_od_matrix",
                 "params": {
@@ -387,7 +387,7 @@ from flowmachine.core.server.query_proxy import construct_query_object
                                 "params": {
                                     "radius": 1.0,
                                     "buffer": 0.0,
-                                    "call_threshold": 2.0,
+                                    "call_threshold": 2,
                                     "call_days": {
                                         "query_kind": "call_days",
                                         "params": {
@@ -483,7 +483,7 @@ from flowmachine.core.server.query_proxy import construct_query_object
                                 "params": {
                                     "radius": 1.0,
                                     "buffer": 0.0,
-                                    "call_threshold": 2.0,
+                                    "call_threshold": 2,
                                     "call_days": {
                                         "query_kind": "call_days",
                                         "params": {

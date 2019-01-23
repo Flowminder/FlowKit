@@ -160,7 +160,7 @@ class LabelEventScore(Query):
         """
         table_rows = []
         for label, label_bounds in bounds.items():
-            table_rows.append(f"('{label}', '{label_bounds.to_wkt()}'::geometry)")
+            table_rows.append(f"('{label}', '{label_bounds.wkt}'::geometry)")
         return f"(VALUES {', '.join(table_rows)}) as score_bounds(label, geom)"
 
     @staticmethod
