@@ -372,6 +372,207 @@ from flowmachine.core.server.query_proxy import construct_query_object
                 },
             },
         ),
+        (
+            "d1b0964408a2d6ca40cb7b8052d68f1f",
+            {
+                "query_kind": "meaningful_locations_od_matrix",
+                "params": {
+                    "aggregation_unit": "admin1",
+                    "meaningful_locations_a": {
+                        "query_kind": "meaningful_locations",
+                        "params": {
+                            "label": "unknown",
+                            "clusters": {
+                                "query_kind": "hartigan_cluster",
+                                "params": {
+                                    "radius": 1.0,
+                                    "buffer": 0.0,
+                                    "call_threshold": 2.0,
+                                    "call_days": {
+                                        "query_kind": "call_days",
+                                        "params": {
+                                            "subscriber_locations": {
+                                                "query_kind": "subscriber_locations",
+                                                "params": {
+                                                    "start": "2016-01-01",
+                                                    "stop": "2016-01-02",
+                                                    "level": "versioned-site",
+                                                    "subscriber_subset": "all",
+                                                },
+                                            }
+                                        },
+                                    },
+                                },
+                            },
+                            "scores": {
+                                "query_kind": "event_score",
+                                "params": {
+                                    "score_hour": [
+                                        -1,
+                                        -1,
+                                        -1,
+                                        -1,
+                                        -1,
+                                        -1,
+                                        -1,
+                                        0,
+                                        0,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        -1,
+                                        -1,
+                                        -1,
+                                    ],
+                                    "score_dow": {
+                                        "monday": 1,
+                                        "tuesday": 1,
+                                        "wednesday": 1,
+                                        "thursday": 0,
+                                        "friday": -1,
+                                        "saturday": -1,
+                                        "sunday": -1,
+                                    },
+                                    "start": "2016-01-01",
+                                    "stop": "2016-01-02",
+                                    "level": "versioned-site",
+                                    "subscriber_subset": "all",
+                                },
+                            },
+                            "labels": {
+                                "evening": {
+                                    "type": "Polygon",
+                                    "coordinates": [
+                                        [
+                                            [1e-06, -0.5],
+                                            [1e-06, -1.1],
+                                            [1.1, -1.1],
+                                            [1.1, -0.5],
+                                        ]
+                                    ],
+                                },
+                                "day": {
+                                    "type": "Polygon",
+                                    "coordinates": [
+                                        [
+                                            [-1.1, -0.5],
+                                            [-1.1, 0.5],
+                                            [-1e-06, 0.5],
+                                            [0, -0.5],
+                                        ]
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                    "meaningful_locations_b": {
+                        "query_kind": "meaningful_locations",
+                        "params": {
+                            "label": "unknown",
+                            "clusters": {
+                                "query_kind": "hartigan_cluster",
+                                "params": {
+                                    "radius": 1.0,
+                                    "buffer": 0.0,
+                                    "call_threshold": 2.0,
+                                    "call_days": {
+                                        "query_kind": "call_days",
+                                        "params": {
+                                            "subscriber_locations": {
+                                                "query_kind": "subscriber_locations",
+                                                "params": {
+                                                    "start": "2016-01-01",
+                                                    "stop": "2016-01-05",
+                                                    "level": "versioned-site",
+                                                    "subscriber_subset": "all",
+                                                },
+                                            }
+                                        },
+                                    },
+                                },
+                            },
+                            "scores": {
+                                "query_kind": "event_score",
+                                "params": {
+                                    "score_hour": [
+                                        -1,
+                                        -1,
+                                        -1,
+                                        -1,
+                                        -1,
+                                        -1,
+                                        -1,
+                                        0,
+                                        0,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        -1,
+                                        -1,
+                                        -1,
+                                    ],
+                                    "score_dow": {
+                                        "monday": 1,
+                                        "tuesday": 1,
+                                        "wednesday": 1,
+                                        "thursday": 0,
+                                        "friday": -1,
+                                        "saturday": -1,
+                                        "sunday": -1,
+                                    },
+                                    "start": "2016-01-01",
+                                    "stop": "2016-01-05",
+                                    "level": "versioned-site",
+                                    "subscriber_subset": "all",
+                                },
+                            },
+                            "labels": {
+                                "evening": {
+                                    "type": "Polygon",
+                                    "coordinates": [
+                                        [
+                                            [1e-06, -0.5],
+                                            [1e-06, -1.1],
+                                            [1.1, -1.1],
+                                            [1.1, -0.5],
+                                        ]
+                                    ],
+                                },
+                                "day": {
+                                    "type": "Polygon",
+                                    "coordinates": [
+                                        [
+                                            [-1.1, -0.5],
+                                            [-1.1, 0.5],
+                                            [-1e-06, 0.5],
+                                            [0, -0.5],
+                                        ]
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_construct_query(expected_md5, query_spec):

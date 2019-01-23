@@ -235,9 +235,9 @@ class HartiganCluster(BaseCluster):
             raise TypeError(
                 "calldays must be a subclass of Query (e.g. CallDays, Table, CustomQuery"
             )
-        self.radius = radius
-        self.call_threshold = call_threshold
-        self.buffer = buffer
+        self.radius = float(radius)
+        self.call_threshold = int(call_threshold)
+        self.buffer = float(buffer)
         super().__init__()
 
     def _make_query(self):

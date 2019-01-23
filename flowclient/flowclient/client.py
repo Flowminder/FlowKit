@@ -699,7 +699,7 @@ def meaningful_locations_between_dates_od_matrix(
     aggregation_unit: str,
     tower_cluster_radius: float = 1.0,
     tower_cluster_buffer: float = 0.0,
-    tower_cluster_call_threshold: float = 2.0,
+    tower_cluster_call_threshold: float = 0,
     tower_dow_scores: Dict[str, float] = {
         "monday": 1,
         "tuesday": 1,
