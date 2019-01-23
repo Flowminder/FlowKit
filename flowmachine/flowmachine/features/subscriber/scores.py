@@ -33,9 +33,8 @@ class EventScore(Query):
 
     Parameters
     ----------
-    score_hour : dict
-      A dictionary containing a key for every hour of the day, and a numerical score between
-      zero and 1.
+    score_hour : list of float
+      A length 24 list containing numerical scores between -1 and 1, where entry 0 is midnight.
     score_dow : dict
       A dictionary containing a key for every day of the week, and a numerical score between
       zero and 1. Keys should be the lowercase, full name of the day.
@@ -109,32 +108,32 @@ class EventScore(Query):
         level: str = "admin3",
         hours: str = "all",
         table: str = "all",
-        score_hour: Dict[int, float] = {
-            0: -1,
-            1: -1,
-            2: -1,
-            3: -1,
-            4: -1,
-            5: -1,
-            6: -1,
-            7: 0,
-            8: 0,
-            9: 1,
-            10: 1,
-            11: 1,
-            12: 1,
-            13: 1,
-            14: 1,
-            15: 1,
-            16: 1,
-            17: 0,
-            18: 0,
-            19: 0,
-            20: 0,
-            21: -1,
-            22: -1,
-            23: -1,
-        },
+        score_hour: List[float] = [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            -1,
+            -1,
+        ],
         score_dow: Dict[str, float] = {
             "monday": 1,
             "tuesday": 1,
@@ -162,11 +161,11 @@ class EventScore(Query):
             raise ValueError(
                 f"Day of week score dictionary must have values for all days. Only got {set(score_dow.keys())}"
             )
-        if set(score_hour.keys()) != set(range(24)):
+        if len(score_hour) != 24:
             raise ValueError(
-                f"Hour of day score dictionary must have values for all hours. Only got {set(score_hour.keys())}"
+                f"Hour of day score dictionary must have values for all hours. Only got {len(score_hour)}"
             )
-        if not all([-1 <= float(x) <= 1 for x in score_hour.values()]):
+        if not all([-1 <= float(x) <= 1 for x in score_hour]):
             raise ValueError(f"Hour of day scores must be floats between -1 and 1.")
         if not all([-1 <= float(x) <= 1 for x in score_dow.values()]):
             raise ValueError(f"Day of week scores must be floats between -1 and 1.")
@@ -207,7 +206,7 @@ class EventScore(Query):
         FROM ({self.sds.get_query()}) _"""
 
         hour_case = f"""(CASE 
-        {" ".join(f"WHEN hour={hour} THEN {score}" for hour, score in self.score_hour.items())}
+        {" ".join(f"WHEN hour={hour} THEN {score}" for hour, score in enumerate(self.score_hour))}
         END)"""
 
         day_case = f"""(CASE 
