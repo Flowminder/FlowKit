@@ -52,7 +52,7 @@ async def test_get_geography(app, dummy_zmq_server, access_token_builder):
 
 @pytest.mark.parametrize("status, http_code", [("awol", 404), ("error", 403)])
 @pytest.mark.asyncio
-async def test_get_json_status(
+async def test_get_geography_status(
     status, http_code, app, dummy_zmq_server, access_token_builder
 ):
     """

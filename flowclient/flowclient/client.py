@@ -346,10 +346,10 @@ def get_geography(
         GeoPandas GeoDataFrame containing the results
     
     """
-    response = connection.get_url(f"geography/{aggregation_unit}")
     logger.info(
         f"Getting {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
     )
+    response = connection.get_url(f"geography/{aggregation_unit}")
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
@@ -364,8 +364,9 @@ def get_geography(
         f"Got {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
     )
 
-    gdf = geopandas.GeoDataFrame.from_features(result["features"])
-    gdf.crs = result["properties"]["crs"]
+    gdf = geopandas.GeoDataFrame.from_features(
+        result["features"], crs=result["properties"]["crs"]
+    )
     return gdf
 
 
