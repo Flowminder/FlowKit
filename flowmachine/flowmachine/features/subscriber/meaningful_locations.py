@@ -46,7 +46,7 @@ class MeaningfulLocations(Query):
         labelled_clusters = LabelEventScore(
             scores=clusters.join_to_cluster_components(scores), labels=labels
         )
-        self.subset = labelled_clusters.subset("label", label)
+        self.labelled_subset = labelled_clusters.subset("label", label)
 
         super().__init__()
 
@@ -57,7 +57,7 @@ class MeaningfulLocations(Query):
     def _make_query(self):
         return f"""
         SELECT subscriber, label, cluster, (sum(1) OVER (PARTITION BY subscriber)) as n_clusters FROM 
-            ({self.subset.get_query()}) clus 
+            ({self.labelled_subset.get_query()}) clus 
         GROUP BY subscriber, label, cluster
         ORDER BY subscriber
         """
