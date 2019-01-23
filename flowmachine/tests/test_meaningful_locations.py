@@ -269,3 +269,53 @@ def test_meaningful_locations_od_raises_for_bad_level(
         mfl_od = MeaningfulLocationsOD(
             meaningful_locations_a=mfl, meaningful_locations_b=mfl, level="NOT_A_LEVEL"
         )
+
+
+def test_meaningful_locations_od_results(get_dataframe):
+    """
+    Test that MeaningfulLocations returns expected results and counts clusters per subscriber correctly.
+    """
+    # Because of the nature of the test data, we can't actually test much for most admin levels because
+    # the counts will always be below 15, and hence get redacted!
+    mfl_a = MeaningfulLocations(
+        clusters=HartiganCluster(
+            calldays=CallDays(
+                subscriber_locations=subscriber_locations(
+                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                )
+            ),
+            radius=1,
+        ),
+        scores=EventScore(
+            start="2016-01-01", stop="2016-01-02", level="versioned-site"
+        ),
+        labels=labels,
+        label="unknown",
+    )
+
+    mfl_b = MeaningfulLocations(
+        clusters=HartiganCluster(
+            calldays=CallDays(
+                subscriber_locations=subscriber_locations(
+                    start="2016-01-02", stop="2016-01-03", level="versioned-site"
+                )
+            ),
+            radius=1,
+        ),
+        scores=EventScore(
+            start="2016-01-02", stop="2016-01-03", level="versioned-site"
+        ),
+        labels=labels,
+        label="unknown",
+    )
+    mfl_od = MeaningfulLocationsOD(
+        meaningful_locations_a=mfl_a, meaningful_locations_b=mfl_b, level="admin1"
+    )
+    mfl_od_df = get_dataframe(mfl_od)
+    # Aggregate should not include any counts below 15
+    assert all(mfl_od_df.total > 15)
+    # Smoke test one admin1 region gets the expected result
+    assert mfl_od_df[
+        mfl_od_df.pcod_from == "524 1" & mfl_od_df.pcod_to == "524 4"
+    ].total == pytest.approx(16.490_807)
+    assert mfl_od_df.total.sum() == pytest.approx(350.862)
