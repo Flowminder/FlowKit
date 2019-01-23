@@ -50,7 +50,7 @@ def test_run_query(query_kind, params, access_token_builder, api_host):
 
 
 def test_get_geography(access_token_builder, api_host):
-    """Test that queries can be run, and return a QueryResult object."""
+    """Test that queries can be run, and return a GeoJSON dict."""
     con = flowclient.Connection(
         api_host,
         access_token_builder(
@@ -62,5 +62,7 @@ def test_get_geography(access_token_builder, api_host):
             }
         ),
     )
-    result_geodataframe = flowclient.get_geography(con, "admin3")
-    assert 0 < len(result_geodataframe)
+    result_geojson = flowclient.get_geography(con, "admin3")
+    assert "FeatureCollection" == result_geojson["type"]
+    assert "crs" in result_geojson["properties"]
+    assert 0 < len(result_geojson["features"])

@@ -8,7 +8,6 @@ import re
 
 import jwt
 import pandas as pd
-import geopandas
 import requests
 import time
 from requests import ConnectionError
@@ -327,9 +326,7 @@ def get_result(connection: Connection, query: dict) -> pd.DataFrame:
     return get_result_by_query_id(connection, run_query(connection, query))
 
 
-def get_geography(
-    connection: Connection, aggregation_unit: str
-) -> geopandas.GeoDataFrame:
+def get_geography(connection: Connection, aggregation_unit: str) -> dict:
     """
     Get geography data from the database.
 
@@ -342,8 +339,8 @@ def get_geography(
     
     Returns
     -------
-    geopandas.GeoDataFrame
-        GeoPandas GeoDataFrame containing the results
+    dict
+        geography data as a GeoJSON FeatureCollection
     
     """
     logger.info(
@@ -363,11 +360,7 @@ def get_geography(
     logger.info(
         f"Got {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
     )
-
-    gdf = geopandas.GeoDataFrame.from_features(
-        result["features"], crs=result["properties"]["crs"]
-    )
-    return gdf
+    return result
 
 
 def run_query(connection: Connection, query: dict) -> str:

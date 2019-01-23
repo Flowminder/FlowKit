@@ -11,28 +11,13 @@ from flowclient.client import FlowclientConnectionError, get_geography
 
 def test_get_geography(token):
     """
-    Test that getting geography returns a correct GeoDataFrame
+    Test that getting geography returns the returned dict
     """
     connection_mock = Mock()
     connection_mock.get_url.return_value.status_code = 200
-    connection_mock.get_url.return_value.json.return_value = {
-        "properties": {"crs": "DUMMY_CRS"},
-        "features": [
-            {
-                "type": "Feature",
-                "geometry": {"type": "Point", "coordinates": [0.0, 0.0]},
-                "properties": {},
-            },
-            {
-                "type": "Feature",
-                "geometry": {"type": "Point", "coordinates": [1.0, 0.0]},
-                "properties": {},
-            },
-        ],
-    }
-    gdf = get_geography(connection_mock, "DUMMY_AGGREGATION")
-    assert 2 == len(gdf)
-    assert "DUMMY_CRS" == gdf.crs
+    connection_mock.get_url.return_value.json.return_value = {"some": "json"}
+    gj = get_geography(connection_mock, "DUMMY_AGGREGATION")
+    assert {"some": "json"} == gj
 
 
 @pytest.mark.parametrize("http_code", [401, 404, 418, 400])
