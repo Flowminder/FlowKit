@@ -316,6 +316,6 @@ def test_meaningful_locations_od_results(get_dataframe):
     assert all(mfl_od_df.total > 15)
     # Smoke test one admin1 region gets the expected result
     assert mfl_od_df[
-        mfl_od_df.pcod_from == "524 1" & mfl_od_df.pcod_to == "524 4"
-    ].total == pytest.approx(16.490_807)
-    assert mfl_od_df.total.sum() == pytest.approx(350.862)
+        (mfl_od_df.pcod_from == "524 1") & (mfl_od_df.pcod_to == "524 4")
+    ].total[0] == pytest.approx(16.490_807)
+    assert mfl_od_df.total.sum() == pytest.approx(350.861_567)
