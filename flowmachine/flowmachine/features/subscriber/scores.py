@@ -8,8 +8,7 @@ Calculates an event score for each event based
 on a scoring dictionary.
 """
 
-from typing import Dict, Union
-
+from typing import Dict, Union, Tuple
 
 from typing import List
 
@@ -106,8 +105,8 @@ class EventScore(Query):
         start: str,
         stop: str,
         level: str = "admin3",
-        hours: str = "all",
-        table: str = "all",
+        hours: Union[str, Tuple[int, int]] = "all",
+        table: Union[str, List[str]] = "all",
         score_hour: List[float] = [
             -1,
             -1,
@@ -163,7 +162,7 @@ class EventScore(Query):
             )
         if len(score_hour) != 24:
             raise ValueError(
-                f"Hour of day score dictionary must have values for all hours. Only got {len(score_hour)}"
+                f"Hour of day score dictionary must have 24 hours. Got {len(score_hour)}"
             )
         if not all([-1 <= float(x) <= 1 for x in score_hour]):
             raise ValueError(f"Hour of day scores must be floats between -1 and 1.")
