@@ -28,7 +28,7 @@ class LabelEventScore(Query):
     labels : dict
         A dictionary whose keys are the label names and the values geojson shapes,
         specified hour of day, and day of week score, with hour of day score on the x axis
-        and day of week score on the y axis, where all values are in the range [-1, 1]
+        and day of week score on the y axis, where all scores are real numbers in the range [-1.0, +1.0]
     required :
         Specifies a label which every subscriber must possess independently of
         the score.  This is used in cases where, for instance, we require

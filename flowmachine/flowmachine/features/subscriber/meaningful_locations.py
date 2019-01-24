@@ -23,7 +23,7 @@ class MeaningfulLocations(Query):
     clusters : HartiganCluster
         Per subscriber clusters of towers
     scores : EventScore
-        Per user, per tower scores based on hour of day and day of week of interactions with the tower
+        Per subscriber, per tower scores based on hour of day and day of week of interactions with the tower
     labels : LabelEventScore
         Labels to apply to clusters given their usage pattern scoring
     label : str
