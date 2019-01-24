@@ -67,7 +67,7 @@ async def get_query(query_id):
         results_streamer = stream_with_context(generate_json)(message["sql"], query_id)
         mimetype = "application/json"
 
-        current_app.logger.debug("Returning.")
+        current_app.logger.debug(f"Returning result of query {query_id}.")
         return (
             results_streamer,
             200,

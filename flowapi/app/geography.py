@@ -27,7 +27,7 @@ async def get_geography(aggregation_unit):
         )
         mimetype = "application/geo+json"
 
-        current_app.logger.debug("Returning.")
+        current_app.logger.debug(f"Returning {aggregation_unit} geography data.")
         return (
             results_streamer,
             200,
