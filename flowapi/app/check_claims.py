@@ -4,7 +4,7 @@
 
 from functools import wraps
 from flask_jwt_extended import jwt_required, get_jwt_claims, get_jwt_identity
-from quart import Blueprint, current_app, request, jsonify
+from quart import current_app, request, jsonify
 
 
 def check_claims(claim_type):
