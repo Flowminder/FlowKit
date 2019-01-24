@@ -19,6 +19,8 @@ class LabelEventScore(Query):
     This class is used to label locations based on scoring signatures in the
     absence of other automated labelling mechanisms.
 
+    Returns the original query object, with an added `label` column.
+
     Parameters
     ----------
     scores : flowmachine.Query
@@ -29,10 +31,37 @@ class LabelEventScore(Query):
         A dictionary whose keys are the label names and the values geojson shapes,
         specified hour of day, and day of week score, with hour of day score on the x axis
         and day of week score on the y axis, where all scores are real numbers in the range [-1.0, +1.0]
-    required :
-        Specifies a label which every subscriber must possess independently of
+    required : str or None, default None
+        Optionally specifies a label which every subscriber must possess independently of
         the score.  This is used in cases where, for instance, we require
         that all subscribers must have an evening/home location.
+
+    Examples
+    --------
+    >>> es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
+    >>> es.head()
+             subscriber site_id  version        lon        lat  score_hour  score_dow
+    0  ZYPxqVGLzlQy6l7n  QeBRM8        0  82.914285  29.358975         1.0       -1.0
+    1  4oLKbnxm3vXqjMVx  zdNQx2        0  87.265225  27.585096        -1.0        1.0
+    2  vKVLDx8koQWZ2ez0  LVnDQL        0  86.551302  27.245265         0.0       -1.0
+    3  DELmRj9Vvl346G50  m9jL23        0  82.601710  29.815919         1.0       -1.0
+    4  lqOknAJRDNAewM10  RZgwVz        0  84.623447  28.283523        -1.0        1.0
+    >>> ls = LabelEventScore(
+            scores=es,
+            labels={
+                "daytime": {
+                    "type": "Polygon",
+                    "coordinates": [[[-1.1, -1.1], [-1, 1.1], [1.1, 1.1], [1.1, -1.1]]],
+                }
+            },
+        )
+    >>> ls.head()
+         label        subscriber site_id  version        lon        lat  score_hour  score_dow
+    0  daytime  ZYPxqVGLzlQy6l7n  QeBRM8        0  82.914285  29.358975         1.0       -1.0
+    1  daytime  4oLKbnxm3vXqjMVx  zdNQx2        0  87.265225  27.585096        -1.0        1.0
+    2  daytime  vKVLDx8koQWZ2ez0  LVnDQL        0  86.551302  27.245265         0.0       -1.0
+    3  daytime  DELmRj9Vvl346G50  m9jL23        0  82.601710  29.815919         1.0       -1.0
+    4  daytime  lqOknAJRDNAewM10  RZgwVz        0  84.623447  28.283523        -1.0        1.0
     """
 
     def __init__(
@@ -61,8 +90,8 @@ class LabelEventScore(Query):
                 "Scores must be of type Query, e.g. EventScores, Table, CustomQuery"
             )
 
-        labels = LabelEventScore._make_bounds_dict(labels)
-        LabelEventScore.bounds_dict_has_overlaps(labels)
+        labels = LabelEventScore._convert_bounds_to_shapely_polygons(labels)
+        LabelEventScore.verify_bounds_dict_has_no_overlaps(labels)
         self.labels = labels
 
         self.label_names = list(labels.keys())
@@ -77,7 +106,7 @@ class LabelEventScore(Query):
         super().__init__()
 
     @staticmethod
-    def _make_bounds_dict(
+    def _convert_bounds_to_shapely_polygons(
         geojson_labels: Dict[str, Dict[str, Any]]
     ) -> Dict[str, BaseGeometry]:
         """
@@ -164,7 +193,7 @@ class LabelEventScore(Query):
         return f"(VALUES {', '.join(table_rows)}) as score_bounds(label, geom)"
 
     @staticmethod
-    def bounds_dict_has_overlaps(bounds: Dict[str, BaseGeometry]) -> bool:
+    def verify_bounds_dict_has_no_overlaps(bounds: Dict[str, BaseGeometry]) -> bool:
         """
         Check if any score boundaries overlap one another, and raise
         an exception identifying the ones that do.
