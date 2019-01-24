@@ -148,8 +148,9 @@ async def get_reply_for_message(  # pragma: no cover
     except QueryProxyError as e:
         reply = {"status": "error", "error": f"{e}"}
     except MissingQueryError as e:
-        reply = {"status": "awol", "id": e.missing_query_id}
-
+        reply = {"status": "awol", "id": e.missing_query_id, "error": f"{e}"}
+    except InvalidGeographyError as e:
+        reply = {"status": "awol", "error": f"{e}"}
     logger.debug(f"Received reply {reply} to message: {zmq_msg.msg_str}")
     return reply
 

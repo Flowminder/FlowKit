@@ -72,6 +72,13 @@ class QueryProxyError(Exception):
     """
 
 
+class InvalidGeographyError(Exception):
+    """
+    Custom exception to indicate that the aggregation unit for a
+    geography query is invalid (corresponds to a 404 error in the API).
+    """
+
+
 class MissingQueryError(Exception):
     """
     Custom exception to indicate that a query for a given query id doesn't exist.
@@ -251,7 +258,7 @@ def construct_query_object(query_kind, params):  # pragma: no cover
         allowed_aggregation_units = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 
         if aggregation_unit not in allowed_aggregation_units:
-            raise QueryProxyError(
+            raise InvalidGeographyError(
                 f"{error_msg_prefix}: 'Unrecognised aggregation unit '{aggregation_unit}', "
                 f"must be one of: {allowed_aggregation_units}'"
             )

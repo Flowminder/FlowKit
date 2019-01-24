@@ -47,15 +47,7 @@ async def get_geography(aggregation_unit):
     elif status == "error":
         return jsonify({"status": "Error", "msg": message["error"]}), 403
     elif status == "awol":
-        return (
-            jsonify(
-                {
-                    "status": "Error",
-                    "msg": f"Route '/geography/{aggregation_unit}' does not exist",
-                }
-            ),
-            404,
-        )
+        return (jsonify({"status": "Error", "msg": message["error"]}), 404)
     else:
         return (
             jsonify({"status": "Error", "msg": f"Unexpected status: {status}"}),
