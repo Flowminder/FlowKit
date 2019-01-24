@@ -65,6 +65,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
     monkeypatch.setenv("DB_HOST", "DUMMY_ENV_DB_HOST")
     monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
+    monkeypatch.setenv("THREAD_POOL_SIZE", 99)
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 7777)
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
@@ -86,6 +87,7 @@ def test_param_priority(mocked_connections, monkeypatch):
         redis_host="dummy_redis_host",
         redis_port=1213,
         redis_password="dummy_redis_password",
+        thread_pool_size=10,
     )
     core_init_logging_mock.assert_called_with("dummy_log_level", "dummy_log_file")
     core_init_Connection_mock.assert_called_with(
@@ -100,6 +102,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     core_init_StrictRedis_mock.assert_called_with(
         host="dummy_redis_host", port=1213, password="dummy_redis_password"
     )
+    core_init_start_threadpool_mock.assert_called_with(10)
 
 
 def test_env_priority(mocked_connections, monkeypatch):
@@ -114,6 +117,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 2020)
+    monkeypatch.setenv("THREAD_POOL_SIZE", 99)
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
     monkeypatch.setenv("REDIS_PORT", 5050)
     monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
@@ -136,6 +140,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     core_init_StrictRedis_mock.assert_called_with(
         host="DUMMY_ENV_REDIS_HOST", port=5050, password="DUMMY_ENV_REDIS_PASSWORD"
     )
+    core_init_start_threadpool_mock.assert_called_with(99)
 
 
 @pytest.mark.usefixtures("clean_env")
@@ -152,3 +157,4 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_StrictRedis_mock.assert_called_with(
         host="localhost", port=6379, password="fm_redis"
     )
+    core_init_start_threadpool_mock.assert_called_with(None)
