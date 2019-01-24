@@ -35,13 +35,14 @@ def connect(
     db_pw=None,
     db_host=None,
     db_name=None,
-    pool_size=None,
-    pool_overflow=None,
+    db_connection_pool_size=None,
+    db_connection_pool_overflow=None,
+    thread_pool_size: Union[int, None] = None,
     redis_host=None,
     redis_port=None,
     redis_password=None,
     conn=None,
-):
+) -> Connection:
     """
     Connects flowmachine to a database, and performs initial set-up routines.
     You may provide a Settings object here, which can specify the database
@@ -63,8 +64,12 @@ def connect(
         Hostname of flowdb server
     db_name : str, default "flowdb"
         Name of database to connect to.
-    pool_size : int, default 5
-    pool_overflow : int, default 1
+    db_connection_pool_size : int, default 5
+        Default number of database connections to use
+    db_connection_pool_overflow : int, default 1
+        Number of extra database connections to allow
+    thread_pool_size : int, default None
+        Number of threads to use for running queries. Defaults to 5*n_cores
     redis_host : str, default "localhost"
         Hostname for redis server.
     redis_port : int, default 6379
@@ -74,7 +79,7 @@ def connect(
 
     Returns
     -------
-    None
+    Connection
 
     Notes
     -----
@@ -119,15 +124,26 @@ def connect(
         if db_name is None
         else db_name
     )
-    pool_size = (
-        int(getsecret("POOL_SIZE", os.getenv("POOL_SIZE", 5)))
-        if pool_size is None
-        else pool_size
+    db_connection_pool_size = (
+        int(
+            getsecret(
+                "DB_CONNECTION_POOL_SIZE", os.getenv("DB_CONNECTION_POOL_SIZE", 5)
+            )
+        )
+        if db_connection_pool_size is None
+        else db_connection_pool_size
     )
-    pool_overflow = int(
-        getsecret("POOL_OVERFLOW", os.getenv("POOL_OVERFLOW", 1))
-        if pool_overflow is None
-        else pool_overflow
+    db_connection_pool_overflow = int(
+        getsecret(
+            "DB_CONNECTION_POOL_OVERFLOW", os.getenv("DB_CONNECTION_POOL_OVERFLOW", 1)
+        )
+        if db_connection_pool_overflow is None
+        else db_connection_pool_overflow
+    )
+    thread_pool_size = int(
+        getsecret("THREAD_POOL_SIZE", os.getenv("THREAD_POOL_SIZE", None))
+        if thread_pool_size is None
+        else thread_pool_size
     )
     redis_host = (
         getsecret("REDIS_HOST", os.getenv("REDIS_HOST", "localhost"))
@@ -152,14 +168,20 @@ def connect(
         _init_logging(log_level, log_file)
         if conn is None:
             conn = Connection(
-                db_port, db_user, db_pw, db_host, db_name, pool_size, pool_overflow
+                db_port,
+                db_user,
+                db_pw,
+                db_host,
+                db_name,
+                db_connection_pool_size,
+                db_connection_pool_overflow,
             )
         Query.connection = conn
 
         Query.redis = redis.StrictRedis(
             host=redis_host, port=redis_port, password=redis_pw
         )
-        _start_threadpool(pool_size)
+        _start_threadpool(thread_pool_size)
 
         print(f"FlowMachine version: {flowmachine.__version__}")
 
@@ -207,14 +229,14 @@ def _init_logging(log_level, log_file):
         logger.info(f"Added log file handler, logging to {log_file}")
 
 
-def _start_threadpool(pool_size=None):
+def _start_threadpool(thread_pool_size=None):
     """
     Start the threadpool flowmachine uses for executing queries
     asynchronously.
 
     Parameters
     ----------
-    pool_size : int
+    thread_pool_size : int
         Size of thread pool to use.
 
     See Also
@@ -222,4 +244,4 @@ def _start_threadpool(pool_size=None):
     ThreadPoolExecutor
 
     """
-    Query.tp = ThreadPoolExecutor(pool_size)
+    Query.tp = ThreadPoolExecutor(thread_pool_size)
