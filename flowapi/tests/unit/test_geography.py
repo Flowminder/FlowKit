@@ -48,7 +48,9 @@ async def test_get_geography(app, dummy_zmq_server, access_token_builder):
     )
 
 
-@pytest.mark.parametrize("status, http_code", [("awol", 404), ("error", 403)])
+@pytest.mark.parametrize(
+    "status, http_code", [("awol", 404), ("error", 403), ("NOT_A_STATUS", 500)]
+)
 @pytest.mark.asyncio
 async def test_get_geography_status(
     status, http_code, app, dummy_zmq_server, access_token_builder
@@ -66,7 +68,7 @@ async def test_get_geography_status(
             }
         }
     )
-    dummy_zmq_server.side_effect = ({"status": status, "error": "Some error., "},)
+    dummy_zmq_server.side_effect = ({"status": status, "error": "Some error"},)
     response = await client.get(
         f"/api/0/geography/DUMMY_AGGREGATION",
         headers={"Authorization": f"Bearer {token}"},

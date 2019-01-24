@@ -66,7 +66,10 @@ async def get_query(query_id):
     try:
         status = message["status"]
     except KeyError:
-        return jsonify({"status": "Error", "msg": "Server responded without status"}), 500
+        return (
+            jsonify({"status": "Error", "msg": "Server responded without status"}),
+            500,
+        )
     if message["status"] == "done":
         results_streamer = stream_with_context(generate_json)(message["sql"], query_id)
         mimetype = "application/json"
@@ -86,9 +89,14 @@ async def get_query(query_id):
     elif message["status"] == "error":
         return jsonify({"status": "Error", "msg": message["error"]}), 403
     elif status == "awol":
-        return jsonify({"status": "Error", "msg": f"Route '/get/{query_id}' does not exist"}), 404
+        return (
+            jsonify(
+                {"status": "Error", "msg": f"Route '/get/{query_id}' does not exist"}
+            ),
+            404,
+        )
     else:
-        return jsonify({"status": "Error", "msg": f"Unexpected status: {message["status"]}"}), 500
+        return jsonify({"status": "Error", "msg": f"Unexpected status: {status}"}), 500
 
 
 async def generate_json(sql_query, query_id):

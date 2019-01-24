@@ -24,7 +24,10 @@ async def get_geography(aggregation_unit):
     try:
         status = message["status"]
     except KeyError:
-        return jsonify({"status": "Error", "msg": "Server responded without status"}), 500
+        return (
+            jsonify({"status": "Error", "msg": "Server responded without status"}),
+            500,
+        )
     if status == "done":
         results_streamer = stream_with_context(assemble_geojson_feature_collection)(
             message["sql"]
@@ -44,9 +47,20 @@ async def get_geography(aggregation_unit):
     elif status == "error":
         return jsonify({"status": "Error", "msg": message["error"]}), 403
     elif status == "awol":
-        return jsonify({"status": "Error", "msg": f"Route '/geography/{aggregation_unit}' does not exist"}), 404
+        return (
+            jsonify(
+                {
+                    "status": "Error",
+                    "msg": f"Route '/geography/{aggregation_unit}' does not exist",
+                }
+            ),
+            404,
+        )
     else:
-        return jsonify({"status": "Error", "msg": f"Unexpected status: {message["status"]}"}), 500
+        return (
+            jsonify({"status": "Error", "msg": f"Unexpected status: {status}"}),
+            500,
+        )
 
 
 async def assemble_geojson_feature_collection(sql_query):
