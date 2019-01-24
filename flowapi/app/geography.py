@@ -3,13 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from quart import Blueprint, current_app, request, stream_with_context, jsonify
-from .check_claims import check_claims
+from .check_claims import check_geography_claims
 
 blueprint = Blueprint(__name__, __name__)
 
 
 @blueprint.route("/geography/<aggregation_unit>")
-@check_claims("get_result")
+@check_geography_claims()
 async def get_geography(aggregation_unit):
     request.socket.send_json(
         {

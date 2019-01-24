@@ -37,14 +37,9 @@ def check_claims(claim_type):
             )
 
             # Get query kind
-            if request.path.split("/")[3] == "geography":
-                query_kind = "geography"
-            else:
-                query_kind = (
-                    "NA"
-                    if json_payload is None
-                    else json_payload.get("query_kind", "NA")
-                )
+            query_kind = (
+                "NA" if json_payload is None else json_payload.get("query_kind", "NA")
+            )
             try:  # Get the query kind from the backend
                 request.socket.send_json(
                     {
@@ -104,31 +99,28 @@ def check_claims(claim_type):
                 )
             elif claim_type == "get_result":
                 # Get aggregation unit
-                if query_kind == "geography":
-                    aggregation_unit = kwargs["aggregation_unit"]
-                else:
-                    request.socket.send_json(
-                        {
-                            "request_id": request.request_id,
-                            "action": "get_params",
-                            "query_id": kwargs["query_id"],
-                        }
+                request.socket.send_json(
+                    {
+                        "request_id": request.request_id,
+                        "action": "get_params",
+                        "query_id": kwargs["query_id"],
+                    }
+                )
+                message = await request.socket.recv_json()
+                if "params" not in message:
+                    return jsonify({}), 404
+                try:
+                    aggregation_unit = message["params"]["aggregation_unit"]
+                except KeyError:
+                    return (
+                        jsonify(
+                            {
+                                "status": "Error",
+                                "msg": "Missing parameter: 'aggregation_unit'",
+                            }
+                        ),
+                        500,
                     )
-                    message = await request.socket.recv_json()
-                    if "params" not in message:
-                        return jsonify({}), 404
-                    try:
-                        aggregation_unit = message["params"]["aggregation_unit"]
-                    except KeyError:
-                        return (
-                            jsonify(
-                                {
-                                    "status": "Error",
-                                    "msg": "Missing parameter: 'aggregation_unit'",
-                                }
-                            ),
-                            500,
-                        )
                 # Check aggregation claims
                 if aggregation_unit not in aggregation_claims:
                     current_app.query_run_logger.error(
@@ -146,6 +138,90 @@ def check_claims(claim_type):
                     )
                 else:
                     pass
+            else:
+                pass
+            current_app.query_run_logger.info("Authorised", **log_dict)
+            return await func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def check_geography_claims():
+    """
+    Create a decorator which checks the "get_result" permission for
+    query kind "geography" against the claims of any token provided.
+
+    Returns
+    -------
+    decorator
+    """
+
+    def decorator(func):
+        @wraps(func)
+        @jwt_required
+        async def wrapper(*args, **kwargs):
+            json_payload = await request.json
+            current_app.access_logger.info(
+                "AUTHENTICATED",
+                request_id=request.request_id,
+                route=request.path,
+                user=get_jwt_identity(),
+                src_ip=request.headers.get("Remote-Addr"),
+                json_payload=json_payload,
+            )
+
+            query_kind = "geography"
+            claim_type = "get_result"
+            aggregation_unit = kwargs["aggregation_unit"]
+
+            # Get claims
+            claims = get_jwt_claims().get(query_kind, {})
+            endpoint_claims = claims.get("permissions", {})
+            aggregation_claims = claims.get("spatial_aggregation", {})
+            log_dict = dict(
+                request_id=request.request_id,
+                query_kind=query_kind.upper(),
+                route=request.path,
+                user=get_jwt_identity(),
+                src_ip=request.headers.get("Remote-Addr"),
+                json_payload=json_payload,
+                claims=claims,
+            )
+            current_app.query_run_logger.info("Received", **log_dict)
+
+            # Check claims
+            if (claim_type not in endpoint_claims) or (
+                endpoint_claims[claim_type] == False
+            ):  # Check endpoint claims
+                current_app.query_run_logger.error(
+                    "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN", **log_dict
+                )
+                return (
+                    jsonify(
+                        {
+                            "status": "Error",
+                            "msg": f"'{claim_type}' access denied for '{query_kind}' query",
+                        }
+                    ),
+                    401,
+                )
+            # Check aggregation claims
+            elif aggregation_unit not in aggregation_claims:
+                current_app.query_run_logger.error(
+                    "SPATIAL_AGGREGATION_LEVEL_NOT_ALLOWED_BY_TOKEN", **log_dict
+                )
+                return (
+                    jsonify(
+                        {
+                            "status": "Error",
+                            "msg": f"'{claim_type}' access denied for '{aggregation_unit}' "
+                            f"aggregated result of '{query_kind}' query",
+                        }
+                    ),
+                    401,
+                )
             else:
                 pass
             current_app.query_run_logger.info("Authorised", **log_dict)
