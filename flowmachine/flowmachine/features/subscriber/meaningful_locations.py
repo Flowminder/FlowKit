@@ -148,7 +148,7 @@ class MeaningfulLocationsAggregate(Query):
         ({self.meaningful_locations.get_query()}) meaningful_locations
         LEFT JOIN 
         ({agg_query}) agg
-        ON st_contains(agg.geom::geometry, meaningful_locations.cluster::geometry)
+        ON ST_Contains(agg.geom::geometry, meaningful_locations.cluster::geometry)
         GROUP BY label, {level_cols}
         HAVING sum(1./n_clusters) > 15
         ORDER BY {level_cols}
@@ -255,10 +255,10 @@ class MeaningfulLocationsOD(Query):
         ({self.flow.get_query()}) meaningful_locations
         LEFT JOIN 
         ({agg_query}) from_q
-        ON st_contains(from_q.geom::geometry, meaningful_locations.cluster_from::geometry)
+        ON ST_Contains(from_q.geom::geometry, meaningful_locations.cluster_from::geometry)
         LEFT JOIN 
         ({agg_query}) to_q
-        ON st_contains(to_q.geom::geometry, meaningful_locations.cluster_to::geometry)
+        ON ST_Contains(to_q.geom::geometry, meaningful_locations.cluster_to::geometry)
         GROUP BY label_from, label_to, {level_cols}
         HAVING sum(1./(n_clusters_from*n_clusters_to)) > 15
         ORDER BY {level_cols}

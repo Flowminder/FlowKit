@@ -139,7 +139,7 @@ class LabelEventScore(Query):
         sql = f"""
         SELECT COALESCE(score_bounds.label, 'unknown') as label, scores.* FROM {scores}
         LEFT JOIN {LabelEventScore._get_bound_as_sql(self.labels)}
-        ON st_contains(score_bounds.geom, st_point(scores.score_hour, scores.score_dow))
+        ON ST_Contains(score_bounds.geom, ST_Point(scores.score_hour, scores.score_dow))
         """
 
         if self.required is not None:
