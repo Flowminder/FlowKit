@@ -21,6 +21,7 @@ from logging.handlers import TimedRotatingFileHandler
 import redis
 
 import flowmachine
+from flowmachine.core.union import Union
 from flowmachine.utils.utils import getsecret
 from . import Connection, Query
 
@@ -28,20 +29,20 @@ logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
 def connect(
-    log_level=None,
-    log_file=None,
-    db_port=None,
-    db_user=None,
-    db_pw=None,
-    db_host=None,
-    db_name=None,
-    db_connection_pool_size=None,
-    db_connection_pool_overflow=None,
+    log_level: Union[str, None] = None,
+    log_file: Union[str, None] = None,
+    db_port: Union[int, None] = None,
+    db_user: Union[str, None] = None,
+    db_pw: Union[str, None] = None,
+    db_host: Union[str, None] = None,
+    db_name: Union[str, None] = None,
+    db_connection_pool_size: Union[int, None] = None,
+    db_connection_pool_overflow: Union[int, None] = None,
     thread_pool_size: Union[int, None] = None,
-    redis_host=None,
-    redis_port=None,
-    redis_password=None,
-    conn=None,
+    redis_host: Union[str, None] = None,
+    redis_port: Union[int, None] = None,
+    redis_password: Union[str, None] = None,
+    conn: Union[Connection, None] = None,
 ) -> Connection:
     """
     Connects flowmachine to a database, and performs initial set-up routines.
