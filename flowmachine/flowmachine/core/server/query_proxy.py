@@ -107,7 +107,9 @@ def construct_query_object(query_kind, params):  # pragma: no cover
     -------
     flowmachine.core.query.Query
     """
-    params = deepcopy(params)
+    params = deepcopy(
+        params
+    )  # Operate on a copy to avoid mutating the passed in dict, which might change the redis lookup
     error_msg_prefix = (
         f"Error when constructing query of kind {query_kind} with parameters {params}"
     )
