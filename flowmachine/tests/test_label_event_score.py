@@ -200,7 +200,7 @@ bad_bounds = [
 @pytest.mark.parametrize("bad_bound", next(zip(*bad_bounds)))
 def test_constructor_raises_value_error(bad_bound):
     """
-    Constructor should only raise value errors.
+    Constructor should raise valueerror for bad bounds..
     """
     with pytest.raises(ValueError):
         LabelEventScore(
