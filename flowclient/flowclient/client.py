@@ -460,46 +460,59 @@ def _meaningful_locations(
     stop_date: str,
     label: str,
     labels: Dict[str, Dict[str, dict]],
+    tower_day_of_week_scores: Dict[str, float],
+    tower_hour_of_day_scores: List[float],
     tower_cluster_radius: float = 1.0,
-    tower_cluster_buffer: float = 0.0,
     tower_cluster_call_threshold: int = 0,
-    tower_dow_scores: Dict[str, float] = {
-        "monday": 1,
-        "tuesday": 1,
-        "wednesday": 1,
-        "thursday": 0,
-        "friday": -1,
-        "saturday": -1,
-        "sunday": -1,
-    },
-    tower_hour_of_day_scores: List[float] = [
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        0,
-        0,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        0,
-        0,
-        0,
-        0,
-        -1,
-        -1,
-        -1,
-    ],
     subscriber_subset: Union[dict, None] = None,
 ):
+    """
+    Helper function which constructs a spec for a meaningful locations query
+    to be aggregated.
+    
+    Parameters
+    ----------
+    start_date : str
+        ISO format date that begins the period, e.g. "2016-01-01"
+    stop_date : str
+        ISO format date that begins the period, e.g. "2016-01-07"
+    label : str
+        One of the labels specified in `labels`, or 'unknown'. Locations with this
+        label are returned.
+    labels : dict of dicts
+        A dictionary whose keys are the label names and the values geojson-style shapes,
+        specified hour of day, and day of week score, with hour of day score on the x axis
+        and day of week score on the y axis, where all scores are real numbers in the range [-1.0, +1.0]
+    tower_day_of_week_scores : dict
+        A dictionary mapping days of the week ("monday", "tuesday" etc.) to numerical scores in the range [-1.0, +1.0].
+
+        Each of a subscriber's interactions with a tower is given a score for the day of the week it took place on. For
+        example, passing {"monday":1.0, "tuesday":0, "wednesday":0, "thursday":0, "friday":0, "saturday":0, "sunday":0}
+        would score any interaction taking place on a monday 1, and 0 on all other days. So a subscriber who made two calls
+        on a monday, and received one sms on tuesday, all from the same tower would have a final score of 0.666 for that
+        tower.
+    tower_hour_of_day_scores : list of float
+        A length 24 list containing numerical scores in the range [-1.0, +1.0], where the first entry is midnight.
+        Each of a subscriber's interactions with a tower is given a score for the hour of the day it took place in. For
+        example, if the first entry of this list was 1, and all others were zero, each interaction the subscriber had
+        that used a tower at midnight would receive a score of 1. If the subscriber used a particular tower twice, once
+        at midnight, and once at noon, the final hour score for that tower would be 0.5.
+    tower_cluster_radius : float
+        When constructing clusters, towers will be considered for inclusion in a cluster only if they are within this
+        number of KM from the current cluster centroid. Hence, large values here will tend to produce clusters containing
+        more towers, and fewer clusters.
+    tower_cluster_call_threshold : int
+        Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve modal locations for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+         Dict which functions as the query specification
+    """
     if subscriber_subset is None:
         subscriber_subset = "all"
     return {
@@ -510,7 +523,6 @@ def _meaningful_locations(
                 "query_kind": "hartigan_cluster",
                 "params": {
                     "radius": tower_cluster_radius,
-                    "buffer": tower_cluster_buffer,
                     "call_threshold": tower_cluster_call_threshold,
                     "call_days": {
                         "query_kind": "call_days",
@@ -532,7 +544,7 @@ def _meaningful_locations(
                 "query_kind": "event_score",
                 "params": {
                     "score_hour": tower_hour_of_day_scores,
-                    "score_dow": tower_dow_scores,
+                    "score_dow": tower_day_of_week_scores,
                     "start": start_date,
                     "stop": stop_date,
                     "level": "versioned-site",
@@ -549,47 +561,81 @@ def meaningful_locations_aggregate(
     stop_date: str,
     label: str,
     labels: Dict[str, Dict[str, dict]],
+    tower_day_of_week_scores: Dict[str, float],
+    tower_hour_of_day_scores: List[float],
     aggregation_unit: str,
     tower_cluster_radius: float = 1.0,
-    tower_cluster_buffer: float = 0.0,
     tower_cluster_call_threshold: int = 0,
-    tower_dow_scores: Dict[str, float] = {
-        "monday": 1,
-        "tuesday": 1,
-        "wednesday": 1,
-        "thursday": 0,
-        "friday": -1,
-        "saturday": -1,
-        "sunday": -1,
-    },
-    tower_hour_of_day_scores: List[float] = [
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        0,
-        0,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        0,
-        0,
-        0,
-        0,
-        -1,
-        -1,
-        -1,
-    ],
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
+    """
+    Return a count of meaningful locations at some unit of spatial aggregation.
+    Generates clusters of towers used by subscribers' over the given time period, scores the clusters based on the
+    subscribers' usage patterns over hours of the day and days of the week. Each subscriber then has a number of
+    clusters, each of which has a score for hourly usage, and day of week usage. These clusters are then labelled
+    based on whether they overlap with the regions of that space defined in the `labels` parameter.
+
+    Once the clusters are labelled, those clusters which have the label specified are extracted, and then a count of
+    subscribers per aggregation unit is returned, based on whether the _spatial_ position of the cluster overlaps with
+    the aggregation unit. Subscribers are not counted directly, but contribute `1/number_of_clusters` to the count of
+    each aggregation unit, for each cluster that lies within that aggregation unit.
+
+    This methodology is based on work originally by Isaacman et al.[1]_, and extensions by Zagatti et al[2]_.
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date that begins the period, e.g. "2016-01-01"
+    stop_date : str
+        ISO format date that begins the period, e.g. "2016-01-07"
+    label : str
+        One of the labels specified in `labels`, or 'unknown'. Locations with this
+        label are returned.
+    labels : dict of dicts
+        A dictionary whose keys are the label names and the values geojson-style shapes,
+        specified hour of day, and day of week score, with hour of day score on the x-axis
+        and day of week score on the y-axis, where all scores are real numbers in the range [-1.0, +1.0]
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    tower_day_of_week_scores : dict
+        A dictionary mapping days of the week ("monday", "tuesday" etc.) to numerical scores in the range [-1.0, +1.0].
+
+        Each of a subscriber's interactions with a tower is given a score for the day of the week it took place on. For
+        example, passing {"monday":1.0, "tuesday":0, "wednesday":0, "thursday":0, "friday":0, "saturday":0, "sunday":0}
+        would score any interaction taking place on a monday 1, and 0 on all other days. So a subscriber who made two calls
+        on a monday, and received one sms on tuesday, all from the same tower would have a final score of 0.666 for that
+        tower.
+    tower_hour_of_day_scores : list of float
+        A length 24 list containing numerical scores in the range [-1.0, +1.0], where the first entry is midnight.
+        Each of a subscriber's interactions with a tower is given a score for the hour of the day it took place in. For
+        example, if the first entry of this list was 1, and all others were zero, each interaction the subscriber had
+        that used a tower at midnight would receive a score of 1. If the subscriber used a particular tower twice, once
+        at midnight, and once at noon, the final hour score for that tower would be 0.5.
+    tower_cluster_radius : float
+        When constructing clusters, towers will be considered for inclusion in a cluster only if they are within this
+        number of KM from the current cluster centroid. Hence, large values here will tend to produce clusters containing
+        more towers, and fewer clusters.
+    tower_cluster_call_threshold : int
+        Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve modal locations for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+         Dict which functions as the query specification
+
+    References
+    ----------
+    .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
+    .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
+
+    Notes
+    -----
+    Does not return any value below 15.
+    """
     return {
         "query_kind": "meaningful_locations_aggregate",
         "params": {
@@ -597,14 +643,13 @@ def meaningful_locations_aggregate(
             "meaningful_locations": _meaningful_locations(
                 start_date=start_date,
                 stop_date=stop_date,
-                subscriber_subset=subscriber_subset,
                 label=label,
                 labels=labels,
-                tower_cluster_buffer=tower_cluster_buffer,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_dow_scores=tower_dow_scores,
+                tower_day_of_week_scores=tower_day_of_week_scores,
                 tower_hour_of_day_scores=tower_hour_of_day_scores,
+                tower_cluster_radius=tower_cluster_radius,
+                tower_cluster_call_threshold=tower_cluster_call_threshold,
+                subscriber_subset=subscriber_subset,
             ),
         },
     }
@@ -616,47 +661,81 @@ def meaningful_locations_between_label_od_matrix(
     label_a: str,
     label_b: str,
     labels: Dict[str, Dict[str, dict]],
+    tower_day_of_week_scores: Dict[str, float],
+    tower_hour_of_day_scores: List[float],
     aggregation_unit: str,
     tower_cluster_radius: float = 1.0,
-    tower_cluster_buffer: float = 0.0,
     tower_cluster_call_threshold: int = 0,
-    tower_dow_scores: Dict[str, float] = {
-        "monday": 1,
-        "tuesday": 1,
-        "wednesday": 1,
-        "thursday": 0,
-        "friday": -1,
-        "saturday": -1,
-        "sunday": -1,
-    },
-    tower_hour_of_day_scores: List[float] = [
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        0,
-        0,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        0,
-        0,
-        0,
-        0,
-        -1,
-        -1,
-        -1,
-    ],
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
+    """
+    Return an origin-destination matrix between two meaningful locations at some unit of spatial aggregation.
+    Generates clusters of towers used by subscribers' over the given time period, scores the clusters based on the
+    subscribers' usage patterns over hours of the day and days of the week. Each subscriber then has a number of
+    clusters, each of which has a score for hourly usage, and day of week usage. These clusters are then labelled
+    based on whether they overlap with the regions of that space defined in the `labels` parameter.
+
+    Once the clusters are labelled, those clusters which have either `label_a` or `label_b` are extracted, and then
+    a count of of number of subscribers who move between the labels is returned, after aggregating spatially.
+    Each subscriber contributes to `1/(num_cluster_with_label_a*num_clusters_with_label_b)` to the count. So, for example
+    a subscriber with two clusters labelled evening, and one labelled day, all in different spatial units would contribute
+    0.5 to the flow from each of the spatial units containing the evening clusters, to the unit containing the day cluster.
+
+    This methodology is based on work originally by Isaacman et al.[1]_, and extensions by Zagatti et al[2]_.
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date that begins the period, e.g. "2016-01-01"
+    stop_date : str
+        ISO format date that begins the period, e.g. "2016-01-07"
+    label_a, label_b : str
+        One of the labels specified in `labels`, or 'unknown'. Calculates the OD between these two labels.
+    labels : dict of dicts
+        A dictionary whose keys are the label names and the values geojson-style shapes,
+        specified hour of day, and day of week score, with hour of day score on the x-axis
+        and day of week score on the y-axis, where all scores are real numbers in the range [-1.0, +1.0]
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    tower_day_of_week_scores : dict
+        A dictionary mapping days of the week ("monday", "tuesday" etc.) to numerical scores in the range [-1.0, +1.0].
+
+        Each of a subscriber's interactions with a tower is given a score for the day of the week it took place on. For
+        example, passing {"monday":1.0, "tuesday":0, "wednesday":0, "thursday":0, "friday":0, "saturday":0, "sunday":0}
+        would score any interaction taking place on a monday 1, and 0 on all other days. So a subscriber who made two calls
+        on a monday, and received one sms on tuesday, all from the same tower would have a final score of 0.666 for that
+        tower.
+    tower_hour_of_day_scores : list of float
+        A length 24 list containing numerical scores in the range [-1.0, +1.0], where the first entry is midnight.
+        Each of a subscriber's interactions with a tower is given a score for the hour of the day it took place in. For
+        example, if the first entry of this list was 1, and all others were zero, each interaction the subscriber had
+        that used a tower at midnight would receive a score of 1. If the subscriber used a particular tower twice, once
+        at midnight, and once at noon, the final hour score for that tower would be 0.5.
+    tower_cluster_radius : float
+        When constructing clusters, towers will be considered for inclusion in a cluster only if they are within this
+        number of KM from the current cluster centroid. Hence, large values here will tend to produce clusters containing
+        more towers, and fewer clusters.
+    tower_cluster_call_threshold : int
+        Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve modal locations for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+         Dict which functions as the query specification
+
+    Notes
+    -----
+    Does not return any value below 15.
+
+    References
+    ----------
+    .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
+    .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
+    """
     return {
         "query_kind": "meaningful_locations_od_matrix",
         "params": {
@@ -664,26 +743,24 @@ def meaningful_locations_between_label_od_matrix(
             "meaningful_locations_a": _meaningful_locations(
                 start_date=start_date,
                 stop_date=stop_date,
-                subscriber_subset=subscriber_subset,
                 label=label_a,
                 labels=labels,
-                tower_cluster_buffer=tower_cluster_buffer,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_dow_scores=tower_dow_scores,
+                tower_day_of_week_scores=tower_day_of_week_scores,
                 tower_hour_of_day_scores=tower_hour_of_day_scores,
+                tower_cluster_radius=tower_cluster_radius,
+                tower_cluster_call_threshold=tower_cluster_call_threshold,
+                subscriber_subset=subscriber_subset,
             ),
             "meaningful_locations_b": _meaningful_locations(
                 start_date=start_date,
                 stop_date=stop_date,
-                subscriber_subset=subscriber_subset,
                 label=label_b,
                 labels=labels,
-                tower_cluster_buffer=tower_cluster_buffer,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_dow_scores=tower_dow_scores,
+                tower_day_of_week_scores=tower_day_of_week_scores,
                 tower_hour_of_day_scores=tower_hour_of_day_scores,
+                tower_cluster_radius=tower_cluster_radius,
+                tower_cluster_call_threshold=tower_cluster_call_threshold,
+                subscriber_subset=subscriber_subset,
             ),
         },
     }
@@ -696,47 +773,86 @@ def meaningful_locations_between_dates_od_matrix(
     stop_date_b: str,
     label: str,
     labels: Dict[str, Dict[str, dict]],
+    tower_day_of_week_scores: Dict[str, float],
+    tower_hour_of_day_scores: List[float],
     aggregation_unit: str,
     tower_cluster_radius: float = 1.0,
-    tower_cluster_buffer: float = 0.0,
     tower_cluster_call_threshold: float = 0,
-    tower_dow_scores: Dict[str, float] = {
-        "monday": 1,
-        "tuesday": 1,
-        "wednesday": 1,
-        "thursday": 0,
-        "friday": -1,
-        "saturday": -1,
-        "sunday": -1,
-    },
-    tower_hour_of_day_scores: List[float] = [
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        0,
-        0,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        0,
-        0,
-        0,
-        0,
-        -1,
-        -1,
-        -1,
-    ],
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
+    """
+    Return an origin-destination matrix between one meaningful location in two time periods at some unit of spatial
+    aggregation. This is analagous to performing a `flows` calculation.
+
+    Generates clusters of towers used by subscribers' over the given time period, scores the clusters based on the
+    subscribers' usage patterns over hours of the day and days of the week. Each subscriber then has a number of
+    clusters, each of which has a score for hourly usage, and day of week usage. These clusters are then labelled
+    based on whether they overlap with the regions of that space defined in the `labels` parameter.
+
+    Once the clusters are labelled, those clusters which have a label of `label` are extracted, and then
+    a count of of number of subscribers who's labelled clusters have moved between time periods is returned, after
+    aggregating spatially.
+    Each subscriber contributes to `1/(num_cluster_with_label_in_period_a*num_clusters_with_label_in_period_b)` to the
+    count. So, for example a subscriber with two clusters labelled evening in the first time period, and only one in the
+    second time period, with all clusters in different spatial units, would contribute 0.5 to the flow from the spatial
+    units holding both the original clusters, to the spatial unit of the cluster in the second time period.
+
+    This methodology is based on work originally by Isaacman et al.[1]_, and extensions by Zagatti et al[2]_.
+
+    Parameters
+    ----------
+    start_date_a, start_date_b : str
+        ISO format date that begins the period, e.g. "2016-01-01"
+    stop_date_a, stop_date_b : str
+        ISO format date that begins the period, e.g. "2016-01-07"
+    label : str
+        One of the labels specified in `labels`, or 'unknown'. Locations with this
+        label are returned.
+    labels : dict of dicts
+        A dictionary whose keys are the label names and the values geojson-style shapes,
+        specified hour of day, and day of week score, with hour of day score on the x-axis
+        and day of week score on the y-axis, where all scores are real numbers in the range [-1.0, +1.0]
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    tower_day_of_week_scores : dict
+        A dictionary mapping days of the week ("monday", "tuesday" etc.) to numerical scores in the range [-1.0, +1.0].
+
+        Each of a subscriber's interactions with a tower is given a score for the day of the week it took place on. For
+        example, passing {"monday":1.0, "tuesday":0, "wednesday":0, "thursday":0, "friday":0, "saturday":0, "sunday":0}
+        would score any interaction taking place on a monday 1, and 0 on all other days. So a subscriber who made two calls
+        on a monday, and received one sms on tuesday, all from the same tower would have a final score of 0.666 for that
+        tower.
+    tower_hour_of_day_scores : list of float
+        A length 24 list containing numerical scores in the range [-1.0, +1.0], where the first entry is midnight.
+        Each of a subscriber's interactions with a tower is given a score for the hour of the day it took place in. For
+        example, if the first entry of this list was 1, and all others were zero, each interaction the subscriber had
+        that used a tower at midnight would receive a score of 1. If the subscriber used a particular tower twice, once
+        at midnight, and once at noon, the final hour score for that tower would be 0.5.
+    tower_cluster_radius : float
+        When constructing clusters, towers will be considered for inclusion in a cluster only if they are within this
+        number of KM from the current cluster centroid. Hence, large values here will tend to produce clusters containing
+        more towers, and fewer clusters.
+    tower_cluster_call_threshold : int
+        Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
+    subscriber_subset : dict or None
+        Subset of subscribers to retrieve modal locations for. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+         Dict which functions as the query specification
+
+    Notes
+    -----
+    Does not return any value below 15.
+
+    References
+    ----------
+    .. [1] S. Isaacman et al., "Identifying Important Places in People's Lives from Cellular Network Data", International Conference on Pervasive Computing (2011), pp 133-151.
+    .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
+    """
     return {
         "query_kind": "meaningful_locations_od_matrix",
         "params": {
@@ -744,26 +860,24 @@ def meaningful_locations_between_dates_od_matrix(
             "meaningful_locations_a": _meaningful_locations(
                 start_date=start_date_a,
                 stop_date=stop_date_a,
-                subscriber_subset=subscriber_subset,
                 label=label,
                 labels=labels,
-                tower_cluster_buffer=tower_cluster_buffer,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_dow_scores=tower_dow_scores,
+                tower_day_of_week_scores=tower_day_of_week_scores,
                 tower_hour_of_day_scores=tower_hour_of_day_scores,
+                tower_cluster_radius=tower_cluster_radius,
+                tower_cluster_call_threshold=tower_cluster_call_threshold,
+                subscriber_subset=subscriber_subset,
             ),
             "meaningful_locations_b": _meaningful_locations(
                 start_date=start_date_b,
                 stop_date=stop_date_b,
-                subscriber_subset=subscriber_subset,
                 label=label,
                 labels=labels,
-                tower_cluster_buffer=tower_cluster_buffer,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_dow_scores=tower_dow_scores,
+                tower_day_of_week_scores=tower_day_of_week_scores,
                 tower_hour_of_day_scores=tower_hour_of_day_scores,
+                tower_cluster_radius=tower_cluster_radius,
+                tower_cluster_call_threshold=tower_cluster_call_threshold,
+                subscriber_subset=subscriber_subset,
             ),
         },
     }

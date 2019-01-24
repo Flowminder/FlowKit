@@ -16,6 +16,12 @@ class MeaningfulLocations(Query):
     Infer 'meaningful' locations for individual subscribers (for example, home and work) based on
     a clustering of the cell towers they use, and their usage patterns for those towers.
 
+    Return a count of meaningful locations at some unit of spatial aggregation.
+    Generates clusters of towers used by subscribers' over the given time period, scores the clusters based on the
+    subscribers' usage patterns over hours of the day and days of the week. Each subscriber then has a number of
+    clusters, each of which has a score for hourly usage, and day of week usage. These clusters are then labelled
+    based on whether they overlap with the regions of that space defined in the `labels` parameter.
+
     This is an extension of work by Isaacman et al.[1]_ by Flowminder in collaboration with the World Bank[2]_.
 
     Parameters
@@ -24,7 +30,7 @@ class MeaningfulLocations(Query):
         Per subscriber clusters of towers
     scores : EventScore
         Per subscriber, per tower scores based on hour of day and day of week of interactions with the tower
-    labels : LabelEventScore
+    labels : dict of dict
         Labels to apply to clusters given their usage pattern scoring
     label : str
         Meaningful label to extract clusters for
