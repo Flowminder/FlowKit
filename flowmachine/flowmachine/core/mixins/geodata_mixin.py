@@ -187,14 +187,12 @@ class GeoDataMixin:
         )
 
         json_query = f"""
-                SELECT json_build_object(
-                    'type',       'Feature',
-                    'id',         gid,
-                    'geometry',   ST_AsGeoJSON({crs_trans})::json,
-                    'properties', json_build_object({", ".join(properties)})
-                ) AS feature FROM (
-                            SELECT * 
-                            FROM ({joined_query}) AS J) AS row
+                SELECT
+                    'Feature' AS type,
+                    gid AS id,
+                    ST_AsGeoJSON({crs_trans})::json AS geometry,
+                    json_build_object({", ".join(properties)}) AS properties
+                FROM (SELECT * FROM ({joined_query}) AS J) AS row
         """
 
         return json_query
@@ -244,7 +242,10 @@ class GeoDataMixin:
         dict
 
         """
-        features = [x[0] for x in self.connection.fetch(self.geojson_query(crs=proj4))]
+        features = [
+            {"type": x[0], "id": x[1], "geometry": x[2], "properties": x[3]}
+            for x in self.connection.fetch(self.geojson_query(crs=proj4))
+        ]
         js = {
             "properties": {"crs": proj4},
             "type": "FeatureCollection",

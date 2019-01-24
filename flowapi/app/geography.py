@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from quart import Blueprint, current_app, request, stream_with_context, jsonify
+from .stream_results import stream_result_as_json
 from .check_claims import check_geography_claims
 
 blueprint = Blueprint("geography", __name__)
@@ -29,8 +30,10 @@ async def get_geography(aggregation_unit):
             500,
         )
     if status == "done":
-        results_streamer = stream_with_context(assemble_geojson_feature_collection)(
-            message["sql"]
+        results_streamer = stream_with_context(stream_result_as_json)(
+            message["sql"],
+            headers={"type": "FeatureCollection"},
+            result_name="features",
         )
         mimetype = "application/geo+json"
 
@@ -53,39 +56,3 @@ async def get_geography(aggregation_unit):
             jsonify({"status": "Error", "msg": f"Unexpected status: {status}"}),
             500,
         )
-
-
-async def assemble_geojson_feature_collection(sql_query):
-    """
-    Assemble the GeoJSON "Feature" objects from the query response into a
-    "FeatureCollection" object.
-
-    Parameters
-    ----------
-    sql_query : str
-        SQL query to stream output of
-
-    Yields
-    ------
-    bytes
-        Encoded lines of JSON
-
-    """
-    logger = current_app.logger
-    pool = current_app.pool
-    yield f'{{"type":"FeatureCollection", "features":['.encode()
-    prepend = ""
-    logger.debug("Starting generator.")
-    async with pool.acquire() as connection:
-        logger.debug("Connected.")
-        async with connection.transaction():
-            logger.debug("Got transaction.")
-            logger.debug(f"Running {sql_query}")
-            try:
-                async for row in connection.cursor(sql_query):
-                    yield f"{prepend}{row[0]}".encode()
-                    prepend = ", "
-                logger.debug("Finishing up.")
-                yield b"]}"
-            except Exception as e:
-                logger.error(e)

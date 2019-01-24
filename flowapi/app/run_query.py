@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import ujson as json
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
+from .stream_results import stream_result_as_json
 from .check_claims import check_claims
 
 blueprint = Blueprint("query", __name__)
@@ -71,7 +71,9 @@ async def get_query(query_id):
             500,
         )
     if message["status"] == "done":
-        results_streamer = stream_with_context(generate_json)(message["sql"], query_id)
+        results_streamer = stream_with_context(stream_result_as_json)(
+            message["sql"], headers={"query_id": query_id}
+        )
         mimetype = "application/json"
 
         current_app.logger.debug(f"Returning result of query {query_id}.")
@@ -92,39 +94,3 @@ async def get_query(query_id):
         return (jsonify({"status": "Error", "msg": message["error"]}), 404)
     else:
         return jsonify({"status": "Error", "msg": f"Unexpected status: {status}"}), 500
-
-
-async def generate_json(sql_query, query_id):
-    """
-    Generate a JSON representation of a query.
-    Parameters
-    ----------
-    sql_query : str
-        SQL query to stream output of
-    query_id : str
-        Unique id of the query
-
-    Yields
-    ------
-    bytes
-        Encoded lines of JSON
-
-    """
-    logger = current_app.logger
-    pool = current_app.pool
-    yield f'{{"query_id":"{query_id}", "query_result":['.encode()
-    prepend = ""
-    logger.debug("Starting generator.")
-    async with pool.acquire() as connection:
-        logger.debug("Connected.")
-        async with connection.transaction():
-            logger.debug("Got transaction.")
-            logger.debug(f"Running {sql_query}")
-            try:
-                async for row in connection.cursor(sql_query):
-                    yield f"{prepend}{json.dumps(dict(row.items()))}".encode()
-                    prepend = ", "
-                logger.debug("Finishing up.")
-                yield b"]}"
-            except Exception as e:
-                logger.error(e)
