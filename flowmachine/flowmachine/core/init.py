@@ -21,7 +21,7 @@ from logging.handlers import TimedRotatingFileHandler
 import redis
 
 import flowmachine
-from flowmachine.core.union import Union
+from typing import Union
 from flowmachine.utils.utils import getsecret
 from . import Connection, Query
 
