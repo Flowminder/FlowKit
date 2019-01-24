@@ -141,11 +141,15 @@ def connect(
         if db_connection_pool_overflow is None
         else db_connection_pool_overflow
     )
-    thread_pool_size = int(
+
+    thread_pool_size = (
         getsecret("THREAD_POOL_SIZE", os.getenv("THREAD_POOL_SIZE", None))
         if thread_pool_size is None
         else thread_pool_size
     )
+    if thread_pool_size is not None:
+        thread_pool_size = int(thread_pool_size)
+
     redis_host = (
         getsecret("REDIS_HOST", os.getenv("REDIS_HOST", "localhost"))
         if redis_host is None
