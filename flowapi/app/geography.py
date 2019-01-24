@@ -5,7 +5,7 @@
 from quart import Blueprint, current_app, request, stream_with_context, jsonify
 from .check_claims import check_geography_claims
 
-blueprint = Blueprint(__name__, __name__)
+blueprint = Blueprint("geography", __name__)
 
 
 @blueprint.route("/geography/<aggregation_unit>")

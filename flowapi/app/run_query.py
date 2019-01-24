@@ -6,7 +6,7 @@ import ujson as json
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
 from .check_claims import check_claims
 
-blueprint = Blueprint(__name__, __name__)
+blueprint = Blueprint("query", __name__)
 
 
 @blueprint.route("/run", methods=["POST"])
@@ -27,7 +27,7 @@ async def run_query():
     current_app.logger.debug(f"Received reply {message}")
 
     if "id" in message:
-        d = {"Location": url_for(f"{__name__}.poll_query", query_id=message["id"])}
+        d = {"Location": url_for(f"query.poll_query", query_id=message["id"])}
         return jsonify({}), 202, d
     elif "error" in message:
         return jsonify({"status": "Error", "msg": message["error"]}), 403
@@ -47,7 +47,7 @@ async def poll_query(query_id):
         return (
             jsonify({}),
             303,
-            {"Location": url_for(f"{__name__}.get_query", query_id=message["id"])},
+            {"Location": url_for(f"query.get_query", query_id=message["id"])},
         )
     elif message["status"] == "running":
         return jsonify({}), 202
