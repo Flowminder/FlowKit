@@ -138,7 +138,7 @@ class LabelEventScore(Query):
 
         sql = f"""
         SELECT COALESCE(score_bounds.label, 'unknown') as label, scores.* FROM {scores}
-        LEFT JOIN {LabelEventScore._get_sql_bound(self.labels)}
+        LEFT JOIN {LabelEventScore._get_bound_as_sql(self.labels)}
         ON st_contains(score_bounds.geom, st_point(scores.score_hour, scores.score_dow))
         """
 
@@ -170,7 +170,7 @@ class LabelEventScore(Query):
         return ["label"] + self.scores.column_names
 
     @staticmethod
-    def _get_sql_bound(bounds: Dict[str, List[Dict[str, float]]]) -> str:
+    def _get_bound_as_sql(bounds: Dict[str, List[Dict[str, float]]]) -> str:
         """
         Translate a dict of label and lists of score boundary dictionaries into an sql case
         statement.
@@ -216,6 +216,6 @@ class LabelEventScore(Query):
         for ix, label, bound in flattened_bounds:
             for ix_b, label_b, bound_b in flattened_bounds[ix + 1 :]:
                 if bound.intersects(bound_b):
-                    error = f"Labels overlap. Label '{label}' bounds overlaps with that of '{label_b}'."
+                    error = f"Label '{label}' bounds overlaps with that of '{label_b}'."
                     raise ValueError(error)
         return False
