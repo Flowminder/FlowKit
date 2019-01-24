@@ -265,10 +265,11 @@ def rlock(redis_client, lock_id, holder_id=None):
         holder_id = f"{get_ident()}".encode()
     logger.debug(f"My lock holder id is {holder_id}")
     logger.debug(
-        f"Getting lock. Currently held by {redis_lock.Lock(redis_client, lock_id, id=holder_id).get_owner_id()}"
+        f"Getting lock id {lock_id}. Currently held by {redis_lock.Lock(redis_client, lock_id, id=holder_id).get_owner_id()}"
     )
     try:
         with redis_lock.Lock(redis_client, lock_id, id=holder_id):
             yield
     except AlreadyAcquired:
         yield
+    logger.debug(f"{holder_id} released lock id {lock_id}.")
