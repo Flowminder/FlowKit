@@ -21,7 +21,11 @@ async def get_geography(aggregation_unit):
     #  Get the reply.
     message = await request.socket.recv_json()
     current_app.logger.debug(f"Got message: {message}")
-    if message["status"] == "done":
+    try:
+        status = message["status"]
+    except KeyError:
+        return jsonify({"status": "Error", "msg": "Server responded without status"}), 500
+    if status == "done":
         results_streamer = stream_with_context(assemble_geojson_feature_collection)(
             message["sql"]
         )
@@ -37,10 +41,12 @@ async def get_geography(aggregation_unit):
                 "Content-type": mimetype,
             },
         )
-    elif message["status"] == "error":
+    elif status == "error":
         return jsonify({"status": "Error", "msg": message["error"]}), 403
+    elif status == "awol":
+        return jsonify({"status": "Error", "msg": f"Route '/geography/{aggregation_unit}' does not exist"}), 404
     else:
-        return jsonify({}), 404
+        return jsonify({"status": "Error", "msg": f"Unexpected status: {message["status"]}"}), 500
 
 
 async def assemble_geojson_feature_collection(sql_query):

@@ -63,6 +63,10 @@ async def get_query(query_id):
     )
     message = await request.socket.recv_json()
     current_app.logger.debug(f"Got message: {message}")
+    try:
+        status = message["status"]
+    except KeyError:
+        return jsonify({"status": "Error", "msg": "Server responded without status"}), 500
     if message["status"] == "done":
         results_streamer = stream_with_context(generate_json)(message["sql"], query_id)
         mimetype = "application/json"
@@ -81,8 +85,10 @@ async def get_query(query_id):
         return jsonify({}), 202
     elif message["status"] == "error":
         return jsonify({"status": "Error", "msg": message["error"]}), 403
+    elif status == "awol":
+        return jsonify({"status": "Error", "msg": f"Route '/get/{query_id}' does not exist"}), 404
     else:
-        return jsonify({}), 404
+        return jsonify({"status": "Error", "msg": f"Unexpected status: {message["status"]}"}), 500
 
 
 async def generate_json(sql_query, query_id):
