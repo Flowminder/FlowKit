@@ -252,24 +252,6 @@ class GeoDataMixin:
         }
         return js
 
-    def get_proj4_string(self, crs=None):
-        """
-        Get the proj4 string corresponding to crs, or the default proj4 string if crs is None.
-
-        Parameters
-        ----------
-        crs : int or str
-            Optionally give an integer srid, or valid proj4 string
-        
-        Returns
-        -------
-        str
-            proj4 string
-        """
-        # TODO: Some refactoring would be beneficial here.
-        proj4_string = proj4string(self.connection, crs)
-        return proj4_string
-
     def to_geojson(self, crs=None):
         """
         Parameters
@@ -282,7 +264,7 @@ class GeoDataMixin:
         dict
             This query as a GeoJson FeatureCollection in dict form. 
         """
-        proj4_string = self.get_proj4_string(crs)
+        proj4_string = proj4string(self.connection, crs)
         try:
             js = self._geojson.get(proj4_string, self._get_geojson(proj4_string))
         except AttributeError:

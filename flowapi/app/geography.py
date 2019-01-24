@@ -23,7 +23,7 @@ async def get_geography(aggregation_unit):
     current_app.logger.debug(f"Got message: {message}")
     if message["status"] == "done":
         results_streamer = stream_with_context(assemble_geojson_feature_collection)(
-            message["sql"], message["crs"]
+            message["sql"]
         )
         mimetype = "application/geo+json"
 
@@ -43,7 +43,7 @@ async def get_geography(aggregation_unit):
         return jsonify({}), 404
 
 
-async def assemble_geojson_feature_collection(sql_query, crs):
+async def assemble_geojson_feature_collection(sql_query):
     """
     Assemble the GeoJSON "Feature" objects from the query response into a
     "FeatureCollection" object.
@@ -52,8 +52,6 @@ async def assemble_geojson_feature_collection(sql_query, crs):
     ----------
     sql_query : str
         SQL query to stream output of
-    crs : str
-        Coordinate reference system
 
     Yields
     ------
@@ -63,7 +61,7 @@ async def assemble_geojson_feature_collection(sql_query, crs):
     """
     logger = current_app.logger
     pool = current_app.pool
-    yield f'{{"properties":{{"crs":"{crs}"}}, "type":"FeatureCollection", "features":['.encode()
+    yield f'{{"type":"FeatureCollection", "features":['.encode()
     prepend = ""
     logger.debug("Starting generator.")
     async with pool.acquire() as connection:

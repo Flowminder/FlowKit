@@ -134,10 +134,10 @@ async def get_reply_for_message(  # pragma: no cover
             # TODO: Once we have refactored QueryProxy, we won't want to
             # directly import 'construct_query_object' here.
             q = construct_query_object("geography", zmq_msg.action_params["params"])
-            crs = q.get_proj4_string()
-            sql = q.geojson_query(crs=crs)
+            # Explicitly project to WGS84 (SRID=4326) to conform with GeoJSON standard
+            sql = q.geojson_query(crs=4326)
             query_run_log.info("get_geography", **run_log_dict)
-            reply = {"status": "done", "crs": crs, "sql": sql}
+            reply = {"status": "done", "sql": sql}
 
         else:
             logger.debug(f"Unknown action: '{action}'")

@@ -32,16 +32,14 @@ async def test_get_geography(app, dummy_zmq_server, access_token_builder):
         }
     )
 
-    dummy_zmq_server.side_effect = (
-        {"status": "done", "crs": "DUMMY_CRS", "sql": "SELECT 1;"},
-    )
+    dummy_zmq_server.side_effect = ({"status": "done", "sql": "SELECT 1;"},)
     response = await client.get(
         f"/api/0/geography/{aggregation_unit}",
         headers={"Authorization": f"Bearer {token}"},
     )
     gjs = loads(await response.get_data())
     assert 200 == response.status_code
-    assert "DUMMY_CRS" == gjs["properties"]["crs"]
+    assert "FeatureCollection" == gjs["type"]
     assert [{"some": "valid"}, {"json": "bits"}] == gjs["features"]
     assert "application/geo+json" == response.headers["content-type"]
     assert (
