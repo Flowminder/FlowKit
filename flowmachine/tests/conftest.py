@@ -68,6 +68,8 @@ def skip_datecheck(request, monkeypatch):
     """Temporarily patches EventTableSubset so that it thinks any date is
     available, _without_ needing to touch the database. This shaves a little
     time off every `daily_location` creation.
+
+    Use the `check_available_dates` mark on your test to opt-in to date checking.
     """
     run_date_checks = request.node.get_closest_marker("check_available_dates", False)
     if not run_date_checks:
