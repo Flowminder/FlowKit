@@ -251,9 +251,9 @@ def test_meaningful_locations_od_raises_for_bad_level(
 
 def test_meaningful_locations_od_results(get_dataframe):
     """
-    Test that od on MeaningfulLocations returns expected results and counts clusters per subscriber correctly.
+    Test that OD on MeaningfulLocations returns expected results and counts clusters per subscriber correctly.
     """
-    # Because of the nature of the test data, we can't actually test much for most admin levels because
+    # FIXME: Because of the nature of the test data, we can't actually test much for most admin levels because
     # the counts will always be below 15, and hence get redacted!
     mfl_a = MeaningfulLocations(
         clusters=HartiganCluster(
