@@ -6,7 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 
+- Aggregated meaningful locations are now available via FlowAPI
+- Origin-destination matrices between meaningful locations are now available via FlowAPI
+- Added new `MeaningfulLocations`, `MeaningfulLocationsAggregate` and `MeaningfulLocationsOD` query classes to FlowMachine
+
 ### Changed
+
+- Constructors for `HartiganCluster`, `LabelEventScore`, `EventScore` and `CallDays` now have different signatures 
 
 ### Fixed
 
