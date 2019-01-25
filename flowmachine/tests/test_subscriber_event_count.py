@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.features.subscriber.subscriber_event_count import *
-from flowmachine.core.errors.flowmachine_errors import MissingDateError
+from flowmachine.core.errors.flowmachine_errors import MissingDirectionColumnError
 import pytest
 
 
@@ -40,6 +40,10 @@ def test_count(get_dataframe):
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["E0LZAa7AyNd34Djq"].event_count == 24
 
+    query = SubscriberEventCount("2016-01-01", "2016-01-08", direction="in")
+    df = get_dataframe(query).set_index("subscriber")
+    assert df.loc["4dqenN2oQZExwEK2"].event_count == 12
+
 
 def test_directed_count_consistent(get_dataframe):
     """
@@ -69,35 +73,8 @@ def test_directed_count_undirected_tables_raises():
     """
     Test that requesting directed counts of undirected tables raises warning and errors.
     """
-    with pytest.warns(UserWarning):
-        query = SubscriberEventCount(
-            "2016-01-01",
-            "2016-01-08",
-            direction="out",
-            tables=["events.calls", "events.mds"],
-        )
-
-    with pytest.raises(MissingDateError):
+    with pytest.raises(MissingDirectionColumnError):
         query = SubscriberEventCount(
             "2016-01-01", "2016-01-08", direction="out", tables=["events.mds"]
         )
 
-
-def test_directed_count_skips_undirected_tables(get_dataframe):
-    """
-    Test that directed count skips undirected tables.
-    """
-    want_query = SubscriberEventCount(
-        "2016-01-01", "2016-01-08", direction="out", tables=["events.calls"]
-    )
-    want_df = get_dataframe(want_query).set_index("subscriber")
-
-    got_query = SubscriberEventCount(
-        "2016-01-01",
-        "2016-01-08",
-        direction="out",
-        tables=["events.calls", "events.mds"],
-    )
-    got_df = get_dataframe(got_query).set_index("subscriber")
-
-    assert all(want_df.event_count == got_df.event_count)

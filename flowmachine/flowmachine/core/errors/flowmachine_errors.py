@@ -64,3 +64,13 @@ class MissingDateError(Exception):
         if stop is not None:
             msg += " - {}".format(stop)
         Exception.__init__(self, msg)
+
+class MissingDirectionColumnError(Exception):
+    """
+    Raised when instantiating a class that requires a directed calculation but
+    for which the direction column is missing for any of the tables requested.
+    """
+
+    def __init__(self, tables):
+        msg = "Direction is missing for {tables}"
+        Exception.__init__(self, msg)

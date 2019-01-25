@@ -7,6 +7,7 @@
 import warnings
 
 from ...core import Table
+from ...core.errors.flowmachine_errors import MissingDirectionColumnError
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -76,31 +77,8 @@ class SubscriberEventCount(SubscriberFeature):
             column_list = [self.subscriber_identifier]
             self.tables = tables
         else:
-
             column_list = [self.subscriber_identifier, "outgoing"]
-
-            if isinstance(tables, str) and tables.lower() == "all":
-                tables = [f"events.{t}" for t in self.connection.subscriber_tables]
-            elif type(tables) is str:
-                tables = [tables]
-            else:
-                tables = tables
-
-            self.tables = []
-            raise_warning = False
-            for t in tables:
-                if self._has_outgoing(t):
-                    self.tables.append(t)
-                else:
-                    raise_warning = True
-
-            if raise_warning:
-                warnings.warn(
-                    f"""Not all events table have a direction. Since you
-                    requested a directed count, only {self.tables} will be
-                    considered during the count.""",
-                    stacklevel=2,
-                )
+            self.tables = self._parse_tables_with_direction(tables)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -113,14 +91,32 @@ class SubscriberEventCount(SubscriberFeature):
         )
         super().__init__()
 
-    def _has_outgoing(self, table):
+    def _parse_tables_with_direction(self, tables):
 
-        return "outgoing" in Table(table).column_names
+        if isinstance(tables, str) and tables.lower() == "all":
+            tables = [f"events.{t}" for t in self.connection.subscriber_tables]
+        elif type(tables) is str:
+            tables = [tables]
+        else:
+            tables = tables
+
+        parsed_tables = []
+        tables_lacking_direction_column = []
+        for t in tables:
+            if "outgoing" in Table(t).column_names:
+                parsed_tables.append(t)
+            else:
+                tables_lacking_direction_column.append(t)
+
+        if tables_lacking_direction_column:
+            raise MissingDirectionColumnError(tables_lacking_direction_column)
+
+        return parsed_tables
 
     def _make_query(self):
         where_clause = ""
         if self.direction != "both":
-            where_clause = f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE}"
+            where_clause = f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
         return f"""
         SELECT subscriber, COUNT(*) as event_count FROM
         ({self.unioned_query.get_query()}) u
