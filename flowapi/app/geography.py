@@ -32,8 +32,8 @@ async def get_geography(aggregation_unit):
     if status == "done":
         results_streamer = stream_with_context(stream_result_as_json)(
             message["sql"],
-            headers={"type": "FeatureCollection"},
             result_name="features",
+            additional_elements={"type": "FeatureCollection"},
         )
         mimetype = "application/geo+json"
 

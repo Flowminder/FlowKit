@@ -6,7 +6,9 @@ import ujson as json
 from quart import current_app
 
 
-async def stream_result_as_json(sql_query, headers={}, result_name="query_result"):
+async def stream_result_as_json(
+    sql_query, result_name="query_result", additional_elements=None
+):
     """
     Generate a JSON representation of a query result.
 
@@ -14,10 +16,10 @@ async def stream_result_as_json(sql_query, headers={}, result_name="query_result
     ----------
     sql_query : str
         SQL query to stream output of
-    headers : dict
-        Additional items to encode along with the query result
     result_name : str
         Name of the JSON item containing the rows of the result
+    additional_elements : dict
+        Additional JSON elements to include along with the query result
 
     Yields
     ------
@@ -28,8 +30,9 @@ async def stream_result_as_json(sql_query, headers={}, result_name="query_result
     logger = current_app.logger
     pool = current_app.pool
     prefix = "{"
-    for key in headers:
-        prefix += f'"{key}":{json.dumps(headers[key])}, '
+    if additional_elements:
+        for key, value in additional_elements.items():
+            prefix += f'"{key}":{json.dumps(value)}, '
     prefix += f'"{result_name}":['
     yield prefix.encode()
     prepend = ""

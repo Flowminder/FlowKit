@@ -72,7 +72,7 @@ async def get_query(query_id):
         )
     if message["status"] == "done":
         results_streamer = stream_with_context(stream_result_as_json)(
-            message["sql"], headers={"query_id": query_id}
+            message["sql"], additional_elements={"query_id": query_id}
         )
         mimetype = "application/json"
 
