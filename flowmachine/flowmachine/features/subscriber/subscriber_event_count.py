@@ -35,8 +35,6 @@ class SubscriberEventCount(SubscriberFeature):
         Can be a string of a single table (with the schema)
         or a list of these. The keyword all is to select all
         subscriber tables
-    kwargs :
-        Passed to flowmachine.EventTableSubset
 
     Examples
     --------
@@ -63,7 +61,6 @@ class SubscriberEventCount(SubscriberFeature):
         hours="all",
         subscriber_subset=None,
         tables="all",
-        **kwargs,
     ):
         self.start = start
         self.stop = stop
@@ -115,7 +112,6 @@ class SubscriberEventCount(SubscriberFeature):
             hours=hours,
             subscriber_identifier=subscriber_identifier,
             subscriber_subset=subscriber_subset,
-            **kwargs,
         )
         super().__init__()
 
