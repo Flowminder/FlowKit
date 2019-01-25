@@ -66,13 +66,11 @@ class SubscriberEventCount(SubscriberFeature):
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
         self.direction = direction
+        self.hours = hours
+
         if direction not in {"in", "out", "both"}:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "all"
 
         if self.direction == "both":
             column_list = [self.subscriber_identifier]
