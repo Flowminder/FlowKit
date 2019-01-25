@@ -57,6 +57,7 @@ class SubscriberEventCount(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         subscriber_identifier="msisdn",
         direction="both",
         hours="all",
