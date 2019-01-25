@@ -13,7 +13,7 @@ from .metaclasses import SubscriberFeature
 
 class SubscriberEventCount(SubscriberFeature):
     """
-    This class returns the event count pr subscriber within the period,
+    This class returns the event count per subscriber within the period,
     optionally limited to only incoming or outgoing events.
 
     Parameters
