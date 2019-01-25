@@ -20,8 +20,8 @@ async def test_get_geography(app, dummy_zmq_server, access_token_builder):
     # the pool's context manager, getting the cursor on that, and then looping
     # over the values in cursor
     db.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
-        ['{"some": "valid"}'],
-        ['{"json": "bits"}'],
+        {"some": "valid"},
+        {"json": "bits"},
     ]
     token = access_token_builder(
         {
