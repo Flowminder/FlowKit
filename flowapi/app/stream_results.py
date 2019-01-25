@@ -9,6 +9,7 @@ from quart import current_app
 async def stream_result_as_json(sql_query, headers={}, result_name="query_result"):
     """
     Generate a JSON representation of a query result.
+
     Parameters
     ----------
     sql_query : str
