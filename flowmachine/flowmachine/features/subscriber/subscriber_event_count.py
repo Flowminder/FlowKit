@@ -120,9 +120,7 @@ class SubscriberEventCount(SubscriberFeature):
     def _make_query(self):
         where_clause = ""
         if self.direction != "both":
-            where_clause = "WHERE {}outgoing".format(
-                "" if self.direction == "out" else "NOT "
-            )
+            where_clause = f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE}"
         return f"""
         SELECT subscriber, COUNT(*) as event_count FROM
         ({self.unioned_query.get_query()}) u
