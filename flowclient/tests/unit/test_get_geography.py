@@ -33,3 +33,17 @@ def test_get_geography_error(http_code, token):
         match=f"Could not get result. API returned with status code: {http_code}. Reason: MESSAGE",
     ):
         get_geography(connection_mock, "DUMMY_AGGREGATION")
+
+
+def test_get_geography_no_msg_error(token):
+    """
+    A response with an unexpected http code and no "msg" should raise a FlowclientConnectionError.
+    """
+    connection_mock = Mock()
+    connection_mock.get_url.return_value.status_code = 404
+    connection_mock.get_url.return_value.json.return_value = {}
+    with pytest.raises(
+        FlowclientConnectionError,
+        match=f"Could not get result. API returned with status code: 404.",
+    ):
+        get_geography(connection_mock, "DUMMY_AGGREGATION")
