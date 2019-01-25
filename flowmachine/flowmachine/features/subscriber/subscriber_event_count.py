@@ -44,6 +44,13 @@ class SubscriberEventCount(SubscriberFeature):
     >>> s = SubscriberEventCount("2016-01-01", "2016-01-07", direction="in")
     >>> s.get_dataframe()
 
+             subscriber  event_count
+    0  2ZdMowMXoyMByY07           65
+    1  MobnrVMDK24wPRzB           81
+    2  0Ze1l70j0LNgyY4w           57
+    3  Nnlqka1oevEMvVrm           63
+    4  4dqenN2oQZExwEK2           59
+                    ...          ...
     """
 
     def __init__(
