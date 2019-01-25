@@ -72,7 +72,6 @@ class SubscriberEventCount(SubscriberFeature):
         if direction not in {"in", "out", "both"}:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-
         if self.direction == "both":
             column_list = [self.subscriber_identifier]
             self.tables = tables
@@ -116,7 +115,9 @@ class SubscriberEventCount(SubscriberFeature):
     def _make_query(self):
         where_clause = ""
         if self.direction != "both":
-            where_clause = f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+            where_clause = (
+                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+            )
         return f"""
         SELECT subscriber, COUNT(*) as event_count FROM
         ({self.unioned_query.get_query()}) u

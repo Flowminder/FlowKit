@@ -77,4 +77,3 @@ def test_directed_count_undirected_tables_raises():
         query = SubscriberEventCount(
             "2016-01-01", "2016-01-08", direction="out", tables=["events.mds"]
         )
-

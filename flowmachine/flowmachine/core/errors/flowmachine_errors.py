@@ -65,6 +65,7 @@ class MissingDateError(Exception):
             msg += " - {}".format(stop)
         Exception.__init__(self, msg)
 
+
 class MissingDirectionColumnError(Exception):
     """
     Raised when instantiating a class that requires a directed calculation but
