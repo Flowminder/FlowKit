@@ -8,4 +8,4 @@ pandas = "*"
 tohu = {file = "https://github.com/maxalbert/tohu/archive/v0.5.1.tar.gz"}
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
