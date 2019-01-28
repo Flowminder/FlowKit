@@ -17,10 +17,7 @@ Makes use of the tohu module for generation of random data.
 """
 
 import os
-from collections import OrderedDict
 import pandas as pd
-import textwrap
-import tohu
 from tohu import *
 import argparse
 import datetime
