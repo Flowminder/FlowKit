@@ -77,7 +77,7 @@ class SubscriberEventCount(SubscriberFeature):
             self.tables = tables
         else:
             column_list = [self.subscriber_identifier, "outgoing"]
-            self.tables = self._parse_tables_with_direction(tables)
+            self.tables = self._parse_tables_ensuring_direction_present(tables)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -90,7 +90,7 @@ class SubscriberEventCount(SubscriberFeature):
         )
         super().__init__()
 
-    def _parse_tables_with_direction(self, tables):
+    def _parse_tables_ensuring_direction_present(self, tables):
 
         if isinstance(tables, str) and tables.lower() == "all":
             tables = [f"events.{t}" for t in self.connection.subscriber_tables]
