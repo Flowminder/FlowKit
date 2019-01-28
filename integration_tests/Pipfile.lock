@@ -96,10 +96,10 @@
         },
         "h2": {
             "hashes": [
-                "sha256:4be613e35caad5680dc48f98f3bf4e7338c7c429e6375a5137be7fbe45219981",
-                "sha256:b2962f883fa392a23cbfcc4ad03c335bcc661be0cf9627657b589f0df2206e64"
+                "sha256:c8f387e0e4878904d4978cd688a3195f6b169d49b1ffa572a3d347d7adc5e09f",
+                "sha256:fd07e865a3272ac6ef195d8904de92dc7b38dc28297ec39cfa22716b6d62e6eb"
             ],
-            "version": "==3.0.1"
+            "version": "==3.1.0"
         },
         "hpack": {
             "hashes": [
@@ -110,10 +110,10 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:84c53ef8248a4067c6ec0b7c9a8a850eed2c85e660b1afdaac37f4f8cc8420f2",
-                "sha256:d3bd0ec5f6377f3eb1aea85314b74ef6720ab5e28be4afb8cced038efea9c6b9"
+                "sha256:2c4f630f4f84fb0016ad4ff0d05fb22354917a6823efca7286e49b74fa261ace",
+                "sha256:9a6bb6fab4c14299d8358ac0cee3c7e88991c9a1c9e4262ab98c9b3606547284"
             ],
-            "version": "==0.4.6"
+            "version": "==0.5.0"
         },
         "hyperframe": {
             "hashes": [
@@ -308,10 +308,10 @@
         },
         "sqlalchemy": {
             "hashes": [
-                "sha256:6af3ca2f7f00844465ab4fa78337d487b39e53f516c51328aed4ed3a719d4264"
+                "sha256:52a42dbf02d0562d6e90e7af59f177f1cc027e72833cc29c3a821eefa009c71d"
             ],
             "index": "pypi",
-            "version": "==1.2.16"
+            "version": "==1.2.17"
         },
         "typing-extensions": {
             "hashes": [
@@ -337,10 +337,10 @@
         },
         "wsproto": {
             "hashes": [
-                "sha256:1fcb726d448f1b9bcbea884e26621af5ddd01d2d502941a024f4c727828b6009",
-                "sha256:6a51cf18d9de612892b9c1d38a8c1bdadec0cfe15de61cd5c0f09174bf0c7e82"
+                "sha256:c013342d7a9180486713c6c986872e4fe24e18a21ccbece314939d8b58312e0e",
+                "sha256:fd6020d825022247053400306448e161d8740bdd52e328e5553cd9eee089f705"
             ],
-            "version": "==0.12.0"
+            "version": "==0.13.0"
         }
     },
     "develop": {}
