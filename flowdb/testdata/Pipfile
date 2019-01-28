@@ -4,8 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pandas = "*"
-tohu = {file = "https://github.com/maxalbert/tohu/archive/v0.5.1.tar.gz"}
+tohu = "==0.6.4"
 
 [requires]
 python_version = "3.7"
