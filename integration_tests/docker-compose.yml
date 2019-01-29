@@ -12,7 +12,7 @@ networks:
 services:
     flowdb:
         container_name: 'flowdb'
-        image: "flowminder/flowdb:testdata-${CIRCLE_BRANCH:-master}"
+        image: "flowminder/flowdb:testdata-${CIRCLE_BRANCH:-latest}"
         environment:
             - POSTGRES_DB=${POSTGRES_DB:-flowdb}
             - POSTGRES_USER=${POSTGRES_USER:-flowdb}
@@ -29,7 +29,7 @@ services:
               - flowdb
     flowmachine:
         container_name: 'flowmachine'
-        image: "flowminder/flowmachine:${CIRCLE_BRANCH:-master}"
+        image: "flowminder/flowmachine:${CIRCLE_BRANCH:-latest}"
         restart: always
         environment:
             - DB_PORT=${DB_PORT:-5432}
@@ -44,7 +44,7 @@ services:
           - zero
     flowapi:
         container_name: 'flowapi'
-        image: "flowminder/flowapi:${CIRCLE_BRANCH:-master}"
+        image: "flowminder/flowapi:${CIRCLE_BRANCH:-latest}"
         restart: always
         ports:
           - "9090:9090"

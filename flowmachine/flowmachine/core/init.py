@@ -38,7 +38,6 @@ def connect(
     db_name: Union[str, None] = None,
     db_connection_pool_size: Union[int, None] = None,
     db_connection_pool_overflow: Union[int, None] = None,
-    thread_pool_size: Union[int, None] = None,
     redis_host: Union[str, None] = None,
     redis_port: Union[int, None] = None,
     redis_password: Union[str, None] = None,
@@ -69,8 +68,6 @@ def connect(
         Default number of database connections to use
     db_connection_pool_overflow : int, default 1
         Number of extra database connections to allow
-    thread_pool_size : int, default None
-        Number of threads to use for running queries. Defaults to 5*n_cores
     redis_host : str, default "localhost"
         Hostname for redis server.
     redis_port : int, default 6379
@@ -142,14 +139,6 @@ def connect(
         else db_connection_pool_overflow
     )
 
-    thread_pool_size = (
-        getsecret("THREAD_POOL_SIZE", os.getenv("THREAD_POOL_SIZE", None))
-        if thread_pool_size is None
-        else thread_pool_size
-    )
-    if thread_pool_size is not None:
-        thread_pool_size = int(thread_pool_size)
-
     redis_host = (
         getsecret("REDIS_HOST", os.getenv("REDIS_HOST", "localhost"))
         if redis_host is None
@@ -186,7 +175,7 @@ def connect(
         Query.redis = redis.StrictRedis(
             host=redis_host, port=redis_port, password=redis_pw
         )
-        _start_threadpool(thread_pool_size)
+        _start_threadpool(db_connection_pool_size)
 
         print(f"FlowMachine version: {flowmachine.__version__}")
 

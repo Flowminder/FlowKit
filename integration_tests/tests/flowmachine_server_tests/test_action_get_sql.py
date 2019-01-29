@@ -59,4 +59,8 @@ async def test_get_sql_for_nonexistent_query_id(zmq_url):
     msg_get_sql = {"action": "get_sql", "query_id": "FOOBAR", "request_id": "DUMMY_ID"}
 
     reply = send_message_and_get_reply(zmq_url, msg_get_sql)
-    assert {"status": "awol", "id": "FOOBAR"} == reply
+    assert {
+        "status": "awol",
+        "id": "FOOBAR",
+        "error": "Unknown query id: FOOBAR",
+    } == reply

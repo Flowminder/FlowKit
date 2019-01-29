@@ -11,6 +11,16 @@ from asynctest import MagicMock, Mock, CoroutineMock
 from datetime import timedelta
 from zmq.asyncio import Context
 from .utils import make_token
+from asyncio import Future
+
+
+def async_return(result):
+    """
+    Return an object which can be used in an 'await' expression.
+    """
+    f = Future()
+    f.set_result(result)
+    return f
 
 
 @pytest.fixture
@@ -48,6 +58,13 @@ def dummy_db_pool(monkeypatch):
         The mock db connection that will be used
     """
     dummy = MagicMock()
+
+    # A MagicMock can't be used in an 'await' expression,
+    # so we need to set the return value of connection.set_type_codec
+    # (awaited in stream_result_as_json())
+    dummy.acquire.return_value.__aenter__.return_value.set_type_codec.return_value = async_return(
+        Mock()
+    )
 
     async def f(*args, **kwargs):
         print("Creating dummy db pool.")
