@@ -8,14 +8,13 @@ The integration test suite uses docker-compose, and pytest to respectively creat
 
 To run the tests, you should first run `docker-compose up`, in this directory. This will pull all necessary docker images, and start the containers. The API will start on port 9090 of localhost.
 
-We recommend using [Pipenv](https://docs.pipenv.org) to run the tests, and a Pipfile and Pipfile.lock are included in this directory. With Pipenv you can simply do:
+We recommend using [Pipenv](https://docs.pipenv.org) to run the tests, and a Pipfile and Pipfile.lock are included in this directory.
+With Pipenv you can run the test suite as follows.
 
 ```bash
 pipenv install
 pipenv run pytest
 ```
-
-to run the test suite.
 
 If you are using an alternative environment manager, you should install the small number of packages listed in the Pipfile before running pytest.
 
