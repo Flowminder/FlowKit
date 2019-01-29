@@ -12,6 +12,7 @@ subscriber's total event count.
 """
 from typing import List
 
+from ...core import Table
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
@@ -99,6 +100,28 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         )
         self._cols = ["subscriber", "msisdn_counterpart", "events", "proportion"]
         super().__init__()
+
+    def _parse_tables_ensuring_direction_present(self, tables):
+
+        if isinstance(tables, str) and tables.lower() == "all":
+            tables = [f"events.{t}" for t in self.connection.subscriber_tables]
+        elif type(tables) is str:
+            tables = [tables]
+        else:
+            tables = tables
+
+        parsed_tables = []
+        tables_lacking_direction_column = []
+        for t in tables:
+            if "outgoing" in Table(t).column_names:
+                parsed_tables.append(t)
+            else:
+                tables_lacking_direction_column.append(t)
+
+        if tables_lacking_direction_column:
+            raise MissingDirectionColumnError(tables_lacking_direction_column)
+
+        return parsed_tables
 
     def _make_query(self):
 
