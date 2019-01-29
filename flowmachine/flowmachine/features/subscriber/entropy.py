@@ -10,18 +10,22 @@ period.
 
 from abc import ABCMeta
 from .metaclasses import SubscriberFeature
+from .contact_balance import ContactBalance
+from ..utilities.sets import EventsTablesUnion
 from ..utilities.subscriber_locations import subscriber_locations
+from ...utils.utils import get_columns_for_level
+from ...core import Table
+
 
 class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
     """ Base query for calculating entropy of subscriber features. """
-    __metaclass__ = abc.ABCMeta
 
     def _make_query(self):
 
         return f"""
         SELECT
             subscriber,
-            -1 * SUM( relative_freq / LN( relative_freq ) ) AS entropy
+            -1 * SUM( relative_freq * LN( relative_freq ) ) AS entropy
         FROM ({self._relative_freq_query}) u
         GROUP BY subscriber
         """
@@ -36,14 +40,12 @@ class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
         return f"""
         SELECT
             subscriber,
-            absolute_freq / ( SUM( absolute_freq ) OVER ( PARTITION BY subscriber ) ) AS relative_freq
+            absolute_freq::float / ( SUM( absolute_freq ) OVER ( PARTITION BY subscriber ) ) AS relative_freq
         FROM ({self._absolute_freq_query}) u
         """
 
 
-
 class SubscriberPeriodicEntropy(BaseEntropy):
-
     def __init__(
         self,
         start,
@@ -74,14 +76,34 @@ class SubscriberPeriodicEntropy(BaseEntropy):
             self.tables = self._parse_tables_ensuring_direction_present(tables)
 
         # extracted from the POSTGRES manual
-        allowed_phases=("century", "day", "decade", "dow", "doy", "epoch",
-                "hour", "isodow", "isoyear", "microseconds", "millennium",
-                "milliseconds", "minute", "month", "quarter", "second",
-                "timezone", "timezone_hour", "timezone_minute", "week",
-                "year",)
+        allowed_phases = (
+            "century",
+            "day",
+            "decade",
+            "dow",
+            "doy",
+            "epoch",
+            "hour",
+            "isodow",
+            "isoyear",
+            "microseconds",
+            "millennium",
+            "milliseconds",
+            "minute",
+            "month",
+            "quarter",
+            "second",
+            "timezone",
+            "timezone_hour",
+            "timezone_minute",
+            "week",
+            "year",
+        )
 
         if phase not in allowed_phases:
-            raise ValueError(f"{phase} is not a valid phase. Choose one of {allowed_phases}")
+            raise ValueError(
+                f"{phase} is not a valid phase. Choose one of {allowed_phases}"
+            )
 
         self.phase = phase
 
@@ -129,12 +151,14 @@ class SubscriberPeriodicEntropy(BaseEntropy):
 
         return f"""
         SELECT subscriber, COUNT(*) AS absolute_freq FROM
-        (self.unioned_query.get_query()) u
+        ({self.unioned_query.get_query()}) u
+        {where_clause}
         GROUP BY subscriber, EXTRACT( {self.phase} FROM datetime )
+        HAVING COUNT(*) > 0
         """
 
-class SubscriberLocationEntropy(BaseEntropy):
 
+class SubscriberLocationEntropy(BaseEntropy):
     def __init__(
         self,
         start,
@@ -158,26 +182,25 @@ class SubscriberLocationEntropy(BaseEntropy):
             hours=hours,
             subscriber_identifier=subscriber_identifier,
             subscriber_subset=subscriber_subset,
-            ignore_nulls=ignore_nulls
+            ignore_nulls=ignore_nulls,
+        )
+        self.location_cols = ", ".join(
+            get_columns_for_level(level=level, column_name=column_name)
         )
         super().__init__()
 
     @property
     def _absolute_freq_query(self):
 
-        location_cols = [cn for cn in
-                self.subscriber_locations.locations.column_names if cn !=
-                "subscriber"]
-
         return f"""
         SELECT subscriber, COUNT(*) AS absolute_freq FROM
-        (self.subscriber_locations.get_query()) u
-        GROUP BY subscriber, {location_cols}
+        ({self.subscriber_locations.get_query()}) u
+        GROUP BY subscriber, {self.location_cols}
+        HAVING COUNT(*) > 0
         """
 
 
 class SubscriberContactEntropy(BaseEntropy):
-
     def __init__(
         self,
         start,
@@ -188,18 +211,27 @@ class SubscriberContactEntropy(BaseEntropy):
         hours="all",
         subscriber_subset=None,
         tables="all",
+        exclude_self_calls=True,
     ):
 
         self.contact_balance = ContactBalance(
             start=start,
             stop=stop,
             hours=hours,
-            table=tables,
+            tables=tables,
             subscriber_identifier=subscriber_identifier,
             direction=direction,
             exclude_self_calls=exclude_self_calls,
             subscriber_subset=subscriber_subset,
         )
+
+    @property
+    def _absolute_freq_query(self):
+
+        return f"""
+        SELECT subscriber, events AS absolute_freq FROM
+        ({self.contact_balance.get_query()}) u
+        """
 
     @property
     def _relative_freq_query(self):
@@ -208,10 +240,3 @@ class SubscriberContactEntropy(BaseEntropy):
         SELECT subscriber, proportion AS relative_freq FROM
         ({self.contact_balance.get_query()}) u
         """
-
-
-
-
-
-
-
