@@ -45,7 +45,7 @@ class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
         """
 
 
-class SubscriberPeriodicEntropy(BaseEntropy):
+class PeriodicEntropy(BaseEntropy):
     def __init__(
         self,
         start,
@@ -158,7 +158,7 @@ class SubscriberPeriodicEntropy(BaseEntropy):
         """
 
 
-class SubscriberLocationEntropy(BaseEntropy):
+class LocationEntropy(BaseEntropy):
     def __init__(
         self,
         start,
@@ -200,7 +200,7 @@ class SubscriberLocationEntropy(BaseEntropy):
         """
 
 
-class SubscriberContactEntropy(BaseEntropy):
+class ContactEntropy(BaseEntropy):
     def __init__(
         self,
         start,
