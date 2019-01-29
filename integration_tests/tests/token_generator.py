@@ -1,6 +1,6 @@
 from datetime import timedelta
 import click
-from .utils import make_token, permissions_types, aggregation_types
+from utils import make_token, permissions_types, aggregation_types
 
 
 @click.command()
@@ -16,7 +16,7 @@ from .utils import make_token, permissions_types, aggregation_types
 @click.option(
     "--permission",
     "-p",
-    type=(str, click.Choice(permissions_types)),
+    type=(str, click.Choice(permissions_types.keys())),
     multiple=True,
     help="Query kinds this token will allow access to, and type of access allowed.",
 )
@@ -31,10 +31,10 @@ def print_token(username, secret_key, lifetime, permission, aggregation):
     claims = {}
     for query_kind, permission_type in permission:
         if query_kind in claims.keys():
-            claims[query_kind]["permissions"].append(permission_type)
+            claims[query_kind]["permissions"][permission_type] = True
         else:
             claims[query_kind] = {
-                "permissions": [permission_type],
+                "permissions": {permission_type: True},
                 "spatial_aggregation": [],
             }
     for query_kind, aggregation_type in aggregation:
@@ -42,7 +42,7 @@ def print_token(username, secret_key, lifetime, permission, aggregation):
             claims[query_kind]["spatial_aggregation"].append(aggregation_type)
         else:
             claims[query_kind] = {
-                "permissions": [],
+                "permissions": {},
                 "spatial_aggregation": [aggregation_type],
             }
     print(make_token(username, secret_key, timedelta(days=lifetime), claims))

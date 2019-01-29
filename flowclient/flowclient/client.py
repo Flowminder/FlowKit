@@ -326,6 +326,43 @@ def get_result(connection: Connection, query: dict) -> pd.DataFrame:
     return get_result_by_query_id(connection, run_query(connection, query))
 
 
+def get_geography(connection: Connection, aggregation_unit: str) -> dict:
+    """
+    Get geography data from the database.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    aggregation_unit : str
+        aggregation unit, e.g. 'admin3'
+    
+    Returns
+    -------
+    dict
+        geography data as a GeoJSON FeatureCollection
+    
+    """
+    logger.info(
+        f"Getting {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
+    )
+    response = connection.get_url(f"geography/{aggregation_unit}")
+    if response.status_code != 200:
+        try:
+            msg = response.json()["msg"]
+            more_info = f" Reason: {msg}"
+        except KeyError:
+            more_info = ""
+        raise FlowclientConnectionError(
+            f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
+        )
+    result = response.json()
+    logger.info(
+        f"Got {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
+    )
+    return result
+
+
 def run_query(connection: Connection, query: dict) -> str:
     """
     Run a query of a specified kind with parameters and get the identifier for it.
