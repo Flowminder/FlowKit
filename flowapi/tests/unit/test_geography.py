@@ -9,11 +9,12 @@ from asynctest import return_once
 
 
 @pytest.mark.asyncio
-async def test_get_query(app, dummy_zmq_server, access_token_builder):
+async def test_get_geography(app, dummy_zmq_server, access_token_builder):
     """
     Test that JSON is returned when getting a query.
     """
     client, db, log_dir, app = app
+    aggregation_unit = "DUMMY_AGGREGATION"
     # Set the rows returned by iterating over the rows from the db
     # This is a long chain of mocks corresponding to getting a connection using
     # the pool's context manager, getting the cursor on that, and then looping
@@ -24,89 +25,78 @@ async def test_get_query(app, dummy_zmq_server, access_token_builder):
     ]
     token = access_token_builder(
         {
-            "modal_location": {
+            "geography": {
                 "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+                "spatial_aggregation": [aggregation_unit],
             }
         }
     )
 
-    dummy_zmq_server.side_effect = (
-        {"id": 0, "query_kind": "modal_location"},
-        {"id": 0, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-        {"sql": "SELECT 1;", "status": "done"},
-    )
+    dummy_zmq_server.side_effect = ({"status": "done", "sql": "SELECT 1;"},)
     response = await client.get(
-        f"/api/0/get/0", headers={"Authorization": f"Bearer {token}"}
+        f"/api/0/geography/{aggregation_unit}",
+        headers={"Authorization": f"Bearer {token}"},
     )
-    js = loads(await response.get_data())
-    assert "0" == js["query_id"]
-    assert [{"some": "valid"}, {"json": "bits"}] == js["query_result"]
-    assert "attachment;filename=0.json" == response.headers["content-disposition"]
+    gjs = loads(await response.get_data())
+    assert 200 == response.status_code
+    assert "FeatureCollection" == gjs["type"]
+    assert [{"some": "valid"}, {"json": "bits"}] == gjs["features"]
+    assert "application/geo+json" == response.headers["content-type"]
+    assert (
+        f"attachment;filename={aggregation_unit}.geojson"
+        == response.headers["content-disposition"]
+    )
 
 
 @pytest.mark.parametrize(
-    "status, http_code",
-    [
-        ("done", 200),
-        ("running", 202),
-        ("awol", 404),
-        ("error", 403),
-        ("NOT_A_STATUS", 500),
-    ],
+    "status, http_code", [("awol", 404), ("error", 403), ("NOT_A_STATUS", 500)]
 )
 @pytest.mark.asyncio
-async def test_get_json_status(
+async def test_get_geography_status(
     status, http_code, app, dummy_zmq_server, access_token_builder
 ):
     """
-    Test that correct status code and any redirect is returned when getting json.
+    Test that correct status code is returned when server returns an error.
     """
     client, db, log_dir, app = app
 
     token = access_token_builder(
         {
-            "modal_location": {
+            "geography": {
                 "permissions": {"get_result": True},
                 "spatial_aggregation": ["DUMMY_AGGREGATION"],
             }
         }
     )
-    dummy_zmq_server.side_effect = (
-        {"id": 0, "query_kind": "modal_location"},
-        {"id": 0, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-        {"status": status, "id": 0, "error": "Some error", "sql": "SELECT 1;"},
-    )
+    dummy_zmq_server.side_effect = ({"status": status, "error": "Some error"},)
     response = await client.get(
-        f"/api/0/get/0", headers={"Authorization": f"Bearer {token}"}
+        f"/api/0/geography/DUMMY_AGGREGATION",
+        headers={"Authorization": f"Bearer {token}"},
     )
     assert http_code == response.status_code
 
 
 @pytest.mark.asyncio
-async def test_get_error_for_missing_status(
+async def test_geography_error_for_missing_status(
     app, dummy_zmq_server, access_token_builder
 ):
     """
     Test that status code 500 is returned if a message without a status is
-    received in get_query.
+    received in get_geography.
     """
     client, db, log_dir, app = app
 
     token = access_token_builder(
         {
-            "modal_location": {
+            "geography": {
                 "permissions": {"get_result": True},
                 "spatial_aggregation": ["DUMMY_AGGREGATION"],
             }
         }
     )
-    dummy_zmq_server.side_effect = (
-        {"id": 0, "query_kind": "modal_location"},
-        {"id": 0, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-        {"id": 0},
-    )
+    dummy_zmq_server.side_effect = ({},)
     response = await client.get(
-        f"/api/0/get/0", headers={"Authorization": f"Bearer {token}"}
+        f"/api/0/geography/DUMMY_AGGREGATION",
+        headers={"Authorization": f"Bearer {token}"},
     )
     assert 500 == response.status_code

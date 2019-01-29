@@ -162,10 +162,10 @@ class GeoDataMixin:
         cols = list(set(self.column_names + ["gid", "geom"]))
         return joined_query, cols
 
-    def _geo_json_query(self, crs=None):
+    def geojson_query(self, crs=None):
         """
-        Create a query which will transform this one into a geojson
-        featurecollection.
+        Create a query which will transform each row into a geojson
+        feature.
         
         Parameters
         ----------
@@ -187,14 +187,12 @@ class GeoDataMixin:
         )
 
         json_query = f"""
-                SELECT json_build_object(
-                    'type',       'Feature',
-                    'id',         gid,
-                    'geometry',   ST_AsGeoJSON({crs_trans})::json,
-                    'properties', json_build_object({", ".join(properties)})
-                ) FROM (
-                            SELECT * 
-                            FROM ({joined_query}) AS J) AS row
+                SELECT
+                    'Feature' AS type,
+                    gid AS id,
+                    ST_AsGeoJSON({crs_trans})::json AS geometry,
+                    json_build_object({", ".join(properties)}) AS properties
+                FROM (SELECT * FROM ({joined_query}) AS J) AS row
         """
 
         return json_query
@@ -230,7 +228,8 @@ class GeoDataMixin:
     def _get_geojson(self, proj4):
         """
         Helper function that actually retrieves geojson from the
-        database, and sets a proj4 string on it.
+        database, combines into a geojson featurecollection, and
+        sets a proj4 string on it.
 
 
         Parameters
@@ -244,7 +243,8 @@ class GeoDataMixin:
 
         """
         features = [
-            x[0] for x in self.connection.fetch(self._geo_json_query(crs=proj4))
+            {"type": x[0], "id": x[1], "geometry": x[2], "properties": x[3]}
+            for x in self.connection.fetch(self.geojson_query(crs=proj4))
         ]
         js = {
             "properties": {"crs": proj4},

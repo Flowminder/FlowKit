@@ -5,10 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- API route for retrieving geography data from FlowDB
 
 ### Changed
-
-- The number of threads used by FlowMachine to manage running queries is no longer the same as the number of database connections. It can instead be controlled using the `THREAD_POOL_SIZE` environment variable, and will default to `5*n_cores`.
 
 ### Fixed
 
