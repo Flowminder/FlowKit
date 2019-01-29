@@ -16,6 +16,7 @@ from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
 
+
 class ContactBalance(GraphMixin, SubscriberFeature):
     """
     This class calculates the total number of events 
