@@ -48,15 +48,15 @@ def test_subscriber_periodic_entropy(get_dataframe):
     """
     Test some hand picked periods and tables.
     """
-    query = SubscriberPeriodicEntropy("2016-01-01", "2016-01-08")
+    query = PeriodicEntropy("2016-01-01", "2016-01-08")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["09NrjaNNvDanD8pk"].entropy == pytest.approx(2.906_541)
 
-    query = SubscriberPeriodicEntropy("2016-01-01", "2016-01-07", direction="in")
+    query = PeriodicEntropy("2016-01-01", "2016-01-07", direction="in")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["0Gl95NRLjW2aw8pW"].entropy == pytest.approx(2.271_869)
 
-    query = SubscriberPeriodicEntropy("2016-01-02", "2016-01-08", direction="out")
+    query = PeriodicEntropy("2016-01-02", "2016-01-08", direction="out")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["0DB8zw67E9mZAPK2"].entropy == pytest.approx(2.304_619)
 
@@ -65,11 +65,11 @@ def test_subscriber_location_entropy(get_dataframe):
     """
     Test some hand picked periods and tables.
     """
-    query = SubscriberLocationEntropy("2016-01-01", "2016-01-08")
+    query = LocationEntropy("2016-01-01", "2016-01-08")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["0DB8zw67E9mZAPK2"].entropy == pytest.approx(2.996_587)
 
-    query = SubscriberLocationEntropy("2016-01-01", "2016-01-08", level="admin1")
+    query = LocationEntropy("2016-01-01", "2016-01-08", level="admin1")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["0DB8zw67E9mZAPK2"].entropy == pytest.approx(1.352_298)
 
@@ -78,16 +78,16 @@ def test_subscriber_contact_entropy(get_dataframe):
     """
     Test some hand picked periods and tables.
     """
-    query = SubscriberContactEntropy("2016-01-01", "2016-01-08")
+    query = ContactEntropy("2016-01-01", "2016-01-08")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["gPZ7jbqlnAXR3JG5"].entropy == pytest.approx(0.673_012)
 
-    query = SubscriberContactEntropy("2016-01-01", "2016-01-08", direction="out")
+    query = ContactEntropy("2016-01-01", "2016-01-08", direction="out")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["0DB8zw67E9mZAPK2"].entropy == 0
     assert df.loc["VkzMxYjv7mYn53oK"].entropy == pytest.approx(0.679_838)
 
-    query = SubscriberContactEntropy("2016-01-01", "2016-01-08", direction="in")
+    query = ContactEntropy("2016-01-01", "2016-01-08", direction="in")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["0Gl95NRLjW2aw8pW"].entropy == 0
     assert df.loc["VkzMxYjv7mYn53oK"].entropy == pytest.approx(0.680_629)
