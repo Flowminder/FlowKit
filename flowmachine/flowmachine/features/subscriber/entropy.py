@@ -272,6 +272,7 @@ class LocationEntropy(BaseEntropy):
                      ...       ...
     """
 
+class SubscriberLocationEntropy(BaseEntropy):
     def __init__(
         self,
         start,
