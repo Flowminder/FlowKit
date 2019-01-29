@@ -75,4 +75,8 @@ async def test_get_params_for_nonexistent_query_id(zmq_url):
     }
 
     reply = send_message_and_get_reply(zmq_url, msg_get_sql)
-    assert {"status": "awol", "id": "FOOBAR"} == reply
+    assert {
+        "status": "awol",
+        "id": "FOOBAR",
+        "error": "Unknown query id: FOOBAR",
+    } == reply
