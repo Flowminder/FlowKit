@@ -13,7 +13,7 @@ services:
 
   flowdb:
     container_name: flowdb
-    image: flowminder/flowdb:master
+    image: flowminder/flowdb:latest
     ports:
       - ${FLOWDB_PORT:-9000}:5432
     environment:
@@ -33,7 +33,7 @@ services:
 
   flowdb_testdata:
     container_name: flowdb_testdata
-    image: flowminder/flowdb:testdata-master
+    image: flowminder/flowdb:testdata-latest
     ports:
       - ${FLOWDB_TESTDATA_PORT:-9001}:5432
     environment:
@@ -75,7 +75,7 @@ services:
 
   flowapi:
     container_name: flowapi
-    image: flowminder/flowapi:master
+    image: flowminder/flowapi:latest
     build:
       context: ./flowapi
       dockerfile: Dockerfile
@@ -101,7 +101,7 @@ services:
 
   flowmachine:
     container_name: flowmachine
-    image: flowminder/flowmachine:master
+    image: flowminder/flowmachine:latest
     build:
       context: ./flowmachine
       dockerfile: Dockerfile
