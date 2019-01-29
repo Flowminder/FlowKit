@@ -83,4 +83,5 @@ __all__ = [
     "Displacement",
     "MostFrequentLocation",
     "LastLocation",
+    "SubscriberEventCount",
 ]
