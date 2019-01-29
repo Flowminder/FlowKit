@@ -54,6 +54,7 @@ subs = [
     "PairedPerLocationSubscriberCallDurations",
     "MostFrequentLocation",
     "LastLocation",
+    "EventCount",
 ]
 
 rast = ["RasterStatistics"]
