@@ -512,7 +512,13 @@ def make_demodata():  # pragma: no cover
         db.session.add(x)
     # Add some things that you can do
     caps = []
-    for c in ("daily_location", "flows", "modal_location", "location_event_counts"):
+    for c in (
+        "daily_location",
+        "flows",
+        "modal_location",
+        "location_event_counts",
+        "geography",
+    ):
         c = Capability(name=c)
         db.session.add(c)
         caps.append(c)

@@ -4,7 +4,7 @@ import redis_lock
 from json import dumps, loads, JSONDecodeError
 
 
-from flowmachine.core import Query
+from flowmachine.core import Query, GeoTable
 from flowmachine.core.cache import get_query_object_by_id, cache_table_exists
 from flowmachine.features import (
     daily_location,
@@ -72,6 +72,13 @@ class QueryProxyError(Exception):
     """
 
 
+class InvalidGeographyError(Exception):
+    """
+    Custom exception to indicate that the aggregation unit for a
+    geography query is invalid (corresponds to a 404 error in the API).
+    """
+
+
 class MissingQueryError(Exception):
     """
     Custom exception to indicate that a query for a given query id doesn't exist.
@@ -98,13 +105,16 @@ def construct_query_object(query_kind, params):  # pragma: no cover
     -------
     flowmachine.core.query.Query
     """
+    error_msg_prefix = (
+        f"Error when constructing query of kind {query_kind} with parameters {params}"
+    )
+
     if "daily_location" == query_kind:
         date = params["date"]
         method = params["daily_location_method"]
         level = params["aggregation_unit"]
         subscriber_subset = params["subscriber_subset"]
 
-        error_msg_prefix = f"Error when constructing query of kind {query_kind} with parameters {params}"
         allowed_methods = ["last", "most-common"]
         allowed_levels = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 
@@ -146,7 +156,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
         direction = params["direction"]
         event_types = params["event_types"]
 
-        error_msg_prefix = f"Error when constructing query of kind {query_kind} with parameters {params}"
         allowed_intervals = TotalLocationEvents.allowed_intervals
         allowed_directions = ["in", "out", "all"]
         allowed_levels = [
@@ -210,18 +219,18 @@ def construct_query_object(query_kind, params):  # pragma: no cover
                 query_kind = loc["query_kind"]
                 if query_kind != "daily_location":
                     raise QueryProxyError(
-                        "Currently modal location takes only daily locations as input."
+                        f"{error_msg_prefix}: Currently modal location takes only daily locations as input."
                     )
                 if aggregation_unit != loc["params"]["aggregation_unit"]:
                     raise QueryProxyError(
-                        "Modal location aggregation unit must be the same as the ones of all input locations."
+                        f"{error_msg_prefix}: Modal location aggregation unit must be the same as the ones of all input locations."
                     )
                 params = loc["params"]
                 dl = construct_query_object(query_kind, params)
                 location_objects.append(dl)
             q = ModalLocation(*location_objects)
         except Exception as e:
-            raise QueryProxyError(f"FIXME (modal_location): {e}")
+            raise QueryProxyError(f"{error_msg_prefix}: '{e}'")
 
     elif "flows" == query_kind:
         aggregation_unit = params["aggregation_unit"]
@@ -233,7 +242,7 @@ def construct_query_object(query_kind, params):  # pragma: no cover
                 or aggregation_unit != to_location["params"]["aggregation_unit"]
             ):
                 raise QueryProxyError(
-                    "Flow aggregation unit must be the same as the ones for from_location and to_location."
+                    f"{error_msg_prefix}: Flow aggregation unit must be the same as the ones for from_location and to_location."
                 )
             from_location_object = construct_query_object(
                 from_location["query_kind"], from_location["params"]
@@ -243,7 +252,26 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             )
             q = Flows(from_location_object, to_location_object)
         except Exception as e:
-            raise QueryProxyError(f"FIXME (modal_location): {e}")
+            raise QueryProxyError(f"{error_msg_prefix}: '{e}'")
+    elif "geography" == query_kind:
+        aggregation_unit = params["aggregation_unit"]
+
+        allowed_aggregation_units = ["admin0", "admin1", "admin2", "admin3", "admin4"]
+
+        if aggregation_unit not in allowed_aggregation_units:
+            raise InvalidGeographyError(
+                f"{error_msg_prefix}: 'Unrecognised aggregation unit '{aggregation_unit}', "
+                f"must be one of: {allowed_aggregation_units}'"
+            )
+
+        try:
+            q = GeoTable(
+                name=aggregation_unit,
+                schema="geography",
+                columns=[f"{aggregation_unit}name", f"{aggregation_unit}pcod", "geom"],
+            )
+        except Exception as e:
+            raise QueryProxyError(f"{error_msg_prefix}: '{e}'")
 
     else:
         error_msg = f"Unsupported query kind: '{query_kind}'"

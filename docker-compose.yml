@@ -12,7 +12,7 @@ networks:
 services:
     flowdb-testdata:
         container_name: flowdb_testdata
-        image: flowminder/flowdb:testdata-master 
+        image: flowminder/flowdb:testdata-latest 
         environment:
             - POSTGRES_DB=${POSTGRES_DB:-flowdb}
             - POSTGRES_USER=${POSTGRES_USER:-flowdb}
@@ -31,7 +31,7 @@ services:
                     - flowdb
     flowmachine:
         container_name: flowmachine
-        image: flowminder/flowmachine:master
+        image: flowminder/flowmachine:latest
         restart: always
         environment:
             - DB_PORT=${DB_PORT:-5432}
@@ -48,7 +48,7 @@ services:
             - zero
     flowapi:
         container_name: flowapi
-        image: flowminder/flowapi:master
+        image: flowminder/flowapi:latest
         restart: always
         ports:
           - 9090:9090

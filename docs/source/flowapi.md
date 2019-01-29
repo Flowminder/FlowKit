@@ -6,7 +6,7 @@ FlowAPI uses [ZeroMQ](http://zeromq.org/) for asynchronous communication with th
 
 ## API Routes
 
-The API exposes three routes:
+The API exposes four routes:
 
 - `/run`: set a query running in FlowMachine.
 
@@ -14,7 +14,9 @@ The API exposes three routes:
 
 - `/get/<query_id>`: return the result of a finished query.
 
-At present, three query kinds are accessible through FlowAPI:
+- `/geography/<aggregation_unit>`: return geography data for a given aggregation unit.
+
+At present, four query kinds are accessible through FlowAPI:
 
 - `daily_location`
 
@@ -24,9 +26,13 @@ At present, three query kinds are accessible through FlowAPI:
 
     The mode of a set of daily locations.
 
-- `flow`
+- `flows`
 
     The difference in locations between two location queries.
+
+- `location_event_counts`
+
+    Count of total interactions in a time period, aggregated to a spatial location level.
 
 ## Access tokens
 
