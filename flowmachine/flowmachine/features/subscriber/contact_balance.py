@@ -10,15 +10,11 @@ that a given contact participates out of the
 subscriber's total event count.
 
 """
-import logging
 
 from ...core import Table
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
-
-logger = logging.getLogger("flowmachine").getChild(__name__)
-
 
 class ContactBalance(GraphMixin, SubscriberFeature):
     """
@@ -76,15 +72,6 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
-        """
-        """
-        logger.warning(
-            "The the ContactBalance() feature uses CDRs "
-            + "IDs for calculating an subscriber's graph. "
-            + "If IDs are not generated correctly, this "
-            + "feature could yield erroneous results."
-        )
-
         self.tables = tables
         self.start = start
         self.stop = stop
@@ -94,10 +81,10 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.exclude_self_calls = exclude_self_calls
 
         if self.direction == "both":
-            column_list = [self.subscriber_identifier, "id", "msisdn_counterpart"]
+            column_list = [self.subscriber_identifier, "msisdn_counterpart"]
             self.tables = tables
         else:
-            column_list = [self.subscriber_identifier, "id", "msisdn_counterpart", "outgoing"]
+            column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
             self.tables = self._parse_tables_ensuring_direction_present(tables)
 
         self.unioned_query = EventsTablesUnion(
@@ -156,10 +143,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             SELECT
                 subscriber,
                 count(*) AS events
-            FROM (
-              SELECT DISTINCT U.subscriber,
-                U.id
-              FROM unioned AS U) AS _
+            FROM unioned
             GROUP BY subscriber
         )
         SELECT
@@ -167,10 +151,9 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             U.msisdn_counterpart,
             count(*) as events,
             (count(*)::float / T.events::float) as proportion
-        FROM 
-        (SELECT DISTINCT U.subscriber,
-            U.msisdn_counterpart,
-            U.id as id
+        FROM
+        (SELECT U.subscriber,
+            U.msisdn_counterpart
           FROM unioned as U) AS U
         JOIN total_events AS T
             ON U.subscriber = T.subscriber
