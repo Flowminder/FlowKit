@@ -54,6 +54,9 @@ subs = [
     "PairedPerLocationSubscriberCallDurations",
     "MostFrequentLocation",
     "LastLocation",
+    "PeriodicEntropy",
+    "LocationEntropy",
+    "ContactEntropy",
 ]
 
 rast = ["RasterStatistics"]
