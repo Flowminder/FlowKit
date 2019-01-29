@@ -514,7 +514,7 @@ jobs:
       - run:
           name: Run integration tests
           command: |
-            docker exec testrunner bash -c "cd /tests && FLOWDB_HOST=flowdb FLOWDB_PORT=5432 FLOWMACHINE_ZMQ_HOST=flowmachine REDIS_HOST=redis pipenv run pytest --junitxml=test_results/pytest/results.xml --durations=10"
+            docker exec testrunner bash -c "cd /tests && FLOWDB_HOST=flowdb FLOWDB_PORT=5432 FLOWMACHINE_ZMQ_HOST=flowmachine REDIS_HOST=redis pipenv run pytest -sv --junitxml=test_results/pytest/results.xml --durations=10"
       - run:
           name: Extract test results
           command: docker cp testrunner:/tests/test_results .
