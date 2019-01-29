@@ -12,6 +12,7 @@ from .call_days import CallDays
 from .new_subscribers import NewSubscribers
 from .modal_location import ModalLocation
 from .first_location import FirstLocation
+from .entropy import PeriodicEntropy, LocationEntropy, ContactEntropy
 from .daily_location import daily_location
 from .nocturnal_calls import NocturnalCalls
 from .location_visits import LocationVisits
@@ -97,4 +98,7 @@ __all__ = [
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
     "ProportionEventType",
+    "PeriodicEntropy",
+    "LocationEntropy",
+    "ContactEntropy",
 ]
