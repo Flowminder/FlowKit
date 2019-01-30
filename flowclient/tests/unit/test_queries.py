@@ -2,15 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from unittest.mock import Mock, PropertyMock, call
+from unittest.mock import Mock, PropertyMock, MagicMock, call
 
 import pytest
 import flowclient
+import flowclient.client
 from flowclient.client import (
     Connection,
     FlowclientConnectionError,
     get_result_by_query_id,
     get_result,
+    query_is_ready,
 )
 
 
@@ -57,14 +59,26 @@ def test_get_result_by_id(token):
 
 
 @pytest.mark.parametrize("http_code", [401, 404, 418, 400])
-def test_get_result_by_id_error(http_code, token):
+def test_get_result_by_id_error(monkeypatch, http_code, token):
     """
     Any unexpected http code should raise an exception.
     """
+    dummy_reply = MagicMock()
+    dummy_reply.headers.__getitem__.return_value = "/api/0/DUMMY_LOCATION"
+    monkeypatch.setattr(
+        flowclient.client,
+        "query_is_ready",
+        lambda connection, query_id: (True, dummy_reply),
+    )
     connection_mock = Mock()
     connection_mock.get_url.return_value.status_code = http_code
-    with pytest.raises(FlowclientConnectionError):
+    connection_mock.get_url.return_value.json.return_value = {"msg": "MESSAGE"}
+    with pytest.raises(
+        FlowclientConnectionError,
+        match=f"Could not get result. API returned with status code: {http_code}. Reason: MESSAGE",
+    ):
         get_result_by_query_id(connection_mock, "99")
+    assert call("DUMMY_LOCATION") in connection_mock.get_url.call_args_list
 
 
 def test_get_result_by_id_poll_loop(monkeypatch):

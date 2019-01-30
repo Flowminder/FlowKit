@@ -81,10 +81,10 @@
         },
         "h2": {
             "hashes": [
-                "sha256:4be613e35caad5680dc48f98f3bf4e7338c7c429e6375a5137be7fbe45219981",
-                "sha256:b2962f883fa392a23cbfcc4ad03c335bcc661be0cf9627657b589f0df2206e64"
+                "sha256:c8f387e0e4878904d4978cd688a3195f6b169d49b1ffa572a3d347d7adc5e09f",
+                "sha256:fd07e865a3272ac6ef195d8904de92dc7b38dc28297ec39cfa22716b6d62e6eb"
             ],
-            "version": "==3.0.1"
+            "version": "==3.1.0"
         },
         "hpack": {
             "hashes": [
@@ -95,11 +95,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:84c53ef8248a4067c6ec0b7c9a8a850eed2c85e660b1afdaac37f4f8cc8420f2",
-                "sha256:d3bd0ec5f6377f3eb1aea85314b74ef6720ab5e28be4afb8cced038efea9c6b9"
+                "sha256:106f506d6d1a07ea9ee86c5e96403872383f73c70dfa5a57c33c7bda68048d8d",
+                "sha256:21de02a0076588cec5aeb1022526be4bedc6c91678e8a8700e0d50aa45fa485a"
             ],
             "index": "pypi",
-            "version": "==0.4.6"
+            "version": "==0.5.1"
         },
         "hyperframe": {
             "hashes": [
@@ -235,11 +235,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:a07d139a6ac05c27db965f8bd444a4adf47f2d14c475aa08991cd734135aa293",
-                "sha256:a918745611572a2ebaad0a5890c9cffdf7db0b8aa87ed18341139aca96f05234"
+                "sha256:f4ecb4b76b49b72b7f2167b7b2f0888fc047f3abefeec8ed866e59c52016b5f5",
+                "sha256:f8a957a86b9c6d90a3ec1b04548379caf6a052bc535f66026add36e354ad5603"
             ],
             "index": "pypi",
-            "version": "==0.7.2"
+            "version": "==0.8.0"
         },
         "six": {
             "hashes": [
@@ -287,10 +287,10 @@
         },
         "wsproto": {
             "hashes": [
-                "sha256:1fcb726d448f1b9bcbea884e26621af5ddd01d2d502941a024f4c727828b6009",
-                "sha256:6a51cf18d9de612892b9c1d38a8c1bdadec0cfe15de61cd5c0f09174bf0c7e82"
+                "sha256:c013342d7a9180486713c6c986872e4fe24e18a21ccbece314939d8b58312e0e",
+                "sha256:fd6020d825022247053400306448e161d8740bdd52e328e5553cd9eee089f705"
             ],
-            "version": "==0.12.0"
+            "version": "==0.13.0"
         }
     },
     "develop": {

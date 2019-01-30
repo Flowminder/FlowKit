@@ -147,8 +147,8 @@ async def test_run_query_with_wrong_parameters(
 
     reply = send_message_and_get_reply(zmq_url, msg_run_query)
     expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
-    assert "rejected" == reply["status"]
-    assert expected_reason == reply["reason"]
+    assert "error" == reply["status"]
+    assert expected_reason == reply["error"]
 
 
 @pytest.mark.skip(reason="Cannot currently test this because the sender hangs")

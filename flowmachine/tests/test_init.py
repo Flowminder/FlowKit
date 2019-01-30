@@ -65,8 +65,8 @@ def test_param_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
     monkeypatch.setenv("DB_HOST", "DUMMY_ENV_DB_HOST")
     monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
-    monkeypatch.setenv("POOL_SIZE", 7777)
-    monkeypatch.setenv("POOL_OVERFLOW", 7777)
+    monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
+    monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 7777)
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
     monkeypatch.setenv("REDIS_PORT", 7777)
     monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
@@ -81,8 +81,8 @@ def test_param_priority(mocked_connections, monkeypatch):
         db_pw="dummy_db_pw",
         db_host="dummy_db_host",
         db_name="dummy_db_name",
-        pool_size=6789,
-        pool_overflow=1011,
+        db_connection_pool_size=6789,
+        db_connection_pool_overflow=1011,
         redis_host="dummy_redis_host",
         redis_port=1213,
         redis_password="dummy_redis_password",
@@ -100,6 +100,9 @@ def test_param_priority(mocked_connections, monkeypatch):
     core_init_StrictRedis_mock.assert_called_with(
         host="dummy_redis_host", port=1213, password="dummy_redis_password"
     )
+    core_init_start_threadpool_mock.assert_called_with(
+        6789
+    )  # for the time being, we should have num_threads = num_db_connections
 
 
 def test_env_priority(mocked_connections, monkeypatch):
@@ -112,8 +115,8 @@ def test_env_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
     monkeypatch.setenv("DB_HOST", "DUMMY_ENV_DB_HOST")
     monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
-    monkeypatch.setenv("POOL_SIZE", 7777)
-    monkeypatch.setenv("POOL_OVERFLOW", 2020)
+    monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
+    monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 2020)
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
     monkeypatch.setenv("REDIS_PORT", 5050)
     monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
@@ -136,6 +139,9 @@ def test_env_priority(mocked_connections, monkeypatch):
     core_init_StrictRedis_mock.assert_called_with(
         host="DUMMY_ENV_REDIS_HOST", port=5050, password="DUMMY_ENV_REDIS_PASSWORD"
     )
+    core_init_start_threadpool_mock.assert_called_with(
+        7777
+    )  # for the time being, we should have num_threads = num_db_connections
 
 
 @pytest.mark.usefixtures("clean_env")
@@ -152,3 +158,6 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_StrictRedis_mock.assert_called_with(
         host="localhost", port=6379, password="fm_redis"
     )
+    core_init_start_threadpool_mock.assert_called_with(
+        5
+    )  # for the time being, we should have num_threads = num_db_connections

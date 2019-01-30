@@ -167,3 +167,7 @@ conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certifi
 ```
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
+
+### Benchmarks
+
+There is a suite of benchmarks for FlowKit at https://github.com/Flowminder/FlowKit-benchmarks. The benchmark results can be seen at https://flowminder.github.io/FlowKit-benchmarks.

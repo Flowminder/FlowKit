@@ -16,6 +16,7 @@ from zmq.asyncio import Context
 
 from app.jwt_auth_callbacks import register_logging_callbacks
 from .run_query import blueprint as run_query_blueprint
+from .geography import blueprint as geography_blueprint
 from flask_jwt_extended import JWTManager
 
 import structlog
@@ -139,6 +140,7 @@ def create_app():
         return ""
 
     app.register_blueprint(run_query_blueprint, url_prefix="/api/0")
+    app.register_blueprint(geography_blueprint, url_prefix="/api/0")
 
     register_logging_callbacks(jwt)
 
