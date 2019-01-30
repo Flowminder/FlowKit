@@ -1,11 +1,11 @@
 site_name: FlowKiit
 nav:
-    - Introduction: introduction.md
-    - Installation: install.md
-    - Analyst: flowclient.md
-    - Developer: developer/roadmap.md
-    - Administrator: administrator/cache_management.md
-    - License: license.md
+  - Introduction: introduction.md
+  - Installation: install.md
+  - Analyst: flowclient.md
+  - Developer: developer/roadmap.md
+  - Administrator: administrator/cache_management.md
+  - License: license.md
 repo_name: "Flowminder/FlowKit"
 repo_url: https://github.com/Flowminder/FlowKit
 docs_dir: source
@@ -20,9 +20,9 @@ plugins:
         flowclient:
           section: analyst/client
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
-- mknotebooks:
-    execute: true
-    preamble: "pandas_to_markdown.py"
+  - mknotebooks:
+      execute: true
+      preamble: "pandas_to_markdown.py"
 
 theme:
   name: "material"
