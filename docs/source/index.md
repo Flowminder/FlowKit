@@ -12,7 +12,7 @@ CDRs constitute a highly sensitive data set, so FlowKit is designed with privacy
 
 FlowKit is deployed as a collection of Docker containers on a compute instance, usually hosted inside an MNO firewall. 
 
-Good practice is to pseudonymize CDR data in the first instance. It must then be transposed into the FlowDB standard schema. Once ingested, the user can analyse the records using the example FlowClient included. FlowClient is an example client implemented as a JupyterLab + Python Data Science Stack Notebook. Other client implementations (e.g. R) can be built on the provided FlowAPI.
+Good practice is to pseudonymize CDR data in the first instance. It must then be transformed into the FlowDB standard schema. Once ingested, the user can analyse the records using the example FlowClient included. FlowClient is an example client implemented as a JupyterLab + Python Data Science Stack Notebook. Other client implementations (e.g. R) can be built on the provided FlowAPI.
 
 This architecture is shown in the figure below.
 
