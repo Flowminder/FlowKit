@@ -434,7 +434,7 @@
 <p>CDRs constitute a highly sensitive data set, so FlowKit is designed with privacy protection in mind. It includes the FlowAuth framework to enable fine grained authorization with extensive access logging, making it an important tool for deployment of a GDPR compliant CDR analysis system.  </p>
 <h2 id="how-does-flowkit-work">How does FlowKit work ?<a class="headerlink" href="#how-does-flowkit-work" title="Permanent link">&para;</a></h2>
 <p>FlowKit is deployed as a collection of Docker containers on a compute instance, usually hosted inside an MNO firewall. </p>
-<p>Good practice is to pseudonymize CDR data in the first instance. It must then be transposed into the FlowDB standard schema. Once ingested, the user can analyse the records using the example FlowClient included. FlowClient is an example client implemented as a JupyterLab + Python Data Science Stack Notebook. Other client implementations (e.g. R) can be built on the provided FlowAPI.</p>
+<p>Good practice is to pseudonymize CDR data in the first instance. It must then be transformed into the FlowDB standard schema. Once ingested, the user can analyse the records using the example FlowClient included. FlowClient is an example client implemented in Python which can be conveniently used to interact with FlowKit via Jupyter notebooks and the Python data science stack. Other client implementations (e.g. R) can be built on top of the provided FlowAPI.</p>
 <p>This architecture is shown in the figure below.</p>
 <p><img alt="FlowKit System Diagram" src="flowkit_sys.png" title="FlowKit System Diagram" /></p>
 <ul>
@@ -468,7 +468,7 @@
 <p>A further container is created to host a redis message platform used internally by FlowMachine.  </p>
 </li>
 </ul>
-<p>FlowKit is in active development, visit the project's  <a href="../developer/roadmap">roadmap</a> to get a sense about upcoming developments.</p>
+<p>FlowKit is in active development, visit the project's  <a href="./developer/roadmap">roadmap</a> to get a sense about upcoming developments.</p>
 <p>Continue to the FlowKit <a href="install/">installation documents</a> to find out what type of install meets your requirements.</p>
 <p>These documents are also hosted on <a href="https://flowminder.github.io/FlowKit">https://flowminder.github.io/FlowKit/</a>.</p>
 <h2 id="feature-requests">Feature requests<a class="headerlink" href="#feature-requests" title="Permanent link">&para;</a></h2>
