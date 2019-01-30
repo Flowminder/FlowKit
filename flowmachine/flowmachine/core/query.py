@@ -8,7 +8,7 @@ This is the base class that defines any query on our database.  It simply
 defines methods that returns the query as a string and as a pandas dataframe.
 
 """
-
+import json
 import os
 import pickle
 import logging
@@ -91,7 +91,7 @@ class Query(metaclass=ABCMeta):
                     if isinstance(item, list) or isinstance(item, tuple):
                         item = sorted(item)
                     elif isinstance(item, dict):
-                        item = sorted(item.items())
+                        item = json.dumps(item, sort_keys=True, default=str)
 
                     try:
                         hashes.append(str(item))

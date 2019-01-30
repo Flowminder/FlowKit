@@ -57,6 +57,9 @@ subs = [
     "PeriodicEntropy",
     "LocationEntropy",
     "ContactEntropy",
+    "MeaningfulLocations",
+    "MeaningfulLocationsAggregate",
+    "MeaningfulLocationsOD",
 ]
 
 rast = ["RasterStatistics"]

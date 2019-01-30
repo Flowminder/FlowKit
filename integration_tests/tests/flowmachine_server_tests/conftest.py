@@ -7,11 +7,6 @@ from flowmachine.core import Connection, Query
 from flowmachine.core.cache import reset_cache
 
 
-from .helpers import (
-    create_flowdb_version_table,
-    create_flowdb_function_available_tables,
-)
-
 logger = logging.getLogger(__name__)
 
 

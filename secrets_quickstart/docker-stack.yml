@@ -27,7 +27,7 @@ networks:
   api:
 services:
     flowdb:
-        image: "flowminder/flowdb:testdata-${CIRCLE_BRANCH:-master}"
+        image: "flowminder/flowdb:testdata-${CIRCLE_BRANCH:-latest}"
         secrets:
           - POSTGRES_PASSWORD_FILE
           - API_DB_USER
@@ -42,7 +42,7 @@ services:
             aliases:
               - flowdb
     flowmachine:
-        image: "flowminder/flowmachine:${CIRCLE_BRANCH:-master}"
+        image: "flowminder/flowmachine:${CIRCLE_BRANCH:-latest}"
         environment:
             - DB_PORT=5432
             - DB_HOST=flowdb
@@ -57,7 +57,7 @@ services:
           - redis
           - zero
     flowapi:
-        image: "flowminder/flowapi:${CIRCLE_BRANCH:-master}"
+        image: "flowminder/flowapi:${CIRCLE_BRANCH:-latest}"
         ports:
           - "9090:9090"
         environment:

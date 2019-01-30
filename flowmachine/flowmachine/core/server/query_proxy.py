@@ -1,4 +1,6 @@
 import logging
+from copy import deepcopy
+
 import redis
 import redis_lock
 from json import dumps, loads, JSONDecodeError
@@ -11,7 +13,14 @@ from flowmachine.features import (
     ModalLocation,
     Flows,
     TotalLocationEvents,
+    MeaningfulLocations,
+    HartiganCluster,
+    CallDays,
+    EventScore,
+    MeaningfulLocationsOD,
+    MeaningfulLocationsAggregate,
 )
+from flowmachine.features.utilities.subscriber_locations import subscriber_locations
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -105,9 +114,25 @@ def construct_query_object(query_kind, params):  # pragma: no cover
     -------
     flowmachine.core.query.Query
     """
+    params = deepcopy(
+        params
+    )  # Operate on a copy to avoid mutating the passed in dict, which might change the redis lookup
     error_msg_prefix = (
         f"Error when constructing query of kind {query_kind} with parameters {params}"
     )
+    try:
+        subscriber_subset = params["subscriber_subset"]
+        if subscriber_subset == "all":
+            params["subscriber_subset"] = None
+        else:
+            if isinstance(subscriber_subset, dict):
+                raise NotImplementedError("Proper subsetting not implemented yet.")
+            else:
+                raise QueryProxyError(
+                    f"{error_msg_prefix}: 'Cannot construct {query_kind} subset from given input: {subscriber_subset}'"
+                )
+    except KeyError:
+        pass  # No subset param
 
     if "daily_location" == query_kind:
         date = params["date"]
@@ -127,16 +152,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             raise QueryProxyError(
                 f"{error_msg_prefix}: 'Unrecognised level '{level}', must be one of: {allowed_levels}'"
             )
-
-        if subscriber_subset == "all":
-            subscriber_subset = None
-        else:
-            if isinstance(subscriber_subset, dict):
-                raise NotImplementedError("Proper subsetting not implemented yet.")
-            else:
-                raise QueryProxyError(
-                    f"{error_msg_prefix}: 'Cannot construct daily location subset from given input: {subscriber_subset}'"
-                )
 
         try:
             q = daily_location(
@@ -187,16 +202,6 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             )
         if direction == "all":
             direction = "both"
-
-        if subscriber_subset == "all":
-            subscriber_subset = None
-        else:
-            if isinstance(subscriber_subset, dict):
-                raise NotImplementedError("Proper subsetting not implemented yet.")
-            else:
-                raise QueryProxyError(
-                    f"{error_msg_prefix}: 'Cannot construct location event counts subset from given input: {subscriber_subset}'"
-                )
 
         try:
             q = TotalLocationEvents(
@@ -252,7 +257,70 @@ def construct_query_object(query_kind, params):  # pragma: no cover
             )
             q = Flows(from_location_object, to_location_object)
         except Exception as e:
-            raise QueryProxyError(f"{error_msg_prefix}: '{e}'")
+            raise QueryProxyError(f"FIXME (flows): {e}")
+
+    elif "meaningful_locations_aggregate" == query_kind:
+        aggregation_unit = params["aggregation_unit"]
+        mfl = params["meaningful_locations"]
+        try:
+            q = MeaningfulLocationsAggregate(
+                meaningful_locations=construct_query_object(**mfl),
+                level=aggregation_unit,
+            )
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (meaningful_location_aggregate): {e}")
+
+    elif "meaningful_locations_od_matrix" == query_kind:
+        aggregation_unit = params["aggregation_unit"]
+        mfl_a = params["meaningful_locations_a"]
+        mfl_b = params["meaningful_locations_b"]
+        try:
+            q = MeaningfulLocationsOD(
+                meaningful_locations_a=construct_query_object(**mfl_a),
+                meaningful_locations_b=construct_query_object(**mfl_b),
+                level=aggregation_unit,
+            )
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (meaningful_location_od_matrix): {e}")
+
+    elif "meaningful_locations" == query_kind:
+        label = params["label"]
+        scores = params["scores"]
+        labels = params["labels"]
+        clusters = params["clusters"]
+        try:
+            q = MeaningfulLocations(
+                clusters=construct_query_object(**clusters),
+                labels=labels,
+                scores=construct_query_object(**scores),
+                label=label,
+            )
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (meaningful_locations): {e}")
+    elif "event_score" == query_kind:
+        try:
+            q = EventScore(**params)
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (event_score): {e}")
+
+    elif "hartigan_cluster" == query_kind:
+        call_days = params.pop("call_days")
+        try:
+            q = HartiganCluster(calldays=construct_query_object(**call_days), **params)
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (hartigan_cluster): {e}")
+
+    elif "call_days" == query_kind:
+        sls = params.pop("subscriber_locations")
+        try:
+            q = CallDays(subscriber_locations=construct_query_object(**sls))
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (call_days): {e}")
+    elif "subscriber_locations" == query_kind:
+        try:
+            q = subscriber_locations(**params)
+        except Exception as e:
+            raise QueryProxyError(f"FIXME (subscriber_locations): {e}")
     elif "geography" == query_kind:
         aggregation_unit = params["aggregation_unit"]
 
