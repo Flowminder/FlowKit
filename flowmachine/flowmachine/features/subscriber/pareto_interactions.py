@@ -64,7 +64,7 @@ class ParetoInteractions(SubscriberFeature):
         start,
         stop,
         proportion=0.8,
-        table="all",
+        tables="all",
         subscriber_identifier="msisdn",
         hours="all",
         exclude_self_calls=False,
@@ -78,7 +78,7 @@ class ParetoInteractions(SubscriberFeature):
         self.contact_balance = ContactBalance(
             start,
             stop,
-            table=table,
+            tables=table,
             subscriber_identifier=subscriber_identifier,
             hours=hours,
             exclude_self_calls=exclude_self_calls,
