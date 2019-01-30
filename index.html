@@ -103,7 +103,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowkit" tabindex="1" class="md-skip">
+      <a href="#flowkit-cdr-analytics-toolkit" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -125,7 +125,12 @@
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
             
-              FlowKit
+              <span class="md-header-nav__topic">
+                FlowKit
+              </span>
+              <span class="md-header-nav__topic">
+                Introduction
+              </span>
             
           
         </div>
@@ -176,6 +181,14 @@
     <ul class="md-tabs__list">
       
         
+  <li class="md-tabs__item">
+    
+      <a href="." title="Introduction" class="md-tabs__link md-tabs__link--active">
+        Introduction
+      </a>
+    
+  </li>
+
       
         
       
@@ -236,11 +249,63 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="introduction/" title="Introduction" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Introduction
+      </label>
+    
+    <a href="." title="Introduction" class="md-nav__link md-nav__link--active">
       Introduction
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-flowkit" title="What is FlowKit ?" class="md-nav__link">
+    What is FlowKit ?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-does-flowkit-work" title="How does FlowKit work ?" class="md-nav__link">
+    How does FlowKit work ?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feature-requests" title="Feature requests" class="md-nav__link">
+    Feature requests
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
     
@@ -325,63 +390,23 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation-using-docker-cloud-repositories" title="Installation using docker cloud repositories" class="md-nav__link">
-    Installation using docker cloud repositories
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#server" title="Server" class="md-nav__link">
-    Server
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#client" title="Client" class="md-nav__link">
-    Client
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flowauth" title="FlowAuth" class="md-nav__link">
-    FlowAuth
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation-for-developers" title="Installation for developers" class="md-nav__link">
-    Installation for developers
+  <a href="#what-is-flowkit" title="What is FlowKit ?" class="md-nav__link">
+    What is FlowKit ?
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-with-secrets" title="Running with Secrets" class="md-nav__link">
-    Running with Secrets
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#secrets-quickstart" title="Secrets Quickstart" class="md-nav__link">
-    Secrets Quickstart
+  <a href="#how-does-flowkit-work" title="How does FlowKit work ?" class="md-nav__link">
+    How does FlowKit work ?
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#feature-requests" title="Feature requests" class="md-nav__link">
+    Feature requests
+  </a>
   
 </li>
       
@@ -402,135 +427,53 @@
               
                 
                 
-                <h1 id="flowkit">FlowKit<a class="headerlink" href="#flowkit" title="Permanent link">&para;</a></h1>
-<p>FlowKit is a platform for analysis of CDR and other data. The system is designed to be deployed as a set of <a href="https://docs.docker.com">Docker</a> containers on a server. The three main server components are:</p>
+                <h1 id="flowkit-cdr-analytics-toolkit">FlowKit CDR Analytics Toolkit<a class="headerlink" href="#flowkit-cdr-analytics-toolkit" title="Permanent link">&para;</a></h1>
+<h2 id="what-is-flowkit">What is FlowKit ?<a class="headerlink" href="#what-is-flowkit" title="Permanent link">&para;</a></h2>
+<p>Use FlowKit to analyze the <a href="https://en.wikipedia.org/wiki/Call_detail_record">Call Detail Record</a> (CDR) data created by mobile network operators (MNOs). CDR data is primarily used for generating subscriber bills and settling accounts with other carriers.  </p>
+<p>FlowKit is designed to extend CDR data analysis to meet many other applications beyond billing. Some examples include <a href="http://www.flowminder.org/practice-areas/disaster-response">disaster response</a>, <a href="http://www.flowminder.org/practice-areas/precision-epidemiology">precision epidimiology</a> and <a href="http://www.flowminder.org/publications/a-trip-to-work-estimation-of-origin-and-destination-of-commuting-patterns-in-the-main-metropolitan-regions-of-haiti-using-cdr">transport and mobility</a>, more examples can be found <a href="http://www.flowminder.org/work/research-innovation">here</a>.</p>
+<p>CDRs constitute a highly sensitive data set, so FlowKit is designed with privacy protection in mind. It includes the FlowAuth framework to enable fine grained authorization with extensive access logging, making it an important tool for deployment of a GDPR compliant CDR analysis system.  </p>
+<h2 id="how-does-flowkit-work">How does FlowKit work ?<a class="headerlink" href="#how-does-flowkit-work" title="Permanent link">&para;</a></h2>
+<p>FlowKit is deployed as a collection of Docker containers on a compute instance, usually hosted inside an MNO firewall. </p>
+<p>Good practice is to pseudonymize CDR data in the first instance. It must then be transposed into the FlowDB standard schema. Once ingested, the user can analyse the records using the example FlowClient included. FlowClient is an example client implemented as a JupyterLab + Python Data Science Stack Notebook. Other client implementations (e.g. R) can be built on the provided FlowAPI.</p>
+<p>This architecture is shown in the figure below.</p>
+<p><img alt="FlowKit System Diagram" src="flowkit_sys.png" title="FlowKit System Diagram" /></p>
 <ul>
 <li>
-<p><a href="./flowdb">FlowDB</a></p>
-<p>A <a href="https://www.postgresql.org">PostgreSQL</a> database for storing and serving mobile operator data.</p>
+<p>FlowDB</p>
+<p>A <a href="https://www.postgresql.org">PostgreSQL</a> database for storing and serving mobile operator data. Initialised with sample data for demonstration purposes. In a live installation, this data comes from the MNO.
+<p></p>
 </li>
 <li>
-<p><a href="./flowmachine">FlowMachine</a></p>
-<p>A Python toolkit for the analysis of CDR data.</p>
+<p>FlowMachine</p>
+<p>A Python toolkit for the analysis of CDR data.
+<p></p>
 </li>
 <li>
-<p><a href="./flowapi">FlowAPI</a></p>
-<p>An HTTP API which provides access to the functionality of FlowMachine, and handles access control.</p>
+<p>FlowAPI</p>
+<p>An HTTP API which provides access to the functionality of FlowMachine, and handles access control.
+<p></p>
+</li>
+<li>
+<p>FlowClient</p>
+<p>A Python client to FlowAPI.
+<p></p>
+</li>
+<li>
+<p>FlowAuth</p>
+<p>An authentication management system used to generate access tokens for use with FlowClient.
+<p>    </p>
+</li>
+<li>
+<p>Redis</p>
+<p>A further container is created to host a redis message platform used internally by FlowMachine.  </p>
 </li>
 </ul>
-<p>In addition, <a href="http://zeromq.org/">ZeroMQ</a> is used for communication between FlowAPI and FlowMachine, and FlowMachine uses <a href="https://redis.io/">Redis</a> for interprocess communication. <a href="http://jwt.io">JSON Web Tokens</a> are used for access control in FlowAPI.</p>
-<p>There are two other components of FlowKit:</p>
-<ul>
-<li>
-<p><a href="./flowclient">FlowClient</a></p>
-<p>A Python client to FlowAPI.</p>
-</li>
-<li>
-<p><a href="./flowauth">FlowAuth</a></p>
-<p>An authentication management system used to generate access tokens for use with FlowClient.</p>
-</li>
-</ul>
-<p>FlowKit is an open-source product. The source code can be found at <a href="https://github.com/Flowminder/FlowKit">https://github.com/Flowminder/FlowKit</a>, and documentation is available at <a href="https://flowminder.github.io/FlowKit">https://flowminder.github.io/FlowKit</a>. </p>
-<p>FlowKit is in active development, visit the project's  <a href="developer/roadmap">roadmap</a> to get a sense about upcoming developments.</p>
-<h2 id="installation-using-docker-cloud-repositories">Installation using docker cloud repositories<a class="headerlink" href="#installation-using-docker-cloud-repositories" title="Permanent link">&para;</a></h2>
-<h3 id="server">Server<a class="headerlink" href="#server" title="Permanent link">&para;</a></h3>
-<p>Docker containers for FlowAPI, FlowMachine and FlowDB are provided in the docker cloud repositories <code>flowminder/flowapi</code>, <code>flowminder/flowmachine</code> and <code>flowminder/flowdb</code>, respectively. To set up FlowKit using the docker cloud repositories, you will need <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a>.</p>
-<p>The file <a href="https://github.com/Flowminder/FlowKit/raw/master/docker-compose.yml"><code>docker-compose.yml</code></a> can be used to start FlowKit and populate FlowDB with a test dataset. The compose file expects the <code>JWT_SECRET_KEY</code> environment variable to be set. This is used to sign and verify access tokens for the API.</p>
-<p>The FlowKit test system can be started by running <code>JWT_SECRET_KEY=&lt;secret&gt; docker-compose up -d</code> in the same directory as the <code>docker-compose.yml</code> file. This will pull any necessary docker containers, and start the system in the background with the API exposed on port <code>9090</code> by default.</p>
-<h3 id="client">Client<a class="headerlink" href="#client" title="Permanent link">&para;</a></h3>
-<p>The FlowClient Python client may be installed using pip:</p>
-<div class="codehilite"><pre><span></span>pip install flowclient
-</pre></div>
-
-<p>Details of FlowClient usage can be found <a href="./flowclient">here</a>.</p>
-<h3 id="flowauth">FlowAuth<a class="headerlink" href="#flowauth" title="Permanent link">&para;</a></h3>
-<p>The FlowAuth Docker container is provided in the docker cloud repository <code>flowminder/flowauth</code>. Deployment and usage instructions can be found <a href="./flowauth">here</a>.</p>
-<h2 id="installation-for-developers">Installation for developers<a class="headerlink" href="#installation-for-developers" title="Permanent link">&para;</a></h2>
-<p>After cloning the <a href="https://github.com/Flowminder/FlowKit">GitHub repository</a>, the FlowKit system can be started by running <code>make up</code> in the root directory. This requires <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a> to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the <code>docker-compose-dev.yml</code> file.</p>
-<p>FlowKit uses <a href="https://pipenv.readthedocs.io/">pipenv</a> to manage Python environments. To start a Python session in which you can use FlowClient:</p>
-<div class="codehilite"><pre><span></span>cd flowclient
-pipenv install
-pipenv run python
-&gt;&gt;&gt; import flowclient
-</pre></div>
-
-<p>To run the tests in the <code>flowapi</code>, <code>flowclient</code>, <code>flowdb</code>, <code>flowmachine</code> or <code>integration_tests</code> directory:</p>
-<div class="codehilite"><pre><span></span><span class="nb">cd</span> &lt;directory&gt;
-pipenv install --dev
-pipenv run pytest
-</pre></div>
-
-<h2 id="running-with-secrets">Running with Secrets<a class="headerlink" href="#running-with-secrets" title="Permanent link">&para;</a></h2>
-<p>The standard Docker compose file supplies a number of 'secret' values as environment variables. Typically, this is a bad idea.</p>
-<p>Instead, you should make use of <a href="https://docs.docker.com/engine/swarm/secrets/">docker secrets</a>, which are stored securely in docker and only made available <em>inside</em> containers.  The <code>secrets_quickstart</code> directory contains a <a href="https://docs.docker.com/docker-cloud/apps/stack-yaml-reference/">docker <em>stack</em></a> file (<code>docker-stack.yml</code>). The stack file is very similar to a compose file, but removes container names, and adds a new section - secrets.</p>
-<p>The stack expects you to provide seven secrets:</p>
-<ul>
-<li>
-<p>cert-flowkit.pem</p>
-<p>An SSL certificate file (should contain private key as well)</p>
-</li>
-<li>
-<p>API_DB_USER</p>
-<p>The username the API will use to connect to FlowDB</p>
-</li>
-<li>
-<p>API_DB_PASS</p>
-<p>The password that the API will use to connect to FlowDB</p>
-</li>
-<li>
-<p>FM_DB_USER</p>
-<p>The username that FlowMachine will use to connect to FlowDB</p>
-</li>
-<li>
-<p>FM_DB_PASS </p>
-<p>The password that FlowMachine will use to connect to FlowDB</p>
-</li>
-<li>
-<p>POSTGRES_PASSWORD_FILE</p>
-<p>The superuser password for the <code>flowdb</code> user </p>
-</li>
-<li>
-<p>JWT_SECRET_KEY</p>
-<p>The secret key used to sign API access tokens</p>
-</li>
-<li>
-<p>REDIS_PASSWORD_FILE</p>
-<p>The password protecting the redis instance</p>
-</li>
-</ul>
-<p>To make use of secrets you will need to use docker swarm. For testing purposes, you can set up a single node swarm by running <code>docker swarm init</code>.</p>
-<p>Once you have created a swarm, you can add secrets to it using the <a href="https://docs.docker.com/engine/reference/commandline/secret_create/">docker secret</a> command. For example, to add a randomly generated password for the <code>FM_DB_PASS</code> secret:</p>
-<div class="codehilite"><pre><span></span>openssl rand -base64 <span class="m">16</span> <span class="p">|</span> docker secret create FM_DB_PASS -
-</pre></div>
-
-<p>And to add the (unsigned) localhost SSL certificate supplied in the <code>integration_tests</code> directory:</p>
-<div class="codehilite"><pre><span></span>docker secret create cert-flowkit.pem integration_tests/cert.pem
-</pre></div>
-
-<p>(Note that unlike the other examples, we are supplying a <em>file</em> rather than piping to stdin.)</p>
-<p>Once you have added all five required secrets, you can use <code>docker stack</code> to spin up FlowKit, much as you would <code>docker-compose</code>:</p>
-<div class="codehilite"><pre><span></span><span class="nb">cd</span> secrets_quickstart
-docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
-</pre></div>
-
-<p>After which, the API will be available via HTTPS (and no longer available via HTTP). Note that to access the API using FlowClient, you'll need to provide the path to the certificate as the <code>ssl_certificate</code> argument when calling <code>flowclient.Connection</code> (much as you would if using a self-signed certificate with <code>requests</code>):</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">flowclient</span>
-<span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="o">=</span><span class="s2">&quot;/home/username/flowkit/integration_tests/client_cert.pem&quot;</span><span class="p">)</span>
-</pre></div>
-
-<h3 id="secrets-quickstart">Secrets Quickstart<a class="headerlink" href="#secrets-quickstart" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><span class="nb">cd</span> secrets_quickstart
-pipenv run secrets_quickstart
-</pre></div>
-
-<p>This will bring up a single node swarm, create random 16 character passwords for the database users, generate a certificate valid for the <code>flowkit.api</code> domain (and point that to <code>localhost</code> using <code>/etc/hosts</code>), pull all necessary containers, and bring up the API with <code>secret</code> as the JWT secret key.</p>
-<p>Note that if you wish to deploy a branch other than master, you should set the <code>CIRCLE_BRANCH</code> environment variable before running, to ensure that Docker pulls the correct tags.</p>
-<p>You can then provide the certificate to <code>flowclient</code>, and finally connect via https:</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">flowclient</span>
-<span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="o">=</span><span class="s2">&quot;&lt;path_to_cert.pem&gt;&quot;</span><span class="p">)</span>
-</pre></div>
-
-<p>(This generates a certificate valid for the <code>flow.api</code> domain as well, which you can use by adding a corresponding entry to your <code>/etc/hosts</code> file.)</p>
+<p>FlowKit is in active development, visit the project's  <a href="../developer/roadmap">roadmap</a> to get a sense about upcoming developments.</p>
+<p>Continue to the FlowKit <a href="install/">installation documents</a> to find out what type of install meets your requirements.</p>
+<p>These documents are also hosted on <a href="https://flowminder.github.io/FlowKit">https://flowminder.github.io/FlowKit/</a>.</p>
+<h2 id="feature-requests">Feature requests<a class="headerlink" href="#feature-requests" title="Permanent link">&para;</a></h2>
+<p>Please send us your ideas on how to improve FlowKit to <a href="mailto:flowkit@flowminder.org">flowkit@flowminder.org</a>.
+Or add requests here: <a href="https://github.com/Flowminder/FlowKit/issues">Feature requests</a>.</p>
                 
                   
                 
@@ -547,6 +490,27 @@ pipenv run secrets_quickstart
       
         
 <footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+        
+          <a href="install/" title="Installation" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Installation
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">

@@ -36,7 +36,7 @@
     
     
       
-        <title>utils</title>
+        <title>server</title>
       
     
     
@@ -103,7 +103,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#flowmachinecoreutils" tabindex="1" class="md-skip">
+      <a href="#flowmachinecoreserver" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -129,7 +129,7 @@
                 FlowKit
               </span>
               <span class="md-header-nav__topic">
-                utils
+                server
               </span>
             
           
@@ -334,42 +334,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#pretty_sql" title="pretty_sql" class="md-nav__link">
-    pretty_sql
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#returns" title="Returns" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -381,49 +345,7 @@
               
                 
                 
-                <h1 id="flowmachinecoreutils">flowmachine.core.utils<a class="headerlink" href="#flowmachinecoreutils" title="Permanent link">&para;</a></h1>
-<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/utils.py#L0">flowmachine/core/utils.py</a></p>
-<p>Utility functions that are used only by the core code and are not therefore user facing.</p>
-<h2 id="pretty_sql">pretty_sql<a class="headerlink" href="#pretty_sql" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">pretty_sql</span><span class="p">(</span>
-    <span class="n">sql</span><span class="p">,</span>
-    <span class="n">compact_lists_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">split_string_literals_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">special_functions</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-    <span class="n">comma_at_eoln</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/utils.py#L18">flowmachine/core/utils.py</a></p>
-<p>Prettify and validate the syntax of an SQL query, using pglast</p>
-<h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
-<ul>
-<li>
-<p><code>sql</code>: <code>str</code></p>
-<p>SQL to prettyify and validate</p>
-</li>
-<li>
-<p><code>compact_lists_margin</code>: <code>int</code>, default <code>0</code></p>
-<p>Use compact form for lists shorter than this</p>
-</li>
-<li>
-<p><code>split_string_literals_threshold</code>: <code>int</code>, default <code>0</code></p>
-<p>Split strings (in the sql) longer than this threshold</p>
-</li>
-<li>
-<p><code>special_functions</code>: <code>bool</code>, default <code>True</code></p>
-<p>Translate some special functions to their more commonly used forms</p>
-</li>
-<li>
-<p><code>comma_at_eoln</code></p>
-</li>
-</ul>
-<h3 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h3>
-<ul>
-<li>
-<p><code>str</code></p>
-<p>The prettified string.</p>
-</li>
-</ul>
+                <h1 id="flowmachinecoreserver">flowmachine.core.server<a class="headerlink" href="#flowmachinecoreserver" title="Permanent link">&para;</a></h1>
                 
                   
                 
