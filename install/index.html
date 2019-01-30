@@ -1,0 +1,885 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.2.0">
+    
+    
+      
+        <title>Installation - FlowKit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.572ca0f0.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.22915126.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.8c900955.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/mermaid@7.1.2/dist/mermaid.css">
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="#095798" data-md-color-accent="#2977b8">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="__github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#how-to-install-flowkit" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="FlowKit" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                FlowKit
+              </span>
+              <span class="md-header-nav__topic">
+                Installation
+              </span>
+            
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#__github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      Flowminder/FlowKit
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+<nav class="md-tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href=".." title="FlowKit" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    FlowKit
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#__github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      Flowminder/FlowKit
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../introduction/" title="Introduction" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Installation
+      </label>
+    
+    <a href="./" title="Installation" class="md-nav__link md-nav__link--active">
+      Installation
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-install" title="Quick Install" class="md-nav__link">
+    Quick Install
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#server-and-authentication-installation" title="Server and Authentication Installation" class="md-nav__link">
+    Server and Authentication Installation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-flowauth" title="Installing FlowAuth" class="md-nav__link">
+    Installing FlowAuth
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowauth-quickstart" title="FlowAuth Quickstart" class="md-nav__link">
+    FlowAuth Quickstart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generating-tokens-with-flowauth-for-use-in-flowclient" title="Generating tokens with FlowAuth for use in FlowClient" class="md-nav__link">
+    Generating tokens with FlowAuth for use in FlowClient
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowclient" title="FlowClient  " class="md-nav__link">
+    FlowClient  
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developer-install" title="Developer Install" class="md-nav__link">
+    Developer Install
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#production-install" title="Production Install" class="md-nav__link">
+    Production Install
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowauth-production-deployment" title="FlowAuth Production Deployment" class="md-nav__link">
+    FlowAuth Production Deployment
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-with-secrets" title="Running with Secrets" class="md-nav__link">
+    Running with Secrets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets-quickstart" title="Secrets Quickstart" class="md-nav__link">
+    Secrets Quickstart
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../flowclient/" title="Analyst" class="md-nav__link">
+      Analyst
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../developer/roadmap/" title="Developer" class="md-nav__link">
+      Developer
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../administrator/cache_management/" title="Administrator" class="md-nav__link">
+      Administrator
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-install" title="Quick Install" class="md-nav__link">
+    Quick Install
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#server-and-authentication-installation" title="Server and Authentication Installation" class="md-nav__link">
+    Server and Authentication Installation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-flowauth" title="Installing FlowAuth" class="md-nav__link">
+    Installing FlowAuth
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowauth-quickstart" title="FlowAuth Quickstart" class="md-nav__link">
+    FlowAuth Quickstart
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generating-tokens-with-flowauth-for-use-in-flowclient" title="Generating tokens with FlowAuth for use in FlowClient" class="md-nav__link">
+    Generating tokens with FlowAuth for use in FlowClient
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flowclient" title="FlowClient  " class="md-nav__link">
+    FlowClient  
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developer-install" title="Developer Install" class="md-nav__link">
+    Developer Install
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#production-install" title="Production Install" class="md-nav__link">
+    Production Install
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flowauth-production-deployment" title="FlowAuth Production Deployment" class="md-nav__link">
+    FlowAuth Production Deployment
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-with-secrets" title="Running with Secrets" class="md-nav__link">
+    Running with Secrets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets-quickstart" title="Secrets Quickstart" class="md-nav__link">
+    Secrets Quickstart
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="how-to-install-flowkit">How to Install FlowKit<a class="headerlink" href="#how-to-install-flowkit" title="Permanent link">&para;</a></h1>
+<p>There are three main ways to install FlowKit.</p>
+<ul>
+<li><a href="#quickinstall">Quick install</a>; suitable for a try-out on a local PC, includes basic example using FlowClient.</li>
+<li><a href="#developers">Developer install</a>; for those wishing to contribute code</li>
+<li><a href="#prodinstall">Production install</a>; for deployment, e.g. inside an MNO firewall </li>
+</ul>
+<p><a name="quickinstall"></p>
+<h2 id="quick-install">Quick Install<a class="headerlink" href="#quick-install" title="Permanent link">&para;</a></h2>
+<p>This quick install guide will install the major components of FlowKit together with an intial setup and example analysis query.</p>
+<p>The bulk of the installation process consists of downloading <a href="https://docs.docker.com/install/">Docker</a> containers from <a href="https://cloud.docker.com/">DockerCloud</a>, using <a href="https://docs.docker.com/compose/">Docker Compose</a>. Followed by a pip install of FlowClient.</p>
+<p>These instructions assume use of <a href="https://github.com/pyenv/pyenv">Pyenv</a> and <a href="https://github.com/pypa/pipenv">Pipenv</a>. <a href="https://www.anaconda.com/what-is-anaconda/">Anaconda</a> stack based installation commands may be different. </p>
+<h3 id="server-and-authentication-installation">Server and Authentication Installation<a class="headerlink" href="#server-and-authentication-installation" title="Permanent link">&para;</a></h3>
+<p>Docker containers for FlowAPI, FlowMachine and FlowDB are provided in the <a href="https://cloud.docker.com/">DockerCloud</a> repositories <code>flowminder/flowapi</code>, <code>flowminder/flowmachine</code> and <code>flowminder/flowdb</code>, respectively. You will need <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a>.</p>
+<p>Create a directory for your FlowKit install and move into it. Download the <a href="https://github.com/Flowminder/FlowKit/raw/master/docker-compose.yml"><code>docker-compose.yml</code></a> file.</p>
+<p><div class="codehilite"><pre><span></span>wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/docker-compose.yml
+</pre></div>
+Note, it is possible to replace <code>master</code> in the above url to install other releases.</p>
+<p>The compose file expects the <code>JWT_SECRET_KEY</code> environment variable to be set. It is used on FlowAuth and FlowAPI to sign and verify access to the API.</p>
+<p>Start the FlowKit test system by running 
+<div class="codehilite"><pre><span></span><span class="nv">JWT_SECRET_KEY</span><span class="o">=</span>secret docker-compose up -d
+</pre></div>
+This will pull any necessary docker containers, and start the system in the background with the API exposed on port <code>9090</code> by default.  </p>
+<p>In order to use the test system, now install FlowClient and FlowAuth. </p>
+<h3 id="installing-flowauth">Installing FlowAuth<a class="headerlink" href="#installing-flowauth" title="Permanent link">&para;</a></h3>
+<p>FlowAuth must be installed to provide centralised token based authentication management for FlowKit systems.</p>
+<h4 id="flowauth-quickstart">FlowAuth Quickstart<a class="headerlink" href="#flowauth-quickstart" title="Permanent link">&para;</a></h4>
+<p>To run a demonstration version of FlowAuth use:</p>
+<div class="codehilite"><pre><span></span>docker run -p <span class="m">8000</span>:80 -e <span class="nv">DEMO_MODE</span><span class="o">=</span><span class="m">1</span> flowminder/flowauth
+</pre></div>
+
+<p>This will start FlowAuth, and pre-populate a disposable sqlite database with some dummy data. </p>
+<p>The FlowAuth administration tool cannot be started at <a href="http://localhost:8000/" target="_blank"><a href="http://localhost:8000">http://localhost:8000</a></a>. Log in with either <code>TEST_ADMIN:DUMMY_PASSWORD</code> or <code>TEST_USER:DUMMY_PASSWORD</code>.</p>
+<h4 id="generating-tokens-with-flowauth-for-use-in-flowclient">Generating tokens with FlowAuth for use in FlowClient<a class="headerlink" href="#generating-tokens-with-flowauth-for-use-in-flowclient" title="Permanent link">&para;</a></h4>
+<p>The following steps using the FlowAuth administration tool are required to add a user and allow them to generate access tokens to communicate with a FlowKit server using FlowClient:</p>
+<ol>
+<li>
+<p>Log into FlowAuth as an administrator.</p>
+</li>
+<li>
+<p>Under "API Routes", add any applicable API routes (e.g. <code>daily_location</code>).</p>
+</li>
+<li>
+<p>Under "Aggregation Units", add any applicable aggregation units (e.g. <code>admin3</code>).</p>
+</li>
+<li>
+<p>Under "Servers", add a new server and give it a name and secret key. Note that the Secret Key must match the <code>JWT_SECRET_KEY</code> set in the flowapi docker container on this server ('secret' in the example above).</p>
+</li>
+<li>
+<p>Enable any permissions for this server under "API Permissions", and aggregation units under "Aggregation Units".</p>
+</li>
+<li>
+<p>Under "Users", add a new user, and set the username and password.</p>
+</li>
+<li>
+<p>Either:</p>
+<ul>
+<li>Add a server to the user, and enable/disable API permissions and aggregation units,
+<p></li>
+</ul>
+</li>
+<li>
+<p>Or:
+    <p></p>
+<ul>
+<li>
+<p>Under "Groups", add a new group,</p>
+</li>
+<li>
+<p>Add a server to the group, and enable/disable API permissions and aggregation units,</p>
+</li>
+<li>
+<p>Add the user to the group.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>The user can then log in and generate a token:</p>
+<ol>
+<li>
+<p>Log into FlowAuth (<a href="http://localhost:8000/" target="_blank"><a href="http://localhost:8000">http://localhost:8000</a></a>) using the username and password created by the administrator.</p>
+</li>
+<li>
+<p>Optionally, click on the person icon (top right) and reset password.</p>
+</li>
+<li>
+<p>Select the server under "My Servers".</p>
+</li>
+<li>
+<p>Click the '+' icon to add a token, and give it a name (and optionally change the expiry and permissions). And Save.</p>
+</li>
+<li>
+<p>Click "TOKEN" to display the token string. Take a copy.</p>
+</li>
+</ol>
+<h3 id="flowclient">FlowClient <a name="flowclient"> </a><a class="headerlink" href="#flowclient" title="Permanent link">&para;</a></h3>
+<p>The FlowClient Python client is used to perform CDR analysis using the JupyterLab Python Data Science Stack. It may be installed using pip:</p>
+<div class="codehilite"><pre><span></span>pip install flowclient
+</pre></div>
+
+<p>Quick install is continued with an example of FlowClient usage <a href="../flowclient">here</a>.</p>
+<p><a name="developers"></p>
+<h2 id="developer-install">Developer Install</a><a class="headerlink" href="#developer-install" title="Permanent link">&para;</a></h2>
+<p>After cloning the <a href="https://github.com/Flowminder/FlowKit">GitHub repository</a>, the FlowKit system can be started by running <code>make up</code> in the root directory. This requires <a href="https://docs.docker.com/install/">Docker</a> and <a href="https://docs.docker.com/compose/install/">Docker Compose</a> to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the <code>docker-compose-dev.yml</code> file.</p>
+<p>FlowKit uses <a href="https://pipenv.readthedocs.io/">pipenv</a> to manage Python environments. To start a Python session in which you can use FlowClient:</p>
+<div class="codehilite"><pre><span></span>cd flowclient
+pipenv install
+pipenv run python
+&gt;&gt;&gt; import flowclient
+</pre></div>
+
+<p>To run the tests in the <code>flowapi</code>, <code>flowclient</code>, <code>flowdb</code>, <code>flowmachine</code> or <code>integration_tests</code> directory:</p>
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> &lt;directory&gt;
+pipenv install --dev
+pipenv run pytest
+</pre></div>
+
+<p><a name="prodinstall"></p>
+<h2 id="production-install">Production Install<a class="headerlink" href="#production-install" title="Permanent link">&para;</a></h2>
+<p>Contact Flowminder on <a href="mailto:flowkit@flowminder.org">flowkit@flowminder.org</a> for full instructions. Instructions on FlowAuth production deployment and dealing with docker secrets is described below. Note that these instructions are likely subject to change.</p>
+<h3 id="flowauth-production-deployment">FlowAuth Production Deployment<a class="headerlink" href="#flowauth-production-deployment" title="Permanent link">&para;</a></h3>
+<p>FlowAuth is designed to be deployed as a single Docker container working in cooperation with a database and, typically, an ssl reverse proxy (e.g. <a href="https://github.com/jwilder/nginx-proxy">nginx-proxy</a> combined with <a href="https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion">letsencrypt-nginx-proxy-companion</a>).</p>
+<p>FlowAuth supports any database supported by <a href="https://sqlache.me">SQLAlchemy</a>, and to connect you will only need to supply a correct URI for the database either using the <code>DB_URI</code> environment variable, or by setting the <code>DB_URI</code> secret. If <code>DB_URI</code> is not set, a temporary sqlite database will be created.</p>
+<p>On first use, you will need to create the necessary tables and an administrator account. </p>
+<p>To initialise the tables, you can either set the <code>INIT_DB</code> environment variable to <code>true</code>, or run <code>flask init-db</code> from inside the container (<code>docker exec &lt;container-id&gt; flask init-db</code>).</p>
+<p>To create an initial administrator, use the <code>ADMIN_USER</code> and <code>ADMIN_PASSWORD</code> environment variables or set them as secrets. Alternatively, you may run <code>flask add-admin &lt;username&gt; &lt;password&gt;</code> from inside the container. You can combine these environment variables with the <code>INIT_DB</code> environment variable.</p>
+<p>You <em>must</em> also provide two additional environment variables or secrets: <code>FERNET_KEY</code>, and <code>SECRET_KEY</code>. <code>FERNET_KEY</code> is used to encrypt server secret keys, and tokens while 'at rest' in the database, and decrypt them for use. <code>SECRET_KEY</code> is used to secure session, and CSRF protection cookies.</p>
+<p>By default, <code>SECRET_KEY</code> will be set to <code>secret</code>. You should supply this to ensure a secure system.</p>
+<p>While <code>SECRET_KEY</code> can be any arbitrary string, <code>FERNET_KEY</code> should be a valid Fernet key. A convenience command is provided to generate one - <code>flask get-fernet</code>.  </p>
+<h4 id="running-with-secrets">Running with Secrets<a class="headerlink" href="#running-with-secrets" title="Permanent link">&para;</a></h4>
+<p>The standard Docker compose file supplies a number of 'secret' values as environment variables. Typically, this is a bad idea.</p>
+<p>Instead, you should make use of <a href="https://docs.docker.com/engine/swarm/secrets/">docker secrets</a>, which are stored securely in docker and only made available <em>inside</em> containers.  The <code>secrets_quickstart</code> directory contains a <a href="https://docs.docker.com/docker-cloud/apps/stack-yaml-reference/">docker <em>stack</em></a> file (<code>docker-stack.yml</code>). The stack file is very similar to a compose file, but removes container names, and adds a new section - secrets.</p>
+<p>The stack expects you to provide seven secrets:</p>
+<ul>
+<li>
+<p>cert-flowkit.pem</p>
+<p>An SSL certificate file (should contain private key as well)</p>
+</li>
+<li>
+<p>API_DB_USER</p>
+<p>The username the API will use to connect to FlowDB</p>
+</li>
+<li>
+<p>API_DB_PASS</p>
+<p>The password that the API will use to connect to FlowDB</p>
+</li>
+<li>
+<p>FM_DB_USER</p>
+<p>The username that FlowMachine will use to connect to FlowDB</p>
+</li>
+<li>
+<p>FM_DB_PASS </p>
+<p>The password that FlowMachine will use to connect to FlowDB</p>
+</li>
+<li>
+<p>POSTGRES_PASSWORD_FILE</p>
+<p>The superuser password for the <code>flowdb</code> user </p>
+</li>
+<li>
+<p>JWT_SECRET_KEY</p>
+<p>The secret key used to sign API access tokens</p>
+</li>
+</ul>
+<p>To make use of secrets you will need to use docker swarm. For testing purposes, you can set up a single node swarm by running <code>docker swarm init</code>.</p>
+<p>Once you have created a swarm, you can add secrets to it using the <a href="https://docs.docker.com/engine/reference/commandline/secret_create/">docker secret</a> command. For example, to add a randomly generated password for the <code>FM_DB_PASS</code> secret:</p>
+<div class="codehilite"><pre><span></span>openssl rand -base64 <span class="m">16</span> <span class="p">|</span> docker secret create FM_DB_PASS -
+</pre></div>
+
+<p>And to add the (unsigned) localhost SSL certificate supplied in the <code>integration_tests</code> directory:</p>
+<div class="codehilite"><pre><span></span>docker secret create cert-flowkit.pem integration_tests/cert.pem
+</pre></div>
+
+<p>(Note that unlike the other examples, we are supplying a <em>file</em> rather than piping to stdin.)</p>
+<p>Once you have added all five required secrets, you can use <code>docker stack</code> to spin up FlowKit, much as you would <code>docker-compose</code>:</p>
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> secrets_quickstart
+docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
+</pre></div>
+
+<p>After which, the API will be available via HTTPS (and no longer available via HTTP). Note that to access the API using FlowClient, you'll need to provide the path to the certificate as the <code>ssl_certificate</code> argument when calling <code>flowclient.Connection</code> (much as you would if using a self-signed certificate with <code>requests</code>):</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">flowclient</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="o">=</span><span class="s2">&quot;/home/username/flowkit/integration_tests/client_cert.pem&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="secrets-quickstart">Secrets Quickstart<a class="headerlink" href="#secrets-quickstart" title="Permanent link">&para;</a></h4>
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> secrets_quickstart
+docker login
+docker swarm init
+openssl rand -base64 <span class="m">16</span> <span class="p">|</span> docker secret create FM_DB_PASS -
+<span class="nb">echo</span> <span class="s2">&quot;fm&quot;</span> <span class="p">|</span> docker secret create FM_DB_USER -
+<span class="nb">echo</span> <span class="s2">&quot;api&quot;</span> <span class="p">|</span> docker secret create API_DB_USER -
+openssl rand -base64 <span class="m">16</span> <span class="p">|</span> docker secret create API_DB_PASS -
+openssl rand -base64 <span class="m">16</span> <span class="p">|</span> docker secret create POSTGRES_PASSWORD_FILE -
+openssl req -newkey rsa:4096 -days <span class="m">3650</span> -nodes -x509 -subj <span class="s2">&quot;/CN=flow.api&quot;</span> <span class="se">\</span>
+    -extensions SAN <span class="se">\</span>
+    -config &lt;<span class="o">(</span> cat <span class="k">$(</span> <span class="o">[[</span> <span class="s2">&quot;Darwin&quot;</span> -eq <span class="s2">&quot;</span><span class="k">$(</span>uname -s<span class="k">)</span><span class="s2">&quot;</span> <span class="o">]]</span>  <span class="o">&amp;&amp;</span> <span class="nb">echo</span> /System/Library/OpenSSL/openssl.cnf <span class="o">||</span> <span class="nb">echo</span> /etc/ssl/openssl.cnf  <span class="k">)</span> <span class="se">\</span>
+    &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s2">&quot;[SAN]\nsubjectAltName=&#39;DNS.1:localhost,DNS.2:flow.api&#39;&quot;</span><span class="o">))</span> <span class="se">\</span>
+    -keyout cert.key -out cert.pem
+cat client_cert.key cert.pem &gt; cert-flowkit.pem
+docker secret create cert-flowkit.pem cert-flowkit.pem
+<span class="nb">echo</span> <span class="s2">&quot;secret&quot;</span> <span class="p">|</span> docker secret create JWT_SECRET_KEY -
+docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
+</pre></div>
+
+<p>This will bring up a single node swarm, create random 16 character passwords for the database users, generate a certificate valid for the <code>flowkit.api</code> domain (and point that to <code>localhost</code> using <code>/etc/hosts</code>), pull all necessary containers, and bring up the API with <code>secret</code> as the JWT secret key.</p>
+<p>For convenience, you can also do <code>pipenv run secrets_quickstart</code> from the <code>secrets_quickstart</code> directory.</p>
+<p>Note that if you wish to deploy a branch other than master, you should set the <code>CIRCLE_BRANCH</code> environment variable before running, to ensure that Docker pulls the correct tags.</p>
+<p>You can then provide the certificate to <code>flowclient</code>, and finally connect via https:</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">flowclient</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">flowclient</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="s2">&quot;https://localhost:9090&quot;</span><span class="p">,</span> <span class="s2">&quot;JWT_STRING&quot;</span><span class="p">,</span> <span class="n">ssl_certificate</span><span class="o">=</span><span class="s2">&quot;&lt;path_to_cert.pem&gt;&quot;</span><span class="p">)</span>
+</pre></div>
+
+<p>(This generates a certificate valid for the <code>flow.api</code> domain as well, which you can use by adding a corresponding entry to your <code>/etc/hosts</code> file.)</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../introduction/" title="Introduction" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Introduction
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../flowclient/" title="Analyst" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Analyst
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.b41f3d20.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      
+        <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+      
+    
+    
+      
+    
+  </body>
+</html>
