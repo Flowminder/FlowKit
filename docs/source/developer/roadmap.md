@@ -116,7 +116,7 @@ As explained in the [quick install guide](install.md), user authentication and a
 
     Level of spatial aggregation at which the user is allowed to access the results of queries. Currently supports administrative levels `admin0`, `admin1`, `admin2`, `admin3`.
 
-JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The [FlowAuth](../flowauth/) authentication management system is designed to generate JWTs for accessing FlowAPI.
+JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The [FlowAuth](../../flowauth/) authentication management system is designed to generate JWTs for accessing FlowAPI.
 
 
 <a name="flowmachine">
@@ -127,7 +127,7 @@ FlowMachine is a Python toolkit for the analysis of CDR data. It is essentially 
 
 ### Documentation
 
-Documentation for FlowMachine can be found [here](../developer/api/flowmachine).
+Documentation for FlowMachine can be found [here](../../developer/api/flowmachine).
 
 
 <a name="flowdb">
