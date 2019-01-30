@@ -14,7 +14,7 @@ pip install flowclient
 
 ### Example FlowClient usage
 
-Example usage of FlowClient to run daily location, modal location and flow queries is provided [here](analyst/example_usage/).
+Example usage of FlowClient to run daily location, modal location and flow queries is provided [here](../analyst/example_usage/).
 
 
 <a name="flowapi">
