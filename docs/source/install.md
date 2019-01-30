@@ -134,7 +134,7 @@ pipenv run pytest
 
 ## Production Install 
 
-Contact Flowminder on [flowkit@flowminder.org](mailto:flowkit@flowminder.org) for full instructions. FlowAuth production deployment is described below.
+Contact Flowminder on [flowkit@flowminder.org](mailto:flowkit@flowminder.org) for full instructions. Instructions on FlowAuth production deployment and dealing with docker secrets is described below. Note that these instructions are likely subject to change.
 
 
 ### FlowAuth Production Deployment
