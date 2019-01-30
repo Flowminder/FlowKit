@@ -206,7 +206,7 @@ class LabelEventScore(Query):
         Returns
         -------
         bool
-            True if any bounds overlap
+            True if none of the bounds overlap, otherwise False.
         """
 
         flattened_bounds = [
@@ -218,4 +218,4 @@ class LabelEventScore(Query):
                 if bound.intersects(bound_b):
                     error = f"Label '{label}' bounds overlaps with that of '{label_b}'."
                     raise ValueError(error)
-        return False
+        return True

@@ -104,7 +104,7 @@ def test_overlaps_bounds_dict():
             "coordinates": [[[-1, -0.5], [-1, 0.5], [0, 0.5], [0, -0.5]]],
         },
     }
-    assert not LabelEventScore.verify_bounds_dict_has_no_overlaps(
+    assert LabelEventScore.verify_bounds_dict_has_no_overlaps(
         LabelEventScore._convert_bounds_to_shapely_polygons(bounds_dict)
     )
 
