@@ -570,7 +570,7 @@ def meaningful_locations_aggregate(
 ) -> dict:
     """
     Return a count of meaningful locations at some unit of spatial aggregation.
-    Generates clusters of towers used by subscribers' over the given time period, scores the clusters based on the
+    Generates clusters of towers used by subscribers over the given time period, scores the clusters based on the
     subscribers' usage patterns over hours of the day and days of the week. Each subscriber then has a number of
     clusters, each of which has a score for hourly usage, and day of week usage. These clusters are then labelled
     based on whether they overlap with the regions of that space defined in the `labels` parameter.
