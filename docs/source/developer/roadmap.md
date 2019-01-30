@@ -1,6 +1,6 @@
 # Information for Developers
 
-Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](install.md). 
+Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](../install.md). 
 
 An outline roadmap is provided below together with details about [contributing to the project](#contrib).
 
@@ -50,7 +50,7 @@ FlowDB details are found [here](#flowdb).
 
 ### Contributing
 
-We are creating FlowKit at [Flowminder](https://flowminder.org).
+We are creating FlowKit at [Flowminder](http://flowminder.org).
 
 #### Get involved
 You are welcome to contribute to the FlowKit library. To get started:  
@@ -106,7 +106,7 @@ At present, four query types are accessible through FlowAPI:
 
 ### FlowAPI Access tokens
 
-As explained in the [quick install guide](install.md), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
+As explained in the [quick install guide](../install.md), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
 
 - API route permissions
 
