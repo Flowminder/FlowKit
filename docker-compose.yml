@@ -12,7 +12,7 @@ networks:
 services:
     flowdb-testdata:
         container_name: flowdb_testdata
-        image: flowminder/flowdb:testdata-latest 
+        image: flowminder/flowdb:testdata-latest
         environment:
             - POSTGRES_DB=${POSTGRES_DB:-flowdb}
             - POSTGRES_USER=${POSTGRES_USER:-flowdb}

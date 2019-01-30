@@ -11,8 +11,9 @@ These methods are great options for reducing the dimensionality of the
 problem in hand.
 """
 
-from typing import List
+from typing import List, Union
 
+from ..utilities import subscriber_locations
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
 from .call_days import CallDays
@@ -118,13 +119,15 @@ def subscriber_location_cluster(
         buffer = kwargs.pop("buffer", 0)
 
         cd = CallDays(
-            start=start,
-            stop=stop,
-            hours=hours,
-            level="versioned-site",
-            table=table,
-            subscriber_identifier=subscriber_identifier,
-            **kwargs,
+            subscriber_locations(
+                start=start,
+                stop=stop,
+                hours=hours,
+                level="versioned-site",
+                table=table,
+                subscriber_identifier=subscriber_identifier,
+                **kwargs,
+            )
         )
 
         return HartiganCluster(
@@ -208,18 +211,33 @@ class HartiganCluster(BaseCluster):
 
     """
 
-    def __init__(self, calldays, radius, buffer=0, call_threshold=0):
+    def __init__(
+        self,
+        *,
+        calldays: CallDays,
+        radius: Union[float, str],
+        buffer: float = 0,
+        call_threshold: int = 0,
+    ):
         """
         """
 
         self.calldays = calldays
-        self.radius = radius
-        self.call_threshold = call_threshold
-        self.buffer = buffer
-        if not isinstance(calldays, Query):
+        try:
+            if (
+                "site_id" not in calldays.column_names
+                or "version" not in calldays.column_names
+            ):
+                raise ValueError(
+                    "calldays must include 'site_id' and 'version' columns."
+                )
+        except AttributeError:
             raise TypeError(
                 "calldays must be a subclass of Query (e.g. CallDays, Table, CustomQuery"
             )
+        self.radius = float(radius)
+        self.call_threshold = int(call_threshold)
+        self.buffer = float(buffer)
         super().__init__()
 
     def _make_query(self):
@@ -318,6 +336,10 @@ class _JoinedHartiganCluster(BaseCluster):
         if not isinstance(query, Query):
             raise TypeError(
                 f"{query} is not a valid type of object. Should be a Query type object."
+            )
+        if "site_id" not in query.column_names or "version" not in query.column_names:
+            raise ValueError(
+                "scores query must include 'site_id' and 'version' columns."
             )
         super().__init__()
 

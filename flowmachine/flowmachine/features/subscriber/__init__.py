@@ -28,7 +28,8 @@ from .proportion_outgoing import ProportionOutgoing
 from .unique_location_counts import UniqueLocationCounts
 from .total_active_periods import TotalActivePeriodsSubscriber
 from .contact_balance import ContactBalance
-from .scores import EventScore, LabelEventScore
+from .scores import EventScore
+from .label_event_score import LabelEventScore
 
 from .pareto_interactions import ParetoInteractions
 
@@ -47,6 +48,11 @@ from .subscriber_call_durations import (
     PairedPerLocationSubscriberCallDurations,
 )
 
+from .meaningful_locations import (
+    MeaningfulLocations,
+    MeaningfulLocationsAggregate,
+    MeaningfulLocationsOD,
+)
 
 __all__ = [
     "RadiusOfGyration",
@@ -83,4 +89,7 @@ __all__ = [
     "Displacement",
     "MostFrequentLocation",
     "LastLocation",
+    "MeaningfulLocations",
+    "MeaningfulLocationsAggregate",
+    "MeaningfulLocationsOD",
 ]

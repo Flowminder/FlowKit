@@ -31,6 +31,8 @@ services:
         container_name: 'flowmachine'
         image: "flowminder/flowmachine:${CIRCLE_BRANCH:-latest}"
         restart: always
+        ports:
+          - 5555:5555
         environment:
             - DB_PORT=${DB_PORT:-5432}
             - DB_HOST=${DB_HOST:-flowdb}

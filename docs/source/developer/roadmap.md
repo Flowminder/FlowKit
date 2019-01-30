@@ -90,7 +90,7 @@ At present, four query types are accessible through FlowAPI:
 
 - `daily_location`
 
-    A statistic representing where subscribers are on a given day, aggregated to a spatial location level.
+    A statistic representing where subscribers are on a given day, aggregated to a spatial unit.
 
 - `modal_location`
 
@@ -102,7 +102,18 @@ At present, four query types are accessible through FlowAPI:
 
 - `location_event_counts`
 
-    Count of total interactions in a time period, aggregated to a spatial location level.
+    Count of total interactions in a time period, aggregated to a spatial unit.
+
+- `meaningful_locations_aggregate`
+
+    Count of "meaningful" locations for individual subscribers (for example, home and work)
+    based on a clustering of the cell towers they use and their usage patterns for those towers,
+    aggregated to a spatial unit.
+
+- `meaningful_locations_od_matrix`
+
+    OD matrix between two individual-level "meaningful" locations (see above), aggregated to a spatial unit.
+
 
 ### FlowAPI Access tokens
 

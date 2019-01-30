@@ -10,11 +10,12 @@ represent the number of days that a subscriber
 is connected to a given tower within a
 specified time period.
 """
-from typing import List
+from typing import List, Union
 
-from flowmachine.utils.utils import get_columns_for_level
+from ...core import JoinToLocation
+from ...utils.utils import get_columns_for_level
 from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import subscriber_locations
+from ..utilities.subscriber_locations import _SubscriberCells
 
 
 class CallDays(SubscriberFeature):
@@ -25,64 +26,23 @@ class CallDays(SubscriberFeature):
 
     Parameters
     ----------
-    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
-        Either msisdn, or imei, the column that identifies the subscriber.
-    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
-        If provided, string or list of string which are msisdn or imeis to limit
-        results to; or, a query or table which has a column with a name matching
-        subscriber_identifier (typically, msisdn), to limit results to.
+    subscriber_locations : JoinToLocation, _SubscriberCells
+        Locations of subscribers' interactions
 
     See Also
     --------
     flowmachine.features.subscriber_locations
     """
 
-    def __init__(
-        self,
-        start,
-        stop,
-        *,
-        level="cell",
-        hours="all",
-        table="all",
-        subscriber_identifier="msisdn",
-        ignore_nulls=True,
-        column_name=None,
-        subscriber_subset=None,
-        polygon_table=None,
-        size=None,
-        radius=None,
-    ):
-        """
-
-
-        """
-        # the call days class just need the distinct subscriber-location
-        # per day
-        self.ul = subscriber_locations(
-            start=start,
-            stop=stop,
-            level=level,
-            hours=hours,
-            table=table,
-            subscriber_identifier=subscriber_identifier,
-            ignore_nulls=ignore_nulls,
-            column_name=column_name,
-            subscriber_subset=subscriber_subset,
-            polygon_table=polygon_table,
-            size=size,
-            radius=radius,
-        )
-        self.level = self.ul.level
-        self.column_name = self.ul.column_name
-
+    def __init__(self, subscriber_locations: Union[JoinToLocation, _SubscriberCells]):
+        self.ul = subscriber_locations
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
         return (
             ["subscriber"]
-            + get_columns_for_level(self.level, self.column_name)
+            + get_columns_for_level(self.ul.level, self.ul.column_name)
             + ["calldays"]
         )
 
@@ -93,7 +53,7 @@ class CallDays(SubscriberFeature):
         Returns a sorted calldays table.
         """
         relevant_columns = ", ".join(
-            get_columns_for_level(self.level, self.column_name)
+            get_columns_for_level(self.ul.level, self.ul.column_name)
         )
 
         sql = f"""
@@ -112,21 +72,3 @@ class CallDays(SubscriberFeature):
         """
 
         return sql
-
-    def _get_timestamp(self, date):
-        """
-        Gets the POSTGRES `timestamptz` representation of a given date. This
-        function ensures that all dates passed to the function will have a
-        uniform format.
-
-        Parameters
-        ----------
-        date : str
-            A string representing a date.
-        """
-        con = self.connection.engine
-        with con.begin():
-            date = con.execute("SELECT '{}'::timestamptz".format(date))
-            date = date.fetchone()[0]
-        date = date.strftime("%Y%m%d%H%M%S")
-        return date
