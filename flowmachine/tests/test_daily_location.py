@@ -61,6 +61,7 @@ def test_hours(get_length):
     assert get_length(dl1) > get_length(dl2) > get_length(dl3)
 
 
+@pytest.mark.check_available_dates
 def test_daily_locs_errors():
     """
     daily_location() errors when we ask for a date that does not exist.

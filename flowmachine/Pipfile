@@ -17,6 +17,7 @@ pyzmq = "*"
 "python-redis-lock" = "*"
 "psycopg2-binary" = "*"
 structlog = "*"
+shapely = "*"
 
 [dev-packages]
 scipy = "*"

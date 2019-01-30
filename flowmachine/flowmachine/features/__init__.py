@@ -55,6 +55,9 @@ subs = [
     "MostFrequentLocation",
     "LastLocation",
     "EventCount",
+    "MeaningfulLocations",
+    "MeaningfulLocationsAggregate",
+    "MeaningfulLocationsOD",
 ]
 
 rast = ["RasterStatistics"]

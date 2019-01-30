@@ -127,7 +127,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
                 "aggregation_unit": "admin3",
                 "subscriber_subset": None,
             },
-            "Cannot construct daily location subset from given input: None",
+            "Cannot construct daily_location subset from given input: None",
         ),
     ],
 )

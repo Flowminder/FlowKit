@@ -23,6 +23,7 @@ logger = logging.getLogger()
 @pytest.fixture(
     params=[
         {"level": "admin2"},
+        {"level": "admin2", "column_name": "admin2name"},
         {"level": "versioned-site"},
         {"level": "versioned-cell"},
         {"level": "cell"},
@@ -62,13 +63,18 @@ def pytest_itemcollected(item):
             item._nodeid = item._nodeid.rstrip(".") + f" [{item._genid}]."
 
 
-@pytest.fixture
-def skip_datecheck(monkeypatch):
-    """Temporarily patches EventTableSubset so that it thinks any date is
+@pytest.fixture(autouse=True)
+def skip_datecheck(request, monkeypatch):
+    """
+    Temporarily patches EventTableSubset so that it thinks any date is
     available, _without_ needing to touch the database. This shaves a little
     time off every `daily_location` creation.
+
+    Use the `check_available_dates` py mark on your test to opt-in to date checking.
     """
-    monkeypatch.setattr(EventTableSubset, "_check_dates", lambda x: True)
+    run_date_checks = request.node.get_closest_marker("check_available_dates", False)
+    if not run_date_checks:
+        monkeypatch.setattr(EventTableSubset, "_check_dates", lambda x: True)
 
 
 @pytest.fixture(autouse=True)
@@ -131,6 +137,13 @@ def get_dataframe(flowmachine_connect):
     yield lambda query: pd.read_sql_query(
         query.get_query(), con=flowmachine_connect.engine
     )
+
+
+@pytest.fixture
+def get_column_names_from_run(flowmachine_connect):
+    yield lambda query: pd.read_sql_query(
+        f"{query.get_query()} LIMIT 0;", con=flowmachine_connect.engine
+    ).columns.tolist()
 
 
 @pytest.fixture
