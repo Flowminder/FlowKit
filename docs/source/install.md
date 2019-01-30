@@ -3,7 +3,7 @@
 There are three main ways to install FlowKit.
 
 * [Quick install](#quickinstall); suitable for a try-out on a local PC, includes basic example using FlowClient.
-* [Developer install](#devinstall); for those wishing to contribute code
+* [Developer install](#developers); for those wishing to contribute code
 * [Production install](#prodinstall); for deployment, e.g. inside an MNO firewall 
 
  <a name="quickinstall">
