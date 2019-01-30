@@ -55,9 +55,9 @@ Continue to the FlowKit [installation documents](./install.md) to find out what 
 These documents are also hosted on [https://flowminder.github.io/FlowKit/](https://flowminder.github.io/FlowKit).
 
 
-## Feature Requests
+## Feature requests
 
 Please send us your ideas on how to improve FlowKit to [flowkit@flowminder.org](mailto:flowkit@flowminder.org).
-Or add requests here: [Feature Requests](https://github.com/Flowminder/FlowKit/issues).
+Or add requests here: [Feature requests](https://github.com/Flowminder/FlowKit/issues).
 
 
