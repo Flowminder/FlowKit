@@ -499,7 +499,7 @@ def _meaningful_locations(
         at midnight, and once at noon, the final hour score for that tower would be 0.5.
     tower_cluster_radius : float
         When constructing clusters, towers will be considered for inclusion in a cluster only if they are within this
-        number of KM from the current cluster centroid. Hence, large values here will tend to produce clusters containing
+        number of km from the current cluster centroid. Hence, large values here will tend to produce clusters containing
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
@@ -613,7 +613,7 @@ def meaningful_locations_aggregate(
         at midnight, and once at noon, the final hour score for that tower would be 0.5.
     tower_cluster_radius : float
         When constructing clusters, towers will be considered for inclusion in a cluster only if they are within this
-        number of KM from the current cluster centroid. Hence, large values here will tend to produce clusters containing
+        number of km from the current cluster centroid. Hence, large values here will tend to produce clusters containing
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
@@ -713,7 +713,7 @@ def meaningful_locations_between_label_od_matrix(
         at midnight, and once at noon, the final hour score for that tower would be 0.5.
     tower_cluster_radius : float
         When constructing clusters, towers will be considered for inclusion in a cluster only if they are within this
-        number of KM from the current cluster centroid. Hence, large values here will tend to produce clusters containing
+        number of km from the current cluster centroid. Hence, large values here will tend to produce clusters containing
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
@@ -830,7 +830,7 @@ def meaningful_locations_between_dates_od_matrix(
         at midnight, and once at noon, the final hour score for that tower would be 0.5.
     tower_cluster_radius : float
         When constructing clusters, towers will be considered for inclusion in a cluster only if they are within this
-        number of KM from the current cluster centroid. Hence, large values here will tend to produce clusters containing
+        number of km from the current cluster centroid. Hence, large values here will tend to produce clusters containing
         more towers, and fewer clusters.
     tower_cluster_call_threshold : int
         Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
