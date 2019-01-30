@@ -1,6 +1,6 @@
 site_name: FlowKit
 nav:
-  - Introduction: introduction.md
+  - Introduction: index.md
   - Installation: install.md
   - Analyst: flowclient.md
   - Developer: developer/roadmap.md
