@@ -1,6 +1,6 @@
 # Administration Tools
 
-This section describes the [caching](#caching) and [logging](#logging) tools for use by system administrators.
+This section contains information on managing the [cache](#caching) and [log files](#logging) relevant to system administrators.
 
 <a name="caching">
 ## Caching in FlowKit
