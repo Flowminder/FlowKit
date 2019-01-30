@@ -19,27 +19,27 @@ This architecture is shown in the figure below.
 ![FlowKit System Diagram](flowkit_sys.png "FlowKit System Diagram")
 
 
-- [FlowDB](./flowdb)
+- FlowDB
 
     A [PostgreSQL](https://www.postgresql.org) database for storing and serving mobile operator data. Initialised with sample data for demonstration purposes. In a live installation, this data comes from the MNO.
     <p>
 
-- [FlowMachine](./flowmachine)
+- FlowMachine
 
     A Python toolkit for the analysis of CDR data.
     <p>
     
-- [FlowAPI](./flowapi)
+- FlowAPI
 
     An HTTP API which provides access to the functionality of FlowMachine, and handles access control.
     <p>
     
-- [FlowClient](./flowclient)
+- FlowClient
 
     A Python client to FlowAPI.
     <p>
     
-- [FlowAuth](./flowauth)
+- FlowAuth
 
     An authentication management system used to generate access tokens for use with FlowClient.
     <p>    
