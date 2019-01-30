@@ -48,6 +48,8 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 query_run_log.addHandler(ch)
 log_root = os.getenv("LOG_DIRECTORY", "/var/log/flowmachine-server/")
+if not os.path.exists(log_root):
+    os.makedirs(log_root)
 fh = TimedRotatingFileHandler(os.path.join(log_root, "query-runs.log"), when="midnight")
 fh.setLevel(logging.INFO)
 query_run_log.addHandler(fh)
