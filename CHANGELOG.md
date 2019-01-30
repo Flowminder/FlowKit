@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Restructured and extended documentation; added high-level overview and more targeted information for different types of users
+
 ### Fixed
 
 ### Removed
