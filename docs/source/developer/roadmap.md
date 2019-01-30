@@ -70,7 +70,7 @@ If you plan to make a major contribution, please create a [pull request](https:/
 
 This section describes the FlowAPI routes.
 
-FlowAPI is an HTTP API which provides access to the functionality of [FlowMachine](../flowmachine/).
+FlowAPI is an HTTP API which provides access to the functionality of [FlowMachine](#flowmachine).
 
 FlowAPI uses [ZeroMQ](http://zeromq.org/) for asynchronous communication with the FlowMachine server.
 
