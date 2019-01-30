@@ -676,7 +676,7 @@ def meaningful_locations_between_label_od_matrix(
     based on whether they overlap with the regions of that space defined in the `labels` parameter.
 
     Once the clusters are labelled, those clusters which have either `label_a` or `label_b` are extracted, and then
-    a count of of number of subscribers who move between the labels is returned, after aggregating spatially.
+    a count of number of subscribers who move between the labels is returned, after aggregating spatially.
     Each subscriber contributes to `1/(num_cluster_with_label_a*num_clusters_with_label_b)` to the count. So, for example
     a subscriber with two clusters labelled evening, and one labelled day, all in different spatial units would contribute
     0.5 to the flow from each of the spatial units containing the evening clusters, to the unit containing the day cluster.
