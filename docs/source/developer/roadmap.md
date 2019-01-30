@@ -56,7 +56,7 @@ We are creating FlowKit at [Flowminder](https://flowminder.org).
 You are welcome to contribute to the FlowKit library. To get started:  
 
 1. Check [Issues](https://github.com/Flowminder/FlowKit/issues) to see what we are working on right now.  
-2. Express your interest in a paticular [issue](https://github.com/Flowminder/FlowKit/issues) by submitting a comment, or submit your own [issue](https://github.com/Flowminder/FlowKit/issues).
+2. Express your interest in a particular [issue](https://github.com/Flowminder/FlowKit/issues) by submitting a comment, or submit your own [issue](https://github.com/Flowminder/FlowKit/issues).
 3. We will get back to you about working together.
 
 #### Code contributions
