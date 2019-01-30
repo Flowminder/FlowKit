@@ -475,7 +475,7 @@ def _meaningful_locations(
     start_date : str
         ISO format date that begins the period, e.g. "2016-01-01"
     stop_date : str
-        ISO format date that begins the period, e.g. "2016-01-07"
+        ISO format date that ends the period, e.g. "2016-01-07"
     label : str
         One of the labels specified in `labels`, or 'unknown'. Locations with this
         label are returned.
