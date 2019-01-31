@@ -40,7 +40,7 @@ class EventCount(SubscriberFeature):
     Examples
     --------
 
-    >>> s = SubscriberEventCount("2016-01-01", "2016-01-07", direction="in")
+    >>> s = EventCount("2016-01-01", "2016-01-07", direction="in")
     >>> s.get_dataframe()
 
              subscriber  event_count
