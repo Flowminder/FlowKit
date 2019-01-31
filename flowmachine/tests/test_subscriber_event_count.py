@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.features.subscriber.subscriber_event_count import *
+from flowmachine.features.subscriber.event_count import *
 from flowmachine.core.errors.flowmachine_errors import MissingDirectionColumnError
 
 import pytest
@@ -60,14 +60,12 @@ def test_directed_count_consistent(get_dataframe):
     joined.loc[~joined.index.isin(out_df.index), "event_count_out"] = 0
     joined.loc[~joined.index.isin(in_df.index), "event_count_in"] = 0
 
-    joined["event_count_got"] = joined.sum(axis=1)
+    joined["event_count"] = joined.sum(axis=1)
 
     both_query = EventCount("2016-01-01", "2016-01-08", direction="both")
     both_df = get_dataframe(both_query).set_index("subscriber")
 
-    joined = joined.join(both_df, how="outer")
-
-    assert all(joined["event_count_got"] == joined["event_count"])
+    assert joined["event_count"].to_dict() == both_df["event_count"].to_dict()
 
 
 def test_directed_count_undirected_tables_raises():
