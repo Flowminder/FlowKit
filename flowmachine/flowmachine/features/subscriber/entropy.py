@@ -46,6 +46,51 @@ class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
 
 
 class PeriodicEntropy(BaseEntropy):
+    """
+    Calculates the recurrence period entropy for events, that is the entropy
+    associated with the period in which events take place. For instance, if
+    events regularly occur at a certain time of day, say at 9:00 and 18:00 then
+    this user will have a low period entropy.
+
+    Parameters
+    ----------
+    start, stop : str
+         iso-format start and stop datetimes
+    phase : {"century", "day", "decade", "dow", "doy", "epoch", "hour",
+            "isodow", "isoyear", "microseconds", "millennium", "milliseconds",
+            "minute", "month", "quarter", "second", "timezone", "timezone_hour",
+            "timezone_minute", "week", "year"}, default 'hour'
+        The phase of recurrence for which one wishes to calculate the entropy.
+    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
+        Either msisdn, or imei, the column that identifies the subscriber.
+    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
+        If provided, string or list of string which are msisdn or imeis to limit
+        results to; or, a query or table which has a column with a name matching
+        subscriber_identifier (typically, msisdn), to limit results to.
+    direction : {'in', 'out', 'both'}, default 'out'
+        Whether to consider calls made, received, or both. Defaults to 'out'.
+    hours : 2-tuple of floats, default 'all'
+        Restrict the analysis to only a certain set
+        of hours within each day.
+    tables : str or list of strings, default 'all'
+        Can be a string of a single table (with the schema)
+        or a list of these. The keyword all is to select all
+        subscriber tables
+
+    Examples
+    --------
+
+    >>> s = PeriodicEntropy("2016-01-01", "2016-01-07")
+    >>> s.get_dataframe()
+
+             subscriber   entropy
+       038OVABN11Ak4W5P  2.805374
+       09NrjaNNvDanD8pk  2.730881
+       0ayZGYEQrqYlKw6g  2.802434
+       0DB8zw67E9mZAPK2  2.476354
+       0Gl95NRLjW2aw8pW  2.788854
+                    ...       ...
+    """
     def __init__(
         self,
         start,
@@ -159,6 +204,66 @@ class PeriodicEntropy(BaseEntropy):
 
 
 class LocationEntropy(BaseEntropy):
+    """
+    Calculates the entropy of locations visited. For instance, if an individual
+    regularly makes her/his calls from certain location then this user will
+    have a low location entropy.
+
+    Parameters
+    ----------
+    start, stop : str
+         iso-format start and stop datetimes
+    level : str, default 'cell'
+        Levels can be one of:
+            'cell':
+                The identifier as it is found in the CDR itself
+            'versioned-cell':
+                The identifier as found in the CDR combined with the version from
+                the cells table.
+            'versioned-site':
+                The ID found in the sites table, coupled with the version
+                number.
+            'polygon':
+                A custom set of polygons that live in the database. In which
+                case you can pass the parameters column_name, which is the column
+                you want to return after the join, and table_name, the table where
+                the polygons reside (with the schema), and additionally geom_col
+                which is the column with the geometry information (will default to
+                'geom')
+            'admin*':
+                An admin region of interest, such as admin3. Must live in the
+                database in the standard location.
+            'grid':
+                A square in a regular grid, in addition pass size to
+                determine the size of the polygon.
+    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
+        Either msisdn, or imei, the column that identifies the subscriber.
+    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
+        If provided, string or list of string which are msisdn or imeis to limit
+        results to; or, a query or table which has a column with a name matching
+        subscriber_identifier (typically, msisdn), to limit results to.
+    hours : 2-tuple of floats, default 'all'
+        Restrict the analysis to only a certain set
+        of hours within each day.
+    tables : str or list of strings, default 'all'
+        Can be a string of a single table (with the schema)
+        or a list of these. The keyword all is to select all
+        subscriber tables
+
+    Examples
+    --------
+
+    >>> s = LocationEntropy("2016-01-01", "2016-01-07")
+    >>> s.get_dataframe()
+
+              subscriber   entropy
+        038OVABN11Ak4W5P  2.832747
+        09NrjaNNvDanD8pk  3.184784
+        0ayZGYEQrqYlKw6g  3.072458
+        0DB8zw67E9mZAPK2  2.838989
+        0Gl95NRLjW2aw8pW  2.997069
+                     ...       ...
+    """
     def __init__(
         self,
         start,
@@ -201,6 +306,47 @@ class LocationEntropy(BaseEntropy):
 
 
 class ContactEntropy(BaseEntropy):
+    """
+    Calculates the entropy of locations visited. For instance, if an individual
+    regularly interact with a few determined contacts then this user will have
+    a low contact entropy.
+
+    Parameters
+    ----------
+    start, stop : str
+         iso-format start and stop datetimes
+    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
+        Either msisdn, or imei, the column that identifies the subscriber.
+    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
+        If provided, string or list of string which are msisdn or imeis to limit
+        results to; or, a query or table which has a column with a name matching
+        subscriber_identifier (typically, msisdn), to limit results to.
+    direction : {'in', 'out', 'both'}, default 'out'
+        Whether to consider calls made, received, or both. Defaults to 'out'.
+    hours : 2-tuple of floats, default 'all'
+        Restrict the analysis to only a certain set
+        of hours within each day.
+    tables : str or list of strings, default 'all'
+        Can be a string of a single table (with the schema)
+        or a list of these. The keyword all is to select all
+        subscriber tables
+    exclude_self_calls : bool, default True
+        Set to false to *include* calls a subscriber made to themself
+
+    Examples
+    --------
+
+    >>> s = ContactEntropy("2016-01-01", "2016-01-07")
+    >>> s.get_dataframe()
+
+          subscriber   entropy
+    2ZdMowMXoyMByY07  0.692461
+    MobnrVMDK24wPRzB  0.691761
+    0Ze1l70j0LNgyY4w  0.693147
+    Nnlqka1oevEMvVrm  0.607693
+    gPZ7jbqlnAXR3JG5  0.686211
+                 ...       ...
+    """
     def __init__(
         self,
         start,
