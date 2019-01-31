@@ -76,7 +76,9 @@ class EventCount(SubscriberFeature):
             self.tables = tables
         else:
             column_list = [self.subscriber_identifier, "outgoing"]
-            self.tables = parse_tables_ensuring_columns(self.connection, tables, column_list)
+            self.tables = parse_tables_ensuring_columns(
+                self.connection, tables, column_list
+            )
 
         self.unioned_query = EventsTablesUnion(
             self.start,
