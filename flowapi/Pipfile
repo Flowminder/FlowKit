@@ -18,6 +18,7 @@ pytest-asyncio = "*"
 "pytest-cov" = "*"
 asynctest = "*"
 black = "==18.9b0"
+pytest-pspec = "*"
 
 [requires]
 python_version = "3.7"

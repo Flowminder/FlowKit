@@ -21,6 +21,7 @@ cryptography = "*"
 pytest = "*"
 pytest-cov = "*"
 "flowauth" = {editable = true, path = "./backend"}
+pytest-pspec = "*"
 
 [requires]
 python_version = "3.7"
@@ -33,5 +34,3 @@ start-frontend = "bash -c 'cd frontend && npm start'"
 test-frontend-with-record = "bash start.sh test --record"
 test-frontend = "bash start.sh test"
 test-backend = "pytest"
-
-

@@ -19,3 +19,4 @@ flowclient = {editable = true,path = "./../flowclient"}
 python_version = "3.7"
 
 [dev-packages]
+pytest-pspec = "*"

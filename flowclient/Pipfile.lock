@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6930f88b5eba82b4316e6f687803c45bcfc4d51f38da33e9ef145c4e92fa41a0"
+            "sha256": "803661054ecdac083e2bd4df06ec316782951e5f842ef1889a2a8079ba2a7e42"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -143,6 +143,14 @@
                 "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"
             ],
             "version": "==1.4.3"
+        },
+        "appnope": {
+            "hashes": [
+                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
+                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
+            ],
+            "markers": "sys_platform == 'darwin'",
+            "version": "==0.1.0"
         },
         "atomicwrites": {
             "hashes": [
@@ -326,6 +334,14 @@
             ],
             "index": "pypi",
             "version": "==2.6.1"
+        },
+        "pytest-pspec": {
+            "hashes": [
+                "sha256:14274721d4b1ac500a7d133c7a84af26b921dbe942dbf175512ae16225647968",
+                "sha256:6302a692fe3ebd5ee6aea6e458f2455ba8768b57d4571118a28d8d5bbdbb57d0"
+            ],
+            "index": "pypi",
+            "version": "==0.0.3"
         },
         "six": {
             "hashes": [

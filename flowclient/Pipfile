@@ -14,6 +14,7 @@ pytest = "*"
 versioneer = "*"
 black = "==18.9b0"
 ipython = "*"
+pytest-pspec = "*"
 
 [requires]
 python_version = "3.7"
