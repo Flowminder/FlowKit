@@ -37,5 +37,5 @@ setup(
         "zxcvbn",
         "cryptography",
     ],
-    extras_require={"test": ["pytest", "coverage"], "postgres": ["psycopg2-binary"]},
+    extras_require={"test": ["pytest", "pytest-pspec", "coverage"], "postgres": ["psycopg2-binary"]},
 )
