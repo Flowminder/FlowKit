@@ -25,7 +25,7 @@ class SubscriberDegree(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    table : str, default 'all'
+    tables : str, default 'all'
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -59,13 +59,13 @@ class SubscriberDegree(SubscriberFeature):
     """
 
     def __init__(
-        self, start, stop, table="all", subscriber_identifier="msisdn", **kwargs
+        self, start, stop, tables="all", subscriber_identifier="msisdn", **kwargs
     ):
         """
 
         """
 
-        self.table = table
+        self.tables = tables
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
@@ -77,7 +77,7 @@ class SubscriberDegree(SubscriberFeature):
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
-            tables=self.table,
+            tables=self.tables,
             columns=column_list,
             subscriber_identifier=self.subscriber_identifier,
             **kwargs
