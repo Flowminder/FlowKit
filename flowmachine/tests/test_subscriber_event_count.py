@@ -7,6 +7,7 @@ from flowmachine.core.errors.flowmachine_errors import MissingDirectionColumnErr
 
 import pytest
 
+
 def test_count(get_dataframe):
     """
     Test some hand picked periods and tables
