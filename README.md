@@ -14,6 +14,10 @@ CDRs constitute a highly sensitive data set, so FlowKit is designed with privacy
 
 The FlowKit documentation is available [here](https://flowminder.github.io/FlowKit/).
 
+### Development status and installation
+
+FlowKit is under ongoing development. The list of releases can be found [here](https://github.com/Flowminder/FlowKit/releases). Until FlowKit reaches full stable release status, we recommend installing the latest version based on the Github master branch. For details see the installation instructions [here](https://flowminder.github.io/FlowKit/install/).
+
 ### Benchmarks
 
 There is a suite of benchmarks for FlowKit at https://github.com/Flowminder/FlowKit-benchmarks.<br>
