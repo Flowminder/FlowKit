@@ -52,8 +52,13 @@ class DistanceCounterparts(SubscriberFeature):
     >>> s = DistanceCounterparts("2016-01-01", "2016-01-07", statistic="avg")
     >>> s.get_dataframe()
 
-                   subscriber    distance_avg
-
+              subscriber    distance_avg
+        038OVABN11Ak4W5P      272.167815
+        09NrjaNNvDanD8pk      241.290233
+        0ayZGYEQrqYlKw6g      218.161568
+        0DB8zw67E9mZAPK2      228.235324
+        0Gl95NRLjW2aw8pW      189.008980
+                     ...             ...
 
     """
 
