@@ -20,6 +20,7 @@ from .day_trajectories import DayTrajectories
 from .radius_of_gyration import RadiusOfGyration
 from .displacement import Displacement
 from .total_subscriber_events import TotalSubscriberEvents
+from .event_count import EventCount
 from .subscriber_degree import SubscriberDegree, SubscriberInDegree, SubscriberOutDegree
 from .subscriber_location_cluster import subscriber_location_cluster, HartiganCluster
 from .most_frequent_location import MostFrequentLocation
@@ -93,6 +94,7 @@ __all__ = [
     "PeriodicEntropy",
     "LocationEntropy",
     "ContactEntropy",
+    "EventCount",
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",

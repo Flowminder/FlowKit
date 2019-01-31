@@ -12,7 +12,7 @@ from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
 
-class SubscriberEventCount(SubscriberFeature):
+class EventCount(SubscriberFeature):
     """
     This class returns the event count per subscriber within the period,
     optionally limited to only incoming or outgoing events.
@@ -40,7 +40,7 @@ class SubscriberEventCount(SubscriberFeature):
     Examples
     --------
 
-    >>> s = SubscriberEventCount("2016-01-01", "2016-01-07", direction="in")
+    >>> s = EventCount("2016-01-01", "2016-01-07", direction="in")
     >>> s.get_dataframe()
 
              subscriber  event_count
