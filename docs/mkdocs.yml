@@ -23,6 +23,7 @@ plugins:
   - mknotebooks:
       execute: true
       preamble: "pandas_to_markdown.py"
+      preamble: "create_access_token.py"
 
 theme:
   name: "material"
