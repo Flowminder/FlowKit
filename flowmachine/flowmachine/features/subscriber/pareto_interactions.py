@@ -35,7 +35,7 @@ class ParetoInteractions(SubscriberFeature):
         of hours within each day.
     exclude_self_calls : bool, default True
         Set to false to *include* calls a subscriber made to themself
-    table : str, default 'all'
+    tables : str, default 'all'
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -71,14 +71,14 @@ class ParetoInteractions(SubscriberFeature):
         **kwargs
     ):
 
-        self.table = table
+        self.tables = tables
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
         self.contact_balance = ContactBalance(
             start,
             stop,
-            tables=table,
+            tables=tables,
             subscriber_identifier=subscriber_identifier,
             hours=hours,
             exclude_self_calls=exclude_self_calls,
@@ -87,7 +87,7 @@ class ParetoInteractions(SubscriberFeature):
         self.subscriber_degree = SubscriberDegree(
             start,
             stop,
-            table=table,
+            tables=tables,
             subscriber_identifier=subscriber_identifier,
             hours=hours,
             **kwargs
