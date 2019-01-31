@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-tohu = "==0.6.4"
+tohu = "==0.6.5"
 
 [requires]
 python_version = "3.7"
