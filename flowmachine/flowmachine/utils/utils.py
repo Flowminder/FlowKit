@@ -17,8 +17,9 @@ from typing import List, Union
 import redis_lock
 from redis_lock import AlreadyAcquired
 
+import flowmachine
 from ..core.errors import BadLevelError
-from ...core.errors.flowmachine_errors import MissingColumnsError
+from ..core.errors.flowmachine_errors import MissingColumnsError
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -261,32 +262,32 @@ def parse_tables_ensuring_columns(conn, tables, columns):
         Tables that contains the required columns.
     """
 
-        if isinstance(tables, str) and tables.lower() == "all":
-            tables = [f"events.{t}" for t in conn.subscriber_tables]
-        elif type(tables) is str:
-            tables = [tables]
-        else:
-            tables = tables
+    if isinstance(tables, str) and tables.lower() == "all":
+        tables = [f"events.{t}" for t in conn.subscriber_tables]
+    elif type(tables) is str:
+        tables = [tables]
+    else:
+        tables = tables
 
-        if isinstance(columns, str):
-            columns = [columns]
+    if isinstance(columns, str):
+        columns = [columns]
 
-        parsed_tables = []
-        tables_lacking_columns = []
-        for t in tables:
-            has_all_columns = True
-            for c in columns:
-                if c not in Table(t).column_names:
-                    tables_lacking_columns.append(t)
-                    has_all_columns = False
-                    break
-            if has_all_columns:
-                parsed_tables.append(t)
+    parsed_tables = []
+    tables_lacking_columns = []
+    for t in tables:
+        has_all_columns = True
+        for c in columns:
+            if c not in flowmachine.core.Table(t).column_names:
+                tables_lacking_columns.append(t)
+                has_all_columns = False
+                break
+        if has_all_columns:
+            parsed_tables.append(t)
 
-        if tables_lacking_columns:
-            raise MissingColumnsError(tables_lacking_columns, columns)
+    if tables_lacking_columns:
+        raise MissingColumnsError(tables_lacking_columns, columns)
 
-        return parsed_tables
+    return parsed_tables
 
 
 @contextmanager
