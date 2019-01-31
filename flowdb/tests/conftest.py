@@ -26,15 +26,6 @@ def pytest_configure(config):
     )
 
 
-def pytest_itemcollected(item):
-    # improve stdout logging from pytest's default which just prints the
-    # filename and no description of the test.
-    if item._obj.__doc__:
-        item._nodeid = "* " + " ".join(item.obj.__doc__.split())
-        if item._genid:
-            item._nodeid = item._nodeid.rstrip(".") + f" [{item._genid}]."
-
-
 class DBConn:
     """Manages a single database connection, creating and disposing of it.
 
