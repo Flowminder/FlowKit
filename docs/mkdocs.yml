@@ -22,8 +22,7 @@ plugins:
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
   - mknotebooks:
       execute: true
-      preamble: "pandas_to_markdown.py"
-      preamble: "create_access_token.py"
+      preamble: "notebook_preamble.py"
 
 theme:
   name: "material"
