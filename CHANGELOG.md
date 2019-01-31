@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+
+## [0.3.0]
+### Added
 - API route for retrieving geography data from FlowDB
 
 - Aggregated meaningful locations are now available via FlowAPI
@@ -15,10 +25,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Constructors for `HartiganCluster`, `LabelEventScore`, `EventScore` and `CallDays` now have different signatures 
 - Restructured and extended documentation; added high-level overview and more targeted information for different types of users
-
-### Fixed
-
-### Removed
 
 ## [0.2.2]
 ### Added
@@ -67,7 +73,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.2.2...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.3.0...master
+[0.3.0]: https://github.com/Flowminder/FlowKit/compare/0.2.2...0.3.0
 [0.2.2]: https://github.com/Flowminder/FlowKit/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/Flowminder/FlowKit/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/Flowminder/FlowKit/compare/0.1.2...0.2.0
