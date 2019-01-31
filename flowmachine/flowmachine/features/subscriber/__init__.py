@@ -30,8 +30,10 @@ from .total_active_periods import TotalActivePeriodsSubscriber
 from .contact_balance import ContactBalance
 from .scores import EventScore
 from .label_event_score import LabelEventScore
+from .distance_counterparts import DistanceCounterparts
 
 from .pareto_interactions import ParetoInteractions
+
 
 from .subscriber_tacs import (
     SubscriberTAC,
@@ -92,4 +94,5 @@ __all__ = [
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
+    "DistanceCounterparts",
 ]
