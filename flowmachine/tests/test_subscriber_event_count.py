@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.features.subscriber.event_count import *
-from flowmachine.core.errors.flowmachine_errors import MissingDirectionColumnError
+from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 
 import pytest
 
@@ -72,7 +72,7 @@ def test_directed_count_undirected_tables_raises():
     """
     Test that requesting directed counts of undirected tables raises warning and errors.
     """
-    with pytest.raises(MissingDirectionColumnError):
+    with pytest.raises(MissingColumnsError):
         query = EventCount(
             "2016-01-01", "2016-01-08", direction="out", tables=["events.mds"]
         )

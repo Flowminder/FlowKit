@@ -6,8 +6,7 @@
 
 import warnings
 
-from ...core import Table
-from ...core.errors.flowmachine_errors import MissingDirectionColumnError
+from ...utils.utils import parse_tables_ensuring_columns
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -77,7 +76,7 @@ class EventCount(SubscriberFeature):
             self.tables = tables
         else:
             column_list = [self.subscriber_identifier, "outgoing"]
-            self.tables = self._parse_tables_ensuring_direction_present(tables)
+            self.tables = parse_tables_ensuring_columns(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -89,28 +88,6 @@ class EventCount(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
         super().__init__()
-
-    def _parse_tables_ensuring_direction_present(self, tables):
-
-        if isinstance(tables, str) and tables.lower() == "all":
-            tables = [f"events.{t}" for t in self.connection.subscriber_tables]
-        elif type(tables) is str:
-            tables = [tables]
-        else:
-            tables = tables
-
-        parsed_tables = []
-        tables_lacking_direction_column = []
-        for t in tables:
-            if "outgoing" in Table(t).column_names:
-                parsed_tables.append(t)
-            else:
-                tables_lacking_direction_column.append(t)
-
-        if tables_lacking_direction_column:
-            raise MissingDirectionColumnError(tables_lacking_direction_column)
-
-        return parsed_tables
 
     def _make_query(self):
         where_clause = ""
