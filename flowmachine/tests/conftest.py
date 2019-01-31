@@ -54,15 +54,6 @@ def exemplar_level_param(request):
     yield request.param
 
 
-def pytest_itemcollected(item):
-    # improve stdout logging from pytest's default which just prints the
-    # filename and no description of the test.
-    if item._obj.__doc__:
-        item._nodeid = "* " + " ".join(item.obj.__doc__.split())
-        if item._genid:
-            item._nodeid = item._nodeid.rstrip(".") + f" [{item._genid}]."
-
-
 @pytest.fixture(autouse=True)
 def skip_datecheck(request, monkeypatch):
     """
