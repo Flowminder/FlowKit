@@ -8,7 +8,7 @@ FlowKit is a platform for analysis of Call Detail Records (CDR) and other data. 
 
 FlowKit is designed to extend CDR data analysis to meet many other applications beyond billing. Some examples include disaster response, precision epidimiology and transport and mobility, more examples can be found here.
 
-CDRs constitute a highly sensitive data set, so FlowKit is designed with privacy protection in mind. It includes the FlowAuth framework to enable fine grained authorization with extensive access logging, making it an important tool for deployment of a GDPR compliant CDR analysis system.
+CDRs constitute a highly sensitive data set, so FlowKit is designed with privacy protection in mind. It includes the FlowAuth framework to enable fine-grained authorization with extensive access logging, making it an important tool for deployment of a GDPR compliant CDR analysis system.
 
 ### Documentation
 
@@ -16,4 +16,5 @@ The FlowKit documentation is available [here](https://flowminder.github.io/FlowK
 
 ### Benchmarks
 
-There is a suite of benchmarks for FlowKit at https://github.com/Flowminder/FlowKit-benchmarks. The benchmark results can be seen at https://flowminder.github.io/FlowKit-benchmarks.
+There is a suite of benchmarks for FlowKit at https://github.com/Flowminder/FlowKit-benchmarks.<br>
+The benchmark results can be seen at https://flowminder.github.io/FlowKit-benchmarks.
