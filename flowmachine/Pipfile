@@ -35,6 +35,7 @@ pytest-testmon = "*"
 asynctest = "*"
 flowmachine = {editable = true,path = "."}
 cachey = "*"
+pytest-pspec = "*"
 
 [requires]
 python_version = "3.7"
