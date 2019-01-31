@@ -207,7 +207,7 @@ jobs:
             docker images -a
       - run:
           name: Run tests
-          command: cd flowdb && pipenv run pytest --junit-xml=test_results/pytest/results.xml --ignore=tests/test_synthetic_data.py
+          command: cd flowdb && pipenv run pytest --pspec --junit-xml=test_results/pytest/results.xml --ignore=tests/test_synthetic_data.py
       - store_test_results:
           path: flowdb/test_results
       - run:
@@ -273,6 +273,7 @@ jobs:
           name: Run tests
           command: |
             pipenv run pytest \
+                      --pspec \
                       --junit-xml=test_results/pytest/results.xml \
                       --cov flowmachine/ \
                       --cov-report xml \
@@ -298,7 +299,7 @@ jobs:
       - run: *wait_for_flowdb
       - run:
           name: Run tests
-          command: pipenv run pytest --junit-xml=test_results/pytest/results.xml tests/test_synthetic_data.py
+          command: pipenv run pytest --pspec --junit-xml=test_results/pytest/results.xml tests/test_synthetic_data.py
       - store_test_results:
           path: test_results
 
@@ -313,7 +314,7 @@ jobs:
       - run:
           name: Run API unit tests
           command: |
-            pipenv run python -m pytest --junitxml=test_results/pytest/results.xml --cov=app/ \
+            pipenv run python -m pytest --pspec --junitxml=test_results/pytest/results.xml --cov=app/ \
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
@@ -330,7 +331,7 @@ jobs:
       - run:
           name: Run backend unit tests
           command: |
-            pipenv run pytest --junitxml=test_results/pytest/results.xml --cov=backend/flowauth/ \
+            pipenv run pytest --pspec --junitxml=test_results/pytest/results.xml --cov=backend/flowauth/ \
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
@@ -383,7 +384,7 @@ jobs:
       - run:
           name: Run API client unit tests
           command: |
-            pipenv run pytest --junitxml=test_results/pytest/results.xml --cov=flowclient/ \
+            pipenv run pytest --pspec --junitxml=test_results/pytest/results.xml --cov=flowclient/ \
             --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
@@ -514,7 +515,7 @@ jobs:
       - run:
           name: Run integration tests
           command: |
-            docker exec testrunner bash -c "cd /tests && FLOWDB_HOST=flowdb FLOWDB_PORT=5432 FLOWMACHINE_ZMQ_HOST=flowmachine REDIS_HOST=redis pipenv run pytest -sv --junitxml=test_results/pytest/results.xml --durations=10"
+            docker exec testrunner bash -c "cd /tests && FLOWDB_HOST=flowdb FLOWDB_PORT=5432 FLOWMACHINE_ZMQ_HOST=flowmachine REDIS_HOST=redis pipenv run pytest --pspec -sv --junitxml=test_results/pytest/results.xml --durations=10"
       - run:
           name: Extract test results
           command: docker cp testrunner:/tests/test_results .
