@@ -558,21 +558,21 @@
                 
                 
                 <h1 id="flowmachineutilsutils">flowmachine.utils.utils<a class="headerlink" href="#flowmachineutilsutils" title="Permanent link">&para;</a></h1>
-<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/utils/utils.py#L0">flowmachine/utils/utils.py</a></p>
+<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils/utils.py#L0">flowmachine/utils/utils.py</a></p>
 <p>Various simple utilities.</p>
 <h2 id="get_columns_for_level">get_columns_for_level<a class="headerlink" href="#get_columns_for_level" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_columns_for_level</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<p><div class="codehilite"><pre><span></span><span class="n">get_columns_for_level</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">column_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/utils/utils.py#L49">flowmachine/utils/utils.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils/utils.py#L49">flowmachine/utils/utils.py</a></p>
 <p>Get a list of the location related columns</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p><code>level</code>: <code>{'cell', 'versioned-cell', 'versioned-site', 'lat-lon', 'grid', 'adminX'}</code></p>
+<p><code>level</code>: <code>str</code></p>
 <p>Level to get location columns for</p>
 </li>
 <li>
-<p><code>column_name</code>: <code>optional</code>, <code>or list</code> of <code>strings</code>, <code>str</code></p>
+<p><code>column_name</code>: <code>typing.Union[str, typing.List[str]]</code>, default <code>None</code></p>
 <p>name of the column or list of column names. None by default if this is not none then the function trivially returns the column name as a list.</p>
 </li>
 <li>
@@ -598,12 +598,12 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h2 id="get_dist_string">get_dist_string<a class="headerlink" href="#get_dist_string" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">get_dist_string</span><span class="p">(</span><span class="n">lo1</span><span class="p">,</span> <span class="n">la1</span><span class="p">,</span> <span class="n">lo2</span><span class="p">,</span> <span class="n">la2</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/utils/utils.py#L194">flowmachine/utils/utils.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils/utils.py#L196">flowmachine/utils/utils.py</a></p>
 <p>function for getting the distance query string between to lat-lon points.</p>
 <h2 id="getsecret">getsecret<a class="headerlink" href="#getsecret" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">getsecret</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/utils/utils.py#L25">flowmachine/utils/utils.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils/utils.py#L25">flowmachine/utils/utils.py</a></p>
 <p>Get a value from docker secrets (i.e. read it from a file in /run/secrets), return a default if the file is not there.</p>
 <h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -626,7 +626,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h2 id="list_of_dates">list_of_dates<a class="headerlink" href="#list_of_dates" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">list_of_dates</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/utils/utils.py#L128">flowmachine/utils/utils.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils/utils.py#L130">flowmachine/utils/utils.py</a></p>
 <h3 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -641,7 +641,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h2 id="parse_datestring">parse_datestring<a class="headerlink" href="#parse_datestring" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">parse_datestring</span><span class="p">(</span><span class="n">datestring</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/utils/utils.py#L101">flowmachine/utils/utils.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils/utils.py#L103">flowmachine/utils/utils.py</a></p>
 <h3 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -656,7 +656,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h2 id="proj4string">proj4string<a class="headerlink" href="#proj4string" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">proj4string</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/utils/utils.py#L207">flowmachine/utils/utils.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils/utils.py#L209">flowmachine/utils/utils.py</a></p>
 <p>Provide a proj4 string for the input, or by default return the wsg84 proj4 string.</p>
 <h3 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h3>
 <ul>
@@ -679,7 +679,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h2 id="rlock">rlock<a class="headerlink" href="#rlock" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">rlock</span><span class="p">(</span><span class="n">redis_client</span><span class="p">,</span> <span class="n">lock_id</span><span class="p">,</span> <span class="n">holder_id</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/utils/utils.py#L241">flowmachine/utils/utils.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils/utils.py#L243">flowmachine/utils/utils.py</a></p>
 <p>A reentrant lock(ish). This lock can be reacquired using the same holder_id as that which currently holds it.</p>
 <h3 id="parameters_5">Parameters<a class="headerlink" href="#parameters_5" title="Permanent link">&para;</a></h3>
 <ul>
@@ -703,7 +703,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h2 id="time_period_add">time_period_add<a class="headerlink" href="#time_period_add" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">time_period_add</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;days&quot;</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/utils/utils.py#L158">flowmachine/utils/utils.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/utils/utils.py#L160">flowmachine/utils/utils.py</a></p>
 <p>Adds n days to the date (represented as a string). Or alternatively add hours or minutes to the date.</p>
 <h3 id="parameters_6">Parameters<a class="headerlink" href="#parameters_6" title="Permanent link">&para;</a></h3>
 <ul>

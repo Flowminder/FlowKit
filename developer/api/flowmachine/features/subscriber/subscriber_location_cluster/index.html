@@ -1653,13 +1653,13 @@
                 
                 
                 <h1 id="flowmachinefeaturessubscribersubscriber_location_cluster">flowmachine.features.subscriber.subscriber_location_cluster<a class="headerlink" href="#flowmachinefeaturessubscribersubscriber_location_cluster" title="Permanent link">&para;</a></h1>
-<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L0">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L0">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Classes that deal with location clustering using different methods. These classes attempt to reduce the number of locations for each subscriber, by clustering a set of locations according to a specified methodology.
 These methods are great options for reducing the dimensionality of the problem in hand.</p>
 <h2 id="class-basecluster">Class <strong>BaseCluster</strong><a class="headerlink" href="#class-basecluster" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">BaseCluster</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L21">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L22">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Base query for cluster methods, providing a geo augmented query method.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1692,7 +1692,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="dependency_graph">dependency_graph<a class="headerlink" href="#dependency_graph" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependency_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analyse</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L1026">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L1026">flowmachine/core/query.py</a></p>
 <p>Produce a graph of all the queries that go into producing this one, with their estimated run costs, and whether they are stored as node attributes.
 The resulting networkx object can then be visualised, or analysed.</p>
 <h5 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h5>
@@ -1729,7 +1729,7 @@ The resulting networkx object can then be visualised, or analysed.</p>
 <h4 id="explain">explain<a class="headerlink" href="#explain" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">analyse</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L536">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L536">flowmachine/core/query.py</a></p>
 <p>Returns the postgres SQL explanation string.</p>
 <h5 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1752,7 +1752,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="geojson_query">geojson_query<a class="headerlink" href="#geojson_query" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">geojson_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L165">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L165">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <p>Create a query which will transform each row into a geojson feature.</p>
 <h5 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1771,7 +1771,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="get_dataframe">get_dataframe<a class="headerlink" href="#get_dataframe" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L243">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L243">flowmachine/core/query.py</a></p>
 <p>Executes the query and return the result as a pandas dataframe. This should be executed with care, as the results may consume large amounts of memory.</p>
 <h5 id="returns_3">Returns<a class="headerlink" href="#returns_3" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1783,7 +1783,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="get_dataframe_async">get_dataframe_async<a class="headerlink" href="#get_dataframe_async" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get_dataframe_async</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L208">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L208">flowmachine/core/query.py</a></p>
 <p>Execute the query in a worker thread and return a future object which will contain the result as a pandas dataframe when complete.</p>
 <h5 id="returns_4">Returns<a class="headerlink" href="#returns_4" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1799,7 +1799,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="get_query">get_query<a class="headerlink" href="#get_query" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L180">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L180">flowmachine/core/query.py</a></p>
 <p>Returns a  string representing an SQL query. The string will point to the database cache of this query if it exists.</p>
 <h5 id="returns_5">Returns<a class="headerlink" href="#returns_5" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1811,7 +1811,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="get_table">get_table<a class="headerlink" href="#get_table" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L297">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L297">flowmachine/core/query.py</a></p>
 <p>If this Query is stored, return a Table object referencing the stored version. If it is not stored, raise an exception.</p>
 <h5 id="returns_6">Returns<a class="headerlink" href="#returns_6" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1823,7 +1823,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="head">head<a class="headerlink" href="#head" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L274">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L274">flowmachine/core/query.py</a></p>
 <p>Return the first n results of the query</p>
 <h5 id="parameters_3">Parameters<a class="headerlink" href="#parameters_3" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1842,7 +1842,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="invalidate_db_cache">invalidate_db_cache<a class="headerlink" href="#invalidate_db_cache" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">invalidate_db_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L756">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L756">flowmachine/core/query.py</a></p>
 <p>Helper function for store, drops this table, and (by default) any that depend on it, as well as removing them from the cache metadata table.</p>
 <h5 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1874,7 +1874,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
     <span class="n">right_append</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L342">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L342">flowmachine/core/query.py</a></p>
 <h5 id="parameters_5">Parameters<a class="headerlink" href="#parameters_5" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
@@ -1910,7 +1910,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="numeric_subset">numeric_subset<a class="headerlink" href="#numeric_subset" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">numeric_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L397">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L397">flowmachine/core/query.py</a></p>
 <p>Subsets one of the columns to a specified range of numerical values.</p>
 <h5 id="parameters_6">Parameters<a class="headerlink" href="#parameters_6" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1941,7 +1941,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
     <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L950">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L950">flowmachine/core/query.py</a></p>
 <p>Draws a random sample from this query.</p>
 <h5 id="parameters_7">Parameters<a class="headerlink" href="#parameters_7" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1980,7 +1980,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="store">store<a class="headerlink" href="#store" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L613">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L613">flowmachine/core/query.py</a></p>
 <p>Store the results of this computation with the correct table name using a background thread.</p>
 <h5 id="parameters_8">Parameters<a class="headerlink" href="#parameters_8" title="Permanent link">&para;</a></h5>
 <ul>
@@ -1999,7 +1999,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="subset">subset<a class="headerlink" href="#subset" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">subset</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L376">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L376">flowmachine/core/query.py</a></p>
 <p>Subsets one of the columns to a specified subset of values</p>
 <h5 id="parameters_9">Parameters<a class="headerlink" href="#parameters_9" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2019,7 +2019,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_geojson">to_geojson<a class="headerlink" href="#to_geojson" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_geojson</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L256">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L256">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <h5 id="parameters_10">Parameters<a class="headerlink" href="#parameters_10" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
@@ -2037,7 +2037,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_geojson_file">to_geojson_file<a class="headerlink" href="#to_geojson_file" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_geojson_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L200">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L200">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <p>Export this query to a GeoJson FeatureCollection file.</p>
 <h5 id="parameters_11">Parameters<a class="headerlink" href="#parameters_11" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2053,7 +2053,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_geojson_string">to_geojson_string<a class="headerlink" href="#to_geojson_string" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_geojson_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L214">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L214">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <h5 id="parameters_12">Parameters<a class="headerlink" href="#parameters_12" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
@@ -2071,7 +2071,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_geopandas">to_geopandas<a class="headerlink" href="#to_geopandas" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_geopandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L304">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L304">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <h5 id="parameters_13">Parameters<a class="headerlink" href="#parameters_13" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
@@ -2089,7 +2089,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_sql">to_sql<a class="headerlink" href="#to_sql" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Future</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L464">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L464">flowmachine/core/query.py</a></p>
 <p>Store the result of the calculation back into the database.</p>
 <h5 id="parameters_14">Parameters<a class="headerlink" href="#parameters_14" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2120,17 +2120,17 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="turn_off_caching">turn_off_caching<a class="headerlink" href="#turn_off_caching" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">turn_off_caching</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L297">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L297">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <p>Turn off caching. Overridden to also remove cached geojson.</p>
 <h4 id="turn_on_caching">turn_on_caching<a class="headerlink" href="#turn_on_caching" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">turn_on_caching</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L146">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L146">flowmachine/core/query.py</a></p>
 <p>Turn on the caching, so that a computed dataframe is retained.</p>
 <h4 id="union">union<a class="headerlink" href="#union" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L309">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L309">flowmachine/core/query.py</a></p>
 <p>Returns a Query representing a the union of the two queries. This is simply the two tables concatenated. By passing the  argument all as true the duplicates are also removed.</p>
 <h5 id="parameters_15">Parameters<a class="headerlink" href="#parameters_15" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2164,44 +2164,44 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="cache">cache<a class="headerlink" href="#cache" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">cache</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L168">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L168">flowmachine/core/query.py</a></p>
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L257">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L257">flowmachine/core/query.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies">dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L697">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L697">flowmachine/core/query.py</a></p>
 <h4 id="fully_qualified_table_name">fully_qualified_table_name<a class="headerlink" href="#fully_qualified_table_name" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">fully_qualified_table_name</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L572">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L572">flowmachine/core/query.py</a></p>
 <p>Returns a unique fully qualified name for the query to be stored as under the cache schema, based on a hash of the parameters, class, and subqueries.</p>
 <h4 id="index_cols">index_cols<a class="headerlink" href="#index_cols" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">index_cols</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L834">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L834">flowmachine/core/query.py</a></p>
 <p>A list of columns to use as indexes when storing this query.</p>
 <h4 id="is_stored">is_stored<a class="headerlink" href="#is_stored" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">is_stored</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L598">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L598">flowmachine/core/query.py</a></p>
 <h4 id="md5">md5<a class="headerlink" href="#md5" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">md5</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L72">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L72">flowmachine/core/query.py</a></p>
 <p>Generate a uniquely identifying hash of this query, based on the parameters of it and the subqueries it is composed of.</p>
 <h4 id="table_name">table_name<a class="headerlink" href="#table_name" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">table_name</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h2 id="class-hartigancluster">Class <strong>HartiganCluster</strong><a class="headerlink" href="#class-hartigancluster" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">HartiganCluster</span><span class="p">(</span><span class="n">calldays</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="nb">buffer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">call_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">HartiganCluster</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">calldays</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">subscriber</span><span class="o">.</span><span class="n">call_days</span><span class="o">.</span><span class="n">CallDays</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">buffer</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">call_threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L138">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L141">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Implements the Hartigan Clustering algorithm.
 The algorithm clusters locations based on a ranked listed of call days. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup>  The Hartigan clustering algorithm will pick up the site associated with the highest call days and form a cluster on that site. It will descend the ranked list of call days from the top. The second site associated with the highest call days will be incorporated into the the first cluster if it is within a certain radius of it. In such case, a new cluster centroid is calculated by taking a weighted average by the call days of all the sites in the cluster. Eventually, when the algorithm lands on a site which is not within the radius of all the available clusters, it will create a new cluster on that particular site.  The class will produce a table where each row lists a cluster for a given subscriber, the rank of that cluster, the total number of call days in that cluster (which is the sum of all call days constituting that cluster and not the actual call days of the cluster), and all the sites which constitute that cluster.</p>
 <h3 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h3>
@@ -2234,19 +2234,19 @@ The algorithm clusters locations based on a ranked listed of call days. <sup id=
 <h3 id="parameters_16">Parameters<a class="headerlink" href="#parameters_16" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p><code>calldays</code>: <code>flowmachine.core.Query</code></p>
+<p><code>calldays</code>: <code>flowmachine.features.subscriber.call_days.CallDays</code></p>
 <p>The calls day table which contains the call day data per subscriber. This table should follow the same format as the table produced with the <code>CallDays</code> class.</p>
 </li>
 <li>
-<p><code>radius</code>: <code>str</code>, <code>float</code></p>
+<p><code>radius</code>: <code>typing.Union[float, str]</code></p>
 <p>The threshold value in km to be used for clustering towers. If a string is passed, it is assumed that it is the name of the column in the call day table.</p>
 </li>
 <li>
-<p><code>buffer</code>: <code>float</code></p>
+<p><code>buffer</code>: <code>float</code>, default <code>0</code></p>
 <p>The buffer radius size in km to be used for buffering the cluster centroid. If the cluster is formed by only one site, then the buffer radius size has no effect and the cluster centroid is buffered to the polygon representing the given site. If buffer is 0, only the cluster centroids are returned.</p>
 </li>
 <li>
-<p><code>call_threshold</code>: <code>float</code></p>
+<p><code>call_threshold</code>: <code>int</code>, default <code>0</code></p>
 <p>The minimum number of calls that a cluster must have. Any cluster with less than that amount of calls will be eliminated.</p>
 </li>
 </ul>
@@ -2280,7 +2280,7 @@ The algorithm clusters locations based on a ranked listed of call days. <sup id=
 <h4 id="dependency_graph_1">dependency_graph<a class="headerlink" href="#dependency_graph_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependency_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analyse</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L1026">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L1026">flowmachine/core/query.py</a></p>
 <p>Produce a graph of all the queries that go into producing this one, with their estimated run costs, and whether they are stored as node attributes.
 The resulting networkx object can then be visualised, or analysed.</p>
 <h5 id="parameters_17">Parameters<a class="headerlink" href="#parameters_17" title="Permanent link">&para;</a></h5>
@@ -2317,7 +2317,7 @@ The resulting networkx object can then be visualised, or analysed.</p>
 <h4 id="explain_1">explain<a class="headerlink" href="#explain_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">analyse</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L536">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L536">flowmachine/core/query.py</a></p>
 <p>Returns the postgres SQL explanation string.</p>
 <h5 id="parameters_18">Parameters<a class="headerlink" href="#parameters_18" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2340,7 +2340,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="geojson_query_1">geojson_query<a class="headerlink" href="#geojson_query_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">geojson_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L165">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L165">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <p>Create a query which will transform each row into a geojson feature.</p>
 <h5 id="parameters_19">Parameters<a class="headerlink" href="#parameters_19" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2359,7 +2359,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="get_dataframe_1">get_dataframe<a class="headerlink" href="#get_dataframe_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L243">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L243">flowmachine/core/query.py</a></p>
 <p>Executes the query and return the result as a pandas dataframe. This should be executed with care, as the results may consume large amounts of memory.</p>
 <h5 id="returns_21">Returns<a class="headerlink" href="#returns_21" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2371,7 +2371,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="get_dataframe_async_1">get_dataframe_async<a class="headerlink" href="#get_dataframe_async_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get_dataframe_async</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L208">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L208">flowmachine/core/query.py</a></p>
 <p>Execute the query in a worker thread and return a future object which will contain the result as a pandas dataframe when complete.</p>
 <h5 id="returns_22">Returns<a class="headerlink" href="#returns_22" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2387,7 +2387,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="get_query_1">get_query<a class="headerlink" href="#get_query_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L180">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L180">flowmachine/core/query.py</a></p>
 <p>Returns a  string representing an SQL query. The string will point to the database cache of this query if it exists.</p>
 <h5 id="returns_23">Returns<a class="headerlink" href="#returns_23" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2399,7 +2399,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="get_table_1">get_table<a class="headerlink" href="#get_table_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">get_table</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L297">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L297">flowmachine/core/query.py</a></p>
 <p>If this Query is stored, return a Table object referencing the stored version. If it is not stored, raise an exception.</p>
 <h5 id="returns_24">Returns<a class="headerlink" href="#returns_24" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2411,7 +2411,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="head_1">head<a class="headerlink" href="#head_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L274">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L274">flowmachine/core/query.py</a></p>
 <p>Return the first n results of the query</p>
 <h5 id="parameters_20">Parameters<a class="headerlink" href="#parameters_20" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2430,7 +2430,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="invalidate_db_cache_1">invalidate_db_cache<a class="headerlink" href="#invalidate_db_cache_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">invalidate_db_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L756">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L756">flowmachine/core/query.py</a></p>
 <p>Helper function for store, drops this table, and (by default) any that depend on it, as well as removing them from the cache metadata table.</p>
 <h5 id="parameters_21">Parameters<a class="headerlink" href="#parameters_21" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2462,7 +2462,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
     <span class="n">right_append</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L342">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L342">flowmachine/core/query.py</a></p>
 <h5 id="parameters_22">Parameters<a class="headerlink" href="#parameters_22" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
@@ -2498,7 +2498,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="join_to_cluster_components">join_to_cluster_components<a class="headerlink" href="#join_to_cluster_components" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">join_to_cluster_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L250">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L268">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Join the versioned-sites composing the Hartigan cluster table with another table containing versioned-sites.</p>
 <h5 id="parameters_23">Parameters<a class="headerlink" href="#parameters_23" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2539,7 +2539,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="numeric_subset_1">numeric_subset<a class="headerlink" href="#numeric_subset_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">numeric_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L397">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L397">flowmachine/core/query.py</a></p>
 <p>Subsets one of the columns to a specified range of numerical values.</p>
 <h5 id="parameters_24">Parameters<a class="headerlink" href="#parameters_24" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2570,7 +2570,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
     <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L950">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L950">flowmachine/core/query.py</a></p>
 <p>Draws a random sample from this query.</p>
 <h5 id="parameters_25">Parameters<a class="headerlink" href="#parameters_25" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2609,7 +2609,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="store_1">store<a class="headerlink" href="#store_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L613">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L613">flowmachine/core/query.py</a></p>
 <p>Store the results of this computation with the correct table name using a background thread.</p>
 <h5 id="parameters_26">Parameters<a class="headerlink" href="#parameters_26" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2628,7 +2628,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="subset_1">subset<a class="headerlink" href="#subset_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">subset</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L376">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L376">flowmachine/core/query.py</a></p>
 <p>Subsets one of the columns to a specified subset of values</p>
 <h5 id="parameters_27">Parameters<a class="headerlink" href="#parameters_27" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2648,7 +2648,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_geojson_1">to_geojson<a class="headerlink" href="#to_geojson_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_geojson</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L256">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L256">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <h5 id="parameters_28">Parameters<a class="headerlink" href="#parameters_28" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
@@ -2666,7 +2666,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_geojson_file_1">to_geojson_file<a class="headerlink" href="#to_geojson_file_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_geojson_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L200">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L200">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <p>Export this query to a GeoJson FeatureCollection file.</p>
 <h5 id="parameters_29">Parameters<a class="headerlink" href="#parameters_29" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2682,7 +2682,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_geojson_string_1">to_geojson_string<a class="headerlink" href="#to_geojson_string_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_geojson_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L214">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L214">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <h5 id="parameters_30">Parameters<a class="headerlink" href="#parameters_30" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
@@ -2700,7 +2700,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_geopandas_1">to_geopandas<a class="headerlink" href="#to_geopandas_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_geopandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L304">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L304">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <h5 id="parameters_31">Parameters<a class="headerlink" href="#parameters_31" title="Permanent link">&para;</a></h5>
 <ul>
 <li>
@@ -2718,7 +2718,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="to_sql_1">to_sql<a class="headerlink" href="#to_sql_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">to_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">_base</span><span class="o">.</span><span class="n">Future</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L464">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L464">flowmachine/core/query.py</a></p>
 <p>Store the result of the calculation back into the database.</p>
 <h5 id="parameters_32">Parameters<a class="headerlink" href="#parameters_32" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2749,17 +2749,17 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="turn_off_caching_1">turn_off_caching<a class="headerlink" href="#turn_off_caching_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">turn_off_caching</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L297">flowmachine/core/mixins/geodata_mixin.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/mixins/geodata_mixin.py#L297">flowmachine/core/mixins/geodata_mixin.py</a></p>
 <p>Turn off caching. Overridden to also remove cached geojson.</p>
 <h4 id="turn_on_caching_1">turn_on_caching<a class="headerlink" href="#turn_on_caching_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">turn_on_caching</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L146">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L146">flowmachine/core/query.py</a></p>
 <p>Turn on the caching, so that a computed dataframe is retained.</p>
 <h4 id="union_1">union<a class="headerlink" href="#union_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L309">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L309">flowmachine/core/query.py</a></p>
 <p>Returns a Query representing a the union of the two queries. This is simply the two tables concatenated. By passing the  argument all as true the duplicates are also removed.</p>
 <h5 id="parameters_33">Parameters<a class="headerlink" href="#parameters_33" title="Permanent link">&para;</a></h5>
 <ul>
@@ -2793,39 +2793,39 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
 <h4 id="cache_1">cache<a class="headerlink" href="#cache_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">cache</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L168">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L168">flowmachine/core/query.py</a></p>
 <h4 id="column_names_1">column_names<a class="headerlink" href="#column_names_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L246">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L264">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="dependencies_1">dependencies<a class="headerlink" href="#dependencies_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependencies</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L697">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L697">flowmachine/core/query.py</a></p>
 <h4 id="fully_qualified_table_name_1">fully_qualified_table_name<a class="headerlink" href="#fully_qualified_table_name_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">fully_qualified_table_name</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L572">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L572">flowmachine/core/query.py</a></p>
 <p>Returns a unique fully qualified name for the query to be stored as under the cache schema, based on a hash of the parameters, class, and subqueries.</p>
 <h4 id="index_cols_1">index_cols<a class="headerlink" href="#index_cols_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">index_cols</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L834">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L834">flowmachine/core/query.py</a></p>
 <p>A list of columns to use as indexes when storing this query.</p>
 <h4 id="is_stored_1">is_stored<a class="headerlink" href="#is_stored_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">is_stored</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L598">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L598">flowmachine/core/query.py</a></p>
 <h4 id="md5_1">md5<a class="headerlink" href="#md5_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">md5</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L72">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L72">flowmachine/core/query.py</a></p>
 <p>Generate a uniquely identifying hash of this query, based on the parameters of it and the subqueries it is composed of.</p>
 <h4 id="table_name_1">table_name<a class="headerlink" href="#table_name_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">table_name</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L585">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h2 id="subscriber_location_cluster">subscriber_location_cluster<a class="headerlink" href="#subscriber_location_cluster" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">subscriber_location_cluster</span><span class="p">(</span>
@@ -2838,7 +2838,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmach
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/docs-update/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L32">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/subscriber_location_cluster.py#L33">flowmachine/features/subscriber/subscriber_location_cluster.py</a></p>
 <p>Represents a location clustering class. This is a wrapper for all the location clustering methods available in <code>flowmachine</code>.
 This class allows the subscriber to produce location clusters just based on CDR parameters like start and stop dates, hours, etc without the need to pass method specific data formats.</p>
 <h3 id="parameters_34">Parameters<a class="headerlink" href="#parameters_34" title="Permanent link">&para;</a></h3>

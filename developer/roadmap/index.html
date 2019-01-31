@@ -758,7 +758,7 @@
 <ul>
 <li>
 <p><code>daily_location</code></p>
-<p>A statistic representing where subscribers are on a given day, aggregated to a spatial location level.</p>
+<p>A statistic representing where subscribers are on a given day, aggregated to a spatial unit.</p>
 </li>
 <li>
 <p><code>modal_location</code></p>
@@ -770,7 +770,17 @@
 </li>
 <li>
 <p><code>location_event_counts</code></p>
-<p>Count of total interactions in a time period, aggregated to a spatial location level.</p>
+<p>Count of total interactions in a time period, aggregated to a spatial unit.</p>
+</li>
+<li>
+<p><code>meaningful_locations_aggregate</code></p>
+<p>Count of "meaningful" locations for individual subscribers (for example, home and work)
+based on a clustering of the cell towers they use and their usage patterns for those towers,
+aggregated to a spatial unit.</p>
+</li>
+<li>
+<p><code>meaningful_locations_od_matrix</code></p>
+<p>OD matrix between two individual-level "meaningful" locations (see above), aggregated to a spatial unit.</p>
 </li>
 </ul>
 <h3 id="flowapi-access-tokens">FlowAPI Access tokens<a class="headerlink" href="#flowapi-access-tokens" title="Permanent link">&para;</a></h3>
