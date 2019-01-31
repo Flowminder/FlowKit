@@ -77,4 +77,3 @@ class MissingColumnsError(Exception):
             msg = "{columns[0].capitalize()} is missing for {tables}"
         else:
             msg = "{columns} are missing for {tables}"
-        Exception.__init__(self, msg)
