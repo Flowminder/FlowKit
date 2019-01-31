@@ -86,7 +86,9 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         else:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
 
-        self.tables = parse_tables_ensuring_columns(self.connection, tables, column_list)
+        self.tables = parse_tables_ensuring_columns(
+            self.connection, tables, column_list
+        )
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
