@@ -51,13 +51,11 @@ To run a demonstration version of FlowAuth use:
 docker run -p 8000:80 -e DEMO_MODE=1 flowminder/flowauth
 ```
 
-This will start FlowAuth, and pre-populate a disposable sqlite database with some dummy data. 
+This will start FlowAuth at <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a>, and pre-populate a disposable sqlite database with some dummy data. Log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`.
 
-The FlowAuth administration tool cannot be started at <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a>. Log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`.
+#### Granting user permissions in FlowAuth
 
-#### Generating tokens with FlowAuth for use in FlowClient
-
-The following steps using the FlowAuth administration tool are required to add a user and allow them to generate access tokens to communicate with a FlowKit server using FlowClient:
+The following steps using the FlowAuth administration tool are required to add a user and allow them to generate access tokens to communicate with a FlowKit server through FlowAPI:
 
 1. Log into FlowAuth as an administrator.
 
