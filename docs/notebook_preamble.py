@@ -2,10 +2,24 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# This file is executed before running any Jupyter notebook during the docs build.
+# It is set as the 'preamble' option to the 'mknotebooks' plugin in mkdocs.yml
+
 import pandas as pd
 import tabulate as tabulate
 import pprint
 import warnings
+import os
+import sys
+from dotenv import find_dotenv
+from datetime import timedelta
+
+path_to_utils_module = os.path.join(
+    os.path.dirname(find_dotenv()), "..", "integration_tests", "tests"
+)
+sys.path.insert(0, path_to_utils_module)
+
+from utils import make_token
 
 # Ignore warnings in notebook output
 
@@ -31,18 +45,6 @@ get_ipython().display_formatter.formatters["text/markdown"].for_type(
 
 
 # Create an API access token
-
-import os
-import sys
-from dotenv import find_dotenv
-
-path_to_utils_module = os.path.join(
-    os.path.dirname(find_dotenv()), "..", "integration_tests", "tests"
-)
-sys.path.insert(0, path_to_utils_module)
-
-from datetime import timedelta
-from utils import make_token
 
 claims = {
     "daily_location": {
