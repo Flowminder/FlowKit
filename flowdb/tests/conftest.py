@@ -32,11 +32,15 @@ def get_string_with_test_parameter_values(item):
     containing the parameter values. Otherwise return an empty string.
     """
     if "parametrize" in item.keywords:
-        m = re.search("(\[[^\]]*\])$", item.name)  # retrieve text in square brackets at the end of the item's name
+        m = re.search(
+            "(\[[^\]]*\])$", item.name
+        )  # retrieve text in square brackets at the end of the item's name
         if m:
             param_values_str = f" {m.group(1)}"
         else:
-            warnings.warn(f"Test is parametrized but could not extract parameter values from name: '{item.name}'")
+            warnings.warn(
+                f"Test is parametrized but could not extract parameter values from name: '{item.name}'"
+            )
     else:
         param_values_str = ""
 
