@@ -26,13 +26,34 @@ def pytest_configure(config):
     )
 
 
+def get_string_with_test_parameter_values(item):
+    """
+    If `item` corresponds to a parametrized pytest test, return a string
+    containing the parameter values. Otherwise return an empty string.
+    """
+    if "parametrize" in item.keywords:
+        m = re.search("(\[[^\]]*\])$", item.name)  # retrieve text in square brackets at the end of the item's name
+        if m:
+            param_values_str = f" {m.group(1)}"
+        else:
+            warnings.warn(f"Test is parametrized but could not extract parameter values from name: '{item.name}'")
+    else:
+        param_values_str = ""
+
+    return param_values_str
+
+
 def pytest_itemcollected(item):
-    # improve stdout logging from pytest's default which just prints the
-    # filename and no description of the test.
-    if item._obj.__doc__:
+    """
+    Custom hook which improves stdout logging from from pytest's default.
+
+    Instead of just printing the filename and no description of the test
+    (as would be the default) it prints the docstring as the description
+    and also adds info about any parameters (if the test is parametrized).
+    """
+    if item.obj.__doc__:
         item._nodeid = "* " + " ".join(item.obj.__doc__.split())
-        if item._genid:
-            item._nodeid = item._nodeid.rstrip(".") + f" [{item._genid}]."
+        item._nodeid += get_string_with_test_parameter_values(item)
 
 
 class DBConn:
