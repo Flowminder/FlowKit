@@ -25,10 +25,10 @@
         },
         "atomicwrites": {
             "hashes": [
-                "sha256:0312ad34fcad8fac3704d441f7b317e50af620823353ec657a53e981f92920c0",
-                "sha256:ec9ae8adaae229e4f8446952d204a3e4b5fdd2d099f9be3aaf556120135fb3ee"
+                "sha256:03472c30eb2c5d1ba9227e4c2ca66ab8287fbfbbda3888aa93dc2e28fc6811b4",
+                "sha256:75a9445bac02d8d058d5e1fe689654ba5a6556a1dfd8ce6ec55a0ed79866cfa6"
             ],
-            "version": "==1.2.1"
+            "version": "==1.3.0"
         },
         "attrs": {
             "hashes": [
@@ -74,10 +74,10 @@
         },
         "flask-jwt-extended": {
             "hashes": [
-                "sha256:8941a0f7cfe44795d3ce14d400186f7dbc0f5fb1b0015b34c83e49e1ef8dd288"
+                "sha256:97c66f197b4b175173bf955b9a845d03d62e521e512e88f6abff707e6859e7c3"
             ],
             "index": "pypi",
-            "version": "==3.16.0"
+            "version": "==3.17.0"
         },
         "flowclient": {
             "editable": true,
@@ -110,10 +110,10 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:106f506d6d1a07ea9ee86c5e96403872383f73c70dfa5a57c33c7bda68048d8d",
-                "sha256:21de02a0076588cec5aeb1022526be4bedc6c91678e8a8700e0d50aa45fa485a"
+                "sha256:63646155724c605dfb67411cbf8000c5a791d82277bb4c7d0e5e8517603dd101",
+                "sha256:d35853214408b31bce3220847fd3d16847086ec083123e725acbf36fdcf39fde"
             ],
-            "version": "==0.5.1"
+            "version": "==0.5.2"
         },
         "hyperframe": {
             "hashes": [
