@@ -102,7 +102,7 @@ The FlowClient Python client is used to perform CDR analysis using the JupyterLa
 pip install flowclient
 ```
 
-Quick install is continued with an example of FlowClient usage [here](../flowclient).
+Quick install is continued with an example of FlowClient usage [here](../analyst/#flowclient).
 
 <a name="developers">
 

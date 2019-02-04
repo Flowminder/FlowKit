@@ -29,8 +29,8 @@ The `build.sh` script:
 2. Copies the content of `source` to `build` (to avoid including the markdown generated from notebooks in commits)
 3. Copies the readme files from the root, flowdb and flowmachine directories to build
 4. Uses `nbconvert` on all notebooks found in `build/analyst/notebooks` and writes the resulting markdown to `build/analyst`
-5. Generates markdown API documentation for FlowMachine at `build/analyst/api`
-6. Generates markdown API documentation for FlowClient at `build/analyst/client`
+5. Generates markdown API documentation for FlowMachine at `build/components/flowmachine`
+6. Generates markdown API documentation for FlowClient at `build/components/flowclient`
 7. Builds HTML from the markdown using mkdocs
 
 ### Notes

@@ -138,7 +138,7 @@ FlowMachine is a Python toolkit for the analysis of CDR data. It is essentially 
 
 ### Documentation
 
-Documentation for FlowMachine can be found [here](../../developer/api/flowmachine).
+Documentation for FlowMachine can be found [here](../../components/flowmachine).
 
 
 <a name="flowdb">

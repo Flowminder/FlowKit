@@ -36,4 +36,4 @@ To connect FlowClient to FlowAPI, an access token must be generated using FlowAu
 
 ## FlowAPI
 
-Advanced users may wish to write their own clients that interface directly to FlowAPI. This is discussed in more detail in the [Developer](developer/roadmap.md) section of these documents.
+Advanced users may wish to write their own clients that interface directly to FlowAPI. This is discussed in more detail in the [Developer](developer.md) section of these documents.

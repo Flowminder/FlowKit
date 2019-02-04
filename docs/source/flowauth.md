@@ -2,7 +2,7 @@
 
 FlowAuth provides centralised authentication management for FlowKit systems.
 
-FlowAuth allows users to generate access tokens for use with [FlowClient](../flowclient).
+FlowAuth allows users to generate access tokens for use with [FlowClient](../analyst/#flowclient).
 
 ## Quickstart
 
