@@ -63,7 +63,7 @@ def get_string_with_test_parameter_values(item):
     """
     if "parametrize" in item.keywords:
         m = re.search(
-            "(\[[^\]]*\])$", item.name
+            "(\[.*\])$", item.name
         )  # retrieve text in square brackets at the end of the item's name
         if m:
             param_values_str = f" {m.group(1)}"
