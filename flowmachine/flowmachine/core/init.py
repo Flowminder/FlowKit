@@ -104,7 +104,7 @@ def connect(
     write_log_file = (
         (
             "TRUE"
-             == getsecret("WRITE_LOG_FILE", os.getenv("WRITE_LOG_FILE", "FALSE")).upper()
+            == getsecret("WRITE_LOG_FILE", os.getenv("WRITE_LOG_FILE", "FALSE")).upper()
         )
         if write_log_file is None
         else write_log_file
