@@ -50,8 +50,8 @@ services:
       - API_PASSWORD=${API_PASSWORD:-foo}
       - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
       - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:-1000}
-    tty: true
     shm_size: 1G
+    tty: true
     stdin_open: true
     restart: always
     networks:
@@ -61,7 +61,7 @@ services:
     container_name: flowdb_synthetic_data
     image: flowminder/flowdb:synthetic-data-latest
     build:
-      context: ./flowdb/testdata
+      context: ./flowdb/testdata/
       dockerfile: Dockerfile.synthetic_data
     ports:
       - ${FLOWDB_PORT:-9002}:5432
@@ -76,8 +76,8 @@ services:
       - N_DAYS=${N_DAYS:-7}
       - N_CELLS=${N_CELLS:-500}
       - N_CALLS=${N_CALLS:-2000}
-    tty: true
     shm_size: 1G
+    tty: true
     stdin_open: true
     restart: always
     networks:
@@ -125,7 +125,7 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-secret}
       - LOG_LEVEL=${LOG_LEVEL:-debug}
     volumes:
-      - ./flowapi/app:/app
+      - ./flowapi/app:/flowapi/app
     tty: true
     stdin_open: true
     restart: always
