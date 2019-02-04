@@ -13,7 +13,7 @@ from .new_subscribers import NewSubscribers
 from .modal_location import ModalLocation
 from .first_location import FirstLocation
 from .daily_location import daily_location
-from .nocturnal_calls import NocturnalCalls
+from .nocturnal_calls import NocturnalEvents
 from .location_visits import LocationVisits
 from .day_trajectories import DayTrajectories
 from .radius_of_gyration import RadiusOfGyration
@@ -59,7 +59,7 @@ from .meaningful_locations import (
 
 __all__ = [
     "RadiusOfGyration",
-    "NocturnalCalls",
+    "NocturnalEvents",
     "TotalSubscriberEvents",
     "FirstLocation",
     "CallDays",
