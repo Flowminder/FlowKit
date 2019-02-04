@@ -95,11 +95,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:106f506d6d1a07ea9ee86c5e96403872383f73c70dfa5a57c33c7bda68048d8d",
-                "sha256:21de02a0076588cec5aeb1022526be4bedc6c91678e8a8700e0d50aa45fa485a"
+                "sha256:63646155724c605dfb67411cbf8000c5a791d82277bb4c7d0e5e8517603dd101",
+                "sha256:d35853214408b31bce3220847fd3d16847086ec083123e725acbf36fdcf39fde"
             ],
             "index": "pypi",
-            "version": "==0.5.1"
+            "version": "==0.5.2"
         },
         "hyperframe": {
             "hashes": [
