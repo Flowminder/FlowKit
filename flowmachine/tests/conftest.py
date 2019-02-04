@@ -68,7 +68,7 @@ def get_string_with_test_parameter_values(item):
         if m:
             param_values_str = f" {m.group(1)}"
         else:
-            warnings.warn(
+            raise RuntimeError(
                 f"Test is parametrized but could not extract parameter values from name: '{item.name}'"
             )
     else:
