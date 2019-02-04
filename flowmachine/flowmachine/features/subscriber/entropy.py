@@ -91,6 +91,7 @@ class PeriodicEntropy(BaseEntropy):
        0Gl95NRLjW2aw8pW  2.788854
                     ...       ...
     """
+
     def __init__(
         self,
         start,
@@ -264,6 +265,7 @@ class LocationEntropy(BaseEntropy):
         0Gl95NRLjW2aw8pW  2.997069
                      ...       ...
     """
+
     def __init__(
         self,
         start,
@@ -347,6 +349,7 @@ class ContactEntropy(BaseEntropy):
     gPZ7jbqlnAXR3JG5  0.686211
                  ...       ...
     """
+
     def __init__(
         self,
         start,
