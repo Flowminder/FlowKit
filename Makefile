@@ -33,7 +33,7 @@ down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) down
 
 
-flowdb-up:
+flowdb-up: flowdb-build
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build flowdb
 
 flowdb-down:
@@ -43,23 +43,23 @@ flowdb-build:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) build flowdb
 
 
-flowdb_testdata-up:
+flowdb_testdata-up: flowdb_testdata-build
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build flowdb_testdata
 
 flowdb_testdata-down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v flowdb_testdata
 
-flowdb_testdata-build:
+flowdb_testdata-build: flowdb-build
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) build flowdb_testdata
 
 
-flowdb_synthetic_data-up:
+flowdb_synthetic_data-up: flowdb_synthetic_data-build
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build flowdb_synthetic_data
 
 flowdb_synthetic_data-down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v flowdb_synthetic_data
 
-flowdb_synthetic_data-build:
+flowdb_synthetic_data-build: flowdb-build
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) build flowdb_synthetic_data
 
 
