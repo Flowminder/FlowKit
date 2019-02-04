@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 
+Dockerised development setup, with support for live reload of `flowmachine` and `flowapi` after source code changes.
+
 ### Changed
 
 ### Fixed
