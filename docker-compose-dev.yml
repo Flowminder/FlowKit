@@ -9,6 +9,7 @@ networks:
   redis:
   zero:
 
+
 services:
 
   flowdb:
@@ -93,6 +94,8 @@ services:
       - ${FLOWMACHINE_PORT:-5555}:5555
     volumes:
       - ./flowmachine/:/app
+    depends_on:
+      - redis
     tty: true
     stdin_open: true
     environment:
