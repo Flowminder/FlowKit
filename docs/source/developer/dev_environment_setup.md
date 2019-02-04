@@ -1,6 +1,6 @@
 # Setting up a development environment
 
-## Starting up the FlowKit components
+## Option 1: Starting up all FlowKit components inside a dockerised development environment
 
 For convenience, FlowKit comes with a dockerised development environment. You can start up a development version of all
 components by running:
@@ -47,12 +47,44 @@ Any changes to `flowdb` - for example, tweaks to the database schema - will requ
 to achieve this.
 
 
-## Verifying the setup
+## Option 2: Starting Flowmachine and FlowAPI manually, outside the dockerised setup
+
+While the fully dockerised setup described above is convenient, it has the disadvantage that interactive debugging is
+difficult or impossible if Flowmachine and FlowAPI are running inside a docker container. If you want to set breakpoints
+and use for example [pdb](https://docs.python.org/3/library/pdb.html), [ipdb](https://pypi.org/project/ipdb/) or similar
+debuggers to step through the code then it is easier to start the relevant components manually.
+
+To do this, first start the components which you want to run inside the dockerised environment, e.g. via:
+```bash
+$ make flowmachine_testdata-up flowauth-up
+```
+
+Next, run one or more of the following commands (in separate terminals) to start up the remaining components.
+(These commands are the same as the ones inside the `Dockerfile-dev` file for each component.) 
+
+### Flowmachine
+```bash
+$ cd flowmachine/
+$ pipenv run watchmedo auto-restart --recursive --patterns="*.py" --directory="." pipenv run flowmachine
+```
+
+### FlowAPI
+```bash
+$ cd flowapi/
+$ pipenv run hypercorn --debug --reload --bind 0.0.0.0:9090 "app.main:create_app()"
+```
+
+### FlowAuth
+
+_TODO_
+
+
+# Verifying the setup
 
 This section provides example commands which you can run to verify that `flowdb`, `flowmachine` and `flowapi` started up
 successfully and are wired up correctly so that they can talk to each other.
 
-### Running the integration tests
+## Running the integration tests
 
 You can run the integration tests as follows. If these pass, this is a good indication that everything is set up correctly.
 ```bash
@@ -61,7 +93,7 @@ $ pipenv install  # only needed once to install dependencies
 $ pipenv run pytest
 ```
 
-### FlowDB
+## FlowDB
 
 ```
 $ psql "postgresql://flowdb:flowflow@localhost:9000/flowdb" -c "SELECT flowdb_version()"
@@ -74,7 +106,7 @@ The output should be similar to this:
 (1 row)
 ```
 
-### Flowmachine
+## Flowmachine
 
 From within the `flowmachine/` folder, run the following command to send an example message to the Flowmachine server via ZeroMQ.
 ```
@@ -86,7 +118,7 @@ Sending message: {'action': 'run_query', 'query_kind': 'daily_location', 'reques
 {'status': 'accepted', 'id': 'ddc61a04f608dee16fff0655f91c2057'}
 ```
 
-### FlowAPI
+## FlowAPI
 
 First navigate to `http://localhost:8080/` (where Flowauth should be running), create a valid token (TODO: add
 instructions how to do this or link to the appropriate section in the docs) and store it in the environment
