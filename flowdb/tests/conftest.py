@@ -8,6 +8,7 @@ Commonly used testing fixtures for flowdb.
 """
 
 import os
+import re
 import pytest
 import logging
 import psycopg2 as pg
