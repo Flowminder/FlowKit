@@ -1,12 +1,12 @@
 site_name: FlowKit
-# nav:
-#   - Introduction: index.md
-#   - Installation: install.md
-#   - Analyst: analyst/
-#   - Developer: developer.md
-#   - Administrator: administrator/cache_management.md
-#   - License: license.md
-#   - Components: components/
+nav:
+  - Introduction: index.md
+  - Installation: install.md
+  - Analyst: analyst/
+  - Developer: developer.md
+  - Administrator: administrator/
+  - License: license.md
+  - Components: components/
 repo_name: "Flowminder/FlowKit"
 repo_url: https://github.com/Flowminder/FlowKit
 docs_dir: source
@@ -16,10 +16,10 @@ plugins:
   - mktheapidocs:
       modules:
         flowmachine:
-          section: components/flowmachine
+          section: components
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowmachine"
         flowclient:
-          section: components/flowclient
+          section: components
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
   - mknotebooks:
       execute: true
