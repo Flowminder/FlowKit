@@ -1,8 +1,8 @@
 arrange:
-    - Introduction
-    - Installation
-    - Analyst
-    - Developer
-    - Administrator
-    - License
     - Components
+    - index.md
+    - install.md
+    - Analyst
+    - developer.md
+    - administrator.md
+    - license.md
