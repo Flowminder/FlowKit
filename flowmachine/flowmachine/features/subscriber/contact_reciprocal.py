@@ -188,6 +188,7 @@ class ProportionContactReciprocal(SubscriberFeature):
     a76Ajyb9dmEYNd8L         0.0
                  ...         ...
     """
+
     def __init__(
         self,
         start,

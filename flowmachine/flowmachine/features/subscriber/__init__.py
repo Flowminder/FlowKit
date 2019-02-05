@@ -34,7 +34,11 @@ from .label_event_score import LabelEventScore
 from .distance_counterparts import DistanceCounterparts
 
 from .pareto_interactions import ParetoInteractions
-from .contact_reciprocal import ContactReciprocal, ProportionContactReciprocal, ProportionReciprocal
+from .contact_reciprocal import (
+    ContactReciprocal,
+    ProportionContactReciprocal,
+    ProportionReciprocal,
+)
 
 
 from .subscriber_tacs import (
