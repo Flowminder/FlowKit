@@ -4,6 +4,8 @@
 
 import pytest
 
+from flowmachine.core.utils import pretty_sql
+
 from approvaltests.approvals import verify
 from flowmachine.core import CustomQuery
 from flowmachine.features import daily_location
@@ -14,7 +16,7 @@ def test_daily_location_1_sql(diff_reporter):
     Simple daily location query returns the expected SQL string.
     """
     dl = daily_location("2016-01-01", "2016-01-02")
-    sql = dl.get_query()
+    sql = pretty_sql(dl.get_query())
     verify(sql, diff_reporter)
 
 
@@ -41,7 +43,7 @@ def test_daily_location_2_sql(diff_reporter):
         ignore_nulls=False,
         subscriber_subset=["2GJxeNazvlgZbqj6", "7qKmzkeMbmk5nOa0", "8dpPLR15XwR7jQyN", "1NqnrAB9bRd597x2"],
     )
-    sql = dl.get_query()
+    sql = pretty_sql(dl.get_query())
     verify(sql, diff_reporter)
 
 
@@ -78,7 +80,7 @@ def test_daily_location_3_sql(diff_reporter):
         # ignore_nulls=False,
         subscriber_subset=subset_query,
     )
-    sql = dl.get_query()
+    sql = pretty_sql(dl.get_query())
     verify(sql, diff_reporter)
 
 

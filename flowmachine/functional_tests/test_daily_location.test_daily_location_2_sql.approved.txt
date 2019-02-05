@@ -1,70 +1,55 @@
-
-        SELECT 
-            ranked.subscriber, 
-            admin2pcod
-        FROM
-             (SELECT times_visited.subscriber, admin2pcod,
+SELECT ranked.subscriber,
+       admin2pcod
+FROM (SELECT times_visited.subscriber,
+             admin2pcod,
              row_number() OVER (PARTITION BY times_visited.subscriber
-              ORDER BY total DESC) AS rank
-             FROM (
-        SELECT 
-            subscriber_locs.subscriber, 
-            admin2pcod, 
-            count(*) AS total
-        FROM (
-        SELECT
-            l.subscriber, l.time, l.location_id,
-            sites.admin2pcod
-        FROM
-            (
-                SELECT
-                    subscriber, datetime as time, location_id
-                FROM
-                    (
-        SELECT datetime, imei AS subscriber, location_id
-        FROM events.calls
-        WHERE (datetime >= '2016-01-04'::timestamptz) AND (datetime <= '2016-01-05'::timestamptz)
-         AND EXTRACT(hour FROM datetime) BETWEEN 3 and 8  AND  imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')
-UNION ALL
+                                ORDER BY total DESC) AS rank
+      FROM (SELECT subscriber_locs.subscriber,
+                   admin2pcod,
+                   count(*) AS total
+            FROM (SELECT l.subscriber,
+                         l.time,
+                         l.location_id,
+                         sites.admin2pcod
+                  FROM (SELECT subscriber,
+                               datetime AS time,
+                               location_id
+                        FROM (SELECT datetime,
+                                     imei AS subscriber,
+                                     location_id
+                              FROM events.calls
+                              WHERE (datetime >= '2016-01-04'::timestamptz)
+                                AND (datetime <= '2016-01-05'::timestamptz)
+                                AND EXTRACT(HOUR FROM datetime) BETWEEN 3 AND 8
+                                AND imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')
 
-        SELECT datetime, imei AS subscriber, location_id
-        FROM events.sms
-        WHERE (datetime >= '2016-01-04'::timestamptz) AND (datetime <= '2016-01-05'::timestamptz)
-         AND EXTRACT(hour FROM datetime) BETWEEN 3 and 8  AND  imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')) AS foo
-                
-                ) AS l
-        INNER JOIN
-            (
-        SELECT
-            location_id, version, date_of_first_service, date_of_last_service,
-            admin2pcod AS pcod
-        FROM
-            (
-            SELECT
-                locinfo.id AS location_id,
-                locinfo.version,
-                locinfo.date_of_first_service,
-                locinfo.date_of_last_service,
-                polygon.admin2pcod
-            FROM
-                infrastructure.cells AS locinfo
-            INNER JOIN
-                geography.admin2 AS polygon
-            ON ST_within(
-                locinfo.geom_point::geometry,
-                ST_SetSRID(polygon.geom, 4326)::geometry
-            )
-            ) AS map
-        ) AS sites
-        ON
-            l.location_id = sites.location_id
-          AND
-            l.time::date BETWEEN coalesce(sites.date_of_first_service,
-                                                '-infinity'::timestamptz) AND
-                                       coalesce(sites.date_of_last_service,
-                                                'infinity'::timestamptz)
-         ORDER BY time) AS subscriber_locs
-        GROUP BY subscriber_locs.subscriber, admin2pcod
-        ) AS times_visited) AS ranked
-        WHERE rank = 1
-        
+                              UNION ALL
+
+                              SELECT datetime,
+                                     imei AS subscriber,
+                                     location_id
+                              FROM events.sms
+                              WHERE (datetime >= '2016-01-04'::timestamptz)
+                                AND (datetime <= '2016-01-05'::timestamptz)
+                                AND EXTRACT(HOUR FROM datetime) BETWEEN 3 AND 8
+                                AND imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')) AS foo) AS l
+                       INNER JOIN (SELECT location_id,
+                                          version,
+                                          date_of_first_service,
+                                          date_of_last_service,
+                                          admin2pcod AS pcod
+                                   FROM (SELECT locinfo.id AS location_id,
+                                                locinfo.version,
+                                                locinfo.date_of_first_service,
+                                                locinfo.date_of_last_service,
+                                                polygon.admin2pcod
+                                         FROM infrastructure.cells AS locinfo
+                                              INNER JOIN geography.admin2 AS polygon ON st_within(locinfo.geom_point::geometry,
+                                                                                                  st_setsrid(polygon.geom, 4326)::geometry)) AS map) AS sites ON (l.location_id = sites.location_id)
+                                                                                                                                                             AND l.time::date BETWEEN COALESCE(sites.date_of_first_service,
+                                                                                                                                                                                               '-infinity'::timestamptz)
+                                                                                                                                                                                  AND COALESCE(sites.date_of_last_service,
+                                                                                                                                                                                               'infinity'::timestamptz)
+                  ORDER BY time) AS subscriber_locs
+            GROUP BY subscriber_locs.subscriber, admin2pcod) AS times_visited) AS ranked
+WHERE rank = 1
