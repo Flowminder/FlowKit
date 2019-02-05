@@ -18,7 +18,7 @@ This performance boost is achieved at the cost of disk space usage, and manageme
 
 FlowMachine and FlowDB provide tools to inspect and manage the content of FlowKit's cache. FlowDB also contains metadata about the content of cache, in the `cache.cached` table.
 
-Administrators can inspect this table directly by connecting to FlowDB, but in many scenarios the better option is to make use of FlowMachine's [cache management module](Components/flowmachine/core/cache/).
+Administrators can inspect this table directly by connecting to FlowDB, but in many scenarios the better option is to make use of FlowMachine's [cache management module](../Components/flowmachine/core/cache/).
 
 The cache submodule provides functions to assess the disk usage of the cache tables, and to reduce the disk usage below a desired threshold.
 
@@ -28,13 +28,13 @@ To identify which tables should be discarded from cache, FlowKit keeps track of 
 
 Each cache table has a cache score, with a higher score indicating that the table has more cache value.
 
-FlowMachine provides two functions which make use of this cache score to reduce the size of the cache - [`shrink_below_size`](./Components/flowmachine/core/cache/#shrink_below_size), and [`shrink_one`](./Components/flowmachine/core/cache/#shrink_one). `shrink_one` flushes the table with the _lowest_ cache score. `shrink_below_size` flushes tables until the disk space used by the cache falls below a threshold[^1] by calling `shrink_one` repeatedly.
+FlowMachine provides two functions which make use of this cache score to reduce the size of the cache - [`shrink_below_size`](../Components/flowmachine/core/cache/#shrink_below_size), and [`shrink_one`](../Components/flowmachine/core/cache/#shrink_one). `shrink_one` flushes the table with the _lowest_ cache score. `shrink_below_size` flushes tables until the disk space used by the cache falls below a threshold[^1] by calling `shrink_one` repeatedly.
 
-If necessary, the cache can also be completely reset using the [`reset_cache`](./Components/flowmachine/core/cache/#reset_cache) function.
+If necessary, the cache can also be completely reset using the [`reset_cache`](../Components/flowmachine/core/cache/#reset_cache) function.
 
 #### Removing a Specific Query from Cache
 
-If a specific query must be removed from the cache, then an administrator can use the [`invalidate_cache_by_id`](./Components/flowmachine/core/cache/#invalidate_cache_by_id) function of the `cache` submodule.
+If a specific query must be removed from the cache, then an administrator can use the [`invalidate_cache_by_id`](../Components/flowmachine/core/cache/#invalidate_cache_by_id) function of the `cache` submodule.
 
 By default, this function only removes that specific query from cache. However, setting the `cascade` argument to `True` will also flush from the cache any cached queries which used that query in their calculation. This will also cascade to any queries which used _those_ queries, and so on.
 
