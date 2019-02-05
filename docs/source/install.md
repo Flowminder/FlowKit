@@ -1,3 +1,5 @@
+Title: Installation
+
 #How to Install FlowKit
 
 There are three main ways to install FlowKit.

@@ -1,3 +1,5 @@
+Title: Developer
+
 # Information for Developers
 
 Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](../install.md). 

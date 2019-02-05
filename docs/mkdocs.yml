@@ -1,12 +1,4 @@
 site_name: FlowKit
-nav:
-  - Introduction: index.md
-  - Installation: install.md
-  - Analyst: analyst/
-  - Developer: developer.md
-  - Administrator: administrator/
-  - License: license.md
-  - Components: components/
 repo_name: "Flowminder/FlowKit"
 repo_url: https://github.com/Flowminder/FlowKit
 docs_dir: source
@@ -24,6 +16,7 @@ plugins:
   - mknotebooks:
       execute: true
       preamble: "notebook_preamble.py"
+  - awesome-pages
 
 theme:
   name: "material"
