@@ -59,6 +59,7 @@ subs = [
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
     "DistanceCounterparts",
+    "MDSVolume",
 ]
 
 rast = ["RasterStatistics"]

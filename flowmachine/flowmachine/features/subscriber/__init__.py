@@ -57,6 +57,8 @@ from .meaningful_locations import (
     MeaningfulLocationsOD,
 )
 
+from .mds_volume import MDSVolume
+
 __all__ = [
     "RadiusOfGyration",
     "NocturnalCalls",
@@ -97,4 +99,5 @@ __all__ = [
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
     "DistanceCounterparts",
+    "MDSVolume",
 ]
