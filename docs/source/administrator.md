@@ -18,7 +18,7 @@ This performance boost is achieved at the cost of disk space usage, and manageme
 
 FlowMachine and FlowDB provide tools to inspect and manage the content of FlowKit's cache. FlowDB also contains metadata about the content of cache, in the `cache.cached` table.
 
-Administrators can inspect this table directly by connecting to FlowDB, but in many scenarios the better option is to make use of FlowMachine's [cache management module](./Components/flowmachine/core/cache/).
+Administrators can inspect this table directly by connecting to FlowDB, but in many scenarios the better option is to make use of FlowMachine's [cache management module](Components/flowmachine/core/cache/).
 
 The cache submodule provides functions to assess the disk usage of the cache tables, and to reduce the disk usage below a desired threshold.
 
