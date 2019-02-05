@@ -209,6 +209,8 @@ class EventTableSubset(Query):
                 except (TypeError, AssertionError):
                     ss = (self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS,)
                 sql = f"{sql} {where_clause} {self.subscriber_identifier} IN {_makesafe(ss)}"
+        else:
+            sql = self.subscriber_subset.apply_subset(sql)
 
         return sql
 
