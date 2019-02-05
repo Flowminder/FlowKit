@@ -1,0 +1,2 @@
+,subscriber,location_id
+0,GNLM7eW5J5wmlwRa,0RIMKYtf

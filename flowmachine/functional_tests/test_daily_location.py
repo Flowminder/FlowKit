@@ -2,7 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import pytest
+
 from approvaltests.approvals import verify
+from flowmachine.core import CustomQuery
 from flowmachine.features import daily_location
 
 
@@ -55,6 +58,44 @@ def test_daily_location_2_df(get_dataframe, diff_reporter):
         #column_name="admin2pcod",
         ignore_nulls=False,
         subscriber_subset=["2GJxeNazvlgZbqj6", "7qKmzkeMbmk5nOa0", "8dpPLR15XwR7jQyN", "1NqnrAB9bRd597x2"],
+    )
+    df = get_dataframe(dl)
+    verify(df.to_csv(), diff_reporter)
+
+
+def test_daily_location_3_sql(diff_reporter):
+    """
+    Daily location query with non-default parameters returns the expected data.
+    """
+    subset_query = CustomQuery("SELECT msisdn AS subscriber FROM events.calls WHERE msisdn in ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz')")
+    dl = daily_location(
+        "2016-01-05",
+        level="cell",
+        hours=(1, 18),
+        method="last",
+        # subscriber_identifier="imei",
+        # column_name="admin2pcod",
+        # ignore_nulls=False,
+        subscriber_subset=subset_query,
+    )
+    sql = dl.get_query()
+    verify(sql, diff_reporter)
+
+
+def test_daily_location_3_df(get_dataframe, diff_reporter):
+    """
+    Daily location query with non-default parameters returns the expected data.
+    """
+    subset_query = CustomQuery("SELECT msisdn AS subscriber FROM events.calls WHERE msisdn in ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz')")
+    dl = daily_location(
+        "2016-01-05",
+        level="cell",
+        hours=(1, 18),
+        method="last",
+        # subscriber_identifier="imei",
+        # column_name="admin2pcod",
+        ignore_nulls=False,
+        subscriber_subset=subset_query,
     )
     df = get_dataframe(dl)
     verify(df.to_csv(), diff_reporter)
