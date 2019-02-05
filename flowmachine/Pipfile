@@ -34,6 +34,7 @@ pytest-cov = "*"
 pytest-testmon = "*"
 asynctest = "*"
 cachey = "*"
+approvaltests = "*"
 watchdog = "*"
 
 [requires]
