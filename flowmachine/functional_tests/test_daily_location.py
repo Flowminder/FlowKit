@@ -6,18 +6,18 @@ from approvaltests.approvals import verify
 from flowmachine.features import daily_location
 
 
-def test_simple_daily_location_sql(diff_reporter):
+def test_daily_location_1_sql(diff_reporter):
     """
-    daily_location() is equivalent to the MostFrequentLocation().
+    Simple daily location query returns the expected SQL string.
     """
     dl = daily_location("2016-01-01", "2016-01-02")
     sql = dl.get_query()
     verify(sql, diff_reporter)
 
 
-def test_simple_daily_location_df(get_dataframe, diff_reporter):
+def test_daily_location_1_df(get_dataframe, diff_reporter):
     """
-    daily_location() is equivalent to the MostFrequentLocation().
+    Simple daily location query returns the expected data.
     """
     dl = daily_location("2016-01-01", "2016-01-02")
     df = get_dataframe(dl)
