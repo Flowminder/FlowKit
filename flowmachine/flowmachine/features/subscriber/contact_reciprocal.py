@@ -14,10 +14,15 @@ from ...core.mixins.graph_mixin import GraphMixin
 from .contact_balance import ContactBalance
 
 
-class ReciprocalContact(GraphMixin, SubscriberFeature):
+class ContactReciprocal(GraphMixin, SubscriberFeature):
     """
-    This class calculates the total number of reciprocal events between a
-    subscriber and its reciprocal counterparts.
+    This class classifies a subscribers contact as reciprocal or not based. In
+    addition to that, it calculates the number of incoming and outgoing events
+    between the subscriber and her/his counterpart as well as the proportion
+    that those events represent in total incoming and outgoing events.
+
+    A reciprocal contact is a contact who has initiated contact and who also
+    has been the counterpart of an initatiated contact by the subscriber.
 
     Parameters
     ----------
@@ -40,7 +45,7 @@ class ReciprocalContact(GraphMixin, SubscriberFeature):
     Example
     -------
 
-    >> s = ReciprocalContact('2016-01-01', '2016-01-08')
+    >> s = ContactReciprocal('2016-01-01', '2016-01-08')
     >> s.get_dataframe()
 
 
@@ -144,11 +149,12 @@ class ReciprocalContact(GraphMixin, SubscriberFeature):
         return sql
 
 
-class ProportionReciprocal(SubscriberFeature):
+class ProportionContactReciprocal(SubscriberFeature):
     """
-    This class calculates the proportion of events with a reciprocal contact
-    per subscriber.  It is possible to fine-tune the period for which a
-    reciprocal contact must have happened.
+    This class calculates the proportion of reciprocal contacts a subscriber has.
+
+    A reciprocal contact is a contact who has initiated contact and who also
+    has been the counterpart of an initatiated contact by the subscriber.
 
     Parameters
     ----------
@@ -157,8 +163,83 @@ class ProportionReciprocal(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    reciprocal_contact: ReciprocalContact, default None
-        An instance of ReciprocalContact listing which contacts are reciprocal
+    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
+        If provided, string or list of string which are msisdn or imeis to limit
+        results to; or, a query or table which has a column with a name matching
+        subscriber_identifier (typically, msisdn), to limit results to.
+    exclude_self_calls : bool, default True
+        Set to false to *include* calls a subscriber made to themself
+    tables : str or list of strings, default 'all'
+        Can be a string of a single table (with the schema)
+        or a list of these. The keyword all is to select all
+        subscriber tables
+
+    Example
+    -------
+
+    >> s = ProportionContactReciprocal('2016-01-01', '2016-01-08')
+    >> s.get_dataframe()
+
+          subscriber  proportion
+    9vXy462Ej8V1kpWl         0.0
+    Q4mwVxpBOo7X2lb9         0.0
+    5jLW0EWeoyg6NQo3         0.0
+    QEoRM9vlkV18N4ZY         0.0
+    a76Ajyb9dmEYNd8L         0.0
+                 ...         ...
+    """
+    def __init__(
+        self,
+        start,
+        stop,
+        *,
+        hours="all",
+        tables="all",
+        exclude_self_calls=True,
+        subscriber_subset=None,
+    ):
+        self.start = start
+        self.stop = stop
+        self.hours = hours
+        self.exclude_self_calls = exclude_self_calls
+        self.tables = tables
+
+        self.contact_reciprocal_query = ContactReciprocal(
+            self.start,
+            self.stop,
+            hours=self.hours,
+            tables=self.tables,
+            exclude_self_calls=self.exclude_self_calls,
+            subscriber_subset=subscriber_subset,
+        )
+
+    def _make_query(self):
+
+        return f"""
+        SELECT subscriber, AVG(reciprocal::int) AS proportion
+        FROM  ({self.contact_reciprocal_query.get_query()}) R
+        GROUP BY subscriber
+        """
+
+
+class ProportionReciprocal(SubscriberFeature):
+    """
+    This class calculates the proportion of events with a reciprocal contact
+    per subscriber.  It is possible to fine-tune the period for which a
+    reciprocal contact must have happened.
+
+    A reciprocal contact is a contact who has initiated contact and who also
+    has been the counterpart of an initatiated contact by the subscriber.
+
+    Parameters
+    ----------
+    start, stop : str
+         iso-format start and stop datetimes
+    hours : 2-tuple of floats, default 'all'
+        Restrict the analysis to only a certain set
+        of hours within each day.
+    reciprocal_contact: ContactReciprocal, default None
+        An instance of ContactReciprocal listing which contacts are reciprocal
         and which are not. If none is passed, the class instantiates a list of
         reciprocal contacts with the same parameters as the ones used to
         retrieve the requested events for consideration.
@@ -179,6 +260,10 @@ class ProportionReciprocal(SubscriberFeature):
 
     Example
     -------
+
+    >> s = ProportionReciprocal('2016-01-01', '2016-01-08')
+    >> s.get_dataframe()
+
           subscriber  proportion
     9vXy462Ej8V1kpWl         0.0
     Q4mwVxpBOo7X2lb9         0.0
@@ -192,7 +277,7 @@ class ProportionReciprocal(SubscriberFeature):
         self,
         start,
         stop,
-        reciprocal_contact=None,
+        contact_reciprocal=None,
         *,
         direction="both",
         subscriber_identifier="msisdn",
@@ -233,14 +318,14 @@ class ProportionReciprocal(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
 
-        if reciprocal_contact:
-            self.reciprocal_contact_query = reciprocal_contact
+        if contact_reciprocal:
+            self.contact_reciprocal_query = contact_reciprocal
         else:
             contact_start = start
             contact_stop = stop
             contact_hours = hours
             contact_tables = self.tables
-            self.reciprocal_contact_query = ReciprocalContact(
+            self.contact_reciprocal_query = ContactReciprocal(
                 contact_start,
                 contact_stop,
                 tables=contact_tables,
@@ -278,7 +363,7 @@ class ProportionReciprocal(SubscriberFeature):
             ) U
             LEFT JOIN (
                 SELECT subscriber, msisdn_counterpart, reciprocal
-                FROM ({self.reciprocal_contact_query.get_query()}) R
+                FROM ({self.contact_reciprocal_query.get_query()}) R
             ) R
             {on_clause}
         ) R
