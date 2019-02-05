@@ -34,7 +34,7 @@ from .label_event_score import LabelEventScore
 from .distance_counterparts import DistanceCounterparts
 
 from .pareto_interactions import ParetoInteractions
-from .reciprocal_contact import ReciprocalContact, ProportionReciprocal
+from .contact_reciprocal import ContactReciprocal, ProportionContactReciprocal, ProportionReciprocal
 
 
 from .subscriber_tacs import (
@@ -98,6 +98,7 @@ __all__ = [
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
     "DistanceCounterparts",
-    "ReciprocalContact",
+    "ContactReciprocal",
     "ProportionReciprocal",
+    "ProportionContactReciprocal",
 ]

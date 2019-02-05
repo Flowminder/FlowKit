@@ -59,7 +59,8 @@ subs = [
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
     "DistanceCounterparts",
-    "ReciprocalContact",
+    "ContactReciprocal",
+    "ProportionContactReciprocal",
     "ProportionReciprocal",
 ]
 
