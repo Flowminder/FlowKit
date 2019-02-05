@@ -14,6 +14,13 @@ class SubscriberSubsetBase(Query):
             f"Class {self.__class__.__name__} does not implement 'is_proper_subset'"
         )
 
+    @abstractmethod
+    def apply_subset(self, sql):
+        raise NotImplementedError(
+            f"Class {self.__class__.__name__} does not implement 'apply_subset'"
+        )
+
+
 
 class AllSubscribers(SubscriberSubsetBase):
 
@@ -21,6 +28,9 @@ class AllSubscribers(SubscriberSubsetBase):
 
     def _make_query(self):
         return "<AllSubscribers>"
+
+    def apply_subset(self, sql):
+        return sql
 
 
 class OtherSubset(SubscriberSubsetBase):
@@ -35,6 +45,9 @@ class OtherSubset(SubscriberSubsetBase):
 
     def _make_query(self):
         return "<OtherSubset>"
+
+    def apply_subset(self, sql):
+        raise NotImplementedError()
 
 
 def make_subscriber_subset(subset):
