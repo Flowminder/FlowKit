@@ -35,7 +35,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    table : str, default 'all'
+    tables : str, default 'all'
     exclude_self_calls : bool, default True
         Set to false to *include* calls a subscriber made to themself
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
@@ -81,10 +81,13 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
 
-        if self.direction == "both":
+        if self.direction not in ("both", "in", "out"):
+            raise ValueError("Unidentified direction: {}".format(self.direction))
+
+        if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
             self.tables = tables
-        else:
+        elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
             self.tables = self._parse_tables_ensuring_direction_present(tables)
 
