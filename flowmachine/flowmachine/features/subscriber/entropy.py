@@ -35,7 +35,7 @@ class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
 
         raise NotImplementedError
 
-    @abstractproperty
+    @property
     def _relative_freq_query(self):
         return f"""
         SELECT
@@ -128,10 +128,10 @@ class PeriodicEntropy(BaseEntropy):
         if direction not in {"in", "out", "both"}:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        if self.direction == "both":
+        if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "datetime"]
             self.tables = tables
-        else:
+        elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "datetime", "outgoing"]
             self.tables = self._parse_tables_ensuring_direction_present(tables)
 
