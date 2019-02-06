@@ -71,7 +71,7 @@ def test_subscriber_location_entropy(get_dataframe):
 
     query = LocationEntropy("2016-01-02", "2016-01-05", level="admin1")
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc["0DB8zw67E9mZAPK2"].entropy == pytest.approx(1.2148896)
+    assert df.loc["0DB8zw67E9mZAPK2"].entropy == pytest.approx(1.214_889_6)
 
 
 def test_subscriber_contact_entropy(get_dataframe):
