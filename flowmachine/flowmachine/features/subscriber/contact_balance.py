@@ -73,7 +73,6 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
-        self.tables = tables
         self.start = start
         self.stop = stop
         self.hours = hours
@@ -89,6 +88,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.tables = parse_tables_ensuring_columns(
             self.connection, tables, column_list
         )
+
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
