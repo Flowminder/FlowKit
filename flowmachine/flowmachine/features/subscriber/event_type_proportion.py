@@ -12,6 +12,7 @@ from .metaclasses import SubscriberFeature
 
 valid_event_types = {"calls", "sms", "mds", "topups", "forwards"}
 
+
 class ProportionEventType(SubscriberFeature):
     """
     This class returns the proportion of events of a certain type out of all
@@ -80,23 +81,22 @@ class ProportionEventType(SubscriberFeature):
         self.numerator_query = EventCount(
             self.start,
             self.stop,
-            subscriber_identifier = self.subscriber_identifier,
-            direction = self.direction,
-            hours = self.hours,
-            subscriber_subset = subscriber_subset,
-            tables = f"events.{event_type}"
+            subscriber_identifier=self.subscriber_identifier,
+            direction=self.direction,
+            hours=self.hours,
+            subscriber_subset=subscriber_subset,
+            tables=f"events.{event_type}",
         )
 
         self.denominator_query = EventCount(
             self.start,
             self.stop,
-            subscriber_identifier = self.subscriber_identifier,
-            direction = self.direction,
-            hours = self.hours,
-            subscriber_subset = subscriber_subset,
-            tables = self.tables
+            subscriber_identifier=self.subscriber_identifier,
+            direction=self.direction,
+            hours=self.hours,
+            subscriber_subset=subscriber_subset,
+            tables=self.tables,
         )
-
 
         super().__init__()
 
