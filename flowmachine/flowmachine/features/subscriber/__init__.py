@@ -57,6 +57,8 @@ from .meaningful_locations import (
     MeaningfulLocationsOD,
 )
 
+from .topup_stats import TopUpAmount, TopUpBalance
+
 __all__ = [
     "RadiusOfGyration",
     "NocturnalCalls",
@@ -97,4 +99,6 @@ __all__ = [
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
     "DistanceCounterparts",
+    "TopUpAmount",
+    "TopUpBalance",
 ]
