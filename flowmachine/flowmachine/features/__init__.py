@@ -35,8 +35,6 @@ subs = [
     "HartiganCluster",
     "UniqueLocationCounts",
     "SubscriberDegree",
-    "SubscriberInDegree",
-    "SubscriberOutDegree",
     "ProportionOutgoing",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
