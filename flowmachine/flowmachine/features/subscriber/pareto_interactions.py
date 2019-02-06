@@ -89,7 +89,6 @@ class ParetoInteractions(SubscriberFeature):
         else:
             raise ValueError("{} is not a valid proportion.".format(proportion))
 
-
         self.contact_balance = ContactBalance(
             self.start,
             self.stop,
@@ -98,7 +97,7 @@ class ParetoInteractions(SubscriberFeature):
             subscriber_identifier=self.subscriber_identifier,
             direction=self.direction,
             exclude_self_calls=exclude_self_calls,
-            subscriber_subset = subscriber_subset,
+            subscriber_subset=subscriber_subset,
         )
 
         self.subscriber_degree = SubscriberDegree(

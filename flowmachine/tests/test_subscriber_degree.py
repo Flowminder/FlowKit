@@ -46,10 +46,16 @@ def test_returns_correct_in_out_values(get_dataframe):
     # only received a text, and to have degree 1 in in df2 because they
     # also sent one.
     ud1 = SubscriberDegree(
-        "2016-01-01 12:35:00", "2016-01-01 12:40:00", tables="events.sms", direction="in",
+        "2016-01-01 12:35:00",
+        "2016-01-01 12:40:00",
+        tables="events.sms",
+        direction="in",
     )
     ud2 = SubscriberDegree(
-        "2016-01-01 12:28:00", "2016-01-01 12:40:00", tables="events.sms", direction="out",
+        "2016-01-01 12:28:00",
+        "2016-01-01 12:40:00",
+        tables="events.sms",
+        direction="out",
     )
 
     df1 = get_dataframe(ud1)
