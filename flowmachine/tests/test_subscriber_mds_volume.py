@@ -9,16 +9,19 @@ from flowmachine.features.subscriber.mds_volume import *
 import pytest
 
 
-@pytest.mark.parametrize("statistic,msisdn,want", [
-    ("count", "Rzx9WE1QRqdEX2Gp", 11),
-    ("sum", "LBlWd64rqnMGv7kY", 11101.95),
-    ("avg", "JZoaw2jzvK2QMKYX", 1210.263000),
-    ("max", "DELmRj9Vvl346G50", 1509.11),
-    ("min", "9vXy462Ej8V1kpWl", 137.38),
-    ("median", "KXVqP6JyVDGzQa3b", 1245.540),
-    ("stddev", "EkpjZe5z37W70QKA", 507.783502),
-    ("variance", "JNK7mk5G1Dy6M2Ya", 91388.621845),
-])
+@pytest.mark.parametrize(
+    "statistic,msisdn,want",
+    [
+        ("count", "Rzx9WE1QRqdEX2Gp", 11),
+        ("sum", "LBlWd64rqnMGv7kY", 11101.95),
+        ("avg", "JZoaw2jzvK2QMKYX", 1210.263_000),
+        ("max", "DELmRj9Vvl346G50", 1509.11),
+        ("min", "9vXy462Ej8V1kpWl", 137.38),
+        ("median", "KXVqP6JyVDGzQa3b", 1245.540),
+        ("stddev", "EkpjZe5z37W70QKA", 507.783_502),
+        ("variance", "JNK7mk5G1Dy6M2Ya", 91388.621_845),
+    ],
+)
 def test_mds_volume(get_dataframe, statistic, msisdn, want):
     """
     Test a few handpicked MDSVolume instances.
@@ -26,6 +29,7 @@ def test_mds_volume(get_dataframe, statistic, msisdn, want):
     query = MDSVolume("2016-01-01", "2016-01-08", statistic=statistic)
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc[msisdn, f"volume_{statistic}"] == pytest.approx(want)
+
 
 def test_mds_volume_type(get_dataframe):
     """
@@ -38,6 +42,7 @@ def test_mds_volume_type(get_dataframe):
     query = MDSVolume("2016-01-01", "2016-01-08", volume="download")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["YMBqRkzbbxGkX3zA", "volume_sum"] == 2568.49
+
 
 def test_mds_wrong_volume_type_raises(get_dataframe):
     """

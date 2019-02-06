@@ -15,6 +15,7 @@ from .metaclasses import SubscriberFeature
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
+
 class MDSVolume(SubscriberFeature):
     """
     This class calculates statistics associated with MDS volume usage.
@@ -55,6 +56,7 @@ class MDSVolume(SubscriberFeature):
     QoD6rWNN03WPbEBg    10347.43
                  ...         ...
     """
+
     def __init__(
         self,
         start,
