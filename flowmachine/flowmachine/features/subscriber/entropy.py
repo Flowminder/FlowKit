@@ -41,7 +41,7 @@ class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
 
         raise NotImplementedError
 
-    @property
+    @abstractproperty
     def _relative_freq_query(self):
         return f"""
         SELECT
