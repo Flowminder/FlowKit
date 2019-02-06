@@ -28,6 +28,8 @@ def test_send_message_and_receive_reply(zmq_host, zmq_port):
     assert msg_expected == FM_EXAMPLE_MESSAGE
 
     # Check that the flowmachine server sends the expected reply
-    reply = send_message_and_receive_reply(FM_EXAMPLE_MESSAGE, host=zmq_host, port=zmq_port)
+    reply = send_message_and_receive_reply(
+        FM_EXAMPLE_MESSAGE, host=zmq_host, port=zmq_port
+    )
     expected_reply = {"status": "accepted", "id": "ddc61a04f608dee16fff0655f91c2057"}
     assert expected_reply == reply
