@@ -58,6 +58,7 @@ subs = [
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
+    "ProportionEventType",
 ]
 
 rast = ["RasterStatistics"]

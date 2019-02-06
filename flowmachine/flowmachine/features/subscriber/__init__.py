@@ -55,6 +55,8 @@ from .meaningful_locations import (
     MeaningfulLocationsOD,
 )
 
+from .event_type_proportion import ProportionEventType
+
 __all__ = [
     "RadiusOfGyration",
     "NocturnalCalls",
@@ -94,4 +96,5 @@ __all__ = [
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
+    "ProportionEventType",
 ]
