@@ -8,7 +8,7 @@ Calculates various entropy metrics for subscribers with a specified time
 period.
 """
 
-from abc import ABCMeta
+from abc import ABCMeta, abstractproperty
 from .metaclasses import SubscriberFeature
 from .contact_balance import ContactBalance
 from ..utilities.sets import EventsTablesUnion
@@ -30,12 +30,12 @@ class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
         GROUP BY subscriber
         """
 
-    @property
+    @abstractproperty
     def _absolute_freq_query(self):
 
         raise NotImplementedError
 
-    @property
+    @abstractproperty
     def _relative_freq_query(self):
         return f"""
         SELECT
@@ -52,15 +52,29 @@ class PeriodicEntropy(BaseEntropy):
     events regularly occur at a certain time of day, say at 9:00 and 18:00 then
     this user will have a low period entropy.
 
+    Entropy is calculated as:
+
+        -1 * SUM( relative_freq * LN( relative_freq ) )
+
+    where `relative_freq` is the relative frequency of events occurring at a
+    certain period (eg. hour of the day, day of the week, month of the year).
+
+    This formula represents a consistent estimate of the true entropy only
+    under certain conditions. Among them, that the relative frequency is a good
+    approximation to the probability that a certain event occurs within certain
+    periodic phases. In case of strong autocorrelation, this might not be true.
+
     Parameters
     ----------
     start, stop : str
          iso-format start and stop datetimes
     phase : {"century", "day", "decade", "dow", "doy", "epoch", "hour",
             "isodow", "isoyear", "microseconds", "millennium", "milliseconds",
-            "minute", "month", "quarter", "second", "timezone", "timezone_hour",
-            "timezone_minute", "week", "year"}, default 'hour'
-        The phase of recurrence for which one wishes to calculate the entropy.
+            "minute", "month", "quarter", "second", "week", "year"}, default 'hour'
+        The phase of recurrence for which one wishes to calculate the entropy
+        for. See [Postgres
+        manual](https://www.postgresql.org/docs/current/functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT)
+        for further info on the allowed phases.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -139,9 +153,6 @@ class PeriodicEntropy(BaseEntropy):
             "month",
             "quarter",
             "second",
-            "timezone",
-            "timezone_hour",
-            "timezone_minute",
             "week",
             "year",
         )
@@ -209,6 +220,19 @@ class LocationEntropy(BaseEntropy):
     Calculates the entropy of locations visited. For instance, if an individual
     regularly makes her/his calls from certain location then this user will
     have a low location entropy.
+
+    Entropy is calculated as:
+
+        -1 * SUM( relative_freq * LN( relative_freq ) )
+
+    where `relative_freq` is the relative frequency of events occurring at a
+    certain location (eg. cell, site, admnistrative region, etc.).
+
+    This formula represents a consistent estimate of the true entropy only
+    under certain conditions. Among them, that the relative frequency is a good
+    approximation to the probability that a certain event occurs in a given
+    location. In case of strong spatial autocorrelation, this might not be
+    true.
 
     Parameters
     ----------
@@ -309,9 +333,22 @@ class LocationEntropy(BaseEntropy):
 
 class ContactEntropy(BaseEntropy):
     """
-    Calculates the entropy of locations visited. For instance, if an individual
-    regularly interact with a few determined contacts then this user will have
-    a low contact entropy.
+    Calculates the entropy of counterparts contacted. For instance, if an
+    individual regularly interacts with a few determined counterparts on a
+    predictable way then this user will have a low contact entropy.
+
+    Entropy is calculated as:
+
+        -1 * SUM( relative_freq * LN( relative_freq ) )
+
+    where `relative_freq` is the relative frequency of events with a given
+    counterpart.
+
+    This formula represents a consistent estimate of the true entropy only
+    under certain conditions. Among them, that the relative frequency is a good
+    approximation to the probability that a certain event will occur with a
+    given counterpart. In case of strong correlation between counterparts, this
+    might not be true.
 
     Parameters
     ----------
