@@ -8,16 +8,20 @@ from flowmachine.features.subscriber.topup_stats import *
 
 import pytest
 
-@pytest.mark.parametrize("statistic,msisdn,want", [
-    ("count", "Rzx9WE1QRqdEX2Gp", 10),
-    ("sum", "LBlWd64rqnMGv7kY", 45.71),
-    ("avg", "JZoaw2jzvK2QMKYX", 4.556667),
-    ("max", "DELmRj9Vvl346G50", 9.16),
-    ("min", "9vXy462Ej8V1kpWl", 1.64),
-    ("median", "KXVqP6JyVDGzQa3b", 5.83),
-    ("stddev", "EkpjZe5z37W70QKA", 1.759553),
-    ("variance", "JNK7mk5G1Dy6M2Ya", 4.70577),
-])
+
+@pytest.mark.parametrize(
+    "statistic,msisdn,want",
+    [
+        ("count", "Rzx9WE1QRqdEX2Gp", 10),
+        ("sum", "LBlWd64rqnMGv7kY", 45.71),
+        ("avg", "JZoaw2jzvK2QMKYX", 4.556_667),
+        ("max", "DELmRj9Vvl346G50", 9.16),
+        ("min", "9vXy462Ej8V1kpWl", 1.64),
+        ("median", "KXVqP6JyVDGzQa3b", 5.83),
+        ("stddev", "EkpjZe5z37W70QKA", 1.759_553),
+        ("variance", "JNK7mk5G1Dy6M2Ya", 4.70577),
+    ],
+)
 def test_topup_amount(get_dataframe, statistic, msisdn, want):
     """
     Test a few handpicked TopUpAmount instances.
@@ -26,16 +30,20 @@ def test_topup_amount(get_dataframe, statistic, msisdn, want):
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc[msisdn, f"amount_{statistic}"] == pytest.approx(want)
 
-@pytest.mark.parametrize("statistic,msisdn,want", [
-    ("count", "Rzx9WE1QRqdEX2Gp", 10),
-    ("sum", "LBlWd64rqnMGv7kY", 44575009.52),
-    ("avg", "JZoaw2jzvK2QMKYX", 224.419246),
-    ("max", "DELmRj9Vvl346G50", 529.73),
-    ("min", "9vXy462Ej8V1kpWl", 442),
-    ("median", "KXVqP6JyVDGzQa3b", 435.94),
-    ("stddev", "EkpjZe5z37W70QKA", 15.095273),
-    ("variance", "JNK7mk5G1Dy6M2Ya", 505.767),
-])
+
+@pytest.mark.parametrize(
+    "statistic,msisdn,want",
+    [
+        ("count", "Rzx9WE1QRqdEX2Gp", 10),
+        ("sum", "LBlWd64rqnMGv7kY", 44_575_009.52),
+        ("avg", "JZoaw2jzvK2QMKYX", 224.419_246),
+        ("max", "DELmRj9Vvl346G50", 529.73),
+        ("min", "9vXy462Ej8V1kpWl", 442),
+        ("median", "KXVqP6JyVDGzQa3b", 435.94),
+        ("stddev", "EkpjZe5z37W70QKA", 15.095_273),
+        ("variance", "JNK7mk5G1Dy6M2Ya", 505.767),
+    ],
+)
 def test_topup_balance(get_dataframe, statistic, msisdn, want):
     """
     Test a few handpicked TopUpBalance instances.

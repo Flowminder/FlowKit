@@ -15,6 +15,7 @@ from .metaclasses import SubscriberFeature
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
+
 class TopUpAmount(SubscriberFeature):
     """
     This class calculates statistics associated with top-up recharge amounts.
@@ -53,6 +54,7 @@ class TopUpAmount(SubscriberFeature):
     7XebRKr35JMJnq8A    3.748750
                  ...         ...
     """
+
     def __init__(
         self,
         start,
@@ -102,6 +104,7 @@ class TopUpAmount(SubscriberFeature):
         FROM ({self.unioned_query.get_query()}) U
         GROUP BY subscriber
         """
+
 
 class TopUpBalance(SubscriberFeature):
     """
@@ -162,6 +165,7 @@ class TopUpBalance(SubscriberFeature):
                  ...          ...
 
     """
+
     def __init__(
         self,
         start,
@@ -186,7 +190,12 @@ class TopUpBalance(SubscriberFeature):
                 )
             )
 
-        column_list = [self.subscriber_identifier, "datetime", "pre_event_balance", "post_event_balance"]
+        column_list = [
+            self.subscriber_identifier,
+            "datetime",
+            "pre_event_balance",
+            "post_event_balance",
+        ]
 
         self.tables = parse_tables_ensuring_columns(
             self.connection, tables, column_list
@@ -229,7 +238,6 @@ class TopUpBalance(SubscriberFeature):
             GROUP BY subscriber
             """
             return sql
-
 
         weighted_sum = f"SUM(weight * balance)"
         weighted_avg = f"{weighted_sum} / SUM(weight)"
