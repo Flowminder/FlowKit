@@ -6,11 +6,7 @@
 Test the subscriber degree class
 """
 
-from flowmachine.features.subscriber.subscriber_degree import (
-    SubscriberDegree,
-    SubscriberInDegree,
-    SubscriberOutDegree,
-)
+from flowmachine.features.subscriber.subscriber_degree import *
 
 
 def test_returns_correct_column_names(get_dataframe):
@@ -49,11 +45,11 @@ def test_returns_correct_in_out_values(get_dataframe):
     # We expect subscriber '2Dq97XmPqvL6noGk' to not appear in df1, because they
     # only received a text, and to have degree 1 in in df2 because they
     # also sent one.
-    ud1 = SubscriberInDegree(
-        "2016-01-01 12:35:00", "2016-01-01 12:40:00", tables="events.sms"
+    ud1 = SubscriberDegree(
+        "2016-01-01 12:35:00", "2016-01-01 12:40:00", tables="events.sms", direction="in",
     )
-    ud2 = SubscriberOutDegree(
-        "2016-01-01 12:28:00", "2016-01-01 12:40:00", tables="events.sms"
+    ud2 = SubscriberDegree(
+        "2016-01-01 12:28:00", "2016-01-01 12:40:00", tables="events.sms", direction="out",
     )
 
     df1 = get_dataframe(ud1)

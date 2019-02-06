@@ -11,6 +11,7 @@ have done over a certain time period.
 """
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
+from ...utils.utils import parse_tables_ensuring_columns
 
 
 class SubscriberDegree(SubscriberFeature):
@@ -59,89 +60,72 @@ class SubscriberDegree(SubscriberFeature):
     """
 
     def __init__(
-        self, start, stop, tables="all", subscriber_identifier="msisdn", **kwargs
+        self,
+        start,
+        stop,
+        *,
+        hours="all",
+        tables="all",
+        subscriber_identifier="msisdn",
+        direction="both",
+        exclude_self_calls=True,
+        subscriber_subset=None,
     ):
         """
 
         """
 
-        self.tables = tables
         self.start = start
         self.stop = stop
+        self.hours = hours
+        self.direction = direction
         self.subscriber_identifier = subscriber_identifier
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "ALL"
-        column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
+        self.exclude_self_calls = exclude_self_calls
+
+        if self.direction == "both":
+            column_list = [self.subscriber_identifier, "msisdn_counterpart"]
+        else:
+            column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
+
+        self.tables = parse_tables_ensuring_columns(
+            self.connection, tables, column_list
+        )
+
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
+            hours=self.hours,
             tables=self.tables,
             columns=column_list,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs
+            subscriber_subset=subscriber_subset,
         )
+
         self._cols = ["subscriber", "degree"]
+
         super().__init__()
 
     def _make_query(self):
 
-        sql = """
+        filters = []
+        if self.direction != "both":
+            filters.append(
+                f"outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+            )
+        if self.exclude_self_calls:
+            filters.append("subscriber != msisdn_counterpart")
+        where_clause = f"WHERE {' AND '.join(filters)} " if len(filters) > 0 else ""
+
+        sql = f"""
         SELECT
            subscriber,
-            count(*) AS degree FROM
-        (SELECT DISTINCT subscriber, msisdn_counterpart
-         FROM ({unioned_query}) AS subscriber_degree) AS _
+           COUNT(*) AS degree
+        FROM (
+            SELECT DISTINCT subscriber, msisdn_counterpart
+            FROM ({self.unioned_query.get_query()}) AS U
+            {where_clause}
+        ) AS U
         GROUP BY subscriber
-        """.format(
-            unioned_query=self.unioned_query.get_query()
-        )
-
-        return sql
-
-
-class SubscriberInDegree(SubscriberDegree):
-    """
-    Find the total number of unique contacts
-    that each subscriber is contacted by.
-    """
-
-    def _make_query(self):
-
-        sql = """
-        SELECT
-            subscriber,
-            count(*) AS degree FROM
-        (SELECT DISTINCT subscriber, msisdn_counterpart
-         FROM ({unioned_query}) AS subscriber_degree
-         WHERE subscriber_degree.outgoing = FALSE) AS _
-        GROUP BY subscriber
-        """.format(
-            unioned_query=self.unioned_query.get_query()
-        )
-
-        return sql
-
-
-class SubscriberOutDegree(SubscriberDegree):
-    """
-    Find the total number of unique contacts
-    that each subscriber contacts.
-    """
-
-    def _make_query(self):
-
-        sql = """
-        SELECT
-            subscriber,
-            count(*) AS degree FROM
-        (SELECT DISTINCT subscriber AS subscriber, msisdn_counterpart
-         FROM ({unioned_query}) AS subscriber_degree
-         WHERE subscriber_degree.outgoing = TRUE) AS _
-        GROUP BY subscriber
-        """.format(
-            unioned_query=self.unioned_query.get_query()
-        )
+        """
 
         return sql
