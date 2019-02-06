@@ -10,20 +10,19 @@ from ...core import Table
 from .event_count import EventCount
 from .metaclasses import SubscriberFeature
 
+valid_event_types = {"calls", "sms", "mds", "topups", "forwards"}
 
 class ProportionEventType(SubscriberFeature):
     """
     This class returns the proportion of events of a certain type out of all
-    events observed during the target period per subscriber in all tables
-    specified in `tables`.
+    events observed during the target period per subscriber.
 
     Parameters
     ----------
     start, stop : str
          iso-format start and stop datetimes
-    numerator: str or list of strings
-        The event tables for which we are seeking as the proportion of the
-        total events observed in all tables specified in `tables`.
+    event_type: {'calls', 'sms', 'mds', 'topups', 'forwards'}
+        The event type for which we are seeking as the proportion of the total.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
@@ -38,7 +37,7 @@ class ProportionEventType(SubscriberFeature):
     tables : str or list of strings, default 'all'
         Can be a string of a single table (with the schema)
         or a list of these. The keyword all is to select all
-        subscriber tables.
+        subscriber tables
 
     Examples
     --------
@@ -46,7 +45,7 @@ class ProportionEventType(SubscriberFeature):
     >>> s = ProportionEventType("2016-01-01", "2016-01-07", type="sms")
     >>> s.get_dataframe()
 
-          subscriber       value
+          subscriber  proportion
     AgB6KR3Levd9Z1vJ    0.351852
     PbN9vQlbEORLmaxd    0.333333
     W6ljak9BpW0Z7ybg    0.271429
@@ -59,7 +58,7 @@ class ProportionEventType(SubscriberFeature):
         self,
         start,
         stop,
-        numerator,
+        event_type,
         *,
         subscriber_identifier="msisdn",
         direction="both",
@@ -73,37 +72,37 @@ class ProportionEventType(SubscriberFeature):
         self.direction = direction
         self.hours = hours
         self.tables = tables
-        self.numerator = numerator if isinstance(numerator, list) else [numerator]
+        self.event_type = event_type
+
+        if self.event_type not in valid_event_types:
+            raise ValueError(f"{self.event_type} is not a valid event type.")
 
         self.numerator_query = EventCount(
             self.start,
             self.stop,
-            subscriber_identifier=self.subscriber_identifier,
-            direction=self.direction,
-            hours=self.hours,
-            subscriber_subset=subscriber_subset,
-            tables=self.numerator,
+            subscriber_identifier = self.subscriber_identifier,
+            direction = self.direction,
+            hours = self.hours,
+            subscriber_subset = subscriber_subset,
+            tables = f"events.{event_type}"
         )
 
         self.denominator_query = EventCount(
             self.start,
             self.stop,
-            subscriber_identifier=self.subscriber_identifier,
-            direction=self.direction,
-            hours=self.hours,
-            subscriber_subset=subscriber_subset,
-            tables=self.tables,
+            subscriber_identifier = self.subscriber_identifier,
+            direction = self.direction,
+            hours = self.hours,
+            subscriber_subset = subscriber_subset,
+            tables = self.tables
         )
+
 
         super().__init__()
 
-    @property
-    def column_names(self):
-        return ["subscriber", "value"]
-
     def _make_query(self):
         return f"""
-        SELECT D.subscriber, N.event_count::float / D.event_count::float AS value
+        SELECT D.subscriber, N.event_count::float / D.event_count::float AS proportion
         FROM ({self.numerator_query.get_query()}) N
         JOIN ({self.denominator_query.get_query()}) D
         ON D.subscriber = N.subscriber
