@@ -44,6 +44,12 @@ def test_pareto(get_dataframe):
     p = ParetoInteractions("2016-01-01", "2016-01-02")
     assert all(get_dataframe(p).set_index("subscriber").loc["VkzMxYjv7mYn53oK"] == 0.75)
 
+    p = ParetoInteractions("2016-01-03", "2016-01-04", direction="in")
+    assert all(get_dataframe(p).set_index("subscriber").loc["ZM3zYAPqx95Rw15J"] == 1)
+
+    p = ParetoInteractions("2016-01-03", "2016-01-04", direction="out")
+    assert all(get_dataframe(p).set_index("subscriber").loc["YK6z2lXzg7w57Vap"] == 1)
+
 
 def test_pareto_nepal(get_dataframe):
     """Test flowmachine's method against the nepal code."""
