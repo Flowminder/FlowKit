@@ -12,8 +12,9 @@ from .call_days import CallDays
 from .new_subscribers import NewSubscribers
 from .modal_location import ModalLocation
 from .first_location import FirstLocation
+from .entropy import PeriodicEntropy, LocationEntropy, ContactEntropy
 from .daily_location import daily_location
-from .nocturnal_calls import NocturnalEvents
+from .nocturnal_events import NocturnalEvents
 from .location_visits import LocationVisits
 from .day_trajectories import DayTrajectories
 from .radius_of_gyration import RadiusOfGyration
@@ -92,6 +93,9 @@ __all__ = [
     "Displacement",
     "MostFrequentLocation",
     "LastLocation",
+    "PeriodicEntropy",
+    "LocationEntropy",
+    "ContactEntropy",
     "EventCount",
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
