@@ -82,10 +82,8 @@ class ContactBalance(GraphMixin, SubscriberFeature):
 
         if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-            self.tables = tables
         elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
-            self.tables = self._parse_tables_ensuring_direction_present(tables)
         else:
             raise ValueError("Unidentified direction: {}".format(self.direction))
 
