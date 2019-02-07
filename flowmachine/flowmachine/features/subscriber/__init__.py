@@ -58,6 +58,8 @@ from .meaningful_locations import (
     MeaningfulLocationsOD,
 )
 
+from .contact_modal_location_distance import ContactModalLocationDistance
+
 __all__ = [
     "RadiusOfGyration",
     "NocturnalCalls",
@@ -101,4 +103,5 @@ __all__ = [
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
     "DistanceCounterparts",
+    "ContactModalLocationDistance",
 ]
