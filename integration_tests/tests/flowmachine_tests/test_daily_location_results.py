@@ -13,7 +13,9 @@ def test_daily_location_1_sql(diff_reporter):
     """
     Daily location query with non-default parameters returns the expected data.
     """
-    subset_query = CustomQuery("SELECT DISTINCT msisdn AS subscriber FROM events.calls WHERE msisdn in ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')")
+    subset_query = CustomQuery(
+        "SELECT DISTINCT msisdn AS subscriber FROM events.calls WHERE msisdn in ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')"
+    )
     dl = daily_location(
         "2016-01-05",
         level="cell",
@@ -31,7 +33,9 @@ def test_daily_location_1_df(get_dataframe, diff_reporter):
     """
     # Note that subscriber `1vGR8kp342yxEpwY` should be missing from the result
     # because they have no event on 2016-01-05 after 11pm or before 5am.
-    subset_query = CustomQuery("SELECT DISTINCT msisdn AS subscriber FROM events.calls WHERE msisdn in ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')")
+    subset_query = CustomQuery(
+        "SELECT DISTINCT msisdn AS subscriber FROM events.calls WHERE msisdn in ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')"
+    )
     dl = daily_location(
         "2016-01-05",
         level="cell",

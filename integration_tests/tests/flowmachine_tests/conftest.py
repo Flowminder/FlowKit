@@ -1,7 +1,9 @@
 import pandas as pd
 import pytest
 
-from approvaltests.reporters.generic_diff_reporter_factory import GenericDiffReporterFactory
+from approvaltests.reporters.generic_diff_reporter_factory import (
+    GenericDiffReporterFactory,
+)
 
 import flowmachine
 from flowmachine.core import Query
@@ -29,4 +31,4 @@ def get_dataframe(flowmachine_connect):
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
     return diff_reporter_factory.get("opendiff")
-    #return diff_reporter_factory.get_first_working()
+    # return diff_reporter_factory.get_first_working()
