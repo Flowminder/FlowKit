@@ -17,6 +17,7 @@ from ..spatial.distance_matrix import DistanceMatrix
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
+
 class ContactModalLocationDistance(SubscriberFeature):
     """
     This class calculates statistics for the distance between subscriber's own modal
@@ -65,13 +66,19 @@ class ContactModalLocationDistance(SubscriberFeature):
 
         loc_cols = get_columns_for_level(self.modal_location_query.level)
 
-        subscriber_loc_cols_before_merge = ", ".join([f"M.{i} AS subscriber_{i}" for i in loc_cols])
-        subscriber_loc_cols_after_merge = ", ".join([f"C.subscriber_{i}" for i in loc_cols])
-        counterpart_loc_cols = ", ".join([f"M.{i} AS msisdn_counterpart_{i}" for i in loc_cols])
+        subscriber_loc_cols_before_merge = ", ".join(
+            [f"M.{i} AS subscriber_{i}" for i in loc_cols]
+        )
+        subscriber_loc_cols_after_merge = ", ".join(
+            [f"C.subscriber_{i}" for i in loc_cols]
+        )
+        counterpart_loc_cols = ", ".join(
+            [f"M.{i} AS msisdn_counterpart_{i}" for i in loc_cols]
+        )
 
         last_merge_clause = " AND ".join(
-                [f"C.subscriber_{i} = D.{i}_from" for i in loc_cols] +
-                [f"C.msisdn_counterpart_{i} = D.{i}_to" for i in loc_cols]
+            [f"C.subscriber_{i} = D.{i}_from" for i in loc_cols]
+            + [f"C.msisdn_counterpart_{i} = D.{i}_to" for i in loc_cols]
         )
 
         sql = f"""
@@ -94,8 +101,3 @@ class ContactModalLocationDistance(SubscriberFeature):
         """
 
         return sql
-
-
-
-
-
