@@ -58,6 +58,8 @@ subs = [
     "LocationEntropy",
     "ContactEntropy",
     "EventCount",
+    "PerLocationEventCount",
+    "PerContactEventCount",
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
