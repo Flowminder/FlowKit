@@ -5,8 +5,8 @@
 # -*- coding: utf-8 -*-
 """
 The total number of events that a subscriber interacts
-with a counterpart, and the proportion of events
-that a given contact participates out of the
+with a counterpart, and the proportion of events 
+that a given contact participates out of the 
 subscriber's total event count.
 
 """
@@ -19,12 +19,12 @@ from ...utils.utils import parse_tables_ensuring_columns
 
 class ContactBalance(GraphMixin, SubscriberFeature):
     """
-    This class calculates the total number of events
+    This class calculates the total number of events 
     that a subscriber interacts with a counterpart,
     and the proportion of events that a given contact
     participates out of the subscriber's total event count.
     This can be used to calculate a subscriber's contact
-    network graph and the respective weighted edges
+    network graph and the respective weighted edges 
     for each contact.
 
     Parameters
@@ -35,7 +35,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    table : str, default 'all'
+    tables : str, default 'all'
     exclude_self_calls : bool, default True
         Set to false to *include* calls a subscriber made to themself
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
@@ -83,12 +83,18 @@ class ContactBalance(GraphMixin, SubscriberFeature):
 
         if self.direction == "both":
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-        else:
+            self.tables = parse_tables_ensuring_columns(
+                self.connection, tables, column_list
+            )
+        elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
+        else:
+            raise ValueError("Unidentified direction: {}".format(self.direction))
 
         self.tables = parse_tables_ensuring_columns(
             self.connection, tables, column_list
         )
+
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
@@ -97,7 +103,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             subscriber_identifier=self.subscriber_identifier,
             hours=hours,
             subscriber_subset=subscriber_subset,
-        )
+        ).get_query()
         self._cols = ["subscriber", "msisdn_counterpart", "events", "proportion"]
         super().__init__()
 
@@ -116,7 +122,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         WITH unioned AS (
             SELECT
                 *
-            FROM ({self.unioned_query.get_query()}) as U
+            FROM ({self.unioned_query}) as U
             {where_clause}
         ),
         total_events AS (
@@ -137,7 +143,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
           FROM unioned as U) AS U
         JOIN total_events AS T
             ON U.subscriber = T.subscriber
-        GROUP BY U.subscriber,
+        GROUP BY U.subscriber, 
                  U.msisdn_counterpart,
                  T.events
         ORDER BY proportion DESC
