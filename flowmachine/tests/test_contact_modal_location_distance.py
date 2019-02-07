@@ -13,7 +13,7 @@ import pytest
     "statistic,msisdn,level,want",
     [
         ("avg", "gwAynWXp4eWvxGP7", "versioned-cell", 298.7215),
-        ("stddev", "NG1km5NzBg5JD8nj", "versioned-site", 188.679378),
+        ("stddev", "NG1km5NzBg5JD8nj", "versioned-site", 188.679_378),
     ],
 )
 def test_contact_modal_location_distance(get_dataframe, statistic, msisdn, level, want):
