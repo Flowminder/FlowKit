@@ -53,6 +53,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
     --------
 
     >>> ContactBalance('2016-01-01', '2016-01-07')
+
                    msisdn       msisdn_counterpart  events     proportion
     0    038OVABN11Ak4W5P         09NrjaNNvDanD8pk     110           0.54
     1    09NrjaNNvDanD8pk         0ayZGYEQrqYlKw6g      94           0.44
