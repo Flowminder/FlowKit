@@ -9,10 +9,13 @@ from flowmachine.features.subscriber.contact_modal_location_distance import *
 import pytest
 
 
-@pytest.mark.parametrize("statistic,msisdn,level,want", [
-    ("avg", "gwAynWXp4eWvxGP7", "versioned-cell", 298.7215),
-    ("stddev", "NG1km5NzBg5JD8nj", "versioned-site", 298.7215)
-])
+@pytest.mark.parametrize(
+    "statistic,msisdn,level,want",
+    [
+        ("avg", "gwAynWXp4eWvxGP7", "versioned-cell", 298.7215),
+        ("stddev", "NG1km5NzBg5JD8nj", "versioned-site", 188.679378),
+    ],
+)
 def test_contact_modal_location_distance(get_dataframe, statistic, msisdn, level, want):
     """ Test a few hand-picked ContactModalLocationDistance. """
     hl = ModalLocation(
@@ -24,8 +27,4 @@ def test_contact_modal_location_distance(get_dataframe, statistic, msisdn, level
     cb = ContactBalance("2016-01-01", "2016-01-03")
     query = ContactModalLocationDistance(hl, cb, statistic="avg")
     df = get_dataframe(query).set_index("subscriber")
-    print(df.sample(n=5))
-    print()
-    print(df.loc[msisdn])
-    # assert df.loc[msisdn, f"distance_{statistic}"] == pytest.approx(want)
-
+    assert df.loc[msisdn, f"distance_{statistic}"] == pytest.approx(want)
