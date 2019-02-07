@@ -29,10 +29,10 @@ def test_returns_correct_values(get_dataframe):
     # We expect subscriber '2Dq97XmPqvL6noGk' to have a single event in df1
     # and two events in df2 (due to the larger time interval).
     ud1 = SubscriberDegree(
-        "2016-01-01 12:35:00", "2016-01-01 12:40:00", table="events.sms"
+        "2016-01-01 12:35:00", "2016-01-01 12:40:00", tables="events.sms"
     )
     ud2 = SubscriberDegree(
-        "2016-01-01 12:28:00", "2016-01-01 12:40:00", table="events.sms"
+        "2016-01-01 12:28:00", "2016-01-01 12:40:00", tables="events.sms"
     )
 
     df1 = get_dataframe(ud1).set_index("subscriber")
@@ -50,10 +50,10 @@ def test_returns_correct_in_out_values(get_dataframe):
     # only received a text, and to have degree 1 in in df2 because they
     # also sent one.
     ud1 = SubscriberInDegree(
-        "2016-01-01 12:35:00", "2016-01-01 12:40:00", table="events.sms"
+        "2016-01-01 12:35:00", "2016-01-01 12:40:00", tables="events.sms"
     )
     ud2 = SubscriberOutDegree(
-        "2016-01-01 12:28:00", "2016-01-01 12:40:00", table="events.sms"
+        "2016-01-01 12:28:00", "2016-01-01 12:40:00", tables="events.sms"
     )
 
     df1 = get_dataframe(ud1)
