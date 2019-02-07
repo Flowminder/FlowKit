@@ -82,9 +82,6 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
 
-        if self.direction not in ("both", "in", "out"):
-            raise ValueError("Unidentified direction: {}".format(self.direction))
-
         if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
         elif self.direction in {"in", "out"}:
