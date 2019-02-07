@@ -8,7 +8,7 @@ Calculates various entropy metrics for subscribers with a specified time
 period.
 """
 
-from abc import ABCMeta, abstractproperty
+from abc import ABCMeta, abstractmethod
 from .metaclasses import SubscriberFeature
 from .contact_balance import ContactBalance
 from ..utilities.sets import EventsTablesUnion
@@ -30,7 +30,8 @@ class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
         GROUP BY subscriber
         """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def _absolute_freq_query(self):
 
         raise NotImplementedError
