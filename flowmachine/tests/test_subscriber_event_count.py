@@ -8,7 +8,7 @@ from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 import pytest
 
 
-def test_count(get_dataframe):
+def test_event_count(get_dataframe):
     """
     Test some hand picked periods and tables
     """
@@ -44,6 +44,48 @@ def test_count(get_dataframe):
     query = EventCount("2016-01-01", "2016-01-08", direction="in")
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["4dqenN2oQZExwEK2"].event_count == 12
+
+
+@pytest.mark.parametrize(
+    "statistic,msisdn,want,level",
+    [
+        ("count", "Rzx9WE1QRqdEX2Gp", 16, {}),
+        ("sum", "LBlWd64rqnMGv7kY", 22, {}),
+        ("avg", "JZoaw2jzvK2QMKYX", 1.333_333, {}),
+        ("avg", "JZoaw2jzvK2QMKYX", 1.647_059, {"level": "admin3"}),
+        ("max", "DELmRj9Vvl346G50", 4, {}),
+        ("min", "9vXy462Ej8V1kpWl", 1, {}),
+        ("stddev", "EkpjZe5z37W70QKA", 0.594_089, {}),
+        ("variance", "JNK7mk5G1Dy6M2Ya", 0.395_833, {}),
+    ],
+)
+def test_per_location_event_count(get_dataframe, statistic, msisdn, want, level):
+    """ Test hand-picked PerLocationEventCount. """
+    query = PerLocationEventCount(
+        "2016-01-01", "2016-01-06", statistic=statistic, **level
+    )
+    df = get_dataframe(query).set_index("subscriber")
+    assert df.loc[msisdn, f"event_{statistic}"] == pytest.approx(want)
+
+
+@pytest.mark.parametrize(
+    "statistic,msisdn,want",
+    [
+        ("count", "Rzx9WE1QRqdEX2Gp", 2),
+        ("sum", "LBlWd64rqnMGv7kY", 16),
+        ("avg", "JZoaw2jzvK2QMKYX", 12.5),
+        ("max", "DELmRj9Vvl346G50", 14),
+        ("min", "9vXy462Ej8V1kpWl", 4),
+        ("median", "KXVqP6JyVDGzQa3b", 8),
+        ("stddev", "EkpjZe5z37W70QKA", 0),
+        ("variance", "JNK7mk5G1Dy6M2Ya", 2),
+    ],
+)
+def test_per_contact_event_count(get_dataframe, statistic, msisdn, want):
+    """ Test hand-picked PerContactEventCount. """
+    query = PerContactEventCount("2016-01-02", "2016-01-06", statistic)
+    df = get_dataframe(query).set_index("subscriber")
+    assert df.loc[msisdn, f"event_{statistic}"] == pytest.approx(want)
 
 
 def test_directed_count_consistent(get_dataframe):
