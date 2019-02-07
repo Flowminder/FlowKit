@@ -81,15 +81,14 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
 
-        if self.direction not in ("both", "in", "out"):
-            raise ValueError("Unidentified direction: {}".format(self.direction))
-
         if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
             self.tables = tables
         elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
             self.tables = self._parse_tables_ensuring_direction_present(tables)
+        else:
+            raise ValueError("Unidentified direction: {}".format(self.direction))
 
         self.unioned_query = EventsTablesUnion(
             self.start,
