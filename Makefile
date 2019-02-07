@@ -33,6 +33,17 @@ down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) down
 
 
+# Note: the targets below are repetetive and could be simplified by using
+# a pattern rule as follows:
+#
+#   %-up: %-build
+#       docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build $*
+#
+# The reason we are keeping the explicitly spelled-out versions is in order
+# to increase discoverability of the available Makefile targets and to enable
+# tab-completion of targets (which is not possible when using patterns).
+
+
 flowdb-up: flowdb-build
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build flowdb
 
