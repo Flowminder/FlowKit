@@ -7,9 +7,9 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
 
 
 @pytest.fixture
-def get_dataframe(flowmachine_connect):
+def get_dataframe(fm_conn):
     yield lambda query: pd.read_sql_query(
-        query.get_query(), con=flowmachine_connect.engine
+        query.get_query(), con=fm_conn.engine
     )
 
 
