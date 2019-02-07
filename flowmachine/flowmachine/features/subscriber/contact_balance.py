@@ -16,7 +16,6 @@ from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
 from ...utils.utils import parse_tables_ensuring_columns
 
-
 class ContactBalance(GraphMixin, SubscriberFeature):
     """
     This class calculates the total number of events 
@@ -35,7 +34,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    table : str, default 'all'
+    tables : str, default 'all'
     exclude_self_calls : bool, default True
         Set to false to *include* calls a subscriber made to themself
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
@@ -73,6 +72,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
+        self.tables = tables
         self.start = start
         self.stop = stop
         self.hours = hours
@@ -80,10 +80,14 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
 
-        if self.direction == "both":
+        if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-        else:
+            self.tables = tables
+        elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
+            self.tables = self._parse_tables_ensuring_direction_present(tables)
+        else:
+            raise ValueError("Unidentified direction: {}".format(self.direction))
 
         self.tables = parse_tables_ensuring_columns(
             self.connection, tables, column_list
