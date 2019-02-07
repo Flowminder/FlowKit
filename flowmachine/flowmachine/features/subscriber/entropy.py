@@ -125,15 +125,14 @@ class PeriodicEntropy(BaseEntropy):
         self.direction = direction
         self.hours = hours
 
-        if direction not in {"in", "out", "both"}:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
-
         if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "datetime"]
             self.tables = tables
         elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "datetime", "outgoing"]
             self.tables = self._parse_tables_ensuring_direction_present(tables)
+        else:
+            raise ValueError("{} is not a valid direction.".format(self.direction))
 
         # extracted from the POSTGRES manual
         allowed_phases = (
