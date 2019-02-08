@@ -33,7 +33,7 @@ down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) down
 
 
-# Note: the targets below are repetetive and could be simplified by using
+# Note: the targets below are repetitive and could be simplified by using
 # a pattern rule as follows:
 #
 #   %-up: %-build
