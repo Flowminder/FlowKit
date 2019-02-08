@@ -8,10 +8,10 @@ plugins:
   - mktheapidocs:
       modules:
         flowmachine:
-          section: flowmachine/documentation
+          section: flowmachine
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowmachine"
         flowclient:
-          section: flowclient/documentation
+          section: flowclient
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
   - mknotebooks:
       execute: true
