@@ -198,7 +198,7 @@ def _init_logging(log_level, write_log_file):
     ----------
     log_level : str
         Level to emit logs at
-    write_log_file : bool, default False
+    write_log_file : bool
         If True, logging output will be written to the file 'flowmachine-debug.log'
         in the directory '/var/log/flowmachine/' (or the directory given by the
         environment variable 'LOG_DIRECTORY' if it is set). Log files are rotated
