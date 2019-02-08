@@ -16,7 +16,6 @@ plugins:
   - mknotebooks:
       execute: true
       preamble: "notebook_preamble.py"
-  - awesome-pages
 
 theme:
   name: "material"

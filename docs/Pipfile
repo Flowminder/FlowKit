@@ -24,7 +24,6 @@ seaborn = "*"
 "3ff404a" = {editable = true, path = "./../flowclient"}
 mktheapidocs = "*"
 mknotebooks = "*"
-mkdocs-awesome-pages-plugin = "*"
 flask-jwt-extended = "*"
 quart = "*"
 python-dotenv = "*"
