@@ -83,17 +83,7 @@ The following steps using the FlowAuth administration tool are required to add a
     - Add the user to the group.
 
 
-The user can then log in and generate a token:
-
-1. Log into FlowAuth (<a href="http://localhost:8000/" target="_blank">http://localhost:8000</a>) using the username and password created by the administrator.
-
-2. Optionally, click on the person icon (top right) and reset password.
-
-3. Select the server under "My Servers".
-
-4. Click the '+' icon to add a token, and give it a name (and optionally change the expiry and permissions). And Save.
-
-5. Click "TOKEN" to display the token string. Take a copy.
+The user can then log into FlowAuth and generate a token (see the [analyst page](./3-analyst.md#flowauth) for instructions).
 
 
 ### FlowClient <a name="flowclient"> </a>
