@@ -185,8 +185,8 @@ class EventTableSubset(Query):
             # If dates are backwards, then this will be interpreted as
             # spanning midnight
             else:
-                sql += f" AND EXTRACT(hour FROM datetime)  >= {self.hours[0]}"
-                sql += f" OR EXTRACT(hour FROM datetime)  < {self.hours[1]}"
+                sql += f" AND (   EXTRACT(hour FROM datetime)  >= {self.hours[0]}"
+                sql += f"      OR EXTRACT(hour FROM datetime)  < {self.hours[1]})"
 
         if self.subscriber_subset is not None:
             try:
