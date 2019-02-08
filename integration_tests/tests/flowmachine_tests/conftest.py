@@ -15,4 +15,3 @@ def get_dataframe(fm_conn):
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
     return diff_reporter_factory.get("opendiff")
-    # return diff_reporter_factory.get_first_working()
