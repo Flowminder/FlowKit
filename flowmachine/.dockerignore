@@ -1,8 +1,17 @@
-build/
-dist/
-tests/
-Dockerfile/
-.ipynb_checkpoints/
-.pytest_cache/
-.flowmachine.egg-info/
-docs/
+# This .dockerignore file follows the "whitelisting" approach described here:
+#    https://youknowfordevs.com/2018/12/07/getting-control-of-your-dockerignore-files.html
+
+#
+# First, exclude everything by default:
+#
+*
+
+#
+# Now un-exclude only those folders and files that are needed for building the image:
+#
+!Pipfile
+!Pipfile.lock
+!flowmachine/
+!setup.cfg
+!setup.py
+!versioneer.py

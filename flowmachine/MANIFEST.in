@@ -1,3 +1,2 @@
-include flowmachine/core/settings/flowmachine_default.yml
 include versioneer.py
 include flowmachine/_version.py

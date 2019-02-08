@@ -146,7 +146,7 @@ def mocked_connections(monkeypatch):
 @pytest.fixture
 def clean_env(monkeypatch):
     monkeypatch.delenv("LOG_LEVEL", raising=False)
-    monkeypatch.delenv("LOG_FILE", raising=False)
+    monkeypatch.delenv("WRITE_LOG_FILE", raising=False)
     monkeypatch.delenv("DB_PORT", raising=False)
     monkeypatch.delenv("DB_USER", raising=False)
     monkeypatch.delenv("DB_PW", raising=False)
