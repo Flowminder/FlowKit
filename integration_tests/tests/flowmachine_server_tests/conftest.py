@@ -32,7 +32,10 @@ def zmq_port():
 def zmq_url(zmq_host, zmq_port):
     """
     Return the URL where to connect to zeromq when running the tests.
-    This is currently hard-coded to "tcp://localhost:5555".
+    This is constructed as "tcp://<zmq_host>:<zmq_port>", where the
+    host and port are provided by the `zmq_host` and `zmq_port`
+    fixtures (which read the values from the environment variables
+    `FLOWMACHINE_ZMQ_HOST` and `FLOWMACHINE_ZMQ_PORT`, respectively).
     """
     return f"tcp://{zmq_host}:{zmq_port}"
 
