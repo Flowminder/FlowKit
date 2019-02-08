@@ -55,17 +55,33 @@ def access_token_builder():
 
 
 @pytest.fixture(scope="session")
-def zmq_url():
+def zmq_host():
+    """
+    Return the host on which zmq is running. This is either the value of
+    the environment variable FLOWMACHINE_ZMQ_HOST or else 'localhost'.
+    """
+    return os.getenv("FLOWMACHINE_ZMQ_HOST", "localhost")
+
+
+@pytest.fixture(scope="session")
+def zmq_port():
+    """
+    Return the port on which zmq is running. This is either the value of
+    the environment variable FLOWMACHINE_ZMQ_PORT or else 5555.
+    """
+    return os.getenv("FLOWMACHINE_ZMQ_PORT", "5555")
+
+
+@pytest.fixture(scope="session")
+def zmq_url(zmq_host, zmq_port):
     """
     Return the URL where to connect to zeromq when running the tests.
-
-    By default this is "tcp://localhost:5555" but the tests can be run
-    against a flowmachine at a different URL by setting the environment
-    variable FLOWMACHINE_ZMQ_URL.
+    This is constructed as "tcp://<zmq_host>:<zmq_port>", where the
+    host and port are provided by the `zmq_host` and `zmq_port`
+    fixtures (which read the values from the environment variables
+    `FLOWMACHINE_ZMQ_HOST` and `FLOWMACHINE_ZMQ_PORT`, respectively).
     """
-    host = os.getenv("FLOWMACHINE_ZMQ_HOST", "localhost")
-    port = os.getenv("FLOWMACHINE_ZMQ_PORT", "5555")
-    return f"tcp://{host}:{port}"
+    return f"tcp://{zmq_host}:{zmq_port}"
 
 
 @pytest.fixture(scope="session")
