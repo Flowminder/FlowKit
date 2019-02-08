@@ -33,8 +33,8 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-testmon = "*"
 asynctest = "*"
-flowmachine = {editable = true,path = "."}
 cachey = "*"
+watchdog = "*"
 
 [requires]
 python_version = "3.7"

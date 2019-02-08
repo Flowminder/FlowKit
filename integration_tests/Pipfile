@@ -14,6 +14,7 @@ sqlalchemy = "*"
 pytest-asyncio = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 flowclient = {editable = true,path = "./../flowclient"}
+approvaltests = "*"
 
 [requires]
 python_version = "3.7"
