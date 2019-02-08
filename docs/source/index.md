@@ -46,13 +46,13 @@ This architecture is shown in the figure below.
     An authentication management system used to generate access tokens for use with FlowClient.
     <p>    
 
-* Redis
+- Redis
 
     A further container is created to host a redis message platform used internally by FlowMachine.  
 
-FlowKit is in active development, visit the project's  [roadmap](./developer.md#roadmap) to get a sense about upcoming developments.
+FlowKit is in active development, visit the project's  [roadmap](4-developer.md#roadmap) to get a sense about upcoming developments.
 
-Continue to the FlowKit [installation documents](./install.md) to find out what type of install meets your requirements.
+Continue to the FlowKit [installation documents](2-install.md) to find out what type of install meets your requirements.
 
 These documents are also hosted on [https://flowminder.github.io/FlowKit/](https://flowminder.github.io/FlowKit).
 

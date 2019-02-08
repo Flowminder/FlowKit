@@ -83,7 +83,7 @@ The following steps using the FlowAuth administration tool are required to add a
     - Add the user to the group.
 
 
-The user can then log into FlowAuth and generate a token (see the [analyst page](./3-analyst.md#flowauth) for instructions).
+The user can then log into FlowAuth and generate a token (see the [analyst section](3-analyst.md#flowauth) for instructions).
 
 
 ### FlowClient <a name="flowclient"> </a>
@@ -94,7 +94,7 @@ The FlowClient Python client is used to perform CDR analysis using the JupyterLa
 pip install flowclient
 ```
 
-Quick install is continued with an example of FlowClient usage [here](../analyst/#flowclient).
+Quick install is continued with an example of FlowClient usage [here](3-analyst.md#flowclient).
 
 <a name="developers">
 
