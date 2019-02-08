@@ -8,11 +8,11 @@ plugins:
   - mktheapidocs:
       modules:
         flowmachine:
-          section: components
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowMachine"
+          section: 7-components
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowmachine"
         flowclient:
-          section: components
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowClient"
+          section: 7-components
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
   - mknotebooks:
       execute: true
       preamble: "notebook_preamble.py"

@@ -1,4 +1,4 @@
-Title: Installation
+Title: 2 Installation
 
 #How to Install FlowKit
 
