@@ -37,7 +37,7 @@ The `build.sh` script:
 
 #### nbconvert
 
-By default, Pandas output is as HTML tables, which don't get styled nicely in the resulting markdown.  To avoid this, a modified nbconvert executor (`ExecuteWithPreamble`), from the [nbconvert-utils](https://pypi.org/project/nbconvert-utils/) package is used to inject the [pandas_to_markdown.py](/pandas_to_markdown.py) script at the start of each notebook, and hide that cell from the markdown. This makes pandas output appear as markdown tables, which then get rendered nicely by mkdocs.
+By default, Pandas output is as HTML tables, which don't get styled nicely in the resulting markdown.  To avoid this, a modified nbconvert executor (`ExecuteWithPreamble`), from the [nbconvert-utils](https://pypi.org/project/nbconvert-utils/) package is used to inject the [notebook_preamble.py](/notebook_preamble.py) script at the start of each notebook, and hide that cell from the markdown. This filters warnings, makes pandas output appear as markdown tables (which then get rendered nicely by mkdocs), and generates an API access token.
 
 #### API Documentation
 
