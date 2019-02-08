@@ -26,7 +26,7 @@ from .subscriber_location_cluster import subscriber_location_cluster, HartiganCl
 from .most_frequent_location import MostFrequentLocation
 from .last_location import LastLocation
 
-from .proportion_outgoing import ProportionOutgoing
+from .proportion_outgoing import ProportionEventOutgoing
 from .unique_location_counts import UniqueLocationCounts
 from .total_active_periods import TotalActivePeriodsSubscriber
 from .contact_balance import ContactBalance
@@ -38,7 +38,7 @@ from .pareto_interactions import ParetoInteractions
 from .contact_reciprocal import (
     ContactReciprocal,
     ProportionContactReciprocal,
-    ProportionReciprocal,
+    ProportionEventReciprocal,
 )
 
 
@@ -80,7 +80,7 @@ __all__ = [
     "SubscriberDegree",
     "SubscriberInDegree",
     "SubscriberOutDegree",
-    "ProportionOutgoing",
+    "ProportionEventOutgoing",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",
@@ -107,6 +107,6 @@ __all__ = [
     "MeaningfulLocationsOD",
     "DistanceCounterparts",
     "ContactReciprocal",
-    "ProportionReciprocal",
+    "ProportionEventReciprocal",
     "ProportionContactReciprocal",
 ]

@@ -14,7 +14,7 @@ from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
 
-class ProportionOutgoing(SubscriberFeature):
+class ProportionEventOutgoing(SubscriberFeature):
     """
     Find the proportion of interactions initiated by a
     given subscriber.
@@ -45,7 +45,7 @@ class ProportionOutgoing(SubscriberFeature):
 
     Examples
     --------
-    >>> ProportionOutgoing("2016-01-01", "2016-01-02",
+    >>> ProportionEventOutgoing("2016-01-01", "2016-01-02",
     table="events.calls")
                    msisdn  proportion_outgoing  proportion_incoming
     0    jWlyLwbGdvKV35Mm                    1                    0

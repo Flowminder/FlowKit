@@ -223,7 +223,7 @@ class ProportionContactReciprocal(SubscriberFeature):
         """
 
 
-class ProportionReciprocal(SubscriberFeature):
+class ProportionEventReciprocal(SubscriberFeature):
     """
     This class calculates the proportion of events with a reciprocal contact
     per subscriber.  It is possible to fine-tune the period for which a
@@ -239,7 +239,7 @@ class ProportionReciprocal(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    reciprocal_contact: ContactReciprocal, default None
+    contact_reciprocal: ContactReciprocal, default None
         An instance of ContactReciprocal listing which contacts are reciprocal
         and which are not. If none is passed, the class instantiates a list of
         reciprocal contacts with the same parameters as the ones used to
@@ -262,7 +262,7 @@ class ProportionReciprocal(SubscriberFeature):
     Example
     -------
 
-    >> s = ProportionReciprocal('2016-01-01', '2016-01-08')
+    >> s = ProportionEventReciprocal('2016-01-01', '2016-01-08')
     >> s.get_dataframe()
 
           subscriber  proportion

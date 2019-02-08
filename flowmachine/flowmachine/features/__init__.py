@@ -37,7 +37,7 @@ subs = [
     "SubscriberDegree",
     "SubscriberInDegree",
     "SubscriberOutDegree",
-    "ProportionOutgoing",
+    "ProportionEventOutgoing",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",
@@ -64,7 +64,7 @@ subs = [
     "DistanceCounterparts",
     "ContactReciprocal",
     "ProportionContactReciprocal",
-    "ProportionReciprocal",
+    "ProportionEventReciprocal",
 ]
 
 rast = ["RasterStatistics"]
