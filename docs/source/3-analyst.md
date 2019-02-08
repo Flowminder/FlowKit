@@ -1,3 +1,5 @@
+Title: Analyst
+
 # FlowKit for Analysts
 
 It is recommended to use the [FlowClient](#flowclient) provided with FlowKit. Advanced users may want to create their own client interfacing to [FlowAPI](#flowapi).
