@@ -111,7 +111,7 @@ As with the authentication log, the usage log is written to both stdout and a ro
 
 If a request has triggered an action in the FlowMachine backend, logs will also be written there. These logs will include the `request_id` for the API request which originally triggered them.
 
-As with the FlowAPI loggers, these messages are written both to stdout and a rotating log file (`/var/log/flowmachine-server/query-runs.log`, although the directory can be set using the `LOG_DIRECTORY` environment variable.)
+As with the FlowAPI loggers, these messages are written both to stdout and a rotating log file (`/var/log/flowmachine/query-runs.log`, although the directory can be set using the `LOG_DIRECTORY` environment variable.)
 
 ### Complete Logging Cycle
 
@@ -238,7 +238,7 @@ Note that the `request_id` field is identical across the five log entries, which
 
 Because FlowKit employs structured logging, and all log messages are JSON objects, the access and usage logs are easy to use with tools like [Logstash](https://www.elastic.co/products/logstash). Getting FlowKit logs into Logstash is as easy as configuring it to consume the log files generated.
 
-Once approach to this is to mount the volumes for `/var/log/flowmachine-server/` and `/var/log/flowapi/` and expose the log files to Logstash, or a log shipper.
+One approach to this is to mount the volumes for `/var/log/flowmachine/` and `/var/log/flowapi/` and expose the log files to Logstash, or a log shipper.
 
 Alternatively, [Filebeat](https://www.elastic.co/docker-kubernetes-container-monitoring) allows you to integrate the logs from stdout directly into your monitoring system.
 
