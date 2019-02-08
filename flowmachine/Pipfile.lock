@@ -759,10 +759,11 @@
         },
         "pytest-testmon": {
             "hashes": [
-                "sha256:47fb5d4faa16bf431afbf404029167c18703ffa673d83b13a354186385f25246"
+                "sha256:3d0e859bfaf66e1ea77fa35b82462717c6849107bc14447ad674ebf8d011e126",
+                "sha256:e348c23c5be668de3cc1b3c1e5d35578dc1241ade7d230b471c06ec6e15b8161"
             ],
             "index": "pypi",
-            "version": "==0.9.14"
+            "version": "==0.9.15"
         },
         "python-dateutil": {
             "hashes": [
