@@ -1,4 +1,4 @@
-Title: 1 Introduction
+Title: Introduction
 
 # FlowKit CDR Analytics Toolkit
 

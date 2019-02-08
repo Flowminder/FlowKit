@@ -1,4 +1,4 @@
-Title: 6 License
+Title: License
 
 Mozilla Public License Version 2.0
 ==================================

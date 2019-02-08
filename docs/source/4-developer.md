@@ -1,4 +1,4 @@
-Title: 4 Developer
+Title: Developer
 
 # Information for Developers
 

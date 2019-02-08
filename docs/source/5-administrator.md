@@ -1,4 +1,4 @@
-Title: 5 Administrator
+Title: Administrator
 
 # Administration Tools
 
