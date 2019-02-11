@@ -30,6 +30,9 @@ def get_sqlalchemy_table_definition(fully_qualified_table_name, *, engine):
     elif fully_qualified_table_name == "events.sms":
         schema = "events"
         table_name = "sms"
+    elif fully_qualified_table_name == "events.mds":
+        schema = "events"
+        table_name = "mds"
     else:
         raise NotImplementedError(
             f"No sqlalchemy definition found for table: '{fully_qualified_table_name}'"
