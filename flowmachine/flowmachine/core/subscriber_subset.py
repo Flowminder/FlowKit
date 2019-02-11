@@ -58,6 +58,20 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
         raise NotImplementedError()
 
 
+class ExplicitSubset(SubscriberSubsetBase):
+
+    is_proper_subset = True
+
+    def __init__(self, subset):
+        self.ORIG_SUBSET_TODO_REMOVE_THIS = subset
+
+    def _make_query(self):
+        return "<ExplicitSubset>"
+
+    def apply_subset(self, sql):
+        raise NotImplementedError()
+
+
 class OtherSubset(SubscriberSubsetBase):
 
     is_proper_subset = True
@@ -80,9 +94,11 @@ def make_subscriber_subset(subset):
         return subset
     elif subset == "all" or subset is None:
         return AllSubscribers()
+    elif isinstance(subset, (list, tuple)):
+        return ExplicitSubset(subset)
     elif isinstance(subset, Query):
         return SubsetFromFlowmachineQuery(subset)
-    else:
-        return OtherSubset(subset)
     # else:
-    #     raise ValueError(f"Invalid subscriber subset: {subset!r}")
+    #     return OtherSubset(subset)
+    else:
+        raise ValueError(f"Invalid subscriber subset: {subset!r}")
