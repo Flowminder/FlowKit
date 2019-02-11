@@ -8,12 +8,14 @@ Statistics for the distance between subscriber's own modal
 location and its contacts' modal location.
 """
 
-from .contact_balance import ContactBalance
-from flowmachine.utils.utils import get_columns_for_level, list_of_dates
 from .metaclasses import SubscriberFeature
-from .daily_location import daily_location
+
 from .modal_location import ModalLocation
+from .contact_balance import ContactBalance
 from ..spatial.distance_matrix import DistanceMatrix
+from .daily_location import daily_location
+
+from flowmachine.utils.utils import get_columns_for_level, list_of_dates
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -25,17 +27,36 @@ class ContactModalLocationDistance(SubscriberFeature):
 
     Parameters
     ----------
-    statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
+    start, stop : str
+         iso-format start and stop datetimes
+    statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
-    modal_location: features.subscriber.ModalLocation
-        An instance of ModalLocation.
-    contact_balance: features.subscriber.ContactBalance
-        An instance of ContactBalance.
+    method : str, default 'last'
+        The method by which to calculate the location of the subscriber.
+        This can be either 'most-common' or last. 'most-common' is
+        simply the modal location of the subscribers, whereas 'lsat' is
+        the location of the subscriber at the time of the final call in
+        the data.
+    contact_balance: features.subscriber.ContactBalance, default None.
+        An instance of ContactBalance. If an instance is not provide, the
+        ContactBalance is instantiated with the same parameters as for the
+        features.subscriber.ModalLocation
+    hours : 2-tuple of floats, default 'all'
+        Restrict the analysis to only a certain set
+        of hours within each day.
+    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
+        If provided, string or list of string which are msisdn or imeis to limit
+        results to; or, a query or table which has a column with a name matching
+        subscriber_identifier (typically, msisdn), to limit results to.
+    direction : {'in', 'out', 'both'}, default 'out'
+        Whether to consider calls made, received, or both. Defaults to 'out'.
+    column_name : str
+        Optionally specify a non-default column name. Required if level is 'polygon'.
 
     Example
     -------
 
-    >>> s = ContactModalLocationDistance(modal_location, contact_balance, statistic="avg")
+    >>> s = ContactModalLocationDistance("2016-01-01", "2016-01-03", statistic="avg")
     >>> s.get_dataframe()
 
         subscriber  distance_avg
@@ -47,7 +68,27 @@ class ContactModalLocationDistance(SubscriberFeature):
                ...           ...
     """
 
-    def __init__(self, modal_location, contact_balance, statistic="avg"):
+    def __init__(
+        self,
+        start,
+        stop,
+        statistic="avg",
+        method="last",
+        *,
+        contact_balance=None,
+        tables = "all",
+        direction="both",
+        hours="all",
+        subscriber_subset=None,
+        size=None,
+    ):
+
+        self.start = start
+        self.stop = stop
+        self.direction = direction
+        self.hours = hours
+        self.tables = tables
+        self.method = method
 
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
@@ -56,11 +97,49 @@ class ContactModalLocationDistance(SubscriberFeature):
                     self.statistic, valid_stats
                 )
             )
-        self.modal_location_query = modal_location
-        self.contact_balance_query = contact_balance
+
         self.distance_matrix_query = DistanceMatrix(
-            level=self.modal_location_query.level
+            level="versioned-cell",
         )
+
+        if contact_balance:
+            if contact_balance.subscriber_identifier not in {"msisdn"}:
+                raise ValueError(f"""
+                The only `subscriber_identifier` allowed is the msisdn, because
+                it is the only identifier capable of identifying counterparts
+                for all transation types. Please use a ContactBalance
+                instantiated with msisdn for the `subscriber_identifier`.
+                """)
+            self.contact_balance_query = contact_balance
+        else:
+            self.contact_balance_query = ContactBalance(
+                self.start,
+                self.stop,
+                hours=self.hours,
+                tables=self.tables,
+                subscriber_identifier="msisdn",
+                direction=self.direction,
+                exclude_self_calls=True,
+                subscriber_subset=subscriber_subset,
+            )
+
+        print(self.contact_balance_query.get_query())
+
+        self.modal_location_query = ModalLocation(*[
+            daily_location(
+                d,
+                level="versioned-cell",
+                hours=self.hours,
+                method=self.method,
+                table=self.tables,
+                subscriber_identifier="msisdn",
+                subscriber_subset=self.contact_balance_query.counterparts_subset(include_subscribers=True),
+            )
+            for d in list_of_dates(self.start, self.stop)
+        ])
+
+        super().__init__()
+
 
     def _make_query(self):
 
