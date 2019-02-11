@@ -570,6 +570,21 @@ class Query(metaclass=ABCMeta):
         return exp[0][0]  # Everything else comes as one
 
     def _get_query_attrs_for_dependency_graph(self, analyse):
+        """
+        Helper method which returns information about this query for use in a dependency graph.
+
+        Parameters
+        ----------
+        analyse : bool
+            Set to True to get actual runtimes for queries, note that this will actually run the query!
+
+        Returns
+        -------
+        dict
+            Dictionary containing the keys "name", "stored", "cost" and "runtime" (the latter is only
+            present if `analyse=True`.
+            Example return value: `{"name": "DailyLocation", "stored": False, "cost": 334.53, "runtime": 161.6}`
+        """
         expl = self.explain(format="json", analyse=analyse)[0]
         attrs = {}
         attrs["name"] = self.__class__.__name__
