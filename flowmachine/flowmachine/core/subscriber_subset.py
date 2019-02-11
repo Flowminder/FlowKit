@@ -21,6 +21,13 @@ class SubscriberSubsetBase(Query):
         )
 
 
+    def _get_query_attrs_for_dependency_graph(self, analyse=False):
+        attrs = {}
+        attrs["name"] = self.__class__.__name__
+        attrs["stored"] = "N/A"
+        attrs["cost"] = "N/A"
+        attrs["runtime"] = "N/A"
+        return attrs
 
 class AllSubscribers(SubscriberSubsetBase):
 
