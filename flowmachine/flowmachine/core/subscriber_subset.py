@@ -111,23 +111,6 @@ class ExplicitSubset(SubscriberSubsetBase):
         return sql.where(parent_table.c[PARENT_SUBSCRIBER_IDENTIFIER].in_(self.subscribers))
 
 
-class OtherSubset(SubscriberSubsetBase):
-
-    is_proper_subset = True
-
-    def __init__(self, subset):
-        self.ORIG_SUBSET_TODO_REMOVE_THIS = subset
-
-    def get_query(self):
-        return self.ORIG_SUBSET_TODO_REMOVE_THIS.get_query()
-
-    def _make_query(self):
-        return "<OtherSubset>"
-
-    def apply_subset(self, sql):
-        raise NotImplementedError()
-
-
 def make_subscriber_subset(subset):
     if isinstance(subset, SubscriberSubsetBase):
         return subset
@@ -137,7 +120,5 @@ def make_subscriber_subset(subset):
         return ExplicitSubset(subset)
     elif isinstance(subset, Query):
         return SubsetFromFlowmachineQuery(subset)
-    # else:
-    #     return OtherSubset(subset)
     else:
         raise ValueError(f"Invalid subscriber subset: {subset!r}")
