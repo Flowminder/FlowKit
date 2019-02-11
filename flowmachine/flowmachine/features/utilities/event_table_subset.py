@@ -10,6 +10,7 @@ from ...core import Query, Table
 from ...core.errors import MissingDateError
 from ...core.utils import _makesafe
 from ...utils.utils import list_of_dates
+from .subscriber_subset import make_subscriber_subset
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -73,7 +74,7 @@ class EventTableSubset(Query):
         self.start = start
         self.stop = stop
         self.hours = hours
-        self.subscriber_subset = subscriber_subset
+        self.subscriber_subset = make_subscriber_subset(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
         if columns == ["*"]:
             self.table = Table(table)
@@ -85,7 +86,7 @@ class EventTableSubset(Query):
             self.columns.remove(subscriber_identifier)
             self.columns.add(f"{subscriber_identifier} AS subscriber")
         except KeyError:
-            if subscriber_subset is not None:
+            if self.subscriber_subset.is_proper_subset:
                 warnings.warn(
                     f"No subscriber column requested, did you mean to include {subscriber_identifier} in columns? "
                     "Since you passed a subscriber_subset the data will still be subset by your subscriber subset, "
@@ -188,9 +189,9 @@ class EventTableSubset(Query):
                 sql += f" AND (   EXTRACT(hour FROM datetime)  >= {self.hours[0]}"
                 sql += f"      OR EXTRACT(hour FROM datetime)  < {self.hours[1]})"
 
-        if self.subscriber_subset is not None:
+        if self.subscriber_subset.is_proper_subset:
             try:
-                subs_table = self.subscriber_subset.get_query()
+                subs_table = self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS.get_query()
                 cols = ", ".join(
                     c if "AS subscriber" not in c else "subscriber"
                     for c in self.columns
@@ -199,10 +200,10 @@ class EventTableSubset(Query):
             except AttributeError:
                 where_clause = "WHERE " if where_clause == "" else " AND "
                 try:
-                    assert not isinstance(self.subscriber_subset, str)
-                    ss = tuple(self.subscriber_subset)
+                    assert not isinstance(self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS, str)
+                    ss = tuple(self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS)
                 except (TypeError, AssertionError):
-                    ss = (self.subscriber_subset,)
+                    ss = (self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS,)
                 sql = f"{sql} {where_clause} {self.subscriber_identifier} IN {_makesafe(ss)}"
 
         return sql
