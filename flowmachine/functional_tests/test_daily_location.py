@@ -131,3 +131,47 @@ def test_daily_location_4_df(get_dataframe, diff_reporter):
     )
     df = get_dataframe(dl)
     verify(df.to_csv(), diff_reporter)
+
+
+def test_daily_location_5_sql(diff_reporter):
+    """
+    Daily location query with non-default parameters returns the expected data.
+    """
+    subset_query = CustomQuery("SELECT DISTINCT msisdn AS subscriber FROM events.calls WHERE msisdn in ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')")
+    dl = daily_location(
+        "2016-01-05",
+        level="cell",
+        hours=(23, 5),
+        method="last",
+        # subscriber_identifier="imei",
+        # column_name="admin2pcod",
+        # ignore_nulls=False,
+        subscriber_subset=subset_query,
+    )
+    sql = pretty_sql(dl.get_query())
+    verify(sql, diff_reporter)
+
+
+def test_daily_location_5_df(get_dataframe, diff_reporter):
+    """
+    Daily location query with non-default parameters returns the expected data.
+    """
+    subset_query = CustomQuery("""
+        SELECT DISTINCT msisdn AS subscriber
+        FROM events.calls
+        WHERE (   (datetime >= '2016-01-01 08:00:00' AND datetime <= '2016-01-01 20:00:00' AND substring(tac::TEXT, 0, 2) = '68')
+               OR (datetime >= '2016-01-07 14:00:00' AND datetime <= '2016-01-07 15:00:00' AND duration < 400))
+        """)
+
+    dl = daily_location(
+        "2016-01-02",
+        level="admin3",
+        hours=(4, 9),
+        method="most-common",
+        # subscriber_identifier="imei",
+        # column_name="admin2pcod",
+        # ignore_nulls=False,
+        subscriber_subset=subset_query,
+    )
+    df = get_dataframe(dl)
+    verify(df.to_csv(), diff_reporter)
