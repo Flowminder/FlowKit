@@ -77,6 +77,7 @@ class EventTableSubset(Query):
         self.start = start
         self.stop = stop
         self.hours = hours
+        self.subscriber_subset_ORIG = subscriber_subset
         self.subscriber_subset = make_subscriber_subset(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
         if columns == ["*"]:
@@ -224,10 +225,10 @@ class EventTableSubset(Query):
                 sql += f" AND (   EXTRACT(hour FROM datetime)  >= {self.hours[0]}"
                 sql += f"      OR EXTRACT(hour FROM datetime)  < {self.hours[1]})"
 
-        if self.subscriber_subset.is_proper_subset:
+        if self.subscriber_subset_ORIG is not None:
             try:
                 subs_table = (
-                    self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS.get_query()
+                    self.subscriber_subset_ORIG.get_query()
                 )
                 cols = ", ".join(
                     c if "AS subscriber" not in c else "subscriber"
@@ -238,14 +239,12 @@ class EventTableSubset(Query):
                 where_clause = "WHERE " if where_clause == "" else " AND "
                 try:
                     assert not isinstance(
-                        self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS, str
+                        self.subscriber_subset_ORIG, str
                     )
-                    ss = tuple(self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS)
+                    ss = tuple(self.subscriber_subset_ORIG)
                 except (TypeError, AssertionError):
-                    ss = (self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS,)
+                    ss = (self.subscriber_subset_ORIG,)
                 sql = f"{sql} {where_clause} {self.subscriber_identifier} IN {_makesafe(ss)}"
-        else:
-            sql = self.subscriber_subset.apply_subset(sql)
 
         return sql
 
