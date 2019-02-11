@@ -26,7 +26,7 @@ class SubscriberSubsetBase(Query):
         )
 
     @abstractmethod
-    def apply_subset_sqlalchemy(self, sql, *, PARENT_SUBSCRIBER_IDENTIFIER):
+    def apply_subset_sqlalchemy(self, sql, *, subscriber_identifier):
         raise NotImplementedError(
             f"Class {self.__class__.__name__} does not implement 'apply_subset_sqlalchemy'"
         )
@@ -54,7 +54,7 @@ class AllSubscribers(SubscriberSubsetBase):
     def apply_subset(self, sql):
         return sql
 
-    def apply_subset_sqlalchemy(self, sql, *, PARENT_SUBSCRIBER_IDENTIFIER):
+    def apply_subset_sqlalchemy(self, sql, *, subscriber_identifier):
         return sql
 
 
@@ -71,7 +71,7 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
     def apply_subset(self, sql):
         raise NotImplementedError()
 
-    def apply_subset_sqlalchemy(self, sql, *, PARENT_SUBSCRIBER_IDENTIFIER=None):
+    def apply_subset_sqlalchemy(self, sql, *, subscriber_identifier=None):
         assert isinstance(sql, ClauseElement)
 
         tbl = sql.alias("tbl")
@@ -102,11 +102,11 @@ class ExplicitSubset(SubscriberSubsetBase):
     def apply_subset(self, sql):
         raise NotImplementedError()
 
-    def apply_subset_sqlalchemy(self, sql, *, PARENT_SUBSCRIBER_IDENTIFIER):
+    def apply_subset_sqlalchemy(self, sql, *, subscriber_identifier):
         assert isinstance(sql, ClauseElement)
         assert len(sql.froms) == 1
         parent_table = sql.froms[0]
-        return sql.where(parent_table.c[PARENT_SUBSCRIBER_IDENTIFIER].in_(self.subscribers))
+        return sql.where(parent_table.c[subscriber_identifier].in_(self.subscribers))
 
 
 def make_subscriber_subset(subset):
