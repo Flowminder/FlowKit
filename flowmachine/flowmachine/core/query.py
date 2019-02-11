@@ -29,6 +29,7 @@ from flowmachine.utils.utils import rlock
 from abc import ABCMeta, abstractmethod
 
 from .errors import NameTooLongError, NotConnectedError
+from .subscriber_subset import SubscriberSubsetBase
 
 import flowmachine
 
@@ -714,7 +715,7 @@ class Query(metaclass=ABCMeta):
         """
         dependencies = set()
         for x in self.__dict__.values():
-            if isinstance(x, Query):
+            if isinstance(x, (Query, SubscriberSubsetBase)):
                 dependencies.add(x)
         lists = [
             x
@@ -723,7 +724,7 @@ class Query(metaclass=ABCMeta):
         ]
         for l in lists:
             for x in l:
-                if isinstance(x, Query):
+                if isinstance(x, (Query, SubscriberSubsetBase)):
                     dependencies.add(x)
 
         return dependencies
