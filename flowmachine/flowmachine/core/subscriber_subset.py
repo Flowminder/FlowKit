@@ -69,7 +69,9 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
     is_proper_subset = True
 
     def __init__(self, flowmachine_query):
-        self.subset_query = text(flowmachine_query.get_query()).columns(column('subscriber'))
+        self.subset_query = text(flowmachine_query.get_query()).columns(
+            column("subscriber")
+        )
 
     def _make_query(self):
         return "<SubsetFromFlowmachineQuery>"

@@ -11,7 +11,11 @@ from typing import List
 from ...core import Query, Table
 from ...core.errors import MissingDateError
 from ...core.utils import _makesafe
-from ...core.sqlalchemy_utils import get_sqlalchemy_table_definition, get_sqlalchemy_column, get_sql_string
+from ...core.sqlalchemy_utils import (
+    get_sqlalchemy_table_definition,
+    get_sqlalchemy_column,
+    get_sql_string,
+)
 from ...utils.utils import list_of_dates
 from flowmachine.core.subscriber_subset import make_subscriber_subset
 
@@ -170,8 +174,12 @@ class EventTableSubset(Query):
             )
 
     def _make_query_with_sqlalchemy(self):
-        table = get_sqlalchemy_table_definition(self.table.fully_qualified_table_name, engine=Query.connection.engine)
-        sqlalchemy_columns = [get_sqlalchemy_column(table, column_str) for column_str in self.columns]
+        table = get_sqlalchemy_table_definition(
+            self.table.fully_qualified_table_name, engine=Query.connection.engine
+        )
+        sqlalchemy_columns = [
+            get_sqlalchemy_column(table, column_str) for column_str in self.columns
+        ]
         select_stmt = select(sqlalchemy_columns)
 
         if self.start is not None:
@@ -184,19 +192,20 @@ class EventTableSubset(Query):
         if self.hours != "all":
             hour_start, hour_end = self.hours
             if hour_start < hour_end:
-                select_stmt = select_stmt.where(between(extract('hour', table.c.datetime), hour_start, hour_end - 1))
+                select_stmt = select_stmt.where(
+                    between(extract("hour", table.c.datetime), hour_start, hour_end - 1)
+                )
             else:
                 # If dates are backwards, then this will be interpreted as spanning midnight
                 select_stmt = select_stmt.where(
                     or_(
-                        extract('hour', table.c.datetime) >= hour_start,
-                        extract('hour', table.c.datetime) < hour_end,
+                        extract("hour", table.c.datetime) >= hour_start,
+                        extract("hour", table.c.datetime) < hour_end,
                     )
                 )
 
         select_stmt = self.subscriber_subset.apply_subset_sqlalchemy(
-            select_stmt,
-            subscriber_identifier=self.subscriber_identifier
+            select_stmt, subscriber_identifier=self.subscriber_identifier
         )
 
         return get_sql_string(select_stmt)
@@ -227,9 +236,7 @@ class EventTableSubset(Query):
 
         if self.subscriber_subset_ORIG is not None:
             try:
-                subs_table = (
-                    self.subscriber_subset_ORIG.get_query()
-                )
+                subs_table = self.subscriber_subset_ORIG.get_query()
                 cols = ", ".join(
                     c if "AS subscriber" not in c else "subscriber"
                     for c in self.columns
@@ -238,9 +245,7 @@ class EventTableSubset(Query):
             except AttributeError:
                 where_clause = "WHERE " if where_clause == "" else " AND "
                 try:
-                    assert not isinstance(
-                        self.subscriber_subset_ORIG, str
-                    )
+                    assert not isinstance(self.subscriber_subset_ORIG, str)
                     ss = tuple(self.subscriber_subset_ORIG)
                 except (TypeError, AssertionError):
                     ss = (self.subscriber_subset_ORIG,)
@@ -248,7 +253,7 @@ class EventTableSubset(Query):
 
         return sql
 
-    #_make_query = _make_query_ORIG
+    # _make_query = _make_query_ORIG
     _make_query = _make_query_with_sqlalchemy
 
     @property

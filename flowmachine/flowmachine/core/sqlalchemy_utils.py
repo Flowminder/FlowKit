@@ -31,9 +31,13 @@ def get_sqlalchemy_table_definition(fully_qualified_table_name, *, engine):
         schema = "events"
         table_name = "sms"
     else:
-        raise NotImplementedError(f"No sqlalchemy definition found for table: '{fully_qualified_table_name}'")
+        raise NotImplementedError(
+            f"No sqlalchemy definition found for table: '{fully_qualified_table_name}'"
+        )
 
-    return Table(table_name, metadata, schema=schema, autoload=True, autoload_with=engine)
+    return Table(
+        table_name, metadata, schema=schema, autoload=True, autoload_with=engine
+    )
 
 
 def get_sql_string(query):
@@ -51,7 +55,9 @@ def get_sql_string(query):
         SQL string compiled from the sqlalchemy query.
     """
     assert isinstance(query, Selectable)
-    compiled_query = query.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True})
+    compiled_query = query.compile(
+        dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
+    )
     sql = str(compiled_query)
     return sql
 
