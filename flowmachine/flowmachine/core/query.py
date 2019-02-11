@@ -569,6 +569,16 @@ class Query(metaclass=ABCMeta):
             )  # TEXT comes back as multiple rows, i.e. a list of tuple(str, )
         return exp[0][0]  # Everything else comes as one
 
+    def _get_query_attrs_for_dependency_graph(self, analyse):
+        expl = self.explain(format="json", analyse=analyse)[0]
+        attrs = {}
+        attrs["name"] = self.__class__.__name__
+        attrs["stored"] = self.is_stored
+        attrs["cost"] = expl["Plan"]["Total Cost"]
+        if analyse:
+            attrs["runtime"] = expl["Execution Time"]
+        return attrs
+
     @property
     def fully_qualified_table_name(self):
         """
@@ -1073,15 +1083,8 @@ class Query(metaclass=ABCMeta):
 
         _, y = zip(*deps)
         for n in set(y):
-            expl = n.explain(format="json", analyse=analyse)[0]
-            attrs = {
-                "name": n.__class__.__name__,
-                "cost": expl["Plan"]["Total Cost"],
-                "stored": n.is_stored,
-                "shape": "rect",
-            }
-            if analyse:
-                attrs["runtime"] = expl["Execution Time"]
+            attrs = n._get_query_attrs_for_dependency_graph(analyse=analyse)
+            attrs["shape"] = "rect"
             attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
             if analyse:
                 attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
