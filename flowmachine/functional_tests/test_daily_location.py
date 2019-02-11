@@ -101,3 +101,33 @@ def test_daily_location_3_df(get_dataframe, diff_reporter):
     )
     df = get_dataframe(dl)
     verify(df.to_csv(), diff_reporter)
+
+
+def test_daily_location_4_sql(diff_reporter):
+    """
+    Regression test; this verifies the SQL statement for the test below (which checks the resulting dataframe)
+    """
+    subset_query = CustomQuery("SELECT * FROM (VALUES ('dr9xNYK006wykgXj')) as tmp (subscriber)")
+    dl = daily_location(
+        "2016-01-05",
+        table="events.calls",
+        hours=(22, 6),
+        subscriber_subset=subset_query,
+    )
+    sql = pretty_sql(dl.get_query())
+    verify(sql, diff_reporter)
+
+
+def test_daily_location_4_df(get_dataframe, diff_reporter):
+    """
+    Regression test; the expected result is empty because the given subscriber does not make any calls on the given date.
+    """
+    subset_query = CustomQuery("SELECT * FROM (VALUES ('dr9xNYK006wykgXj')) as tmp (subscriber)")
+    dl = daily_location(
+        "2016-01-05",
+        table="events.calls",
+        hours=(22, 6),
+        subscriber_subset=subset_query,
+    )
+    df = get_dataframe(dl)
+    verify(df.to_csv(), diff_reporter)
