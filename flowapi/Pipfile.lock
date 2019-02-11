@@ -235,11 +235,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:f4ecb4b76b49b72b7f2167b7b2f0888fc047f3abefeec8ed866e59c52016b5f5",
-                "sha256:f8a957a86b9c6d90a3ec1b04548379caf6a052bc535f66026add36e354ad5603"
+                "sha256:4df12c7909e25e5d7adeab936a173efb4e7ff3da7a907004f3234d3e8350c0c4",
+                "sha256:bbf6ead887aeca9af053b59c3072cbf9dd68ec6681320ff72107ad2cd4e02ab0"
             ],
             "index": "pypi",
-            "version": "==0.8.0"
+            "version": "==0.8.1"
         },
         "six": {
             "hashes": [
