@@ -3,12 +3,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import logging
+import pandas as pd
 import warnings
+from sqlalchemy import select, between, extract, or_
 from typing import List
 
 from ...core import Query, Table
 from ...core.errors import MissingDateError
 from ...core.utils import _makesafe
+from ...core.sqlalchemy_utils import get_sqlalchemy_table_definition, get_sqlalchemy_column, get_sql_string
 from ...utils.utils import list_of_dates
 from flowmachine.core.subscriber_subset import make_subscriber_subset
 
@@ -165,7 +168,39 @@ class EventTableSubset(Query):
                 stacklevel=2,
             )
 
-    def _make_query(self):
+    def _make_query_with_sqlalchemy(self):
+        table = get_sqlalchemy_table_definition(self.table.fully_qualified_table_name, engine=Query.connection.engine)
+        sqlalchemy_columns = [get_sqlalchemy_column(table, column_str) for column_str in self.columns]
+        select_stmt = select(sqlalchemy_columns)
+
+        if self.start is not None:
+            ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
+            select_stmt = select_stmt.where(table.c.datetime >= ts_start)
+        if self.stop is not None:
+            ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
+            select_stmt = select_stmt.where(table.c.datetime <= ts_stop)
+
+        if self.hours != "all":
+            hour_start, hour_end = self.hours
+            if hour_start < hour_end:
+                select_stmt = select_stmt.where(between(extract('hour', table.c.datetime), hour_start, hour_end - 1))
+            else:
+                # If dates are backwards, then this will be interpreted as spanning midnight
+                select_stmt = select_stmt.where(
+                    or_(
+                        extract('hour', table.c.datetime) >= hour_start,
+                        extract('hour', table.c.datetime) < hour_end,
+                    )
+                )
+
+        select_stmt = self.subscriber_subset.apply_subset_sqlalchemy(
+            select_stmt,
+            PARENT_SUBSCRIBER_IDENTIFIER=self.subscriber_identifier
+        )
+
+        return get_sql_string(select_stmt)
+
+    def _make_query_ORIG(self):
 
         where_clause = ""
         if self.start is not None:
@@ -213,6 +248,9 @@ class EventTableSubset(Query):
             sql = self.subscriber_subset.apply_subset(sql)
 
         return sql
+
+    #_make_query = _make_query_ORIG
+    _make_query = _make_query_with_sqlalchemy
 
     @property
     def fully_qualified_table_name(self):
