@@ -14,25 +14,25 @@ FROM (SELECT times_visited.subscriber,
                   FROM (SELECT subscriber,
                                datetime AS time,
                                location_id
-                        FROM (SELECT datetime,
-                                     imei AS subscriber,
-                                     location_id
+                        FROM (SELECT events.calls.datetime,
+                                     events.calls.imei AS subscriber,
+                                     events.calls.location_id
                               FROM events.calls
-                              WHERE (datetime >= '2016-01-04'::timestamptz)
-                                AND (datetime <= '2016-01-05'::timestamptz)
-                                AND EXTRACT(HOUR FROM datetime) BETWEEN 3 AND 8
-                                AND imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')
+                              WHERE (events.calls.datetime >= '2016-01-04 00:00:00')
+                                AND (events.calls.datetime <= '2016-01-05 00:00:00')
+                                AND EXTRACT(HOUR FROM events.calls.datetime) BETWEEN 3 AND 8
+                                AND events.calls.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')
 
                               UNION ALL
 
-                              SELECT datetime,
-                                     imei AS subscriber,
-                                     location_id
+                              SELECT events.sms.datetime,
+                                     events.sms.imei AS subscriber,
+                                     events.sms.location_id
                               FROM events.sms
-                              WHERE (datetime >= '2016-01-04'::timestamptz)
-                                AND (datetime <= '2016-01-05'::timestamptz)
-                                AND EXTRACT(HOUR FROM datetime) BETWEEN 3 AND 8
-                                AND imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')) AS foo) AS l
+                              WHERE (events.sms.datetime >= '2016-01-04 00:00:00')
+                                AND (events.sms.datetime <= '2016-01-05 00:00:00')
+                                AND EXTRACT(HOUR FROM events.sms.datetime) BETWEEN 3 AND 8
+                                AND events.sms.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')) AS foo) AS l
                        INNER JOIN (SELECT location_id,
                                           version,
                                           date_of_first_service,
