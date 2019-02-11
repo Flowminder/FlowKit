@@ -45,6 +45,9 @@ class SubscriberSubsetBase(Query):
 
 
 class AllSubscribers(SubscriberSubsetBase):
+    """
+    Represents the 'subset' of all subscribers - i.e., no subsetting at all.
+    """
 
     is_proper_subset = False
 
@@ -59,6 +62,9 @@ class AllSubscribers(SubscriberSubsetBase):
 
 
 class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
+    """
+    Represents a subset given by a flowmachine query.
+    """
 
     is_proper_subset = True
 
@@ -90,6 +96,9 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
 
 
 class ExplicitSubset(SubscriberSubsetBase):
+    """
+    Represents a subset given by an explicit list of subscribers.
+    """
 
     is_proper_subset = True
 
