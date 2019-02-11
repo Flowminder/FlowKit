@@ -11,19 +11,10 @@ class SubscriberSubsetBase(metaclass=ABCMeta):
     def is_proper_subset(self):
         raise NotImplementedError(f"Class {self.__class__.__name__} does not implement 'is_proper_subset'")
 
-    @property
-    @abstractmethod
-    def md5(self):
-        raise NotImplementedError(f"Class {self.__class__.__name__} does not implement 'md5'")
-
 
 class AllSubscribers(SubscriberSubsetBase):
 
     is_proper_subset = False
-
-    @property
-    def md5(self):
-        return "<AllSubscribers>"
 
 
 class OtherSubset(SubscriberSubsetBase):
@@ -35,10 +26,6 @@ class OtherSubset(SubscriberSubsetBase):
 
     def get_query(self):
         return self.ORIG_SUBSET_TODO_REMOVE_THIS.get_query()
-
-    @property
-    def md5(self):
-        return "<OtherSubset>"
 
 
 def make_subscriber_subset(subset):
