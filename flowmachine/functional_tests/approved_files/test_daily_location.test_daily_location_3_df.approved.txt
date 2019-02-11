@@ -1,2 +1,3 @@
 ,subscriber,location_id
-0,GNLM7eW5J5wmlwRa,0RIMKYtf
+0,e6BxY8mAP38GyAQz,eAwMUT94
+1,GNLM7eW5J5wmlwRa,UJE4phmX
