@@ -10,7 +10,7 @@ from ...core import Query, Table
 from ...core.errors import MissingDateError
 from ...core.utils import _makesafe
 from ...utils.utils import list_of_dates
-from .subscriber_subset import make_subscriber_subset
+from flowmachine.core.subscriber_subset import make_subscriber_subset
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
