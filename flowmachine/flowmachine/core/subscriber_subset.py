@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from abc import abstractmethod
+from sqlalchemy.sql import ClauseElement, select, text, column
 from .query import Query
 
 
@@ -24,7 +25,17 @@ class SubscriberSubsetBase(Query):
             f"Class {self.__class__.__name__} does not implement 'apply_subset'"
         )
 
+    @abstractmethod
+    def apply_subset_sqlalchemy(self, sql, *, PARENT_SUBSCRIBER_IDENTIFIER):
+        raise NotImplementedError(
+            f"Class {self.__class__.__name__} does not implement 'apply_subset_sqlalchemy'"
+        )
+
     def _get_query_attrs_for_dependency_graph(self, analyse=False):
+        # This is a stub implementation of this internal method.
+        # It is needed because SubscriberSubsetBase currently
+        # inherits from flowmachine.Query, so we implement just
+        # enough to ensure Query.dependency_graph() doesn't break.
         attrs = {}
         attrs["name"] = self.__class__.__name__
         attrs["stored"] = "N/A"
@@ -43,13 +54,17 @@ class AllSubscribers(SubscriberSubsetBase):
     def apply_subset(self, sql):
         return sql
 
+    def apply_subset_sqlalchemy(self, sql, *, PARENT_SUBSCRIBER_IDENTIFIER):
+        return sql
+
 
 class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
 
     is_proper_subset = True
 
-    def __init__(self, query):
-        self.ORIG_SUBSET_TODO_REMOVE_THIS = query
+    def __init__(self, flowmachine_query):
+        self.ORIG_SUBSET_TODO_REMOVE_THIS = flowmachine_query
+        self.subset_query = text(flowmachine_query.get_query()).columns(column('subscriber'))
 
     def _make_query(self):
         return "<SubsetFromFlowmachineQuery>"
@@ -57,19 +72,43 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
     def apply_subset(self, sql):
         raise NotImplementedError()
 
+    def apply_subset_sqlalchemy(self, sql, *, PARENT_SUBSCRIBER_IDENTIFIER=None):
+        assert isinstance(sql, ClauseElement)
+
+        tbl = sql.alias("tbl")
+
+        try:
+            subset = self.subset_query.distinct().alias("subset")
+        except AttributeError:
+            # This can happen if `self.subset_query` is a textual query
+            subset = self.subset_query.alias("subset")
+
+        res = select(tbl.columns).select_from(
+            tbl.join(subset, tbl.c.subscriber == subset.c.subscriber)
+        )
+
+        return res
+
 
 class ExplicitSubset(SubscriberSubsetBase):
 
     is_proper_subset = True
 
-    def __init__(self, subset):
-        self.ORIG_SUBSET_TODO_REMOVE_THIS = subset
+    def __init__(self, subscribers):
+        self.subscribers = subscribers
+        self.ORIG_SUBSET_TODO_REMOVE_THIS = subscribers
 
     def _make_query(self):
         return "<ExplicitSubset>"
 
     def apply_subset(self, sql):
         raise NotImplementedError()
+
+    def apply_subset_sqlalchemy(self, sql, *, PARENT_SUBSCRIBER_IDENTIFIER):
+        assert isinstance(sql, ClauseElement)
+        assert len(sql.froms) == 1
+        parent_table = sql.froms[0]
+        return sql.where(parent_table.c[PARENT_SUBSCRIBER_IDENTIFIER].in_(self.subscribers))
 
 
 class OtherSubset(SubscriberSubsetBase):
