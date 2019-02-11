@@ -204,7 +204,7 @@ class EventTableSubset(Query):
                     )
                 )
 
-        select_stmt = self.subscriber_subset.apply_subset_sqlalchemy(
+        select_stmt = self.subscriber_subset.apply_subset(
             select_stmt, subscriber_identifier=self.subscriber_identifier
         )
 
