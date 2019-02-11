@@ -1,7 +1,8 @@
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
+from .query import Query
 
 
-class SubscriberSubsetBase(metaclass=ABCMeta):
+class SubscriberSubsetBase(Query):
     """
     Base class for the different types of subscriber subsets.
     """
@@ -16,6 +17,9 @@ class AllSubscribers(SubscriberSubsetBase):
 
     is_proper_subset = False
 
+    def _make_query(self):
+        return "<AllSubscribers>"
+
 
 class OtherSubset(SubscriberSubsetBase):
 
@@ -26,6 +30,9 @@ class OtherSubset(SubscriberSubsetBase):
 
     def get_query(self):
         return self.ORIG_SUBSET_TODO_REMOVE_THIS.get_query()
+
+    def _make_query(self):
+        return "<OtherSubset>"
 
 
 def make_subscriber_subset(subset):
