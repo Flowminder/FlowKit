@@ -40,6 +40,20 @@ class AllSubscribers(SubscriberSubsetBase):
         return sql
 
 
+class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
+
+    is_proper_subset = True
+
+    def __init__(self, query):
+        self.ORIG_SUBSET_TODO_REMOVE_THIS = query
+
+    def _make_query(self):
+        return "<SubsetFromFlowmachineQuery>"
+
+    def apply_subset(self, sql):
+        raise NotImplementedError()
+
+
 class OtherSubset(SubscriberSubsetBase):
 
     is_proper_subset = True
@@ -62,6 +76,8 @@ def make_subscriber_subset(subset):
         return subset
     elif subset == "all" or subset is None:
         return AllSubscribers()
+    elif isinstance(subset, Query):
+        return SubsetFromFlowmachineQuery(subset)
     else:
         return OtherSubset(subset)
     # else:
