@@ -63,7 +63,6 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
     is_proper_subset = True
 
     def __init__(self, flowmachine_query):
-        self.ORIG_SUBSET_TODO_REMOVE_THIS = flowmachine_query
         self.subset_query = text(flowmachine_query.get_query()).columns(column('subscriber'))
 
     def _make_query(self):
@@ -96,7 +95,6 @@ class ExplicitSubset(SubscriberSubsetBase):
 
     def __init__(self, subscribers):
         self.subscribers = subscribers
-        self.ORIG_SUBSET_TODO_REMOVE_THIS = subscribers
 
     def _make_query(self):
         return "<ExplicitSubset>"
