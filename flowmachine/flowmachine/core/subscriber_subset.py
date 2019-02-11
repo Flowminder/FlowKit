@@ -20,12 +20,6 @@ class SubscriberSubsetBase(Query):
         )
 
     @abstractmethod
-    def apply_subset(self, sql):
-        raise NotImplementedError(
-            f"Class {self.__class__.__name__} does not implement 'apply_subset'"
-        )
-
-    @abstractmethod
     def apply_subset_sqlalchemy(self, sql, *, subscriber_identifier):
         raise NotImplementedError(
             f"Class {self.__class__.__name__} does not implement 'apply_subset_sqlalchemy'"
@@ -54,9 +48,6 @@ class AllSubscribers(SubscriberSubsetBase):
     def _make_query(self):
         return "<AllSubscribers>"
 
-    def apply_subset(self, sql):
-        return sql
-
     def apply_subset_sqlalchemy(self, sql, *, subscriber_identifier):
         return sql
 
@@ -75,9 +66,6 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
 
     def _make_query(self):
         return "<SubsetFromFlowmachineQuery>"
-
-    def apply_subset(self, sql):
-        raise NotImplementedError()
 
     def apply_subset_sqlalchemy(self, sql, *, subscriber_identifier=None):
         assert isinstance(sql, ClauseElement)
@@ -109,9 +97,6 @@ class ExplicitSubset(SubscriberSubsetBase):
 
     def _make_query(self):
         return "<ExplicitSubset>"
-
-    def apply_subset(self, sql):
-        raise NotImplementedError()
 
     def apply_subset_sqlalchemy(self, sql, *, subscriber_identifier):
         assert isinstance(sql, ClauseElement)
