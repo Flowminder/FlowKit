@@ -10,7 +10,9 @@ class SubscriberSubsetBase(Query):
     @property
     @abstractmethod
     def is_proper_subset(self):
-        raise NotImplementedError(f"Class {self.__class__.__name__} does not implement 'is_proper_subset'")
+        raise NotImplementedError(
+            f"Class {self.__class__.__name__} does not implement 'is_proper_subset'"
+        )
 
 
 class AllSubscribers(SubscriberSubsetBase):

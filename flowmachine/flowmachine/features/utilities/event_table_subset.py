@@ -191,7 +191,9 @@ class EventTableSubset(Query):
 
         if self.subscriber_subset.is_proper_subset:
             try:
-                subs_table = self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS.get_query()
+                subs_table = (
+                    self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS.get_query()
+                )
                 cols = ", ".join(
                     c if "AS subscriber" not in c else "subscriber"
                     for c in self.columns
@@ -200,7 +202,9 @@ class EventTableSubset(Query):
             except AttributeError:
                 where_clause = "WHERE " if where_clause == "" else " AND "
                 try:
-                    assert not isinstance(self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS, str)
+                    assert not isinstance(
+                        self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS, str
+                    )
                     ss = tuple(self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS)
                 except (TypeError, AssertionError):
                     ss = (self.subscriber_subset.ORIG_SUBSET_TODO_REMOVE_THIS,)
