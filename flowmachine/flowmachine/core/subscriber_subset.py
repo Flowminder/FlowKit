@@ -176,6 +176,8 @@ def make_subscriber_subset(subset):
         return subset
     elif subset == "all" or subset is None:
         return AllSubscribers()
+    elif isinstance(subset, str):
+        return ExplicitSubset([subset])
     elif isinstance(subset, (list, tuple)):
         return ExplicitSubset(subset)
     elif isinstance(subset, Query):
