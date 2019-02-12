@@ -9,11 +9,15 @@ networks:
   redis:
   zero:
 
+
 services:
 
   flowdb:
     container_name: flowdb
     image: flowminder/flowdb:latest
+    build:
+      context: ./flowdb/
+      dockerfile: Dockerfile
     ports:
       - ${FLOWDB_PORT:-9000}:5432
     environment:
@@ -22,28 +26,33 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FM_PASSWORD=${FM_PASSWORD:-foo}
       - API_PASSWORD=${API_PASSWORD:-foo}
+      - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
+      - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:-1000}
     shm_size: 1G
     tty: true
     stdin_open: true
     restart: always
-    volumes:
-      - data_volume_flowdb:/var/lib/postgresql/data
     networks:
       - db
 
   flowdb_testdata:
     container_name: flowdb_testdata
     image: flowminder/flowdb:testdata-latest
+    build:
+      context: ./flowdb/testdata/
+      dockerfile: Dockerfile
     ports:
-      - ${FLOWDB_TESTDATA_PORT:-9001}:5432
+      - ${FLOWDB_PORT:-9000}:5432
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-flowdb}
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FM_PASSWORD=${FM_PASSWORD:-foo}
       - API_PASSWORD=${API_PASSWORD:-foo}
-    tty: true
+      - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
+      - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:-1000}
     shm_size: 1G
+    tty: true
     stdin_open: true
     restart: always
     networks:
@@ -53,62 +62,40 @@ services:
     container_name: flowdb_synthetic_data
     image: flowminder/flowdb:synthetic-data-latest
     build:
-      context: ./flowdb/testdata
+      context: ./flowdb/testdata/
       dockerfile: Dockerfile.synthetic_data
     ports:
-      - ${FLOWDB_SYNTHDATA_PORT:-9002}:5432
+      - ${FLOWDB_PORT:-9002}:5432
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-flowdb}
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FM_PASSWORD=${FM_PASSWORD:-foo}
       - API_PASSWORD=${API_PASSWORD:-foo}
+      - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
+      - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:-1000}
       - N_DAYS=${N_DAYS:-7}
       - N_CELLS=${N_CELLS:-500}
       - N_CALLS=${N_CALLS:-2000}
-    tty: true
     shm_size: 1G
-    stdin_open: true
-    restart: always
-    networks:
-      - db
-
-  flowapi:
-    container_name: flowapi
-    image: flowminder/flowapi:latest
-    build:
-      context: ./flowapi
-      dockerfile: Dockerfile
-    ports:
-      - ${FLOWAPI_PORT:-9090}:9090
-    environment:
-      - SERVER=flowmachine
-      - DB_USER=reporter
-      - DB_PASS=${REPORTER_PASSWORD:-foo}
-      - DB_HOST=${DB_HOST:-flowdb}
-      - DB_PORT=${DB_PORT:-5432}
-      - JWT_SECRET_KEY=secret
-      - LOG_LEVEL=${LOG_LEVEL:-debug}
-    volumes:
-      - ./flowapi/app:/app
-      - data_volume_flowapi_logs:/var/logs/flowkit/
     tty: true
     stdin_open: true
     restart: always
     networks:
       - db
-      - zero
 
   flowmachine:
     container_name: flowmachine
     image: flowminder/flowmachine:latest
     build:
       context: ./flowmachine
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-dev
     ports:
       - ${FLOWMACHINE_PORT:-5555}:5555
     volumes:
       - ./flowmachine/:/app
+    depends_on:
+      - redis
     tty: true
     stdin_open: true
     environment:
@@ -124,6 +111,42 @@ services:
       - db
       - redis
 
+  flowapi:
+    container_name: flowapi
+    image: flowminder/flowapi:latest
+    build:
+      context: ./flowapi
+      dockerfile: Dockerfile-dev
+    ports:
+      - ${FLOWAPI_PORT:-9090}:9090
+    environment:
+      - SERVER=flowmachine
+      - DB_USER=reporter
+      - DB_PASS=${REPORTER_PASSWORD:-foo}
+      - DB_HOST=${DB_HOST:-flowdb}
+      - DB_PORT=${DB_PORT:-5432}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-secret}
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+    volumes:
+      - ./flowapi/app:/flowapi/app
+    tty: true
+    stdin_open: true
+    restart: always
+    networks:
+      - db
+      - zero
+
+  flowauth:
+    container_name: flowauth
+    image: flowminder/flowauth:latest
+    build:
+      context: ./flowauth
+      dockerfile: Dockerfile
+    ports:
+      - ${FLOWAUTH_PORT:-8080}:80
+    environment:
+      DEMO_MODE: ${DEMO_MODE:-1}
+
   redis:
     container_name: redis_flowkit
     image: bitnami/redis
@@ -136,9 +159,3 @@ services:
       redis:
         aliases:
           - redis
-
-
-
-volumes:
-    data_volume_flowdb:
-    data_volume_flowapi_logs:

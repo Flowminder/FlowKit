@@ -1,23 +1,16 @@
-.git
-Dockerfile*
-testdata
-tests
-hooks
-.circleci
-.idea
-.pyup.yml
-environment.yml
-LICENSE.md
-docker-compose.*
-.gitignore
-README.md
-Makefile
-bin/*.py
-bin/*.sh
-bin/data_cleaning
-logo.png
-requirements.txt
-doc
-.DS_Store
-flowdb-cli/tests
-oracle_fdw
+# This .dockerignore file follows the "whitelisting" approach described here:
+#    https://youknowfordevs.com/2018/12/07/getting-control-of-your-dockerignore-files.html
+
+#
+# First, exclude everything by default:
+#
+*
+
+#
+# Now un-exclude only those folders and files that are needed for building the image:
+#
+!Pipfile
+!Pipfile.lock
+!./bin/build/
+!./sql/
+!./data/

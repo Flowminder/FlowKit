@@ -1,0 +1,44 @@
+SELECT final_time.subscriber,
+       location_id
+FROM (SELECT subscriber_locs.subscriber,
+             time,
+             location_id,
+             row_number() OVER (PARTITION BY subscriber_locs.subscriber
+                                ORDER BY time DESC) AS rank
+      FROM (SELECT subscriber,
+                   datetime AS time,
+                   location_id
+            FROM (SELECT datetime,
+                         location_id,
+                         subscriber
+                  FROM (SELECT datetime,
+                               location_id,
+                               msisdn AS subscriber
+                        FROM events.calls
+                        WHERE (datetime >= '2016-01-05'::timestamptz)
+                          AND (datetime <= '2016-01-06'::timestamptz)
+                          AND ((   (EXTRACT(HOUR FROM datetime) >= 23)
+                                OR (EXTRACT(HOUR FROM datetime) < 5)))) AS ss
+                       INNER JOIN (SELECT DISTINCT msisdn AS subscriber
+                                   FROM events.calls
+                                   WHERE msisdn IN ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')) AS subs USING (subscriber)
+
+                  UNION ALL
+
+                  SELECT datetime,
+                         location_id,
+                         subscriber
+                  FROM (SELECT datetime,
+                               location_id,
+                               msisdn AS subscriber
+                        FROM events.sms
+                        WHERE (datetime >= '2016-01-05'::timestamptz)
+                          AND (datetime <= '2016-01-06'::timestamptz)
+                          AND ((   (EXTRACT(HOUR FROM datetime) >= 23)
+                                OR (EXTRACT(HOUR FROM datetime) < 5)))) AS ss
+                       INNER JOIN (SELECT DISTINCT msisdn AS subscriber
+                                   FROM events.calls
+                                   WHERE msisdn IN ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')) AS subs USING (subscriber)) AS foo
+            WHERE location_id IS NOT NULL
+              AND (location_id <> '')) AS subscriber_locs) AS final_time
+WHERE rank = 1
