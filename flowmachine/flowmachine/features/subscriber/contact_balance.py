@@ -14,7 +14,7 @@ subscriber's total event count.
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 
 
 class ContactBalance(GraphMixin, SubscriberFeature):
@@ -83,7 +83,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
 
         if self.direction == "both":
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-            self.tables = parse_tables_ensuring_columns(
+            self.tables = verify_columns_exist_in_all_tables(
                 self.connection, tables, column_list
             )
         elif self.direction in {"in", "out"}:
@@ -91,9 +91,10 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         else:
             raise ValueError("Unidentified direction: {}".format(self.direction))
 
-        self.tables = parse_tables_ensuring_columns(
+        verify_columns_exist_in_all_tables(
             self.connection, tables, column_list
         )
+        self.tables = tables
 
         self.unioned_query = EventsTablesUnion(
             self.start,

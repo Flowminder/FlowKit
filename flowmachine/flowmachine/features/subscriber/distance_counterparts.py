@@ -9,7 +9,7 @@ Calculate metrics related with distance between caller and her/his counterparts.
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ..spatial.distance_matrix import DistanceMatrix
@@ -90,9 +90,10 @@ class DistanceCounterparts(SubscriberFeature):
             )
 
         column_list = ["msisdn", "msisdn_counterpart", "id", "location_id", "outgoing"]
-        self.tables = parse_tables_ensuring_columns(
+        verify_columns_exist_in_all_tables(
             self.connection, tables, column_list
         )
+        self.tables = tables
 
         # EventsTablesUnion will only subset on the subscriber identifier,
         # which means that we need to query for a unioned table twice.

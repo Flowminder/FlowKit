@@ -242,7 +242,7 @@ def proj4string(conn, crs=None):
     return proj4_string.strip()
 
 
-def parse_tables_ensuring_columns(conn, tables, columns):
+def verify_columns_exist_in_all_tables(conn, tables, columns):
     """
     Parse a list of tables ensuring that certain columns are present.
 
