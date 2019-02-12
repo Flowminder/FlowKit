@@ -96,7 +96,7 @@ class EventCount(SubscriberFeature):
         where_clause = ""
         if self.direction != "both":
             where_clause = (
-                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"WHERE outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
         return f"""
         SELECT subscriber, COUNT(*) as event_count FROM

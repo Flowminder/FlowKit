@@ -126,7 +126,7 @@ class DistanceCounterparts(SubscriberFeature):
         filters = []
         if self.direction != "both":
             filters.append(
-                f"A.outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"A.outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
         if self.exclude_self_calls:
             filters.append("A.subscriber != A.msisdn_counterpart")
