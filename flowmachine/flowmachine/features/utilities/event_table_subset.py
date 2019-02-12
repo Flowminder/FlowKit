@@ -210,7 +210,10 @@ class EventTableSubset(Query):
 
         return get_sql_string(select_stmt)
 
-    def _make_query_ORIG(self):
+    def _make_query_ORIG(self):  # pragma: no cover
+        # Note: this is the original implementation of _make_query. It is kept for
+        # reference for the time being but will likely be removed in the near future.
+        # The one currently being used is _make_query_with_sqlalchemy above.
 
         where_clause = ""
         if self.start is not None:
