@@ -42,7 +42,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
         },
         "request_id": "DUMMY_ID",
     }
-    expected_query_id = "ddc61a04f608dee16fff0655f91c2057"
+    expected_query_id = "c283e42b083e652aeadb5c8db4cd8b2c"
 
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
@@ -68,7 +68,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
     # and that it contains the expected number of rows.
     #
     output_cache_table = f"x{expected_query_id}"
-    implicit_cache_table = f"x7ea3c788cb7f5829ee2a69494e502765"
+    implicit_cache_table = f"x010f0baa76e0724215613b8486a71a49"
     assert [implicit_cache_table, output_cache_table] == get_cache_tables(fm_conn)
     num_rows = fm_conn.engine.execute(
         f"SELECT COUNT(*) FROM cache.{output_cache_table}"
