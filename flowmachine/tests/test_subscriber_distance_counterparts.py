@@ -88,10 +88,7 @@ def test_distance_counterparts(get_dataframe, distance_counterparts_wanted):
     assert got.distance_avg.to_dict() == pytest.approx(want.distance.to_dict())
 
     query = DistanceCounterparts(
-        "2016-01-03",
-        "2016-01-05",
-        direction="in",
-        subscriber_subset=got.index.values,
+        "2016-01-03", "2016-01-05", direction="in", subscriber_subset=got.index.values
     )
     df = get_dataframe(query).set_index("subscriber")
     got = df.sample(n=5)

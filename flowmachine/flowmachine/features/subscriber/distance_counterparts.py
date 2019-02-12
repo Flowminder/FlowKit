@@ -90,9 +90,7 @@ class DistanceCounterparts(SubscriberFeature):
             )
 
         column_list = ["msisdn", "msisdn_counterpart", "id", "location_id", "outgoing"]
-        verify_columns_exist_in_all_tables(
-            self.connection, tables, column_list
-        )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
         self.tables = tables
 
         # EventsTablesUnion will only subset on the subscriber identifier,
