@@ -115,7 +115,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             filters.append(
                 f"outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
-        if self.exclude_self_calls:
+        if (self.subscriber_identifier in {"msisdn"}) and (self.exclude_self_calls):
             filters.append("subscriber != msisdn_counterpart")
         where_clause = f"WHERE {' AND '.join(filters)} " if len(filters) > 0 else ""
 
