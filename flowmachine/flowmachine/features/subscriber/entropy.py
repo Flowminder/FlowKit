@@ -193,7 +193,7 @@ class PeriodicEntropy(BaseEntropy):
                 tables_lacking_direction_column.append(t)
 
         if tables_lacking_direction_column:
-            raise MissingDirectionColumnError(tables_lacking_direction_column)
+            raise MissingColumnsError(tables_lacking_direction_column)
 
         return parsed_tables
 
