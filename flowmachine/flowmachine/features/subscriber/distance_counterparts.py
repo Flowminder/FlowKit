@@ -36,13 +36,13 @@ class DistanceCounterparts(SubscriberFeature):
         of hours within each day.
     tables: str, default 'all'.
         The table must have a `msisdn_counterpart` column.
-    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
-        Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
     statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
+    exclude_self_calls : bool, default True
+        Set to false to *include* calls a subscriber made to themself
         Defaults to sum, aggregation statistic over the durations.
 
 
@@ -71,8 +71,8 @@ class DistanceCounterparts(SubscriberFeature):
         hours="all",
         tables="all",
         direction="both",
-        exclude_self_calls=True,
         subscriber_subset=None,
+        exclude_self_calls=True,
     ):
         self.tables = tables
         self.start = start
@@ -96,7 +96,8 @@ class DistanceCounterparts(SubscriberFeature):
         self.tables = tables
 
         # EventsTablesUnion will only subset on the subscriber identifier,
-        # which means that we need to query for a unioned table twice.
+        # which means that we need to query for a unioned table twice. That has
+        # a considerable negative impact on execution time.
         self.unioned_from_query = EventsTablesUnion(
             self.start,
             self.stop,
@@ -128,7 +129,7 @@ class DistanceCounterparts(SubscriberFeature):
             filters.append(
                 f"A.outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
-        if (self.subscriber_identifier in {"msisdn"}) and (self.exclude_self_calls):
+        if self.exclude_self_calls:
             filters.append("A.subscriber != A.msisdn_counterpart")
         on_filters = f"AND {' AND '.join(filters)} " if len(filters) > 0 else ""
 
