@@ -26,7 +26,9 @@ def get_sqlalchemy_table_definition(fully_qualified_table_name, *, engine):
     try:
         schema, table_name = fully_qualified_table_name.split(".")
     except ValueError:
-        raise ValueError(f"Fully qualified table name must be of the form '<schema>.<table>'. Got: {fully_qualified_table_name}")
+        raise ValueError(
+            f"Fully qualified table name must be of the form '<schema>.<table>'. Got: {fully_qualified_table_name}"
+        )
 
     metadata = MetaData()
     return Table(
@@ -82,7 +84,9 @@ def get_query_result_as_dataframe(query, *, engine):
     return df
 
 
-def make_sqlalchemy_column_from_flowmachine_column_description(sqlalchemy_table, column_str):
+def make_sqlalchemy_column_from_flowmachine_column_description(
+    sqlalchemy_table, column_str
+):
     """
     Given a sqlalchemy sqlalchemy_table and a string with a column description, return
     the actual sqlalchemy Column object (or a sqlalchemy Label object if

@@ -157,7 +157,9 @@ class EventTableSubset(Query):
             db_dates = [
                 d.strftime("%Y-%m-%d")
                 for d in self.connection.available_dates(
-                    table=self.table_ORIG.name, strictness=1, schema=self.table_ORIG.schema
+                    table=self.table_ORIG.name,
+                    strictness=1,
+                    schema=self.table_ORIG.schema,
                 )[self.table_ORIG.name]
             ]
         except KeyError:  # No dates at all for this table
@@ -188,7 +190,9 @@ class EventTableSubset(Query):
 
         if self.start is not None:
             ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
-            select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime >= ts_start)
+            select_stmt = select_stmt.where(
+                self.sqlalchemy_table.c.datetime >= ts_start
+            )
         if self.stop is not None:
             ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
             select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime <= ts_stop)
@@ -197,7 +201,11 @@ class EventTableSubset(Query):
             hour_start, hour_end = self.hours
             if hour_start < hour_end:
                 select_stmt = select_stmt.where(
-                    between(extract("hour", self.sqlalchemy_table.c.datetime), hour_start, hour_end - 1)
+                    between(
+                        extract("hour", self.sqlalchemy_table.c.datetime),
+                        hour_start,
+                        hour_end - 1,
+                    )
                 )
             else:
                 # If dates are backwards, then this will be interpreted as spanning midnight

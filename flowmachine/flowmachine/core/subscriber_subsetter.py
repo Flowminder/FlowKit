@@ -155,8 +155,7 @@ class SubscriberSubsetterFromFlowmachineQuery(SubscriberSubsetterBase):
 
         res = select(tbl.columns).select_from(
             tbl.join(
-                subset_query_full,
-                tbl.c.subscriber == subset_query_full.c.subscriber,
+                subset_query_full, tbl.c.subscriber == subset_query_full.c.subscriber
             )
         )
 

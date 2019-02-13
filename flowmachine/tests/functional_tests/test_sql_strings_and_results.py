@@ -201,15 +201,15 @@ def test_daily_location_6_sql(diff_reporter):
     """
     Regression test; this verifies the SQL statement for the test below (which checks the resulting dataframe)
     """
-    subset_query = CustomQuery("""
+    subset_query = CustomQuery(
+        """
         SELECT outgoing, datetime, duration, msisdn AS subscriber
         FROM events.calls
         WHERE datetime::date = '2016-01-01' AND duration > 2000
-        """)
+        """
+    )
     dl = daily_location(
-        "2016-01-03",
-        table="events.calls",
-        subscriber_subset=subset_query,
+        "2016-01-03", table="events.calls", subscriber_subset=subset_query
     )
     sql = pretty_sql(dl.get_query())
     verify(sql, diff_reporter)
@@ -219,15 +219,15 @@ def test_daily_location_6_df(get_dataframe, diff_reporter):
     """
     Regression test; the expected result is empty because the given subscriber does not make any calls on the given date.
     """
-    subset_query = CustomQuery("""
+    subset_query = CustomQuery(
+        """
         SELECT outgoing, datetime, duration, msisdn AS subscriber
         FROM events.calls
         WHERE datetime::date = '2016-01-01' AND duration > 2000
-        """)
+        """
+    )
     dl = daily_location(
-        "2016-01-03",
-        table="events.calls",
-        subscriber_subset=subset_query,
+        "2016-01-03", table="events.calls", subscriber_subset=subset_query
     )
     df = get_dataframe(dl)
     verify(df.to_csv(), diff_reporter)
