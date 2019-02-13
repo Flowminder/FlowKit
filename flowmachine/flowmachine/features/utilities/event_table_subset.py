@@ -174,33 +174,33 @@ class EventTableSubset(Query):
             )
 
     def _make_query_with_sqlalchemy(self):
-        table = get_sqlalchemy_table_definition(
+        sqlalchemy_table = get_sqlalchemy_table_definition(
             self.table.fully_qualified_table_name, engine=Query.connection.engine
         )
         sqlalchemy_columns = [
-            get_sqlalchemy_column(table, column_str) for column_str in self.columns
+            get_sqlalchemy_column(sqlalchemy_table, column_str) for column_str in self.columns
         ]
         select_stmt = select(sqlalchemy_columns)
 
         if self.start is not None:
             ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
-            select_stmt = select_stmt.where(table.c.datetime >= ts_start)
+            select_stmt = select_stmt.where(sqlalchemy_table.c.datetime >= ts_start)
         if self.stop is not None:
             ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
-            select_stmt = select_stmt.where(table.c.datetime <= ts_stop)
+            select_stmt = select_stmt.where(sqlalchemy_table.c.datetime <= ts_stop)
 
         if self.hours != "all":
             hour_start, hour_end = self.hours
             if hour_start < hour_end:
                 select_stmt = select_stmt.where(
-                    between(extract("hour", table.c.datetime), hour_start, hour_end - 1)
+                    between(extract("hour", sqlalchemy_table.c.datetime), hour_start, hour_end - 1)
                 )
             else:
                 # If dates are backwards, then this will be interpreted as spanning midnight
                 select_stmt = select_stmt.where(
                     or_(
-                        extract("hour", table.c.datetime) >= hour_start,
-                        extract("hour", table.c.datetime) < hour_end,
+                        extract("hour", sqlalchemy_table.c.datetime) >= hour_start,
+                        extract("hour", sqlalchemy_table.c.datetime) < hour_end,
                     )
                 )
 
