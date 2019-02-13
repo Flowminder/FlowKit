@@ -7,7 +7,7 @@ from sqlalchemy.sql import ClauseElement, select, text, column
 from .query import Query
 
 
-class SubscriberSubsetBase(Query):
+class SubscriberSubsetterBase(Query):
     """
     Base class for the different types of subscriber subsets.
     """
@@ -27,7 +27,7 @@ class SubscriberSubsetBase(Query):
 
     def _get_query_attrs_for_dependency_graph(self, analyse=False):
         # This is a stub implementation of this internal method.
-        # It is needed because SubscriberSubsetBase currently
+        # It is needed because SubscriberSubsetterBase currently
         # inherits from flowmachine.Query, so we implement just
         # enough to ensure Query.dependency_graph() doesn't break.
         attrs = {}
@@ -38,7 +38,7 @@ class SubscriberSubsetBase(Query):
         return attrs
 
 
-class AllSubscribers(SubscriberSubsetBase):
+class SubscriberSubsetterForAllSubscribers(SubscriberSubsetterBase):
     """
     Represents the subset of all subscribers (i.e., no subsetting at all).
     """
@@ -47,9 +47,9 @@ class AllSubscribers(SubscriberSubsetBase):
 
     def _make_query(self):
         # Return a dummy string representing this subset. This is only needed
-        # because SubscriberSubsetBase currently inherits from Query, but will
+        # because SubscriberSubsetterBase currently inherits from Query, but will
         # eventually be removed.
-        return "<AllSubscribers>"
+        return "<SubscriberSubsetterForAllSubscribers>"
 
     def apply_subset(self, sql, *, subscriber_identifier=None):
         """
@@ -66,7 +66,7 @@ class AllSubscribers(SubscriberSubsetBase):
         return sql
 
 
-class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
+class SubscriberSubsetterFromFlowmachineQuery(SubscriberSubsetterBase):
     """
     Represents a subset given by a flowmachine query.
     """
@@ -92,9 +92,9 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
 
     def _make_query(self):
         # Return a dummy string representing this subset. This is only needed
-        # because SubscriberSubsetBase currently inherits from Query, but will
+        # because SubscriberSubsetterBase currently inherits from Query, but will
         # eventually be removed.
-        return "<SubsetFromFlowmachineQuery>"
+        return "<SubscriberSubsetterFromFlowmachineQuery>"
 
     def apply_subset(self, sql, *, subscriber_identifier=None):
         """
@@ -106,7 +106,7 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
             The SQL query to which the subset should be applied.
 
         subscriber_identifier : str
-            This argument is ignored for subsets of type 'SubsetFromFlowmachineQuery'.
+            This argument is ignored for subsets of type 'SubscriberSubsetterFromFlowmachineQuery'.
 
         Returns
         ----------
@@ -137,7 +137,7 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
         return res
 
 
-class ExplicitSubset(SubscriberSubsetBase):
+class SubscriberSubsetterForExplicitSubset(SubscriberSubsetterBase):
     """
     Represents a subset given by an explicit list of subscribers.
     """
@@ -150,9 +150,9 @@ class ExplicitSubset(SubscriberSubsetBase):
 
     def _make_query(self):
         # Return a dummy string representing this subset. This is only needed
-        # because SubscriberSubsetBase currently inherits from Query, but will
+        # because SubscriberSubsetterBase currently inherits from Query, but will
         # eventually be removed.
-        return "<ExplicitSubset>"
+        return "<SubscriberSubsetterForExplicitSubset>"
 
     def apply_subset(self, sql, *, subscriber_identifier):
         """
@@ -178,27 +178,27 @@ class ExplicitSubset(SubscriberSubsetBase):
 
 def make_subscriber_subsetter(subset):
     """
-    Return an instance of an appropriate subclass of SubscriberSubsetBase representing the given input.
+    Return an instance of an appropriate subclass of SubscriberSubsetterBase representing the given input.
 
     Parameters
     ----------
-    subset : "all" or None or list or tuple or flowmachine.Query or SubscriberSubsetBase
+    subset : "all" or None or list or tuple or flowmachine.Query or SubscriberSubsetterBase
         This can be one of the following:
           - "all" or None: represents the subset of "all subscribers (i.e., no subsetting at all)
           - list or tuple: represents a subset of an explicit list of subscribers
           - flowmachine.Query: represents a subset given by the result of a flowmachine query
             (where the resulting table must have a "subscriber" column)
-        If `subset` is already an instance of SubscriberSubsetBase then it is returned unchanged.
+        If `subset` is already an instance of SubscriberSubsetterBase then it is returned unchanged.
     """
-    if isinstance(subset, SubscriberSubsetBase):
+    if isinstance(subset, SubscriberSubsetterBase):
         return subset
     elif subset == "all" or subset is None:
-        return AllSubscribers()
+        return SubscriberSubsetterForAllSubscribers()
     elif isinstance(subset, str):
-        return ExplicitSubset([subset])
+        return SubscriberSubsetterForExplicitSubset([subset])
     elif isinstance(subset, (list, tuple)):
-        return ExplicitSubset(subset)
+        return SubscriberSubsetterForExplicitSubset(subset)
     elif isinstance(subset, Query):
-        return SubsetFromFlowmachineQuery(subset)
+        return SubscriberSubsetterFromFlowmachineQuery(subset)
     else:
         raise ValueError(f"Invalid subscriber subset: {subset!r}")
