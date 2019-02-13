@@ -176,7 +176,7 @@ class ExplicitSubset(SubscriberSubsetBase):
         return sql.where(parent_table.c[subscriber_identifier].in_(self.subscribers))
 
 
-def make_subscriber_subset(subset):
+def make_subscriber_subsetter(subset):
     """
     Return an instance of an appropriate subclass of SubscriberSubsetBase representing the given input.
 

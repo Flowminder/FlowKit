@@ -17,7 +17,7 @@ from ...core.sqlalchemy_utils import (
     get_sql_string,
 )
 from ...utils.utils import list_of_dates
-from flowmachine.core.subscriber_subset import make_subscriber_subset
+from flowmachine.core.subscriber_subset import make_subscriber_subsetter
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -82,7 +82,7 @@ class EventTableSubset(Query):
         self.stop = stop
         self.hours = hours
         self.subscriber_subset_ORIG = subscriber_subset
-        self.subscriber_subset = make_subscriber_subset(subscriber_subset)
+        self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
         if columns == ["*"]:
             self.table = Table(table)
@@ -94,7 +94,7 @@ class EventTableSubset(Query):
             self.columns.remove(subscriber_identifier)
             self.columns.add(f"{subscriber_identifier} AS subscriber")
         except KeyError:
-            if self.subscriber_subset.is_proper_subset:
+            if self.subscriber_subsetter.is_proper_subset:
                 warnings.warn(
                     f"No subscriber column requested, did you mean to include {subscriber_identifier} in columns? "
                     "Since you passed a subscriber_subset the data will still be subset by your subscriber subset, "
@@ -204,7 +204,7 @@ class EventTableSubset(Query):
                     )
                 )
 
-        select_stmt = self.subscriber_subset.apply_subset(
+        select_stmt = self.subscriber_subsetter.apply_subset(
             select_stmt, subscriber_identifier=self.subscriber_identifier
         )
 
