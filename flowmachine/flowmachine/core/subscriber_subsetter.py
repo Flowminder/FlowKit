@@ -40,7 +40,19 @@ class SubscriberSubsetterBase(Query):
 
 class SubscriberSubsetterForAllSubscribers(SubscriberSubsetterBase):
     """
-    Represents the subset of all subscribers (i.e., no subsetting at all).
+    Represents the subset of all subscribers - i.e., no subsetting at all.
+    In other words this is the "null object" for the subsetting logic, which
+    represents the case of "no work needed".
+
+    The reason this exists is so that external code does not need to know
+    anything about the subsetting logic or implementation and can use any
+    of these classes completely interchangeably, no matter what kind
+    of subset is required or whether any subsetting is needed at all.
+
+    If we didn't have this class then external code would need to make
+    a case distinction to check if subsetting is needed, which leads
+    to coupling between unrelated parts of the code base, unnecessary
+    complexity and makes testing of all possible cases much difficult.
     """
 
     is_proper_subset = False
