@@ -21,7 +21,7 @@ FROM (SELECT subscriber_locs.subscriber,
                                 OR (EXTRACT(HOUR FROM events.calls.datetime) < 5)))) AS tbl
                        INNER JOIN (SELECT DISTINCT msisdn AS subscriber
                                    FROM events.calls
-                                   WHERE msisdn IN ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')) AS subset ON tbl.subscriber = subset.subscriber
+                                   WHERE msisdn IN ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')) AS subset_query ON tbl.subscriber = subset_query.subscriber
 
                   UNION ALL
 
@@ -38,7 +38,7 @@ FROM (SELECT subscriber_locs.subscriber,
                                 OR (EXTRACT(HOUR FROM events.sms.datetime) < 5)))) AS tbl
                        INNER JOIN (SELECT DISTINCT msisdn AS subscriber
                                    FROM events.calls
-                                   WHERE msisdn IN ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')) AS subset ON tbl.subscriber = subset.subscriber) AS foo
+                                   WHERE msisdn IN ('GNLM7eW5J5wmlwRa', 'e6BxY8mAP38GyAQz', '1vGR8kp342yxEpwY')) AS subset_query ON tbl.subscriber = subset_query.subscriber) AS foo
             WHERE location_id IS NOT NULL
               AND (location_id <> '')) AS subscriber_locs) AS final_time
 WHERE rank = 1

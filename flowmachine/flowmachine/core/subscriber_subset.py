@@ -76,9 +76,19 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
     def __init__(self, flowmachine_query):
         assert isinstance(flowmachine_query, Query)
 
-        self.subset_query = text(flowmachine_query.get_query()).columns(
-            column("subscriber")
-        )
+        self._verify_that_subscriber_column_is_present(flowmachine_query)
+        self.flowmachine_query = flowmachine_query
+
+    def _verify_that_subscriber_column_is_present(self, flowmachine_query):
+        """
+        Check that the flowmachine query contains a 'subscriber' column and
+        raise an error if this is not the case.
+        """
+        if "subscriber" not in flowmachine_query.column_names:
+            raise ValueError(
+                f"Flowmachine query used for subsetting must contain a 'subscriber' column. "
+                f"Columns present are: {flowmachine_query.column_names}"
+            )
 
     def _make_query(self):
         # Return a dummy string representing this subset. This is only needed
@@ -106,14 +116,22 @@ class SubsetFromFlowmachineQuery(SubscriberSubsetBase):
 
         tbl = sql.alias("tbl")
 
-        try:
-            subset = self.subset_query.distinct().alias("subset")
-        except AttributeError:
-            # This can happen if `self.subset_query` is a textual query
-            subset = self.subset_query.alias("subset")
+        sql_flowmachine_query = self.flowmachine_query.get_query()
+
+        subset_query_columns = [
+            column(colname) for colname in self.flowmachine_query.column_names
+        ]
+        subset_query_full = (
+            text(sql_flowmachine_query)
+            .columns(*subset_query_columns)
+            .alias("subset_query")
+        )
 
         res = select(tbl.columns).select_from(
-            tbl.join(subset, tbl.c.subscriber == subset.c.subscriber)
+            tbl.join(
+                subset_query_full,
+                tbl.c.subscriber == subset_query_full.c.subscriber,
+            )
         )
 
         return res

@@ -24,7 +24,7 @@ FROM (SELECT subscriber_locs.subscriber,
                                 AND ((   (EXTRACT(HOUR FROM events.calls.datetime) >= 22)
                                       OR (EXTRACT(HOUR FROM events.calls.datetime) < 6)))) AS tbl
                              INNER JOIN (SELECT *
-                                         FROM ((VALUES ('dr9xNYK006wykgXj'))) AS tmp(subscriber)) AS subset ON tbl.subscriber = subset.subscriber) AS foo
+                                         FROM ((VALUES ('dr9xNYK006wykgXj'))) AS tmp(subscriber)) AS subset_query ON tbl.subscriber = subset_query.subscriber) AS foo
                   WHERE location_id IS NOT NULL
                     AND (location_id <> '')) AS l
                  INNER JOIN (SELECT location_id,
