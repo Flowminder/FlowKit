@@ -10,6 +10,14 @@ from .query import Query
 class SubscriberSubsetterBase(Query):
     """
     Base class for the different types of subscriber subsets.
+
+    TODO: this class currently inherits from flowmachine.Query, mainly for
+    practical reasons (to avoid changes to the subsetting logic ripple
+    through the entire codebase because of the way the caching logic works).
+    Unfortunately, this requires us to implement `_make_query()` and
+    `_get_query_attrs_for_dependency_graph`. In the long run we should
+    remove the inheritance from Query, which will allow us to remove these
+    stub implementations too.
     """
 
     @property
@@ -17,6 +25,12 @@ class SubscriberSubsetterBase(Query):
     def is_proper_subset(self):
         raise NotImplementedError(
             f"Class {self.__class__.__name__} does not implement 'is_proper_subset'"
+        )
+
+    @abstractmethod
+    def _make_query(self):
+        raise NotImplementedError(
+            f"Class {self.__class__.__name__} does not implement '_make_query'"
         )
 
     @abstractmethod
