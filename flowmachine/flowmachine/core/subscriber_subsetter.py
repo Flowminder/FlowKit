@@ -92,7 +92,7 @@ class SubscriberSubsetterForAllSubscribers(SubscriberSubsetterBase):
         return sql
 
 
-class SubscriberSubsetterFromFlowmachineQuery(SubscriberSubsetterBase):
+class SubscriberSubsetterForFlowmachineQuery(SubscriberSubsetterBase):
     """
     Represents a subset given by a flowmachine query.
     """
@@ -120,7 +120,7 @@ class SubscriberSubsetterFromFlowmachineQuery(SubscriberSubsetterBase):
         # Return a dummy string representing this subset. This is only needed
         # because SubscriberSubsetterBase currently inherits from Query, but will
         # eventually be removed.
-        return "<SubscriberSubsetterFromFlowmachineQuery>"
+        return "<SubscriberSubsetterForFlowmachineQuery>"
 
     def apply_subset_if_needed(self, sql, *, subscriber_identifier=None):
         """
@@ -132,7 +132,7 @@ class SubscriberSubsetterFromFlowmachineQuery(SubscriberSubsetterBase):
             The SQL query to which the subset should be applied.
 
         subscriber_identifier : str
-            This argument is ignored for subsets of type 'SubscriberSubsetterFromFlowmachineQuery'.
+            This argument is ignored for subsets of type 'SubscriberSubsetterForFlowmachineQuery'.
 
         Returns
         ----------
@@ -224,6 +224,6 @@ def make_subscriber_subsetter(subset):
     elif isinstance(subset, (list, tuple)):
         return SubscriberSubsetterForExplicitSubset(subset)
     elif isinstance(subset, Query):
-        return SubscriberSubsetterFromFlowmachineQuery(subset)
+        return SubscriberSubsetterForFlowmachineQuery(subset)
     else:
         raise ValueError(f"Invalid subscriber subset: {subset!r}")
