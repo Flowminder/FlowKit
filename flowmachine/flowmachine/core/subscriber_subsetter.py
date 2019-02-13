@@ -100,6 +100,14 @@ class SubscriberSubsetterForFlowmachineQuery(SubscriberSubsetterBase):
     is_proper_subset = True
 
     def __init__(self, flowmachine_query):
+        """
+        Parameters
+        ----------
+        flowmachine_query : flowmachine.Query
+            The flowmachine query to be used for subsetting. The only requirement
+            on it is that the result has a column called "subscriber" (it is fine
+            for other columns to be present, too).
+        """
         assert isinstance(flowmachine_query, Query)
 
         self._verify_that_subscriber_column_is_present(flowmachine_query)
@@ -203,7 +211,7 @@ class SubscriberSubsetterForExplicitSubset(SubscriberSubsetterBase):
 
 def make_subscriber_subsetter(subset):
     """
-    Return an instance of an appropriate subclass of SubscriberSubsetterBase representing the given input.
+    Return an appropriate subsetter for the given input.
 
     Parameters
     ----------
