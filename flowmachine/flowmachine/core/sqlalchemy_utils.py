@@ -15,7 +15,7 @@ def get_sqlalchemy_table_definition(fully_qualified_table_name, *, engine):
     Parameters
     ----------
     fully_qualified_table_name : str
-        Fully qualified table name. Example: "events.calls"
+        Fully qualified table name, for example: "events.calls"
     engine : sqlalchemy.engine.Engine
         SQLAlchemy engine to use for reading the table information.
 
@@ -23,24 +23,12 @@ def get_sqlalchemy_table_definition(fully_qualified_table_name, *, engine):
     -------
     sqlalchemy.Table
     """
-    metadata = MetaData()
-    if fully_qualified_table_name == "events.calls":
-        schema = "events"
-        table_name = "calls"
-    elif fully_qualified_table_name == "events.sms":
-        schema = "events"
-        table_name = "sms"
-    elif fully_qualified_table_name == "events.mds":
-        schema = "events"
-        table_name = "mds"
-    elif fully_qualified_table_name == "events.topups":
-        schema = "events"
-        table_name = "topups"
-    else:
-        raise NotImplementedError(
-            f"No sqlalchemy definition found for table: '{fully_qualified_table_name}'"
-        )
+    try:
+        schema, table_name = fully_qualified_table_name.split(".")
+    except ValueError:
+        raise ValueError(f"Fully qualified table name must be of the form '<schema>.<table>'. Got: {fully_qualified_table_name}")
 
+    metadata = MetaData()
     return Table(
         table_name, metadata, schema=schema, autoload=True, autoload_with=engine
     )
