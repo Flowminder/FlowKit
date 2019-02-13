@@ -20,7 +20,7 @@ class SubscriberSubsetterBase(Query):
         )
 
     @abstractmethod
-    def apply_subset(self, sql, *, subscriber_identifier):
+    def apply_subset_if_needed(self, sql, *, subscriber_identifier):
         raise NotImplementedError(
             f"Class {self.__class__.__name__} does not implement 'apply_subset'"
         )
@@ -51,7 +51,7 @@ class SubscriberSubsetterForAllSubscribers(SubscriberSubsetterBase):
         # eventually be removed.
         return "<SubscriberSubsetterForAllSubscribers>"
 
-    def apply_subset(self, sql, *, subscriber_identifier=None):
+    def apply_subset_if_needed(self, sql, *, subscriber_identifier=None):
         """
         Return the input query unchanged, since no subsetting is applied.
 
@@ -96,7 +96,7 @@ class SubscriberSubsetterFromFlowmachineQuery(SubscriberSubsetterBase):
         # eventually be removed.
         return "<SubscriberSubsetterFromFlowmachineQuery>"
 
-    def apply_subset(self, sql, *, subscriber_identifier=None):
+    def apply_subset_if_needed(self, sql, *, subscriber_identifier=None):
         """
         Return a modified version of the input SQL query which has the subset applied.
 
@@ -154,7 +154,7 @@ class SubscriberSubsetterForExplicitSubset(SubscriberSubsetterBase):
         # eventually be removed.
         return "<SubscriberSubsetterForExplicitSubset>"
 
-    def apply_subset(self, sql, *, subscriber_identifier):
+    def apply_subset_if_needed(self, sql, *, subscriber_identifier):
         """
         Return a modified version of the input SQL query which has the subset applied.
 

@@ -204,7 +204,7 @@ class EventTableSubset(Query):
                     )
                 )
 
-        select_stmt = self.subscriber_subsetter.apply_subset(
+        select_stmt = self.subscriber_subsetter.apply_subset_if_needed(
             select_stmt, subscriber_identifier=self.subscriber_identifier
         )
 
