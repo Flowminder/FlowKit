@@ -34,13 +34,13 @@ def get_sqlalchemy_table_definition(fully_qualified_table_name, *, engine):
     )
 
 
-def get_sql_string(query):
+def get_sql_string(sqlalchemy_query):
     """
     Return SQL string compiled from the given sqlalchemy query (using the PostgreSQL dialect).
 
     Parameters
     ----------
-    query : sqlalchemy.sql.Selectable
+    sqlalchemy_query : sqlalchemy.sql.Selectable
         SQLAlchemy query
 
     Returns
@@ -48,8 +48,8 @@ def get_sql_string(query):
     str
         SQL string compiled from the sqlalchemy query.
     """
-    assert isinstance(query, Selectable)
-    compiled_query = query.compile(
+    assert isinstance(sqlalchemy_query, Selectable)
+    compiled_query = sqlalchemy_query.compile(
         dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
     )
     sql = str(compiled_query)
