@@ -17,7 +17,7 @@ from ...core.sqlalchemy_utils import (
     get_sql_string,
 )
 from ...utils.utils import list_of_dates
-from flowmachine.core.subscriber_subset import make_subscriber_subsetter
+from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
