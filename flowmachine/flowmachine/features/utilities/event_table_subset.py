@@ -13,7 +13,7 @@ from ...core.errors import MissingDateError
 from ...core.utils import _makesafe
 from ...core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
-    get_sqlalchemy_column,
+    make_sqlalchemy_column_from_flowmachine_column_description,
     get_sql_string,
 )
 from ...utils.utils import list_of_dates
@@ -106,9 +106,6 @@ class EventTableSubset(Query):
         self.sqlalchemy_table = get_sqlalchemy_table_definition(
             self.table_ORIG.fully_qualified_table_name, engine=Query.connection.engine
         )
-        self.sqlalchemy_columns = [
-            get_sqlalchemy_column(self.sqlalchemy_table, column_str) for column_str in self.columns
-        ]
 
         if self.start == self.stop:
             raise ValueError("Start and stop are the same.")
@@ -181,7 +178,13 @@ class EventTableSubset(Query):
             )
 
     def _make_query_with_sqlalchemy(self):
-        select_stmt = select(self.sqlalchemy_columns)
+        sqlalchemy_columns = [
+            make_sqlalchemy_column_from_flowmachine_column_description(
+                self.sqlalchemy_table, column_str
+            )
+            for column_str in self.columns
+        ]
+        select_stmt = select(sqlalchemy_columns)
 
         if self.start is not None:
             ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
