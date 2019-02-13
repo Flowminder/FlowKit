@@ -106,6 +106,9 @@ class EventTableSubset(Query):
         self.sqlalchemy_table = get_sqlalchemy_table_definition(
             self.table_ORIG.fully_qualified_table_name, engine=Query.connection.engine
         )
+        self.sqlalchemy_columns = [
+            get_sqlalchemy_column(self.sqlalchemy_table, column_str) for column_str in self.columns
+        ]
 
         if self.start == self.stop:
             raise ValueError("Start and stop are the same.")
@@ -178,10 +181,7 @@ class EventTableSubset(Query):
             )
 
     def _make_query_with_sqlalchemy(self):
-        sqlalchemy_columns = [
-            get_sqlalchemy_column(self.sqlalchemy_table, column_str) for column_str in self.columns
-        ]
-        select_stmt = select(sqlalchemy_columns)
+        select_stmt = select(self.sqlalchemy_columns)
 
         if self.start is not None:
             ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
