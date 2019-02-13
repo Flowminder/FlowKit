@@ -85,10 +85,10 @@ class EventTableSubset(Query):
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
         if columns == ["*"]:
-            self.table = Table(table)
-            columns = self.table.column_names
+            self.table_ORIG = Table(table)
+            columns = self.table_ORIG.column_names
         else:
-            self.table = Table(table, columns=columns)
+            self.table_ORIG = Table(table, columns=columns)
         self.columns = set(columns)
         try:
             self.columns.remove(subscriber_identifier)
@@ -126,14 +126,14 @@ class EventTableSubset(Query):
         # the min/max date in the events.calls table
         if self.start is None:
             d1 = self.connection.min_date(
-                self.table.fully_qualified_table_name.split(".")[1]
+                self.table_ORIG.fully_qualified_table_name.split(".")[1]
             ).strftime("%Y-%m-%d")
         else:
             d1 = self.start.split()[0]
 
         if self.stop is None:
             d2 = self.connection.max_date(
-                self.table.fully_qualified_table_name.split(".")[1]
+                self.table_ORIG.fully_qualified_table_name.split(".")[1]
             ).strftime("%Y-%m-%d")
         else:
             d2 = self.stop.split()[0]
@@ -153,8 +153,8 @@ class EventTableSubset(Query):
             db_dates = [
                 d.strftime("%Y-%m-%d")
                 for d in self.connection.available_dates(
-                    table=self.table.name, strictness=1, schema=self.table.schema
-                )[self.table.name]
+                    table=self.table_ORIG.name, strictness=1, schema=self.table_ORIG.schema
+                )[self.table_ORIG.name]
             ]
         except KeyError:  # No dates at all for this table
             raise MissingDateError
@@ -175,7 +175,7 @@ class EventTableSubset(Query):
 
     def _make_query_with_sqlalchemy(self):
         sqlalchemy_table = get_sqlalchemy_table_definition(
-            self.table.fully_qualified_table_name, engine=Query.connection.engine
+            self.table_ORIG.fully_qualified_table_name, engine=Query.connection.engine
         )
         sqlalchemy_columns = [
             get_sqlalchemy_column(sqlalchemy_table, column_str) for column_str in self.columns
@@ -224,7 +224,7 @@ class EventTableSubset(Query):
 
         sql = f"""
         SELECT {", ".join(self.columns)}
-        FROM {self.table.fully_qualified_table_name}
+        FROM {self.table_ORIG.fully_qualified_table_name}
         {where_clause}
         """
 
