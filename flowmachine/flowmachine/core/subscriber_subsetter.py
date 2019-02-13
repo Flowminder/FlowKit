@@ -150,20 +150,28 @@ class SubscriberSubsetterForFlowmachineQuery(SubscriberSubsetterBase):
 
         tbl = sql.alias("tbl")
 
-        sql_flowmachine_query = self.flowmachine_query.get_query()
+        # Create a sqlalchemy "Textual SQL" object from the flowmachine SQL string
+        textual_sql = text(self.flowmachine_query.get_query())
 
-        subset_query_columns = [
+        # Create sqlalchemy column objects for each of the columns
+        # in the output of the flowmachine query
+        sqlalchemy_columns = [
             column(colname) for colname in self.flowmachine_query.column_names
         ]
-        subset_query_full = (
-            text(sql_flowmachine_query)
-            .columns(*subset_query_columns)
-            .alias("subset_query")
+
+        # Explicitly inform the textual query about the output columns we expect
+        # and provide an alias. This allows the generated SQL string to be embedded
+        # as a subquery in other queries.
+        sqlalchemy_subset_query = textual_sql.columns(*sqlalchemy_columns).alias(
+            "subset_query"
         )
+
+        # SQL string. Also explicitly mark the expected columns o, and ensure
 
         res = select(tbl.columns).select_from(
             tbl.join(
-                subset_query_full, tbl.c.subscriber == subset_query_full.c.subscriber
+                sqlalchemy_subset_query,
+                tbl.c.subscriber == sqlalchemy_subset_query.c.subscriber,
             )
         )
 
