@@ -283,6 +283,7 @@ def verify_columns_exist_in_all_tables(conn, tables, columns):
     if tables_lacking_columns:
         raise MissingColumnsError(tables_lacking_columns, columns)
 
+
 @contextmanager
 def rlock(redis_client, lock_id, holder_id=None):
     """
