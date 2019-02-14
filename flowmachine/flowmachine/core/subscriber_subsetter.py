@@ -170,8 +170,7 @@ class SubscriberSubsetterForFlowmachineQuery(SubscriberSubsetterBase):
             "subset_query"
         )
 
-        # SQL string. Also explicitly mark the expected columns o, and ensure
-
+        # Actually perform the subsetting (via a join with the subset query)
         res = select(tbl.columns).select_from(
             tbl.join(
                 sqlalchemy_subset_query,
