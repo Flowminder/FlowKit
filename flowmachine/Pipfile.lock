@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0db9247f33c372da4d4c3a1aa1b7b0f1a0535707cc3b015e8ad6c0552aa94567"
+            "sha256": "662c97b1fa1a234d5d86d452c179181c163a94a8df4d4e6abde0ddc244326846"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -261,6 +261,21 @@
                 "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"
             ],
             "version": "==1.4.3"
+        },
+        "appnope": {
+            "hashes": [
+                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
+                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
+            ],
+            "markers": "sys_platform == 'darwin'",
+            "version": "==0.1.0"
+        },
+        "approvaltests": {
+            "hashes": [
+                "sha256:15c18543f68dcdb124295b9fc0135096f86a9d973381ff5936e40a4457c02038"
+            ],
+            "index": "pypi",
+            "version": "==0.2.4"
         },
         "argh": {
             "hashes": [
@@ -708,6 +723,12 @@
                 "sha256:f6c5ef0d7480ad048c054c37632c67fca55299990fff127850181659eea33fc3"
             ],
             "version": "==2.3.1"
+        },
+        "pyperclip": {
+            "hashes": [
+                "sha256:a3cb6df5d8f1557ca8fc514d94fabf50dc5a97042c90e5ba4f3611864fed3fc5"
+            ],
+            "version": "==1.5.27"
         },
         "pyproj": {
             "hashes": [
