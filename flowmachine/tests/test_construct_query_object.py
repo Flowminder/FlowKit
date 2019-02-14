@@ -17,7 +17,7 @@ from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocati
     "expected_md5, query_spec",
     [
         (
-            "010f0baa76e0724215613b8486a71a49",
+            "77ea8996b031a8712c71dbaf87828ca0",
             {
                 "query_kind": "daily_location",
                 "params": {
@@ -29,7 +29,7 @@ from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocati
             },
         ),
         (
-            "bf3dba82e8a7e404fda6d66f8a900fb9",
+            "cc13f4c70a59b25a61192583132c1efe",
             {
                 "query_kind": "location_event_counts",
                 "params": {
@@ -44,7 +44,7 @@ from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocati
             },
         ),
         (
-            "21e89d6cc510cd333c199ab8c50ad0c0",
+            "fb7c3603f5e9a56812f59b118bde3425",
             {
                 "query_kind": "modal_location",
                 "params": {
@@ -77,7 +77,7 @@ from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocati
             {"query_kind": "geography", "params": {"aggregation_unit": "admin3"}},
         ),
         (
-            "bdd98c3db9128a1e7ec3e9d64ff57ff7",
+            "195311061636d0716112fda6f85e87e4",
             {
                 "query_kind": "meaningful_locations_aggregate",
                 "params": {
@@ -182,7 +182,7 @@ from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocati
             },
         ),
         (
-            "ad691ab8d2f6f5e1009c08144f74a5ff",
+            "6a39f4802690d98dc701dd91e0e700ee",
             {
                 "query_kind": "meaningful_locations_od_matrix",
                 "params": {
@@ -383,7 +383,7 @@ from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocati
             },
         ),
         (
-            "ac9acfdf869e20d507ea6ff419acd991",
+            "5589073987023d3f9bd97128aab08401",
             {
                 "query_kind": "meaningful_locations_od_matrix",
                 "params": {
