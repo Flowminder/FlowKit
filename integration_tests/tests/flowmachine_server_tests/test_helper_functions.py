@@ -31,5 +31,5 @@ def test_send_message_and_receive_reply(zmq_host, zmq_port):
     reply = send_message_and_receive_reply(
         FM_EXAMPLE_MESSAGE, host=zmq_host, port=zmq_port
     )
-    expected_reply = {"status": "accepted", "id": "c283e42b083e652aeadb5c8db4cd8b2c"}
+    expected_reply = {"status": "accepted", "id": "e39b0d45bc6b46b7700c67cd52f00455"}
     assert expected_reply == reply

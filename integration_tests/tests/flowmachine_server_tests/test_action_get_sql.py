@@ -25,7 +25,7 @@ async def test_get_sql(zmq_url):
         },
         "request_id": "DUMMY_ID",
     }
-    expected_query_id = "c283e42b083e652aeadb5c8db4cd8b2c"
+    expected_query_id = "e39b0d45bc6b46b7700c67cd52f00455"
 
     reply = send_message_and_get_reply(zmq_url, msg_run_query)
     assert {"status": "accepted", "id": expected_query_id} == reply
@@ -45,7 +45,7 @@ async def test_get_sql(zmq_url):
     }
 
     reply = send_message_and_get_reply(zmq_url, msg_get_sql)
-    assert "SELECT * FROM cache.xc283e42b083e652aeadb5c8db4cd8b2c" == reply["sql"]
+    assert f"SELECT * FROM cache.x{expected_query_id}" == reply["sql"]
 
 
 @pytest.mark.asyncio
