@@ -258,8 +258,9 @@ def verify_columns_exist_in_all_tables(conn, tables, columns):
 
     Returns
     -------
-    list
-        Tables that contains the required columns.
+    None
+        The functions does not raise any errors and return None when all
+        columns exists in all tables.
     """
 
     if isinstance(tables, str) and tables.lower() == "all":
@@ -272,23 +273,15 @@ def verify_columns_exist_in_all_tables(conn, tables, columns):
     if isinstance(columns, str):
         columns = [columns]
 
-    parsed_tables = []
     tables_lacking_columns = []
     for t in tables:
-        has_all_columns = True
         for c in columns:
             if c not in flowmachine.core.Table(t).column_names:
                 tables_lacking_columns.append(t)
-                has_all_columns = False
                 break
-        if has_all_columns:
-            parsed_tables.append(t)
 
     if tables_lacking_columns:
         raise MissingColumnsError(tables_lacking_columns, columns)
-
-    return parsed_tables
-
 
 @contextmanager
 def rlock(redis_client, lock_id, holder_id=None):

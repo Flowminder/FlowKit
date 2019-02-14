@@ -83,16 +83,12 @@ class ContactBalance(GraphMixin, SubscriberFeature):
 
         if self.direction == "both":
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-            self.tables = verify_columns_exist_in_all_tables(
-                self.connection, tables, column_list
-            )
         elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
         else:
             raise ValueError("Unidentified direction: {}".format(self.direction))
 
         verify_columns_exist_in_all_tables(self.connection, tables, column_list)
-        self.tables = tables
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -102,7 +98,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             subscriber_identifier=self.subscriber_identifier,
             hours=hours,
             subscriber_subset=subscriber_subset,
-        ).get_query()
+        )
         self._cols = ["subscriber", "msisdn_counterpart", "events", "proportion"]
         super().__init__()
 
@@ -121,7 +117,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         WITH unioned AS (
             SELECT
                 *
-            FROM ({self.unioned_query}) as U
+            FROM ({self.unioned_query.get_query()}) as U
             {where_clause}
         ),
         total_events AS (
