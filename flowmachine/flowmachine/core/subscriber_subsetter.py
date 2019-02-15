@@ -2,9 +2,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import numpy as np
+import pandas as pd
+
 from abc import abstractmethod
 from sqlalchemy.sql import ClauseElement, select, text, column
 from .query import Query
+
+__all__ = [
+    "make_subscriber_subsetter",
+    "SubscriberSubsetterForAllSubscribers",
+    "SubscriberSubsetterForExplicitSubset",
+    "SubscriberSubsetterForFlowmachineQuery",
+]
 
 
 class SubscriberSubsetterBase(Query):
@@ -189,7 +199,12 @@ class SubscriberSubsetterForExplicitSubset(SubscriberSubsetterBase):
     is_proper_subset = True
 
     def __init__(self, subscribers):
-        assert isinstance(subscribers, (list, tuple))
+        valid_input_types = (list, tuple, np.ndarray, pd.Series)
+        if not isinstance(subscribers, valid_input_types):
+            raise TypeError(
+                f"Invalid input type: {type(subscribers)}. Must be one of: {valid_input_types}"
+            )
+
         self.subscribers = subscribers
 
     def _make_query(self):
@@ -236,13 +251,13 @@ def make_subscriber_subsetter(subset):
     """
     if isinstance(subset, SubscriberSubsetterBase):
         return subset
+    elif isinstance(subset, Query):
+        return SubscriberSubsetterForFlowmachineQuery(subset)
+    elif isinstance(subset, (list, tuple, np.ndarray, pd.Series)):
+        return SubscriberSubsetterForExplicitSubset(subset)
     elif subset == "all" or subset is None:
         return SubscriberSubsetterForAllSubscribers()
     elif isinstance(subset, str):
         return SubscriberSubsetterForExplicitSubset([subset])
-    elif isinstance(subset, (list, tuple)):
-        return SubscriberSubsetterForExplicitSubset(subset)
-    elif isinstance(subset, Query):
-        return SubscriberSubsetterForFlowmachineQuery(subset)
     else:
         raise ValueError(f"Invalid subscriber subset: {subset!r}")
