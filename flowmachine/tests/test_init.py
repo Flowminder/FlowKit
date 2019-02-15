@@ -46,11 +46,12 @@ def test_log_level_set(monkeypatch):
 
 def test_log_file_created(tmpdir, monkeypatch):
     """Test that a file handler is created when a path to LOG_FILE is set."""
-    monkeypatch.setenv("LOG_FILE", str(tmpdir + "log_file"))
+    monkeypatch.setenv("LOG_DIRECTORY", str(tmpdir))
+    monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
     connect()
     logging.getLogger("flowmachine").error("TEST_MESSAGE")
-    with open(tmpdir + "log_file") as fin:
-        log_lines = fin.readline()
+    with open(tmpdir.join("flowmachine-debug.log")) as f:
+        log_lines = f.readline()
     assert "TEST_MESSAGE" in log_lines
     assert 2 == len(logging.getLogger("flowmachine").handlers)
 
@@ -59,7 +60,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     """Explicit parameters to connect should be respected"""
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
-    monkeypatch.setenv("LOG_FILE", "DUMMY_ENV_LOG_FILE")
+    monkeypatch.setenv("WRITE_LOG_FILE", "DUMMY_ENV_WRITE_LOG_FILE")
     monkeypatch.setenv("DB_PORT", 7777)
     monkeypatch.setenv("DB_USER", "DUMMY_ENV_DB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
@@ -75,7 +76,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     )
     connect(
         log_level="dummy_log_level",
-        log_file="dummy_log_file",
+        write_log_file=False,
         db_port=1234,
         db_user="dummy_db_user",
         db_pw="dummy_db_pw",
@@ -87,7 +88,7 @@ def test_param_priority(mocked_connections, monkeypatch):
         redis_port=1213,
         redis_password="dummy_redis_password",
     )
-    core_init_logging_mock.assert_called_with("dummy_log_level", "dummy_log_file")
+    core_init_logging_mock.assert_called_with("dummy_log_level", False)
     core_init_Connection_mock.assert_called_with(
         1234,
         "dummy_db_user",
@@ -109,7 +110,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     """Env vars should be used over defaults in connect"""
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
-    monkeypatch.setenv("LOG_FILE", "DUMMY_ENV_LOG_FILE")
+    monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
     monkeypatch.setenv("DB_PORT", 6969)
     monkeypatch.setenv("DB_USER", "DUMMY_ENV_DB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
@@ -124,9 +125,7 @@ def test_env_priority(mocked_connections, monkeypatch):
         mocked_connections
     )
     connect()
-    core_init_logging_mock.assert_called_with(
-        "DUMMY_ENV_LOG_LEVEL", "DUMMY_ENV_LOG_FILE"
-    )
+    core_init_logging_mock.assert_called_with("DUMMY_ENV_LOG_LEVEL", True)
     core_init_Connection_mock.assert_called_with(
         6969,
         "DUMMY_ENV_DB_USER",

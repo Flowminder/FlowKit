@@ -30,7 +30,7 @@ logger = logging.getLogger("flowmachine").getChild(__name__)
 
 def connect(
     log_level: Union[str, None] = None,
-    log_file: Union[str, None] = None,
+    write_log_file: Union[bool, None] = None,
     db_port: Union[int, None] = None,
     db_user: Union[str, None] = None,
     db_pw: Union[str, None] = None,
@@ -52,8 +52,11 @@ def connect(
     ----------
     log_level : str, default "error"
         Level to log at
-    log_file : str, default False
-        Path to a file to write logs to, log files are rotated at midnight.
+    write_log_file : bool, default False
+        If True, logging output will be written to the file 'flowmachine-debug.log'
+        in the directory '/var/log/flowmachine/' (or the directory given by the
+        environment variable 'LOG_DIRECTORY' if it is set). Log files are rotated
+        at midnight.
     db_port : int, default 9000
         Port number to connect to flowdb
     db_user : str, default "analyst"
@@ -98,10 +101,13 @@ def connect(
         if log_level is None
         else log_level
     )
-    log_file = (
-        getsecret("LOG_FILE", os.getenv("LOG_FILE", False))
-        if log_file is None
-        else log_file
+    write_log_file = (
+        (
+            "TRUE"
+            == getsecret("WRITE_LOG_FILE", os.getenv("WRITE_LOG_FILE", "FALSE")).upper()
+        )
+        if write_log_file is None
+        else write_log_file
     )
     db_port = int(
         getsecret("DB_PORT", os.getenv("DB_PORT", 9000)) if db_port is None else db_port
@@ -159,7 +165,7 @@ def connect(
         Query.connection
         warnings.warn("FlowMachine already started. Ignoring.")
     except AttributeError:
-        _init_logging(log_level, log_file)
+        _init_logging(log_level, write_log_file)
         if conn is None:
             conn = Connection(
                 db_port,
@@ -185,15 +191,18 @@ def connect(
     return Query.connection
 
 
-def _init_logging(log_level, log_file):
+def _init_logging(log_level, write_log_file):
     """
 
     Parameters
     ----------
     log_level : str
         Level to emit logs at
-    log_file : str
-        Path to file to write logs to
+    write_log_file : bool
+        If True, logging output will be written to the file 'flowmachine-debug.log'
+        in the directory '/var/log/flowmachine/' (or the directory given by the
+        environment variable 'LOG_DIRECTORY' if it is set). Log files are rotated
+        at midnight.
 
     Returns
     -------
@@ -215,7 +224,14 @@ def _init_logging(log_level, log_file):
     ch.setFormatter(formatter)
     logger.addHandler(ch)
     logger.info(f"Logger created with level {true_log_level}")
-    if log_file:
+    if write_log_file:
+        log_root = os.getenv("LOG_DIRECTORY", "/var/log/flowmachine/")
+        if not os.path.exists(log_root):
+            logger.info(
+                f"Creating log_root directory because it does not exist: {log_root}"
+            )
+            os.makedirs(log_root)
+        log_file = os.path.join(log_root, "flowmachine-debug.log")
         fh = TimedRotatingFileHandler(log_file, when="midnight")
         fh.setLevel(true_log_level)
         fh.setFormatter(formatter)

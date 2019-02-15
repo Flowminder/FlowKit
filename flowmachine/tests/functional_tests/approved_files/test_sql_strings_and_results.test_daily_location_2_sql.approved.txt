@@ -1,0 +1,55 @@
+SELECT ranked.subscriber,
+       admin2pcod
+FROM (SELECT times_visited.subscriber,
+             admin2pcod,
+             row_number() OVER (PARTITION BY times_visited.subscriber
+                                ORDER BY total DESC) AS rank
+      FROM (SELECT subscriber_locs.subscriber,
+                   admin2pcod,
+                   count(*) AS total
+            FROM (SELECT l.subscriber,
+                         l.time,
+                         l.location_id,
+                         sites.admin2pcod
+                  FROM (SELECT subscriber,
+                               datetime AS time,
+                               location_id
+                        FROM (SELECT events.calls.datetime,
+                                     events.calls.imei AS subscriber,
+                                     events.calls.location_id
+                              FROM events.calls
+                              WHERE (events.calls.datetime >= '2016-01-04 00:00:00')
+                                AND (events.calls.datetime <= '2016-01-05 00:00:00')
+                                AND EXTRACT(HOUR FROM events.calls.datetime) BETWEEN 3 AND 8
+                                AND events.calls.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')
+
+                              UNION ALL
+
+                              SELECT events.sms.datetime,
+                                     events.sms.imei AS subscriber,
+                                     events.sms.location_id
+                              FROM events.sms
+                              WHERE (events.sms.datetime >= '2016-01-04 00:00:00')
+                                AND (events.sms.datetime <= '2016-01-05 00:00:00')
+                                AND EXTRACT(HOUR FROM events.sms.datetime) BETWEEN 3 AND 8
+                                AND events.sms.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')) AS foo) AS l
+                       INNER JOIN (SELECT location_id,
+                                          version,
+                                          date_of_first_service,
+                                          date_of_last_service,
+                                          admin2pcod AS pcod
+                                   FROM (SELECT locinfo.id AS location_id,
+                                                locinfo.version,
+                                                locinfo.date_of_first_service,
+                                                locinfo.date_of_last_service,
+                                                polygon.admin2pcod
+                                         FROM infrastructure.cells AS locinfo
+                                              INNER JOIN geography.admin2 AS polygon ON st_within(locinfo.geom_point::geometry,
+                                                                                                  st_setsrid(polygon.geom, 4326)::geometry)) AS map) AS sites ON (l.location_id = sites.location_id)
+                                                                                                                                                             AND l.time::date BETWEEN COALESCE(sites.date_of_first_service,
+                                                                                                                                                                                               '-infinity'::timestamptz)
+                                                                                                                                                                                  AND COALESCE(sites.date_of_last_service,
+                                                                                                                                                                                               'infinity'::timestamptz)
+                  ORDER BY time) AS subscriber_locs
+            GROUP BY subscriber_locs.subscriber, admin2pcod) AS times_visited) AS ranked
+WHERE rank = 1
