@@ -259,8 +259,12 @@ def verify_columns_exist_in_all_tables(conn, tables, columns):
     Returns
     -------
     None
-        The functions does not raise any errors and return None when all
-        columns exists in all tables.
+        The functions returns None when all columns exist in all tables.
+
+    Raises
+    ------
+    MissingColumnsError
+        If any column does not exist in any of the tables.
     """
 
     if isinstance(tables, str) and tables.lower() == "all":
