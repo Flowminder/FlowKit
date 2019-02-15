@@ -4,7 +4,7 @@
 
 from flowmachine.features.subscriber.entropy import *
 from flowmachine.core import CustomQuery
-from flowmachine.core.errors.flowmachine_errors import MissingDirectionColumnError
+from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 
 import numpy as np
 import pytest

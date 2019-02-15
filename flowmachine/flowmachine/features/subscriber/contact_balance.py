@@ -11,10 +11,10 @@ subscriber's total event count.
 
 """
 
-from ...core import Table
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
+from ...utils.utils import verify_columns_exist_in_all_tables
 
 
 class ContactBalance(GraphMixin, SubscriberFeature):
@@ -81,14 +81,14 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
 
-        if self.direction in {"both"}:
+        if self.direction == "both":
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-            self.tables = tables
         elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
-            self.tables = self._parse_tables_ensuring_direction_present(tables)
         else:
             raise ValueError("Unidentified direction: {}".format(self.direction))
+
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -98,40 +98,18 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             subscriber_identifier=self.subscriber_identifier,
             hours=hours,
             subscriber_subset=subscriber_subset,
-        ).get_query()
+        )
         self._cols = ["subscriber", "msisdn_counterpart", "events", "proportion"]
         super().__init__()
-
-    def _parse_tables_ensuring_direction_present(self, tables):
-
-        if isinstance(tables, str) and tables.lower() == "all":
-            tables = [f"events.{t}" for t in self.connection.subscriber_tables]
-        elif type(tables) is str:
-            tables = [tables]
-        else:
-            tables = tables
-
-        parsed_tables = []
-        tables_lacking_direction_column = []
-        for t in tables:
-            if "outgoing" in Table(t).column_names:
-                parsed_tables.append(t)
-            else:
-                tables_lacking_direction_column.append(t)
-
-        if tables_lacking_direction_column:
-            raise MissingDirectionColumnError(tables_lacking_direction_column)
-
-        return parsed_tables
 
     def _make_query(self):
 
         filters = []
         if self.direction != "both":
             filters.append(
-                f"outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
-        if self.exclude_self_calls:
+        if (self.subscriber_identifier in {"msisdn"}) and (self.exclude_self_calls):
             filters.append("subscriber != msisdn_counterpart")
         where_clause = f"WHERE {' AND '.join(filters)} " if len(filters) > 0 else ""
 
@@ -139,7 +117,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         WITH unioned AS (
             SELECT
                 *
-            FROM ({self.unioned_query}) as U
+            FROM ({self.unioned_query.get_query()}) as U
             {where_clause}
         ),
         total_events AS (
