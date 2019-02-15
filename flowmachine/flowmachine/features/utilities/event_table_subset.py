@@ -3,13 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import logging
+import pandas as pd
 import warnings
+from sqlalchemy import select, between, extract, or_
 from typing import List
 
 from ...core import Query, Table
 from ...core.errors import MissingDateError
 from ...core.utils import _makesafe
+from ...core.sqlalchemy_utils import (
+    get_sqlalchemy_table_definition,
+    make_sqlalchemy_column_from_flowmachine_column_description,
+    get_sql_string,
+)
 from ...utils.utils import list_of_dates
+from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -73,19 +81,20 @@ class EventTableSubset(Query):
         self.start = start
         self.stop = stop
         self.hours = hours
-        self.subscriber_subset = subscriber_subset
+        self.subscriber_subset_ORIG = subscriber_subset
+        self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
         if columns == ["*"]:
-            self.table = Table(table)
-            columns = self.table.column_names
+            self.table_ORIG = Table(table)
+            columns = self.table_ORIG.column_names
         else:
-            self.table = Table(table, columns=columns)
+            self.table_ORIG = Table(table, columns=columns)
         self.columns = set(columns)
         try:
             self.columns.remove(subscriber_identifier)
             self.columns.add(f"{subscriber_identifier} AS subscriber")
         except KeyError:
-            if subscriber_subset is not None:
+            if self.subscriber_subsetter.is_proper_subset:
                 warnings.warn(
                     f"No subscriber column requested, did you mean to include {subscriber_identifier} in columns? "
                     "Since you passed a subscriber_subset the data will still be subset by your subscriber subset, "
@@ -93,6 +102,10 @@ class EventTableSubset(Query):
                     stacklevel=2,
                 )
         self.columns = sorted(self.columns)
+
+        self.sqlalchemy_table = get_sqlalchemy_table_definition(
+            self.table_ORIG.fully_qualified_table_name, engine=Query.connection.engine
+        )
 
         if self.start == self.stop:
             raise ValueError("Start and stop are the same.")
@@ -117,14 +130,14 @@ class EventTableSubset(Query):
         # the min/max date in the events.calls table
         if self.start is None:
             d1 = self.connection.min_date(
-                self.table.fully_qualified_table_name.split(".")[1]
+                self.table_ORIG.fully_qualified_table_name.split(".")[1]
             ).strftime("%Y-%m-%d")
         else:
             d1 = self.start.split()[0]
 
         if self.stop is None:
             d2 = self.connection.max_date(
-                self.table.fully_qualified_table_name.split(".")[1]
+                self.table_ORIG.fully_qualified_table_name.split(".")[1]
             ).strftime("%Y-%m-%d")
         else:
             d2 = self.stop.split()[0]
@@ -144,8 +157,10 @@ class EventTableSubset(Query):
             db_dates = [
                 d.strftime("%Y-%m-%d")
                 for d in self.connection.available_dates(
-                    table=self.table.name, strictness=1, schema=self.table.schema
-                )[self.table.name]
+                    table=self.table_ORIG.name,
+                    strictness=1,
+                    schema=self.table_ORIG.schema,
+                )[self.table_ORIG.name]
             ]
         except KeyError:  # No dates at all for this table
             raise MissingDateError
@@ -164,7 +179,53 @@ class EventTableSubset(Query):
                 stacklevel=2,
             )
 
-    def _make_query(self):
+    def _make_query_with_sqlalchemy(self):
+        sqlalchemy_columns = [
+            make_sqlalchemy_column_from_flowmachine_column_description(
+                self.sqlalchemy_table, column_str
+            )
+            for column_str in self.columns
+        ]
+        select_stmt = select(sqlalchemy_columns)
+
+        if self.start is not None:
+            ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
+            select_stmt = select_stmt.where(
+                self.sqlalchemy_table.c.datetime >= ts_start
+            )
+        if self.stop is not None:
+            ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
+            select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime <= ts_stop)
+
+        if self.hours != "all":
+            hour_start, hour_end = self.hours
+            if hour_start < hour_end:
+                select_stmt = select_stmt.where(
+                    between(
+                        extract("hour", self.sqlalchemy_table.c.datetime),
+                        hour_start,
+                        hour_end - 1,
+                    )
+                )
+            else:
+                # If dates are backwards, then this will be interpreted as spanning midnight
+                select_stmt = select_stmt.where(
+                    or_(
+                        extract("hour", self.sqlalchemy_table.c.datetime) >= hour_start,
+                        extract("hour", self.sqlalchemy_table.c.datetime) < hour_end,
+                    )
+                )
+
+        select_stmt = self.subscriber_subsetter.apply_subset_if_needed(
+            select_stmt, subscriber_identifier=self.subscriber_identifier
+        )
+
+        return get_sql_string(select_stmt)
+
+    def _make_query_ORIG(self):  # pragma: no cover
+        # Note: this is the original implementation of _make_query. It is kept for
+        # reference for the time being but will likely be removed in the near future.
+        # The one currently being used is _make_query_with_sqlalchemy above.
 
         where_clause = ""
         if self.start is not None:
@@ -175,7 +236,7 @@ class EventTableSubset(Query):
 
         sql = f"""
         SELECT {", ".join(self.columns)}
-        FROM {self.table.fully_qualified_table_name}
+        FROM {self.table_ORIG.fully_qualified_table_name}
         {where_clause}
         """
 
@@ -188,9 +249,9 @@ class EventTableSubset(Query):
                 sql += f" AND (   EXTRACT(hour FROM datetime)  >= {self.hours[0]}"
                 sql += f"      OR EXTRACT(hour FROM datetime)  < {self.hours[1]})"
 
-        if self.subscriber_subset is not None:
+        if self.subscriber_subset_ORIG is not None:
             try:
-                subs_table = self.subscriber_subset.get_query()
+                subs_table = self.subscriber_subset_ORIG.get_query()
                 cols = ", ".join(
                     c if "AS subscriber" not in c else "subscriber"
                     for c in self.columns
@@ -199,13 +260,16 @@ class EventTableSubset(Query):
             except AttributeError:
                 where_clause = "WHERE " if where_clause == "" else " AND "
                 try:
-                    assert not isinstance(self.subscriber_subset, str)
-                    ss = tuple(self.subscriber_subset)
+                    assert not isinstance(self.subscriber_subset_ORIG, str)
+                    ss = tuple(self.subscriber_subset_ORIG)
                 except (TypeError, AssertionError):
-                    ss = (self.subscriber_subset,)
+                    ss = (self.subscriber_subset_ORIG,)
                 sql = f"{sql} {where_clause} {self.subscriber_identifier} IN {_makesafe(ss)}"
 
         return sql
+
+    # _make_query = _make_query_ORIG
+    _make_query = _make_query_with_sqlalchemy
 
     @property
     def fully_qualified_table_name(self):
