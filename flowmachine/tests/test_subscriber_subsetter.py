@@ -45,7 +45,7 @@ flowmachine.connect()
     ],
 )
 def test_can_create_subscriber_subsetter_from_different_input_types(
-        input_subset, expected_subsetter_type
+    input_subset, expected_subsetter_type
 ):
     """
     The factory function make_subscriber_subsetter() accepts supported input types and returns an appropriate instance of SubscriberSubsetterBase.
