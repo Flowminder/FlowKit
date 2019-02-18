@@ -208,10 +208,10 @@
         },
         "redis": {
             "hashes": [
-                "sha256:74c892041cba46078ae1ef845241548baa3bd3634f9a6f0f952f006eb1619c71",
-                "sha256:7ba8612bbfd966dea8c62322543fed0095da2834dbd5a7c124afbc617a156aa7"
+                "sha256:724932360d48e5407e8f82e405ab3650a36ed02c7e460d1e6fddf0f038422b54",
+                "sha256:9b19425a38fd074eb5795ff2b0d9a55b46a44f91f5347995f27e3ad257a7d775"
             ],
-            "version": "==3.1.0"
+            "version": "==3.2.0"
         },
         "shapely": {
             "hashes": [
@@ -240,10 +240,10 @@
         },
         "sqlalchemy": {
             "hashes": [
-                "sha256:52a42dbf02d0562d6e90e7af59f177f1cc027e72833cc29c3a821eefa009c71d"
+                "sha256:8027fa183f5be466030617a497b2d64e0e16c8d615e5a34bdf9fab6f66bf4723"
             ],
             "index": "pypi",
-            "version": "==1.2.17"
+            "version": "==1.2.18"
         },
         "structlog": {
             "hashes": [
@@ -261,14 +261,6 @@
                 "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"
             ],
             "version": "==1.4.3"
-        },
-        "appnope": {
-            "hashes": [
-                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
-                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
-            ],
-            "markers": "sys_platform == 'darwin'",
-            "version": "==0.1.0"
         },
         "approvaltests": {
             "hashes": [
@@ -463,10 +455,10 @@
         },
         "identify": {
             "hashes": [
-                "sha256:0749c74180ef0f6a3874eaa0bf89a6990a523233180e83e6f3c7c27312ac9ba3",
-                "sha256:1cf14bc0324d83a742f558051db0c2cbe15d8b9ae1c59dfefbe38935f1d1ee31"
+                "sha256:04470dbd28741b47d889b77e4dea7a86105c9a338dca987a74ded7bc29f0c45b",
+                "sha256:d3ddec4436e043c3398392b4ba8936b4ab52fa262284e767eb6c351d9b3ab5b7"
             ],
-            "version": "==1.2.1"
+            "version": "==1.2.2"
         },
         "importlib-metadata": {
             "hashes": [
