@@ -33,7 +33,9 @@ services:
     stdin_open: true
     restart: always
     networks:
-      - db
+      db:
+        aliases:
+          - flowdb
 
   flowdb_testdata:
     container_name: flowdb_testdata
