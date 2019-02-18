@@ -56,7 +56,9 @@ services:
     stdin_open: true
     restart: always
     networks:
-      - db
+      db:
+        aliases:
+          - flowdb
 
   flowdb_synthetic_data:
     container_name: flowdb_synthetic_data
@@ -81,8 +83,9 @@ services:
     tty: true
     stdin_open: true
     restart: always
-    networks:
-      - db
+      db:
+        aliases:
+          - flowdb
 
   flowmachine:
     container_name: flowmachine
