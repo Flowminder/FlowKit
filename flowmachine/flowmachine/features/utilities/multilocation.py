@@ -87,15 +87,13 @@ class MultiLocation(BaseLocation):
 
         date_string = f"to_date('{dl.start}','YYYY-MM-DD') AS date"
         sql = f"SELECT *, {date_string} FROM ({dl.get_query()}) AS dl"
-        return CustomQuery(sql, self.column_names + ["date"])
-
-    @property
-    def column_names(self) -> List[str]:
-        return get_columns_for_level(self.level, self.column_name)
+        return CustomQuery(
+            sql, get_columns_for_level(self.level, self.column_name) + ["date"]
+        )
 
     def _get_relevant_columns(self):
         """
         Get a string of the location related columns
         """
 
-        return ", ".join(self.column_names)
+        return ", ".join(get_columns_for_level(self.level, self.column_name))

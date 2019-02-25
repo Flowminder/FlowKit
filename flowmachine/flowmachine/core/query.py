@@ -255,6 +255,7 @@ class Query(metaclass=ABCMeta):
         return self.get_dataframe_async().result()
 
     @property
+    @abstractmethod
     def column_names(self) -> List[str]:
         """
         Returns the column names.

@@ -14,6 +14,7 @@ from typing import List
 
 from functools import reduce
 
+from flowmachine.utils.utils import get_columns_for_level
 from ..utilities.multilocation import MultiLocation
 
 
@@ -27,7 +28,11 @@ class ModalLocation(MultiLocation):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"] + super().column_names + ["date"]
+        return (
+            ["subscriber"]
+            + get_columns_for_level(self.level, self.column_name)
+            + ["date"]
+        )
 
     def _make_query(self):
         """
@@ -51,9 +56,9 @@ class ModalLocation(MultiLocation):
         )
 
         sql = """
-        SELECT ranked.subscriber, {rc}
+        SELECT ranked.subscriber, {rc}, date
         FROM
-             (SELECT times_visited.subscriber, {rc},
+             (SELECT times_visited.subscriber, {rc}, date,
              row_number() OVER (PARTITION BY times_visited.subscriber
                  ORDER BY total DESC, times_visited.date DESC) AS rank
              FROM ({times_visited}) AS times_visited) AS ranked
