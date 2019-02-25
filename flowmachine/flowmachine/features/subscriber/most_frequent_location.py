@@ -9,6 +9,8 @@ the most frequently.
 
 
 """
+from typing import List
+
 from ..utilities.subscriber_locations import BaseLocation, subscriber_locations
 from ...utils.utils import get_columns_for_level
 
@@ -128,6 +130,14 @@ class MostFrequentLocation(BaseLocation):
         )
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return (
+            ["subscriber"]
+            + get_columns_for_level(self.level, self.column_name)
+            + ["total"]
+        )
 
     def _make_query(self):
         """
