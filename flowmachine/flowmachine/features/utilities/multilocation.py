@@ -13,6 +13,7 @@ dailylocations objects, although they can be.
 
 import logging
 import warnings
+from typing import List
 
 from ..utilities.subscriber_locations import BaseLocation
 from ..subscriber.daily_location import daily_location
@@ -73,8 +74,7 @@ class MultiLocation(BaseLocation):
         self.column_name = self._all_dls[0].column_name
         super().__init__()
 
-    @classmethod
-    def _append_date(cls, dl):
+    def _append_date(self, dl):
         """
         Takes a daily location object and returns a query representing that
         daily location, but with an additional (constant) column with the
@@ -87,11 +87,15 @@ class MultiLocation(BaseLocation):
 
         date_string = f"to_date('{dl.start}','YYYY-MM-DD') AS date"
         sql = f"SELECT *, {date_string} FROM ({dl.get_query()}) AS dl"
-        return CustomQuery(sql)
+        return CustomQuery(sql, self.column_names + ["date"])
+
+    @property
+    def column_names(self) -> List[str]:
+        return get_columns_for_level(self.level, self.column_name)
 
     def _get_relevant_columns(self):
         """
         Get a string of the location related columns
         """
 
-        return ", ".join(get_columns_for_level(self.level, self.column_name))
+        return ", ".join(self.column_names)

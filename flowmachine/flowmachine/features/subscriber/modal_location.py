@@ -10,6 +10,7 @@ The modal daily location of a subscriber.
 
 
 """
+from typing import List
 
 from functools import reduce
 
@@ -23,6 +24,10 @@ class ModalLocation(MultiLocation):
     or a list of DailyLocations (the former is more common). It gives each
     subscriber only one location.
     """
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber"] + super().column_names + ["date"]
 
     def _make_query(self):
         """
