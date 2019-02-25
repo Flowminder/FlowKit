@@ -162,7 +162,8 @@ def clean_env(monkeypatch):
 @pytest.fixture
 def get_dataframe(flowmachine_connect):
     yield lambda query: pd.read_sql_query(
-        query.get_query(), con=flowmachine_connect.engine
+        f"SELECT {', '.join(query.column_names)} FROM ({query.get_query()}) _",
+        con=flowmachine_connect.engine,
     )
 
 

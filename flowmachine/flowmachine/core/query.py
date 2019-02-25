@@ -449,7 +449,7 @@ class Query(metaclass=ABCMeta):
             return []
 
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
-            ({self._make_query() if force else self.get_query()})"""
+            (SELECT {", ".join(self.column_names)} FROM ({self._make_query() if force else self.get_query()}) _)"""
         queries.append(Q)
         for ix in self.index_cols:
             queries.append(
