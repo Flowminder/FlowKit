@@ -138,6 +138,10 @@ def subset_numbers_factory(parent_class):
                 raise TypeError("Low and/or High not and integer or float")
             Query.__init__(self)
 
+        @property
+        def column_names(self) -> List[str]:
+            return self.parent.column_names
+
         def __getattr__(self, name):
             # Don't extend this to hidden variables, such as _df
             # and _len

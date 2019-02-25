@@ -5,6 +5,8 @@
 """
 Unit tests for networkx export.
 """
+from typing import List
+
 import pytest
 
 from flowmachine.core import Query
@@ -50,6 +52,10 @@ def test_directed_dupe():
         def __init__(self, flow):
             self.union = flow.union(flow)
             super().__init__()
+
+        @property
+        def column_names(self) -> List[str]:
+            return self.union.column_names
 
         def _make_query(self):
             return self.union.get_query()

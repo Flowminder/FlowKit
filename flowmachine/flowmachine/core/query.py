@@ -9,7 +9,6 @@ defines methods that returns the query as a string and as a pandas dataframe.
 
 """
 import json
-import os
 import pickle
 import logging
 import weakref
@@ -227,13 +226,15 @@ class Query(metaclass=ABCMeta):
                 try:
                     return self._df.copy()
                 except AttributeError:
-                    qur = self.get_query()
+                    qur = f"SELECT {', '.join(self.column_names)} FROM ({self.get_query()}) _"
                     with self.connection.engine.begin():
                         self._df = pd.read_sql_query(qur, con=self.connection.engine)
 
                     return self._df.copy()
             else:
-                qur = self.get_query()
+                qur = (
+                    f"SELECT {', '.join(self.column_names)} FROM ({self.get_query()}) _"
+                )
                 with self.connection.engine.begin():
                     return pd.read_sql_query(qur, con=self.connection.engine)
 
@@ -266,11 +267,7 @@ class Query(metaclass=ABCMeta):
             List of the column names of this query.
 
         """
-        try:
-            return list(self._cols)
-        except AttributeError:
-            self._cols = self.head(0).columns.tolist()
-            return list(self._cols)
+        pass
 
     def head(self, n=5):
         """
@@ -289,7 +286,7 @@ class Query(metaclass=ABCMeta):
         try:
             return self._df.head(n)
         except AttributeError:
-            Q = "SELECT * FROM ({}) h LIMIT {};".format(self.get_query(), n)
+            Q = f"SELECT {', '.join(self.column_names)} FROM ({self.get_query()}) h LIMIT {n};"
             con = self.connection.engine
             with con.begin():
                 df = pd.read_sql_query(Q, con=con)
