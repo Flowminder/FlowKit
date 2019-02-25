@@ -172,7 +172,7 @@ def test_different_call_days_format(get_dataframe):
 
     cd_query = cd.get_query()
     har = get_dataframe(
-        HartiganCluster(calldays=CustomQuery(cd_query, cd.column_name), radius=50)
+        HartiganCluster(calldays=CustomQuery(cd_query, cd.column_names), radius=50)
     )
     assert isinstance(har, pd.DataFrame)
 
