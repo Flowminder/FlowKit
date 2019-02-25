@@ -28,11 +28,7 @@ class ModalLocation(MultiLocation):
 
     @property
     def column_names(self) -> List[str]:
-        return (
-            ["subscriber"]
-            + get_columns_for_level(self.level, self.column_name)
-            + ["date"]
-        )
+        return ["subscriber"] + get_columns_for_level(self.level, self.column_name)
 
     def _make_query(self):
         """
@@ -56,9 +52,9 @@ class ModalLocation(MultiLocation):
         )
 
         sql = """
-        SELECT ranked.subscriber, {rc}, date
+        SELECT ranked.subscriber, {rc}
         FROM
-             (SELECT times_visited.subscriber, {rc}, date,
+             (SELECT times_visited.subscriber, {rc},
              row_number() OVER (PARTITION BY times_visited.subscriber
                  ORDER BY total DESC, times_visited.date DESC) AS rank
              FROM ({times_visited}) AS times_visited) AS ranked

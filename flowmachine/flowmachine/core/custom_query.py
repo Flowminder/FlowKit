@@ -52,3 +52,8 @@ class CustomQuery(Query):
 
     def _make_query(self):
         return self.sql
+
+    def __getstate__(self):
+        state = super().__getstate__()
+        del state["_column_names"]
+        return state
