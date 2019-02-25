@@ -10,6 +10,8 @@ at during a specified time period.
 
 
 """
+from typing import List
+
 from ..utilities.subscriber_locations import BaseLocation
 from ..utilities.subscriber_locations import subscriber_locations
 from ...utils.utils import get_columns_for_level
@@ -125,6 +127,10 @@ class LastLocation(BaseLocation):
             radius=radius,
         )
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber"] + get_columns_for_level(self.level, self.column_name)
 
     def _make_query(self):
         """
