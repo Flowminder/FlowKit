@@ -6,6 +6,7 @@
 """
 Calculate metrics related with distance between caller and her/his counterparts.
 """
+from typing import List
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -119,6 +120,10 @@ class DistanceCounterparts(SubscriberFeature):
         self.distance_matrix = DistanceMatrix()
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", f"distance_{self.statistic}"]
 
     def _make_query(self):
 

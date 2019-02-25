@@ -108,8 +108,8 @@ def __join_queries(queries, dropna):
     # need to give the left object a name on the first join, but
     # not in any subsequent joins.
     col = queries[0].column_names[0]
-    left_append = "_" + queries[0].__class__.__name__ + "_0"
-    right_append = "_" + queries[1].__class__.__name__ + "_1"
+    left_append = "_" + queries[0].__class__.__name__.lower() + "_0"
+    right_append = "_" + queries[1].__class__.__name__.lower() + "_1"
     how = "inner" if dropna else "full outer"
     running_join = queries[0].join(
         queries[1],
@@ -121,7 +121,7 @@ def __join_queries(queries, dropna):
 
     for i, q in enumerate(queries[2:]):
         col = q.column_names[0]
-        append = "_" + q.__class__.__name__ + "_{}".format(i + 2)
+        append = "_" + q.__class__.__name__.lower() + "_{}".format(i + 2)
         running_join = running_join.join(q, on_left=col, right_append=append, how=how)
         # Trigger memoization
         _ = q.md5

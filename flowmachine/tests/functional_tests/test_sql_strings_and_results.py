@@ -120,7 +120,8 @@ def test_daily_location_4_sql(diff_reporter):
     Regression test; this verifies the SQL statement for the test below (which checks the resulting dataframe)
     """
     subset_query = CustomQuery(
-        "SELECT * FROM (VALUES ('dr9xNYK006wykgXj')) as tmp (subscriber)"
+        "SELECT * FROM (VALUES ('dr9xNYK006wykgXj')) as tmp (subscriber)",
+        column_names=["subscriber"],
     )
     dl = daily_location(
         "2016-01-05",

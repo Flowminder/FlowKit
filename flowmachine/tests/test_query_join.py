@@ -121,7 +121,9 @@ def test_using_join_to_subset(get_dataframe):
     Should be able to use the join method to subset one query by another
     """
     dl1 = daily_location("2016-01-01")
-    subset_q = CustomQuery("SELECT msisdn FROM events.calls LIMIT 10")
+    subset_q = CustomQuery(
+        "SELECT msisdn FROM events.calls LIMIT 10", column_names=["msisdn"]
+    )
     sub = dl1.join(subset_q, on_left=["subscriber"], on_right=["msisdn"])
     value_set = set(get_dataframe(sub).subscriber)
     assert set(get_dataframe(subset_q).msisdn) == value_set
