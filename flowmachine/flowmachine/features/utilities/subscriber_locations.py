@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from abc import ABCMeta
 
 from typing import List
 
@@ -79,7 +80,7 @@ class _SubscriberCells(Query):
         return sql
 
 
-class BaseLocation(Query):
+class BaseLocation(Query, metaclass=ABCMeta):
     """
     Base Class for all daily and home location methods.
     Provides the method to aggregate spatially.

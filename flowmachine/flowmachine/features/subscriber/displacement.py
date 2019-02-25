@@ -10,6 +10,8 @@ The maximum displacement of a user from its home location
 
 
 """
+from typing import List
+
 from flowmachine.features.subscriber import daily_location
 from .metaclasses import SubscriberFeature
 from . import ModalLocation
@@ -118,6 +120,10 @@ class Displacement(SubscriberFeature):
         self.unit = unit
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "statistic"]
 
     def _make_query(self):
 

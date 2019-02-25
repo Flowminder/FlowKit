@@ -7,6 +7,7 @@ Utility classes for performing spatial aggregate
 operations in CDRs.
 """
 import warnings
+from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
@@ -31,6 +32,10 @@ class SpatialAggregate(GeoDataMixin, Query):
         self.level = locations.level
         self.column_name = locations.column_name
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return self.locations.column_names[1:] + ["total"]
 
     def _make_query(self):
 
