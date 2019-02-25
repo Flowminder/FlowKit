@@ -26,6 +26,7 @@ References
 """
 import logging
 import warnings
+from typing import List
 
 import pandas as pd
 
@@ -113,6 +114,17 @@ class _populationBuffer(Query):
         )
 
         return sql
+
+    @property
+    def column_names(self) -> List[str]:
+        cols = get_columns_for_level(self.level)
+
+        return (
+            ["id"]
+            + [f"{c}_from" for c in cols]
+            + [f"{c}_to" for c in cols]
+            + ["distance", "geom_buffer", "buffer_population", "n_sites"]
+        )
 
     def _make_query(self):
         """

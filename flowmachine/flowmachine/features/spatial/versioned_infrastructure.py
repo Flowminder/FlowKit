@@ -9,7 +9,11 @@ Methods for fetching a set of versioned infrastructure elements.
 A version is selected based on the date in which that version is valid.
 
 """
+from typing import List
+
 from datetime import datetime
+
+from flowmachine.core import Table
 from ...core.query import Query
 
 
@@ -58,25 +62,25 @@ class VersionedInfrastructure(Query):
         if date == None:
             date = datetime.now().strftime("%Y-%m-%d")
 
-        self.table = table
+        self.table = Table(schema="infrastructure", name=table)
         self.date = date
 
         super().__init__()
 
+    @property
+    def column_names(self) -> List[str]:
+        return self.table_name.column_names
+
     def _make_query(self):
 
-        sql = """
-            SELECT
-                *
-            FROM infrastructure.{table}
-            WHERE date_of_first_service <= '{date}'::date AND
+        sql = f"""
+            {self.table.get_query()}
+            WHERE date_of_first_service <= '{self.date}'::date AND
                   (CASE
                       WHEN date_of_last_service IS NOT NULL
-                      THEN date_of_last_service > '{date}'::date
+                      THEN date_of_last_service > '{self.date}'::date
                       ELSE TRUE
                    END)
-        """.format(
-            table=self.table, date=self.date
-        )
+        """
 
         return sql

@@ -5,7 +5,7 @@
 """
 Tests for our custom join API
 """
-
+from typing import List
 
 import pytest
 
@@ -22,8 +22,13 @@ class TruncatedAndOffsetDailyLocation(Query):
         self.date = date
         self.size = size
         self.offset = offset
+        self.dl_obj = daily_location(self.date)
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return self.dl_obj.column_names
 
     def _make_query(self):
 
@@ -31,7 +36,7 @@ class TruncatedAndOffsetDailyLocation(Query):
         SELECT * FROM
             ( SELECT * FROM ({dl}) AS dl LIMIT {size} OFFSET {offset} ) l
         """.format(
-            dl=daily_location(self.date).get_query(), size=self.size, offset=self.offset
+            dl=self.dl_obj.get_query(), size=self.size, offset=self.offset
         )
 
         return sql

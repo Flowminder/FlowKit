@@ -9,6 +9,8 @@ period.
 """
 
 from abc import ABCMeta, abstractmethod
+from typing import List
+
 from .metaclasses import SubscriberFeature
 from .contact_balance import ContactBalance
 from ..utilities.sets import EventsTablesUnion
@@ -20,6 +22,10 @@ from ...utils.utils import verify_columns_exist_in_all_tables
 
 class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
     """ Base query for calculating entropy of subscriber features. """
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "entropy"]
 
     def _make_query(self):
 

@@ -199,7 +199,7 @@ class GeoDataMixin:
 
     def to_geojson_file(self, filename, crs=None):
         """
-        Export this query to a GeoJson FeatureCollection file.
+        Export this query to a GeoJson feature_collection file.
         
         Parameters
         ----------
@@ -221,7 +221,7 @@ class GeoDataMixin:
         Returns
         -------
         str
-            A string containing the this query as a GeoJson FeatureCollection. 
+            A string containing the this query as a GeoJson feature_collection.
         """
         return json.dumps(self.to_geojson(crs=crs))
 
@@ -248,7 +248,7 @@ class GeoDataMixin:
         ]
         js = {
             "properties": {"crs": proj4},
-            "type": "FeatureCollection",
+            "type": "feature_collection",
             "features": features,
         }
         return js
@@ -263,7 +263,7 @@ class GeoDataMixin:
         Returns
         -------
         dict
-            This query as a GeoJson FeatureCollection in dict form. 
+            This query as a GeoJson feature_collection in dict form.
         """
         proj4_string = proj4string(self.connection, crs)
         try:

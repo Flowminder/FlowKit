@@ -188,3 +188,9 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         )
 
         return grouped
+
+    @property
+    def column_names(self) -> List[str]:
+        return [
+            cn for cn in self.locations.column_names if cn != "subscriber"
+        ] + self.metric.column_names[1:]

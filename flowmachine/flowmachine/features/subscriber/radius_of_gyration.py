@@ -10,6 +10,8 @@ can be calculated in `km` or `m`.
 
 
 """
+from typing import List
+
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import subscriber_locations
 
@@ -92,6 +94,10 @@ class RadiusOfGyration(SubscriberFeature):
             lo1, la1, lo2, la2
         )
 
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "rog"]
+
     def _make_query(self):
         """
         Default query method implemented in the
@@ -137,7 +143,7 @@ class RadiusOfGyration(SubscriberFeature):
         RoG = """
         SELECT
             dist.subscriber,
-            sqrt( avg( distance_sqr ) )/{} AS RoG
+            sqrt( avg( distance_sqr ) )/{} AS rog
         FROM 
             ({dist}) AS dist
         GROUP BY dist.subscriber

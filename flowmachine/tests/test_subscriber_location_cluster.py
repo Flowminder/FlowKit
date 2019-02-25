@@ -7,6 +7,8 @@ Tests for Subscriber Location Clustering methods. Those methods cluster
 location based on different methods, offering good options for
 reducing the dimensionality of the problem.
 """
+from typing import List
+
 import pandas as pd
 
 
@@ -69,6 +71,10 @@ class Sites(GeoDataMixin, Query):
     """
     Selects the geometric coordinates of the versioned-sites.
     """
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["site_id", "version", "geom_point"]
 
     def _make_query(self):
 

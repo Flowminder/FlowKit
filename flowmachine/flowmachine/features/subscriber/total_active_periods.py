@@ -20,6 +20,7 @@ References
 ----------
 [1] Veronique Lefebvre, https://docs.google.com/document/d/1BVOAM8bVacen0U0wXbxRmEhxdRbW8J_lyaOcUtDGhx8/edit
 """
+from typing import List
 
 from .metaclasses import SubscriberFeature
 from ...utils.utils import time_period_add
@@ -132,6 +133,10 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
             for start, stop in zip(self.starts, self.stops)
         ]
         return reduce(lambda x, y: x.union(y), all_subscribers)
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "active_periods", "inactive_periods"]
 
     def _make_query(self):
 

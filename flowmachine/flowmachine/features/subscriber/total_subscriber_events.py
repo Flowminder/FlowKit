@@ -9,6 +9,8 @@ have done over a certain time period.
 
 
 """
+from typing import List
+
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -131,3 +133,7 @@ class TotalSubscriberEvents(SubscriberFeature):
         )
 
         return sql
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "total"]

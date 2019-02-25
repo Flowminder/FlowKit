@@ -10,6 +10,8 @@ at the network level.
 
 
 """
+from typing import List
+
 from ...core.mixins import GeoDataMixin
 from ...core import JoinToLocation
 from ...utils.utils import get_columns_for_level
@@ -152,6 +154,13 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         self.subscriber_identifier = subscriber_identifier
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return get_columns_for_level(self.level, self.joined.column_name) + [
+            "total",
+            "datetime",
+        ]
 
     def _make_query(self):
         cols = ",".join(get_columns_for_level(self.network_object))
@@ -339,6 +348,13 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             subscriber_subset=total_objs.subscriber_subset,
             subscriber_identifier=total_objs.subscriber_identifier,
         )
+
+    @property
+    def column_names(self) -> List[str]:
+        return get_columns_for_level(self.level, self.joined.column_name) + [
+            "stat",
+            "datetime",
+        ]
 
     def _make_query(self):
         group_cols = ",".join(
