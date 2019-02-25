@@ -79,7 +79,7 @@ setup(
         "pytz",
         "python-louvain",
         "psycopg2-binary",
-        "python-redis-lock",
+        "finist",
         "redis",
         "pyzmq",
         "shapely",

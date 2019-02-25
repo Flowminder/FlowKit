@@ -8,6 +8,55 @@ Custom errors raised by flowmachine.
 """
 
 
+class QueryResetFailedException(Exception):
+    """
+    Exception indicating that a query failed to reset while being reset
+    from another thread or FlowMachine instance.
+
+    Parameters
+    ----------
+    query_id : str
+        Identifier of the query
+    """
+
+    def __init__(self, query_id):
+        Exception.__init__(
+            self, f"Query '{query_id}' errored while being reset from elsewhere."
+        )
+
+
+class QueryErroredException(Exception):
+    """
+    Exception indicating that a query failed with an error while being run
+    from another thread or FlowMachine instance.
+
+    Parameters
+    ----------
+    query_id : str
+        Identifier of the query
+    """
+
+    def __init__(self, query_id):
+        Exception.__init__(
+            self, f"Query '{query_id}' errored while being run elsewhere."
+        )
+
+
+class QueryCancelledException(Exception):
+    """
+    Exception indicating that a query was cancelled while being run
+    from another thread or FlowMachine instance.
+
+    Parameters
+    ----------
+    query_id : str
+        Identifier of the query
+    """
+
+    def __init__(self, query_id):
+        Exception.__init__(self, f"Query '{query_id}' was cancelled.")
+
+
 class NameTooLongError(Exception):
     """
     Custom error to pass when a table name is too

@@ -17,7 +17,7 @@ from typing import List, Union
 
 import pandas as pd
 
-from flowmachine.utils.utils import rlock
+from flowmachine.core.query_state import QueryStateMachine
 from .query import Query
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
@@ -150,7 +150,9 @@ class ModelResult(Query):
 
         def do_query() -> ModelResult:
             logger.debug("Getting storage lock.")
-            with rlock(self.redis, self.md5):
+            q_state_machine = QueryStateMachine(self.redis, self.md5)
+            current_state, this_thread_is_owner = q_state_machine.execute()
+            if this_thread_is_owner:
                 logger.debug("Obtained storage lock.")
                 con = self.connection.engine
                 if force:

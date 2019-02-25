@@ -9,13 +9,10 @@ Various simple utilities.
 
 import datetime
 import logging
-from contextlib import contextmanager
-from pathlib import Path
-from threading import get_ident
-from typing import List, Union
 
-import redis_lock
-from redis_lock import AlreadyAcquired
+from pathlib import Path
+
+from typing import List, Union
 
 import flowmachine
 from ..core.errors import BadLevelError
@@ -286,38 +283,3 @@ def verify_columns_exist_in_all_tables(conn, tables, columns):
 
     if tables_lacking_columns:
         raise MissingColumnsError(tables_lacking_columns, columns)
-
-
-@contextmanager
-def rlock(redis_client, lock_id, holder_id=None):
-    """
-    A reentrant lock(ish). This lock can be reacquired using the same
-    holder_id as that which currently holds it.
-
-    Parameters
-    ----------
-    redis_client : redis.StrictRedis
-        Client for a redis
-    lock_id : str
-        Identifier of the lock to try and acquire
-    holder_id : bytes
-        Identifier of the holder, defaults to `get_ident()`
-
-    Notes
-    -----
-    Not a true reentrant lock because being held n times by one holder
-    requires only 1 release. Only the _first_ holder can release.
-
-    """
-    if holder_id is None:
-        holder_id = f"{get_ident()}".encode()
-    logger.debug(f"My lock holder id is {holder_id}")
-    logger.debug(
-        f"Getting lock id {lock_id}. Currently held by {redis_lock.Lock(redis_client, lock_id, id=holder_id).get_owner_id()}"
-    )
-    try:
-        with redis_lock.Lock(redis_client, lock_id, id=holder_id):
-            yield
-    except AlreadyAcquired:
-        yield
-    logger.debug(f"{holder_id} released lock id {lock_id}.")

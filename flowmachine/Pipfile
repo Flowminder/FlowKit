@@ -14,10 +14,10 @@ python-dateutil = "*"
 pytz = "*"
 python-louvain = "*"
 pyzmq = "*"
-"python-redis-lock" = "*"
 "psycopg2-binary" = "*"
 structlog = "*"
 shapely = "*"
+finist = "*"
 
 [dev-packages]
 scipy = "*"
