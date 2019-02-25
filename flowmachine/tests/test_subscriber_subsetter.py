@@ -38,7 +38,8 @@ flowmachine.connect()
         ),
         (
             CustomQuery(
-                "SELECT duration, msisdn as subscriber FROM events.calls WHERE duration < 200"
+                "SELECT duration, msisdn as subscriber FROM events.calls WHERE duration < 200",
+                ["duration", "subscriber"],
             ),
             SubscriberSubsetterForFlowmachineQuery,
         ),
@@ -58,6 +59,8 @@ def test_raises_error_if_flowmachine_query_does_not_contain_subscriber_column():
     """
     An error is raised when creating a subsetter from a flowmachine query that doesn't contain a column named 'subscriber'.
     """
-    flowmachine_query = CustomQuery("SELECT msisdn, duration FROM events.calls")
+    flowmachine_query = CustomQuery(
+        "SELECT msisdn, duration FROM events.calls", ["msisdn", "duration"]
+    )
     with pytest.raises(ValueError):
         _ = make_subscriber_subsetter(flowmachine_query)
