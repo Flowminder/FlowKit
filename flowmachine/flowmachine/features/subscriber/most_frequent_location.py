@@ -133,11 +133,7 @@ class MostFrequentLocation(BaseLocation):
 
     @property
     def column_names(self) -> List[str]:
-        return (
-            ["subscriber"]
-            + get_columns_for_level(self.level, self.column_name)
-            + ["total"]
-        )
+        return ["subscriber"] + get_columns_for_level(self.level, self.column_name)
 
     def _make_query(self):
         """

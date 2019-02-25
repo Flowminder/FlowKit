@@ -5,6 +5,7 @@
 # -*- coding: utf-8 -*-
 
 import warnings
+from typing import List
 
 from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities.sets import EventsTablesUnion
@@ -89,6 +90,10 @@ class EventCount(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "event_count"]
 
     def _make_query(self):
         where_clause = ""

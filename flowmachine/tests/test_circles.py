@@ -114,7 +114,7 @@ geojson = {
         },
     ],
     "properties": {"crs": "+proj=longlat +datum=WGS84 +no_defs"},
-    "type": "FeatureCollection",
+    "type": "feature_collection",
 }
 
 

@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from typing import List
 
 from .query import Query
 import numbers
@@ -52,6 +53,10 @@ def subset_factory(parent_class):
             self.col = col
             self.subsetby = subsetby
             Query.__init__(self)
+
+        @property
+        def column_names(self) -> List[str]:
+            return self.parent.column_names
 
         # This voodoo incantation means that if we look for an attribute
         # in this class, and it is not found, we then look in the parent class

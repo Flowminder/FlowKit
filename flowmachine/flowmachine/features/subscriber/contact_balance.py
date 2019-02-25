@@ -10,6 +10,7 @@ that a given contact participates out of the
 subscriber's total event count.
 
 """
+from typing import List
 
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
@@ -145,3 +146,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         """
 
         return sql
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "msisdn_counterpart", "events", "proportion"]

@@ -3,13 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Class definition for FeatureCollection, this is a group of
+Class definition for feature_collection, this is a group of
 joined features.
 """
-from ...core import Query
+from flowmachine.core.join import Join
 
 
-class FeatureCollection(Query):
+def feature_collection(metrics, dropna=True) -> Join:
     """
     Joined set of features. Takes a set of features and creates
     one wide dataset about these features. Most often used to gather
@@ -35,7 +35,7 @@ class FeatureCollection(Query):
                    NocturnalCalls(start, stop),
                    SubscriberDegree(start, stop)]
 
-    >>> fc = FeatureCollection(metrics)
+    >>> fc = feature_collection(metrics)
     >>> fc.head()
        subscriber            |rog_radiusofgyration_0|percentage_nocturnal_nocturnalcalls_1|degree_subscriberdegree_2
         ----------------|----------------------|-------------------------------------|-------------------
@@ -50,7 +50,7 @@ class FeatureCollection(Query):
     to return rows that have values for all the features. To override this 
     behaviour we can do the following;
 
-    >>> fc = FeatureCollection(metrics, dropna=False)
+    >>> fc = feature_collection(metrics, dropna=False)
     >>> fc.head()
         subscriber      |rog_radiusofgyration_0|percentage_nocturnal_nocturnalcalls_1|degree_subscriberdegree_2
         ----------------|----------------------|-------------------------------------|-------------------
@@ -68,7 +68,7 @@ class FeatureCollection(Query):
                    NocturnalCalls,
                    SubscriberDegree]
 
-    >>> fc = FeatureCollection.from_list_of_classes(metrics, start, stop)
+    >>> fc = feature_collection.feature_collection_from_list_of_classes(metrics, start, stop)
 
     But this requires that you want the same arguments for each class 
     (and are happy with the defaults).
@@ -82,53 +82,50 @@ class FeatureCollection(Query):
 
     """
 
-    def __init__(self, metrics, dropna=True):
+    return __join_queries(metrics, dropna)
 
-        self.joined_metrics = self.__join_queries(metrics, dropna)
 
-        super().__init__()
+def feature_collection_from_list_of_classes(
+    classes, *args, dropna=False, **kwargs
+) -> Join:
+    """
+    Create a feature collection from uninstantiated classes with common arguments.
 
-    @classmethod
-    def from_list_of_classes(cls, classes, *args, **kwargs):
-        """
-        From uninstantiated classes with common arguments.
-        """
+    See Also
+    --------
+    feature_collection
+    """
 
-        metrics = [c(*args, **kwargs) for c in classes]
-        return cls(metrics)
+    metrics = [c(*args, **kwargs) for c in classes]
+    return feature_collection(metrics, dropna=dropna)
 
-    # Private method that joins multiple queries together
-    # and returns a joined query.
-    @staticmethod
-    def __join_queries(queries, dropna):
 
-        # We want to handle the first case as a special case, as we
-        # need to give the left object a name on the first join, but
-        # not in any subsequent joins.
-        col = queries[0].column_names[0]
-        left_append = "_" + queries[0].__class__.__name__ + "_0"
-        right_append = "_" + queries[1].__class__.__name__ + "_1"
-        how = "inner" if dropna else "full outer"
-        running_join = queries[0].join(
-            queries[1],
-            on_left=col,
-            left_append=left_append,
-            right_append=right_append,
-            how=how,
-        )
+# Private method that joins multiple queries together
+# and returns a joined query.
+def __join_queries(queries, dropna):
 
-        for i, q in enumerate(queries[2:]):
-            col = q.column_names[0]
-            append = "_" + q.__class__.__name__ + "_{}".format(i + 2)
-            running_join = running_join.join(
-                q, on_left=col, right_append=append, how=how
-            )
-            # Trigger memoization
-            _ = q.md5
-            _ = running_join.md5
-            _ = running_join.column_names
+    # We want to handle the first case as a special case, as we
+    # need to give the left object a name on the first join, but
+    # not in any subsequent joins.
+    col = queries[0].column_names[0]
+    left_append = "_" + queries[0].__class__.__name__ + "_0"
+    right_append = "_" + queries[1].__class__.__name__ + "_1"
+    how = "inner" if dropna else "full outer"
+    running_join = queries[0].join(
+        queries[1],
+        on_left=col,
+        left_append=left_append,
+        right_append=right_append,
+        how=how,
+    )
 
-        return running_join
+    for i, q in enumerate(queries[2:]):
+        col = q.column_names[0]
+        append = "_" + q.__class__.__name__ + "_{}".format(i + 2)
+        running_join = running_join.join(q, on_left=col, right_append=append, how=how)
+        # Trigger memoization
+        _ = q.md5
+        _ = running_join.md5
+        _ = running_join.column_names
 
-    def _make_query(self):
-        return self.joined_metrics.get_query()
+    return running_join
