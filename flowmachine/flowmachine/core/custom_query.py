@@ -55,5 +55,8 @@ class CustomQuery(Query):
 
     def __getstate__(self):
         state = super().__getstate__()
-        del state["_column_names"]
+        try:
+            del state["_column_names"]
+        except KeyError:
+            pass
         return state
