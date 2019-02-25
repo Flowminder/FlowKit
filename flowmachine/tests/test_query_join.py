@@ -45,12 +45,16 @@ class TruncatedAndOffsetDailyLocation(Query):
 @pytest.mark.parametrize("join_type", Join.join_kinds)
 def test_join_column_names(join_type):
     """Test that join column_names attribute is correct"""
-    t = Table("events.calls_20160101")
-    joined = t.join(t, on_left="msisdn", how=join_type)
-    cols = t.column_names
-    cols.remove("msisdn")
-    expected = ["msisdn"] + cols + [f"{c}" for c in cols]
-    assert expected == joined.column_names
+    t = Table("events.calls_20160101", columns=["location_id", "datetime"])
+    t2 = Table("infrastructure.cells", columns=["id", "geom_point"])
+    joined = t.join(t2, on_left="location_id", on_right="id", how=join_type)
+
+    expected = [
+        "location_id" if join_type in ("left", "inner", "left outer") else "id",
+        "datetime",
+        "geom_point",
+    ]
+    assert joined.column_names == expected
 
 
 def test_name_append():
@@ -81,6 +85,16 @@ def test_value_of_join(get_dataframe):
     assert 490 == len(df)
 
 
+def test_ambiguity_is_an_error():
+    """
+    Join raises an error if resulting columns are ambiguous.
+    """
+    with pytest.raises(ValueError):
+        daily_location("2016-01-01").join(
+            daily_location("2016-01-01"), on_left="subscriber"
+        )
+
+
 def test_left_join(get_dataframe):
     """
     FlowMachine.Join can be done as a left join.
@@ -89,7 +103,9 @@ def test_left_join(get_dataframe):
     stub1 = TruncatedAndOffsetDailyLocation("2016-01-01")
     stub2 = TruncatedAndOffsetDailyLocation("2016-01-01", offset=5)
 
-    table = get_dataframe(stub1.join(stub2, on_left="subscriber", how="left"))
+    table = get_dataframe(
+        stub1.join(stub2, on_left="subscriber", how="left", left_append="_")
+    )
     assert 10 == len(table)
     assert 0 == table.subscriber.isnull().sum()
 
@@ -101,7 +117,9 @@ def test_right_join(get_dataframe):
     stub1 = TruncatedAndOffsetDailyLocation("2016-01-01")
     stub2 = TruncatedAndOffsetDailyLocation("2016-01-01", offset=5)
 
-    table = get_dataframe(stub1.join(stub2, on_left="subscriber", how="right"))
+    table = get_dataframe(
+        stub1.join(stub2, on_left="subscriber", how="right", left_append="_")
+    )
     assert 10 == len(table)
     assert 0 == table.subscriber.isnull().sum()
 
