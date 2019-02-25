@@ -351,10 +351,9 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return get_columns_for_level(self.level, self.joined.column_name) + [
-            "stat",
-            "datetime",
-        ]
+        return get_columns_for_level(
+            self.total_objs.level, self.total_objs.joined.column_name
+        ) + [self.statistic, "datetime"]
 
     def _make_query(self):
         group_cols = ",".join(
