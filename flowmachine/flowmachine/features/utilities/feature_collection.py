@@ -73,6 +73,11 @@ def feature_collection(metrics, dropna=True) -> Join:
     But this requires that you want the same arguments for each class 
     (and are happy with the defaults).
 
+    Returns
+    -------
+    Join
+        A Join object combining all the features
+
     Notes
     -----
     Each column has the name of the class appended to it to distinguish
@@ -94,6 +99,11 @@ def feature_collection_from_list_of_classes(
     See Also
     --------
     feature_collection
+
+    Returns
+    -------
+    Join
+        A Join object combining all the features
     """
 
     metrics = [c(*args, **kwargs) for c in classes]
