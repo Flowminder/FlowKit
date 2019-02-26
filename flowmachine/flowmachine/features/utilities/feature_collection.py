@@ -87,7 +87,7 @@ def feature_collection(metrics, dropna=True) -> Join:
 
     """
 
-    return __join_queries(metrics, dropna)
+    return _join_queries(metrics, dropna)
 
 
 def feature_collection_from_list_of_classes(
@@ -110,9 +110,9 @@ def feature_collection_from_list_of_classes(
     return feature_collection(metrics, dropna=dropna)
 
 
-# Private method that joins multiple queries together
+# Private function that joins multiple queries together
 # and returns a joined query.
-def __join_queries(queries, dropna):
+def _join_queries(queries, dropna):
 
     # We want to handle the first case as a special case, as we
     # need to give the left object a name on the first join, but
