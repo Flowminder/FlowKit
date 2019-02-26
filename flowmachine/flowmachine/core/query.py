@@ -270,7 +270,6 @@ class Query(metaclass=ABCMeta):
         -------
         list of str
             List of the column names of this query.
-
         """
         pass
 
@@ -278,10 +277,11 @@ class Query(metaclass=ABCMeta):
     def column_names_as_string_list(self) -> str:
         """
         Get the column names as a comma separated list
+
         Returns
         -------
         str
-
+            Comma separated list of column names
         """
         return ", ".join(self.column_names)
 
@@ -461,8 +461,7 @@ class Query(metaclass=ABCMeta):
             return []
 
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
-
-            (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
+        (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
         queries.append(Q)
         for ix in self.index_cols:
             queries.append(
