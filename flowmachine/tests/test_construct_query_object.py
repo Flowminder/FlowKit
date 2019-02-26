@@ -77,7 +77,7 @@ from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocati
             {"query_kind": "geography", "params": {"aggregation_unit": "admin3"}},
         ),
         (
-            "195311061636d0716112fda6f85e87e4",
+            "b40a542fa6e8ed06bb09fd859ad487d5",
             {
                 "query_kind": "meaningful_locations_aggregate",
                 "params": {
@@ -182,7 +182,7 @@ from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocati
             },
         ),
         (
-            "6a39f4802690d98dc701dd91e0e700ee",
+            "d08d04cb54eb4b7e4220d9a7129ff584",
             {
                 "query_kind": "meaningful_locations_od_matrix",
                 "params": {
@@ -383,7 +383,7 @@ from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocati
             },
         ),
         (
-            "5589073987023d3f9bd97128aab08401",
+            "0d8dec7386242823fad1a68914d95513",
             {
                 "query_kind": "meaningful_locations_od_matrix",
                 "params": {
