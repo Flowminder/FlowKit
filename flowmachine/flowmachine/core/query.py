@@ -226,15 +226,13 @@ class Query(metaclass=ABCMeta):
                 try:
                     return self._df.copy()
                 except AttributeError:
-                    qur = f"SELECT {', '.join(self.column_names)} FROM ({self.get_query()}) _"
+                    qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
                     with self.connection.engine.begin():
                         self._df = pd.read_sql_query(qur, con=self.connection.engine)
 
                     return self._df.copy()
             else:
-                qur = (
-                    f"SELECT {', '.join(self.column_names)} FROM ({self.get_query()}) _"
-                )
+                qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
                 with self.connection.engine.begin():
                     return pd.read_sql_query(qur, con=self.connection.engine)
 
@@ -269,6 +267,17 @@ class Query(metaclass=ABCMeta):
         """
         pass
 
+    @property
+    def column_names_as_string_list(self) -> str:
+        """
+        Get the column names as a comma separated list
+        Returns
+        -------
+        str
+
+        """
+        return ", ".join(self.column_names)
+
     def head(self, n=5):
         """
         Return the first n results of the query
@@ -286,7 +295,7 @@ class Query(metaclass=ABCMeta):
         try:
             return self._df.head(n)
         except AttributeError:
-            Q = f"SELECT {', '.join(self.column_names)} FROM ({self.get_query()}) h LIMIT {n};"
+            Q = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) h LIMIT {n};"
             con = self.connection.engine
             with con.begin():
                 df = pd.read_sql_query(Q, con=con)
@@ -449,7 +458,7 @@ class Query(metaclass=ABCMeta):
             return []
 
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
-            (SELECT {", ".join(self.column_names)} FROM ({self._make_query() if force else self.get_query()}) _)"""
+            (SELECT {self.column_names_as_string_list} FROM ({self._make_query() if force else self.get_query()}) _)"""
         queries.append(Q)
         for ix in self.index_cols:
             queries.append(
