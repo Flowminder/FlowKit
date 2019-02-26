@@ -77,11 +77,8 @@ class DistanceMatrix(GraphMixin, Query):
     def column_names(self) -> List[str]:
         cols = get_columns_for_level(self.level)
 
-        try:
-            cols.remove("lat")
-            cols.remove("lon")
-        except ValueError:
-            pass  # Nothing to remove
+        cols.remove("lat")
+        cols.remove("lon")
 
         col_names = [f"{c}_from" for c in cols]
         col_names += [f"{c}_to" for c in cols]
@@ -97,11 +94,8 @@ class DistanceMatrix(GraphMixin, Query):
         sql_location_table = "SELECT * FROM infrastructure." + (
             "sites" if self.level == "versioned-site" else "cells"
         )
-        try:
-            cols.remove("lat")
-            cols.remove("lon")
-        except ValueError:
-            pass  # Nothing to remove
+        cols.remove("lat")
+        cols.remove("lon")
 
         from_cols = ", ".join(
             "A.{c_id_safe} AS {c}_from".format(
