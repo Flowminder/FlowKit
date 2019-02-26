@@ -69,7 +69,7 @@ class VersionedInfrastructure(Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.table_name.column_names
+        return self.table.column_names
 
     def _make_query(self):
 
