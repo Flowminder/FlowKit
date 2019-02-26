@@ -12,12 +12,13 @@ at during a specified time period.
 """
 from typing import List
 
+from flowmachine.core import Query
 from ..utilities.subscriber_locations import BaseLocation
 from ..utilities.subscriber_locations import subscriber_locations
 from ...utils.utils import get_columns_for_level
 
 
-class LastLocation(BaseLocation):
+class LastLocation(BaseLocation, Query):
     """
     Class representing a subscribers last location within a certain time
     frame

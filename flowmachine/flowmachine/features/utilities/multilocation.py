@@ -27,7 +27,7 @@ from ...core import CustomQuery
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
-class MultiLocation(BaseLocation):
+class MultiLocation:
     """
     Abstract base class for any class that involves stitching together
     multiple daily locations (or similar).
