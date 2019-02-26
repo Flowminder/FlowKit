@@ -263,7 +263,6 @@ class Query(metaclass=ABCMeta):
         -------
         list of str
             List of the column names of this query.
-
         """
         pass
 
@@ -271,10 +270,11 @@ class Query(metaclass=ABCMeta):
     def column_names_as_string_list(self) -> str:
         """
         Get the column names as a comma separated list
+
         Returns
         -------
         str
-
+            Comma separated list of column names
         """
         return ", ".join(self.column_names)
 
