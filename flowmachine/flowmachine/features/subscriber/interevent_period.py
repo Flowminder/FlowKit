@@ -111,6 +111,10 @@ class IntereventPeriod(SubscriberFeature):
         )
         super().__init__()
 
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", f"interevent_period_{self.statistic}"]
+
     def _make_query(self):
 
         where_clause = ""
