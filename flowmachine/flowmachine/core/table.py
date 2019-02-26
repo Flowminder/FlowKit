@@ -10,6 +10,7 @@ database.
 import logging
 from typing import List
 
+from flowmachine.core.query_state import QueryStateMachine
 from .errors import NotConnectedError
 from .query import Query
 from .subset import subset_factory
@@ -114,7 +115,12 @@ class Table(Query):
         # Recorded provided columns to ensure that md5 differs with different columns
         self.columns = columns
         super().__init__()
+        # Table is immediately in a 'finished executing' state
+        q_state_machine = QueryStateMachine(self.redis, self.md5)
+        q_state_machine.enqueue()
+        q_state_machine.execute()
         self._db_store_cache_metadata(compute_time=0)
+        q_state_machine.finish()
 
     @property
     def column_names(self) -> List[str]:

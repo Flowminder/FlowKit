@@ -704,7 +704,7 @@ class Query(metaclass=ABCMeta):
         try:
             in_cache = bool(
                 self.connection.fetch(
-                    "SELECT * FROM cache.cached WHERE query_id='{}'".format(self.md5)
+                    f"SELECT * FROM cache.cached WHERE query_id='{self.md5}'"
                 )
             )
 

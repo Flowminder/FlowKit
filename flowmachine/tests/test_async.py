@@ -3,11 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from concurrent.futures import Future
+
+from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.features.subscriber import *
 from threading import Thread
 import pandas as pd
-
-from flowmachine.utils.utils import rlock
 
 
 def test_returns_future():
@@ -63,9 +63,12 @@ def test_get_query_blocks_on_store():
     timer = []
 
     def unlock(timer):
-        with rlock(dl.redis, dl.md5):
-            for i in range(101):
-                timer.append(i)
+        qsm = QueryStateMachine(dl.redis, dl.md5)
+        qsm.enqueue()
+        for i in range(101):
+            timer.append(i)
+        qsm.execute()
+        qsm.finish()
 
     timeout = Thread(target=unlock, args=(timer,))
     timeout.start()
@@ -87,9 +90,12 @@ def test_blocks_on_store_cascades():
     timer = []
 
     def unlock(timer):
-        with rlock(dl.redis, dl.md5):
-            for i in range(101):
-                timer.append(i)
+        qsm = QueryStateMachine(dl.redis, dl.md5)
+        qsm.enqueue()
+        for i in range(101):
+            timer.append(i)
+        qsm.execute()
+        qsm.finish()
 
     timeout = Thread(target=unlock, args=(timer,))
     timeout.start()
