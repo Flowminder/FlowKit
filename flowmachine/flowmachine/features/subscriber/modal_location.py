@@ -14,11 +14,13 @@ from typing import List
 
 from functools import reduce
 
+from flowmachine.core import Query
+from flowmachine.features.utilities.subscriber_locations import BaseLocation
 from flowmachine.utils.utils import get_columns_for_level
 from ..utilities.multilocation import MultiLocation
 
 
-class ModalLocation(MultiLocation):
+class ModalLocation(MultiLocation, BaseLocation, Query):
     """
     ModalLocation is the mode of multiple DailyLocations (or other similar
     location like objects.) It can be instantiated with either a date range

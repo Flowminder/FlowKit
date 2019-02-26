@@ -80,9 +80,9 @@ class _SubscriberCells(Query):
         return sql
 
 
-class BaseLocation(Query, metaclass=ABCMeta):
+class BaseLocation:
     """
-    Base Class for all daily and home location methods.
+    Mixin for all daily and home location methods.
     Provides the method to aggregate spatially.
     """
 
