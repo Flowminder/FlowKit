@@ -2,7 +2,6 @@ import logging
 from copy import deepcopy
 
 import redis
-import redis_lock
 from json import dumps, loads, JSONDecodeError
 
 
