@@ -82,6 +82,9 @@ class QueryStateMachine:
             QueryEvent.EXECUTE, QueryState.QUEUED, QueryState.EXECUTING
         )
         self.state_machine.on(
+            QueryEvent.ERROR, QueryState.EXECUTING, QueryState.ERRORED
+        )
+        self.state_machine.on(
             QueryEvent.FINISH, QueryState.EXECUTING, QueryState.EXECUTED
         )
         self.state_machine.on(
@@ -181,6 +184,6 @@ class QueryStateMachine:
             True if the query has been executed successfully and is in cache.
         """
         if self.is_executing or self.is_queued or self.is_resetting:
-            while not self.is_executed:
+            while not self.is_executed or self.is_cancelled:
                 sleep(1)
         return self.is_executed_without_error
