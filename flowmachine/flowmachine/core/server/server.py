@@ -90,7 +90,7 @@ async def get_reply_for_message(  # pragma: no cover
             )
             query_id = query_proxy.run_query_async()
             query_run_log.info("run_query", query_id=query_id, **run_log_dict)
-            reply = {"status": "accepted", "id": query_id}
+            reply = {"status": query_proxy.poll(), "id": query_id}
 
         elif "poll" == action:
             logger.debug(f"Trying to poll query.  Message: {zmq_msg.msg_str}")
@@ -106,7 +106,7 @@ async def get_reply_for_message(  # pragma: no cover
             query_proxy = QueryProxy.from_query_id(query_id)
             sql = query_proxy.get_sql()
             query_run_log.info("get_sql", query_id=query_id, **run_log_dict)
-            reply = {"status": "done", "sql": sql}
+            reply = {"status": query_proxy.poll(), "sql": sql}
 
         elif "get_params" == action:
             logger.debug(f"Trying to get query parameters. Message: {zmq_msg.msg_str}")

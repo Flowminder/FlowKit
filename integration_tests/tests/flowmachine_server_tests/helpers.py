@@ -9,7 +9,7 @@ from sqlalchemy import inspect
 def poll_until_done(port, query_id, max_tries=100):
     """
     Send zmq message to flowmachine on port `port` which polls the
-    query with id `query_id` until the return status is "done".
+    query with id `query_id` until the return status is "executed".
     """
     msg_poll_query = {
         "action": "poll",
