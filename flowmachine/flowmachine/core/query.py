@@ -197,7 +197,7 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
-            if QueryStateMachine(self.redis, self.md5).block_while_executing():
+            if QueryStateMachine(self.redis, self.md5).has_finished_operating():
                 if self.connection.has_table(schema=schema, name=name):
                     try:
                         touch_cache(self.connection, self.md5)

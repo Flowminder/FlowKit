@@ -62,7 +62,7 @@ class QueryStateMachine:
     - resetting, when a previously run query is being purged from cache
 
     When the query is in a queued, executing, or resetting state, methods which need
-    to use the results of the query should wait. The `block_while_executing` method
+    to use the results of the query should wait. The `has_finished_operating` method
     will block while the query is in any of these states.
 
     Parameters
@@ -172,7 +172,7 @@ class QueryStateMachine:
     def finish_reset(self):
         return self.trigger_event(QueryEvent.FINISH_RESET)
 
-    def block_while_executing(self):
+    def has_finished_operating(self):
         """
         Blocks while the query is in any state that makes how to get
         the result of it indeterminate (i.e. currently running, restting,
@@ -184,6 +184,13 @@ class QueryStateMachine:
             True if the query has been executed successfully and is in cache.
         """
         if self.is_executing or self.is_queued or self.is_resetting:
-            while not self.is_executed or self.is_cancelled:
-                sleep(1)
+            while not (self.is_executed or self.is_cancelled or self.is_known):
+                _sleep(1)
+
         return self.is_executed_without_error
+
+
+def _sleep(time):
+    # Private function to facilitate testing
+    # monkeypatch this to avoid needing to monkeypatch time.sleep
+    sleep(1)
