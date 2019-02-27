@@ -10,7 +10,7 @@ duration between calls.
 import warnings
 from typing import List
 
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -83,14 +83,14 @@ class IntereventPeriod(SubscriberFeature):
             raise ValueError("{} is not a valid direction.".format(self.direction))
         self.direction = direction
 
-        if self.direction == "both":
+        if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "datetime"]
-            self.tables = tables
-        else:
+        elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "datetime", "outgoing"]
-            self.tables = parse_tables_ensuring_columns(
-                self.connection, tables, column_list
-            )
+        else:
+            raise ValueError("{} is not a valid direction.".format(self.direction))
+
+        verify_columns_exist_in_all_tables(self.connection, self.tables, column_list)
 
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
