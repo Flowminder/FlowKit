@@ -12,7 +12,7 @@ hour definitions can be specified.
 
 """
 from .metaclasses import SubscriberFeature
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 
 
@@ -72,18 +72,16 @@ class NocturnalEvents(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.direction = direction
         self.hours = hours
+        self.tables = tables
 
-        if direction not in {"in", "out", "both"}:
+        if self.direction in {"both"}:
+            column_list = [self.subscriber_identifier, "datetime"]
+        elif self.direction in {"in", "out"}:
+            column_list = [self.subscriber_identifier, "datetime", "outgoing"]
+        else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        if self.direction == "both":
-            column_list = [self.subscriber_identifier, "datetime"]
-            self.tables = tables
-        else:
-            column_list = [self.subscriber_identifier, "datetime", "outgoing"]
-            self.tables = parse_tables_ensuring_columns(
-                self.connection, tables, column_list
-            )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -95,6 +93,10 @@ class NocturnalEvents(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
         super().__init__()
+
+    @property
+    def column_names(self):
+        return ["subscriber", "percentage_nocturnal"]
 
     def _make_query(self):
         where_clause = ""
