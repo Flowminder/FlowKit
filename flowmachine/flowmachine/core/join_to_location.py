@@ -109,7 +109,7 @@ class JoinToLocation(Query):
         # then we'll simply turn this string into a flowmachine.Query object
         # and proceed as normal.
         if type(left) is str:
-            self.left = CustomQuery(left)
+            self.left = CustomQuery(left, left.column_names)
         else:
             self.left = left
         self.time_col = time_col
@@ -162,7 +162,16 @@ class JoinToLocation(Query):
                         ST_X(geom_point::geometry) AS lon,
                         ST_Y(geom_point::geometry) AS lat
                    FROM {self.location_table_fqn}"""
-            return CustomQuery(sql)
+            return CustomQuery(
+                sql,
+                [
+                    "location_id",
+                    "date_of_first_service",
+                    "date_of_last_service",
+                    "lon",
+                    "lat",
+                ],
+            )
         elif self.level == "versioned-site":
             if self.location_table_fqn == "infrastructure.sites":
                 sql = """
@@ -191,7 +200,18 @@ class JoinToLocation(Query):
                     infrastructure.cells AS c
                     ON s.id = c.site_id
                     """
-            return CustomQuery(sql)
+            return CustomQuery(
+                sql,
+                [
+                    "location_id",
+                    "site_id",
+                    "date_of_first_service",
+                    "date_of_last_service",
+                    "version",
+                    "lon",
+                    "lat",
+                ],
+            )
         elif self.level == "versioned-cell":
             if self.location_table_fqn == "infrastructure.cells":
                 sql = """
@@ -204,7 +224,17 @@ class JoinToLocation(Query):
                         ST_Y(geom_point::geometry) AS lat
                     FROM infrastructure.cells
                     """
-                return CustomQuery(sql)
+                return CustomQuery(
+                    sql,
+                    [
+                        "location_id",
+                        "version",
+                        "date_of_first_service",
+                        "date_of_last_service",
+                        "lon",
+                        "lat",
+                    ],
+                )
             else:
                 raise ValueError("Versioned cell level is unavailable.")
 

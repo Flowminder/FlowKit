@@ -3,17 +3,20 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Tests for flowmachine.FeatureCollection
+Tests for flowmachine.feature_collection
 """
 
-from flowmachine import FeatureCollection
+from flowmachine import feature_collection
 from flowmachine.core import CustomQuery
 from flowmachine.features import RadiusOfGyration, NocturnalCalls, SubscriberDegree
+from flowmachine.features.utilities.feature_collection import (
+    feature_collection_from_list_of_classes,
+)
 
 
 def test_collects_metrics():
     """
-    Test that we can instantiate flowmachine.FeatureCollection with list of
+    Test that we can instantiate flowmachine.feature_collection with list of
     objects.
     """
 
@@ -29,14 +32,14 @@ def test_collects_metrics():
         "percentage_nocturnal_nocturnalcalls_1",
         "degree_subscriberdegree_2",
     ]
-    fc = FeatureCollection(metrics)
+    fc = feature_collection(metrics)
     column_names = fc.column_names
     assert expected_columns == column_names
 
 
 def test_from_list_of_classes():
     """
-    Test that we can instantiate flowmachine.FeatureCollection with list of
+    Test that we can instantiate flowmachine.feature_collection with list of
     classes.
     """
 
@@ -48,7 +51,7 @@ def test_from_list_of_classes():
         "percentage_nocturnal_nocturnalcalls_1",
         "degree_subscriberdegree_2",
     ]
-    fc = FeatureCollection.from_list_of_classes(metrics, start=start, stop=stop)
+    fc = feature_collection_from_list_of_classes(metrics, start=start, stop=stop)
     column_names = fc.column_names
     assert expected_columns == column_names
 
@@ -73,8 +76,8 @@ def test_dropna(get_length):
         msisdn
     )
 
-    metrics = [CustomQuery(sql), RadiusOfGyration(start, stop)]
-    fc = FeatureCollection(metrics, dropna=False)
+    metrics = [CustomQuery(sql, ["subscriber"]), RadiusOfGyration(start, stop)]
+    fc = feature_collection(metrics, dropna=False)
 
     # usully without dropna=False this query would only return
     # a single row. We check that this is not the case.

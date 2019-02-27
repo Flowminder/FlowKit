@@ -1,0 +1,24 @@
+# This .dockerignore file follows the "whitelisting" approach described here:
+#    https://youknowfordevs.com/2018/12/07/getting-control-of-your-dockerignore-files.html
+
+#
+# First, exclude everything by default:
+#
+*
+
+#
+# Now un-exclude only those folders and files that are needed for
+# building the flowdb_testdata image:
+#
+!./bin/z_ingest_test_data.sh
+!./test_data/sql/
+!./test_data/data/
+
+# And un-exclude only those folders and files that are needed for
+# building the flowdb_synthetic_data image:
+!Pipfile
+!Pipfile.lock
+!./bin/generate_synthetic_data.py
+!./bin/z_ingest_synthetic_data.sh
+!./synthetic_data/sql/*
+!./synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson

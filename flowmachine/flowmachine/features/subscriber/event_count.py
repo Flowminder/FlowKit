@@ -5,9 +5,10 @@
 # -*- coding: utf-8 -*-
 
 import warnings
+from typing import List
 
 from ...core import JoinToLocation
-from ...utils.utils import parse_tables_ensuring_columns, get_columns_for_level
+from ...utils.utils import verify_columns_exist_in_all_tables, get_columns_for_level
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from .contact_balance import ContactBalance
@@ -71,17 +72,16 @@ class EventCount(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.direction = direction
         self.hours = hours
+        self.tables = tables
 
         if self.direction in {"both"}:
             column_list = [self.subscriber_identifier]
-            self.tables = tables
         elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "outgoing"]
-            self.tables = parse_tables_ensuring_columns(
-                self.connection, tables, column_list
-            )
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
+
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -94,11 +94,15 @@ class EventCount(SubscriberFeature):
         )
         super().__init__()
 
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "event_count"]
+
     def _make_query(self):
         where_clause = ""
         if self.direction != "both":
             where_clause = (
-                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"WHERE outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
         return f"""
         SELECT subscriber, COUNT(*) as event_count FROM
@@ -245,6 +249,10 @@ class PerLocationEventCount(SubscriberFeature):
 
         super().__init__()
 
+    @property
+    def column_names(self):
+        return ["subscriber", f"event_{self.statistic}"]
+
     def _make_query(self):
         loc_cols = ", ".join(get_columns_for_level(self.level, self.column_name))
 
@@ -349,6 +357,10 @@ class PerContactEventCount(SubscriberFeature):
             exclude_self_calls=self.exclude_self_calls,
             subscriber_subset=subscriber_subset,
         )
+
+    @property
+    def column_names(self):
+        return ["subscriber", f"event_{self.statistic}"]
 
     def _make_query(self):
 

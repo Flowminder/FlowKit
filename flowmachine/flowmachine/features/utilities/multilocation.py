@@ -13,6 +13,7 @@ dailylocations objects, although they can be.
 
 import logging
 import warnings
+from typing import List
 
 from ..utilities.subscriber_locations import BaseLocation
 from ..subscriber.daily_location import daily_location
@@ -26,7 +27,7 @@ from ...core import CustomQuery
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
-class MultiLocation(BaseLocation):
+class MultiLocation:
     """
     Abstract base class for any class that involves stitching together
     multiple daily locations (or similar).
@@ -73,8 +74,7 @@ class MultiLocation(BaseLocation):
         self.column_name = self._all_dls[0].column_name
         super().__init__()
 
-    @classmethod
-    def _append_date(cls, dl):
+    def _append_date(self, dl):
         """
         Takes a daily location object and returns a query representing that
         daily location, but with an additional (constant) column with the
@@ -87,7 +87,9 @@ class MultiLocation(BaseLocation):
 
         date_string = f"to_date('{dl.start}','YYYY-MM-DD') AS date"
         sql = f"SELECT *, {date_string} FROM ({dl.get_query()}) AS dl"
-        return CustomQuery(sql)
+        return CustomQuery(
+            sql, get_columns_for_level(self.level, self.column_name) + ["date"]
+        )
 
     def _get_relevant_columns(self):
         """
