@@ -221,7 +221,7 @@ class GeoDataMixin:
         Returns
         -------
         str
-            A string containing the this query as a GeoJson FeatureCollection. 
+            A string containing the this query as a GeoJson FeatureCollection.
         """
         return json.dumps(self.to_geojson(crs=crs))
 
@@ -263,7 +263,7 @@ class GeoDataMixin:
         Returns
         -------
         dict
-            This query as a GeoJson FeatureCollection in dict form. 
+            This query as a GeoJson FeatureCollection in dict form.
         """
         proj4_string = proj4string(self.connection, crs)
         try:

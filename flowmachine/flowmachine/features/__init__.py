@@ -83,7 +83,7 @@ spat = [
 
 ut = [
     "GroupValues",
-    "FeatureCollection",
+    "feature_collection",
     "subscriber_locations",
     "EventTableSubset",
     "UniqueSubscribers",

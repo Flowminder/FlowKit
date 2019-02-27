@@ -10,6 +10,8 @@ is seen within a specified time period.
 
 
 """
+from typing import List
+
 from ...utils.utils import get_columns_for_level
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import subscriber_locations
@@ -100,6 +102,10 @@ class FirstLocation(SubscriberFeature):
         self.subscriber_identifier = self.ul.subscriber_identifier
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "time"]
 
     def _make_query(self):
         """

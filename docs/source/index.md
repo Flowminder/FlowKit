@@ -1,10 +1,12 @@
+Title: Introduction
+
 # FlowKit CDR Analytics Toolkit
 
 ## What is FlowKit ?
 
 Use FlowKit to analyze the [Call Detail Record](https://en.wikipedia.org/wiki/Call_detail_record) (CDR) data created by mobile network operators (MNOs). CDR data is primarily used for generating subscriber bills and settling accounts with other carriers.  
 
-FlowKit is designed to extend CDR data analysis to meet many other applications beyond billing. Some examples include [disaster response](http://www.flowminder.org/practice-areas/disaster-response), [precision epidimiology](http://www.flowminder.org/practice-areas/precision-epidemiology) and [transport and mobility](http://www.flowminder.org/publications/a-trip-to-work-estimation-of-origin-and-destination-of-commuting-patterns-in-the-main-metropolitan-regions-of-haiti-using-cdr), more examples can be found [here](http://www.flowminder.org/work/research-innovation).
+FlowKit is designed to extend CDR data analysis to meet many other applications beyond billing. Some examples include [disaster response](http://www.flowminder.org/practice-areas/disaster-response), [precision epidemiology](http://www.flowminder.org/practice-areas/precision-epidemiology) and [transport and mobility](http://www.flowminder.org/publications/a-trip-to-work-estimation-of-origin-and-destination-of-commuting-patterns-in-the-main-metropolitan-regions-of-haiti-using-cdr), more examples can be found [here](http://www.flowminder.org/work/research-innovation).
  
 CDRs constitute a highly sensitive data set, so FlowKit is designed with privacy protection in mind. It includes the FlowAuth framework to enable fine grained authorization with extensive access logging, making it an important tool for deployment of a GDPR compliant CDR analysis system.  
 
@@ -44,13 +46,13 @@ This architecture is shown in the figure below.
     An authentication management system used to generate access tokens for use with FlowClient.
     <p>    
 
-* Redis
+- Redis
 
     A further container is created to host a redis message platform used internally by FlowMachine.  
 
-FlowKit is in active development, visit the project's  [roadmap](./developer/roadmap) to get a sense about upcoming developments.
+FlowKit is in active development, visit the project's  [roadmap](4-developer.md#roadmap) to get a sense about upcoming developments.
 
-Continue to the FlowKit [installation documents](./install.md) to find out what type of install meets your requirements.
+Continue to the FlowKit [installation documents](2-install.md) to find out what type of install meets your requirements.
 
 These documents are also hosted on [https://flowminder.github.io/FlowKit/](https://flowminder.github.io/FlowKit).
 

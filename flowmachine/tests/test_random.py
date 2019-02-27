@@ -129,7 +129,9 @@ def test_random_from_query(get_dataframe):
     """
     Tests whether class selects random rows from query.
     """
-    custom_query = CustomQuery("SELECT id, version FROM infrastructure.sites")
+    custom_query = CustomQuery(
+        "SELECT id, version FROM infrastructure.sites", column_names=["id", "version"]
+    )
     df = get_dataframe(custom_query.random_sample(size=7))
     assert len(df) == 7
 
@@ -238,7 +240,9 @@ def test_random_sample(get_dataframe):
     """
     Test whether the random_sample method in the Query object works.
     """
-    custom_query = CustomQuery("SELECT id, version FROM infrastructure.sites")
+    custom_query = CustomQuery(
+        "SELECT id, version FROM infrastructure.sites", ["id", "version"]
+    )
     df = get_dataframe(custom_query.random_sample(size=6))
     assert list(df.columns) == ["id", "version"]
     assert len(df) == 6

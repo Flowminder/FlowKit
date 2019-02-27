@@ -4,11 +4,11 @@
 
 FROM python:3.7
 
-COPY Pipfile* /app/
-RUN pip install pipenv && cd app && pipenv install --deploy
-COPY . /app/
 WORKDIR /app
-RUN pipenv run pip install .
+COPY Pipfile* /app/
+RUN pip install pipenv && pipenv install --deploy
+COPY . /app/
+RUN pipenv install .
 CMD ["pipenv", "run", "flowmachine"]
 ENV LOG_LEVEL=error
 ENV DB_PORT=5432

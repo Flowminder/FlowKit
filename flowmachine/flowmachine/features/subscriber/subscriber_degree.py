@@ -9,6 +9,8 @@ have done over a certain time period.
 
 
 """
+from typing import List
+
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
 
@@ -84,6 +86,10 @@ class SubscriberDegree(SubscriberFeature):
         )
         self._cols = ["subscriber", "degree"]
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "degree"]
 
     def _make_query(self):
 

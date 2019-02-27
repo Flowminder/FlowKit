@@ -10,6 +10,8 @@ incoming per subscriber.
 
 
 """
+from typing import List
+
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -89,6 +91,10 @@ class ProportionEventOutgoing(SubscriberFeature):
             **kwargs
         )
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "proportion_outgoing", "proportion_incoming"]
 
     def _make_query(self):
 

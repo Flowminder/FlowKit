@@ -10,19 +10,27 @@ The modal daily location of a subscriber.
 
 
 """
+from typing import List
 
 from functools import reduce
 
+from flowmachine.core import Query
+from flowmachine.features.utilities.subscriber_locations import BaseLocation
+from flowmachine.utils.utils import get_columns_for_level
 from ..utilities.multilocation import MultiLocation
 
 
-class ModalLocation(MultiLocation):
+class ModalLocation(MultiLocation, BaseLocation, Query):
     """
     ModalLocation is the mode of multiple DailyLocations (or other similar
     location like objects.) It can be instantiated with either a date range
     or a list of DailyLocations (the former is more common). It gives each
     subscriber only one location.
     """
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber"] + get_columns_for_level(self.level, self.column_name)
 
     def _make_query(self):
         """
