@@ -7,7 +7,15 @@ from asynctest import return_once
 
 
 @pytest.mark.parametrize(
-    "status, http_code", [("done", 303), ("running", 202), ("awol", 404)]
+    "status, http_code",
+    [
+        ("executed", 303),
+        ("executing", 202),
+        ("awol", 404),
+        ("queued", 202),
+        ("errored", 500),
+        ("cancelled", 500),
+    ],
 )
 @pytest.mark.asyncio
 async def test_poll_query(

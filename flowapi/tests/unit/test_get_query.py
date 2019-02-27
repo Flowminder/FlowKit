@@ -34,7 +34,7 @@ async def test_get_query(app, dummy_zmq_server, access_token_builder):
     dummy_zmq_server.side_effect = (
         {"id": 0, "query_kind": "modal_location"},
         {"id": 0, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-        {"sql": "SELECT 1;", "status": "done"},
+        {"sql": "SELECT 1;", "status": "executed"},
     )
     response = await client.get(
         f"/api/0/get/0", headers={"Authorization": f"Bearer {token}"}
@@ -48,10 +48,12 @@ async def test_get_query(app, dummy_zmq_server, access_token_builder):
 @pytest.mark.parametrize(
     "status, http_code",
     [
-        ("done", 200),
-        ("running", 202),
+        ("executed", 200),
+        ("executing", 202),
+        ("queued", 202),
         ("awol", 404),
-        ("error", 403),
+        ("errored", 403),
+        ("known", 404),
         ("NOT_A_STATUS", 500),
     ],
 )

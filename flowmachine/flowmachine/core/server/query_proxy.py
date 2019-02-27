@@ -8,6 +8,7 @@ from json import dumps, loads, JSONDecodeError
 
 from flowmachine.core import Query, GeoTable
 from flowmachine.core.cache import get_query_object_by_id, cache_table_exists
+from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.features import (
     daily_location,
     ModalLocation,
@@ -65,12 +66,8 @@ class RedisInterface:
     def keys(self):
         return self._redis.keys()
 
-    def has_lock(self, key):
-        lock = redis_lock.Lock(self._redis, key)
-        if lock.get_owner_id() is None:
-            return False
-        else:
-            return True
+    def query_status(self, query_id: str) -> QueryState:
+        return QueryStateMachine(self._redis, query_id).current_query_state
 
 
 class QueryProxyError(Exception):
@@ -488,15 +485,13 @@ class QueryProxy:
         query_id = self._get_query_id_from_redis()
         logger.debug(f"Getting status for query {query_id} of kind {self.query_kind}")
 
-        if self.redis_interface.has_lock(query_id):
-            status = "running"
-        else:
-            if cache_table_exists(Query.connection, query_id):
-                status = "done"
-            else:
-                status = "awol"
+        status = self.redis_interface.query_status(query_id)
+        if status == QueryState.EXECUTED and not cache_table_exists(
+            Query.connection, query_id
+        ):
+            return "awol"
 
-        return status
+        return status.value
 
     def get_sql(self):
         """
@@ -509,11 +504,32 @@ class QueryProxy:
         """
         query_id = self._get_query_id_from_redis()
         try:
-            if self.redis_interface.has_lock(query_id):
-                raise QueryProxyError(f"Query with id '{query_id}' is still running.")
-            else:
-                return get_sql_for_query_id(query_id)
-        except (AttributeError, ValueError):
+            query_state = self.redis_interface.query_status(query_id)
+        except ValueError as e:
+            raise QueryProxyError(
+                f"Got a bad state for '{query_id}'. Original exception was {e}"
+            )
+
+        if query_state == QueryState.EXECUTING:
+            raise QueryProxyError(f"Query with id '{query_id}' is still running.")
+        elif query_state == QueryState.QUEUED:
+            raise QueryProxyError(f"Query with id '{query_id}' is still queued.")
+        elif query_state == QueryState.ERRORED:
+            raise QueryProxyError(f"Query with id '{query_id}' is failed.")
+        elif query_state == QueryState.CANCELLED:
+            raise QueryProxyError(f"Query with id '{query_id}' was cancelled.")
+        elif query_state == QueryState.RESETTING:
+            raise QueryProxyError(
+                f"Query with id '{query_id}' is being removed from cache."
+            )
+        elif query_state == QueryState.KNOWN:
             raise MissingQueryError(
-                query_id, msg=f"Query with id '{query_id}' does not exist"
+                query_id,
+                msg=f"Query with id '{query_id}' has not been run yet, or was reset.",
+            )
+        elif query_state == QueryState.EXECUTED:
+            return get_sql_for_query_id(query_id)
+        else:
+            raise QueryProxyError(
+                f"Unknown state for query with id '{query_id}'. Got {query_state}."
             )

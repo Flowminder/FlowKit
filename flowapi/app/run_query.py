@@ -43,16 +43,18 @@ async def poll_query(query_id):
     )
     message = await request.socket.recv_json()
 
-    if message["status"] == "done":
+    if message["status"] == "executed":
         return (
             jsonify({}),
             303,
             {"Location": url_for(f"query.get_query", query_id=message["id"])},
         )
-    elif message["status"] == "running":
-        return jsonify({}), 202
+    elif message["status"] in ("executing", "queued"):
+        return jsonify({"status": message["status"]}), 202
+    elif message["status"] in ("errored", "cancelled"):
+        return jsonify({"status": message["status"]}), 500
     else:
-        return jsonify({}), 404
+        return jsonify({"status": message["status"]}), 404
 
 
 @blueprint.route("/get/<query_id>")
@@ -70,7 +72,7 @@ async def get_query(query_id):
             jsonify({"status": "Error", "msg": "Server responded without status"}),
             500,
         )
-    if message["status"] == "done":
+    if message["status"] == "executed":
         results_streamer = stream_with_context(stream_result_as_json)(
             message["sql"], additional_elements={"query_id": query_id}
         )
@@ -86,11 +88,11 @@ async def get_query(query_id):
                 "Content-type": mimetype,
             },
         )
-    elif message["status"] == "running":
+    elif message["status"] in ("executing", "queued"):
         return jsonify({}), 202
-    elif message["status"] == "error":
+    elif message["status"] == "errored":
         return jsonify({"status": "Error", "msg": message["error"]}), 403
-    elif status == "awol":
+    elif status in ("awol", "known"):
         return (jsonify({"status": "Error", "msg": message["error"]}), 404)
     else:
         return jsonify({"status": "Error", "msg": f"Unexpected status: {status}"}), 500

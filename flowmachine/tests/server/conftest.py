@@ -55,6 +55,24 @@ class DummyRedis:
     def __init__(self):
         self._store = {}
 
+    def setnx(self, name, val):
+        if name not in self._store:
+            self._store[name] = val.encode()
+
+    def eval(self, script, numkeys, name, event):
+        current_value = self._store[name]
+        try:
+            self._store[name] = self._store[event][current_value]
+            return self._store[name], current_value
+        except KeyError:
+            return current_value, None
+
+    def hset(self, key, current, next):
+        try:
+            self._store[key][current.encode()] = next.encode()
+        except KeyError:
+            self._store[key] = {current.encode(): next.encode()}
+
     def set(self, key, value):
         self._store[key] = value.encode()
 
