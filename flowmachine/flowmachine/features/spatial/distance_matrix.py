@@ -7,6 +7,8 @@ Utility methods for calculating a distance
 matrix from a given point collection.
 
 """
+from typing import List
+
 from flowmachine.utils.utils import get_columns_for_level
 from ...core.query import Query
 from ...core.mixins import GraphMixin
@@ -70,6 +72,25 @@ class DistanceMatrix(GraphMixin, Query):
         self.return_geometry = return_geometry
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        cols = get_columns_for_level(self.level)
+
+        try:
+            cols.remove("lat")
+            cols.remove("lon")
+        except ValueError:
+            pass  # Nothing to remove
+
+        col_names = [f"{c}_from" for c in cols]
+        col_names += [f"{c}_to" for c in cols]
+        col_names += [f"{c}_from" for c in ("lon", "lat")]
+        col_names += [f"{c}_to" for c in ("lon", "lat")]
+        col_names += ["distance"]
+        if self.return_geometry:
+            col_names += ["geom_origin", "geom_destination"]
+        return col_names
 
     def _make_query(self):
         cols = get_columns_for_level(self.level)

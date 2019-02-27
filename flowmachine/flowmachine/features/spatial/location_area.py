@@ -11,6 +11,7 @@ need to be point collections with geographic properties.
 
 """
 import logging
+from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
@@ -53,6 +54,17 @@ class _viewshedSlopes(Query):
         self.above_ground_position = above_ground_position
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return [
+            "location_id",
+            "geom_point",
+            "od_line_identifier",
+            "geom",
+            "distance",
+            "slope",
+        ]
 
     def _make_query(self):
 
@@ -158,6 +170,10 @@ class _computeArea(Query):
         self.geom_area_column = geom_area_column
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["location_id", "geom_point", self.geom_area_column, "area"]
 
     def _make_query(self):
 
@@ -334,6 +350,10 @@ class LocationArea(GeoDataMixin, Query):
         self.computed_area = _computeArea(
             location_area_query=self.get_query(), geom_area_column=self.column_name
         )
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["location_id", "geom_point", self.column_name]
 
     def __get_point_statement(self):
         """

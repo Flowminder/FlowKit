@@ -14,7 +14,7 @@ import zmq
 from logging.handlers import TimedRotatingFileHandler
 from zmq.asyncio import Context
 
-from app.jwt_auth_callbacks import register_logging_callbacks
+from .jwt_auth_callbacks import register_logging_callbacks
 from .run_query import blueprint as run_query_blueprint
 from .geography import blueprint as geography_blueprint
 from flask_jwt_extended import JWTManager

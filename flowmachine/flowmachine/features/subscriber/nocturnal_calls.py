@@ -11,6 +11,8 @@ hour definitions can be specified.
 
 
 """
+from typing import List
+
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import subscriber_locations
 
@@ -56,6 +58,10 @@ class NocturnalCalls(SubscriberFeature):
         self.subscriber_identifier = self.ul.subscriber_identifier
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "percentage_nocturnal"]
 
     def _make_query(self):
         """

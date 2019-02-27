@@ -9,7 +9,7 @@ Class for calculating MDS volume statistics.
 
 import warnings
 
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -75,6 +75,7 @@ class MDSVolume(SubscriberFeature):
         self.hours = hours
         self.volume = volume
         self.statistic = statistic.lower()
+        self.tables = tables
 
         if self.statistic not in valid_stats:
             raise ValueError(
@@ -88,9 +89,7 @@ class MDSVolume(SubscriberFeature):
 
         column_list = [self.subscriber_identifier, f"volume_{volume}"]
 
-        self.tables = parse_tables_ensuring_columns(
-            self.connection, tables, column_list
-        )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -103,6 +102,10 @@ class MDSVolume(SubscriberFeature):
         )
 
         super().__init__()
+
+    @property
+    def column_names(self):
+        return ["subscriber", f"volume_{self.statistic}"]
 
     def _make_query(self):
 

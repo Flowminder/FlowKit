@@ -58,9 +58,9 @@ def test_parse():
     )
 
 
-def test_graph():
+def test_dependency_graph():
     """Test that dependency graph util runs and has some correct entries."""
-    g = daily_location("2016-01-01").dependency_graph()
+    g = daily_location("2016-01-01").dependency_graph(analyse=True)
     sd = EventTableSubset(
         "2016-01-01", "2016-01-02", columns=["msisdn", "datetime", "location_id"]
     )
