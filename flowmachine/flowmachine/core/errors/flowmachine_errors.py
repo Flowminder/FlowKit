@@ -66,12 +66,14 @@ class MissingDateError(Exception):
         Exception.__init__(self, msg)
 
 
-class MissingDirectionColumnError(Exception):
+class MissingColumnsError(Exception):
     """
-    Raised when instantiating a class that requires a directed calculation but
-    for which the direction column is missing for any of the tables requested.
+    Raised when instantiating a class that requires a particular column but
+    for which it is missing for any of the tables requested.
     """
 
-    def __init__(self, tables):
-        msg = "Direction is missing for {tables}"
-        Exception.__init__(self, msg)
+    def __init__(self, columns, tables):
+        if len(columns) == 1:
+            msg = "{columns[0].capitalize()} is missing for {tables}"
+        else:
+            msg = "{columns} are missing for {tables}"

@@ -28,6 +28,8 @@ def poll_until_done(port, query_id, max_tries=100):
         time.sleep(0.1)
 
 
+# TODO: This is almost identical to the new helper function `send_message_and_receive_reply` in flowmachine.core.server.utils
+#       We should probably remove the helper function here and switch the tests to using the other.
 def send_message_and_get_reply(zmq_url, msg):
     """
     Send message `msg` to zeromq instance on the given port and return the reply.

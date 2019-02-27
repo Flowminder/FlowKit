@@ -8,6 +8,7 @@ random events, msisdns, sites or a given geographical boundary. All the samples
 can be subsetted by time.
 """
 import random
+from typing import List
 
 from .query import Query
 from .table import Table
@@ -311,7 +312,8 @@ def random_factory(parent_class):
                 return f"x{self.md5}"
 
         # Overwrite to call on parent instead
-        def get_column_names(self):
+        @property
+        def column_names(self) -> List[str]:
             return self.query.column_names
 
     return Random

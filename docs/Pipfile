@@ -27,6 +27,7 @@ mknotebooks = "*"
 flask-jwt-extended = "*"
 quart = "*"
 python-dotenv = "*"
+structlog = "*"
 
 [dev-packages]
 

@@ -54,6 +54,9 @@ subs = [
     "PairedPerLocationSubscriberCallDurations",
     "MostFrequentLocation",
     "LastLocation",
+    "PeriodicEntropy",
+    "LocationEntropy",
+    "ContactEntropy",
     "EventCount",
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
@@ -62,6 +65,7 @@ subs = [
     "PeriodicEntropy",
     "LocationEntropy",
     "ContactEntropy",
+    "DistanceCounterparts",
 ]
 
 rast = ["RasterStatistics"]
@@ -80,7 +84,7 @@ spat = [
 
 ut = [
     "GroupValues",
-    "FeatureCollection",
+    "feature_collection",
     "subscriber_locations",
     "EventTableSubset",
     "UniqueSubscribers",

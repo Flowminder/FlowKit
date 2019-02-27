@@ -5,9 +5,9 @@
 # -*- coding: utf-8 -*-
 
 import warnings
+from typing import List
 
-from ...core import Table
-from ...core.errors.flowmachine_errors import MissingDirectionColumnError
+from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -77,7 +77,8 @@ class EventCount(SubscriberFeature):
             self.tables = tables
         else:
             column_list = [self.subscriber_identifier, "outgoing"]
-            self.tables = self._parse_tables_ensuring_direction_present(tables)
+            verify_columns_exist_in_all_tables(self.connection, tables, column_list)
+            self.tables = tables
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -90,33 +91,15 @@ class EventCount(SubscriberFeature):
         )
         super().__init__()
 
-    def _parse_tables_ensuring_direction_present(self, tables):
-
-        if isinstance(tables, str) and tables.lower() == "all":
-            tables = [f"events.{t}" for t in self.connection.subscriber_tables]
-        elif type(tables) is str:
-            tables = [tables]
-        else:
-            tables = tables
-
-        parsed_tables = []
-        tables_lacking_direction_column = []
-        for t in tables:
-            if "outgoing" in Table(t).column_names:
-                parsed_tables.append(t)
-            else:
-                tables_lacking_direction_column.append(t)
-
-        if tables_lacking_direction_column:
-            raise MissingDirectionColumnError(tables_lacking_direction_column)
-
-        return parsed_tables
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "event_count"]
 
     def _make_query(self):
         where_clause = ""
         if self.direction != "both":
             where_clause = (
-                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"WHERE outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
         return f"""
         SELECT subscriber, COUNT(*) as event_count FROM

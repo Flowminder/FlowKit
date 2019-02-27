@@ -146,7 +146,7 @@ def mocked_connections(monkeypatch):
 @pytest.fixture
 def clean_env(monkeypatch):
     monkeypatch.delenv("LOG_LEVEL", raising=False)
-    monkeypatch.delenv("LOG_FILE", raising=False)
+    monkeypatch.delenv("WRITE_LOG_FILE", raising=False)
     monkeypatch.delenv("DB_PORT", raising=False)
     monkeypatch.delenv("DB_USER", raising=False)
     monkeypatch.delenv("DB_PW", raising=False)
@@ -162,7 +162,8 @@ def clean_env(monkeypatch):
 @pytest.fixture
 def get_dataframe(flowmachine_connect):
     yield lambda query: pd.read_sql_query(
-        query.get_query(), con=flowmachine_connect.engine
+        f"SELECT {', '.join(query.column_names)} FROM ({query.get_query()}) _",
+        con=flowmachine_connect.engine,
     )
 
 

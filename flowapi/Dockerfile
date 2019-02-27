@@ -4,12 +4,11 @@
 
 FROM python:3.7
 
+WORKDIR /flowapi
 COPY Pipfile* /
 RUN pip install pipenv && pipenv install --deploy
-COPY app /app
+COPY app /flowapi/app
 RUN mkdir /var/log/flowapi
 VOLUME /var/log/flowapi
-ENTRYPOINT ["pipenv", "run"]
-
-CMD ["app/start.sh"]
-ENV CONFIG=production
+ENV QUART_ENV=production
+CMD ["pipenv", "run", "./app/start.sh"]
