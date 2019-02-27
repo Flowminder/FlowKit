@@ -10,10 +10,18 @@ files before each commit.
 
 To install the pre-commit hook run:
 ```bash
-$ cd flowmachine && pipenv run pre-commit install
+$ pre-commit install
 ```
-If you ever want to uninstall the hook you can do this by running `pipenv run pre-commit uninstall` (inside the
-`flowmachine/` directory).
+If you ever want to uninstall the hook you can do this by running `pipenv run pre-commit uninstall`.
+
+The above command requires `pre-commit` to be installed on your system. For convenience, it is also
+included in the `flowmachine` pipenv environment, so if you don't want to install it system-wide you
+can run it as follows (it will still be installed and available for all FlowKit components, not just
+flowmachine).
+```bash
+$ cd flowmachine/
+$ pipenv run pre-commit install
+```
 
 Note that if you run `git commit` and any files are modified by the re-formatting, the pre-commit hook will abort
 the commit (but leave the files re-formatted). Simply repeat the `git commit` command in order to complete the commit.
