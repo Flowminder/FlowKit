@@ -1,3 +1,13 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# -*- coding: utf-8 -*-
+"""
+State machine for queries. Tracks where in a lifecycle a query is to allow
+waiting for a query to finish running, and reporting status to the user.
+"""
+
 import logging
 from enum import Enum
 from time import sleep
@@ -11,6 +21,10 @@ logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
 class QueryState(Enum):
+    """
+    Possible states for a query to be in.
+    """
+
     QUEUED = "queued"
     EXECUTED = "executed"
     CANCELLED = "cancelled"
@@ -21,6 +35,10 @@ class QueryState(Enum):
 
 
 class QueryEvent(Enum):
+    """
+    Events that trigger a transition to a new state.
+    """
+
     EXECUTE = "execute"
     FINISH = "finish"
     FINISH_RESET = "finish_reset"
@@ -31,6 +49,30 @@ class QueryEvent(Enum):
 
 
 class QueryStateMachine:
+    """
+    Implements a state machine for a query's lifecycle, backed by redis.
+
+    Each query, once instantiated, is in one of a number of possible states.
+    - known, indicating that the query has been created, but not yet run.
+    - queued, which indicates that a query is going to be executed in future
+    - executing, for queries which are currently running in FlowDB
+    - executed, indicating that the query has finished running successfully
+    - errored, when a query has been run but failed to succeed
+    - cancelled, when execution was terminated by the user
+    - resetting, when a previously run query is being purged from cache
+
+    When the query is in a queued, executing, or resetting state, methods which need
+    to use the results of the query should wait. The `block_while_executing` method
+    will block while the query is in any of these states.
+
+    Parameters
+    ----------
+    redis_client : StrictRedis
+        Client for redis
+    query_id : str
+        md5 query identifier
+    """
+
     def __init__(self, redis_client: StrictRedis, query_id: str):
         self.redis_client = redis_client
         self.query_id = query_id
@@ -146,6 +188,16 @@ class QueryStateMachine:
         return self.trigger_event(QueryEvent.FINISH_RESET)
 
     def block_while_executing(self):
+        """
+        Blocks while the query is in any state that makes how to get
+        the result of it indeterminate (i.e. currently running, restting,
+        or scheduled to run).
+
+        Returns
+        -------
+        bool
+            True if the query has been executed successfully and is in cache.
+        """
         if self.is_executing or self.is_queued or self.is_resetting:
             while not self.is_executed:
                 sleep(1)
