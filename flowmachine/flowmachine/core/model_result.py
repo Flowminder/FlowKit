@@ -13,10 +13,16 @@ of postgres.
 
 import logging
 from concurrent.futures import Future
+from time import sleep
+
 from typing import List, Union
 
 import pandas as pd
 
+from flowmachine.core.errors.flowmachine_errors import (
+    QueryCancelledException,
+    QueryErroredException,
+)
 from flowmachine.core.query_state import QueryStateMachine
 from .query import Query
 
@@ -115,9 +121,7 @@ class ModelResult(Query):
         except AttributeError:
             return super().column_names
 
-    def to_sql(
-        self, name: str, schema: Union[str, None] = None, force: bool = False
-    ) -> Future:
+    def to_sql(self, name: str, schema: Union[str, None] = None) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -128,8 +132,6 @@ class ModelResult(Query):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
 
         Returns
         -------
@@ -155,22 +157,45 @@ class ModelResult(Query):
             if this_thread_is_owner:
                 logger.debug("Obtained storage lock.")
                 con = self.connection.engine
-                if force:
-                    self.invalidate_db_cache(name, schema=schema)
                 try:
                     with con.begin():
                         logger.debug("Using pandas to store.")
                         self._df.to_sql(name, con, schema=schema, index=False)
+                        # Mark as finished before writing meta to avoid getting blocked when
+                        # meta calls _make_query
+                        q_state_machine.finish()
                         if schema == "cache":
                             self._db_store_cache_metadata(compute_time=self._runtime)
+
                 except AttributeError:
                     logger.debug(
                         "No dataframe to store, presumably because this"
                         " was retrieved from the db."
                     )
-            logger.debug("Released storage lock.")
+            elif q_state_machine.is_executing:
+                logger.debug(
+                    f"Model result '{self.md5}' being written elsewhere, waiting for it to finish."
+                )
+                while q_state_machine.is_executing:
+                    sleep(5)
+
+            if q_state_machine.is_executed_without_error:
+                return self
+            elif q_state_machine.is_cancelled:
+                logger.error(f"Model result write '{self.md5}' was cancelled.")
+                raise QueryCancelledException(self.md5)
+            elif q_state_machine.errored:
+                logger.error(f"Model result write '{self.md5}' finished with an error.")
+                raise QueryErroredException(self.md5)
+                logger.debug("Released storage lock.")
             return self
 
+        current_state, changed_to_queue = QueryStateMachine(
+            self.redis, self.md5
+        ).enqueue()
+        logger.debug(
+            f"Attempted to enqueue write of model result with id '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+        )
         store_future = self.tp.submit(do_query)
         return store_future
 

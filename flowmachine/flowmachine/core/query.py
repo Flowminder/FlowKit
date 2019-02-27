@@ -554,7 +554,7 @@ class Query(metaclass=ABCMeta):
             self.redis, self.md5
         ).enqueue()
         logger.debug(
-            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change was happened {'here and now' if changed_to_queue else 'elsewhere'}."
+            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
         store_future = self.tp.submit(do_query)
         return store_future
