@@ -6,7 +6,6 @@ import os
 
 import pytest
 
-from hashlib import md5
 
 from flowmachine.features import daily_location
 from flowmachine.features.location.flows import *
@@ -42,12 +41,6 @@ def test_column_names_flow(exemplar_level_param):
         daily_location("2016-01-01", **exemplar_level_param),
         daily_location("2016-01-01", **exemplar_level_param),
     )
-    assert flow.head(0).columns.tolist() == flow.column_names
-
-
-def test_column_names_edgelist(exemplar_level_param):
-    """ Test that column_names property matches head(0) for EdgeList"""
-    flow = EdgeList(daily_location("2016-01-01", **exemplar_level_param).aggregate())
     assert flow.head(0).columns.tolist() == flow.column_names
 
 
