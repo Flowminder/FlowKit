@@ -9,7 +9,7 @@ Class for calculating top-up statistics.
 
 import warnings
 
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -71,6 +71,7 @@ class TopUpAmount(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.statistic = statistic.lower()
+        self.tables = tables
 
         if self.statistic not in valid_stats:
             raise ValueError(
@@ -81,9 +82,7 @@ class TopUpAmount(SubscriberFeature):
 
         column_list = [self.subscriber_identifier, "recharge_amount"]
 
-        self.tables = parse_tables_ensuring_columns(
-            self.connection, tables, column_list
-        )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -96,6 +95,10 @@ class TopUpAmount(SubscriberFeature):
         )
 
         super().__init__()
+
+    @property
+    def column_names(self):
+        return ["subscriber", f"amount_{self.statistic}"]
 
     def _make_query(self):
 
@@ -182,6 +185,7 @@ class TopUpBalance(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.statistic = statistic.lower()
+        self.tables = tables
 
         if self.statistic not in valid_stats:
             raise ValueError(
@@ -197,9 +201,7 @@ class TopUpBalance(SubscriberFeature):
             "post_event_balance",
         ]
 
-        self.tables = parse_tables_ensuring_columns(
-            self.connection, tables, column_list
-        )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -212,6 +214,10 @@ class TopUpBalance(SubscriberFeature):
         )
 
         super().__init__()
+
+    @property
+    def column_names(self):
+        return ["subscriber", f"balance_{self.statistic}"]
 
     def _make_query(self):
 
