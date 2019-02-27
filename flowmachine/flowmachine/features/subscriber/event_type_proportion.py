@@ -100,6 +100,10 @@ class ProportionEventType(SubscriberFeature):
 
         super().__init__()
 
+    @property
+    def column_names(self):
+        return ["subscriber", "proportion"]
+
     def _make_query(self):
         return f"""
         SELECT D.subscriber, N.event_count::float / D.event_count::float AS proportion
