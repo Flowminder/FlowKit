@@ -142,7 +142,7 @@ async def get_reply_for_message(  # pragma: no cover
             # Explicitly project to WGS84 (SRID=4326) to conform with GeoJSON standard
             sql = q.geojson_query(crs=4326)
             query_run_log.info("get_geography", **run_log_dict)
-            reply = {"status": QueryState.EXECUTED, "sql": sql}
+            reply = {"status": QueryState.EXECUTED.value, "sql": sql}
 
         else:
             logger.debug(f"Unknown action: '{action}'")
