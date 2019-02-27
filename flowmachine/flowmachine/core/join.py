@@ -61,6 +61,13 @@ class Join(Query):
 
         self.left = left
         self.right = right
+        if left_append == right_append and not set(left.column_names).isdisjoint(
+            right.column_names
+        ):
+            raise ValueError(
+                f"Columns {set(left.column_names).intersection(right.column_names)} are ambiguous. Pass left_append or right_append to disambiguate."
+            )
+
         # Always store the join columns as a list, even if there is only one of them
         if type(on_left) is str:
             self.on_left = [on_left]

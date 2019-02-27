@@ -5,7 +5,7 @@
 """
 Tests for our custom join API
 """
-
+from typing import List
 
 import pytest
 
@@ -22,8 +22,13 @@ class TruncatedAndOffsetDailyLocation(Query):
         self.date = date
         self.size = size
         self.offset = offset
+        self.dl_obj = daily_location(self.date)
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return self.dl_obj.column_names
 
     def _make_query(self):
 
@@ -31,7 +36,7 @@ class TruncatedAndOffsetDailyLocation(Query):
         SELECT * FROM
             ( SELECT * FROM ({dl}) AS dl LIMIT {size} OFFSET {offset} ) l
         """.format(
-            dl=daily_location(self.date).get_query(), size=self.size, offset=self.offset
+            dl=self.dl_obj.get_query(), size=self.size, offset=self.offset
         )
 
         return sql
@@ -40,12 +45,16 @@ class TruncatedAndOffsetDailyLocation(Query):
 @pytest.mark.parametrize("join_type", Join.join_kinds)
 def test_join_column_names(join_type):
     """Test that join column_names attribute is correct"""
-    t = Table("events.calls_20160101")
-    joined = t.join(t, on_left="msisdn", how=join_type)
-    cols = t.column_names
-    cols.remove("msisdn")
-    expected = ["msisdn"] + cols + [f"{c}" for c in cols]
-    assert expected == joined.column_names
+    t = Table("events.calls_20160101", columns=["location_id", "datetime"])
+    t2 = Table("infrastructure.cells", columns=["id", "geom_point"])
+    joined = t.join(t2, on_left="location_id", on_right="id", how=join_type)
+
+    expected = [
+        "location_id" if join_type in ("left", "inner", "left outer") else "id",
+        "datetime",
+        "geom_point",
+    ]
+    assert joined.column_names == expected
 
 
 def test_name_append():
@@ -76,6 +85,16 @@ def test_value_of_join(get_dataframe):
     assert 490 == len(df)
 
 
+def test_ambiguity_is_an_error():
+    """
+    Join raises an error if resulting columns are ambiguous.
+    """
+    with pytest.raises(ValueError):
+        daily_location("2016-01-01").join(
+            daily_location("2016-01-01"), on_left="subscriber"
+        )
+
+
 def test_left_join(get_dataframe):
     """
     FlowMachine.Join can be done as a left join.
@@ -84,7 +103,9 @@ def test_left_join(get_dataframe):
     stub1 = TruncatedAndOffsetDailyLocation("2016-01-01")
     stub2 = TruncatedAndOffsetDailyLocation("2016-01-01", offset=5)
 
-    table = get_dataframe(stub1.join(stub2, on_left="subscriber", how="left"))
+    table = get_dataframe(
+        stub1.join(stub2, on_left="subscriber", how="left", left_append="_")
+    )
     assert 10 == len(table)
     assert 0 == table.subscriber.isnull().sum()
 
@@ -96,7 +117,9 @@ def test_right_join(get_dataframe):
     stub1 = TruncatedAndOffsetDailyLocation("2016-01-01")
     stub2 = TruncatedAndOffsetDailyLocation("2016-01-01", offset=5)
 
-    table = get_dataframe(stub1.join(stub2, on_left="subscriber", how="right"))
+    table = get_dataframe(
+        stub1.join(stub2, on_left="subscriber", how="right", left_append="_")
+    )
     assert 10 == len(table)
     assert 0 == table.subscriber.isnull().sum()
 
@@ -116,7 +139,9 @@ def test_using_join_to_subset(get_dataframe):
     Should be able to use the join method to subset one query by another
     """
     dl1 = daily_location("2016-01-01")
-    subset_q = CustomQuery("SELECT msisdn FROM events.calls LIMIT 10")
+    subset_q = CustomQuery(
+        "SELECT msisdn FROM events.calls LIMIT 10", column_names=["msisdn"]
+    )
     sub = dl1.join(subset_q, on_left=["subscriber"], on_right=["msisdn"])
     value_set = set(get_dataframe(sub).subscriber)
     assert set(get_dataframe(subset_q).msisdn) == value_set

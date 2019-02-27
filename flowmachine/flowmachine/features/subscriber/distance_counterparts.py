@@ -6,10 +6,11 @@
 """
 Calculate metrics related with distance between caller and her/his counterparts.
 """
+from typing import List
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ..spatial.distance_matrix import DistanceMatrix
@@ -36,13 +37,13 @@ class DistanceCounterparts(SubscriberFeature):
         of hours within each day.
     tables: str, default 'all'.
         The table must have a `msisdn_counterpart` column.
-    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
-        Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
     statistic :  {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
+    exclude_self_calls : bool, default True
+        Set to false to *include* calls a subscriber made to themself
         Defaults to sum, aggregation statistic over the durations.
 
 
@@ -71,8 +72,8 @@ class DistanceCounterparts(SubscriberFeature):
         hours="all",
         tables="all",
         direction="both",
-        exclude_self_calls=True,
         subscriber_subset=None,
+        exclude_self_calls=True,
     ):
         self.tables = tables
         self.start = start
@@ -90,12 +91,12 @@ class DistanceCounterparts(SubscriberFeature):
             )
 
         column_list = ["msisdn", "msisdn_counterpart", "id", "location_id", "outgoing"]
-        self.tables = parse_tables_ensuring_columns(
-            self.connection, tables, column_list
-        )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
+        self.tables = tables
 
         # EventsTablesUnion will only subset on the subscriber identifier,
-        # which means that we need to query for a unioned table twice.
+        # which means that we need to query for a unioned table twice. That has
+        # a considerable negative impact on execution time.
         self.unioned_from_query = EventsTablesUnion(
             self.start,
             self.stop,
@@ -120,12 +121,16 @@ class DistanceCounterparts(SubscriberFeature):
 
         super().__init__()
 
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", f"distance_{self.statistic}"]
+
     def _make_query(self):
 
         filters = []
         if self.direction != "both":
             filters.append(
-                f"A.outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"A.outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
         if self.exclude_self_calls:
             filters.append("A.subscriber != A.msisdn_counterpart")

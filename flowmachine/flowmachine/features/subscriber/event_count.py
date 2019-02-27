@@ -5,8 +5,9 @@
 # -*- coding: utf-8 -*-
 
 import warnings
+from typing import List
 
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -76,9 +77,8 @@ class EventCount(SubscriberFeature):
             self.tables = tables
         else:
             column_list = [self.subscriber_identifier, "outgoing"]
-            self.tables = parse_tables_ensuring_columns(
-                self.connection, tables, column_list
-            )
+            verify_columns_exist_in_all_tables(self.connection, tables, column_list)
+            self.tables = tables
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -91,11 +91,15 @@ class EventCount(SubscriberFeature):
         )
         super().__init__()
 
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "event_count"]
+
     def _make_query(self):
         where_clause = ""
         if self.direction != "both":
             where_clause = (
-                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"WHERE outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
         return f"""
         SELECT subscriber, COUNT(*) as event_count FROM

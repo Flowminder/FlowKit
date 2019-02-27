@@ -9,9 +9,11 @@ have done over a certain time period.
 
 
 """
+from typing import List
+
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 
 
 class SubscriberDegree(SubscriberFeature):
@@ -81,15 +83,16 @@ class SubscriberDegree(SubscriberFeature):
         self.direction = direction
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
+        self.tables = tables
 
-        if self.direction == "both":
+        if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-        else:
+        elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
+        else:
+            raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        self.tables = parse_tables_ensuring_columns(
-            self.connection, tables, column_list
-        )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -100,17 +103,19 @@ class SubscriberDegree(SubscriberFeature):
             subscriber_identifier=self.subscriber_identifier,
             subscriber_subset=subscriber_subset,
         )
-
         self._cols = ["subscriber", "degree"]
-
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "degree"]
 
     def _make_query(self):
 
         filters = []
         if self.direction != "both":
             filters.append(
-                f"outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
         if self.exclude_self_calls:
             filters.append("subscriber != msisdn_counterpart")

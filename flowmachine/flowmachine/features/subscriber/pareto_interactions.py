@@ -10,6 +10,8 @@ that fraction of their contacts who account for 80% of their interactions.
 
 
 """
+from typing import List
+
 from .contact_balance import ContactBalance
 from .subscriber_degree import SubscriberDegree
 from ..utilities import EventsTablesUnion
@@ -153,3 +155,7 @@ class ParetoInteractions(SubscriberFeature):
         """
 
         return sql
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "pareto"]
