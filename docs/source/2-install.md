@@ -1,3 +1,5 @@
+Title: Installation
+
 #How to Install FlowKit
 
 There are three main ways to install FlowKit.
@@ -51,13 +53,11 @@ To run a demonstration version of FlowAuth use:
 docker run -p 8000:80 -e DEMO_MODE=1 flowminder/flowauth
 ```
 
-This will start FlowAuth, and pre-populate a disposable sqlite database with some dummy data. 
+This will start FlowAuth at <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a>, and pre-populate a disposable sqlite database with some dummy data. Log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`.
 
-The FlowAuth administration tool cannot be started at <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a>. Log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`.
+#### Granting user permissions in FlowAuth
 
-#### Generating tokens with FlowAuth for use in FlowClient
-
-The following steps using the FlowAuth administration tool are required to add a user and allow them to generate access tokens to communicate with a FlowKit server using FlowClient:
+The following steps using the FlowAuth administration tool are required to add a user and allow them to generate access tokens to communicate with a FlowKit server through FlowAPI:
 
 1. Log into FlowAuth as an administrator.
 
@@ -83,17 +83,7 @@ The following steps using the FlowAuth administration tool are required to add a
     - Add the user to the group.
 
 
-The user can then log in and generate a token:
-
-1. Log into FlowAuth (<a href="http://localhost:8000/" target="_blank">http://localhost:8000</a>) using the username and password created by the administrator.
-
-2. Optionally, click on the person icon (top right) and reset password.
-
-3. Select the server under "My Servers".
-
-4. Click the '+' icon to add a token, and give it a name (and optionally change the expiry and permissions). And Save.
-
-5. Click "TOKEN" to display the token string. Take a copy.
+The user can then log into FlowAuth and generate a token (see the [analyst section](3-analyst.md#flowauth) for instructions).
 
 
 ### FlowClient <a name="flowclient"> </a>
@@ -104,7 +94,7 @@ The FlowClient Python client is used to perform CDR analysis using the JupyterLa
 pip install flowclient
 ```
 
-Quick install is continued with an example of FlowClient usage [here](../flowclient).
+Quick install is continued with an example of FlowClient usage [here](3-analyst.md#flowclient).
 
 <a name="developers">
 

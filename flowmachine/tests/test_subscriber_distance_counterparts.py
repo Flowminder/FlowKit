@@ -21,11 +21,13 @@ def distance_matrix(get_dataframe):
 
 
 @pytest.fixture()
-def distance_counterparts(get_dataframe, distance_matrix):
-    """ Returns a dataframe with the distance from subscriber and counterpart
-    for each event. """
+def distance_counterparts_wanted(get_dataframe, distance_matrix):
+    """ Returns the wanted  dataframe with the distance from subscriber and
+    counterpart for each event. It uses pandas, instead of flowmachine, to
+    conduct the required calculations and to arrive at the expected results.
+    """
 
-    def _distance_counterparts(start, stop, direction, subset):
+    def _distance_counterparts_wanted(start, stop, direction, subset):
         events_a_query = EventsTablesUnion(
             start,
             stop,
@@ -60,59 +62,41 @@ def distance_counterparts(get_dataframe, distance_matrix):
 
         return events.loc[:, ["subscriber", "distance"]].groupby("subscriber")
 
-    return _distance_counterparts
+    return _distance_counterparts_wanted
 
 
-def test_distance_counterparts(get_dataframe, distance_counterparts):
+def test_distance_counterparts(get_dataframe, distance_counterparts_wanted):
     """
     Test some hand-picked results for DistanceCounterparts.
     """
     query = DistanceCounterparts("2016-01-01", "2016-01-07")
     df = get_dataframe(query).set_index("subscriber")
-    sample = df.sample(n=5)
-    dist = distance_counterparts("2016-01-01", "2016-01-07", "both", sample).mean()
-    joined = sample.join(dist)
-    assert joined["distance_avg"].to_dict() == pytest.approx(
-        joined["distance"].to_dict()
-    )
+    got = df.sample(n=5)
+    want = distance_counterparts_wanted("2016-01-01", "2016-01-07", "both", got).mean()
+    assert got.distance_avg.to_dict() == pytest.approx(want.distance.to_dict())
 
     query = DistanceCounterparts("2016-01-01", "2016-01-07", direction="out")
     df = get_dataframe(query).set_index("subscriber")
-    sample = df.sample(n=5)
-    dist = distance_counterparts("2016-01-01", "2016-01-07", "out", sample).mean()
-    joined = sample.join(dist)
-    assert joined["distance_avg"].to_dict() == pytest.approx(
-        joined["distance"].to_dict()
-    )
+    got = df.sample(n=5)
+    want = distance_counterparts_wanted("2016-01-01", "2016-01-07", "out", got).mean()
+    assert got.distance_avg.to_dict() == pytest.approx(want.distance.to_dict())
 
     query = DistanceCounterparts("2016-01-03", "2016-01-05", direction="in")
     df = get_dataframe(query).set_index("subscriber")
-    sample = df.sample(n=5)
-    dist = distance_counterparts("2016-01-03", "2016-01-05", "in", sample).mean()
-    joined = sample.join(dist)
-    assert joined["distance_avg"].to_dict() == pytest.approx(
-        joined["distance"].to_dict()
-    )
+    got = df.sample(n=5)
+    want = distance_counterparts_wanted("2016-01-03", "2016-01-05", "in", got).mean()
+    assert got.distance_avg.to_dict() == pytest.approx(want.distance.to_dict())
 
     query = DistanceCounterparts(
-        "2016-01-03",
-        "2016-01-05",
-        direction="in",
-        subscriber_subset=sample.index.values,
+        "2016-01-03", "2016-01-05", direction="in", subscriber_subset=got.index.values
     )
     df = get_dataframe(query).set_index("subscriber")
-    sample = df.sample(n=5)
-    dist = distance_counterparts("2016-01-03", "2016-01-05", "in", sample).mean()
-    joined = sample.join(dist)
-    assert joined["distance_avg"].to_dict() == pytest.approx(
-        joined["distance"].to_dict()
-    )
+    got = df.sample(n=5)
+    want = distance_counterparts_wanted("2016-01-03", "2016-01-05", "in", got).mean()
+    assert got.distance_avg.to_dict() == pytest.approx(want.distance.to_dict())
 
     query = DistanceCounterparts("2016-01-01", "2016-01-05", statistic="stddev")
     df = get_dataframe(query).set_index("subscriber")
-    sample = df.sample(n=5)
-    dist = distance_counterparts("2016-01-01", "2016-01-05", "both", sample).std()
-    joined = sample.join(dist)
-    assert joined["distance_stddev"].to_dict() == pytest.approx(
-        joined["distance"].to_dict()
-    )
+    got = df.sample(n=5)
+    want = distance_counterparts_wanted("2016-01-01", "2016-01-05", "both", got).std()
+    assert got.distance_stddev.to_dict() == pytest.approx(want.distance.to_dict())

@@ -1,6 +1,8 @@
+Title: Developer
+
 # Information for Developers
 
-Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](../install.md). 
+Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](2-install.md). 
 
 An outline roadmap is provided below together with details about [contributing to the project](#contrib).
 
@@ -86,7 +88,7 @@ The API exposes four routes:
 
 - `/geography/<aggregation_unit>`: return geography data for a given aggregation unit.
 
-At present, four query types are accessible through FlowAPI:
+At present, the following query types are accessible through FlowAPI:
 
 - `daily_location`
 
@@ -117,7 +119,7 @@ At present, four query types are accessible through FlowAPI:
 
 ### FlowAPI Access tokens
 
-As explained in the [quick install guide](../install.md), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
+As explained in the [quick install guide](2-install.md), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
 
 - API route permissions
 
@@ -127,7 +129,7 @@ As explained in the [quick install guide](../install.md), user authentication an
 
     Level of spatial aggregation at which the user is allowed to access the results of queries. Currently supports administrative levels `admin0`, `admin1`, `admin2`, `admin3`.
 
-JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The [FlowAuth](../../flowauth/) authentication management system is designed to generate JWTs for accessing FlowAPI.
+JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The [FlowAuth](2-install.md#installing-flowauth) authentication management system is designed to generate JWTs for accessing FlowAPI.
 
 
 <a name="flowmachine">
@@ -138,7 +140,7 @@ FlowMachine is a Python toolkit for the analysis of CDR data. It is essentially 
 
 ### Documentation
 
-Documentation for FlowMachine can be found [here](../../developer/api/flowmachine).
+Documentation for FlowMachine can be found [here](../flowmachine/flowmachine/).
 
 
 <a name="flowdb">
@@ -208,3 +210,33 @@ docker run --name flowdb_testdata -e FM_PASSWORD=foo -e API_PASSWORD=foo \
     like this: `initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted`.
     
     When using docker volumes, docker will manage the permissions for you.
+
+
+## FlowAuth
+
+## Quick setup to run the Frontend tests interactively
+
+For development purposes, it is useful to be able to run the Flowauth frontend tests interactively.
+
+- As an initial step, ensure that all the relevant Python and Javascript dependencies are installed.
+```
+cd /path/to/flowkit/flowauth/
+pipenv install
+
+cd /path/to/flowkit/flowauth/frontend
+npm install
+```
+
+- The following command sets both the flowauth backend and frontend running (and also opens the flowauth web interface at `http://localhost:3000/` in the browser).
+```
+cd /path/to/flowkit/flowauth/
+pipenv run start-all
+```
+
+- To open the Cypress UI, run the following in a separate terminal session:
+```
+cd /path/to/flowkit/flowauth/frontend/
+npm run cy:open
+```
+
+- You can then click the button "Run all specs", or select an individual spec to run only a subset of the tests.

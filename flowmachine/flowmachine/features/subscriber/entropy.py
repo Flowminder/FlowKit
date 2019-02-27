@@ -9,16 +9,23 @@ period.
 """
 
 from abc import ABCMeta, abstractmethod
+from typing import List
+
 from .metaclasses import SubscriberFeature
 from .contact_balance import ContactBalance
 from ..utilities.sets import EventsTablesUnion
 from ..utilities.subscriber_locations import subscriber_locations
 from ...utils.utils import get_columns_for_level
 from ...core import Table
+from ...utils.utils import verify_columns_exist_in_all_tables
 
 
 class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
     """ Base query for calculating entropy of subscriber features. """
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "entropy"]
 
     def _make_query(self):
 
@@ -120,6 +127,7 @@ class PeriodicEntropy(BaseEntropy):
         tables="all",
     ):
 
+        self.tables = tables
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
@@ -128,12 +136,12 @@ class PeriodicEntropy(BaseEntropy):
 
         if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "datetime"]
-            self.tables = tables
         elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "datetime", "outgoing"]
-            self.tables = self._parse_tables_ensuring_direction_present(tables)
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
+
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         # extracted from the POSTGRES manual
         allowed_phases = (
@@ -175,35 +183,13 @@ class PeriodicEntropy(BaseEntropy):
         )
         super().__init__()
 
-    def _parse_tables_ensuring_direction_present(self, tables):
-
-        if isinstance(tables, str) and tables.lower() == "all":
-            tables = [f"events.{t}" for t in self.connection.subscriber_tables]
-        elif type(tables) is str:
-            tables = [tables]
-        else:
-            tables = tables
-
-        parsed_tables = []
-        tables_lacking_direction_column = []
-        for t in tables:
-            if "outgoing" in Table(t).column_names:
-                parsed_tables.append(t)
-            else:
-                tables_lacking_direction_column.append(t)
-
-        if tables_lacking_direction_column:
-            raise MissingDirectionColumnError(tables_lacking_direction_column)
-
-        return parsed_tables
-
     @property
     def _absolute_freq_query(self):
 
         where_clause = ""
         if self.direction != "both":
             where_clause = (
-                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"WHERE outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
 
         return f"""
