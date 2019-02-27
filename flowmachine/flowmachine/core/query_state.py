@@ -20,7 +20,7 @@ from redis import StrictRedis
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
-class QueryState(Enum):
+class QueryState(str, Enum):
     """
     Possible states for a query to be in.
     """
@@ -34,7 +34,7 @@ class QueryState(Enum):
     KNOWN = "known"
 
 
-class QueryEvent(Enum):
+class QueryEvent(str, Enum):
     """
     Events that trigger a transition to a new state.
     """
@@ -76,52 +76,34 @@ class QueryStateMachine:
     def __init__(self, redis_client: StrictRedis, query_id: str):
         self.redis_client = redis_client
         self.query_id = query_id
-        self.state_machine = Finist(
-            redis_client, f"{query_id}-state", QueryState.KNOWN.value
+        self.state_machine = Finist(redis_client, f"{query_id}-state", QueryState.KNOWN)
+        self.state_machine.on(QueryEvent.QUEUE, QueryState.KNOWN, QueryState.QUEUED)
+        self.state_machine.on(
+            QueryEvent.EXECUTE, QueryState.QUEUED, QueryState.EXECUTING
         )
         self.state_machine.on(
-            QueryEvent.QUEUE.value, QueryState.KNOWN.value, QueryState.QUEUED.value
+            QueryEvent.FINISH, QueryState.EXECUTING, QueryState.EXECUTED
         )
         self.state_machine.on(
-            QueryEvent.EXECUTE.value,
-            QueryState.QUEUED.value,
-            QueryState.EXECUTING.value,
+            QueryEvent.CANCEL, QueryState.QUEUED, QueryState.CANCELLED
         )
         self.state_machine.on(
-            QueryEvent.FINISH.value,
-            QueryState.EXECUTING.value,
-            QueryState.EXECUTED.value,
+            QueryEvent.CANCEL, QueryState.EXECUTING, QueryState.CANCELLED
         )
         self.state_machine.on(
-            QueryEvent.CANCEL.value, QueryState.QUEUED.value, QueryState.CANCELLED.value
+            QueryEvent.RESET, QueryState.CANCELLED, QueryState.RESETTING
         )
         self.state_machine.on(
-            QueryEvent.CANCEL.value,
-            QueryState.EXECUTING.value,
-            QueryState.CANCELLED.value,
+            QueryEvent.RESET, QueryState.ERRORED, QueryState.RESETTING
         )
         self.state_machine.on(
-            QueryEvent.RESET.value,
-            QueryState.CANCELLED.value,
-            QueryState.RESETTING.value,
+            QueryEvent.RESET, QueryState.EXECUTED, QueryState.RESETTING
         )
         self.state_machine.on(
-            QueryEvent.RESET.value, QueryState.ERRORED.value, QueryState.RESETTING.value
+            QueryEvent.RESET, QueryState.EXECUTED, QueryState.RESETTING
         )
         self.state_machine.on(
-            QueryEvent.RESET.value,
-            QueryState.EXECUTED.value,
-            QueryState.RESETTING.value,
-        )
-        self.state_machine.on(
-            QueryEvent.RESET.value,
-            QueryState.EXECUTED.value,
-            QueryState.RESETTING.value,
-        )
-        self.state_machine.on(
-            QueryEvent.FINISH_RESET.value,
-            QueryState.RESETTING.value,
-            QueryState.KNOWN.value,
+            QueryEvent.FINISH_RESET, QueryState.RESETTING, QueryState.KNOWN
         )
 
     @property
@@ -163,7 +145,7 @@ class QueryStateMachine:
         return self.current_query_state == QueryState.CANCELLED
 
     def trigger_event(self, event: QueryEvent) -> Tuple[QueryState, bool]:
-        state, trigger_success = self.state_machine.trigger(event.value)
+        state, trigger_success = self.state_machine.trigger(event)
         return QueryState(state.decode()), trigger_success
 
     def cancel(self):

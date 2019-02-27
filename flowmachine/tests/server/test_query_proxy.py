@@ -230,6 +230,6 @@ def test_get_sql_errors(current_state, expected_error, dummy_redis, monkeypatch)
     )
     # Set query state
     qsm = QueryStateMachine(dummy_redis, query_id=q.md5)
-    dummy_redis._store[qsm.state_machine._name] = current_state.value.encode()
+    dummy_redis._store[qsm.state_machine._name] = current_state.encode()
     with pytest.raises(expected_error):
         sql = query_proxy.get_sql()

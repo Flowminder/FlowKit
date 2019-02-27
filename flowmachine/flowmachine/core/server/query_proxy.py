@@ -490,7 +490,7 @@ class QueryProxy:
         ):
             return "awol"
 
-        return status.value
+        return status
 
     def get_sql(self):
         """
