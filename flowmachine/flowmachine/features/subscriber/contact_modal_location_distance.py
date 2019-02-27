@@ -140,6 +140,10 @@ class ContactModalLocationDistance(SubscriberFeature):
 
         super().__init__()
 
+    @property
+    def column_names(self):
+        return ["subscriber", f"distance_{self.statistic}"]
+
 
     def _make_query(self):
 

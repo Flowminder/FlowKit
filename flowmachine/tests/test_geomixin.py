@@ -7,6 +7,7 @@ Tests for the GeoDataMixin mixin.
 """
 import os
 import json
+from typing import List
 
 import geojson
 
@@ -42,6 +43,10 @@ def test_massive_geojson():
 
         def _make_query(self):
             pass
+
+        @property
+        def column_names(self) -> List[str]:
+            return ["gid", "id", "geom", "junk_data"]
 
         def _geo_augmented_query(self):
             return (

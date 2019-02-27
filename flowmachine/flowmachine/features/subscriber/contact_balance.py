@@ -10,11 +10,12 @@ that a given contact participates out of the
 subscriber's total event count.
 
 """
+from typing import List
 
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 
 
 class ContactBalance(GraphMixin, SubscriberFeature):
@@ -81,20 +82,16 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.direction = direction
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
+        self.tables = tables
 
         if self.direction == "both":
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
-            self.tables = parse_tables_ensuring_columns(
-                self.connection, tables, column_list
-            )
         elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
         else:
             raise ValueError("Unidentified direction: {}".format(self.direction))
 
-        self.tables = parse_tables_ensuring_columns(
-            self.connection, tables, column_list
-        )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -108,14 +105,18 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self._cols = ["subscriber", "msisdn_counterpart", "events", "proportion"]
         super().__init__()
 
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "msisdn_counterpart", "events", "proportion"]
+
     def _make_query(self):
 
         filters = []
         if self.direction != "both":
             filters.append(
-                f"outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+                f"outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
-        if self.exclude_self_calls:
+        if (self.subscriber_identifier in {"msisdn"}) and (self.exclude_self_calls):
             filters.append("subscriber != msisdn_counterpart")
         where_clause = f"WHERE {' AND '.join(filters)} " if len(filters) > 0 else ""
 
@@ -198,6 +199,10 @@ class _ContactBalanceSubset(SubscriberFeature):
             """)
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber"]
 
     def _make_query(self):
 

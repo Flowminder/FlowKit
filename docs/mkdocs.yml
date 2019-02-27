@@ -1,11 +1,4 @@
 site_name: FlowKit
-nav:
-  - Introduction: index.md
-  - Installation: install.md
-  - Analyst: flowclient.md
-  - Developer: developer/roadmap.md
-  - Administrator: administrator/cache_management.md
-  - License: license.md
 repo_name: "Flowminder/FlowKit"
 repo_url: https://github.com/Flowminder/FlowKit
 docs_dir: source
@@ -15,10 +8,10 @@ plugins:
   - mktheapidocs:
       modules:
         flowmachine:
-          section: developer/api
+          section: flowmachine
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowmachine"
         flowclient:
-          section: analyst/client
+          section: flowclient
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
   - mknotebooks:
       execute: true
@@ -33,7 +26,8 @@ theme:
   # Default values, taken from mkdocs_theme.yml
   language: en
   feature:
-    tabs: true
+    # True to use tabs at the top, in addition to the side navbar
+    tabs: false
   palette:
     primary: "#095798"
     accent: "#2977B8"

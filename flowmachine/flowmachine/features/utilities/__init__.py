@@ -7,7 +7,7 @@ Utilities for working with features.
 """
 from .group_values import GroupValues
 from .subscriber_locations import subscriber_locations
-from .feature_collection import FeatureCollection
+from .feature_collection import feature_collection
 
 
 from .sets import UniqueSubscribers, SubscriberLocationSubset

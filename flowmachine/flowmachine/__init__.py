@@ -26,13 +26,13 @@ __flowdb_version__ = "0.2.0"
 del get_versions
 
 from .core.init import connect
-from .features.utilities import GroupValues, FeatureCollection
+from .features.utilities import GroupValues, feature_collection
 import flowmachine.models
 import flowmachine.features
 import flowmachine.utils
 import flowmachine.core
 
-methods = ["GroupValues", "FeatureCollection", "connect"]
+methods = ["GroupValues", "feature_collection", "connect"]
 
 sub_modules = ["core", "features", "utils", "models"]
 

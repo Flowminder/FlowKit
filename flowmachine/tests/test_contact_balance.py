@@ -14,7 +14,7 @@ import pytest
 
 def test_some_results(get_dataframe):
     """
-    TotalSubscriberEvents() returns a dataframe that contains hand-picked results.
+    ContactBalance() returns a dataframe that contains hand-picked results.
     """
     df = get_dataframe(ContactBalance("2016-01-01", "2016-01-07"))
     set_df = df.set_index("subscriber")
