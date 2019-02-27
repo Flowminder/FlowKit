@@ -6,6 +6,7 @@
 Tests for the basic functionality of the base classes that do not
 pertain to any one particular query
 """
+from typing import List
 
 import pytest
 from sqlalchemy.exc import ProgrammingError
@@ -54,6 +55,10 @@ def test_object_representation_is_correct():
         def _make_query(self):
             pass
 
+        @property
+        def column_names(self) -> List[str]:
+            return []
+
     o = inherits_object_representation()
     r = o.__repr__()
     assert "Query object of type" in r
@@ -76,6 +81,10 @@ def test_is_stored():
     class storable_query(Query):
         def _make_query(self):
             return """SELECT 1"""
+
+        @property
+        def column_names(self) -> List[str]:
+            return ["1"]
 
     sq = storable_query()
     sq.invalidate_db_cache()

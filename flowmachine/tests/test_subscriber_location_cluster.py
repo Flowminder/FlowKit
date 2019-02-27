@@ -7,6 +7,8 @@ Tests for Subscriber Location Clustering methods. Those methods cluster
 location based on different methods, offering good options for
 reducing the dimensionality of the problem.
 """
+from typing import List
+
 import pandas as pd
 
 
@@ -69,6 +71,10 @@ class Sites(GeoDataMixin, Query):
     """
     Selects the geometric coordinates of the versioned-sites.
     """
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["site_id", "version", "geom_point"]
 
     def _make_query(self):
 
@@ -165,7 +171,9 @@ def test_different_call_days_format(get_dataframe):
     assert isinstance(har, pd.DataFrame)
 
     cd_query = cd.get_query()
-    har = get_dataframe(HartiganCluster(calldays=CustomQuery(cd_query), radius=50))
+    har = get_dataframe(
+        HartiganCluster(calldays=CustomQuery(cd_query, cd.column_names), radius=50)
+    )
     assert isinstance(har, pd.DataFrame)
 
 

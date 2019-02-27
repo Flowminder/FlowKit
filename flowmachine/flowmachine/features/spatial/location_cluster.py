@@ -11,6 +11,7 @@ be used to any other point collection.
 
 """
 import logging
+from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
@@ -186,6 +187,13 @@ class LocationCluster(GeoDataMixin, Query):
             )
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        if self.aggregate:
+            return ["cluster_id", "location_id_members", "geom_cluster", "geom"]
+        else:
+            return ["location_id", "cluster_id", "geom"]
 
     def __create_aggregate_cluster_geometries(self, sql_points):
         """
