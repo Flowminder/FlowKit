@@ -24,7 +24,7 @@ from hashlib import md5
 from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.core.cache import touch_cache
-from flowmachine.utils.utils import rlock
+from flowmachine.utils import rlock
 from abc import ABCMeta, abstractmethod
 
 from .errors import NameTooLongError, NotConnectedError
@@ -880,7 +880,7 @@ class Query(metaclass=ABCMeta):
         >>> daily_location("2016-01-01").index_cols
         [['name'], '"subscriber"']
         """
-        from flowmachine.utils.utils import (
+        from flowmachine.utils import (
             get_columns_for_level,
         )  # Local import to avoid circular import
 

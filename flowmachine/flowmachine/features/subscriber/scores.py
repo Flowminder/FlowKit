@@ -15,7 +15,7 @@ from typing import List
 from ..utilities import EventsTablesUnion
 from ...core import Query
 from ...core import JoinToLocation
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 
 
 class EventScore(Query):

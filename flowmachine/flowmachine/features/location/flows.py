@@ -15,11 +15,9 @@ import logging
 from abc import ABCMeta
 from typing import List
 
-from uuid import uuid4
-
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin, GraphMixin
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 

@@ -12,7 +12,7 @@ Mixin providing utility methods for geographic type queries.
 import json
 import logging
 
-from flowmachine.utils.utils import proj4string
+from flowmachine.utils import proj4string
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
