@@ -32,7 +32,7 @@ async def test_get_geography(app, dummy_zmq_server, access_token_builder):
         }
     )
 
-    dummy_zmq_server.side_effect = ({"status": "done", "sql": "SELECT 1;"},)
+    dummy_zmq_server.side_effect = ({"status": "executed", "sql": "SELECT 1;"},)
     response = await client.get(
         f"/api/0/geography/{aggregation_unit}",
         headers={"Authorization": f"Bearer {token}"},
