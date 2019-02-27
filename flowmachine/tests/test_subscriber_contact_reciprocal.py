@@ -29,7 +29,9 @@ def test_proportion_contact_reciprocal(get_dataframe):
 
 def test_proportion_reciprocal(get_dataframe):
     """ Test a few cases of ProportionEventReciprocal. """
-    query = ProportionEventReciprocal("2016-01-01", "2016-01-08", exclude_self_calls=False)
+    query = ProportionEventReciprocal(
+        "2016-01-01", "2016-01-08", exclude_self_calls=False
+    )
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["self_caller"].proportion == 1
     assert df.loc["9vXy462Ej8V1kpWl"].proportion == 0

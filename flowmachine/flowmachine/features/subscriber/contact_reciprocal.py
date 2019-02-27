@@ -7,7 +7,7 @@
 Classes for searching and dealing with reciprocal contacts.
 """
 
-from ...utils.utils import parse_tables_ensuring_columns
+from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ...core.mixins.graph_mixin import GraphMixin
@@ -81,11 +81,10 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
         self.stop = stop
         self.hours = hours
         self.exclude_self_calls = exclude_self_calls
+        self.tables = tables
 
         column_list = ["msisdn", "msisdn_counterpart", "outgoing"]
-        self.tables = parse_tables_ensuring_columns(
-            self.connection, tables, column_list
-        )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.contact_in_query = ContactBalance(
             self.start,
@@ -110,6 +109,18 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
         )
 
         super().__init__()
+
+    @property
+    def column_names(self):
+        return [
+            "subscriber",
+            "msisdn_counterpart",
+            "events_in",
+            "events_out",
+            "proportion_in",
+            "proportion_out",
+            "reciprocal",
+        ]
 
     def _make_query(self):
 
@@ -214,6 +225,10 @@ class ProportionContactReciprocal(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
 
+    @property
+    def column_names(self):
+        return ["subscriber", "proportion"]
+
     def _make_query(self):
 
         return f"""
@@ -294,6 +309,7 @@ class ProportionEventReciprocal(SubscriberFeature):
         self.hours = hours
         self.exclude_self_calls = exclude_self_calls
         self.direction = direction
+        self.tables = tables
 
         if self.direction == "both":
             column_list = [self.subscriber_identifier, "msisdn", "msisdn_counterpart"]
@@ -305,9 +321,7 @@ class ProportionEventReciprocal(SubscriberFeature):
                 "outgoing",
             ]
 
-        self.tables = parse_tables_ensuring_columns(
-            self.connection, tables, column_list
-        )
+        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -336,6 +350,10 @@ class ProportionEventReciprocal(SubscriberFeature):
             )
 
         super().__init__()
+
+    @property
+    def column_names(self):
+        return ["subscriber", "proportion"]
 
     def _make_query(self):
 
