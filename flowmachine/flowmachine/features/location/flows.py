@@ -15,7 +15,6 @@ import logging
 from abc import ABCMeta
 from typing import List
 
-from uuid import uuid4
 
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin, GraphMixin
@@ -24,11 +23,39 @@ from ...utils.utils import get_columns_for_level
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
-class BaseFlow:
+class Flows(GeoDataMixin, GraphMixin, Query):
     """
-    Abstract flow class. There are different forms of flows, e.g. scaled flow
-    and a relative flow. They all have the same form, i.e. from_location, to_location.
+    An object representing the difference in locations between two location
+    type objects.
+
+    Parameters
+    ----------
+    loc1 : daily_location, or ModalLocation object
+        Object representing the locations of people within the
+        first time frame of interest
+    loc2 : daily_location, or ModalLocation object
+        As above for the second period
     """
+
+    def __init__(self, loc1, loc2):
+        """
+
+        """
+
+        if loc1.level != loc2.level:
+            raise ValueError(
+                "You cannot compute flows for locations on " + "different levels"
+            )
+
+        self.level = loc1.level
+        self.column_name = loc1.column_name
+        self.joined = loc1.join(
+            loc2, on_left="subscriber", left_append="_from", right_append="_to"
+        )
+        logger.info(
+            "{} locations are pre-calculated.".format(loc1.is_stored + loc2.is_stored)
+        )
+        super().__init__()
 
     def outflow(self):
         """
@@ -63,140 +90,6 @@ class BaseFlow:
         return (
             [f"{col}_from" for col in cols] + [f"{col}_to" for col in cols] + ["count"]
         )
-
-
-class EdgeList(BaseFlow, Query):
-    """
-    Takes a 'normal' Query object, and presents it in a Flows-like
-    form. Essentially, reindexes it by the cross product of the
-    enclosed query's columns. This allows you to use arithmetic
-    operations with a Flows, and a regular Query object.
-
-    In vector terms, equivalent to multiplying the query by a transposed one-filled
-    version of itself, expressed as an edgelist.
-
-    With `left_handed=False`, this is equivalent to multiplying a one-filled version
-    of the query by the transposed query.
-
-    Parameters
-    ----------
-    query : Query
-        Query object to construct an edgelist for, required to have a location column, and at least
-        one numeric column
-    count_column : str
-        Name of the column to make the count column, defaults to the rightmost.
-    left_handed : bool
-        Handedness of the reindex, set to False for right-handed.
-
-    Examples
-    --------
-
-    >>> dl = daily_location("2016-01-01")
-    >>> dl.aggregate().get_dataframe()
-                 name  total
-    0           Rasuwa     11
-    1         Sindhuli     14
-    2            Gulmi     12
-    >>> f = EdgeList(dl.aggregate())
-    >>> f.get_dataframe()
-        name_from         name_to  count
-    0      Rasuwa          Rasuwa     11
-    1      Rasuwa        Sindhuli     11
-    2      Rasuwa           Gulmi     11
-    >>> f = EdgeList(dl.aggregate(), left_handed=False)
-    >>> f.get_dataframe()
-        name_from         name_to  count
-    0      Rasuwa          Rasuwa     11
-    1      Rasuwa        Sindhuli     14
-    2      Rasuwa           Gulmi     12
-    >>> f = EdgeList(dl.aggregate(), left_handed=False, count_column="name")
-    >>> f.get_dataframe()
-        name_from         name_to  count
-    0      Rasuwa          Rasuwa     Rasuwa
-    1      Rasuwa        Sindhuli     Sindhuli
-    2      Rasuwa           Gulmi     Gulmi
-    >>> f = EdgeList(dl.aggregate(), count_column="name")
-    >>> f.get_dataframe()
-        name_from         name_to  count
-    0      Rasuwa          Rasuwa     Rasuwa
-    1      Rasuwa        Sindhuli     Rasuwa
-    2      Rasuwa           Gulmi     Rasuwa
-    """
-
-    def __init__(self, query, count_column=None, left_handed=True):
-        self.level = query.level
-        self.column_name = query.column_name
-        if count_column is None:
-            self.count_column = query.column_names[-1]
-        else:
-            self.count_column = count_column
-        if self.count_column not in query.column_names:
-            raise ValueError(
-                "{} is not a column. Must be one of {}.".format(
-                    count_column, query.column_names
-                )
-            )
-        self.wrapped_query = query
-        self.primary = "left" if left_handed else "right"
-        super().__init__()
-
-    def _make_query(self):
-        cols = get_columns_for_level(self.level, self.column_name)
-        left_cols = ",".join(
-            "locs_left.{col} as {col}_from".format(col=col) for col in cols
-        )
-        right_cols = ",".join(
-            "locs_right.{col} as {col}_to".format(col=col) for col in cols
-        )
-        qur = """
-        WITH locs AS ({locs})
-            SELECT {l_cols},
-                {r_cols},
-                locs_{primary}.{measure_col} as count
-            FROM locs as locs_left CROSS JOIN locs as locs_right
-        """.format(
-            locs=self.wrapped_query.get_query(),
-            l_cols=left_cols,
-            r_cols=right_cols,
-            measure_col=self.count_column,
-            primary=self.primary,
-        )
-        return qur
-
-
-class Flows(GeoDataMixin, GraphMixin, BaseFlow, Query):
-    """
-    An object representing the difference in locations between two location
-    type objects.
-
-    Parameters
-    ----------
-    loc1 : daily_location, or ModalLocation object
-        Object representing the locations of people within the
-        first time frame of interest
-    loc2 : daily_location, or ModalLocation object
-        As above for the second period
-    """
-
-    def __init__(self, loc1, loc2):
-        """
-
-        """
-
-        if loc1.level != loc2.level:
-            raise ValueError(
-                "You cannot compute flows for locations on " + "different levels"
-            )
-
-        self.level = loc1.level
-        self.column_name = loc1.column_name
-        self.joined = loc1.join(
-            loc2, on_left="subscriber", left_append="_from", right_append="_to"
-        )
-        logger.info(
-            "{} locations are pre-calculated.".format(loc1.is_stored + loc2.is_stored)
-        )
-        super().__init__()
 
     def _make_query(self):
         group_cols = ",".join(self.joined.column_names[1:])
