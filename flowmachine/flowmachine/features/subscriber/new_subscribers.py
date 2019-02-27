@@ -11,6 +11,8 @@ comparison time period.
 
 
 """
+from typing import List
+
 from ..utilities.sets import UniqueSubscribers
 from ...core.query import Query
 
@@ -90,3 +92,7 @@ class NewSubscribers(Query):
         )
 
         return sql
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber"]

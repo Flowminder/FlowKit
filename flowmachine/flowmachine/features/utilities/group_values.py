@@ -7,6 +7,8 @@
 Utility class that allows the subscriber to iterate through arbitrary groups of fields
 and apply a python function to the results.
 """
+from typing import List
+
 from ...core.query import Query
 from .event_table_subset import EventTableSubset
 
@@ -65,6 +67,10 @@ class GroupValues(Query):
         self.subset = EventTableSubset(start, stop, **kwargs)
 
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return self.groups + self.value
 
     def _make_query(self):
 

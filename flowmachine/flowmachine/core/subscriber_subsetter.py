@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -36,6 +37,9 @@ class SubscriberSubsetterBase(Query):
         raise NotImplementedError(
             f"Class {self.__class__.__name__} does not implement 'is_proper_subset'"
         )
+
+    def column_names(self) -> List[str]:
+        return []
 
     @abstractmethod
     def _make_query(self):

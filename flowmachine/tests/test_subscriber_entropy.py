@@ -3,8 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.features.subscriber.entropy import *
-from flowmachine.core import CustomQuery
-from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 
 import numpy as np
 import pytest

@@ -9,7 +9,6 @@ defines methods that returns the query as a string and as a pandas dataframe.
 
 """
 import json
-import os
 import pickle
 import logging
 import weakref
@@ -227,13 +226,13 @@ class Query(metaclass=ABCMeta):
                 try:
                     return self._df.copy()
                 except AttributeError:
-                    qur = self.get_query()
+                    qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
                     with self.connection.engine.begin():
                         self._df = pd.read_sql_query(qur, con=self.connection.engine)
 
                     return self._df.copy()
             else:
-                qur = self.get_query()
+                qur = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) _"
                 with self.connection.engine.begin():
                     return pd.read_sql_query(qur, con=self.connection.engine)
 
@@ -255,6 +254,7 @@ class Query(metaclass=ABCMeta):
         return self.get_dataframe_async().result()
 
     @property
+    @abstractmethod
     def column_names(self) -> List[str]:
         """
         Returns the column names.
@@ -265,11 +265,18 @@ class Query(metaclass=ABCMeta):
             List of the column names of this query.
 
         """
-        try:
-            return list(self._cols)
-        except AttributeError:
-            self._cols = self.head(0).columns.tolist()
-            return list(self._cols)
+        pass
+
+    @property
+    def column_names_as_string_list(self) -> str:
+        """
+        Get the column names as a comma separated list
+        Returns
+        -------
+        str
+
+        """
+        return ", ".join(self.column_names)
 
     def head(self, n=5):
         """
@@ -288,7 +295,7 @@ class Query(metaclass=ABCMeta):
         try:
             return self._df.head(n)
         except AttributeError:
-            Q = "SELECT * FROM ({}) h LIMIT {};".format(self.get_query(), n)
+            Q = f"SELECT {self.column_names_as_string_list} FROM ({self.get_query()}) h LIMIT {n};"
             con = self.connection.engine
             with con.begin():
                 df = pd.read_sql_query(Q, con=con)
@@ -451,7 +458,7 @@ class Query(metaclass=ABCMeta):
             return []
 
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
-            ({self._make_query() if force else self.get_query()})"""
+            (SELECT {self.column_names_as_string_list} FROM ({self._make_query() if force else self.get_query()}) _)"""
         queries.append(Q)
         for ix in self.index_cols:
             queries.append(
