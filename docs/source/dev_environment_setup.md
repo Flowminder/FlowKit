@@ -1,5 +1,51 @@
 # Setting up a development environment
 
+## Prerequisites
+
+### Pre-commit hook for Python formatting with black
+
+FlowKit's Python code is formatted with [black](https://black.readthedocs.io/en/stable/) (which is included in the
+FlowKit pipenv environments). There is also a [pre-commit](https://pre-commit.com/) hook which runs black on all Python
+files before each commit.
+
+To install the pre-commit hook run:
+```bash
+$ cd flowmachine && pipenv run pre-commit install
+```
+If you ever want to uninstall the hook you can do this by running `pipenv run pre-commit uninstall` (inside the
+`flowmachine/` directory).
+
+Note that if you run `git commit` and any files are modified by the re-formatting, the pre-commit hook will abort
+the commit (but leave the files re-formatted). Simply repeat the `git commit` command in order to complete the commit.
+
+Example:
+
+```bash
+# 1) First attempt to commit; this is aborted because one of the files
+#    is reformatted by the pre-commit hook.
+
+$ git commit -a -m "Some changes"
+black...................................................Failed
+hookid: black
+
+Files were modified by this hook. Additional output:
+
+reformatted flowmachine/__init__.py
+All done! ✨ 🍰 ✨
+1 file reformatted.
+
+
+# 2) Complete the commit by running the same 'git commit' command again.
+
+$ git commit -a -m "Some changes"
+black...................................................Passed
+[black-pre-commit-hook 8ebaace] Some changes
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+```
+
+
+
+
 ## Option 1: Starting up all FlowKit components inside a dockerised development environment
 
 For convenience, FlowKit comes with a dockerised development environment. You can start up a development version of all
