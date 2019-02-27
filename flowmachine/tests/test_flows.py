@@ -26,6 +26,16 @@ def test_column_names_inout(query, exemplar_level_param):
     assert query_instance.head(0).columns.tolist() == query_instance.column_names
 
 
+def test_flows_raise_error():
+    """
+    Flows() raises error if location levels are different.
+    """
+    dl1 = daily_location("2016-01-01", level="admin3")
+    dl2 = daily_location("2016-01-01", level="admin2")
+    with pytest.raises(ValueError):
+        Flows(dl1, dl2)
+
+
 def test_column_names_flow(exemplar_level_param):
     """ Test that column_names property matches head(0) for Flows"""
     flow = Flows(
