@@ -15,17 +15,6 @@ from flowmachine.features.subscriber.daily_location import locate_subscribers
 pytestmark = pytest.mark.usefixtures("skip_datecheck")
 
 
-@pytest.mark.parametrize("query", [FlowDiv, FlowMul, FlowPow, FlowSub, FlowSum])
-def test_column_names_math(query, exemplar_level_param):
-    """ Test that column_names property matches head(0) for FlowMath"""
-    flow = Flows(
-        daily_location("2016-01-01", **exemplar_level_param),
-        daily_location("2016-01-01", **exemplar_level_param),
-    )
-    query_instance = query(flow, flow)
-    assert query_instance.head(0).columns.tolist() == query_instance.column_names
-
-
 @pytest.mark.parametrize("query", [InFlow, OutFlow])
 def test_column_names_inout(query, exemplar_level_param):
     """ Test that column_names property matches head(0) for InFlow & OutFlow"""
