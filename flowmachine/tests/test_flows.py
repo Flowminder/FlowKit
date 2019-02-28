@@ -6,24 +6,12 @@ import os
 
 import pytest
 
-from hashlib import md5
 
 from flowmachine.features import daily_location
 from flowmachine.features.location.flows import *
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 pytestmark = pytest.mark.usefixtures("skip_datecheck")
-
-
-@pytest.mark.parametrize("query", [FlowDiv, FlowMul, FlowPow, FlowSub, FlowSum])
-def test_column_names_math(query, exemplar_level_param):
-    """ Test that column_names property matches head(0) for FlowMath"""
-    flow = Flows(
-        daily_location("2016-01-01", **exemplar_level_param),
-        daily_location("2016-01-01", **exemplar_level_param),
-    )
-    query_instance = query(flow, flow)
-    assert query_instance.head(0).columns.tolist() == query_instance.column_names
 
 
 @pytest.mark.parametrize("query", [InFlow, OutFlow])
@@ -37,18 +25,22 @@ def test_column_names_inout(query, exemplar_level_param):
     assert query_instance.head(0).columns.tolist() == query_instance.column_names
 
 
+def test_flows_raise_error():
+    """
+    Flows() raises error if location levels are different.
+    """
+    dl1 = daily_location("2016-01-01", level="admin3")
+    dl2 = daily_location("2016-01-01", level="admin2")
+    with pytest.raises(ValueError):
+        Flows(dl1, dl2)
+
+
 def test_column_names_flow(exemplar_level_param):
     """ Test that column_names property matches head(0) for Flows"""
     flow = Flows(
         daily_location("2016-01-01", **exemplar_level_param),
         daily_location("2016-01-01", **exemplar_level_param),
     )
-    assert flow.head(0).columns.tolist() == flow.column_names
-
-
-def test_column_names_edgelist(exemplar_level_param):
-    """ Test that column_names property matches head(0) for EdgeList"""
-    flow = EdgeList(daily_location("2016-01-01", **exemplar_level_param).aggregate())
     assert flow.head(0).columns.tolist() == flow.column_names
 
 
