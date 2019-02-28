@@ -12,7 +12,7 @@ is seen within a specified time period.
 """
 from typing import List
 
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import subscriber_locations
 

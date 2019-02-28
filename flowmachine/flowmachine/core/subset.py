@@ -5,7 +5,7 @@ from typing import List
 
 from .query import Query
 import numbers
-from .utils import _makesafe
+from flowmachine.utils import _makesafe
 
 
 class _SubsetGetter:

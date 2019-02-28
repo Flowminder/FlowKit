@@ -12,7 +12,7 @@ from typing import List
 from .event_table_subset import EventTableSubset
 from .events_tables_union import EventsTablesUnion
 from ...core import Query
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 
 from numpy import inf
 

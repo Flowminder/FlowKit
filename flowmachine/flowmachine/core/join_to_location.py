@@ -10,8 +10,7 @@ another spatial level, such as a grid or an admin region.
 """
 from typing import List
 
-import flowmachine
-from ..utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 from .query import Query
 from .custom_query import CustomQuery
 from .errors import BadLevelError

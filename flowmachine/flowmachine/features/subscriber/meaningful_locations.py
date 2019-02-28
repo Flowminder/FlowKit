@@ -8,7 +8,7 @@ from flowmachine.core.errors import BadLevelError
 from ...core import GeoTable, Query
 from . import LabelEventScore, HartiganCluster, EventScore
 from ..spatial import Grid
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 
 
 class MeaningfulLocations(Query):

@@ -14,7 +14,7 @@ from typing import List
 
 from ...core.mixins import GeoDataMixin
 from ...core import JoinToLocation
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 from ...core.query import Query
 from ..utilities import EventsTablesUnion
 
