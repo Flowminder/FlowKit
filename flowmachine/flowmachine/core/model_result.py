@@ -24,7 +24,7 @@ from flowmachine.core.errors.flowmachine_errors import (
     QueryErroredException,
 )
 from flowmachine.core.query_state import QueryStateMachine
-from .query import Query
+from flowmachine.core.query import Query
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 

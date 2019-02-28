@@ -34,7 +34,7 @@ from flowmachine.core.errors.flowmachine_errors import (
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
-from .errors import NameTooLongError, NotConnectedError
+from flowmachine.core.errors import NameTooLongError, NotConnectedError
 
 import flowmachine
 
@@ -906,7 +906,7 @@ class Query(metaclass=ABCMeta):
         >>> daily_location("2016-01-01").index_cols
         [['name'], '"subscriber"']
         """
-        from flowmachine.utils.utils import (
+        from flowmachine.utils import (
             get_columns_for_level,
         )  # Local import to avoid circular import
 

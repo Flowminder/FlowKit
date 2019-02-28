@@ -22,7 +22,7 @@ import redis
 
 import flowmachine
 from typing import Union
-from flowmachine.utils.utils import getsecret
+from flowmachine.utils import getsecret
 from . import Connection, Query
 
 logger = logging.getLogger("flowmachine").getChild(__name__)

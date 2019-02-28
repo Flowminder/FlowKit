@@ -11,12 +11,15 @@ import datetime
 import logging
 
 from pathlib import Path
+from pglast import prettify
+from psycopg2._psycopg import adapt
+
 
 from typing import List, Union
 
 import flowmachine
-from ..core.errors import BadLevelError
-from ..core.errors.flowmachine_errors import MissingColumnsError
+from flowmachine.core.errors import BadLevelError
+from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -283,3 +286,58 @@ def verify_columns_exist_in_all_tables(conn, tables, columns):
 
     if tables_lacking_columns:
         raise MissingColumnsError(tables_lacking_columns, columns)
+
+
+def pretty_sql(
+    sql,
+    compact_lists_margin=0,
+    split_string_literals_threshold=0,
+    special_functions=True,
+    comma_at_eoln=True,
+):
+    """
+    Prettify and validate the syntax of an SQL query, using pglast
+
+    Parameters
+    ----------
+    sql : str
+        SQL to prettyify and validate
+    compact_lists_margin : int, default 0
+        Use compact form for lists shorter than this
+    split_string_literals_threshold : int, default 0
+        Split strings (in the sql) longer than this threshold
+    special_functions : bool, default True
+        Translate some special functions to their more commonly used forms
+    comma_at_eoln
+
+    Raises
+    ------
+
+    pglast.parser.ParseError
+        Raises a parse error if the query syntax was bad.
+
+    See Also
+    --------
+    pglast.prettify: Function wrapped, use this for additional prettification options
+
+    Returns
+    -------
+    str
+        The prettified string.
+
+    """
+
+    return prettify(
+        sql,
+        compact_lists_margin=compact_lists_margin,
+        split_string_literals_threshold=split_string_literals_threshold,
+        special_functions=special_functions,
+        comma_at_eoln=comma_at_eoln,
+    )
+
+
+def _makesafe(x):
+    """
+    Function that converts input into a PostgreSQL readable.
+    """
+    return adapt(x).getquoted().decode()
