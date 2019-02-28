@@ -18,7 +18,6 @@ pyzmq = "*"
 "psycopg2-binary" = "*"
 structlog = "*"
 shapely = "*"
-flowmachine = {editable = true,path = "."}
 
 [dev-packages]
 scipy = "*"
