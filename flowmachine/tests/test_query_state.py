@@ -101,3 +101,23 @@ def test_non_blocks(non_blocking_state, expected_return, monkeypatch, dummy_redi
     )
 
     assert expected_return == state_machine.has_finished_operating()
+
+
+@pytest.mark.parametrize(
+    "start_state, succeeds",
+    [
+        (QueryState.KNOWN, False),
+        (QueryState.CANCELLED, True),
+        (QueryState.EXECUTED, False),
+        (QueryState.ERRORED, False),
+        (QueryState.QUEUED, True),
+        (QueryState.RESETTING, False),
+        (QueryState.EXECUTING, True),
+    ],
+)
+def test_query_cancellation(start_state, succeeds, dummy_redis):
+    """Test the cancel method works as expected."""
+    state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
+    dummy_redis._store[state_machine.state_machine._name] = start_state.encode()
+    state_machine.cancel()
+    assert succeeds == state_machine.is_cancelled
