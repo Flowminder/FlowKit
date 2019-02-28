@@ -516,7 +516,7 @@ class Query(metaclass=ABCMeta):
                         try:
                             ddl_op_result = con.execute(ddl_op)
                         except Exception as e:
-                            q_state_machine.error()
+                            q_state_machine.raise_error()
                             logger.error(
                                 f"Error executing SQL: '{ddl_op}'. Error was {e}"
                             )
@@ -884,7 +884,7 @@ class Query(metaclass=ABCMeta):
             logger.debug("Dropping {}".format(full_name))
             with con.begin():
                 con.execute("DROP TABLE IF EXISTS {}".format(full_name))
-            q_state_machine.finish_reset()
+            q_state_machine.finish_resetting()
         elif q_state_machine.is_resetting:
             logger.debug(
                 f"Query '{self.md5}' is being reset from elsewhere, waiting for reset to finish."

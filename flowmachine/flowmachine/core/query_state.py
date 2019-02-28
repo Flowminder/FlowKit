@@ -42,7 +42,7 @@ class QueryEvent(str, Enum):
 
     EXECUTE = "execute"
     FINISH = "finish"
-    FINISH_RESET = "finish_reset"
+    FINISH_RESET = "finish_resetting"
     CANCEL = "cancel"
     RESET = "reset"
     ERROR = "error"
@@ -55,9 +55,9 @@ class QueryStateMachine:
 
     Each query, once instantiated, is in one of a number of possible states.
     - known, indicating that the query has been created, but not yet run, or queued for storage.
-    - queued, which indicates that a query is going to be executed in future
+    - queued, which indicates that a query is going to be executed in future (i.e. `store` has been called on it)
     - executing, for queries which are currently running in FlowDB
-    - executed, indicating that the query has finished running successfully
+    - completed, indicating that the query has finished running successfully
     - is_errored, when a query has been run but failed to succeed
     - cancelled, when execution was terminated by the user
     - resetting, when a previously run query is being purged from cache
@@ -120,18 +120,46 @@ class QueryStateMachine:
 
     @property
     def current_query_state(self) -> QueryState:
+        """
+
+        Returns
+        -------
+        QueryState
+            Current state of the query this state machine refers to
+        """
         return QueryState(self.state_machine.state().decode())
 
     @property
     def is_executing(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if the query is currently running
+
+        """
         return self.current_query_state == QueryState.EXECUTING
 
     @property
     def is_queued(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if the the query's store method has been called and it has not begin running
+
+        """
         return self.current_query_state == QueryState.QUEUED
 
     @property
     def is_completed(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if the query ran successfully and is in cache
+
+        """
         return self.current_query_state == QueryState.COMPLETED
 
     @property
@@ -145,18 +173,46 @@ class QueryStateMachine:
 
     @property
     def is_errored(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if the query failed to run with an error
+
+        """
         return self.current_query_state == QueryState.ERRORED
 
     @property
     def is_resetting(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if the query is currently being removed from cache, or recovered from cancellation or error
+
+        """
         return self.current_query_state == QueryState.RESETTING
 
     @property
     def is_known(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if the query has not been set running and may be queued to do so
+
+        """
         return self.current_query_state == QueryState.KNOWN
 
     @property
     def is_cancelled(self) -> bool:
+        """
+        Returns
+        -------
+        bool
+            True if the query was previously queued or running but was cancelled
+
+        """
         return self.current_query_state == QueryState.CANCELLED
 
     def trigger_event(self, event: QueryEvent) -> Tuple[QueryState, bool]:
@@ -180,24 +236,94 @@ class QueryStateMachine:
         return QueryState(state.decode()), trigger_success
 
     def cancel(self):
+        """
+        Attempt to mark the query as cancelled.
+
+        Returns
+        -------
+        tuple of QueryState, bool
+            Returns a tuple of the new query state, and a bool indicating whether the caller
+            triggered the query to be cancelled with this call
+
+        """
         return self.trigger_event(QueryEvent.CANCEL)
 
     def enqueue(self):
+        """
+        Attempt to mark the query as queued.
+
+        Returns
+        -------
+        tuple of QueryState, bool
+            Returns a tuple of the new query state, and a bool indicating whether the caller
+            triggered the query to be queued with this call
+
+        """
         return self.trigger_event(QueryEvent.QUEUE)
 
-    def error(self):
+    def raise_error(self):
+        """
+        Attempt to mark the query as having errored while running.
+
+        Returns
+        -------
+        tuple of QueryState, bool
+            Returns a tuple of the new query state, and a bool indicating whether the caller
+            marked the query as erroring with this call
+
+        """
         return self.trigger_event(QueryEvent.ERROR)
 
     def execute(self):
+        """
+        Attempt to mark the query as in the process of executing.
+
+        Returns
+        -------
+        tuple of QueryState, bool
+            Returns a tuple of the new query state, and a bool indicating whether the caller
+            marked the query as executing with this call
+
+        """
         return self.trigger_event(QueryEvent.EXECUTE)
 
     def finish(self):
+        """
+        Attempt to mark the query as completed.
+
+        Returns
+        -------
+        tuple of QueryState, bool
+            Returns a tuple of the new query state, and a bool indicating whether the caller
+            marked the query as finished with this call
+
+        """
         return self.trigger_event(QueryEvent.FINISH)
 
     def reset(self):
+        """
+        Attempt to mark the query as in the process of resetting.
+
+        Returns
+        -------
+        tuple of QueryState, bool
+            Returns a tuple of the new query state, and a bool indicating whether the caller
+            triggered the query to be reset with this call
+
+        """
         return self.trigger_event(QueryEvent.RESET)
 
-    def finish_reset(self):
+    def finish_resetting(self):
+        """
+        Attempt to mark the query as having finished resetting.
+
+        Returns
+        -------
+        tuple of QueryState, bool
+            Returns a tuple of the new query state, and a bool indicating whether the caller
+           marked the reset as complete with this call.
+
+        """
         return self.trigger_event(QueryEvent.FINISH_RESET)
 
     def wait_until_complete(self):
