@@ -13,8 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Query classes are now required to declare the column names they return via the `column_names` property
 
 ### Fixed
+- Server no longer loses track of queries under heavy load
 
 ### Removed
+- Query objects can no longer be recalculated to cache and must be explicitly removed first
 
 
 ## [0.3.0]
