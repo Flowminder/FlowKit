@@ -23,7 +23,7 @@ References
 from typing import List
 
 from .metaclasses import SubscriberFeature
-from ...utils.utils import time_period_add
+from flowmachine.utils import time_period_add
 from ..utilities.sets import UniqueSubscribers
 
 from functools import reduce
