@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - `CustomQuery` now requires column names to be specified
 - Query classes are now required to declare the column names they return via the `column_names` property
+- FlowAPI now reports whether a query is queued or running when polling
 
 ### Fixed
 - Server no longer loses track of queries under heavy load
