@@ -540,7 +540,7 @@ class Query(metaclass=ABCMeta):
                     f"Query '{self.md5}' executing elsewhere, waiting for it to finish."
                 )
                 while q_state_machine.is_executing:
-                    sleep(5)
+                    _sleep(5)
             if q_state_machine.is_executed_without_error:
                 return self
             elif q_state_machine.is_cancelled:
@@ -885,7 +885,7 @@ class Query(metaclass=ABCMeta):
                 f"Query '{self.md5}' is being reset from elsewhere, waiting for reset to finish."
             )
             while q_state_machine.is_resetting:
-                sleep(1)
+                _sleep(1)
         if not q_state_machine.is_known:
             raise QueryResetFailedException(self.md5)
 

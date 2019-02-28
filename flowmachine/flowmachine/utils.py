@@ -6,6 +6,7 @@
 """
 Various simple utilities.
 """
+from time import sleep
 
 import datetime
 import logging
@@ -341,3 +342,9 @@ def _makesafe(x):
     Function that converts input into a PostgreSQL readable.
     """
     return adapt(x).getquoted().decode()
+
+
+def _sleep(seconds_to_sleep):
+    # Private function to facilitate testing
+    # monkeypatch this to avoid needing to monkeypatch time.sleep
+    sleep(seconds_to_sleep)

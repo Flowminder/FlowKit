@@ -18,6 +18,7 @@ from flowmachine.core.errors.flowmachine_errors import (
     QueryErroredException,
 )
 from flowmachine.core.query_state import QueryStateMachine, QueryState, QueryEvent
+import flowmachine.utils
 
 
 class DummyQuery(Query):
@@ -28,12 +29,12 @@ class DummyQuery(Query):
     ----------
     x : str
         Id to distringuish this query
-    sleep_time : int, default 30
+    sleep_time : int, default 5
         Number of seconds to block in _make_query
 
     """
 
-    def __init__(self, x, sleep_time=30):
+    def __init__(self, x, sleep_time=5):
 
         self.x = x
         self.sleep_time = sleep_time
@@ -66,11 +67,11 @@ def test_no_limit_on_blocks(monkeypatch):
     """Test that even with a large number of queries, starting a store op will block calls to get_query."""
 
     flowmachine.connect()
-    dummies = [DummyQuery(x) for x in range(50)]
-    [dummy.store() for dummy in dummies]
     monkeypatch.setattr(
         flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
+    dummies = [DummyQuery(x) for x in range(50)]
+    [dummy.store() for dummy in dummies]
 
     with pytest.raises(BlockingIOError):
         dummies[-1].get_query()

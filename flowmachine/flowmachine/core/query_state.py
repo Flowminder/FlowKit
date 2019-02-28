@@ -10,12 +10,13 @@ waiting for a query to finish running, and reporting status to the user.
 
 import logging
 from enum import Enum
-from time import sleep
 
 from finist import Finist
 from typing import Tuple
 
 from redis import StrictRedis
+
+from flowmachine.utils import _sleep
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -188,9 +189,3 @@ class QueryStateMachine:
                 _sleep(1)
 
         return self.is_executed_without_error
-
-
-def _sleep(time):
-    # Private function to facilitate testing
-    # monkeypatch this to avoid needing to monkeypatch time.sleep
-    sleep(1)
