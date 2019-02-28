@@ -20,9 +20,7 @@ class QueryResetFailedException(Exception):
     """
 
     def __init__(self, query_id):
-        Exception.__init__(
-            self, f"Query '{query_id}' is_errored while being reset from elsewhere."
-        )
+        Exception.__init__(self, f"Query '{query_id}' reset failed.")
 
 
 class QueryErroredException(Exception):
@@ -38,7 +36,7 @@ class QueryErroredException(Exception):
 
     def __init__(self, query_id):
         Exception.__init__(
-            self, f"Query '{query_id}' is_errored while being run elsewhere."
+            self, f"Query '{query_id}' errored while being run elsewhere."
         )
 
 
