@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a22ccf951880362ed63c6a6e9ddc559182cfe08e3cfbc29d109458b22eb570c9"
+            "sha256": "662c97b1fa1a234d5d86d452c179181c163a94a8df4d4e6abde0ddc244326846"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -30,10 +30,6 @@
                 "sha256:cabb249f4710888a2fc0e13e9a16c343d932033718ff62e1e9bc93a9d3a9122b"
             ],
             "version": "==4.3.2"
-        },
-        "flowmachine": {
-            "editable": true,
-            "path": "."
         },
         "networkx": {
             "hashes": [

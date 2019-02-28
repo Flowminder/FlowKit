@@ -1,5 +1,8 @@
 [run]
 branch = True
+concurrency =
+    thread
+    multiprocessing
 
 [report]
 omit =

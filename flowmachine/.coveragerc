@@ -2,7 +2,6 @@
 branch = True
 
 [report]
-fail_under = 90
 
 omit =
     */python?.?/*

@@ -18,6 +18,7 @@ from .query_proxy import (
     MissingQueryError,
     QueryProxyError,
     construct_query_object,
+    InvalidGeographyError,
 )
 from .zmq_interface import ZMQMultipartMessage, ZMQInterfaceError
 
@@ -57,16 +58,14 @@ query_run_log.addHandler(fh)
 query_run_log = structlog.wrap_logger(query_run_log)
 
 
-async def get_reply_for_message(  # pragma: no cover
-    zmq_msg: ZMQMultipartMessage  # pragma: no cover
-) -> dict:  # pragma: no cover
+async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
     """
     Dispatches the message to the appropriate handling function
     based on the specified action and returns the reply.
 
     Parameters
     ----------
-    message : dict
+    zmq_msg : ZMQMultipartMessage
         The message received via zeromq.
 
     Returns
@@ -158,7 +157,7 @@ async def get_reply_for_message(  # pragma: no cover
     return reply
 
 
-async def recv(port):  # pragma: no cover
+async def recv(port):
     """
     Listen for messages coming in via zeromq on the given port, and dispatch them.
     """
@@ -180,7 +179,7 @@ async def recv(port):  # pragma: no cover
     s.close()
 
 
-async def get_next_zmq_message(socket):  # pragma: no cover
+async def get_next_zmq_message(socket):
     """
     Listen on the given zmq socket and return the next multipart message received.
 
@@ -200,7 +199,7 @@ async def get_next_zmq_message(socket):  # pragma: no cover
     return ZMQMultipartMessage(multipart_msg)
 
 
-def main():  # pragma: no cover
+def main():
     port = os.getenv("FLOWMACHINE_PORT", 5555)
     connect()
     debug_mode = "True" == os.getenv("DEBUG", "False")
@@ -213,9 +212,3 @@ def main():  # pragma: no cover
         if debug_mode:
             main_loop.set_debug(True)
         main_loop.run_until_complete(recv(port))
-
-
-if __name__ == "__main__":
-    print("Started.")
-    main()
-    print("Exiting.")
