@@ -13,7 +13,6 @@ import pickle
 import logging
 import weakref
 from concurrent.futures import Future
-from time import sleep
 
 from typing import List, Union
 
@@ -37,6 +36,7 @@ from abc import ABCMeta, abstractmethod
 from flowmachine.core.errors import NameTooLongError, NotConnectedError
 
 import flowmachine
+from flowmachine.utils import _sleep
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 

@@ -16,6 +16,7 @@ from flowmachine.core import Query
 from flowmachine.core.errors.flowmachine_errors import (
     QueryCancelledException,
     QueryErroredException,
+    QueryResetFailedException,
 )
 from flowmachine.core.query_state import QueryStateMachine, QueryState, QueryEvent
 import flowmachine.utils
@@ -149,3 +150,30 @@ def test_store_exceptions(fail_event, expected_exception):
     qsm.trigger_event(fail_event)
     with pytest.raises(expected_exception):
         raise q_fut.exception()
+
+
+def test_drop_query_blocks(monkeypatch):
+    """Test that resetting a query's cache will block if that's already happening."""
+    monkeypatch.setattr(
+        flowmachine.core.query, "_sleep", Mock(side_effect=BlockingIOError)
+    )
+    q = DummyQuery(1, sleep_time=5)
+    qsm = QueryStateMachine(q.redis, q.md5)
+    # Mark the query as in the process of resetting
+    qsm.enqueue()
+    qsm.execute()
+    qsm.finish()
+    qsm.reset()
+    with pytest.raises(BlockingIOError):
+        q.invalidate_db_cache()
+
+
+def test_drop_query_errors(monkeypatch):
+    """Test that resetting a query's cache will error if in a state where that isn't possible."""
+    q = DummyQuery(1, sleep_time=5)
+    qsm = QueryStateMachine(q.redis, q.md5)
+    # Mark the query as in the process of resetting
+    qsm.enqueue()
+    qsm.execute()
+    with pytest.raises(QueryResetFailedException):
+        q.invalidate_db_cache()
