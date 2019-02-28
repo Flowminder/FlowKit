@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Dockerised development setup, with support for live reload of `flowmachine` and `flowapi` after source code changes.
+- Pre-commit hook for Python formatting with black.
 
 ### Changed
 - `CustomQuery` now requires column names to be specified
@@ -18,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 - Query objects can no longer be recalculated to cache and must be explicitly removed first
+- Arbitrary `Flow` maths
+- `EdgeList` query type
 
 
 ## [0.3.0]
