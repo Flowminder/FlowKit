@@ -802,9 +802,14 @@ class Query(metaclass=ABCMeta):
 
     def invalidate_db_cache(self, name=None, schema=None, cascade=True, drop=True):
         """
-        Helper function for store, drops this table, and (by default) any
-        that depend on it, as well as removing them from
-        the cache metadata table.
+        Drops this table, and (by default) any that depend on it, as well as removing them from
+        the cache metadata table. If the table is currently being dropped from elsewhere, this
+        method will block and return when the table has been removed.
+
+        Raises
+        ------
+        QueryResetFailedException
+            If the query wasn't succesfully removed
 
         Parameters
         ----------
