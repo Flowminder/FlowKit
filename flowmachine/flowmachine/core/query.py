@@ -29,6 +29,7 @@ from flowmachine.core.errors.flowmachine_errors import (
     QueryCancelledException,
     QueryErroredException,
     QueryResetFailedException,
+    StoreFailedException,
 )
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
@@ -535,13 +536,8 @@ class Query(metaclass=ABCMeta):
                     if schema == "cache":
                         self._db_store_cache_metadata(compute_time=plan_time)
                 q_state_machine.finish()
-            elif q_state_machine.is_executing:
-                logger.debug(
-                    f"Query '{self.md5}' executing elsewhere, waiting for it to finish."
-                )
-                while q_state_machine.is_executing:
-                    _sleep(5)
-            if q_state_machine.is_completed:
+
+            if q_state_machine.wait_until_complete():
                 return self
             elif q_state_machine.is_cancelled:
                 logger.error(f"Query '{self.md5}' was cancelled.")
@@ -549,6 +545,11 @@ class Query(metaclass=ABCMeta):
             elif q_state_machine.is_errored:
                 logger.error(f"Query '{self.md5}' finished with an error.")
                 raise QueryErroredException(self.md5)
+            else:
+                logger.error(
+                    f"Query '{self.md5}' not stored. State is {q_state_machine.current_query_state}"
+                )
+                raise StoreFailedException(self.md5)
 
         current_state, changed_to_queue = QueryStateMachine(
             self.redis, self.md5
