@@ -49,8 +49,8 @@ def test_intervent_period(get_dataframe, intervent_period):
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-01", "2016-01-08", "both", sample, "mean")
-    assert query.column_names == ["subscriber", "interevent_period_avg"]
-    assert pd.to_numeric(sample["interevent_period_avg"]).to_dict() == pytest.approx(
+    assert query.column_names == ["subscriber", "value"]
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(
         want
     )
 
@@ -58,8 +58,8 @@ def test_intervent_period(get_dataframe, intervent_period):
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-01", "2016-01-05", "out", sample, "mean")
-    assert query.column_names == ["subscriber", "interevent_period_avg"]
-    assert pd.to_numeric(sample["interevent_period_avg"]).to_dict() == pytest.approx(
+    assert query.column_names == ["subscriber", "value"]
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(
         want
     )
 
@@ -67,8 +67,8 @@ def test_intervent_period(get_dataframe, intervent_period):
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-03", "2016-01-05", "in", sample, "mean")
-    assert query.column_names == ["subscriber", "interevent_period_avg"]
-    assert pd.to_numeric(sample["interevent_period_avg"]).to_dict() == pytest.approx(
+    assert query.column_names == ["subscriber", "value"]
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(
         want
     )
 
@@ -76,7 +76,7 @@ def test_intervent_period(get_dataframe, intervent_period):
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-01", "2016-01-08", "both", sample, "std")
-    assert query.column_names == ["subscriber", "interevent_period_stddev"]
-    assert pd.to_numeric(sample["interevent_period_stddev"]).to_dict() == pytest.approx(
+    assert query.column_names == ["subscriber", "value"]
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(
         want
     )
