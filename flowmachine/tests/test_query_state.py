@@ -13,7 +13,38 @@ import pytest
 
 import flowmachine
 from flowmachine.core import Query
-from flowmachine.core.query_state import QueryStateMachine, QueryState
+from flowmachine.core.errors.flowmachine_errors import (
+    QueryCancelledException,
+    QueryErroredException,
+)
+from flowmachine.core.query_state import QueryStateMachine, QueryState, QueryEvent
+
+
+class DummyQuery(Query):
+    """
+    Simulate a long running query which will error when it actually hits postgres.
+
+    Parameters
+    ----------
+    x : str
+        Id to distringuish this query
+    sleep_time : int, default 30
+        Number of seconds to block in _make_query
+
+    """
+
+    def __init__(self, x, sleep_time=30):
+
+        self.x = x
+        self.sleep_time = sleep_time
+        super().__init__()
+
+    @property
+    def column_names(self):
+        return []
+
+    def _make_query(self):
+        time.sleep(self.sleep_time)
 
 
 @pytest.mark.parametrize(
@@ -34,18 +65,6 @@ def test_blocks(blocking_state, monkeypatch, dummy_redis):
 def test_no_limit_on_blocks(monkeypatch):
     """Test that even with a large number of queries, starting a store op will block calls to get_query."""
 
-    class DummyQuery(Query):
-        def ___init__(self, x):
-            self.x = x
-            super().__init__()
-
-        @property
-        def column_names(self):
-            return []
-
-        def _make_query(self):
-            time.sleep(30)
-
     flowmachine.connect()
     dummies = [DummyQuery(x) for x in range(50)]
     [dummy.store() for dummy in dummies]
@@ -59,18 +78,6 @@ def test_no_limit_on_blocks(monkeypatch):
 
 def test_non_blocking(monkeypatch):
     """Test that states which do not alter the executing state of the query don't block."""
-
-    class DummyQuery(Query):
-        def ___init__(self, x):
-            self.x = x
-            super().__init__()
-
-        @property
-        def column_names(self):
-            return []
-
-        def _make_query(self):
-            time.sleep(30)
 
     flowmachine.connect()
     dummies = [DummyQuery(x) for x in range(50)]
@@ -121,3 +128,23 @@ def test_query_cancellation(start_state, succeeds, dummy_redis):
     dummy_redis._store[state_machine.state_machine._name] = start_state.encode()
     state_machine.cancel()
     assert succeeds == state_machine.is_cancelled
+
+
+@pytest.mark.parametrize(
+    "fail_event, expected_exception",
+    [
+        (QueryEvent.CANCEL, QueryCancelledException),
+        (QueryEvent.ERROR, QueryErroredException),
+    ],
+)
+def test_store_exceptions(fail_event, expected_exception):
+    """Test that exceptions are raised when watching a store op triggered elsewhere."""
+    q = DummyQuery(1, sleep_time=5)
+    qsm = QueryStateMachine(q.redis, q.md5)
+    # Mark the query as having begun executing elsewhere
+    qsm.enqueue()
+    qsm.execute()
+    q_fut = q.store()
+    qsm.trigger_event(fail_event)
+    with pytest.raises(expected_exception):
+        raise q_fut.exception()
