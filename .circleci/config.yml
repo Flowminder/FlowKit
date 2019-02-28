@@ -483,13 +483,14 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
+      - run: *wait_for_flowdb
       - run:
           name: Run integration tests
           command: |
             pipenv run run-tests -sv --junitxml=test_results/pytest/results.xml --durations=10 \
             --cov=../flowmachine --cov=../flowclient --cov=../flowapi \
             --cov-report xml \
-            --cov-report term--junitxml=test_results/pytest/results.xml --durations=10
+            --cov-report term
       - store_test_results:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash)
