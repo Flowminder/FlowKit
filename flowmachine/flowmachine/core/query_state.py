@@ -30,7 +30,7 @@ class QueryState(str, Enum):
     COMPLETED = "completed"
     CANCELLED = "cancelled"
     EXECUTING = "executing"
-    ERRORED = "is_errored"
+    ERRORED = "errored"
     RESETTING = "resetting"
     KNOWN = "known"
 
@@ -58,7 +58,7 @@ class QueryStateMachine:
     - queued, which indicates that a query is going to be executed in future (i.e. `store` has been called on it)
     - executing, for queries which are currently running in FlowDB
     - completed, indicating that the query has finished running successfully
-    - is_errored, when a query has been run but failed to succeed
+    - errored, when a query has been run but failed to succeed
     - cancelled, when execution was terminated by the user
     - resetting, when a previously run query is being purged from cache
 
