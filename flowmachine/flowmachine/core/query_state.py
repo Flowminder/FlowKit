@@ -136,6 +136,9 @@ class QueryStateMachine:
 
     @property
     def is_finished_executing(self) -> bool:
+        """
+        True if the query is guaranteed to have previously been in an executing state.
+        """
         return (self.current_query_state == QueryState.COMPLETED) or (
             self.current_query_state == QueryState.ERRORED
         )
