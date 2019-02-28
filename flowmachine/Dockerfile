@@ -11,7 +11,7 @@ COPY . /app/
 RUN pipenv install .
 CMD ["pipenv", "run", "flowmachine"]
 ENV LOG_LEVEL=error
-ENV DB_PORT=5432
+ENV FLOWDB_PORT=5432
 ENV DB_HOST=flowdb
 ENV DB_USER=analyst
 ENV DB_PASS=flowflow

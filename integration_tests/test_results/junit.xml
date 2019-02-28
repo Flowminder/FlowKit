@@ -1,0 +1,1157 @@
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="3" failures="0" name="pytest" skipped="0" tests="3" time="3.387"><testcase classname="tests.test_queries" file="tests/test_queries.py" line="12" name="test_run_query[daily_location-params0]" time="0.013"><error message="test setup failure">self = TLEngine(postgresql://flowdb:***@localhost:9997/flowdb), fn = &lt;bound method Pool.unique_connection of &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;&gt;
+connection = None
+
+    def _wrap_pool_connect(self, fn, connection):
+        dialect = self.dialect
+        try:
+&gt;           return fn()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2228: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def unique_connection(self):
+        &quot;&quot;&quot;Produce a DBAPI connection that is not referenced by any
+        thread-local context.
+    
+        This method is equivalent to :meth:`.Pool.connect` when the
+        :paramref:`.Pool.use_threadlocal` flag is not set to True.
+        When :paramref:`.Pool.use_threadlocal` is True, the
+        :meth:`.Pool.unique_connection` method provides a means of bypassing
+        the threadlocal context.
+    
+        &quot;&quot;&quot;
+&gt;       return _ConnectionFairy._checkout(self)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:365: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = &lt;class &apos;sqlalchemy.pool._ConnectionFairy&apos;&gt;, pool = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;, threadconns = None, fairy = None
+
+    @classmethod
+    def _checkout(cls, pool, threadconns=None, fairy=None):
+        if not fairy:
+&gt;           fairy = _ConnectionRecord.checkout(pool)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:822: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = &lt;class &apos;sqlalchemy.pool._ConnectionRecord&apos;&gt;, pool = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    @classmethod
+    def checkout(cls, pool):
+&gt;       rec = pool._do_get()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:554: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def _do_get(self):
+        use_overflow = self._max_overflow &gt; -1
+    
+        try:
+            wait = use_overflow and self._overflow &gt;= self._max_overflow
+            return self._pool.get(wait, self._timeout)
+        except sqla_queue.Empty:
+            # don&apos;t do things inside of &quot;except Empty&quot;, because when we say
+            # we timed out or can&apos;t connect and raise, Python 3 tells
+            # people the real error is queue.Empty which it isn&apos;t.
+            pass
+        if use_overflow and self._overflow &gt;= self._max_overflow:
+            if not wait:
+                return self._do_get()
+            else:
+                raise exc.TimeoutError(
+                    &quot;QueuePool limit of size %d overflow %d reached, &quot;
+                    &quot;connection timed out, timeout %d&quot;
+                    % (self.size(), self.overflow(), self._timeout),
+                    code=&quot;3o7r&quot;,
+                )
+    
+        if self._inc_overflow():
+            try:
+                return self._create_connection()
+            except:
+                with util.safe_reraise():
+&gt;                   self._dec_overflow()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.util.langhelpers.safe_reraise object at 0x1106de5f8&gt;, type_ = None, value = None, traceback = None
+
+    def __exit__(self, type_, value, traceback):
+        # see #2703 for notes
+        if type_ is None:
+            exc_type, exc_value, exc_tb = self._exc_info
+            self._exc_info = None  # remove potential circular references
+            if not self.warn_only:
+&gt;               compat.reraise(exc_type, exc_value, exc_tb)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/langhelpers.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tp = &lt;class &apos;psycopg2.OperationalError&apos;&gt;
+value = OperationalError(&apos;could not connect to server: Connection refused\n\tIs the server running on host &quot;localhost&quot; (::1) a... refused\n\tIs the server running on host &quot;localhost&quot; (127.0.0.1) and accepting\n\tTCP/IP connections on port 9997?\n&apos;)
+tb = &lt;traceback object at 0x1106ef508&gt;, cause = None
+
+    def reraise(tp, value, tb=None, cause=None):
+        if cause is not None:
+            assert cause is not value, &quot;Same cause emitted&quot;
+            value.__cause__ = cause
+        if value.__traceback__ is not tb:
+            raise value.with_traceback(tb)
+&gt;       raise value
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:277: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def _do_get(self):
+        use_overflow = self._max_overflow &gt; -1
+    
+        try:
+            wait = use_overflow and self._overflow &gt;= self._max_overflow
+            return self._pool.get(wait, self._timeout)
+        except sqla_queue.Empty:
+            # don&apos;t do things inside of &quot;except Empty&quot;, because when we say
+            # we timed out or can&apos;t connect and raise, Python 3 tells
+            # people the real error is queue.Empty which it isn&apos;t.
+            pass
+        if use_overflow and self._overflow &gt;= self._max_overflow:
+            if not wait:
+                return self._do_get()
+            else:
+                raise exc.TimeoutError(
+                    &quot;QueuePool limit of size %d overflow %d reached, &quot;
+                    &quot;connection timed out, timeout %d&quot;
+                    % (self.size(), self.overflow(), self._timeout),
+                    code=&quot;3o7r&quot;,
+                )
+    
+        if self._inc_overflow():
+            try:
+&gt;               return self._create_connection()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1247: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def _create_connection(self):
+        &quot;&quot;&quot;Called by subclasses to create a new ConnectionRecord.&quot;&quot;&quot;
+    
+&gt;       return _ConnectionRecord(self)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:370: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool._ConnectionRecord object at 0x1106e5dd8&gt;, pool = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;, connect = True
+
+    def __init__(self, pool, connect=True):
+        self.__pool = pool
+        if connect:
+&gt;           self.__connect(first_connect_check=True)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:499: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool._ConnectionRecord object at 0x1106e5dd8&gt;, first_connect_check = True
+
+    def __connect(self, first_connect_check=False):
+        pool = self.__pool
+    
+        # ensure any existing connection is removed, so that if
+        # creator fails, this attribute stays None
+        self.connection = None
+        try:
+            self.starttime = time.time()
+&gt;           connection = pool._invoke_creator(self)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:701: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+connection_record = &lt;sqlalchemy.pool._ConnectionRecord object at 0x1106e5dd8&gt;
+
+    def connect(connection_record=None):
+        if dialect._has_events:
+            for fn in dialect.dispatch.do_connect:
+                connection = fn(
+                    dialect, connection_record, cargs, cparams
+                )
+                if connection is not None:
+                    return connection
+&gt;       return dialect.connect(*cargs, **cparams)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/strategies.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.dialects.postgresql.psycopg2.PGDialect_psycopg2 object at 0x1051b6828&gt;, cargs = ()
+cparams = {&apos;application_name&apos;: &apos;flowmachine-jono&apos;, &apos;database&apos;: &apos;flowdb&apos;, &apos;host&apos;: &apos;localhost&apos;, &apos;password&apos;: &apos;flowflow&apos;, ...}
+
+    def connect(self, *cargs, **cparams):
+&gt;       return self.dbapi.connect(*cargs, **cparams)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/default.py:437: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = &apos;host=localhost user=flowdb password=flowflow port=9997 application_name=flowmachine-jono dbname=flowdb&apos;, connection_factory = None, cursor_factory = None
+kwargs = {&apos;application_name&apos;: &apos;flowmachine-jono&apos;, &apos;database&apos;: &apos;flowdb&apos;, &apos;host&apos;: &apos;localhost&apos;, &apos;password&apos;: &apos;flowflow&apos;, ...}, kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        &quot;&quot;&quot;
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect(&quot;dbname=test user=postgres password=secret&quot;)
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database=&quot;test&quot;, user=&quot;postgres&quot;, password=&quot;secret&quot;)
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        &quot;&quot;&quot;
+        kwasync = {}
+        if &apos;async&apos; in kwargs:
+            kwasync[&apos;async&apos;] = kwargs.pop(&apos;async&apos;)
+        if &apos;async_&apos; in kwargs:
+            kwasync[&apos;async_&apos;] = kwargs.pop(&apos;async_&apos;)
+    
+        if dsn is None and not kwargs:
+            raise TypeError(&apos;missing dsn and no parameters&apos;)
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+&gt;       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       psycopg2.OperationalError: could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (::1) and accepting
+E       	TCP/IP connections on port 9997?
+E       could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (127.0.0.1) and accepting
+E       	TCP/IP connections on port 9997?
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/psycopg2/__init__.py:130: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    @pytest.fixture(scope=&quot;session&quot;)
+    def fm_conn():
+        &quot;&quot;&quot;
+        Returns a flowmachine Connection object which
+    
+        Returns
+        -------
+        flowmachine.core.connection.Connection
+        &quot;&quot;&quot;
+        FLOWDB_HOST = os.getenv(&quot;FLOWDB_HOST&quot;, &quot;localhost&quot;)
+        FLOWDB_PORT = os.getenv(&quot;FLOWDB_PORT&quot;, &quot;9000&quot;)
+        conn_str = f&quot;postgresql://flowdb:flowflow@{FLOWDB_HOST}:{FLOWDB_PORT}/flowdb&quot;
+    
+&gt;       fm_conn = Connection(conn_str=conn_str)
+
+tests/conftest.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../flowmachine/flowmachine/core/connection.py:116: in __init__
+    self.inspector = sqlalchemy.inspect(self.engine)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/inspection.py:62: in inspect
+    ret = reg(subject)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/reflection.py:140: in _insp
+    return Inspector.from_engine(bind)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/reflection.py:135: in from_engine
+    return bind.dialect.inspector(bind)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/dialects/postgresql/base.py:2179: in __init__
+    reflection.Inspector.__init__(self, conn)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/reflection.py:110: in __init__
+    bind.connect().close()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2171: in connect
+    return self._connection_cls(self, **kwargs)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:103: in __init__
+    else engine.raw_connection()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2259: in raw_connection
+    self.pool.unique_connection, _connection
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2232: in _wrap_pool_connect
+    e, dialect, self
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:1528: in _handle_dbapi_exception_noconnection
+    util.raise_from_cause(sqlalchemy_exception, exc_info)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:296: in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:276: in reraise
+    raise value.with_traceback(tb)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2228: in _wrap_pool_connect
+    return fn()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:365: in unique_connection
+    return _ConnectionFairy._checkout(self)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:822: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:554: in checkout
+    rec = pool._do_get()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1250: in _do_get
+    self._dec_overflow()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/langhelpers.py:67: in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:277: in reraise
+    raise value
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1247: in _do_get
+    return self._create_connection()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:370: in _create_connection
+    return _ConnectionRecord(self)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:499: in __init__
+    self.__connect(first_connect_check=True)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:701: in __connect
+    connection = pool._invoke_creator(self)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/strategies.py:114: in connect
+    return dialect.connect(*cargs, **cparams)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/default.py:437: in connect
+    return self.dbapi.connect(*cargs, **cparams)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = &apos;host=localhost user=flowdb password=flowflow port=9997 application_name=flowmachine-jono dbname=flowdb&apos;, connection_factory = None, cursor_factory = None
+kwargs = {&apos;application_name&apos;: &apos;flowmachine-jono&apos;, &apos;database&apos;: &apos;flowdb&apos;, &apos;host&apos;: &apos;localhost&apos;, &apos;password&apos;: &apos;flowflow&apos;, ...}, kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        &quot;&quot;&quot;
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect(&quot;dbname=test user=postgres password=secret&quot;)
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database=&quot;test&quot;, user=&quot;postgres&quot;, password=&quot;secret&quot;)
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        &quot;&quot;&quot;
+        kwasync = {}
+        if &apos;async&apos; in kwargs:
+            kwasync[&apos;async&apos;] = kwargs.pop(&apos;async&apos;)
+        if &apos;async_&apos; in kwargs:
+            kwasync[&apos;async_&apos;] = kwargs.pop(&apos;async_&apos;)
+    
+        if dsn is None and not kwargs:
+            raise TypeError(&apos;missing dsn and no parameters&apos;)
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+&gt;       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (::1) and accepting
+E       	TCP/IP connections on port 9997?
+E       could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (127.0.0.1) and accepting
+E       	TCP/IP connections on port 9997?
+E        (Background on this error at: http://sqlalche.me/e/e3q8)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/psycopg2/__init__.py:130: OperationalError</error></testcase><testcase classname="tests.test_queries" file="tests/test_queries.py" line="12" name="test_run_query[daily_location-params1]" time="0.001"><error message="test setup failure">self = TLEngine(postgresql://flowdb:***@localhost:9997/flowdb), fn = &lt;bound method Pool.unique_connection of &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;&gt;
+connection = None
+
+    def _wrap_pool_connect(self, fn, connection):
+        dialect = self.dialect
+        try:
+&gt;           return fn()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2228: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def unique_connection(self):
+        &quot;&quot;&quot;Produce a DBAPI connection that is not referenced by any
+        thread-local context.
+    
+        This method is equivalent to :meth:`.Pool.connect` when the
+        :paramref:`.Pool.use_threadlocal` flag is not set to True.
+        When :paramref:`.Pool.use_threadlocal` is True, the
+        :meth:`.Pool.unique_connection` method provides a means of bypassing
+        the threadlocal context.
+    
+        &quot;&quot;&quot;
+&gt;       return _ConnectionFairy._checkout(self)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:365: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = &lt;class &apos;sqlalchemy.pool._ConnectionFairy&apos;&gt;, pool = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;, threadconns = None, fairy = None
+
+    @classmethod
+    def _checkout(cls, pool, threadconns=None, fairy=None):
+        if not fairy:
+&gt;           fairy = _ConnectionRecord.checkout(pool)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:822: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = &lt;class &apos;sqlalchemy.pool._ConnectionRecord&apos;&gt;, pool = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    @classmethod
+    def checkout(cls, pool):
+&gt;       rec = pool._do_get()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:554: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def _do_get(self):
+        use_overflow = self._max_overflow &gt; -1
+    
+        try:
+            wait = use_overflow and self._overflow &gt;= self._max_overflow
+            return self._pool.get(wait, self._timeout)
+        except sqla_queue.Empty:
+            # don&apos;t do things inside of &quot;except Empty&quot;, because when we say
+            # we timed out or can&apos;t connect and raise, Python 3 tells
+            # people the real error is queue.Empty which it isn&apos;t.
+            pass
+        if use_overflow and self._overflow &gt;= self._max_overflow:
+            if not wait:
+                return self._do_get()
+            else:
+                raise exc.TimeoutError(
+                    &quot;QueuePool limit of size %d overflow %d reached, &quot;
+                    &quot;connection timed out, timeout %d&quot;
+                    % (self.size(), self.overflow(), self._timeout),
+                    code=&quot;3o7r&quot;,
+                )
+    
+        if self._inc_overflow():
+            try:
+                return self._create_connection()
+            except:
+                with util.safe_reraise():
+&gt;                   self._dec_overflow()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.util.langhelpers.safe_reraise object at 0x1106de5f8&gt;, type_ = None, value = None, traceback = None
+
+    def __exit__(self, type_, value, traceback):
+        # see #2703 for notes
+        if type_ is None:
+            exc_type, exc_value, exc_tb = self._exc_info
+            self._exc_info = None  # remove potential circular references
+            if not self.warn_only:
+&gt;               compat.reraise(exc_type, exc_value, exc_tb)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/langhelpers.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tp = &lt;class &apos;psycopg2.OperationalError&apos;&gt;
+value = OperationalError(&apos;could not connect to server: Connection refused\n\tIs the server running on host &quot;localhost&quot; (::1) a... refused\n\tIs the server running on host &quot;localhost&quot; (127.0.0.1) and accepting\n\tTCP/IP connections on port 9997?\n&apos;)
+tb = &lt;traceback object at 0x1106ef508&gt;, cause = None
+
+    def reraise(tp, value, tb=None, cause=None):
+        if cause is not None:
+            assert cause is not value, &quot;Same cause emitted&quot;
+            value.__cause__ = cause
+        if value.__traceback__ is not tb:
+            raise value.with_traceback(tb)
+&gt;       raise value
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:277: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def _do_get(self):
+        use_overflow = self._max_overflow &gt; -1
+    
+        try:
+            wait = use_overflow and self._overflow &gt;= self._max_overflow
+            return self._pool.get(wait, self._timeout)
+        except sqla_queue.Empty:
+            # don&apos;t do things inside of &quot;except Empty&quot;, because when we say
+            # we timed out or can&apos;t connect and raise, Python 3 tells
+            # people the real error is queue.Empty which it isn&apos;t.
+            pass
+        if use_overflow and self._overflow &gt;= self._max_overflow:
+            if not wait:
+                return self._do_get()
+            else:
+                raise exc.TimeoutError(
+                    &quot;QueuePool limit of size %d overflow %d reached, &quot;
+                    &quot;connection timed out, timeout %d&quot;
+                    % (self.size(), self.overflow(), self._timeout),
+                    code=&quot;3o7r&quot;,
+                )
+    
+        if self._inc_overflow():
+            try:
+&gt;               return self._create_connection()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1247: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def _create_connection(self):
+        &quot;&quot;&quot;Called by subclasses to create a new ConnectionRecord.&quot;&quot;&quot;
+    
+&gt;       return _ConnectionRecord(self)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:370: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool._ConnectionRecord object at 0x1106e5dd8&gt;, pool = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;, connect = True
+
+    def __init__(self, pool, connect=True):
+        self.__pool = pool
+        if connect:
+&gt;           self.__connect(first_connect_check=True)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:499: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool._ConnectionRecord object at 0x1106e5dd8&gt;, first_connect_check = True
+
+    def __connect(self, first_connect_check=False):
+        pool = self.__pool
+    
+        # ensure any existing connection is removed, so that if
+        # creator fails, this attribute stays None
+        self.connection = None
+        try:
+            self.starttime = time.time()
+&gt;           connection = pool._invoke_creator(self)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:701: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+connection_record = &lt;sqlalchemy.pool._ConnectionRecord object at 0x1106e5dd8&gt;
+
+    def connect(connection_record=None):
+        if dialect._has_events:
+            for fn in dialect.dispatch.do_connect:
+                connection = fn(
+                    dialect, connection_record, cargs, cparams
+                )
+                if connection is not None:
+                    return connection
+&gt;       return dialect.connect(*cargs, **cparams)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/strategies.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.dialects.postgresql.psycopg2.PGDialect_psycopg2 object at 0x1051b6828&gt;, cargs = ()
+cparams = {&apos;application_name&apos;: &apos;flowmachine-jono&apos;, &apos;database&apos;: &apos;flowdb&apos;, &apos;host&apos;: &apos;localhost&apos;, &apos;password&apos;: &apos;flowflow&apos;, ...}
+
+    def connect(self, *cargs, **cparams):
+&gt;       return self.dbapi.connect(*cargs, **cparams)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/default.py:437: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = &apos;host=localhost user=flowdb password=flowflow port=9997 application_name=flowmachine-jono dbname=flowdb&apos;, connection_factory = None, cursor_factory = None
+kwargs = {&apos;application_name&apos;: &apos;flowmachine-jono&apos;, &apos;database&apos;: &apos;flowdb&apos;, &apos;host&apos;: &apos;localhost&apos;, &apos;password&apos;: &apos;flowflow&apos;, ...}, kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        &quot;&quot;&quot;
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect(&quot;dbname=test user=postgres password=secret&quot;)
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database=&quot;test&quot;, user=&quot;postgres&quot;, password=&quot;secret&quot;)
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        &quot;&quot;&quot;
+        kwasync = {}
+        if &apos;async&apos; in kwargs:
+            kwasync[&apos;async&apos;] = kwargs.pop(&apos;async&apos;)
+        if &apos;async_&apos; in kwargs:
+            kwasync[&apos;async_&apos;] = kwargs.pop(&apos;async_&apos;)
+    
+        if dsn is None and not kwargs:
+            raise TypeError(&apos;missing dsn and no parameters&apos;)
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+&gt;       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       psycopg2.OperationalError: could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (::1) and accepting
+E       	TCP/IP connections on port 9997?
+E       could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (127.0.0.1) and accepting
+E       	TCP/IP connections on port 9997?
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/psycopg2/__init__.py:130: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+tp = &lt;class &apos;sqlalchemy.exc.OperationalError&apos;&gt;, value = None, tb = None
+
+    def reraise(tp, value, tb=None):
+        try:
+            if value is None:
+                value = tp()
+            if value.__traceback__ is not tb:
+&gt;               raise value.with_traceback(tb)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/six.py:692: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/conftest.py:111: in fm_conn
+    fm_conn = Connection(conn_str=conn_str)
+../flowmachine/flowmachine/core/connection.py:116: in __init__
+    self.inspector = sqlalchemy.inspect(self.engine)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/inspection.py:62: in inspect
+    ret = reg(subject)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/reflection.py:140: in _insp
+    return Inspector.from_engine(bind)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/reflection.py:135: in from_engine
+    return bind.dialect.inspector(bind)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/dialects/postgresql/base.py:2179: in __init__
+    reflection.Inspector.__init__(self, conn)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/reflection.py:110: in __init__
+    bind.connect().close()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2171: in connect
+    return self._connection_cls(self, **kwargs)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:103: in __init__
+    else engine.raw_connection()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2259: in raw_connection
+    self.pool.unique_connection, _connection
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2232: in _wrap_pool_connect
+    e, dialect, self
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:1528: in _handle_dbapi_exception_noconnection
+    util.raise_from_cause(sqlalchemy_exception, exc_info)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:296: in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:276: in reraise
+    raise value.with_traceback(tb)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2228: in _wrap_pool_connect
+    return fn()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:365: in unique_connection
+    return _ConnectionFairy._checkout(self)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:822: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:554: in checkout
+    rec = pool._do_get()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1250: in _do_get
+    self._dec_overflow()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/langhelpers.py:67: in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:277: in reraise
+    raise value
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1247: in _do_get
+    return self._create_connection()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:370: in _create_connection
+    return _ConnectionRecord(self)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:499: in __init__
+    self.__connect(first_connect_check=True)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:701: in __connect
+    connection = pool._invoke_creator(self)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/strategies.py:114: in connect
+    return dialect.connect(*cargs, **cparams)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/default.py:437: in connect
+    return self.dbapi.connect(*cargs, **cparams)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = &apos;host=localhost user=flowdb password=flowflow port=9997 application_name=flowmachine-jono dbname=flowdb&apos;, connection_factory = None, cursor_factory = None
+kwargs = {&apos;application_name&apos;: &apos;flowmachine-jono&apos;, &apos;database&apos;: &apos;flowdb&apos;, &apos;host&apos;: &apos;localhost&apos;, &apos;password&apos;: &apos;flowflow&apos;, ...}, kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        &quot;&quot;&quot;
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect(&quot;dbname=test user=postgres password=secret&quot;)
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database=&quot;test&quot;, user=&quot;postgres&quot;, password=&quot;secret&quot;)
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        &quot;&quot;&quot;
+        kwasync = {}
+        if &apos;async&apos; in kwargs:
+            kwasync[&apos;async&apos;] = kwargs.pop(&apos;async&apos;)
+        if &apos;async_&apos; in kwargs:
+            kwasync[&apos;async_&apos;] = kwargs.pop(&apos;async_&apos;)
+    
+        if dsn is None and not kwargs:
+            raise TypeError(&apos;missing dsn and no parameters&apos;)
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+&gt;       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (::1) and accepting
+E       	TCP/IP connections on port 9997?
+E       could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (127.0.0.1) and accepting
+E       	TCP/IP connections on port 9997?
+E        (Background on this error at: http://sqlalche.me/e/e3q8)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/psycopg2/__init__.py:130: OperationalError</error></testcase><testcase classname="tests.test_queries" file="tests/test_queries.py" line="12" name="test_run_query[meaningful_locations_aggregate-params2]" time="0.001"><error message="test setup failure">self = TLEngine(postgresql://flowdb:***@localhost:9997/flowdb), fn = &lt;bound method Pool.unique_connection of &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;&gt;
+connection = None
+
+    def _wrap_pool_connect(self, fn, connection):
+        dialect = self.dialect
+        try:
+&gt;           return fn()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2228: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def unique_connection(self):
+        &quot;&quot;&quot;Produce a DBAPI connection that is not referenced by any
+        thread-local context.
+    
+        This method is equivalent to :meth:`.Pool.connect` when the
+        :paramref:`.Pool.use_threadlocal` flag is not set to True.
+        When :paramref:`.Pool.use_threadlocal` is True, the
+        :meth:`.Pool.unique_connection` method provides a means of bypassing
+        the threadlocal context.
+    
+        &quot;&quot;&quot;
+&gt;       return _ConnectionFairy._checkout(self)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:365: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = &lt;class &apos;sqlalchemy.pool._ConnectionFairy&apos;&gt;, pool = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;, threadconns = None, fairy = None
+
+    @classmethod
+    def _checkout(cls, pool, threadconns=None, fairy=None):
+        if not fairy:
+&gt;           fairy = _ConnectionRecord.checkout(pool)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:822: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = &lt;class &apos;sqlalchemy.pool._ConnectionRecord&apos;&gt;, pool = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    @classmethod
+    def checkout(cls, pool):
+&gt;       rec = pool._do_get()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:554: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def _do_get(self):
+        use_overflow = self._max_overflow &gt; -1
+    
+        try:
+            wait = use_overflow and self._overflow &gt;= self._max_overflow
+            return self._pool.get(wait, self._timeout)
+        except sqla_queue.Empty:
+            # don&apos;t do things inside of &quot;except Empty&quot;, because when we say
+            # we timed out or can&apos;t connect and raise, Python 3 tells
+            # people the real error is queue.Empty which it isn&apos;t.
+            pass
+        if use_overflow and self._overflow &gt;= self._max_overflow:
+            if not wait:
+                return self._do_get()
+            else:
+                raise exc.TimeoutError(
+                    &quot;QueuePool limit of size %d overflow %d reached, &quot;
+                    &quot;connection timed out, timeout %d&quot;
+                    % (self.size(), self.overflow(), self._timeout),
+                    code=&quot;3o7r&quot;,
+                )
+    
+        if self._inc_overflow():
+            try:
+                return self._create_connection()
+            except:
+                with util.safe_reraise():
+&gt;                   self._dec_overflow()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.util.langhelpers.safe_reraise object at 0x1106de5f8&gt;, type_ = None, value = None, traceback = None
+
+    def __exit__(self, type_, value, traceback):
+        # see #2703 for notes
+        if type_ is None:
+            exc_type, exc_value, exc_tb = self._exc_info
+            self._exc_info = None  # remove potential circular references
+            if not self.warn_only:
+&gt;               compat.reraise(exc_type, exc_value, exc_tb)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/langhelpers.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tp = &lt;class &apos;psycopg2.OperationalError&apos;&gt;
+value = OperationalError(&apos;could not connect to server: Connection refused\n\tIs the server running on host &quot;localhost&quot; (::1) a... refused\n\tIs the server running on host &quot;localhost&quot; (127.0.0.1) and accepting\n\tTCP/IP connections on port 9997?\n&apos;)
+tb = &lt;traceback object at 0x1106ef508&gt;, cause = None
+
+    def reraise(tp, value, tb=None, cause=None):
+        if cause is not None:
+            assert cause is not value, &quot;Same cause emitted&quot;
+            value.__cause__ = cause
+        if value.__traceback__ is not tb:
+            raise value.with_traceback(tb)
+&gt;       raise value
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:277: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def _do_get(self):
+        use_overflow = self._max_overflow &gt; -1
+    
+        try:
+            wait = use_overflow and self._overflow &gt;= self._max_overflow
+            return self._pool.get(wait, self._timeout)
+        except sqla_queue.Empty:
+            # don&apos;t do things inside of &quot;except Empty&quot;, because when we say
+            # we timed out or can&apos;t connect and raise, Python 3 tells
+            # people the real error is queue.Empty which it isn&apos;t.
+            pass
+        if use_overflow and self._overflow &gt;= self._max_overflow:
+            if not wait:
+                return self._do_get()
+            else:
+                raise exc.TimeoutError(
+                    &quot;QueuePool limit of size %d overflow %d reached, &quot;
+                    &quot;connection timed out, timeout %d&quot;
+                    % (self.size(), self.overflow(), self._timeout),
+                    code=&quot;3o7r&quot;,
+                )
+    
+        if self._inc_overflow():
+            try:
+&gt;               return self._create_connection()
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1247: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;
+
+    def _create_connection(self):
+        &quot;&quot;&quot;Called by subclasses to create a new ConnectionRecord.&quot;&quot;&quot;
+    
+&gt;       return _ConnectionRecord(self)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:370: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool._ConnectionRecord object at 0x1106e5dd8&gt;, pool = &lt;sqlalchemy.pool.QueuePool object at 0x1106cfd68&gt;, connect = True
+
+    def __init__(self, pool, connect=True):
+        self.__pool = pool
+        if connect:
+&gt;           self.__connect(first_connect_check=True)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:499: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.pool._ConnectionRecord object at 0x1106e5dd8&gt;, first_connect_check = True
+
+    def __connect(self, first_connect_check=False):
+        pool = self.__pool
+    
+        # ensure any existing connection is removed, so that if
+        # creator fails, this attribute stays None
+        self.connection = None
+        try:
+            self.starttime = time.time()
+&gt;           connection = pool._invoke_creator(self)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:701: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+connection_record = &lt;sqlalchemy.pool._ConnectionRecord object at 0x1106e5dd8&gt;
+
+    def connect(connection_record=None):
+        if dialect._has_events:
+            for fn in dialect.dispatch.do_connect:
+                connection = fn(
+                    dialect, connection_record, cargs, cparams
+                )
+                if connection is not None:
+                    return connection
+&gt;       return dialect.connect(*cargs, **cparams)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/strategies.py:114: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;sqlalchemy.dialects.postgresql.psycopg2.PGDialect_psycopg2 object at 0x1051b6828&gt;, cargs = ()
+cparams = {&apos;application_name&apos;: &apos;flowmachine-jono&apos;, &apos;database&apos;: &apos;flowdb&apos;, &apos;host&apos;: &apos;localhost&apos;, &apos;password&apos;: &apos;flowflow&apos;, ...}
+
+    def connect(self, *cargs, **cparams):
+&gt;       return self.dbapi.connect(*cargs, **cparams)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/default.py:437: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = &apos;host=localhost user=flowdb password=flowflow port=9997 application_name=flowmachine-jono dbname=flowdb&apos;, connection_factory = None, cursor_factory = None
+kwargs = {&apos;application_name&apos;: &apos;flowmachine-jono&apos;, &apos;database&apos;: &apos;flowdb&apos;, &apos;host&apos;: &apos;localhost&apos;, &apos;password&apos;: &apos;flowflow&apos;, ...}, kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        &quot;&quot;&quot;
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect(&quot;dbname=test user=postgres password=secret&quot;)
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database=&quot;test&quot;, user=&quot;postgres&quot;, password=&quot;secret&quot;)
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        &quot;&quot;&quot;
+        kwasync = {}
+        if &apos;async&apos; in kwargs:
+            kwasync[&apos;async&apos;] = kwargs.pop(&apos;async&apos;)
+        if &apos;async_&apos; in kwargs:
+            kwasync[&apos;async_&apos;] = kwargs.pop(&apos;async_&apos;)
+    
+        if dsn is None and not kwargs:
+            raise TypeError(&apos;missing dsn and no parameters&apos;)
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+&gt;       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       psycopg2.OperationalError: could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (::1) and accepting
+E       	TCP/IP connections on port 9997?
+E       could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (127.0.0.1) and accepting
+E       	TCP/IP connections on port 9997?
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/psycopg2/__init__.py:130: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+tp = &lt;class &apos;sqlalchemy.exc.OperationalError&apos;&gt;, value = None, tb = None
+
+    def reraise(tp, value, tb=None):
+        try:
+            if value is None:
+                value = tp()
+            if value.__traceback__ is not tb:
+&gt;               raise value.with_traceback(tb)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/six.py:692: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/conftest.py:111: in fm_conn
+    fm_conn = Connection(conn_str=conn_str)
+../flowmachine/flowmachine/core/connection.py:116: in __init__
+    self.inspector = sqlalchemy.inspect(self.engine)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/inspection.py:62: in inspect
+    ret = reg(subject)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/reflection.py:140: in _insp
+    return Inspector.from_engine(bind)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/reflection.py:135: in from_engine
+    return bind.dialect.inspector(bind)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/dialects/postgresql/base.py:2179: in __init__
+    reflection.Inspector.__init__(self, conn)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/reflection.py:110: in __init__
+    bind.connect().close()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2171: in connect
+    return self._connection_cls(self, **kwargs)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:103: in __init__
+    else engine.raw_connection()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2259: in raw_connection
+    self.pool.unique_connection, _connection
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2232: in _wrap_pool_connect
+    e, dialect, self
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:1528: in _handle_dbapi_exception_noconnection
+    util.raise_from_cause(sqlalchemy_exception, exc_info)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:296: in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:276: in reraise
+    raise value.with_traceback(tb)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/base.py:2228: in _wrap_pool_connect
+    return fn()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:365: in unique_connection
+    return _ConnectionFairy._checkout(self)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:822: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:554: in checkout
+    rec = pool._do_get()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1250: in _do_get
+    self._dec_overflow()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/langhelpers.py:67: in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/util/compat.py:277: in reraise
+    raise value
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:1247: in _do_get
+    return self._create_connection()
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:370: in _create_connection
+    return _ConnectionRecord(self)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:499: in __init__
+    self.__connect(first_connect_check=True)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/pool.py:701: in __connect
+    connection = pool._invoke_creator(self)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/strategies.py:114: in connect
+    return dialect.connect(*cargs, **cparams)
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/sqlalchemy/engine/default.py:437: in connect
+    return self.dbapi.connect(*cargs, **cparams)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = &apos;host=localhost user=flowdb password=flowflow port=9997 application_name=flowmachine-jono dbname=flowdb&apos;, connection_factory = None, cursor_factory = None
+kwargs = {&apos;application_name&apos;: &apos;flowmachine-jono&apos;, &apos;database&apos;: &apos;flowdb&apos;, &apos;host&apos;: &apos;localhost&apos;, &apos;password&apos;: &apos;flowflow&apos;, ...}, kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        &quot;&quot;&quot;
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect(&quot;dbname=test user=postgres password=secret&quot;)
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database=&quot;test&quot;, user=&quot;postgres&quot;, password=&quot;secret&quot;)
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        &quot;&quot;&quot;
+        kwasync = {}
+        if &apos;async&apos; in kwargs:
+            kwasync[&apos;async&apos;] = kwargs.pop(&apos;async&apos;)
+        if &apos;async_&apos; in kwargs:
+            kwasync[&apos;async_&apos;] = kwargs.pop(&apos;async_&apos;)
+    
+        if dsn is None and not kwargs:
+            raise TypeError(&apos;missing dsn and no parameters&apos;)
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+&gt;       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (::1) and accepting
+E       	TCP/IP connections on port 9997?
+E       could not connect to server: Connection refused
+E       	Is the server running on host &quot;localhost&quot; (127.0.0.1) and accepting
+E       	TCP/IP connections on port 9997?
+E        (Background on this error at: http://sqlalche.me/e/e3q8)
+
+../../../.local/share/virtualenvs/integration_tests-Br09vuU9/lib/python3.7/site-packages/psycopg2/__init__.py:130: OperationalError</error></testcase></testsuite>

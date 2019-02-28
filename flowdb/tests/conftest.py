@@ -100,7 +100,7 @@ class DBConn:
             [
                 ("usr", self.env["POSTGRES_USER"]),
                 ("pwd", self.env["POSTGRES_PASSWORD"]),
-                ("port", self.env["DB_PORT"]),
+                ("port", self.env["FLOWDB_PORT"]),
                 ("db", "flowdb"),
             ]
         )
@@ -139,7 +139,7 @@ def env():
         FLOWDB_RELEASE_DATE
         FLOWDB_INGESTION_DIR=flowdb/tests/data
         FLOWDB_DATA_DIR
-        DB_PORT
+        FLOWDB_PORT
         ORACLE_DB_PORT
         SYNTHETIC_DATA_DB_PORT
         POSTGRES_USER=flowdb
@@ -161,7 +161,7 @@ def env():
             os.path.join(os.path.dirname(__file__), "data")
         ),
         "FLOWDB_DATA_DIR": None,
-        "DB_PORT": None,
+        "FLOWDB_PORT": None,
         "ORACLE_DB_PORT": None,
         "SYNTHETIC_DATA_DB_PORT": None,
         "POSTGRES_USER": "flowdb",
@@ -230,7 +230,7 @@ def create_test_tables(request, env, test_tables):
         [
             ("usr", env["POSTGRES_USER"]),
             ("pwd", env["POSTGRES_PASSWORD"]),
-            ("port", env["DB_PORT"]),
+            ("port", env["FLOWDB_PORT"]),
             ("db", "flowdb"),
         ]
     )

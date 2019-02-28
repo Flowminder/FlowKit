@@ -1,0 +1,17 @@
+[run]
+branch = True
+
+[report]
+omit =
+    */python?.?/*
+    */venv/*
+    */site-packages/nose/*
+    */tests/*
+    */_version.py
+    */versioneer.py
+    *__init__*
+
+exclude_lines =
+    if __name__ == '__main__':
+
+show_missing = True
