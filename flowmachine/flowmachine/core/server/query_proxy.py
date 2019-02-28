@@ -485,7 +485,7 @@ class QueryProxy:
         logger.debug(f"Getting status for query {query_id} of kind {self.query_kind}")
 
         status = self.redis_interface.query_status(query_id)
-        if status == QueryState.EXECUTED and not cache_table_exists(
+        if status == QueryState.COMPLETED and not cache_table_exists(
             Query.connection, query_id
         ):
             return "awol"
@@ -526,7 +526,7 @@ class QueryProxy:
                 query_id,
                 msg=f"Query with id '{query_id}' has not been run yet, or was reset.",
             )
-        elif query_state == QueryState.EXECUTED:
+        elif query_state == QueryState.COMPLETED:
             return get_sql_for_query_id(query_id)
         else:
             raise QueryProxyError(

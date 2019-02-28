@@ -28,7 +28,7 @@ async def test_get_sql(zmq_url):
     expected_query_id = "e39b0d45bc6b46b7700c67cd52f00455"
 
     reply = send_message_and_get_reply(zmq_url, msg_run_query)
-    assert reply["status"] in ("executing", "queued", "executed")
+    assert reply["status"] in ("executing", "queued", "completed")
 
     #
     # Wait until the query has finished.

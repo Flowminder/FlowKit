@@ -61,7 +61,7 @@ def test_blocks(blocking_state, monkeypatch, dummy_redis):
     )
 
     with pytest.raises(BlockingIOError):
-        state_machine.has_finished_operating()
+        state_machine.wait_until_complete()
 
 
 def test_no_limit_on_blocks(monkeypatch):
@@ -95,7 +95,7 @@ def test_non_blocking(monkeypatch):
 @pytest.mark.parametrize(
     "non_blocking_state, expected_return",
     [
-        (QueryState.EXECUTED, True),
+        (QueryState.COMPLETED, True),
         (QueryState.KNOWN, False),
         (QueryState.CANCELLED, False),
         (QueryState.ERRORED, False),
@@ -109,7 +109,7 @@ def test_non_blocks(non_blocking_state, expected_return, monkeypatch, dummy_redi
         flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
 
-    assert expected_return == state_machine.has_finished_operating()
+    assert expected_return == state_machine.wait_until_complete()
 
 
 @pytest.mark.parametrize(
@@ -117,7 +117,7 @@ def test_non_blocks(non_blocking_state, expected_return, monkeypatch, dummy_redi
     [
         (QueryState.KNOWN, False),
         (QueryState.CANCELLED, True),
-        (QueryState.EXECUTED, False),
+        (QueryState.COMPLETED, False),
         (QueryState.ERRORED, False),
         (QueryState.QUEUED, True),
         (QueryState.RESETTING, False),

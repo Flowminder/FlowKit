@@ -9,7 +9,7 @@ from sqlalchemy import inspect
 def poll_until_done(port, query_id, max_tries=100):
     """
     Send zmq message to flowmachine on port `port` which polls the
-    query with id `query_id` until the return status is "executed".
+    query with id `query_id` until the return status is "completed".
     """
     msg_poll_query = {
         "action": "poll",
@@ -23,7 +23,7 @@ def poll_until_done(port, query_id, max_tries=100):
             raise RuntimeError("Timeout reached but query is not done. Aborting.")
         print(f"[DDD] Polling query {query_id}...")
         reply = send_message_and_get_reply(port, msg_poll_query)
-        if "executed" == reply["status"]:
+        if "completed" == reply["status"]:
             break
         time.sleep(0.1)
 

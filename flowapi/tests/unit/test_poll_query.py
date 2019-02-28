@@ -9,7 +9,7 @@ from asynctest import return_once
 @pytest.mark.parametrize(
     "status, http_code",
     [
-        ("executed", 303),
+        ("completed", 303),
         ("executing", 202),
         ("awol", 404),
         ("queued", 202),

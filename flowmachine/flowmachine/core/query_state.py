@@ -27,10 +27,10 @@ class QueryState(str, Enum):
     """
 
     QUEUED = "queued"
-    EXECUTED = "executed"
+    COMPLETED = "completed"
     CANCELLED = "cancelled"
     EXECUTING = "executing"
-    ERRORED = "errored"
+    ERRORED = "is_errored"
     RESETTING = "resetting"
     KNOWN = "known"
 
@@ -54,17 +54,19 @@ class QueryStateMachine:
     Implements a state machine for a query's lifecycle, backed by redis.
 
     Each query, once instantiated, is in one of a number of possible states.
-    - known, indicating that the query has been created, but not yet run.
+    - known, indicating that the query has been created, but not yet run, or queued for storage.
     - queued, which indicates that a query is going to be executed in future
     - executing, for queries which are currently running in FlowDB
     - executed, indicating that the query has finished running successfully
-    - errored, when a query has been run but failed to succeed
+    - is_errored, when a query has been run but failed to succeed
     - cancelled, when execution was terminated by the user
     - resetting, when a previously run query is being purged from cache
 
     When the query is in a queued, executing, or resetting state, methods which need
-    to use the results of the query should wait. The `has_finished_operating` method
+    to use the results of the query should wait. The `wait_until_complete` method
     will block while the query is in any of these states.
+
+    The initial state for the query is 'known'.
 
     Parameters
     ----------
@@ -72,6 +74,12 @@ class QueryStateMachine:
         Client for redis
     query_id : str
         md5 query identifier
+
+    Notes
+    -----
+    Creating a new instance of a state machine for a query will not alter the state, as
+    the state is persisted in redis.
+
     """
 
     def __init__(self, redis_client: StrictRedis, query_id: str):
@@ -86,7 +94,7 @@ class QueryStateMachine:
             QueryEvent.ERROR, QueryState.EXECUTING, QueryState.ERRORED
         )
         self.state_machine.on(
-            QueryEvent.FINISH, QueryState.EXECUTING, QueryState.EXECUTED
+            QueryEvent.FINISH, QueryState.EXECUTING, QueryState.COMPLETED
         )
         self.state_machine.on(
             QueryEvent.CANCEL, QueryState.QUEUED, QueryState.CANCELLED
@@ -101,10 +109,10 @@ class QueryStateMachine:
             QueryEvent.RESET, QueryState.ERRORED, QueryState.RESETTING
         )
         self.state_machine.on(
-            QueryEvent.RESET, QueryState.EXECUTED, QueryState.RESETTING
+            QueryEvent.RESET, QueryState.COMPLETED, QueryState.RESETTING
         )
         self.state_machine.on(
-            QueryEvent.RESET, QueryState.EXECUTED, QueryState.RESETTING
+            QueryEvent.RESET, QueryState.COMPLETED, QueryState.RESETTING
         )
         self.state_machine.on(
             QueryEvent.FINISH_RESET, QueryState.RESETTING, QueryState.KNOWN
@@ -123,17 +131,17 @@ class QueryStateMachine:
         return self.current_query_state == QueryState.QUEUED
 
     @property
-    def is_executed_without_error(self) -> bool:
-        return self.current_query_state == QueryState.EXECUTED
+    def is_completed(self) -> bool:
+        return self.current_query_state == QueryState.COMPLETED
 
     @property
-    def is_executed(self) -> bool:
-        return (self.current_query_state == QueryState.EXECUTED) or (
+    def is_finished_executing(self) -> bool:
+        return (self.current_query_state == QueryState.COMPLETED) or (
             self.current_query_state == QueryState.ERRORED
         )
 
     @property
-    def errored(self) -> bool:
+    def is_errored(self) -> bool:
         return self.current_query_state == QueryState.ERRORED
 
     @property
@@ -173,10 +181,10 @@ class QueryStateMachine:
     def finish_reset(self):
         return self.trigger_event(QueryEvent.FINISH_RESET)
 
-    def has_finished_operating(self):
+    def wait_until_complete(self):
         """
         Blocks while the query is in any state that makes how to get
-        the result of it indeterminate (i.e. currently running, restting,
+        the result of it indeterminate (i.e. currently running, resetting,
         or scheduled to run).
 
         Returns
@@ -185,7 +193,9 @@ class QueryStateMachine:
             True if the query has been executed successfully and is in cache.
         """
         if self.is_executing or self.is_queued or self.is_resetting:
-            while not (self.is_executed or self.is_cancelled or self.is_known):
+            while not (
+                self.is_finished_executing or self.is_cancelled or self.is_known
+            ):
                 _sleep(1)
 
-        return self.is_executed_without_error
+        return self.is_completed

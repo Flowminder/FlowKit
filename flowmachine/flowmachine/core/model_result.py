@@ -179,12 +179,12 @@ class ModelResult(Query):
                 while q_state_machine.is_executing:
                     sleep(5)
 
-            if q_state_machine.is_executed_without_error:
+            if q_state_machine.is_completed:
                 return self
             elif q_state_machine.is_cancelled:
                 logger.error(f"Model result write '{self.md5}' was cancelled.")
                 raise QueryCancelledException(self.md5)
-            elif q_state_machine.errored:
+            elif q_state_machine.is_errored:
                 logger.error(f"Model result write '{self.md5}' finished with an error.")
                 raise QueryErroredException(self.md5)
                 logger.debug("Released storage lock.")

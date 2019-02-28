@@ -197,7 +197,7 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
-            if QueryStateMachine(self.redis, self.md5).has_finished_operating():
+            if QueryStateMachine(self.redis, self.md5).wait_until_complete():
                 if self.connection.has_table(schema=schema, name=name):
                     try:
                         touch_cache(self.connection, self.md5)
@@ -541,12 +541,12 @@ class Query(metaclass=ABCMeta):
                 )
                 while q_state_machine.is_executing:
                     _sleep(5)
-            if q_state_machine.is_executed_without_error:
+            if q_state_machine.is_completed:
                 return self
             elif q_state_machine.is_cancelled:
                 logger.error(f"Query '{self.md5}' was cancelled.")
                 raise QueryCancelledException(self.md5)
-            elif q_state_machine.errored:
+            elif q_state_machine.is_errored:
                 logger.error(f"Query '{self.md5}' finished with an error.")
                 raise QueryErroredException(self.md5)
 

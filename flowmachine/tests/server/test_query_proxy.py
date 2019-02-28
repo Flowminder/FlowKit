@@ -126,11 +126,11 @@ def test_poll(dummy_redis, monkeypatch):
     dummy_redis._store[qsm.state_machine._name] = QueryState.EXECUTING.value.encode()
     assert QueryState.EXECUTING.value == query_proxy.poll()
 
-    dummy_redis._store[qsm.state_machine._name] = QueryState.EXECUTED.value.encode()
+    dummy_redis._store[qsm.state_machine._name] = QueryState.COMPLETED.value.encode()
     mock_func_cache_table_exists.return_value = False
     assert "awol" == query_proxy.poll()
     mock_func_cache_table_exists.return_value = True
-    assert "executed" == query_proxy.poll()
+    assert "completed" == query_proxy.poll()
 
 
 def test_get_sql(dummy_redis, monkeypatch):
@@ -176,7 +176,7 @@ def test_get_sql(dummy_redis, monkeypatch):
     #
     query_proxy.run_query_async()
     q.store.assert_called_once_with()
-    assert "executed" == query_proxy.poll()
+    assert "completed" == query_proxy.poll()
 
     #
     # Get SQL code and check it is as expected

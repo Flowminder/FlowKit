@@ -43,7 +43,7 @@ async def poll_query(query_id):
     )
     message = await request.socket.recv_json()
 
-    if message["status"] == "executed":
+    if message["status"] == "completed":
         return (
             jsonify({}),
             303,
@@ -72,7 +72,7 @@ async def get_query(query_id):
             jsonify({"status": "Error", "msg": "Server responded without status"}),
             500,
         )
-    if message["status"] == "executed":
+    if message["status"] == "completed":
         results_streamer = stream_with_context(stream_result_as_json)(
             message["sql"], additional_elements={"query_id": query_id}
         )
