@@ -213,3 +213,9 @@ def main():  # pragma: no cover
         if debug_mode:
             main_loop.set_debug(True)
         main_loop.run_until_complete(recv(port))
+
+
+if __name__ == "__main__":
+    print("Started.")
+    main()
+    print("Exiting.")

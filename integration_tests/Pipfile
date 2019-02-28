@@ -5,8 +5,13 @@ name = "pypi"
 
 [packages]
 pytest = "*"
-flask_jwt_extended = "*"
+pyzmq = "*"
 quart = "*"
+hypercorn = "*"
+asyncpg = "*"
+flask-jwt-extended = "*"
+ujson = "*"
+structlog = "*"
 click = "*"
 requests = "*"
 pytest-dotenv = "*"
@@ -15,8 +20,12 @@ pytest-asyncio = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 flowclient = {editable = true,path = "./../flowclient"}
 approvaltests = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.7"
 
 [dev-packages]
+
+[scripts]
+run-tests = "bash run_tests.sh"

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "662c97b1fa1a234d5d86d452c179181c163a94a8df4d4e6abde0ddc244326846"
+            "sha256": "a22ccf951880362ed63c6a6e9ddc559182cfe08e3cfbc29d109458b22eb570c9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -30,6 +30,10 @@
                 "sha256:cabb249f4710888a2fc0e13e9a16c343d932033718ff62e1e9bc93a9d3a9122b"
             ],
             "version": "==4.3.2"
+        },
+        "flowmachine": {
+            "editable": true,
+            "path": "."
         },
         "networkx": {
             "hashes": [
@@ -286,10 +290,10 @@
         },
         "aspy.yaml": {
             "hashes": [
-                "sha256:19dd2ee74f96b72a3096d78be1a872914c70982299cda137725478954870a896",
-                "sha256:5eaaacd0886e8b581f0e4ff383fb6504720bb2b3c7be17307724246261a41adf"
+                "sha256:ae249074803e8b957c83fdd82a99160d0d6d26dff9ba81ba608b42eebd7d8cd3",
+                "sha256:c7390d79f58eb9157406966201abf26da0d56c07e0ff0deadc39c8f4dbc13482"
             ],
-            "version": "==1.1.2"
+            "version": "==1.2.0"
         },
         "asynctest": {
             "hashes": [
@@ -337,10 +341,10 @@
         },
         "cfgv": {
             "hashes": [
-                "sha256:39d9055c47e3932908fe25abd5807e21dc002630db01c7a5f05738d027e2b706",
-                "sha256:41d22dd864c474f919ecb88900000d2410d640315f75bdb79b3abf9347089641"
+                "sha256:39f8475d8eca48639f900daffa3f8bd2f60a31d989df41a9f81c5ad1779a66eb",
+                "sha256:a6a4366d32799a6bfb6f577ebe113b27ba8d1bae43cb57133b1472c1c3dae227"
             ],
-            "version": "==1.4.0"
+            "version": "==1.5.0"
         },
         "click": {
             "hashes": [

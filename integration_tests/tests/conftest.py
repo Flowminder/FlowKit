@@ -2,17 +2,56 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 from datetime import timedelta
+from multiprocessing import Process
+from time import sleep
 
 import pytest
 import os
 
 import requests
-from .utils import make_token
 
 import flowmachine
+
+
 from flowmachine.core import Connection, Query
 from flowmachine.core.cache import reset_cache
+import flowmachine.core.server.server
+import quart.flask_patch
+
+
+@pytest.fixture(scope="session", autouse=True)
+def flowmachine_server():
+    """
+    Starts a flowmachine server in a separate thread for the tests to talk to.
+    """
+    fm_thread = Process(target=flowmachine.core.server.server.main)
+    fm_thread.start()
+    yield
+    fm_thread.terminate()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def flowapi_server():
+    import hypercorn.__main__
+
+    import os
+    import sys
+
+    sys.path.insert(
+        0,
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "flowapi")),
+    )
+
+    api_thread = Process(
+        target=hypercorn.__main__.main,
+        args=(["--bind", "0.0.0.0:9090", "app.main:create_app()"],),
+    )
+    api_thread.start()
+    sleep(2)
+    yield
+    api_thread.terminate()
 
 
 @pytest.fixture
@@ -44,6 +83,8 @@ def access_token_builder():
     function
         Function which returns a token encoding the specified claims.
     """
+    from .utils import make_token
+
     secret = os.getenv("JWT_SECRET_KEY")
     if secret is None:
         raise EnvironmentError("JWT_SECRET_KEY environment variable not set.")
