@@ -157,6 +157,22 @@ class QueryStateMachine:
         return self.current_query_state == QueryState.CANCELLED
 
     def trigger_event(self, event: QueryEvent) -> Tuple[QueryState, bool]:
+        """
+        Attempts to trigger a state transition - will only transition if a
+        transition is possible given the current state of the query.
+
+        Parameters
+        ----------
+        event: QueryEvent
+            Event to trigger
+
+        Returns
+        -------
+        tuple of QueryState, bool
+            Returns a tuple of the new query state, and a bool indicating whether this method
+            call caused a transition to that state
+
+        """
         state, trigger_success = self.state_machine.trigger(event)
         return QueryState(state.decode()), trigger_success
 
