@@ -10,7 +10,7 @@ duration between calls.
 import warnings
 from typing import List
 
-from ...utils.utils import verify_columns_exist_in_all_tables
+from flowmachine.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 

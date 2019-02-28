@@ -50,33 +50,25 @@ def test_intervent_period(get_dataframe, intervent_period):
     sample = df.sample(n=5)
     want = intervent_period("2016-01-01", "2016-01-08", "both", sample, "mean")
     assert query.column_names == ["subscriber", "value"]
-    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(
-        want
-    )
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
 
     query = IntereventPeriod("2016-01-01", "2016-01-05", direction="out")
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-01", "2016-01-05", "out", sample, "mean")
     assert query.column_names == ["subscriber", "value"]
-    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(
-        want
-    )
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
 
     query = IntereventPeriod("2016-01-03", "2016-01-05", direction="in")
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-03", "2016-01-05", "in", sample, "mean")
     assert query.column_names == ["subscriber", "value"]
-    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(
-        want
-    )
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
 
     query = IntereventPeriod("2016-01-01", "2016-01-08", "stddev")
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-01", "2016-01-08", "both", sample, "std")
     assert query.column_names == ["subscriber", "value"]
-    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(
-        want
-    )
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
