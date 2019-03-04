@@ -198,7 +198,7 @@ docker run --name flowdb_testdata -e FM_PASSWORD=foo -e API_PASSWORD=foo \
  --user HOST_USER_ID:HOST_GROUP_ID \
  -v /path/to/store/data/on/host:/var/lib/postgresql/data \
  -v /path/to/consume/data/from/host:/etl:ro \
- --detach flowminder/flowdb:latest
+ --detach flowminder/flowdb-testdata:latest
 ```
 
 !!! tip

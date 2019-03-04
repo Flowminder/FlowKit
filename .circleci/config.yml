@@ -86,7 +86,7 @@ defaults:
     context: org-global
     filters:
       branches:
-        only: master
+        only: retag
   - &tag_only_org_context
     context: org-global
     filters:
@@ -617,7 +617,7 @@ jobs:
           name: Retag
           command: |
             for IMAGE in flowapi flowmachine flowdb flowdb-synth-data flowdb-test-data flowauth; do
-              docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<< parameters.tag >>:-latest}
+              docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<< parameters.tag >>:-retag}
             done
 
 
