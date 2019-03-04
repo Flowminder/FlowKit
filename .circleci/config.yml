@@ -653,6 +653,7 @@ workflows:
             - build_flowdb
           <<: *run_always_org_context
       - retag_images:
+          name: retag_master_branch
           requires:
             - build_flowmachine
             - build_flowdb
@@ -661,6 +662,7 @@ workflows:
             - build_docs
           <<: *master_only_org_context
       - retag_images:
+          name: retag_tagged_build
           requires:
             - build_flowmachine
             - build_flowdb
@@ -676,6 +678,6 @@ workflows:
       - deploy_docs:
           requires:
             - build_docs
-            - retag_images
+            - retag_tagged_build
             - push_wheel
           <<: *tag_only_org_context
