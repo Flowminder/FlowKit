@@ -572,8 +572,10 @@ jobs:
       - run:
           name: Retag
           command: |
+            export DOCKER_USER=$DOCKER_CLOUD_USER
+            export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
             for IMAGE in flowapi flowmachine flowdb flowdb-synth-data flowdb-test-data flowauth; do
-              DOCKER_USER=$DOCKER_CLOUD_USER;DOCKER_PASS=$DOCKER_CLOUD_PASSWORD docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<< parameters.tag >>:-retag}
+              docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<< parameters.tag >>:-retag}
             done
 
 
