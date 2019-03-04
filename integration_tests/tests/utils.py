@@ -4,7 +4,7 @@ Duplicate of flowapi/tests/unit/utils.py
 # TODO: De-duplicate this
 
 from flask_jwt_extended.tokens import encode_access_token
-from quart.json import JSONEncoder
+from json import JSONEncoder
 
 
 def make_token(username, secret_key, lifetime, claims):

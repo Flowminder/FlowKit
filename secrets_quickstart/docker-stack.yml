@@ -44,7 +44,7 @@ services:
     flowmachine:
         image: "flowminder/flowmachine:${CIRCLE_BRANCH:-latest}"
         environment:
-            - DB_PORT=5432
+            - FLOWDB_PORT=5432
             - DB_HOST=flowdb
             - LOG_LEVEL=${LOG_LEVEL:-error}
             - DEBUG=${FM_DEBUG:-False}
