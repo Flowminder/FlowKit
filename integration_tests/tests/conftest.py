@@ -24,7 +24,7 @@ import quart.flask_patch
 @pytest.fixture(scope="session", autouse=True)
 def flowmachine_server():
     """
-    Starts a flowmachine server in a separate thread for the tests to talk to.
+    Starts a flowmachine server in a separate process for the tests to talk to.
     """
     fm_thread = Process(target=flowmachine.core.server.server.main)
     fm_thread.start()
@@ -35,6 +35,9 @@ def flowmachine_server():
 
 @pytest.fixture(scope="session", autouse=True)
 def flowapi_server():
+    """
+    Starts a FlowAPI server in a separate process for the tests to talk to.
+    """
     import hypercorn.__main__
 
     import os
