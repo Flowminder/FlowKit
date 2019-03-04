@@ -401,7 +401,6 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-      - run: cat /home/circleci/.env >> $BASH_ENV
       - setup_remote_docker
       - run:
           name: Log in to docker cloud
@@ -409,13 +408,12 @@ jobs:
       - run:
           name: Build flowmachine image
           command: |
-            echo "Tagging as $SAFE_TAG and $CIRCLE_WORKFLOW_ID"
-            docker build -t flowminder/flowmachine:$SAFE_TAG -t flowminder/flowmachine:$CIRCLE_WORKFLOW_ID ./flowmachine
+            echo "Tagging as $CIRCLE_WORKFLOW_ID"
+            docker build -t flowminder/flowmachine:$CIRCLE_WORKFLOW_ID ./flowmachine
       - run:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowmachine:$CIRCLE_WORKFLOW_ID
-            docker push flowminder/flowmachine:$SAFE_TAG
 
   build_flowauth:
     docker:
@@ -424,20 +422,16 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - attach_workspace:
-          at: /home/circleci
-      - run: cat /home/circleci/.env >> $BASH_ENV
       - setup_remote_docker
       - run:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
       - run:
           name: Build flowauth image
-          command: docker build -t flowminder/flowauth:$SAFE_TAG -t flowminder/flowauth:$CIRCLE_WORKFLOW_ID ./flowauth
+          command: docker build -t flowminder/flowauth:$CIRCLE_WORKFLOW_ID ./flowauth
       - run:
           name: Push images to Docker cloud
           command: |
-            docker push flowminder/flowauth:$SAFE_TAG
             docker push flowminder/flowauth:$CIRCLE_WORKFLOW_ID
 
   build_flowapi:
@@ -447,21 +441,17 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - attach_workspace:
-          at: /home/circleci
-      - run: cat /home/circleci/.env >> $BASH_ENV
       - setup_remote_docker
       - run:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
       - run:
           name: Build flowapi image
-          command: docker build -t flowminder/flowapi:$CIRCLE_WORKFLOW_ID -t flowminder/flowapi:$SAFE_TAG ./flowapi
+          command: docker build -t flowminder/flowapi:$CIRCLE_WORKFLOW_ID ./flowapi
       - run:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowapi:$CIRCLE_WORKFLOW_ID
-            docker push flowminder/flowapi:$SAFE_TAG
 
   integration_tests:
     docker: *docs_build
