@@ -39,7 +39,7 @@ services:
 
   flowdb_testdata:
     container_name: flowdb_testdata
-    image: flowminder/flowdb:testdata-latest
+    image: flowminder/flowdb-testdata:latest
     build:
       context: ./flowdb/testdata/
       dockerfile: Dockerfile
@@ -64,7 +64,7 @@ services:
 
   flowdb_synthetic_data:
     container_name: flowdb_synthetic_data
-    image: flowminder/flowdb:synthetic-data-latest
+    image: flowminder/flowdb-synthetic-data:latest
     build:
       context: ./flowdb/testdata/
       dockerfile: Dockerfile.synthetic_data
