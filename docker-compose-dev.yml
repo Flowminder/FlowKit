@@ -19,7 +19,7 @@ services:
       context: ./flowdb/
       dockerfile: Dockerfile
     ports:
-      - ${FLOWFLOWDB_PORT:-9000}:5432
+      - ${FLOWDB_PORT:-9000}:5432
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-flowdb}
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
@@ -44,7 +44,7 @@ services:
       context: ./flowdb/testdata/
       dockerfile: Dockerfile
     ports:
-      - ${FLOWFLOWDB_PORT:-9000}:5432
+      - ${FLOWDB_PORT:-9000}:5432
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-flowdb}
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
@@ -69,7 +69,7 @@ services:
       context: ./flowdb/testdata/
       dockerfile: Dockerfile.synthetic_data
     ports:
-      - ${FLOWFLOWDB_PORT:-9002}:5432
+      - ${FLOWDB_PORT:-9002}:5432
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-flowdb}
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
