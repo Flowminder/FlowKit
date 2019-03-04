@@ -242,6 +242,7 @@ def proj4string(conn, crs=None):
         raise ValueError("{} cannot be converted to proj4.".format(crs))
     return proj4_string.strip()
 
+
 @contextmanager
 def rlock(redis_client, lock_id, holder_id=None):
     """

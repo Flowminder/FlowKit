@@ -86,7 +86,6 @@ class IntereventPeriod(SubscriberFeature):
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
             raise ValueError(

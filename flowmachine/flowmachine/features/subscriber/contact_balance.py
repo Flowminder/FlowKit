@@ -88,7 +88,6 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         else:
             raise ValueError("Unidentified direction: {}".format(self.direction))
 
-
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,

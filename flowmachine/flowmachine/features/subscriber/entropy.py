@@ -139,7 +139,6 @@ class PeriodicEntropy(BaseEntropy):
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-
         # extracted from the POSTGRES manual
         allowed_phases = (
             "century",
