@@ -7,21 +7,11 @@
 set -e
 
 
-KillJobs() {
-    for job in $(jobs -p); do
-    		echo "Killing $job"
-            kill -s SIGINT $job > /dev/null 2>&1 || (sleep 10 && kill -9 $job > /dev/null 2>&1 &)
-
-    done
-}
 TrapQuit() {
     if [ "$CI" != "true" ]; then
 	    echo "Bringing down containers."
 	    docker-compose down
 	fi
-
-	echo "Shutting down FlowMachine and FlowAPI"
-    KillJobs
 }
 
 trap TrapQuit EXIT
@@ -39,6 +29,6 @@ else
 	export PIPENV_DONT_LOAD_ENV=1
 fi
 echo "Installing."
-pipenv install
+#pipenv install
 echo "Running tests."
 pipenv run pytest $@

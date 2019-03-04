@@ -8,7 +8,9 @@
 import asyncio
 import logging
 import os
+import signal
 from logging.handlers import TimedRotatingFileHandler
+from typing import Any
 
 import zmq
 from zmq.asyncio import Context
@@ -161,6 +163,18 @@ async def recv(port):
     """
     Listen for messages coming in via zeromq on the given port, and dispatch them.
     """
+
+    def _sigterm_handler(*_: Any) -> None:
+        """
+        Handler for SIGTERM to allow coverage data to be written during integration tests.
+        """
+        logger.info("Got sigterm. Shutting down.")
+        exit(1)
+
+    # Get the loop and attach a sigterm handler to allow coverage data to be written
+    main_loop = asyncio.get_event_loop()
+    main_loop.add_signal_handler(signal.SIGTERM, _sigterm_handler)
+
     ctx = Context.instance()
     socket = ctx.socket(zmq.ROUTER)
     socket.bind(f"tcp://*:{port}")
@@ -176,7 +190,7 @@ async def recv(port):
         reply_coroutine = get_reply_for_message(zmq_msg)
         zmq_msg.send_reply_async(socket, reply_coroutine)
 
-    s.close()
+    socket.close()
 
 
 async def get_next_zmq_message(socket):
@@ -203,6 +217,7 @@ def main():
     port = os.getenv("FLOWMACHINE_PORT", 5555)
     connect()
     debug_mode = "True" == os.getenv("DEBUG", "False")
+
     if debug_mode:
         logger.info("Enabling asyncio's debugging mode.")
     try:
