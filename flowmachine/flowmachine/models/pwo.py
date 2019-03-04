@@ -31,7 +31,7 @@ from typing import List
 import pandas as pd
 
 from flowmachine.features import daily_location
-from flowmachine.utils.utils import get_columns_for_level, list_of_dates
+from flowmachine.utils import get_columns_for_level, list_of_dates
 from ..features import ModalLocation
 from ..core.query import Query
 from ..core.model import Model, model_result

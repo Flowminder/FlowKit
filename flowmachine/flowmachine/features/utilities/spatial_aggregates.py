@@ -11,7 +11,7 @@ from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
-from ...utils.utils import parse_datestring
+from flowmachine.utils import parse_datestring
 
 
 class SpatialAggregate(GeoDataMixin, Query):

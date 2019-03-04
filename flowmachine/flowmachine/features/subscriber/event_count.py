@@ -4,10 +4,9 @@
 
 # -*- coding: utf-8 -*-
 
-import warnings
 from typing import List
 
-from ...utils.utils import verify_columns_exist_in_all_tables
+from flowmachine.utils import verify_columns_exist_in_all_tables
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 

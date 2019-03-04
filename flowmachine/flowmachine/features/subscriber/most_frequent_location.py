@@ -13,7 +13,7 @@ from typing import List
 
 from flowmachine.core import Query
 from ..utilities.subscriber_locations import BaseLocation, subscriber_locations
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 
 
 class MostFrequentLocation(BaseLocation, Query):

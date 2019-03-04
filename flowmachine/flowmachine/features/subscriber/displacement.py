@@ -16,7 +16,7 @@ from flowmachine.features.subscriber import daily_location
 from .metaclasses import SubscriberFeature
 from . import ModalLocation
 from ..utilities.subscriber_locations import subscriber_locations
-from ...utils.utils import parse_datestring, get_dist_string, list_of_dates
+from flowmachine.utils import parse_datestring, get_dist_string, list_of_dates
 
 from dateutil.relativedelta import relativedelta
 
