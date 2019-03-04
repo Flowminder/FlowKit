@@ -12,16 +12,9 @@ dailylocations objects, although they can be.
 """
 
 import logging
-import warnings
-from typing import List
 
-from ..utilities.subscriber_locations import BaseLocation
-from ..subscriber.daily_location import daily_location
+from flowmachine.utils import parse_datestring, get_columns_for_level
 
-from ...utils.utils import list_of_dates
-from ...utils.utils import parse_datestring, get_columns_for_level
-
-from ...core.errors import MissingDateError
 from ...core import CustomQuery
 
 logger = logging.getLogger("flowmachine").getChild(__name__)

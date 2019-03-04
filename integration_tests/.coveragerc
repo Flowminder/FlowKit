@@ -1,8 +1,10 @@
 [run]
 branch = True
+concurrency =
+    thread
+    multiprocessing
 
 [report]
-
 omit =
     */python?.?/*
     */venv/*
@@ -11,7 +13,6 @@ omit =
     */_version.py
     */versioneer.py
     *__init__*
-    flowmachine/core/server/server.py
 
 exclude_lines =
     if __name__ == '__main__':

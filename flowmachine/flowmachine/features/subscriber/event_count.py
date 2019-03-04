@@ -4,11 +4,10 @@
 
 # -*- coding: utf-8 -*-
 
-import warnings
 from typing import List
 
 from ...core import JoinToLocation
-from ...utils.utils import verify_columns_exist_in_all_tables, get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from .contact_balance import ContactBalance
@@ -80,8 +79,6 @@ class EventCount(SubscriberFeature):
             column_list = [self.subscriber_identifier, "outgoing"]
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
-
-        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,

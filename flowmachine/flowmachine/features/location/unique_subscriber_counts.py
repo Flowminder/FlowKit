@@ -18,7 +18,7 @@ visited in a given period of time.
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
 
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 from ..utilities.subscriber_locations import subscriber_locations
 
 

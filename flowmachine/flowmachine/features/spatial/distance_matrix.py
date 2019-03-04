@@ -9,11 +9,9 @@ matrix from a given point collection.
 """
 from typing import List
 
-from flowmachine.utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 from ...core.query import Query
 from ...core.mixins import GraphMixin
-
-from .versioned_infrastructure import VersionedInfrastructure
 
 
 class DistanceMatrix(GraphMixin, Query):

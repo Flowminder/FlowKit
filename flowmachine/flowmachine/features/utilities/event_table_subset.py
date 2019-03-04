@@ -10,13 +10,13 @@ from typing import List
 
 from ...core import Query, Table
 from ...core.errors import MissingDateError
-from ...core.utils import _makesafe
+from flowmachine.utils import _makesafe
 from ...core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
     make_sqlalchemy_column_from_flowmachine_column_description,
     get_sql_string,
 )
-from ...utils.utils import list_of_dates
+from flowmachine.utils import list_of_dates
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
