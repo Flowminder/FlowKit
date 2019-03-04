@@ -82,6 +82,7 @@ setup(
         "finist",
         "redis",
         "pyzmq",
+        "structlog",
         "shapely",
     ],
     setup_requires=["pytest-runner"],

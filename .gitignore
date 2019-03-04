@@ -116,3 +116,4 @@ venv.bak/
 # tag files
 tags
 flowauth/test_results/pytest/results.xml
+/integration_tests/test_results/
