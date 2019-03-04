@@ -164,20 +164,29 @@ async def recv(port):
     Listen for messages coming in via zeromq on the given port, and dispatch them.
     """
 
-    def _sigterm_handler(*_: Any) -> None:
-        """
-        Handler for SIGTERM to allow coverage data to be written during integration tests.
-        """
-        logger.info("Got sigterm. Shutting down.")
-        exit(1)
-
-    # Get the loop and attach a sigterm handler to allow coverage data to be written
-    main_loop = asyncio.get_event_loop()
-    main_loop.add_signal_handler(signal.SIGTERM, _sigterm_handler)
-
     ctx = Context.instance()
     socket = ctx.socket(zmq.ROUTER)
     socket.bind(f"tcp://*:{port}")
+
+    def shutdown():
+        """
+        Handler for SIGTERM to allow coverage data to be written during integration tests.
+        """
+        logger.debug("Caught SIGTERM. Shutting down.")
+        socket.close()
+        logger.debug("Closed ZMQ socket,")
+        tasks = [
+            task
+            for task in asyncio.Task.all_tasks()
+            if task is not asyncio.tasks.Task.current_task()
+        ]
+        list(map(lambda task: task.cancel(), tasks))
+        logger.debug("Cancelled all remaining tasks.")
+
+    # Get the loop and attach a sigterm handler to allow coverage data to be written
+    main_loop = asyncio.get_event_loop()
+    main_loop.add_signal_handler(signal.SIGTERM, shutdown)
+
     while True:
         try:
             zmq_msg = await get_next_zmq_message(socket)
@@ -186,6 +195,10 @@ async def recv(port):
                 f"Cannot process message due to unknown return address. Original error: {e}."
             )
             continue
+
+        except asyncio.CancelledError:
+            logger.error("Task cancelled. Shutting down.")
+            break
 
         reply_coroutine = get_reply_for_message(zmq_msg)
         zmq_msg.send_reply_async(socket, reply_coroutine)

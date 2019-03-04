@@ -30,6 +30,7 @@ def flowmachine_server():
     fm_thread.start()
     yield
     fm_thread.terminate()
+    sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -52,6 +53,7 @@ def flowapi_server():
     sleep(2)
     yield
     api_thread.terminate()
+    sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
 
 
 @pytest.fixture
