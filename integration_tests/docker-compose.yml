@@ -2,17 +2,11 @@
 # Compose file for flowkit integration tests
 #
 
-version: '3'
-
-networks:
-  db:
-  redis:
-  zero:
-  api:
+version: "3"
 
 services:
   flowdb:
-    container_name: 'flowdb'
+    container_name: flowkit_integration_tests_flowdb
     image: "flowminder/flowdb-testdata:${CIRCLE_BRANCH:-latest}"
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-flowdb}
@@ -22,53 +16,14 @@ services:
       - API_PASSWORD=${API_PASSWORD:-foo}
     tty: true
     shm_size: 1G
+    ports:
+      - "$FLOWDB_PORT:5432"
     stdin_open: true
     restart: always
-    networks:
-      db:
-        aliases:
-          - flowdb
-  flowmachine:
-    container_name: 'flowmachine'
-    image: "flowminder/flowmachine:${CIRCLE_BRANCH:-latest}"
-    restart: always
-    ports:
-      - 5555:5555
-    environment:
-      - DB_PORT=${DB_PORT:-5432}
-      - DB_HOST=${DB_HOST:-flowdb}
-      - LOG_LEVEL=${LOG_LEVEL:-error}
-      - DEBUG=${FM_DEBUG:-False}
-      - REDIS_HOST=${REDIS_HOST:-redis}
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-fm_redis}
-    networks:
-      - db
-      - redis
-      - zero
-  flowapi:
-    container_name: 'flowapi'
-    image: "flowminder/flowapi:${CIRCLE_BRANCH:-latest}"
-    restart: always
-    ports:
-      - "9090:9090"
-    environment:
-      - SERVER=flowmachine
-      - LOG_LEVEL=${LOG_LEVEL:-error}
-      - DB_USER=reporter
-      - DB_PASS=${API_PASSWORD:-foo}
-      - DB_HOST=${DB_HOST:-flowdb}
-      - DB_PORT=${DB_PORT:-5432}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}
-    networks:
-      - zero
-      - db
-      - api
   query_locker:
-    container_name: flowmachine_redis
+    container_name: flowkit_integration_tests_redis
     image: bitnami/redis:latest
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD:-fm_redis}
-    networks:
-      redis:
-        aliases:
-          - redis
+    ports:
+      - "$REDIS_PORT:6379"

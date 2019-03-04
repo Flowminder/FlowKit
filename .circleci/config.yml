@@ -4,10 +4,10 @@ defaults:
   - &base_docker
     - image: circleci/python:3.7
       environment:
-        DB_PORT: 5432
+        FLOWDB_PORT: 5432
         MPLBACKEND: "agg"
   - &flowdb_env
-    DB_PORT: 9000
+    FLOWDB_PORT: 9000
     ORACLE_DB_PORT: 9002
     SYNTHETIC_DATA_DB_PORT: 5432
     FLOWDB_DATA_DIR: /home/circleci/database_data
@@ -19,7 +19,7 @@ defaults:
   - &flowdb_docker
     - image: circleci/python:3.7
       environment:
-        DB_PORT: 5432
+        FLOWDB_PORT: 5432
         MPLBACKEND: "agg"
         REDIS_HOST: "localhost"
     - image: flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID
@@ -36,7 +36,7 @@ defaults:
   - &docs_build
     - image: circleci/python:3.7
       environment:
-        DB_PORT: 5432
+        FLOWDB_PORT: 5432
         MPLBACKEND: "agg"
         REDIS_HOST: "localhost"
         QUART_APP: "app.main:create_app()"
@@ -57,7 +57,7 @@ defaults:
     - image: circleci/python:3.7
       environment:
         POSTGRES_PASSWORD: flowflow
-        DB_PORT: 5432
+        FLOWDB_PORT: 5432
         FM_PASSWORD: foo
         API_PASSWORD: foo
     - image: flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID
@@ -193,7 +193,7 @@ jobs:
       - run:
           name: Launch flowdb
           command: |
-            docker run --name flowdb --publish $DB_PORT:5432 --user $(id -u):$(id -g) --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
+            docker run --name flowdb --publish $FLOWDB_PORT:5432 --user $(id -u):$(id -g) --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
               --volume=${FLOWDB_INGESTION_DIR}:/ingestion:ro -e FM_PASSWORD=foo -e API_PASSWORD=foo \
               -e MAX_CPUS=2 -e MAX_WORKERS=2 -e MAX_WORKERS_PER_GATHER=2 \
               -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
@@ -464,55 +464,24 @@ jobs:
             docker push flowminder/flowapi:$SAFE_TAG
 
   integration_tests:
-    docker:
-      - image: circleci/python:3.7
+    docker: *docs_build
     working_directory: /home/circleci/project/integration_tests
     steps:
       - checkout:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-      - setup_remote_docker
-      - run:
-          name: Log in to docker cloud
-          command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
-      - run:
-          name: Spin up containers
-          command: |
-            pip install --user docker-compose
-            CIRCLE_BRANCH=$CIRCLE_WORKFLOW_ID docker-compose up -d
-      # Have to do something a bit convoluted here, because we do not have
-      # network access to the remote docker. So we must run the tests _inside_ another docker container,
-      # then copy the results back out.
-      - run:
-          name: Create test environment
-          command: |
-            docker run -t -d --name testrunner circleci/python:3.7
-            docker network connect integration_tests_db testrunner
-            docker network connect integration_tests_api testrunner
-            docker network connect integration_tests_redis testrunner
-            docker network connect integration_tests_zero testrunner
-            docker cp . testrunner:/tests
-            docker cp ../flowclient testrunner:/
-            docker cp ../flowmachine testrunner:/
-            docker exec testrunner bash -c "cd /tests && pipenv install --deploy && pipenv run pip install ../flowclient ../flowmachine"
-      - run:
-          name: Wait for API to be available
-          command: docker exec testrunner bash -c "i=0;until [ \$i -ge 24 ] || (curl -k --fail http://flowapi:9090);do let i=i+1; echo Waiting 10s; sleep 10;done"
+      - run: *wait_for_flowdb
       - run:
           name: Run integration tests
           command: |
-            docker exec testrunner bash -c "cd /tests && FLOWDB_HOST=flowdb FLOWDB_PORT=5432 FLOWMACHINE_ZMQ_HOST=flowmachine REDIS_HOST=redis pipenv run pytest -sv --junitxml=test_results/pytest/results.xml --durations=10"
-      - run:
-          name: Extract test results
-          command: docker cp testrunner:/tests/test_results .
-          when: always
+            PIPENV_DONT_LOAD_ENV=1 pipenv run run-tests -sv --junitxml=test_results/pytest/results.xml --durations=10 \
+            --cov=../flowmachine --cov=../flowclient --cov=../flowapi \
+            --cov-report xml \
+            --cov-report term
       - store_test_results:
           path: test_results
-      - run:
-          name: Compose logs
-          command: docker-compose logs
-          when: always
+      - run: bash <(curl -s https://codecov.io/bash)
 
   build_docs:
     docker: *docs_build
@@ -659,11 +628,13 @@ workflows:
       - build_flowmachine:
           requires:
             - run_flowmachine_tests
+            - integration_tests
             - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_docs:
           requires:
-            - build_flowmachine
+            - install_flowmachine_deps
+            - build_flowdb
           <<: *run_always_org_context
       - build_flowauth:
           requires:
@@ -674,27 +645,33 @@ workflows:
       - build_flowapi:
           requires:
             - run_flowkit_api_tests
+            - integration_tests
             - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_client_wheel:
           requires:
             - run_flowclient_tests
+            - integration_tests
           <<: *run_always_org_context
       - integration_tests:
           requires:
-            - build_flowmachine
-            - build_flowapi
+            - install_flowmachine_deps
+            - build_flowdb
           <<: *run_always_org_context
       - deploy_docs:
           requires:
             - build_docs
             - build_client_wheel
+            - build_flowmachine
+            - build_flowapi
             - integration_tests
           <<: *tag_only_org_context
       - push_wheel:
           requires:
             - build_docs
             - build_client_wheel
+            - build_flowmachine
+            - build_flowapi
             - integration_tests
           <<: *tag_only_org_context
       - retag_images:

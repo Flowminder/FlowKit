@@ -17,7 +17,7 @@ services:
     tty: true
     shm_size: 1G
     ports:
-      - "$DB_PORT:5432"
+      - "$FLOWDB_PORT:5432"
     stdin_open: true
     restart: always
   query_locker:

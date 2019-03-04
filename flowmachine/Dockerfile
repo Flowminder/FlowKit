@@ -8,10 +8,10 @@ WORKDIR /app
 COPY Pipfile* /app/
 RUN pip install pipenv && pipenv install --deploy
 COPY . /app/
-RUN pipenv install .
+RUN pipenv install --skip-lock .
 CMD ["pipenv", "run", "flowmachine"]
 ENV LOG_LEVEL=error
-ENV DB_PORT=5432
+ENV FLOWDB_PORT=5432
 ENV DB_HOST=flowdb
 ENV DB_USER=analyst
 ENV DB_PASS=flowflow
