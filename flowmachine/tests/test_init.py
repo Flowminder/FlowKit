@@ -61,7 +61,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
     monkeypatch.setenv("WRITE_LOG_FILE", "DUMMY_ENV_WRITE_LOG_FILE")
-    monkeypatch.setenv("DB_PORT", 7777)
+    monkeypatch.setenv("FLOWDB_PORT", 7777)
     monkeypatch.setenv("DB_USER", "DUMMY_ENV_DB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
     monkeypatch.setenv("DB_HOST", "DUMMY_ENV_DB_HOST")
@@ -111,7 +111,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
     monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
-    monkeypatch.setenv("DB_PORT", 6969)
+    monkeypatch.setenv("FLOWDB_PORT", 6969)
     monkeypatch.setenv("DB_USER", "DUMMY_ENV_DB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
     monkeypatch.setenv("DB_HOST", "DUMMY_ENV_DB_HOST")

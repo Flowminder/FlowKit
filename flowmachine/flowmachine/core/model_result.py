@@ -17,7 +17,7 @@ from typing import List, Union
 
 import pandas as pd
 
-from flowmachine.utils.utils import rlock
+from flowmachine.utils import rlock
 from .query import Query
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
