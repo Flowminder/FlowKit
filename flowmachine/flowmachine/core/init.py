@@ -110,7 +110,9 @@ def connect(
         else write_log_file
     )
     db_port = int(
-        getsecret("DB_PORT", os.getenv("DB_PORT", 9000)) if db_port is None else db_port
+        getsecret("FLOWDB_PORT", os.getenv("FLOWDB_PORT", 9000))
+        if db_port is None
+        else db_port
     )
     db_user = (
         getsecret("DB_USER", os.getenv("DB_USER", "analyst"))
