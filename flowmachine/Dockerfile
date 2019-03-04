@@ -8,7 +8,7 @@ WORKDIR /app
 COPY Pipfile* /app/
 RUN pip install pipenv && pipenv install --deploy
 COPY . /app/
-RUN pip install .
+RUN pipenv run pip install .
 CMD ["pipenv", "run", "flowmachine"]
 ENV LOG_LEVEL=error
 ENV FLOWDB_PORT=5432
