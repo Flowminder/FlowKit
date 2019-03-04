@@ -612,7 +612,7 @@ jobs:
     steps:
       - run:
           name: Install retagger
-          command: wget -q https://github.com/joshdk/docker-retag/releases/download/0.0.2/docker-retag
+          command: wget -q https://github.com/joshdk/docker-retag/releases/download/0.0.2/docker-retag && sudo install docker-retag /usr/bin
       - run:
           name: Retag
           command: |
