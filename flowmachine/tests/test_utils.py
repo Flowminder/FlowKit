@@ -12,17 +12,17 @@ import pytest
 import pglast
 
 from flowmachine.core.errors import BadLevelError
-from flowmachine.utils.utils import (
+from flowmachine.utils import (
     parse_datestring,
     proj4string,
     get_columns_for_level,
     getsecret,
+    pretty_sql,
+    _makesafe,
 )
 
 from flowmachine.utils import time_period_add
 from flowmachine.features import daily_location, EventTableSubset
-
-from flowmachine.core.utils import _makesafe, pretty_sql
 
 
 def test_time_period_add():
