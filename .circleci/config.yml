@@ -607,8 +607,8 @@ jobs:
     docker:
       - image: circleci/python:3.7
         environment:
-          DOCKER_USER: DOCKER_CLOUD_USER
-          DOCKER_PASS: DOCKER_CLOUD_PASSWORD
+          DOCKER_USER: $DOCKER_CLOUD_USER
+          DOCKER_PASS: $DOCKER_CLOUD_PASSWORD
     steps:
       - run:
           name: Install retagger
