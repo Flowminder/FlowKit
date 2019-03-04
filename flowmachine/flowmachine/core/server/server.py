@@ -8,7 +8,9 @@
 import asyncio
 import logging
 import os
+import signal
 from logging.handlers import TimedRotatingFileHandler
+from typing import Any
 
 import zmq
 from zmq.asyncio import Context
@@ -18,6 +20,7 @@ from .query_proxy import (
     MissingQueryError,
     QueryProxyError,
     construct_query_object,
+    InvalidGeographyError,
 )
 from .zmq_interface import ZMQMultipartMessage, ZMQInterfaceError
 
@@ -57,16 +60,14 @@ query_run_log.addHandler(fh)
 query_run_log = structlog.wrap_logger(query_run_log)
 
 
-async def get_reply_for_message(  # pragma: no cover
-    zmq_msg: ZMQMultipartMessage  # pragma: no cover
-) -> dict:  # pragma: no cover
+async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
     """
     Dispatches the message to the appropriate handling function
     based on the specified action and returns the reply.
 
     Parameters
     ----------
-    message : dict
+    zmq_msg : ZMQMultipartMessage
         The message received via zeromq.
 
     Returns
@@ -158,13 +159,34 @@ async def get_reply_for_message(  # pragma: no cover
     return reply
 
 
-async def recv(port):  # pragma: no cover
+async def recv(port):
     """
     Listen for messages coming in via zeromq on the given port, and dispatch them.
     """
+
     ctx = Context.instance()
     socket = ctx.socket(zmq.ROUTER)
     socket.bind(f"tcp://*:{port}")
+
+    def shutdown():
+        """
+        Handler for SIGTERM to allow coverage data to be written during integration tests.
+        """
+        logger.debug("Caught SIGTERM. Shutting down.")
+        socket.close()
+        logger.debug("Closed ZMQ socket,")
+        tasks = [
+            task
+            for task in asyncio.Task.all_tasks()
+            if task is not asyncio.tasks.Task.current_task()
+        ]
+        list(map(lambda task: task.cancel(), tasks))
+        logger.debug("Cancelled all remaining tasks.")
+
+    # Get the loop and attach a sigterm handler to allow coverage data to be written
+    main_loop = asyncio.get_event_loop()
+    main_loop.add_signal_handler(signal.SIGTERM, shutdown)
+
     while True:
         try:
             zmq_msg = await get_next_zmq_message(socket)
@@ -174,13 +196,17 @@ async def recv(port):  # pragma: no cover
             )
             continue
 
+        except asyncio.CancelledError:
+            logger.error("Task cancelled. Shutting down.")
+            break
+
         reply_coroutine = get_reply_for_message(zmq_msg)
         zmq_msg.send_reply_async(socket, reply_coroutine)
 
-    s.close()
+    socket.close()
 
 
-async def get_next_zmq_message(socket):  # pragma: no cover
+async def get_next_zmq_message(socket):
     """
     Listen on the given zmq socket and return the next multipart message received.
 
@@ -200,10 +226,11 @@ async def get_next_zmq_message(socket):  # pragma: no cover
     return ZMQMultipartMessage(multipart_msg)
 
 
-def main():  # pragma: no cover
+def main():
     port = os.getenv("FLOWMACHINE_PORT", 5555)
     connect()
     debug_mode = "True" == os.getenv("DEBUG", "False")
+
     if debug_mode:
         logger.info("Enabling asyncio's debugging mode.")
     try:

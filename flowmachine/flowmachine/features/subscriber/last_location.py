@@ -15,7 +15,7 @@ from typing import List
 from flowmachine.core import Query
 from ..utilities.subscriber_locations import BaseLocation
 from ..utilities.subscriber_locations import subscriber_locations
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 
 
 class LastLocation(BaseLocation, Query):

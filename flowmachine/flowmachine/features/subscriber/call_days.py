@@ -13,7 +13,7 @@ specified time period.
 from typing import List, Union
 
 from ...core import JoinToLocation
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import _SubscriberCells
 

@@ -132,7 +132,7 @@ def create_app():
 
     @app.before_first_request
     async def create_db():
-        dsn = f'postgres://{getsecret("API_DB_USER", os.getenv("DB_USER"))}:{getsecret("API_DB_PASS", os.getenv("DB_PASS"))}@{os.getenv("DB_HOST")}:{os.getenv("DB_PORT", 5432)}/flowdb'
+        dsn = f'postgres://{getsecret("API_DB_USER", os.getenv("DB_USER"))}:{getsecret("API_DB_PASS", os.getenv("DB_PASS"))}@{os.getenv("DB_HOST")}:{os.getenv("FLOWDB_PORT", 5432)}/flowdb'
         app.pool = await asyncpg.create_pool(dsn, max_size=20)
 
     @app.route("/")
