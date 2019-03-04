@@ -615,11 +615,13 @@ workflows:
       - build_flowmachine:
           requires:
             - run_flowmachine_tests
+            - integration_tests
             - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_docs:
           requires:
-            - build_flowmachine
+            - install_flowmachine_deps
+            - build_flowdb
           <<: *run_always_org_context
       - build_flowauth:
           requires:
@@ -630,26 +632,32 @@ workflows:
       - build_flowapi:
           requires:
             - run_flowkit_api_tests
+            - integration_tests
             - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_client_wheel:
           requires:
             - run_flowclient_tests
+            - integration_tests
           <<: *run_always_org_context
       - integration_tests:
           requires:
-            - build_flowmachine
-            - build_flowapi
+            - install_flowmachine_deps
+            - build_flowdb
           <<: *run_always_org_context
       - deploy_docs:
           requires:
             - build_docs
             - build_client_wheel
+            - build_flowmachine
+            - build_flowapi
             - integration_tests
           <<: *tag_only_org_context
       - push_wheel:
           requires:
             - build_docs
             - build_client_wheel
+            - build_flowmachine
+            - build_flowapi
             - integration_tests
           <<: *tag_only_org_context
