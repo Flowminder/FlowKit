@@ -17,7 +17,7 @@ import pytest
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features import daily_location, Flows
-from flowmachine.utils.utils import proj4string
+from flowmachine.utils import proj4string
 
 
 def test_massive_geojson():

@@ -10,7 +10,7 @@ from typing import List
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
-from ...utils.utils import verify_columns_exist_in_all_tables
+from flowmachine.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ..spatial.distance_matrix import DistanceMatrix

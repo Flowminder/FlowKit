@@ -14,7 +14,7 @@ by the count of days it appears as a daily_location for that subscriber.
 from typing import List
 
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
-from flowmachine.utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 
 
 class LocationVisits(SubscriberFeature):
