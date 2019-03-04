@@ -114,7 +114,7 @@ def test_directed_count_undirected_tables_raises():
     """
     Test that requesting directed counts of undirected tables raises warning and errors.
     """
-    with pytest.raises(MissingColumnsError):
+    with pytest.raises(ValueError):
         query = EventCount(
             "2016-01-01", "2016-01-08", direction="out", tables=["events.mds"]
         )
