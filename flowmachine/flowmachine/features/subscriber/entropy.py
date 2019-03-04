@@ -16,7 +16,6 @@ from .contact_balance import ContactBalance
 from ..utilities.sets import EventsTablesUnion
 from ..utilities.subscriber_locations import subscriber_locations
 from flowmachine.utils import get_columns_for_level
-from flowmachine.utils import verify_columns_exist_in_all_tables
 
 
 class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
@@ -139,8 +138,6 @@ class PeriodicEntropy(BaseEntropy):
             column_list = [self.subscriber_identifier, "datetime", "outgoing"]
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
-
-        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         # extracted from the POSTGRES manual
         allowed_phases = (

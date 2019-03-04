@@ -10,7 +10,6 @@ duration between calls.
 import warnings
 from typing import List
 
-from flowmachine.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -89,8 +88,6 @@ class IntereventPeriod(SubscriberFeature):
             column_list = [self.subscriber_identifier, "datetime", "outgoing"]
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
-
-        verify_columns_exist_in_all_tables(self.connection, self.tables, column_list)
 
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
