@@ -1,3 +1,5 @@
+version: 2.1
+
 defaults:
   - &base_docker
     - image: circleci/python:3.7
@@ -93,7 +95,6 @@ defaults:
       tags:
         only: /.*/
 
-version: 2
 jobs:
   set_docker_tag_for_ci_images:
     docker: *base_docker
@@ -604,10 +605,10 @@ jobs:
         type: string
         default: "latest"
     docker:
-      - image: *base_docker
+      - image: circleci/python:3.7
         environment:
-          - DOCKER_USER: DOCKER_CLOUD_USER
-          - DOCKER_PASS: DOCKER_CLOUD_PASSWORD
+          DOCKER_USER: DOCKER_CLOUD_USER
+          DOCKER_PASS: DOCKER_CLOUD_PASSWORD
     steps:
       - run:
           name: Install retagger
@@ -616,7 +617,7 @@ jobs:
           name: Retag
           command: |
             for IMAGE in flowapi flowmachine flowdb flowdb-synth-data flowdb-test-data flowauth; do
-              docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<<parameters.tag>>:-latest}
+              docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<< parameters.tag >>:-latest}
             done
 
 
@@ -624,7 +625,6 @@ jobs:
 
 
 workflows:
-  version: 2
   run_build_pipeline:
     jobs:
       - set_docker_tag_for_ci_images:
@@ -697,14 +697,14 @@ workflows:
             - build_client_wheel
             - integration_tests
           <<: *tag_only_org_context
-      - latest_tag:
-        requires:
-          - build_flowmachine
-          - build_flowdb
-          - build_flowapi
-          - build_flowauth
-        <<: *master_only_org_context
-      - version_tag:
+      - retag_images:
+          requires:
+            - build_flowmachine
+            - build_flowdb
+            - build_flowapi
+            - build_flowauth
+          <<: *master_only_org_context
+      - retag_images:
           requires:
             - build_flowmachine
             - build_flowdb
