@@ -29,6 +29,6 @@ else
 	export PIPENV_DONT_LOAD_ENV=1
 fi
 echo "Installing."
-#pipenv install
+pipenv install --deploy
 echo "Running tests."
 pipenv run pytest $@
