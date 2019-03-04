@@ -15,9 +15,8 @@ from .metaclasses import SubscriberFeature
 from .contact_balance import ContactBalance
 from ..utilities.sets import EventsTablesUnion
 from ..utilities.subscriber_locations import subscriber_locations
-from ...utils.utils import get_columns_for_level
-from ...core import Table
-from ...utils.utils import verify_columns_exist_in_all_tables
+from flowmachine.utils import get_columns_for_level
+from flowmachine.utils import verify_columns_exist_in_all_tables
 
 
 class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):

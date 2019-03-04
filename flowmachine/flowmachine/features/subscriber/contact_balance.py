@@ -15,7 +15,7 @@ from typing import List
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
-from ...utils.utils import verify_columns_exist_in_all_tables
+from flowmachine.utils import verify_columns_exist_in_all_tables
 
 
 class ContactBalance(GraphMixin, SubscriberFeature):

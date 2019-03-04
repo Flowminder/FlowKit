@@ -7,7 +7,7 @@ from flowmachine.features.subscriber import *
 from threading import Thread
 import pandas as pd
 
-from flowmachine.utils.utils import rlock
+from flowmachine.utils import rlock
 
 
 def test_returns_future():

@@ -13,7 +13,7 @@ it visited
 """
 from typing import List
 
-from ...utils.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level
 from ..utilities.subscriber_locations import subscriber_locations
 from .metaclasses import SubscriberFeature
 

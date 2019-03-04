@@ -35,7 +35,7 @@ services:
     image: flowminder/flowmachine:latest
     restart: always
     environment:
-      - DB_PORT=${DB_PORT:-5432}
+      - FLOWDB_PORT=${FLOWDB_PORT:-5432}
       - DB_HOST=${DB_HOST:-flowdb}
       - LOG_LEVEL=${LOG_LEVEL:-error}
       - DEBUG=${FM_DEBUG:-False}
@@ -59,7 +59,7 @@ services:
       - DB_USER=reporter
       - DB_PASS=${API_PASSWORD:-foo}
       - DB_HOST=${DB_HOST:-flowdb}
-      - DB_PORT=${DB_PORT:-5432}
+      - FLOWDB_PORT=${FLOWDB_PORT:-5432}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}
     volumes:
       - data_volume_flowapi_logs:/var/logs/flowkit/
