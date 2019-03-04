@@ -64,4 +64,3 @@ class MissingDateError(Exception):
         if stop is not None:
             msg += " - {}".format(stop)
         Exception.__init__(self, msg)
-
