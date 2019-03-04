@@ -575,9 +575,6 @@ jobs:
         default: "latest"
     docker:
       - image: circleci/python:3.7
-        environment:
-          DOCKER_USER: $DOCKER_CLOUD_USER
-          DOCKER_PASS: $DOCKER_CLOUD_PASSWORD
     steps:
       - run:
           name: Install retagger
@@ -586,7 +583,7 @@ jobs:
           name: Retag
           command: |
             for IMAGE in flowapi flowmachine flowdb flowdb-synth-data flowdb-test-data flowauth; do
-              docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<< parameters.tag >>:-retag}
+              DOCKER_USER=$DOCKER_CLOUD_USER;DOCKER_PASS=$DOCKER_CLOUD_PASSWORD docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<< parameters.tag >>:-retag}
             done
 
 
@@ -629,7 +626,6 @@ workflows:
           requires:
             - run_flowmachine_tests
             - integration_tests
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_docs:
           requires:
@@ -640,13 +636,11 @@ workflows:
           requires:
             - run_flowauth_backend_tests
             - run_flowauth_frontend_tests
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_flowapi:
           requires:
             - run_flowkit_api_tests
             - integration_tests
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_client_wheel:
           requires:
@@ -658,28 +652,13 @@ workflows:
             - install_flowmachine_deps
             - build_flowdb
           <<: *run_always_org_context
-      - deploy_docs:
-          requires:
-            - build_docs
-            - build_client_wheel
-            - build_flowmachine
-            - build_flowapi
-            - integration_tests
-          <<: *tag_only_org_context
-      - push_wheel:
-          requires:
-            - build_docs
-            - build_client_wheel
-            - build_flowmachine
-            - build_flowapi
-            - integration_tests
-          <<: *tag_only_org_context
       - retag_images:
           requires:
             - build_flowmachine
             - build_flowdb
             - build_flowapi
             - build_flowauth
+            - build_docs
           <<: *master_only_org_context
       - retag_images:
           requires:
@@ -687,5 +666,16 @@ workflows:
             - build_flowdb
             - build_flowapi
             - build_flowauth
+            - build_docs
           tag: CIRCLE_TAG
+          <<: *tag_only_org_context
+      - push_wheel:
+          requires:
+            - build_client_wheel
+          <<: *tag_only_org_context
+      - deploy_docs:
+          requires:
+            - build_docs
+            - retag_images
+            - push_wheel
           <<: *tag_only_org_context
