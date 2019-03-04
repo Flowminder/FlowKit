@@ -12,7 +12,6 @@ hour definitions can be specified.
 
 """
 from .metaclasses import SubscriberFeature
-from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 
 
@@ -81,7 +80,6 @@ class NocturnalEvents(SubscriberFeature):
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
