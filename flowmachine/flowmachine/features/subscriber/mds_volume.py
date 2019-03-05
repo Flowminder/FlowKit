@@ -102,12 +102,12 @@ class MDSVolume(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", f"volume_{self.statistic}"]
+        return ["subscriber", f"value"]
 
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {self.statistic}(volume_{self.volume}) AS volume_{self.statistic}
+        SELECT subscriber, {self.statistic}(volume_{self.volume}) AS value
         FROM ({self.unioned_query.get_query()}) U
         GROUP BY subscriber
         """

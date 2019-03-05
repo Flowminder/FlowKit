@@ -28,7 +28,7 @@ def test_mds_volume(get_dataframe, statistic, msisdn, want):
     """
     query = MDSVolume("2016-01-01", "2016-01-08", statistic=statistic)
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc[msisdn, f"volume_{statistic}"] == pytest.approx(want)
+    assert df.value[msisdn] == pytest.approx(want)
 
 
 def test_mds_volume_type(get_dataframe):
@@ -37,11 +37,11 @@ def test_mds_volume_type(get_dataframe):
     """
     query = MDSVolume("2016-01-01", "2016-01-08", volume="upload")
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc["4oLKbnxm3vXqjMVx", "volume_sum"] == 7673.40
+    assert df.value["4oLKbnxm3vXqjMVx"] == 7673.40
 
     query = MDSVolume("2016-01-01", "2016-01-08", volume="download")
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc["YMBqRkzbbxGkX3zA", "volume_sum"] == 2568.49
+    assert df.value["YMBqRkzbbxGkX3zA"] == 2568.49
 
 
 @pytest.mark.parametrize("kwarg", ["volume", "statistic"])
