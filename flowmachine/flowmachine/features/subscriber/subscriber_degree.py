@@ -13,7 +13,6 @@ from typing import List
 
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
-from ...utils.utils import verify_columns_exist_in_all_tables
 
 
 class SubscriberDegree(SubscriberFeature):
@@ -73,10 +72,6 @@ class SubscriberDegree(SubscriberFeature):
         exclude_self_calls=True,
         subscriber_subset=None,
     ):
-        """
-
-        """
-
         self.start = start
         self.stop = stop
         self.hours = hours
@@ -92,8 +87,6 @@ class SubscriberDegree(SubscriberFeature):
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
-
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
@@ -108,7 +101,7 @@ class SubscriberDegree(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "degree"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
@@ -124,7 +117,7 @@ class SubscriberDegree(SubscriberFeature):
         sql = f"""
         SELECT
            subscriber,
-           COUNT(*) AS degree
+           COUNT(*) AS value
         FROM (
             SELECT DISTINCT subscriber, msisdn_counterpart
             FROM ({self.unioned_query.get_query()}) AS U
