@@ -44,9 +44,9 @@ def test_mds_volume_type(get_dataframe):
     assert df.loc["YMBqRkzbbxGkX3zA", "volume_sum"] == 2568.49
 
 
-def test_mds_wrong_volume_type_raises(get_dataframe):
-    """
-    Test that a wrong volume type raises error.
-    """
+@pytest.mark.parametrize("kwarg", ["volume", "statistic"])
+def test_mds_volume_errors(kwarg):
+    """ Test ValueError is raised for non-compliant kwarg in MDSVolume. """
+
     with pytest.raises(ValueError):
-        query = MDSVolume("2016-01-01", "2016-01-08", volume="foo")
+        query = MDSVolume("2016-01-03", "2016-01-05", **{kwarg: "error"})
