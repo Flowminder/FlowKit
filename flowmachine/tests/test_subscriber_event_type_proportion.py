@@ -33,10 +33,17 @@ def test_proportion_event_type(get_dataframe, event_type, msisdn, want):
         ],
     )
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc[msisdn].proportion == pytest.approx(want)
+    assert df.value[msisdn] == pytest.approx(want)
 
     query = ProportionEventType(
         "2016-01-02", "2016-01-04", event_type, tables=[f"events.{event_type}"]
     )
     df = get_dataframe(query).set_index("subscriber")
-    assert df.proportion.unique() == [1]
+    assert df.value.unique() == [1]
+
+@pytest.mark.parametrize("kwarg", ["event_type"])
+def test_proportion_event_type_errors(kwarg):
+    """ Test ValueError is raised for non-compliant kwarg in ProportionEventType. """
+
+    with pytest.raises(ValueError):
+        query = ProportionEventType("2016-01-03", "2016-01-05", **{kwarg: "error"})
