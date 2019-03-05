@@ -30,7 +30,7 @@ def test_collects_metrics():
         "subscriber",
         "rog_radiusofgyration_0",
         "percentage_nocturnal_nocturnalcalls_1",
-        "degree_subscriberdegree_2",
+        "value_subscriberdegree_2",
     ]
     fc = feature_collection(metrics)
     column_names = fc.column_names
@@ -49,7 +49,7 @@ def test_from_list_of_classes():
         "subscriber",
         "rog_radiusofgyration_0",
         "percentage_nocturnal_nocturnalcalls_1",
-        "degree_subscriberdegree_2",
+        "value_subscriberdegree_2",
     ]
     fc = feature_collection_from_list_of_classes(metrics, start=start, stop=stop)
     column_names = fc.column_names
