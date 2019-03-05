@@ -46,7 +46,7 @@ class EventCount(SubscriberFeature):
     >>> s = EventCount("2016-01-01", "2016-01-07", direction="in")
     >>> s.get_dataframe()
 
-          subscriber  event_avg
+          subscriber        value
     2ZdMowMXoyMByY07           65
     MobnrVMDK24wPRzB           81
     0Ze1l70j0LNgyY4w           57
@@ -93,7 +93,7 @@ class EventCount(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "event_count"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
         where_clause = ""
@@ -102,7 +102,7 @@ class EventCount(SubscriberFeature):
                 f"WHERE outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
         return f"""
-        SELECT subscriber, COUNT(*) as event_count FROM
+        SELECT subscriber, COUNT(*) as value FROM
         ({self.unioned_query.get_query()}) u
         {where_clause}
         GROUP BY subscriber
@@ -167,7 +167,7 @@ class PerLocationEventCount(SubscriberFeature):
     >>> s = PerLocationEventCount("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
 
-          subscriber  event_avg
+          subscriber      value
     OemQ7q2DLZMWnwzB   1.388889
     By4j6PKdB4NGMpxr   1.421053
     L4V537alj321eWz6   1.130435
@@ -248,7 +248,7 @@ class PerLocationEventCount(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", f"event_{self.statistic}"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
         loc_cols = ", ".join(get_columns_for_level(self.level, self.column_name))
@@ -260,7 +260,7 @@ class PerLocationEventCount(SubscriberFeature):
             )
 
         return f"""
-        SELECT subscriber, {self.statistic}(events) AS event_{self.statistic}
+        SELECT subscriber, {self.statistic}(events) AS value
         FROM (
             SELECT subscriber, {loc_cols}, COUNT(*) AS events
             FROM ({self.unioned_query.get_query()}) U
@@ -306,7 +306,7 @@ class PerContactEventCount(SubscriberFeature):
     >>> s = PerContactEventCount("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
 
-          subscriber  event_avg
+          subscriber      value
     J0Yyqw2rkVEwpMG2       13.5
     xkZb5E55LYE10wa4        9.5
     oqNR8gkbv6e4K97z        9.5
@@ -357,12 +357,12 @@ class PerContactEventCount(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", f"event_{self.statistic}"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {self.statistic}(events) AS event_{self.statistic}
+        SELECT subscriber, {self.statistic}(events) AS value
         FROM ({self.contact_balance.get_query()}) C
         GROUP BY subscriber
         """

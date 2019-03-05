@@ -13,7 +13,7 @@ def test_event_count(get_dataframe):
     """
     query = EventCount("2016-01-01", "2016-01-08")
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc["DzpZJ2EaVQo2X5vM"].event_count == 46
+    assert df.loc["DzpZJ2EaVQo2X5vM"].value == 46
 
     query = EventCount(
         "2016-01-01",
@@ -22,27 +22,34 @@ def test_event_count(get_dataframe):
         tables=["events.calls", "events.sms", "events.mds", "events.topups"],
     )
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc["DzpZJ2EaVQo2X5vM"].event_count == 69
+    assert df.loc["DzpZJ2EaVQo2X5vM"].value == 69
 
     query = EventCount(
         "2016-01-01", "2016-01-08", direction="both", tables=["events.mds"]
     )
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc["E0LZAa7AyNd34Djq"].event_count == 8
+    assert df.loc["E0LZAa7AyNd34Djq"].value == 8
 
     query = EventCount(
         "2016-01-01", "2016-01-08", direction="both", tables="events.mds"
     )
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc["E0LZAa7AyNd34Djq"].event_count == 8
+    assert df.loc["E0LZAa7AyNd34Djq"].value == 8
 
     query = EventCount("2016-01-01", "2016-01-08", direction="out")
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc["E0LZAa7AyNd34Djq"].event_count == 24
+    assert df.loc["E0LZAa7AyNd34Djq"].value == 24
 
     query = EventCount("2016-01-01", "2016-01-08", direction="in")
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc["4dqenN2oQZExwEK2"].event_count == 12
+    assert df.loc["4dqenN2oQZExwEK2"].value == 12
+
+@pytest.mark.parametrize("kwarg", ["direction"])
+def test_event_count_errors(kwarg):
+    """ Test ValueError is raised for non-compliant kwarg in EventCount. """
+
+    with pytest.raises(ValueError):
+        query = EventCount("2016-01-03", "2016-01-05", **{kwarg: "error"})
 
 
 @pytest.mark.parametrize(
@@ -64,8 +71,14 @@ def test_per_location_event_count(get_dataframe, statistic, msisdn, want, level)
         "2016-01-01", "2016-01-06", statistic=statistic, **level
     )
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc[msisdn, f"event_{statistic}"] == pytest.approx(want)
+    assert df.value[msisdn] == pytest.approx(want)
 
+@pytest.mark.parametrize("kwarg", ["direction", "statistic"])
+def test_per_location_event_count_errors(kwarg):
+    """ Test ValueError is raised for non-compliant kwarg in PerLocationEventCount. """
+
+    with pytest.raises(ValueError):
+        query = PerLocationEventCount("2016-01-03", "2016-01-05", **{kwarg: "error"})
 
 @pytest.mark.parametrize(
     "statistic,msisdn,want",
@@ -84,7 +97,14 @@ def test_per_contact_event_count(get_dataframe, statistic, msisdn, want):
     """ Test hand-picked PerContactEventCount. """
     query = PerContactEventCount("2016-01-02", "2016-01-06", statistic)
     df = get_dataframe(query).set_index("subscriber")
-    assert df.loc[msisdn, f"event_{statistic}"] == pytest.approx(want)
+    assert df.value[msisdn] == pytest.approx(want)
+
+@pytest.mark.parametrize("kwarg", ["statistic"])
+def test_per_contact_event_count_errors(kwarg):
+    """ Test ValueError is raised for non-compliant kwarg in PerContactEventCount. """
+
+    with pytest.raises(ValueError):
+        query = PerContactEventCount("2016-01-03", "2016-01-05", **{kwarg: "error"})
 
 
 def test_directed_count_consistent(get_dataframe):
@@ -98,15 +118,15 @@ def test_directed_count_consistent(get_dataframe):
     in_df = get_dataframe(in_query).set_index("subscriber")
 
     joined = out_df.join(in_df, lsuffix="_out", rsuffix="_in", how="outer")
-    joined.loc[~joined.index.isin(out_df.index), "event_count_out"] = 0
-    joined.loc[~joined.index.isin(in_df.index), "event_count_in"] = 0
+    joined.loc[~joined.index.isin(out_df.index), "value_out"] = 0
+    joined.loc[~joined.index.isin(in_df.index), "value_in"] = 0
 
-    joined["event_count"] = joined.sum(axis=1)
+    joined["value"] = joined.sum(axis=1)
 
     both_query = EventCount("2016-01-01", "2016-01-08", direction="both")
     both_df = get_dataframe(both_query).set_index("subscriber")
 
-    assert joined["event_count"].to_dict() == both_df["event_count"].to_dict()
+    assert joined["value"].to_dict() == both_df["value"].to_dict()
 
 
 def test_directed_count_undirected_tables_raises():
