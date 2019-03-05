@@ -73,12 +73,10 @@ def test_interevent_period(get_dataframe, intervent_period):
     assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
 
 
-def test_interevent_period_errors():
-    """ Test ValueError is raised for non-compliant parameters in
-    IntereventPeriod. """
+@pytest.mark.parametrize("kwarg", ["direction", "statistic"])
+def test_interevent_period_errors(kwarg):
+    """ Test ValueError is raised for non-compliant kwarg in IntereventPeriod.
+    """
 
     with pytest.raises(ValueError):
-        query = IntereventPeriod("2016-01-03", "2016-01-05", direction="error")
-
-    with pytest.raises(ValueError):
-        query = IntereventPeriod("2016-01-03", "2016-01-05", statistic="error")
+        query = IntereventPeriod("2016-01-03", "2016-01-05", **{kwarg: "error"})
