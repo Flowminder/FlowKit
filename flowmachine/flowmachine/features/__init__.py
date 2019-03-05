@@ -37,7 +37,6 @@ subs = [
     "SubscriberDegree",
     "SubscriberInDegree",
     "SubscriberOutDegree",
-    "ProportionOutgoing",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",

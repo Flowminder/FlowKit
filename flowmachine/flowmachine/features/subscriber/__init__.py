@@ -26,7 +26,6 @@ from .subscriber_location_cluster import subscriber_location_cluster, HartiganCl
 from .most_frequent_location import MostFrequentLocation
 from .last_location import LastLocation
 
-from .proportion_outgoing import ProportionOutgoing
 from .unique_location_counts import UniqueLocationCounts
 from .total_active_periods import TotalActivePeriodsSubscriber
 from .contact_balance import ContactBalance
@@ -77,7 +76,6 @@ __all__ = [
     "SubscriberDegree",
     "SubscriberInDegree",
     "SubscriberOutDegree",
-    "ProportionOutgoing",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",
