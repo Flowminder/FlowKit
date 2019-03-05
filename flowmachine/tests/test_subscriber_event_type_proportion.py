@@ -41,6 +41,7 @@ def test_proportion_event_type(get_dataframe, event_type, msisdn, want):
     df = get_dataframe(query).set_index("subscriber")
     assert df.value.unique() == [1]
 
+
 @pytest.mark.parametrize("kwarg", ["event_type"])
 def test_proportion_event_type_errors(kwarg):
     """ Test ValueError is raised for non-compliant kwarg in ProportionEventType. """
