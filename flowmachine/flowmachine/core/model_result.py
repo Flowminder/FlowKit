@@ -161,7 +161,7 @@ class ModelResult(Query):
                     with con.begin():
                         logger.debug("Using pandas to store.")
                         self._df.to_sql(name, con, schema=schema, index=False)
-                        # Mark as finished before writing meta to avoid getting blocked when
+                        # Mark as finished before writing cache metadata to avoid getting blocked when
                         # meta calls _make_query
                         q_state_machine.finish()
                         if schema == "cache":
