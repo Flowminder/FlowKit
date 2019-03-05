@@ -77,9 +77,6 @@ class IntereventPeriod(SubscriberFeature):
         self.hours = hours
         self.tables = tables
         self.subscriber_identifier = subscriber_identifier
-
-        if direction not in {"in", "out", "both"}:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
         self.direction = direction
 
         if self.direction in {"both"}:

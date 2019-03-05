@@ -71,3 +71,6 @@ def test_intervent_period(get_dataframe, intervent_period):
     want = intervent_period("2016-01-01", "2016-01-08", "both", sample, "std")
     assert query.column_names == ["subscriber", "value"]
     assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
+
+    with pytest.raises(ValueError):
+        query = IntereventPeriod("2016-01-03", "2016-01-05", direction="error")
