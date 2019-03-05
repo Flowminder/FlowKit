@@ -1,3 +1,5 @@
+version: 2.1
+
 defaults:
   - &base_docker
     - image: circleci/python:3.7
@@ -20,7 +22,7 @@ defaults:
         FLOWDB_PORT: 5432
         MPLBACKEND: "agg"
         REDIS_HOST: "localhost"
-    - image: flowminder/flowdb:testdata-$CIRCLE_WORKFLOW_ID
+    - image: flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID
       environment:
         FM_PASSWORD: foo
         API_PASSWORD: foo
@@ -43,7 +45,7 @@ defaults:
         SERVER: localhost
         DB_HOST: localhost
         JWT_SECRET_KEY: secret
-    - image: flowminder/flowdb:testdata-$CIRCLE_WORKFLOW_ID
+    - image: flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID
       environment:
         FM_PASSWORD: foo
         API_PASSWORD: foo
@@ -58,10 +60,7 @@ defaults:
         FLOWDB_PORT: 5432
         FM_PASSWORD: foo
         API_PASSWORD: foo
-    - image: flowminder/flowdb:synthetic-data-$CIRCLE_WORKFLOW_ID
-      auth:
-        username: $DOCKER_CLOUD_USER
-        password: $DOCKER_CLOUD_PASSWORD
+    - image: flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID
       environment:
         N_DAYS: 3
         N_USERS: 400
@@ -83,6 +82,11 @@ defaults:
         only: /.*/
       branches:
         ignore: gh-pages
+  - &master_only_org_context
+    context: org-global
+    filters:
+      branches:
+        only: master
   - &tag_only_org_context
     context: org-global
     filters:
@@ -91,7 +95,6 @@ defaults:
       tags:
         only: /.*/
 
-version: 2
 jobs:
   set_docker_tag_for_ci_images:
     docker: *base_docker
@@ -157,7 +160,7 @@ jobs:
           command: |
             echo Building testdata version $FLOWDB_VERSION
             echo Tagging as testdata-$SAFE_TAG and testdata-$CIRCLE_WORKFLOW_ID
-            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb:testdata-$SAFE_TAG -t flowminder/flowdb:testdata-$CIRCLE_WORKFLOW_ID \
+            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-testdata:$SAFE_TAG -t flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID \
             flowdb/testdata
           background: true
       - run:
@@ -173,7 +176,7 @@ jobs:
           command: |
             echo Building synthetic testdata version $FLOWDB_VERSION.
             echo Tagging as synthetic-data-$SAFE_TAG synthetic-data-$CIRCLE_WORKFLOW_ID
-            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb:synthetic-data-$SAFE_TAG -t flowminder/flowdb:synthetic-data-$CIRCLE_WORKFLOW_ID \
+            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-synthetic-data:$SAFE_TAG -t flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID \
               -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
       - run:
          name: Test that not providing a superuser password causes the container to exit
@@ -221,14 +224,14 @@ jobs:
       - run:
           name: Push images to Docker cloud
           command: |
-            [ "$CIRCLE_BRANCH" = "master" ] && echo "On master branch, pushing latest tag"
-            for PREFIX in "${TAG_PREFIXES[@]}"; do
-              docker push flowminder/flowdb:${PREFIX}${SAFE_TAG}
-              docker push flowminder/flowdb:${PREFIX}${CIRCLE_WORKFLOW_ID}
-              [ "$CIRCLE_BRANCH" = "master" ] && docker tag flowminder/flowdb:${PREFIX}${SAFE_TAG} flowminder/flowdb:${PREFIX}latest \
-              && docker push flowminder/flowdb:${PREFIX}latest
-              echo "Done pushing flowminder/flowdb:${PREFIX}${CIRCLE_TAG}${CIRCLE_BRANCH}."
-            done
+            docker push flowminder/flowdb:${SAFE_TAG}
+            docker push flowminder/flowdb:${CIRCLE_WORKFLOW_ID}
+
+            docker push flowminder/flowdb-testdata:${SAFE_TAG}
+            docker push flowminder/flowdb-testdata:${CIRCLE_WORKFLOW_ID}
+
+            docker push flowminder/flowdb-synthetic-data:${SAFE_TAG}
+            docker push flowminder/flowdb-synthetic-data:${CIRCLE_WORKFLOW_ID}
       - persist_to_workspace:
           root: /home/circleci/
           paths:
@@ -398,7 +401,6 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-      - run: cat /home/circleci/.env >> $BASH_ENV
       - setup_remote_docker
       - run:
           name: Log in to docker cloud
@@ -406,18 +408,12 @@ jobs:
       - run:
           name: Build flowmachine image
           command: |
-            echo "Tagging as $SAFE_TAG and $CIRCLE_WORKFLOW_ID"
-            docker build -t flowminder/flowmachine:$SAFE_TAG -t flowminder/flowmachine:$CIRCLE_WORKFLOW_ID ./flowmachine
+            echo "Tagging as $CIRCLE_WORKFLOW_ID"
+            docker build -t flowminder/flowmachine:$CIRCLE_WORKFLOW_ID ./flowmachine
       - run:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowmachine:$CIRCLE_WORKFLOW_ID
-            docker push flowminder/flowmachine:$SAFE_TAG
-            if [ "$CIRCLE_BRANCH" = "master" ]; then
-                echo "On master branch, pushing latest tag"
-                docker tag flowminder/flowmachine:$SAFE_TAG flowminder/flowmachine
-                docker push flowminder/flowmachine
-            fi
 
   build_flowauth:
     docker:
@@ -426,26 +422,17 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - attach_workspace:
-          at: /home/circleci
-      - run: cat /home/circleci/.env >> $BASH_ENV
       - setup_remote_docker
       - run:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
       - run:
           name: Build flowauth image
-          command: docker build -t flowminder/flowauth:$SAFE_TAG -t flowminder/flowauth:$CIRCLE_WORKFLOW_ID ./flowauth
+          command: docker build -t flowminder/flowauth:$CIRCLE_WORKFLOW_ID ./flowauth
       - run:
           name: Push images to Docker cloud
           command: |
-            docker push flowminder/flowauth:$SAFE_TAG
             docker push flowminder/flowauth:$CIRCLE_WORKFLOW_ID
-            if [ "$CIRCLE_BRANCH" = "master" ]; then
-              echo "On master branch, pushing latest tag"
-              docker tag flowminder/flowauth:$SAFE_TAG flowminder/flowauth
-              docker push flowminder/flowauth
-            fi
 
   build_flowapi:
     docker:
@@ -454,26 +441,17 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - attach_workspace:
-          at: /home/circleci
-      - run: cat /home/circleci/.env >> $BASH_ENV
       - setup_remote_docker
       - run:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
       - run:
           name: Build flowapi image
-          command: docker build -t flowminder/flowapi:$CIRCLE_WORKFLOW_ID -t flowminder/flowapi:$SAFE_TAG ./flowapi
+          command: docker build -t flowminder/flowapi:$CIRCLE_WORKFLOW_ID ./flowapi
       - run:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowapi:$CIRCLE_WORKFLOW_ID
-            docker push flowminder/flowapi:$SAFE_TAG
-            if [ "$CIRCLE_BRANCH" = "master" ]; then
-                echo "On master branch, pushing latest tag"
-                docker tag flowminder/flowapi:$SAFE_TAG flowminder/flowapi
-                docker push flowminder/flowapi
-            fi
 
   integration_tests:
     docker: *docs_build
@@ -570,6 +548,7 @@ jobs:
 
   push_wheel:
     docker: *base_docker
+
     steps:
       - attach_workspace:
           at: /home/circleci/
@@ -579,8 +558,31 @@ jobs:
             pipenv install twine
             pipenv run twine upload /home/circleci/dist/*
 
+  retag_images:
+    parameters:
+      tag:
+        type: string
+        default: "latest"
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - run:
+          name: Install retagger
+          command: wget -q https://github.com/joshdk/docker-retag/releases/download/0.0.2/docker-retag && sudo install docker-retag /usr/bin
+      - run:
+          name: Retag
+          command: |
+            export DOCKER_USER=$DOCKER_CLOUD_USER
+            export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
+            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth; do
+              docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<< parameters.tag >>:-latest}
+            done
+
+
+
+
+
 workflows:
-  version: 2
   run_build_pipeline:
     jobs:
       - set_docker_tag_for_ci_images:
@@ -616,7 +618,6 @@ workflows:
           requires:
             - run_flowmachine_tests
             - integration_tests
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_docs:
           requires:
@@ -627,13 +628,11 @@ workflows:
           requires:
             - run_flowauth_backend_tests
             - run_flowauth_frontend_tests
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_flowapi:
           requires:
             - run_flowkit_api_tests
             - integration_tests
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_client_wheel:
           requires:
@@ -645,19 +644,32 @@ workflows:
             - install_flowmachine_deps
             - build_flowdb
           <<: *run_always_org_context
-      - deploy_docs:
+      - retag_images:
+          name: retag_master_branch
           requires:
-            - build_docs
-            - build_client_wheel
             - build_flowmachine
+            - build_flowdb
             - build_flowapi
-            - integration_tests
+            - build_flowauth
+            - build_docs
+          <<: *master_only_org_context
+      - retag_images:
+          name: retag_tagged_build
+          requires:
+            - build_flowmachine
+            - build_flowdb
+            - build_flowapi
+            - build_flowauth
+            - build_docs
+          tag: CIRCLE_TAG
           <<: *tag_only_org_context
       - push_wheel:
           requires:
-            - build_docs
             - build_client_wheel
-            - build_flowmachine
-            - build_flowapi
-            - integration_tests
+          <<: *tag_only_org_context
+      - deploy_docs:
+          requires:
+            - build_docs
+            - retag_tagged_build
+            - push_wheel
           <<: *tag_only_org_context
