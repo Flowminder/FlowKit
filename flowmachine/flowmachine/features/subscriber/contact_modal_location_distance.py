@@ -15,7 +15,7 @@ from .contact_balance import ContactBalance
 from ..spatial.distance_matrix import DistanceMatrix
 from .daily_location import daily_location
 
-from flowmachine.utils.utils import get_columns_for_level, list_of_dates
+from flowmachine.utils import get_columns_for_level, list_of_dates
 
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
@@ -59,7 +59,7 @@ class ContactModalLocationDistance(SubscriberFeature):
     >>> s = ContactModalLocationDistance("2016-01-01", "2016-01-03", statistic="avg")
     >>> s.get_dataframe()
 
-        subscriber  distance_avg
+        subscriber           value
     gwAynWXp4eWvxGP7    298.721500
     GnyZMedmKQ4X78Wa    290.397556
     BKMy1nYEZpnoEA7G     78.919136
@@ -102,7 +102,7 @@ class ContactModalLocationDistance(SubscriberFeature):
             level="versioned-cell",
         )
 
-        if contact_balance:
+        if not contact_balance is None:
             if contact_balance.subscriber_identifier not in {"msisdn"}:
                 raise ValueError(f"""
                 The only `subscriber_identifier` allowed is the msisdn, because
@@ -142,7 +142,7 @@ class ContactModalLocationDistance(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", f"distance_{self.statistic}"]
+        return ["subscriber", "value"]
 
 
     def _make_query(self):
@@ -165,7 +165,7 @@ class ContactModalLocationDistance(SubscriberFeature):
         )
 
         sql = f"""
-        SELECT subscriber, {self.statistic}(distance) AS distance_{self.statistic}
+        SELECT subscriber, {self.statistic}(distance) AS value
         FROM (
             SELECT C.subscriber, C.msisdn_counterpart, D.distance
             FROM (

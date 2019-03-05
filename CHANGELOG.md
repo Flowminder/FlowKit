@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Dockerised development setup, with support for live reload of `flowmachine` and `flowapi` after source code changes.
 - Pre-commit hook for Python formatting with black.
-- Added new `IntereventPeriod` query classes to FlowMachine.
+- Added new `IntereventPeriod` and `ContactModalLocationDistance` query classes to FlowMachine.
 
 ### Changed
 - `CustomQuery` now requires column names to be specified
