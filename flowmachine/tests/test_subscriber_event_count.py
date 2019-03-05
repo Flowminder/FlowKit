@@ -44,6 +44,7 @@ def test_event_count(get_dataframe):
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["4dqenN2oQZExwEK2"].value == 12
 
+
 @pytest.mark.parametrize("kwarg", ["direction"])
 def test_event_count_errors(kwarg):
     """ Test ValueError is raised for non-compliant kwarg in EventCount. """
@@ -73,12 +74,14 @@ def test_per_location_event_count(get_dataframe, statistic, msisdn, want, level)
     df = get_dataframe(query).set_index("subscriber")
     assert df.value[msisdn] == pytest.approx(want)
 
+
 @pytest.mark.parametrize("kwarg", ["direction", "statistic"])
 def test_per_location_event_count_errors(kwarg):
     """ Test ValueError is raised for non-compliant kwarg in PerLocationEventCount. """
 
     with pytest.raises(ValueError):
         query = PerLocationEventCount("2016-01-03", "2016-01-05", **{kwarg: "error"})
+
 
 @pytest.mark.parametrize(
     "statistic,msisdn,want",
@@ -98,6 +101,7 @@ def test_per_contact_event_count(get_dataframe, statistic, msisdn, want):
     query = PerContactEventCount("2016-01-02", "2016-01-06", statistic)
     df = get_dataframe(query).set_index("subscriber")
     assert df.value[msisdn] == pytest.approx(want)
+
 
 @pytest.mark.parametrize("kwarg", ["statistic"])
 def test_per_contact_event_count_errors(kwarg):
