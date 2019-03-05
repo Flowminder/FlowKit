@@ -349,7 +349,7 @@ class ProportionEventReciprocal(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", "proportion"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
@@ -368,7 +368,7 @@ class ProportionEventReciprocal(SubscriberFeature):
         """
 
         sql = f"""
-        SELECT subscriber, AVG(reciprocal::int) AS proportion
+        SELECT subscriber, AVG(reciprocal::int) AS value
         FROM (
             SELECT U.subscriber, COALESCE(reciprocal, FALSE) AS reciprocal
             FROM (
