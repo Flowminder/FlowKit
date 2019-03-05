@@ -27,7 +27,7 @@ networks:
   api:
 services:
     flowdb:
-        image: "flowminder/flowdb:testdata-${CIRCLE_BRANCH:-latest}"
+        image: "flowminder/flowdb-testdata:${CIRCLE_BRANCH:-latest}"
         secrets:
           - POSTGRES_PASSWORD_FILE
           - API_DB_USER

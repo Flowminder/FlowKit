@@ -107,7 +107,7 @@ class IntereventPeriod(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", f"interevent_period_{self.statistic}"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
@@ -128,7 +128,7 @@ class IntereventPeriod(SubscriberFeature):
         sql = f"""
         SELECT
             subscriber,
-            {statistic_clause} AS interevent_period_{self.statistic}
+            {statistic_clause} AS value
         FROM (
             SELECT subscriber, datetime - LAG(datetime, 1, NULL) OVER (PARTITION BY subscriber ORDER BY datetime) AS delta
             FROM ({self.unioned_query.get_query()}) AS U
