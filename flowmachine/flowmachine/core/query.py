@@ -502,11 +502,11 @@ class Query(metaclass=ABCMeta):
             raise NameTooLongError(err_msg)
 
         def do_query() -> Query:
-            logger.debug("Getting storage lock.")
+            logger.debug(f"Trying to switch '{self.md5}' to executing state.")
             q_state_machine = QueryStateMachine(self.redis, self.md5)
             current_state, this_thread_is_owner = q_state_machine.execute()
             if this_thread_is_owner:
-                logger.debug("Obtained storage lock.")
+                logger.debug(f"In charge of executing '{self.md5}'.")
                 query_ddl_ops = self._make_sql(name, schema=schema)
                 logger.debug("Made SQL.")
                 con = self.connection.engine

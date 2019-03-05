@@ -151,11 +151,11 @@ class ModelResult(Query):
                 raise ValueError("Not computed yet.")
 
         def do_query() -> ModelResult:
-            logger.debug("Getting storage lock.")
+            logger.debug(f"Trying to switch {self.md5} to executing state.")
             q_state_machine = QueryStateMachine(self.redis, self.md5)
             current_state, this_thread_is_owner = q_state_machine.execute()
             if this_thread_is_owner:
-                logger.debug("Obtained storage lock.")
+                logger.debug(f"In charge of executing {self.md5}.")
                 con = self.connection.engine
                 try:
                     with con.begin():
@@ -180,6 +180,7 @@ class ModelResult(Query):
                     sleep(5)
 
             if q_state_machine.is_completed:
+                logger.debug(f"Model result '{self.md5}' already in cache.")
                 return self
             elif q_state_machine.is_cancelled:
                 logger.error(f"Model result write '{self.md5}' was cancelled.")
@@ -187,7 +188,7 @@ class ModelResult(Query):
             elif q_state_machine.is_errored:
                 logger.error(f"Model result write '{self.md5}' finished with an error.")
                 raise QueryErroredException(self.md5)
-                logger.debug("Released storage lock.")
+            logger.debug(f"Wrote model result '{self.md5}' to cache.")
             return self
 
         current_state, changed_to_queue = QueryStateMachine(
