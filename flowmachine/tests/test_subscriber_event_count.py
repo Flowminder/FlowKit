@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.features.subscriber.event_count import *
-from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 
 import pytest
 
