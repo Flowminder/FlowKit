@@ -49,7 +49,7 @@ class SubscriberDegree(SubscriberFeature):
     --------
 
     >>> SubscriberDegree('2016-01-01', '2016-01-01')
-                   msisdn  count
+                   msisdn  value
     0    038OVABN11Ak4W5P      2
     1    09NrjaNNvDanD8pk      2
     2    0ayZGYEQrqYlKw6g      2

@@ -55,7 +55,7 @@ class ParetoInteractions(SubscriberFeature):
     >>> p = ParetoInteractions("2016-01-01", "2016-01-02")
     >>> p.get_dataframe()
 
-             subscriber  pareto
+             subscriber   value
     0  038OVABN11Ak4W5P     1.0
     1  09NrjaNNvDanD8pk     1.0
     2  0ayZGYEQrqYlKw6g     1.0
@@ -146,7 +146,7 @@ class ParetoInteractions(SubscriberFeature):
         """
 
         sql = f"""
-        SELECT uc.subscriber as subscriber, n_contacts/degree::FLOAT as pareto FROM
+        SELECT uc.subscriber as subscriber, uc.n_contacts/ud.value::FLOAT as value FROM
         ({subscriber_count}) uc
         LEFT JOIN
         ({self.subscriber_degree.get_query()}) ud
@@ -158,4 +158,4 @@ class ParetoInteractions(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "pareto"]
+        return ["subscriber", "value"]
