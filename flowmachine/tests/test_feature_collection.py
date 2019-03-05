@@ -29,7 +29,7 @@ def test_collects_metrics():
     expected_columns = [
         "subscriber",
         "rog_radiusofgyration_0",
-        "percentage_nocturnal_nocturnalevents_1",
+        "value_nocturnalevents_1",
         "degree_subscriberdegree_2",
     ]
     fc = feature_collection(metrics)
@@ -48,7 +48,7 @@ def test_from_list_of_classes():
     expected_columns = [
         "subscriber",
         "rog_radiusofgyration_0",
-        "percentage_nocturnal_nocturnalevents_1",
+        "value_nocturnalevents_1",
         "degree_subscriberdegree_2",
     ]
     fc = feature_collection_from_list_of_classes(metrics, start=start, stop=stop)
