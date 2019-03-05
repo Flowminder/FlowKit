@@ -74,7 +74,7 @@ Here is an example of the running docker services after a successful `make up`:
 $ docker ps
 
 CONTAINER ID        IMAGE                               COMMAND                  CREATED             STATUS              PORTS                              NAMES
-54857c5f5da5        flowminder/flowdb:testdata-latest   "docker-entrypoint.s…"   5 minutes ago       Up 5 minutes        8000/tcp, 0.0.0.0:9000->5432/tcp   flowdb_testdata
+54857c5f5da5        flowminder/flowdb-testdata:latest   "docker-entrypoint.s…"   5 minutes ago       Up 5 minutes        8000/tcp, 0.0.0.0:9000->5432/tcp   flowdb_testdata
 e57c8eeb7d38        flowminder/flowmachine:latest       "/bin/sh -c 'pipenv …"   5 minutes ago       Up 5 minutes        0.0.0.0:5555->5555/tcp             flowmachine
 3d54ce0c4484        flowminder/flowapi:latest           "/bin/sh -c 'pipenv …"   5 minutes ago       Up 5 minutes        0.0.0.0:9090->9090/tcp             flowapi
 89e9575c8d42        flowminder/flowauth:latest          "/entrypoint.sh /sta…"   5 minutes ago       Up 5 minutes        443/tcp, 0.0.0.0:8080->80/tcp      flowauth

@@ -15,7 +15,6 @@ from typing import List
 from .metaclasses import SubscriberFeature
 from ..utilities import EventsTablesUnion
 from ...core.mixins.graph_mixin import GraphMixin
-from flowmachine.utils import verify_columns_exist_in_all_tables
 
 
 class ContactBalance(GraphMixin, SubscriberFeature):
@@ -88,8 +87,6 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
         else:
             raise ValueError("Unidentified direction: {}".format(self.direction))
-
-        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
