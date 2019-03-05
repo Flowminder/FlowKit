@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.features.subscriber.interevent_period import *
-from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 
 import pytest
 import pandas as pd
@@ -40,7 +39,7 @@ def intervent_period(get_dataframe):
     return _intervent_period
 
 
-def test_intervent_period(get_dataframe, intervent_period):
+def test_interevent_period(get_dataframe, intervent_period):
     """
     Test some hand-picked results for IntereventPeriod.
     """
@@ -49,30 +48,34 @@ def test_intervent_period(get_dataframe, intervent_period):
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-01", "2016-01-08", "both", sample, "mean")
-    assert pd.to_numeric(sample["interevent_period_avg"]).to_dict() == pytest.approx(
-        want
-    )
+    assert query.column_names == ["subscriber", "value"]
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
 
     query = IntereventPeriod("2016-01-01", "2016-01-05", direction="out")
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-01", "2016-01-05", "out", sample, "mean")
-    assert pd.to_numeric(sample["interevent_period_avg"]).to_dict() == pytest.approx(
-        want
-    )
+    assert query.column_names == ["subscriber", "value"]
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
 
     query = IntereventPeriod("2016-01-03", "2016-01-05", direction="in")
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-03", "2016-01-05", "in", sample, "mean")
-    assert pd.to_numeric(sample["interevent_period_avg"]).to_dict() == pytest.approx(
-        want
-    )
+    assert query.column_names == ["subscriber", "value"]
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
 
     query = IntereventPeriod("2016-01-01", "2016-01-08", "stddev")
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
     want = intervent_period("2016-01-01", "2016-01-08", "both", sample, "std")
-    assert pd.to_numeric(sample["interevent_period_stddev"]).to_dict() == pytest.approx(
-        want
-    )
+    assert query.column_names == ["subscriber", "value"]
+    assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
+
+
+@pytest.mark.parametrize("kwarg", ["direction", "statistic"])
+def test_interevent_period_errors(kwarg):
+    """ Test ValueError is raised for non-compliant kwarg in IntereventPeriod. """
+
+    with pytest.raises(ValueError):
+        query = IntereventPeriod("2016-01-03", "2016-01-05", **{kwarg: "error"})

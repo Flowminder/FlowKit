@@ -7,7 +7,6 @@
 Classes for searching and dealing with reciprocal contacts.
 """
 
-from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ...core.mixins.graph_mixin import GraphMixin
@@ -84,7 +83,6 @@ class ContactReciprocal(GraphMixin, SubscriberFeature):
         self.tables = tables
 
         column_list = ["msisdn", "msisdn_counterpart", "outgoing"]
-        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.contact_in_query = ContactBalance(
             self.start,
@@ -320,8 +318,6 @@ class ProportionEventReciprocal(SubscriberFeature):
                 "msisdn_counterpart",
                 "outgoing",
             ]
-
-        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
 
         self.unioned_query = EventsTablesUnion(
             self.start,
