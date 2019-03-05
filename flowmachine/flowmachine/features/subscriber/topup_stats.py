@@ -9,7 +9,6 @@ Class for calculating top-up statistics.
 
 import warnings
 
-from ...utils.utils import verify_columns_exist_in_all_tables
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -82,8 +81,6 @@ class TopUpAmount(SubscriberFeature):
 
         column_list = [self.subscriber_identifier, "recharge_amount"]
 
-        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
-
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
@@ -98,12 +95,12 @@ class TopUpAmount(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", f"amount_{self.statistic}"]
+        return ["subscriber", f"value"]
 
     def _make_query(self):
 
         return f"""
-        SELECT subscriber, {self.statistic}(recharge_amount) AS amount_{self.statistic}
+        SELECT subscriber, {self.statistic}(recharge_amount) AS value
         FROM ({self.unioned_query.get_query()}) U
         GROUP BY subscriber
         """
@@ -201,8 +198,6 @@ class TopUpBalance(SubscriberFeature):
             "post_event_balance",
         ]
 
-        verify_columns_exist_in_all_tables(self.connection, tables, column_list)
-
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
@@ -217,13 +212,13 @@ class TopUpBalance(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", f"balance_{self.statistic}"]
+        return ["subscriber", f"value"]
 
     def _make_query(self):
 
         if self.statistic in {"count"}:
             sql = f"""
-            SELECT subscriber, COUNT(*) AS balance_count
+            SELECT subscriber, COUNT(*) AS value
             FROM ({self.unioned_query.get_query()}) AS U
             GROUP BY subscriber
             """
@@ -231,7 +226,7 @@ class TopUpBalance(SubscriberFeature):
 
         if self.statistic in {"max", "min"}:
             sql = f"""
-            SELECT subscriber, {self.statistic}(balance) AS balance_{self.statistic}
+            SELECT subscriber, {self.statistic}(balance) AS value
             FROM (
                 SELECT subscriber, {self.statistic}(pre_event_balance) AS balance
                 FROM ({self.unioned_query.get_query()}) AS U
@@ -305,7 +300,7 @@ class TopUpBalance(SubscriberFeature):
 
         if self.statistic in {"sum", "avg", "stddev", "variance"}:
             sql = f"""
-            SELECT subscriber, {statistic_clause} AS balance_{self.statistic}
+            SELECT subscriber, {statistic_clause} AS value
             FROM ({weight_extraction_query}) U
             GROUP BY subscriber
             """
@@ -313,7 +308,7 @@ class TopUpBalance(SubscriberFeature):
 
         sql = f"""
         WITH W AS ({weight_extraction_query})
-        SELECT DISTINCT ON (subscriber) A.subscriber, A.balance AS balance_median
+        SELECT DISTINCT ON (subscriber) A.subscriber, A.balance AS value
         FROM (
             SELECT
                 subscriber,
