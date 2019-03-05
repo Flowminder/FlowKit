@@ -45,7 +45,7 @@ class TopUpAmount(SubscriberFeature):
     >>> s = TopUpAmount("2016-01-01", "2016-01-08")
     >>> s.get_dataframe()
 
-          subscriber  amount_avg
+          subscriber       value
     bjY7mMXxE3zMoelO    5.580000
     dqEQWNwAYEr4Mk3e    5.150000
     BNxWrJ9mqMJ83Mzk    3.968000
@@ -156,7 +156,7 @@ class TopUpBalance(SubscriberFeature):
     >>> s = TopUpBalance("2016-01-01", "2016-01-08")
     >>> s.get_dataframe()
 
-        subscriber  balance_avg
+        subscriber          value
     AZj6MqBAryVyNRDo   410.064467
     Bn5kZrQ2WgEy14zN    78.580122
     LBlWd64rqnMGv7kY    73.702066
