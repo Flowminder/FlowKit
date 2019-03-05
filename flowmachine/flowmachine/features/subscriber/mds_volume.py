@@ -47,7 +47,7 @@ class MDSVolume(SubscriberFeature):
     >>> s = MDSVolume("2016-01-01", "2016-01-08")
     >>> s.get_dataframe()
 
-          subscriber  volume_sum
+          subscriber       value
     37J9rKydzJ0mvo0z     8755.36
     PWlZ8Q5zjYkGJzXg    11383.83
     6zm4b7veY2ljEQ95     7481.94
