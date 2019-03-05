@@ -6,7 +6,6 @@
 
 from typing import List
 
-from flowmachine.utils import verify_columns_exist_in_all_tables
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -76,7 +75,6 @@ class EventCount(SubscriberFeature):
             self.tables = tables
         else:
             column_list = [self.subscriber_identifier, "outgoing"]
-            verify_columns_exist_in_all_tables(self.connection, tables, column_list)
             self.tables = tables
 
         self.unioned_query = EventsTablesUnion(
