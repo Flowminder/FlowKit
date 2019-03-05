@@ -10,6 +10,7 @@ from ...core import Table
 from .event_count import EventCount
 from .metaclasses import SubscriberFeature
 
+
 class ProportionEventType(SubscriberFeature):
     """
     This class returns the proportion of events of a certain type out of all

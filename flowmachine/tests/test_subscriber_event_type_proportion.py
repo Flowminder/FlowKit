@@ -14,7 +14,7 @@ import pytest
         ("events.sms", "7ra3xZakjEqB1Al5", 0.362_069),
         ("events.mds", "QrAlXqDbXDkNJe3E", 0.236_363_63),
         ("events.topups", "bKZLwjrMQG7z468y", 0.183_098_5),
-        (["events.calls", "events.sms"], "AgB6KR3Levd9Z1vJ", 0.6481481),
+        (["events.calls", "events.sms"], "AgB6KR3Levd9Z1vJ", 0.648_148_1),
     ],
 )
 def test_proportion_event_type(get_dataframe, numerator, msisdn, want):
@@ -36,8 +36,6 @@ def test_proportion_event_type(get_dataframe, numerator, msisdn, want):
     df = get_dataframe(query).set_index("subscriber")
     assert df.value[msisdn] == pytest.approx(want)
 
-    query = ProportionEventType(
-        "2016-01-02", "2016-01-04", numerator, tables=numerator
-    )
+    query = ProportionEventType("2016-01-02", "2016-01-04", numerator, tables=numerator)
     df = get_dataframe(query).set_index("subscriber")
     assert df.value.unique() == [1]
