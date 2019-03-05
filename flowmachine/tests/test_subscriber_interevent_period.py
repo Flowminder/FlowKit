@@ -39,7 +39,7 @@ def intervent_period(get_dataframe):
     return _intervent_period
 
 
-def test_intervent_period(get_dataframe, intervent_period):
+def test_interevent_period(get_dataframe, intervent_period):
     """
     Test some hand-picked results for IntereventPeriod.
     """
@@ -72,5 +72,13 @@ def test_intervent_period(get_dataframe, intervent_period):
     assert query.column_names == ["subscriber", "value"]
     assert pd.to_numeric(sample["value"]).to_dict() == pytest.approx(want)
 
+
+def test_interevent_period_errors():
+    """ Test ValueError is raised for non-compliant parameters in
+    IntereventPeriod. """
+
     with pytest.raises(ValueError):
         query = IntereventPeriod("2016-01-03", "2016-01-05", direction="error")
+
+    with pytest.raises(ValueError):
+        query = IntereventPeriod("2016-01-03", "2016-01-05", statistic="error")
