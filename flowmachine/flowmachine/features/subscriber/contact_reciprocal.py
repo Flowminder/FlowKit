@@ -189,7 +189,7 @@ class ProportionContactReciprocal(SubscriberFeature):
     >> s = ProportionContactReciprocal('2016-01-01', '2016-01-08')
     >> s.get_dataframe()
 
-          subscriber  proportion
+          subscriber       value
     9vXy462Ej8V1kpWl         0.0
     Q4mwVxpBOo7X2lb9         0.0
     5jLW0EWeoyg6NQo3         0.0
@@ -278,7 +278,7 @@ class ProportionEventReciprocal(SubscriberFeature):
     >> s = ProportionEventReciprocal('2016-01-01', '2016-01-08')
     >> s.get_dataframe()
 
-          subscriber  proportion
+          subscriber       value
     9vXy462Ej8V1kpWl         0.0
     Q4mwVxpBOo7X2lb9         0.0
     5jLW0EWeoyg6NQo3         0.0
