@@ -8,22 +8,23 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "event_type, msisdn, want",
+    "numerator, msisdn, want",
     [
-        ("calls", "AgB6KR3Levd9Z1vJ", 0.351_852),
-        ("sms", "7ra3xZakjEqB1Al5", 0.362_069),
-        ("mds", "QrAlXqDbXDkNJe3E", 0.236_363_63),
-        ("topups", "bKZLwjrMQG7z468y", 0.183_098_5),
+        ("events.calls", "AgB6KR3Levd9Z1vJ", 0.351_852),
+        ("events.sms", "7ra3xZakjEqB1Al5", 0.362_069),
+        ("events.mds", "QrAlXqDbXDkNJe3E", 0.236_363_63),
+        ("events.topups", "bKZLwjrMQG7z468y", 0.183_098_5),
+        (["events.calls", "events.sms"], "AgB6KR3Levd9Z1vJ", 0.6481481),
     ],
 )
-def test_proportion_event_type(get_dataframe, event_type, msisdn, want):
+def test_proportion_event_type(get_dataframe, numerator, msisdn, want):
     """
     Test some hand picked periods and tables
     """
     query = ProportionEventType(
         "2016-01-01",
         "2016-01-08",
-        event_type,
+        numerator,
         tables=[
             "events.calls",
             "events.sms",
@@ -36,15 +37,7 @@ def test_proportion_event_type(get_dataframe, event_type, msisdn, want):
     assert df.value[msisdn] == pytest.approx(want)
 
     query = ProportionEventType(
-        "2016-01-02", "2016-01-04", event_type, tables=[f"events.{event_type}"]
+        "2016-01-02", "2016-01-04", numerator, tables=numerator
     )
     df = get_dataframe(query).set_index("subscriber")
     assert df.value.unique() == [1]
-
-
-@pytest.mark.parametrize("kwarg", ["event_type"])
-def test_proportion_event_type_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in ProportionEventType. """
-
-    with pytest.raises(ValueError):
-        query = ProportionEventType("2016-01-03", "2016-01-05", **{kwarg: "error"})
