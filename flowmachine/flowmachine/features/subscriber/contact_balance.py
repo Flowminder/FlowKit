@@ -164,7 +164,9 @@ class ContactBalance(GraphMixin, SubscriberFeature):
             Wether to include the list of subscribers in the subset as well.
         """
 
-        return _ContactBalanceSubset(contact_balance=self, include_subscribers=include_subscribers)
+        return _ContactBalanceSubset(
+            contact_balance=self, include_subscribers=include_subscribers
+        )
 
 
 class _ContactBalanceSubset(SubscriberFeature):
@@ -181,19 +183,25 @@ class _ContactBalanceSubset(SubscriberFeature):
     include_subscribers: bool, default False
         Wether to include the list of subscribers in the subset as well.
     """
+
     def __init__(self, contact_balance, include_subscribers=False):
 
         self.contact_balance_query = contact_balance
         self.include_subscribers = include_subscribers
 
-        if self.contact_balance_query.subscriber_identifier in {"imei"} and self.include_subscribers:
-            raise ValueError("""
+        if (
+            self.contact_balance_query.subscriber_identifier in {"imei"}
+            and self.include_subscribers
+        ):
+            raise ValueError(
+                """
                 The counterparts are always identified are identified via the
                 msisdn while the subscribers are being identified via the imei.
                 Therefore, it is not possible to extract the counterpart subset
                 and merge with the subscriber subset. Performing otherwise
                 would be inconsistent.
-            """)
+            """
+            )
 
         super().__init__()
 
@@ -204,7 +212,10 @@ class _ContactBalanceSubset(SubscriberFeature):
     def _make_query(self):
 
         include_subscriber_clause = ""
-        if self.include_subscribers and self.contact_balance_query.subscriber_identifier in {"msisdn"}:
+        if (
+            self.include_subscribers
+            and self.contact_balance_query.subscriber_identifier in {"msisdn"}
+        ):
             include_subscriber_clause = f"""
             UNION SELECT DISTINCT subscriber FROM ({self.contact_balance_query.get_query()}) C
             """
@@ -214,8 +225,3 @@ class _ContactBalanceSubset(SubscriberFeature):
         FROM ({self.contact_balance_query.get_query()}) C
         {include_subscriber_clause}
         """
-
-
-
-
-

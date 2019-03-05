@@ -76,7 +76,7 @@ class ContactModalLocationDistance(SubscriberFeature):
         method="last",
         *,
         contact_balance=None,
-        tables = "all",
+        tables="all",
         direction="both",
         hours="all",
         subscriber_subset=None,
@@ -98,18 +98,18 @@ class ContactModalLocationDistance(SubscriberFeature):
                 )
             )
 
-        self.distance_matrix_query = DistanceMatrix(
-            level="versioned-cell",
-        )
+        self.distance_matrix_query = DistanceMatrix(level="versioned-cell")
 
         if not contact_balance is None:
             if contact_balance.subscriber_identifier not in {"msisdn"}:
-                raise ValueError(f"""
+                raise ValueError(
+                    f"""
                 The only `subscriber_identifier` allowed is the msisdn, because
                 it is the only identifier capable of identifying counterparts
                 for all transation types. Please use a ContactBalance
                 instantiated with msisdn for the `subscriber_identifier`.
-                """)
+                """
+                )
             self.contact_balance_query = contact_balance
         else:
             self.contact_balance_query = ContactBalance(
@@ -125,25 +125,28 @@ class ContactModalLocationDistance(SubscriberFeature):
 
         print(self.contact_balance_query.get_query())
 
-        self.modal_location_query = ModalLocation(*[
-            daily_location(
-                d,
-                level="versioned-cell",
-                hours=self.hours,
-                method=self.method,
-                table=self.tables,
-                subscriber_identifier="msisdn",
-                subscriber_subset=self.contact_balance_query.counterparts_subset(include_subscribers=True),
-            )
-            for d in list_of_dates(self.start, self.stop)
-        ])
+        self.modal_location_query = ModalLocation(
+            *[
+                daily_location(
+                    d,
+                    level="versioned-cell",
+                    hours=self.hours,
+                    method=self.method,
+                    table=self.tables,
+                    subscriber_identifier="msisdn",
+                    subscriber_subset=self.contact_balance_query.counterparts_subset(
+                        include_subscribers=True
+                    ),
+                )
+                for d in list_of_dates(self.start, self.stop)
+            ]
+        )
 
         super().__init__()
 
     @property
     def column_names(self):
         return ["subscriber", "value"]
-
 
     def _make_query(self):
 

@@ -45,6 +45,7 @@ def test_no_result_is_greater_than_one(get_dataframe):
     results = df[df["proportion"] > 1]
     assert len(results) == 0
 
+
 def test_counterpart_subset(get_dataframe):
     """ Test that counterparts_subset method gets correct subset. """
     query = ContactBalance("2016-01-01", "2016-01-03")
@@ -55,7 +56,9 @@ def test_counterpart_subset(get_dataframe):
     query = ContactBalance("2016-01-01", "2016-01-03")
     cb = get_dataframe(query)
     cs = get_dataframe(query.counterparts_subset(include_subscribers=True))
-    assert set(cb.msisdn_counterpart.values).union(cb.subscriber.values) == set(cs.subscriber.values)
+    assert set(cb.msisdn_counterpart.values).union(cb.subscriber.values) == set(
+        cs.subscriber.values
+    )
 
     query = ContactBalance("2016-01-01", "2016-01-03", subscriber_identifier="imei")
     cb = get_dataframe(query)
