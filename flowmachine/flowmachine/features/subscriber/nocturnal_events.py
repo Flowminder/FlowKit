@@ -93,7 +93,7 @@ class NocturnalEvents(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", "percentage_nocturnal"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
         where_clause = ""
@@ -105,7 +105,7 @@ class NocturnalEvents(SubscriberFeature):
         sql = f"""
         SELECT
             subscriber,
-            AVG(nocturnal)*100 AS percentage_nocturnal
+            AVG(nocturnal)*100 AS value
         FROM (
             SELECT
                 subscriber,
