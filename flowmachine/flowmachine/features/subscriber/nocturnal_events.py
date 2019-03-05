@@ -46,7 +46,7 @@ class NocturnalEvents(SubscriberFeature):
     >>> s = NocturnalEvents("2016-01-01", "2016-01-02")
     >>> s.get_dataframe()
 
-          subscriber  percentage_nocturnal
+          subscriber                 value
     2ZdMowMXoyMByY07              0.000000
     MobnrVMDK24wPRzB             40.000000
     0Ze1l70j0LNgyY4w             16.666667
