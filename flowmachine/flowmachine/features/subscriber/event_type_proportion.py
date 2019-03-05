@@ -46,7 +46,7 @@ class ProportionEventType(SubscriberFeature):
     >>> s = ProportionEventType("2016-01-01", "2016-01-07", type="sms")
     >>> s.get_dataframe()
 
-          subscriber  proportion
+          subscriber       value
     AgB6KR3Levd9Z1vJ    0.351852
     PbN9vQlbEORLmaxd    0.333333
     W6ljak9BpW0Z7ybg    0.271429
