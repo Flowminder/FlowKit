@@ -8,7 +8,7 @@ version: '2'
 services:
     flowdb:
         container_name: '${FLOWDB_CONTAINER_NAME:-flowdb-synth}'
-        image: flowminder/flowdb:synthetic-data-${FLOWDB_BRANCH:-latest}
+        image: flowminder/flowdb-synthetic-data:${FLOWDB_BRANCH:-latest}
         environment:
             - POSTGRES_DB=${POSTGRES_DB}
             - POSTGRES_USER=${POSTGRES_USER}

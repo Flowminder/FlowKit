@@ -20,7 +20,6 @@ from typing import List, Union
 
 import flowmachine
 from flowmachine.core.errors import BadLevelError
-from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
