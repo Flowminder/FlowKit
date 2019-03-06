@@ -6,7 +6,7 @@ import uuid
 from pathlib import Path
 
 import quart.flask_patch
-from quart import Quart, request
+from quart import Quart, request, current_app
 import asyncpg
 import logging
 import os
@@ -63,77 +63,82 @@ def getsecret(key: str, default: str) -> str:
         return default
 
 
+async def connect_logger():
+    log_level = current_app.config["LOG_LEVEL"]
+    log_root = current_app.config["LOG_DIRECTORY"]
+    current_app.logger.setLevel(logging.getLevelName(log_level))
+
+    # Logger for authentication
+
+    logger = logging.getLogger("flowkit-access")
+    logger.setLevel(logging.INFO)
+    ch = logging.StreamHandler()
+    ch.setLevel(log_level)
+    logger.addHandler(ch)
+
+    fh = TimedRotatingFileHandler(
+        os.path.join(log_root, "flowkit-access.log"), when="midnight"
+    )
+    fh.setLevel(logging.INFO)
+    logger.addHandler(fh)
+    current_app.access_logger = structlog.wrap_logger(logger)
+
+    # Logger for all queries run or accessed
+
+    logger = logging.getLogger("flowkit-query")
+    logger.setLevel(logging.INFO)
+    ch = logging.StreamHandler()
+    ch.setLevel(log_level)
+    logger.addHandler(ch)
+
+    fh = TimedRotatingFileHandler(
+        os.path.join(log_root, "query-runs.log"), when="midnight"
+    )
+    fh.setLevel(logging.INFO)
+    logger.addHandler(fh)
+    current_app.query_run_logger = structlog.wrap_logger(logger)
+
+
+async def connect_zmq():
+    context = Context.instance()
+    #  Socket to talk to server
+    current_app.logger.debug("Connecting to FlowMachine server…")
+    socket = context.socket(zmq.REQ)
+    socket.connect(
+        f"tcp://{current_app.config['FLOWMACHINE_SERVER']}:{current_app.config['FLOWMACHINE_PORT']}"
+    )
+    request.socket = socket
+    current_app.logger.debug("Connected.")
+
+
+async def add_uuid():
+    request.request_id = str(uuid.uuid4())
+
+
+def close_zmq(exc):
+    current_app.logger.debug("Closing connection to FlowMachine server…")
+    try:
+        request.socket.close()
+        current_app.logger.debug("Closed socket.")
+    except AttributeError:
+        current_app.logger.debug("No socket to close.")
+
+
+async def create_db():
+    dsn = current_app.config["FLOWDB_DSN"]
+    current_app.pool = await asyncpg.create_pool(dsn, max_size=20)
+
+
 def create_app():
     app = Quart(__name__)
-    app.config["JWT_SECRET_KEY"] = getsecret(
-        "JWT_SECRET_KEY", os.getenv("JWT_SECRET_KEY")
-    )
+    app.config.from_envvar("CONFIG_FILE")
+
     jwt = JWTManager(app)
-
-    log_root = os.getenv("LOG_DIRECTORY", "/var/log/flowapi/")
-
-    @app.before_first_request
-    async def connect_logger():
-        log_level = logging.getLevelName(os.getenv("LOG_LEVEL", "error").upper())
-        app.logger.setLevel(logging.getLevelName(log_level))
-
-        # Logger for authentication
-
-        logger = logging.getLogger("flowkit-access")
-        logger.setLevel(logging.INFO)
-        ch = logging.StreamHandler()
-        ch.setLevel(log_level)
-        logger.addHandler(ch)
-
-        fh = TimedRotatingFileHandler(
-            os.path.join(log_root, "flowkit-access.log"), when="midnight"
-        )
-        fh.setLevel(logging.INFO)
-        logger.addHandler(fh)
-        app.access_logger = structlog.wrap_logger(logger)
-
-        # Logger for all queries run or accessed
-
-        logger = logging.getLogger("flowkit-query")
-        logger.setLevel(logging.INFO)
-        ch = logging.StreamHandler()
-        ch.setLevel(log_level)
-        logger.addHandler(ch)
-
-        fh = TimedRotatingFileHandler(
-            os.path.join(log_root, "query-runs.log"), when="midnight"
-        )
-        fh.setLevel(logging.INFO)
-        logger.addHandler(fh)
-        app.query_run_logger = structlog.wrap_logger(logger)
-
-    @app.before_request
-    async def connect_zmq():
-        context = Context.instance()
-        #  Socket to talk to server
-        app.logger.debug("Connecting to FlowMachine server…")
-        socket = context.socket(zmq.REQ)
-        socket.connect(f"tcp://{os.getenv('SERVER')}:5555")
-        request.socket = socket
-        app.logger.debug("Connected.")
-
-    @app.before_request
-    async def add_uuid():
-        request.request_id = str(uuid.uuid4())
-
-    @app.teardown_request
-    def close_zmq(exc):
-        app.logger.debug("Closing connection to FlowMachine server…")
-        try:
-            request.socket.close()
-            app.logger.debug("Closed socket.")
-        except AttributeError:
-            app.logger.debug("No socket to close.")
-
-    @app.before_first_request
-    async def create_db():
-        dsn = f'postgres://{getsecret("API_DB_USER", os.getenv("DB_USER"))}:{getsecret("API_DB_PASS", os.getenv("DB_PASS"))}@{os.getenv("DB_HOST")}:{os.getenv("FLOWDB_PORT", 5432)}/flowdb'
-        app.pool = await asyncpg.create_pool(dsn, max_size=20)
+    app.before_first_request(connect_logger)
+    app.before_first_request(create_db)
+    app.before_request(add_uuid)
+    app.before_request(connect_zmq)
+    app.teardown_request(close_zmq)
 
     @app.route("/")
     async def root():
