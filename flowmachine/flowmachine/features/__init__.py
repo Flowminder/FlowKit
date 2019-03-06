@@ -66,6 +66,10 @@ subs = [
     "ContactEntropy",
     "DistanceCounterparts",
     "MDSVolume",
+    "ContactReciprocal",
+    "ProportionContactReciprocal",
+    "ProportionEventReciprocal",
+>>>>>>> origin/master
 ]
 
 rast = ["RasterStatistics"]
