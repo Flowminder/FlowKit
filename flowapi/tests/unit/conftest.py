@@ -110,6 +110,6 @@ def app(monkeypatch, tmpdir, dummy_db_pool):
     monkeypatch.setenv("DB_HOST", "localhost")
     monkeypatch.setenv("DB_PASS", "flowflow")
     monkeypatch.setenv("JWT_SECRET_KEY", "secret")
-    monkeypatch.setenv("CONFIG", "test")
+    monkeypatch.setenv("CONFIG_FILE", "../config.py")
     current_app = create_app()
     yield current_app.test_client(), dummy_db_pool, tmpdir, current_app
