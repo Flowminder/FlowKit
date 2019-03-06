@@ -107,7 +107,11 @@ async def create_db():
 
 def create_app():
     app = Quart(__name__)
-    app.config.from_envvar("CONFIG_FILE")
+    from . import (
+        config,
+    )  # Importing locally to avoid picking up env before calling create app
+
+    app.config.from_object(config)
 
     jwt = JWTManager(app)
     app.before_first_request(connect_logger)
