@@ -69,7 +69,6 @@ subs = [
     "ContactReciprocal",
     "ProportionContactReciprocal",
     "ProportionEventReciprocal",
->>>>>>> origin/master
 ]
 
 rast = ["RasterStatistics"]
