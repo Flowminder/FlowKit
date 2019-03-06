@@ -48,8 +48,6 @@ def test_from_list_of_classes():
     expected_columns = [
         "subscriber",
         "rog_radiusofgyration_0",
-        "percentage_nocturnal_nocturnalcalls_1",
-        "value_subscriberdegree_2",
         "value_nocturnalevents_1",
         "value_subscriberdegree_2",
     ]
