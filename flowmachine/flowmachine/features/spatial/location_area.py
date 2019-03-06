@@ -10,7 +10,7 @@ need to be point collections with geographic properties.
 
 
 """
-import logging
+
 from typing import List
 
 from ...core.query import Query

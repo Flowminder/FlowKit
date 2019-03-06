@@ -28,7 +28,7 @@ References
 .. [4] Vincent D. Blondel, Jean-Loup Guillaume, Renaud Lambiotte, Etienne Lefebvre. "Fast unfolding of communities in large networks". https://arxiv.org/abs/0803.0476
 
 """
-import logging
+
 import community
 import pandas as pd
 import networkx as nx
@@ -38,7 +38,9 @@ from math import inf
 
 from ..core.model import Model, model_result
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class Louvain(Model):

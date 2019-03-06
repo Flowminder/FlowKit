@@ -11,7 +11,7 @@ import os
 import re
 import datetime
 import warnings
-import logging
+
 from functools import reduce
 from typing import Tuple, Union, Dict, List
 
@@ -24,7 +24,9 @@ from sqlalchemy import event, exc
 import flowmachine
 from cachetools import cached, TTLCache
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+from structlog import get_logger
+
+logger = get_logger(__name__)
 
 
 class Connection:

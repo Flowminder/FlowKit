@@ -10,9 +10,10 @@ defines methods that returns the query as a string and as a pandas dataframe.
 """
 import json
 import pickle
-import logging
 import weakref
 from concurrent.futures import Future
+
+import structlog
 from typing import List, Union
 
 import psycopg2
@@ -31,7 +32,7 @@ from .errors import NameTooLongError, NotConnectedError
 
 import flowmachine
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+logger = structlog.get_logger(__name__)
 
 # This is the maximum length that postgres will allow for its
 # table name. This should only be changed if postgres is updated

@@ -10,7 +10,7 @@ be used to any other point collection.
 
 
 """
-import logging
+
 from typing import List
 
 from ...core.query import Query

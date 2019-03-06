@@ -11,7 +11,7 @@ aggregated to a location level.
 
 
 """
-import logging
+
 from abc import ABCMeta
 from typing import List
 
@@ -19,7 +19,9 @@ from ...core.query import Query
 from ...core.mixins import GeoDataMixin, GraphMixin
 from flowmachine.utils import get_columns_for_level
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class Flows(GeoDataMixin, GraphMixin, Query):

@@ -11,7 +11,6 @@ From a developer perspective, this is where one-time operations
 should live - for example creating postgres functions.
 """
 
-
 import logging
 import os
 import warnings
@@ -25,7 +24,9 @@ from typing import Union
 from flowmachine.utils import getsecret
 from . import Connection, Query
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 def connect(
@@ -75,6 +76,8 @@ def connect(
         Hostname for redis server.
     redis_port : int, default 6379
         Port the redis server is available on
+    redis_password : str, default "fm_redis"
+        Password for the redis instance
     conn : flowmachine.core.Connection
         Optionally provide an existing Connection object to use, overriding any the db options specified here.
 
@@ -216,14 +219,10 @@ def _init_logging(log_level, write_log_file):
     except (AttributeError, TypeError):
         log_level = logging.ERROR
     true_log_level = logging.getLevelName(log_level)
-    formatter = logging.Formatter(
-        "%(asctime)s %(name)s %(levelname)s %(threadName)s %(message)s"
-    )
     logger = logging.getLogger("flowmachine")
     logger.setLevel(true_log_level)
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
-    ch.setFormatter(formatter)
     logger.addHandler(ch)
     logger.info(f"Logger created with level {true_log_level}")
     if write_log_file:
@@ -236,7 +235,6 @@ def _init_logging(log_level, write_log_file):
         log_file = os.path.join(log_root, "flowmachine-debug.log")
         fh = TimedRotatingFileHandler(log_file, when="midnight")
         fh.setLevel(true_log_level)
-        fh.setFormatter(formatter)
         logger.addHandler(fh)
         logger.info(f"Added log file handler, logging to {log_file}")
 

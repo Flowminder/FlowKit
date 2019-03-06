@@ -10,11 +10,13 @@ Mixin providing utility methods for geographic type queries.
 
 """
 import json
-import logging
+
 
 from flowmachine.utils import proj4string
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 try:

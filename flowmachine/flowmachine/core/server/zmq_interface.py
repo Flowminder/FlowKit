@@ -1,8 +1,10 @@
 import asyncio
-import logging
+
 from json import dumps, loads, JSONDecodeError
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class ZMQInterfaceError(Exception):
