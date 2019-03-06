@@ -14,7 +14,7 @@ from .modal_location import ModalLocation
 from .first_location import FirstLocation
 from .entropy import PeriodicEntropy, LocationEntropy, ContactEntropy
 from .daily_location import daily_location
-from .nocturnal_calls import NocturnalCalls
+from .nocturnal_events import NocturnalEvents
 from .location_visits import LocationVisits
 from .day_trajectories import DayTrajectories
 from .radius_of_gyration import RadiusOfGyration
@@ -62,7 +62,7 @@ from .mds_volume import MDSVolume
 
 __all__ = [
     "RadiusOfGyration",
-    "NocturnalCalls",
+    "NocturnalEvents",
     "TotalSubscriberEvents",
     "FirstLocation",
     "CallDays",
