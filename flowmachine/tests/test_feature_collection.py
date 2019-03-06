@@ -8,7 +8,7 @@ Tests for flowmachine.feature_collection
 
 from flowmachine import feature_collection
 from flowmachine.core import CustomQuery
-from flowmachine.features import RadiusOfGyration, NocturnalCalls, SubscriberDegree
+from flowmachine.features import RadiusOfGyration, NocturnalEvents, SubscriberDegree
 from flowmachine.features.utilities.feature_collection import (
     feature_collection_from_list_of_classes,
 )
@@ -23,13 +23,13 @@ def test_collects_metrics():
     start, stop = "2016-01-01", "2016-01-03"
     metrics = [
         RadiusOfGyration(start, stop),
-        NocturnalCalls(start, stop),
+        NocturnalEvents(start, stop),
         SubscriberDegree(start, stop),
     ]
     expected_columns = [
         "subscriber",
         "rog_radiusofgyration_0",
-        "percentage_nocturnal_nocturnalcalls_1",
+        "value_nocturnalevents_1",
         "degree_subscriberdegree_2",
     ]
     fc = feature_collection(metrics)
@@ -44,11 +44,11 @@ def test_from_list_of_classes():
     """
 
     start, stop = "2016-01-01", "2016-01-03"
-    metrics = [RadiusOfGyration, NocturnalCalls, SubscriberDegree]
+    metrics = [RadiusOfGyration, NocturnalEvents, SubscriberDegree]
     expected_columns = [
         "subscriber",
         "rog_radiusofgyration_0",
-        "percentage_nocturnal_nocturnalcalls_1",
+        "value_nocturnalevents_1",
         "degree_subscriberdegree_2",
     ]
     fc = feature_collection_from_list_of_classes(metrics, start=start, stop=stop)
