@@ -37,7 +37,6 @@ subs = [
     "SubscriberDegree",
     "SubscriberInDegree",
     "SubscriberOutDegree",
-    "ProportionOutgoing",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",
@@ -61,6 +60,10 @@ subs = [
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
+    "ProportionEventType",
+    "PeriodicEntropy",
+    "LocationEntropy",
+    "ContactEntropy",
     "DistanceCounterparts",
     "MDSVolume",
 ]
