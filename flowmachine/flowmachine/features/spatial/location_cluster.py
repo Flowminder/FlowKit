@@ -10,7 +10,7 @@ be used to any other point collection.
 
 
 """
-
+import structlog
 from typing import List
 
 from ...core.query import Query
@@ -18,7 +18,7 @@ from ...core.mixins import GeoDataMixin
 
 from .versioned_infrastructure import VersionedInfrastructure
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class LocationCluster(GeoDataMixin, Query):
