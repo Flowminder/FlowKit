@@ -83,10 +83,10 @@ class MDSVolume(SubscriberFeature):
                 )
             )
 
-        if volume not in {"total", "upload", "download"}:
-            raise ValueError("{} is not a valid volume.".format(self.volume))
+        if self.volume not in {"total", "upload", "download"}:
+            raise ValueError(f"{self.volume} is not a valid volume.")
 
-        column_list = [self.subscriber_identifier, f"volume_{volume}"]
+        column_list = [self.subscriber_identifier, f"volume_{self.volume}"]
 
         self.unioned_query = EventsTablesUnion(
             self.start,
