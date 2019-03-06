@@ -35,7 +35,6 @@ subs = [
     "HartiganCluster",
     "UniqueLocationCounts",
     "SubscriberDegree",
-    "ProportionOutgoing",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",
@@ -59,6 +58,10 @@ subs = [
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
+    "ProportionEventType",
+    "PeriodicEntropy",
+    "LocationEntropy",
+    "ContactEntropy",
     "DistanceCounterparts",
 ]
 
