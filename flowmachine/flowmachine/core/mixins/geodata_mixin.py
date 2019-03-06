@@ -9,7 +9,7 @@ Mixin providing utility methods for geographic type queries.
 
 
 """
-import json
+import rapidjson as json
 
 
 from flowmachine.utils import proj4string
