@@ -17,7 +17,7 @@ valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "varianc
 
 class MDSVolume(SubscriberFeature):
     """
-    This class calculates statistics associated with MDS volume usage.
+    This class calculates statistics associated with MDS (mobile data session) volume usage.
 
     Parameters
     ----------
