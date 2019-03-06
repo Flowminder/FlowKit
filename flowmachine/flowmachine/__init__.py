@@ -18,6 +18,7 @@ and inherit from FlowMachine's main `Query()` class.
 
 """
 
+
 from ._version import get_versions
 
 __version__ = get_versions()["version"]
@@ -26,6 +27,7 @@ __flowdb_version__ = "0.2.0"
 del get_versions
 
 import structlog
+import rapidjson
 
 structlog.configure(
     processors=[
@@ -36,7 +38,7 @@ structlog.configure(
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(),
+        structlog.processors.JSONRenderer(serializer=rapidjson.dumps),
     ],
     context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),

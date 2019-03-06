@@ -20,6 +20,7 @@ from .geography import blueprint as geography_blueprint
 from flask_jwt_extended import JWTManager
 
 import structlog
+import rapidjson
 
 structlog.configure(
     processors=[
@@ -30,7 +31,7 @@ structlog.configure(
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(),
+        structlog.processors.JSONRenderer(rapidjson.dumps),
     ],
     context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),

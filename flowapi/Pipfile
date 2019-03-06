@@ -9,8 +9,8 @@ quart = "*"
 hypercorn = "*"
 asyncpg = "*"
 flask-jwt-extended = "*"
-ujson = "*"
 structlog = "*"
+python-rapidjson = "*"
 
 [dev-packages]
 pytest = "*"

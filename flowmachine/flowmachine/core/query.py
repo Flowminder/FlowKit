@@ -8,7 +8,7 @@ This is the base class that defines any query on our database.  It simply
 defines methods that returns the query as a string and as a pandas dataframe.
 
 """
-import json
+import rapidjson as json
 import pickle
 import weakref
 from concurrent.futures import Future
