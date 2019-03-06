@@ -7,7 +7,7 @@ FROM python:3.7
 WORKDIR /flowapi
 COPY Pipfile* /
 RUN pip install pipenv && pipenv install --deploy
-COPY flowapi .
+COPY . /flowapi/
 RUN pipenv install --skip-lock .
 RUN mkdir /var/log/flowapi
 VOLUME /var/log/flowapi
