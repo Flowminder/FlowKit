@@ -34,6 +34,11 @@ from .label_event_score import LabelEventScore
 from .distance_counterparts import DistanceCounterparts
 
 from .pareto_interactions import ParetoInteractions
+from .contact_reciprocal import (
+    ContactReciprocal,
+    ProportionContactReciprocal,
+    ProportionEventReciprocal,
+)
 
 
 from .subscriber_tacs import (
@@ -107,4 +112,7 @@ __all__ = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
+    "ContactReciprocal",
+    "ProportionEventReciprocal",
+    "ProportionContactReciprocal",
 ]
