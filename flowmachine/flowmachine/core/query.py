@@ -717,7 +717,6 @@ class Query(metaclass=ABCMeta):
                     ),
                 )
                 con.execute("SELECT touch_cache(%s);", self.md5)
-                con.execute("SELECT pg_notify(%s, 'Done.')", self.md5)
                 logger.debug(
                     "{} added to cache.".format(self.fully_qualified_table_name)
                 )
