@@ -68,7 +68,7 @@ def test_proportion_reciprocal(get_dataframe):
     )
     df = get_dataframe(query).set_index("subscriber")
     assert "self_caller" not in df.index
-    assert df.loc.value.unique == [0]
+    assert df.value.unique() == [0]
 
 
 @pytest.mark.parametrize("kwarg", ["direction"])
@@ -77,5 +77,8 @@ def test_proportion_event_reciprocal_errors(kwarg):
 
     with pytest.raises(ValueError):
         query = ProportionEventReciprocal(
-            "2016-01-03", "2016-01-05", **{kwarg: "error"}
+            "2016-01-03",
+            "2016-01-05",
+            ContactReciprocal("2016-01-03", "2016-01-05"),
+            **{kwarg: "error"}
         )
