@@ -315,7 +315,7 @@ class LocationCluster(GeoDataMixin, Query):
             identifying clusters.
 
         """
-        logging.info(
+        logger.info(
             " Running DBSCAN algorithm with parameters "
             + "distance tolerance ({} WGS 84 degrees) ".format(self.distance_tolerance)
             + "and density tolerance of {}.".format(self.density_tolerance)

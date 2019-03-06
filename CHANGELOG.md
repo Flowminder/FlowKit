@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Query classes are now required to declare the column names they return via the `column_names` property
 - FlowDB test data and synthetic data images are now available from their own Docker repos (Flowminder/flowdb-testdata, Flowminder/flowdb-synthetic-data)
 - Changed query class name from `NocturnalCalls` to `NocturnalEvents`.
+- All FlowMachine logs are now in structured json form
+- FlowAPI now uses structured logs for debugging messages
 
 ### Fixed
 
@@ -26,7 +28,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.3.0]
 ### Added
 - API route for retrieving geography data from FlowDB
-
 - Aggregated meaningful locations are now available via FlowAPI
 - Origin-destination matrices between meaningful locations are now available via FlowAPI
 - Added new `MeaningfulLocations`, `MeaningfulLocationsAggregate` and `MeaningfulLocationsOD` query classes to FlowMachine

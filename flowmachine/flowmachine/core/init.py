@@ -5,10 +5,10 @@
 # -*- coding: utf-8 -*-
 """
 This module provides initial setup routines for flowmachine. From a user
-perspective, only the `start` method is relevant.
+perspective, only the `connect` method is relevant.
 
 From a developer perspective, this is where one-time operations
-should live - for example creating postgres functions.
+should live - for example configuring loggers.
 """
 
 import logging
