@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `CustomQuery` now requires column names to be specified
 - Query classes are now required to declare the column names they return via the `column_names` property
 - FlowDB test data and synthetic data images are now available from their own Docker repos (Flowminder/flowdb-testdata, Flowminder/flowdb-synthetic-data)
-- Changed query class name from `ProportionOutgoing` to `ProportionEventOutgoing`.
+- Changed query class name from `NocturnalCalls` to `NocturnalEvents`.
 
 ### Fixed
 

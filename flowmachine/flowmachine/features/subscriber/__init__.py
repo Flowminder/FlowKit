@@ -14,7 +14,7 @@ from .modal_location import ModalLocation
 from .first_location import FirstLocation
 from .entropy import PeriodicEntropy, LocationEntropy, ContactEntropy
 from .daily_location import daily_location
-from .nocturnal_calls import NocturnalCalls
+from .nocturnal_events import NocturnalEvents
 from .location_visits import LocationVisits
 from .day_trajectories import DayTrajectories
 from .radius_of_gyration import RadiusOfGyration
@@ -26,7 +26,7 @@ from .subscriber_location_cluster import subscriber_location_cluster, HartiganCl
 from .most_frequent_location import MostFrequentLocation
 from .last_location import LastLocation
 
-from .proportion_outgoing import ProportionEventOutgoing
+from .proportion_outgoing import ProportionOutgoing
 from .unique_location_counts import UniqueLocationCounts
 from .total_active_periods import TotalActivePeriodsSubscriber
 from .contact_balance import ContactBalance
@@ -65,7 +65,7 @@ from .meaningful_locations import (
 
 __all__ = [
     "RadiusOfGyration",
-    "NocturnalCalls",
+    "NocturnalEvents",
     "TotalSubscriberEvents",
     "FirstLocation",
     "CallDays",
@@ -80,7 +80,7 @@ __all__ = [
     "SubscriberDegree",
     "SubscriberInDegree",
     "SubscriberOutDegree",
-    "ProportionEventOutgoing",
+    "ProportionOutgoing",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",

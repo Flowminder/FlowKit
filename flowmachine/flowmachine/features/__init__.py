@@ -22,7 +22,7 @@ loc = ["TotalLocationEvents", "Flows", "UniqueSubscriberCounts", "LocationIntrov
 nw = ["TotalNetworkObjects", "AggregateNetworkObjects"]
 subs = [
     "RadiusOfGyration",
-    "NocturnalCalls",
+    "NocturnalEvents",
     "TotalSubscriberEvents",
     "FirstLocation",
     "CallDays",
@@ -37,7 +37,7 @@ subs = [
     "SubscriberDegree",
     "SubscriberInDegree",
     "SubscriberOutDegree",
-    "ProportionEventOutgoing",
+    "ProportionOutgoing",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",
