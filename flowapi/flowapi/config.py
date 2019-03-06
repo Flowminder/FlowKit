@@ -30,7 +30,6 @@ def getsecret(key: str, default: str) -> str:
         return default
 
 
-print("Loadng config")
 JWT_SECRET_KEY = getsecret("JWT_SECRET_KEY", os.getenv("JWT_SECRET_KEY"))
 LOG_DIRECTORY = os.getenv("LOG_DIRECTORY", "/var/log/flowapi/")
 LOG_LEVEL = logging.getLevelName(os.getenv("LOG_LEVEL", "error").upper())
