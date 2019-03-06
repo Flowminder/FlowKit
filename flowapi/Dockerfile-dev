@@ -7,8 +7,9 @@ FROM python:3.7
 WORKDIR /flowapi
 COPY Pipfile* /
 RUN pip install pipenv && pipenv install --dev
-COPY app /flowapi/app
+COPY flowapi .
+RUN pipenv install --skip-lock .
 RUN mkdir /var/log/flowapi
 VOLUME /var/log/flowapi
 ENV QUART_ENV=development
-CMD pipenv run hypercorn --debug --reload --bind 0.0.0.0:9090 "app.main:create_app()"
+CMD pipenv run hypercorn --debug --reload --bind 0.0.0.0:9090 "flowapi.main:create_app()"

@@ -5,7 +5,7 @@
 import unittest
 from pathlib import Path
 
-from app.main import getsecret
+from flowapi.main import getsecret
 
 
 def test_get_secrets(monkeypatch):

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "eb8d715105e58ea1aa433126ebdd7b71684648e60a23b014826d4494cb4d38a9"
+            "sha256": "e6bafe7669d85162feeda763cd4956dda4c95d0ff1dcf1218f7f36308e0a9349"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -157,6 +157,10 @@
             ],
             "index": "pypi",
             "version": "==3.18.0"
+        },
+        "flowapi": {
+            "editable": true,
+            "path": "./../flowapi"
         },
         "flowclient": {
             "editable": true,
