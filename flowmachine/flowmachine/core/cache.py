@@ -10,15 +10,188 @@ Functions which deal with inspecting and managing the query cache.
 import logging
 import pickle
 
-from typing import TYPE_CHECKING, Tuple, List
+from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
 
 from psycopg2 import InternalError
+
+from redis import StrictRedis
+import psycopg2
+from sqlalchemy.engine import Engine
+
+from flowmachine.core.errors.flowmachine_errors import (
+    QueryCancelledException,
+    QueryErroredException,
+    StoreFailedException,
+)
+from flowmachine.core.query_state import QueryStateMachine
 
 if TYPE_CHECKING:
     from .query import Query
     from .connection import Connection
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
+
+
+def write_query_to_cache(
+    *,
+    name: str,
+    redis: StrictRedis,
+    query: "Query",
+    connection: "Connection",
+    ddl_ops_func: Callable[[str, str], List[str]],
+    write_func: Callable[[List[str], Engine], float],
+    schema: Optional[str] = "cache",
+    sleep_duration: Optional[int] = 1,
+) -> "Query":
+    """
+    Write a Query object into a postgres table and update the cache metadata about it.
+    Attempts to update the query's state in redis to executing, and if successful, tries to run
+    it. If unable to update the state to executing, will block until the query is in a completed,
+    errored, or cancelled state.
+
+    Parameters
+    ----------
+    name : str
+        Name of the table to write to
+    redis : StrictRedis
+        Redis connection to use to update state
+    query : Query
+        Query object to write
+    connection : Connection
+        Flowmachine connection to use for writing
+    ddl_ops_func : Callable[[str, str], List[str]]
+        Function that will be called to generate a list of SQL statements to run. Should accept name and
+        schema as arguments and return a list of SQL strings.
+    write_func : Callable[[List[str], Engine], float]
+        Function which will be called with the result of ddl_ops_func to perform the actual write.
+        Should take a list of SQL strings and an SQLAlchemy Engine as arguments and return the runtime
+        of the query.
+    schema : str, default "cache"
+        Name of the schema to write to
+    sleep_duration : int, default 1
+        Number of seconds to wait between polls when monitoring a query being written from elsewhere
+
+    Returns
+    -------
+    Query
+        The query object which was written once the write has completed successfully.
+
+
+    Raises
+    ------
+    QueryCancelledException
+        If execution of the query was interrupted by a user
+    QueryErroredException
+        If running the ddl ops failed
+    StoreFailedException
+        If something unexpected went wrong while storing the query
+
+    Notes
+    -----
+    This is a _blocking function_, and will not return until the query is no longer in an executing state.
+
+    """
+    logger.debug(f"Trying to switch '{query.md5}' to executing state.")
+    q_state_machine = QueryStateMachine(redis, query.md5)
+    current_state, this_thread_is_owner = q_state_machine.execute()
+    if this_thread_is_owner:
+        logger.debug(f"In charge of executing '{query.md5}'.")
+        query_ddl_ops = ddl_ops_func(name, schema)
+        logger.debug("Made SQL.")
+        con = connection.engine
+        with con.begin():
+            try:
+                plan_time = write_func(query_ddl_ops, con)
+                logger.debug("Executed queries.")
+            except Exception as e:
+                q_state_machine.raise_error()
+                logger.error(f"Error executing SQL. Error was {e}")
+                raise e
+            if schema == "cache":
+                write_cache_metadata(connection, query, compute_time=plan_time)
+        q_state_machine.finish()
+
+    q_state_machine.wait_until_complete(sleep_duration=sleep_duration)
+    if q_state_machine.is_completed:
+        return query
+    elif q_state_machine.is_cancelled:
+        logger.error(f"Query '{query.md5}' was cancelled.")
+        raise QueryCancelledException(query.md5)
+    elif q_state_machine.is_errored:
+        logger.error(f"Query '{query.md5}' finished with an error.")
+        raise QueryErroredException(query.md5)
+    else:
+        logger.error(
+            f"Query '{query.md5}' not stored. State is {q_state_machine.current_query_state}"
+        )
+        raise StoreFailedException(query.md5)
+
+
+def write_cache_metadata(
+    connection: "Connection", query: "Query", compute_time: Optional[float] = None
+):
+    """
+    Helper function for store, updates flowmachine metadata table to
+    log that this query is stored, but does not actually store
+    the query.
+
+    Parameters
+    ----------
+    connection : Connection
+        Flowmachine connection object to use
+    query : Query
+        Query object to write metadata about
+    compute_time : float, default None
+        Optionally provide the compute time for the query
+
+    """
+
+    from ..__init__ import __version__
+
+    con = connection.engine
+
+    self_storage = b""
+    try:
+        self_storage = pickle.dumps(query)
+    except Exception as e:
+        logger.debug("Can't pickle ({e}), attempting to cache anyway.")
+        pass
+
+    try:
+        in_cache = bool(
+            connection.fetch(f"SELECT * FROM cache.cached WHERE query_id='{query.md5}'")
+        )
+
+        with con.begin():
+            cache_record_insert = """
+            INSERT INTO cache.cached 
+            (query_id, version, query, created, access_count, last_accessed, compute_time, 
+            cache_score_multiplier, class, schema, tablename, obj) 
+            VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
+             ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
+            con.execute(
+                cache_record_insert,
+                (
+                    query.md5,
+                    __version__,
+                    query._make_query(),
+                    compute_time,
+                    query.__class__.__name__,
+                    *query.fully_qualified_table_name.split("."),
+                    psycopg2.Binary(self_storage),
+                ),
+            )
+            con.execute("SELECT touch_cache(%s);", query.md5)
+            con.execute("SELECT pg_notify(%s, 'Done.')", query.md5)
+            logger.debug("{} added to cache.".format(query.fully_qualified_table_name))
+            if not in_cache:
+                for dep in query._get_deps(root=True):
+                    con.execute(
+                        "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
+                        (query.md5, dep.md5),
+                    )
+    except NotImplementedError:
+        logger.debug("Table has no standard name.")
 
 
 def touch_cache(connection: "Connection", query_id: str) -> float:

@@ -22,6 +22,7 @@ import pandas as pd
 
 from hashlib import md5
 
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.core.cache import touch_cache
@@ -38,6 +39,8 @@ from flowmachine.core.errors import NameTooLongError, NotConnectedError
 
 import flowmachine
 from flowmachine.utils import _sleep
+
+from flowmachine.core.cache import write_query_to_cache
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -198,16 +201,19 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
-            if QueryStateMachine(self.redis, self.md5).wait_until_complete():
-                if self.connection.has_table(schema=schema, name=name):
-                    try:
-                        touch_cache(self.connection, self.md5)
-                    except ValueError:
-                        pass  # Cache record not written yet, which can happen for Models
-                        # which will call through to this method from their `_make_query` method while writing metadata.
-                    # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
-                    # as the cache metadata transaction isn't complete!
-                    return "SELECT * FROM {}".format(table_name)
+            state_machine = QueryStateMachine(self.redis, self.md5)
+            state_machine.wait_until_complete()
+            if state_machine.is_completed and self.connection.has_table(
+                schema=schema, name=name
+            ):
+                try:
+                    touch_cache(self.connection, self.md5)
+                except ValueError:
+                    pass  # Cache record not written yet, which can happen for Models
+                    # which will call through to this method from their `_make_query` method while writing metadata.
+                # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
+                # as the cache metadata transaction isn't complete!
+                return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
         return self._make_query()
@@ -501,55 +507,27 @@ class Query(metaclass=ABCMeta):
             ).format(name, len(name), MAX_POSTGRES_NAME_LENGTH)
             raise NameTooLongError(err_msg)
 
-        def do_query() -> Query:
-            logger.debug(f"Trying to switch '{self.md5}' to executing state.")
-            q_state_machine = QueryStateMachine(self.redis, self.md5)
-            current_state, this_thread_is_owner = q_state_machine.execute()
-            if this_thread_is_owner:
-                logger.debug(f"In charge of executing '{self.md5}'.")
-                query_ddl_ops = self._make_sql(name, schema=schema)
-                logger.debug("Made SQL.")
-                con = self.connection.engine
-                plan_time = 0
-                with con.begin():
-                    ddl_op_results = []
-                    for ddl_op in query_ddl_ops:
-                        try:
-                            ddl_op_result = con.execute(ddl_op)
-                        except Exception as e:
-                            q_state_machine.raise_error()
-                            logger.error(
-                                f"Error executing SQL: '{ddl_op}'. Error was {e}"
-                            )
-                            raise e
-                        try:
-                            ddl_op_results.append(ddl_op_result.fetchall())
-                        except ResourceClosedError:
-                            pass  # Nothing to do here
-                        for ddl_op_result in ddl_op_results:
-                            try:
-                                plan = ddl_op_result[0][0][0]  # Should be a query plan
-                                plan_time += plan["Execution Time"]
-                            except (IndexError, KeyError):
-                                pass  # Not an explain result
-                    logger.debug("Executed queries.")
-                    if schema == "cache":
-                        self._db_store_cache_metadata(compute_time=plan_time)
-                q_state_machine.finish()
-
-            if q_state_machine.wait_until_complete():
-                return self
-            elif q_state_machine.is_cancelled:
-                logger.error(f"Query '{self.md5}' was cancelled.")
-                raise QueryCancelledException(self.md5)
-            elif q_state_machine.is_errored:
-                logger.error(f"Query '{self.md5}' finished with an error.")
-                raise QueryErroredException(self.md5)
-            else:
-                logger.error(
-                    f"Query '{self.md5}' not stored. State is {q_state_machine.current_query_state}"
-                )
-                raise StoreFailedException(self.md5)
+        def write_query(query_ddl_ops: List[str], connection: Engine) -> float:
+            plan_time = 0
+            ddl_op_results = []
+            for ddl_op in query_ddl_ops:
+                try:
+                    ddl_op_result = connection.execute(ddl_op)
+                except Exception as e:
+                    logger.error(f"Error executing SQL: '{ddl_op}'. Error was {e}")
+                    raise e
+                try:
+                    ddl_op_results.append(ddl_op_result.fetchall())
+                except ResourceClosedError:
+                    pass  # Nothing to do here
+                for ddl_op_result in ddl_op_results:
+                    try:
+                        plan = ddl_op_result[0][0][0]  # Should be a query plan
+                        plan_time += plan["Execution Time"]
+                    except (IndexError, KeyError):
+                        pass  # Not an explain result
+            logger.debug("Executed queries.")
+            return plan_time
 
         current_state, changed_to_queue = QueryStateMachine(
             self.redis, self.md5
@@ -557,7 +535,17 @@ class Query(metaclass=ABCMeta):
         logger.debug(
             f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
-        store_future = self.tp.submit(do_query)
+        # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
+        store_future = self.tp.submit(
+            write_query_to_cache,
+            name=name,
+            schema=schema,
+            query=self,
+            connection=self.connection,
+            redis=self.redis,
+            ddl_ops_func=self._make_sql,
+            write_func=write_query,
+        )
         return store_future
 
     def explain(self, format="text", analyse=False):

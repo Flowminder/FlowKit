@@ -326,21 +326,14 @@ class QueryStateMachine:
         """
         return self.trigger_event(QueryEvent.FINISH_RESET)
 
-    def wait_until_complete(self):
+    def wait_until_complete(self, sleep_duration=1):
         """
-        Blocks while the query is in any state that makes how to get
-        the result of it indeterminate (i.e. currently running, resetting,
-        or scheduled to run).
+        Blocks until the query is in a state where its result is determinate
+        (i.e., one of "know", "errored", "completed", "cancelled").
 
-        Returns
-        -------
-        bool
-            True if the query has been executed successfully and is in cache.
         """
         if self.is_executing or self.is_queued or self.is_resetting:
             while not (
                 self.is_finished_executing or self.is_cancelled or self.is_known
             ):
-                _sleep(1)
-
-        return self.is_completed
+                _sleep(sleep_duration)

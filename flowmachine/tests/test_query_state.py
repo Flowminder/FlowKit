@@ -109,7 +109,10 @@ def test_non_blocks(non_blocking_state, expected_return, monkeypatch, dummy_redi
         flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
 
-    assert expected_return == state_machine.wait_until_complete()
+    try:
+        state_machine.wait_until_complete()
+    except BlockingIOError:
+        pytest.fail("Blocked!")
 
 
 @pytest.mark.parametrize(
