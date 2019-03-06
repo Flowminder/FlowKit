@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Query classes are now required to declare the column names they return via the `column_names` property
 - FlowAPI now reports whether a query is queued or running when polling
 - FlowDB test data and synthetic data images are now available from their own Docker repos (Flowminder/flowdb-testdata, Flowminder/flowdb-synthetic-data)
+- Changed query class name from `NocturnalCalls` to `NocturnalEvents`.
 
 ### Fixed
 - Server no longer loses track of queries under heavy load
