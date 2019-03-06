@@ -38,11 +38,11 @@ def test_joined_modal_aggregate(get_dataframe):
         .join(get_dataframe(mfl).set_index("subscriber"))
         .set_index("pcod")
         .loc["524 2 05 29"]
-        .degree.mode()[0]
+        .value.mode()[0]
     )
     assert (
         pytest.approx(rawus_mode)
-        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].degree
+        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].value
     )
 
 
