@@ -5,8 +5,7 @@
 import asyncpg
 import pytest
 import zmq
-from .context import app
-from app.main import create_app
+from flowapi.main import create_app
 from asynctest import MagicMock, Mock, CoroutineMock
 from datetime import timedelta
 from zmq.asyncio import Context

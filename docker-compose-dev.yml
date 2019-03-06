@@ -99,7 +99,7 @@ services:
     ports:
       - ${FLOWMACHINE_PORT:-5555}:5555
     volumes:
-      - ./flowmachine/:/app
+      - ./flowmachine/:/flowapi
     depends_on:
       - redis
     tty: true
@@ -134,7 +134,7 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-secret}
       - LOG_LEVEL=${LOG_LEVEL:-debug}
     volumes:
-      - ./flowapi/app:/flowapi/app
+      - ./flowapi/flowapi:/flowapi/flowapi
     tty: true
     stdin_open: true
     restart: always

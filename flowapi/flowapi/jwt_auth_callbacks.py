@@ -16,7 +16,7 @@ from typing import Any, Dict
 
 def register_logging_callbacks(jwt: JWTManager):
     """
-    Register callbacks which emit logs to the app's access log and return
+    Register callbacks which emit logs to the flowapi's access log and return
     the result from the default callback.
 
     Registers callbacks for:
