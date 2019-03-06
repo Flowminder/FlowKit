@@ -15,13 +15,14 @@ from .contact_balance import ContactBalance
 
 class ContactReciprocal(GraphMixin, SubscriberFeature):
     """
-    This class classifies a subscribers contact as reciprocal or not based. In
+    This class classifies a subscribers contact as reciprocal or not. In
     addition to that, it calculates the number of incoming and outgoing events
     between the subscriber and her/his counterpart as well as the proportion
     that those events represent in total incoming and outgoing events.
 
-    A reciprocal contact is a contact who has initiated contact and who also
-    has been the counterpart of an initatiated contact by the subscriber.
+    A reciprocal contact is a contact who has initiated contact with the
+    subscriber  and who also has been the counterpart of an initatiated contact
+    by the subscriber.
 
     Parameters
     ----------
@@ -162,31 +163,20 @@ class ProportionContactReciprocal(SubscriberFeature):
     """
     This class calculates the proportion of reciprocal contacts a subscriber has.
 
-    A reciprocal contact is a contact who has initiated contact and who also
-    has been the counterpart of an initatiated contact by the subscriber.
+    A reciprocal contact is a contact who has initiated contact with the
+    subscriber  and who also has been the counterpart of an initatiated contact
+    by the subscriber.
 
     Parameters
     ----------
-    start, stop : str
-         iso-format start and stop datetimes
-    hours : 2-tuple of floats, default 'all'
-        Restrict the analysis to only a certain set
-        of hours within each day.
-    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
-        If provided, string or list of string which are msisdn or imeis to limit
-        results to; or, a query or table which has a column with a name matching
-        subscriber_identifier (typically, msisdn), to limit results to.
-    exclude_self_calls : bool, default True
-        Set to false to *include* calls a subscriber made to themself
-    tables : str or list of strings, default 'all'
-        Can be a string of a single table (with the schema)
-        or a list of these. The keyword all is to select all
-        subscriber tables
+    contact_reciprocal: flowmachine.features.ContactReciprocal
+        An instance of `ContactReciprocal` listing which contacts are reciprocal
+        and which are not.
 
     Example
     -------
 
-    >> s = ProportionContactReciprocal('2016-01-01', '2016-01-08')
+    >> s = ProportionContactReciprocal(ContactReciprocal('2016-01-01', '2016-01-08'))
     >> s.get_dataframe()
 
           subscriber       value
@@ -200,28 +190,10 @@ class ProportionContactReciprocal(SubscriberFeature):
 
     def __init__(
         self,
-        start,
-        stop,
-        *,
-        hours="all",
-        tables="all",
-        exclude_self_calls=True,
-        subscriber_subset=None,
+        contact_reciprocal,
     ):
-        self.start = start
-        self.stop = stop
-        self.hours = hours
-        self.exclude_self_calls = exclude_self_calls
-        self.tables = tables
 
-        self.contact_reciprocal_query = ContactReciprocal(
-            self.start,
-            self.stop,
-            hours=self.hours,
-            tables=self.tables,
-            exclude_self_calls=self.exclude_self_calls,
-            subscriber_subset=subscriber_subset,
-        )
+        self.contact_reciprocal_query = contact_reciprocal
 
     @property
     def column_names(self):
@@ -242,8 +214,9 @@ class ProportionEventReciprocal(SubscriberFeature):
     per subscriber.  It is possible to fine-tune the period for which a
     reciprocal contact must have happened.
 
-    A reciprocal contact is a contact who has initiated contact and who also
-    has been the counterpart of an initatiated contact by the subscriber.
+    A reciprocal contact is a contact who has initiated contact with the
+    subscriber  and who also has been the counterpart of an initatiated contact
+    by the subscriber.
 
     Parameters
     ----------
@@ -252,11 +225,9 @@ class ProportionEventReciprocal(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    contact_reciprocal: ContactReciprocal, default None
-        An instance of ContactReciprocal listing which contacts are reciprocal
-        and which are not. If none is passed, the class instantiates a list of
-        reciprocal contacts with the same parameters as the ones used to
-        retrieve the requested events for consideration.
+    contact_reciprocal: flowmachine.features.ContactReciprocal
+        An instance of `ContactReciprocal` listing which contacts are reciprocal
+        and which are not.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -275,7 +246,8 @@ class ProportionEventReciprocal(SubscriberFeature):
     Example
     -------
 
-    >> s = ProportionEventReciprocal('2016-01-01', '2016-01-08')
+    >> s = ProportionEventReciprocal('2016-01-01', '2016-01-08',
+        ContactReciprocal('2016-01-01', '2016-01-08'))
     >> s.get_dataframe()
 
           subscriber       value
@@ -291,7 +263,7 @@ class ProportionEventReciprocal(SubscriberFeature):
         self,
         start,
         stop,
-        contact_reciprocal=None,
+        contact_reciprocal,
         *,
         direction="both",
         subscriber_identifier="msisdn",
@@ -309,15 +281,17 @@ class ProportionEventReciprocal(SubscriberFeature):
         self.direction = direction
         self.tables = tables
 
-        if self.direction == "both":
+        if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "msisdn", "msisdn_counterpart"]
-        else:
+        elif self.direction in {"in", "out"}:
             column_list = [
                 self.subscriber_identifier,
                 "msisdn",
                 "msisdn_counterpart",
                 "outgoing",
             ]
+        else:
+            raise ValueError("{} is not a valid direction.".format(self.direction))
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -329,21 +303,7 @@ class ProportionEventReciprocal(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
 
-        if contact_reciprocal:
-            self.contact_reciprocal_query = contact_reciprocal
-        else:
-            contact_start = start
-            contact_stop = stop
-            contact_hours = hours
-            contact_tables = self.tables
-            self.contact_reciprocal_query = ContactReciprocal(
-                contact_start,
-                contact_stop,
-                tables=contact_tables,
-                hours=contact_hours,
-                exclude_self_calls=self.exclude_self_calls,
-                subscriber_subset=subscriber_subset,
-            )
+        self.contact_reciprocal_query = contact_reciprocal
 
         super().__init__()
 
