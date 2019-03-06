@@ -18,7 +18,7 @@ from ..utilities import EventsTablesUnion
 class NocturnalEvents(SubscriberFeature):
     """
     Represents the percentage of events that a subscriber make/receives which
-    are at night. The definition of night is configurable.
+    began at night. The definition of night is configurable.
 
     Parameters
     ----------
