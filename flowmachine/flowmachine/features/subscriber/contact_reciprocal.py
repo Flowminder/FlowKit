@@ -188,10 +188,7 @@ class ProportionContactReciprocal(SubscriberFeature):
                  ...         ...
     """
 
-    def __init__(
-        self,
-        contact_reciprocal,
-    ):
+    def __init__(self, contact_reciprocal):
 
         self.contact_reciprocal_query = contact_reciprocal
 
