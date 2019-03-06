@@ -75,7 +75,12 @@ def create_app():
     @app.before_first_request
     async def connect_logger():
         log_level = logging.getLevelName(os.getenv("LOG_LEVEL", "error").upper())
-        app.logger.setLevel(logging.getLevelName(log_level))
+        logger = logging.getLogger("flowapi")
+        logger.setLevel(log_level)
+        ch = logging.StreamHandler()
+        ch.setLevel(log_level)
+        logger.addHandler(ch)
+        app.log = structlog.wrap_logger(logger)
 
         # Logger for authentication
 
@@ -108,27 +113,30 @@ def create_app():
         app.query_run_logger = structlog.wrap_logger(logger)
 
     @app.before_request
+    async def add_uuid():
+        request.request_id = str(uuid.uuid4())
+        app.log.debug("Added request id.", request_id=request.request_id)
+
+    @app.before_request
     async def connect_zmq():
         context = Context.instance()
         #  Socket to talk to server
-        app.logger.debug("Connecting to FlowMachine server…")
+        app.log.debug("Connecting to FlowMachine server", request_id=request.request_id)
         socket = context.socket(zmq.REQ)
         socket.connect(f"tcp://{os.getenv('SERVER')}:5555")
         request.socket = socket
-        app.logger.debug("Connected.")
-
-    @app.before_request
-    async def add_uuid():
-        request.request_id = str(uuid.uuid4())
+        app.log.debug("Connected.", request_id=request.request_id)
 
     @app.teardown_request
     def close_zmq(exc):
-        app.logger.debug("Closing connection to FlowMachine server…")
+        app.log.debug(
+            "Closing connection to FlowMachine server…", request_id=request.request_id
+        )
         try:
             request.socket.close()
-            app.logger.debug("Closed socket.")
+            app.log.debug("Closed socket.", request_id=request.request_id)
         except AttributeError:
-            app.logger.debug("No socket to close.")
+            app.log.debug("No socket to close.", request_id=request.request_id)
 
     @app.before_first_request
     async def create_db():

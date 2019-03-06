@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import ujson as json
-from quart import current_app
+from quart import current_app, request
 
 
 async def stream_result_as_json(
@@ -27,7 +27,7 @@ async def stream_result_as_json(
         Encoded lines of JSON
 
     """
-    logger = current_app.logger
+    logger = current_app.log
     pool = current_app.pool
     prefix = "{"
     if additional_elements:
@@ -36,21 +36,21 @@ async def stream_result_as_json(
     prefix += f'"{result_name}":['
     yield prefix.encode()
     prepend = ""
-    logger.debug("Starting generator.")
+    logger.debug("Starting generator.", request_id=request.request_id)
     async with pool.acquire() as connection:
         # Configure asyncpg to encode/decode JSON values
         await connection.set_type_codec(
             "json", encoder=json.dumps, decoder=json.loads, schema="pg_catalog"
         )
-        logger.debug("Connected.")
+        logger.debug("Connected.", request_id=request.request_id)
         async with connection.transaction():
-            logger.debug("Got transaction.")
-            logger.debug(f"Running {sql_query}")
+            logger.debug("Got transaction.", request_id=request.request_id)
+            logger.debug(f"Running {sql_query}", request_id=request.request_id)
             try:
                 async for row in connection.cursor(sql_query):
                     yield f"{prepend}{json.dumps(dict(row.items()))}".encode()
                     prepend = ", "
-                logger.debug("Finishing up.")
+                logger.debug("Finishing up.", request_id=request.request_id)
                 yield b"]}"
             except Exception as e:
                 logger.error(e)
