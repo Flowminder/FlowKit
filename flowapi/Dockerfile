@@ -12,4 +12,5 @@ RUN pipenv install --skip-lock .
 RUN mkdir /var/log/flowapi
 VOLUME /var/log/flowapi
 ENV QUART_ENV=production
+ENV CONFIG_FILE="config.py"
 CMD ["pipenv", "run", "./start.sh"]
