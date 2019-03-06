@@ -11,6 +11,25 @@ from typing import List
 from . import Query, GeoTable, Grid
 
 
+def get_alias(column_name):
+    """
+    Given a column name string, return the alias (if there is one),
+    or return the provided column name if there is no alias.
+
+    Examples
+    --------
+    >>> get_alias("col AS alias")
+      "alias"
+    >>> get_alias("col")
+      "col"
+    """
+    column_name_split = column_name.split()
+    if len(column_name_split) == 3 and column_name_split[1].lower() == "as":
+        return column_name_split[2]
+    else:
+        return column_name
+
+
 class SpatialMapping(Query):
     """
     Class that provides a mapping from cell/site data in the location table to
@@ -29,6 +48,13 @@ class SpatialMapping(Query):
         column that defines the geography.
     """
 
+    _columns_from_locinfo_table = (
+        "id AS location_id",
+        "version",
+        "date_of_first_service",
+        "date_of_last_service",
+    )
+
     def __init__(self, *, column_name, geom_table, geom_col="geom"):
         if type(column_name) is str:
             self.column_name = [column_name]
@@ -43,7 +69,7 @@ class SpatialMapping(Query):
         # if the subscriber wants to select a geometry from the sites table there
         # is no need to join the table with itself.
         self.requires_join = not (
-            hasattr(self.geo_table, "fully_qualified_table_name")
+            hasattr(self.geom_table, "fully_qualified_table_name")
             and (
                 self.location_info_table_fqn
                 == self.geom_table.fully_qualified_table_name
@@ -59,12 +85,7 @@ class SpatialMapping(Query):
         Helper function which returns the list of returned column names,
         excluding self.location_columns.
         """
-        return [
-            "location_id",
-            "version",
-            "date_of_first_service",
-            "date_of_last_service",
-        ]
+        return [get_alias(c) for c in self._columns_from_locinfo_table]
 
     @property
     def location_columns(self) -> List[str]:
@@ -80,7 +101,7 @@ class SpatialMapping(Query):
 
     def _join_clause(self):
         if self.requires_join:
-            table_name = "polygon"
+            joined_name = "polygon"
             join = f"""
             INNER JOIN
                 ({self.geom_table.get_query()}) AS polygon
@@ -92,20 +113,20 @@ class SpatialMapping(Query):
         else:
             # if the subscriber wants to select a geometry from the sites table
             # there is no need to join the table with itself.
-            table_name = "locinfo"
+            joined_name = "locinfo"
             join = ""
 
+        return joined_name, join
+
     def _make_query(self):
-        table_name, join = self._join_clause()
+        joined_name, join = self._join_clause()
+        other_cols = ", ".join(f"locinfo.{c}" for c in self._columns_from_locinfo_table)
         columns = ", ".join(f"{table_name}.{c}" for c in self.column_name)
 
         # Create a table
         sql = f"""
         SELECT
-            locinfo.id AS location_id,
-            locinfo.version,
-            locinfo.date_of_first_service,
-            locinfo.date_of_last_service,
+            {other_cols},
             {columns}
         FROM
             {self.location_info_table_fqn} AS locinfo
@@ -165,6 +186,7 @@ class AdminSpatialMapping(SpatialMapping):
 
     def _make_query(self):
         table_name, join = self._join_clause()
+        other_cols = ", ".join(f"locinfo.{c}" for c in self._columns_from_locinfo_table)
         # If the user has asked for the standard column_name
         # then we will alias this column as 'pcod', otherwise
         # we'll won't alias it at all.
@@ -176,10 +198,7 @@ class AdminSpatialMapping(SpatialMapping):
         # Create a table
         sql = f"""
         SELECT
-            locinfo.id AS location_id,
-            locinfo.version,
-            locinfo.date_of_first_service,
-            locinfo.date_of_last_service,
+            {other_cols},
             {col_name}
         FROM
             {self.location_info_table_fqn} AS locinfo
@@ -208,5 +227,32 @@ class GridSpatialMapping(SpatialMapping):
         )
 
 
-# class LatLonSpatialMapping(SpatialMapping):
+class LatLonSpatialMapping(SpatialMapping):
 
+    _columns_from_locinfo_table = (
+        "id AS location_id",
+        "date_of_first_service",
+        "date_of_last_service",
+    )
+
+    def __init__(self):
+        super().__init__(
+            column_name=[
+                "ST_X(geom_point::geometry) AS lon",
+                "ST_Y(geom_point::geometry) AS lat",
+            ],
+            geom_table=self.connection.location_table,
+        )
+
+    @property
+    def location_columns(self) -> List[str]:
+        return ["lon", "lat"]
+
+    def _make_query(self):
+        other_cols = ", ".join(self._columns_from_locinfo_table)
+        columns = ", ".join(self.column_name)
+        sql = f"""
+        SELECT
+            {other_cols},
+            {columns}
+        FROM {self.location_table_fqn}"""
