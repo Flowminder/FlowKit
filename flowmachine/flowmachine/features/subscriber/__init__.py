@@ -58,7 +58,8 @@ from .meaningful_locations import (
     MeaningfulLocationsOD,
 )
 
-from .topup_stats import TopUpAmount, TopUpBalance
+from .topup_amount import TopUpAmount
+from .topup_balance import TopUpBalance
 
 __all__ = [
     "RadiusOfGyration",
