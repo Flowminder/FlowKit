@@ -15,7 +15,7 @@ from logging.handlers import TimedRotatingFileHandler
 from zmq.asyncio import Context
 
 from .jwt_auth_callbacks import register_logging_callbacks
-from .run_query import blueprint as run_query_blueprint
+from .query_endpoints import blueprint as query_endpoints_blueprint
 from .geography import blueprint as geography_blueprint
 from flask_jwt_extended import JWTManager
 
@@ -37,30 +37,6 @@ structlog.configure(
     wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
 )
-
-
-def getsecret(key: str, default: str) -> str:
-    """
-    Get a value from docker secrets (i.e. read it from a file in
-    /run/secrets), return a default if the file is not there.
-
-    Parameters
-    ----------
-    key: str
-        Name of the secret.
-    default: str
-        Default value to return if the file does not exist
-
-    Returns
-    -------
-    str
-        Value in the file, or default
-    """
-    try:
-        with open(Path("/run/secrets") / key, "r") as fin:
-            return fin.read().strip()
-    except FileNotFoundError:
-        return default
 
 
 async def connect_logger():
@@ -144,7 +120,7 @@ def create_app():
     async def root():
         return ""
 
-    app.register_blueprint(run_query_blueprint, url_prefix="/api/0")
+    app.register_blueprint(query_endpoints_blueprint, url_prefix="/api/0")
     app.register_blueprint(geography_blueprint, url_prefix="/api/0")
 
     register_logging_callbacks(jwt)
