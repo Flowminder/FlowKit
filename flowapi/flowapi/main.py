@@ -14,9 +14,10 @@ import zmq
 from logging.handlers import TimedRotatingFileHandler
 from zmq.asyncio import Context
 
-from .jwt_auth_callbacks import register_logging_callbacks
-from .query_endpoints import blueprint as query_endpoints_blueprint
-from .geography import blueprint as geography_blueprint
+from flowapi.config import get_config
+from flowapi.jwt_auth_callbacks import register_logging_callbacks
+from flowapi.query_endpoints import blueprint as query_endpoints_blueprint
+from flowapi.geography import blueprint as geography_blueprint
 from flask_jwt_extended import JWTManager
 
 import structlog
@@ -107,11 +108,8 @@ async def create_db():
 
 def create_app():
     app = Quart(__name__)
-    from . import (
-        config,
-    )  # Importing locally to avoid picking up env before calling create app
 
-    app.config.from_object(config)
+    app.config.from_mapping(get_config())
 
     jwt = JWTManager(app)
     app.before_first_request(connect_logger)
