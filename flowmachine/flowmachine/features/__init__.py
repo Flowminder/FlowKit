@@ -67,6 +67,9 @@ subs = [
     "DistanceCounterparts",
     "TopUpAmount",
     "TopUpBalance",
+    "ContactReciprocal",
+    "ProportionContactReciprocal",
+    "ProportionEventReciprocal",
 ]
 
 rast = ["RasterStatistics"]
