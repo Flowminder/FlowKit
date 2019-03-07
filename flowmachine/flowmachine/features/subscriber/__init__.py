@@ -21,7 +21,7 @@ from .radius_of_gyration import RadiusOfGyration
 from .displacement import Displacement
 from .total_subscriber_events import TotalSubscriberEvents
 from .event_count import EventCount
-from .subscriber_degree import SubscriberDegree, SubscriberInDegree, SubscriberOutDegree
+from .subscriber_degree import SubscriberDegree
 from .subscriber_location_cluster import subscriber_location_cluster, HartiganCluster
 from .most_frequent_location import MostFrequentLocation
 from .last_location import LastLocation
@@ -80,8 +80,6 @@ __all__ = [
     "HartiganCluster",
     "UniqueLocationCounts",
     "SubscriberDegree",
-    "SubscriberInDegree",
-    "SubscriberOutDegree",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",
