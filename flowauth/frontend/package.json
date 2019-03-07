@@ -11,7 +11,7 @@
     "material-ui-pickers": "^2.2.4",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-scripts": "^2.1.6",
+    "react-scripts": "^2.1.7",
     "zxcvbn": "^4.4.2"
   },
   "homepage": "http://site.com/static",
