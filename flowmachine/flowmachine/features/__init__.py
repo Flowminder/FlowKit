@@ -63,6 +63,7 @@ subs = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
+    "MDSVolume",
     "ContactReciprocal",
     "ProportionContactReciprocal",
     "ProportionEventReciprocal",

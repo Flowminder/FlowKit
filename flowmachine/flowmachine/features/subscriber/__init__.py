@@ -62,6 +62,7 @@ from .meaningful_locations import (
     MeaningfulLocationsOD,
 )
 
+from .mds_volume import MDSVolume
 from .event_type_proportion import ProportionEventType
 
 __all__ = [
@@ -108,6 +109,7 @@ __all__ = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
+    "MDSVolume",
     "ContactReciprocal",
     "ProportionEventReciprocal",
     "ProportionContactReciprocal",
