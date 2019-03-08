@@ -24,7 +24,7 @@ class TopUpBalance(SubscriberFeature):
     Given that we only learn about changes in balance when a top-up event
     occurs, this average will be biased upwards. For instance, if a subscriber
     with zero balance top-up a certain amount and spends the whole balance
-    right away , the subscriber's effective balance during the whole period is
+    right away, the subscriber's effective balance during the whole period is
     0 and so should be its average.
 
     However, given the nature of the data we take the conservative approach
