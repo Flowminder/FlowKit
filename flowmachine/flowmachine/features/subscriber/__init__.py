@@ -21,7 +21,6 @@ from .radius_of_gyration import RadiusOfGyration
 from .displacement import Displacement
 from .total_subscriber_events import TotalSubscriberEvents
 from .event_count import EventCount, PerLocationEventCount, PerContactEventCount
-from .subscriber_degree import SubscriberDegree, SubscriberInDegree, SubscriberOutDegree
 from .event_count import EventCount
 from .subscriber_degree import SubscriberDegree
 from .subscriber_location_cluster import subscriber_location_cluster, HartiganCluster

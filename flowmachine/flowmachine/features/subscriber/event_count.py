@@ -319,6 +319,7 @@ class PerContactEventCount(SubscriberFeature):
         self,
         start,
         stop,
+        contact_balance,
         statistic="avg",
         *,
         hours="all",
@@ -330,6 +331,7 @@ class PerContactEventCount(SubscriberFeature):
     ):
         self.start = start
         self.stop = stop
+        self.contact_balance = contact_balance
         self.hours = hours
         self.tables = tables
         self.subscriber_identifier = subscriber_identifier
@@ -343,17 +345,6 @@ class PerContactEventCount(SubscriberFeature):
                     self.statistic, valid_stats
                 )
             )
-
-        self.contact_balance = ContactBalance(
-            self.start,
-            self.stop,
-            hours=self.hours,
-            tables=self.tables,
-            subscriber_identifier=self.subscriber_identifier,
-            direction=self.direction,
-            exclude_self_calls=self.exclude_self_calls,
-            subscriber_subset=subscriber_subset,
-        )
 
     @property
     def column_names(self):

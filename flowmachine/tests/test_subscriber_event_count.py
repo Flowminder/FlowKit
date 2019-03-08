@@ -98,7 +98,12 @@ def test_per_location_event_count_errors(kwarg):
 )
 def test_per_contact_event_count(get_dataframe, statistic, msisdn, want):
     """ Test hand-picked PerContactEventCount. """
-    query = PerContactEventCount("2016-01-02", "2016-01-06", statistic)
+    query = PerContactEventCount(
+        "2016-01-02",
+        "2016-01-06",
+        ContactBalance("2016-01-02", "2016-01-06"),
+        statistic,
+    )
     df = get_dataframe(query).set_index("subscriber")
     assert df.value[msisdn] == pytest.approx(want)
 
@@ -108,7 +113,12 @@ def test_per_contact_event_count_errors(kwarg):
     """ Test ValueError is raised for non-compliant kwarg in PerContactEventCount. """
 
     with pytest.raises(ValueError):
-        query = PerContactEventCount("2016-01-03", "2016-01-05", **{kwarg: "error"})
+        query = PerContactEventCount(
+            "2016-01-03",
+            "2016-01-05",
+            ContactBalance("2016-01-02", "2016-01-06"),
+            **{kwarg: "error"},
+        )
 
 
 def test_directed_count_consistent(get_dataframe):
