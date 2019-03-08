@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 """
-Class for calculating top-up statistics.
+Class for calculating top-up balance statistics.
 """
 
 import warnings
@@ -22,10 +22,14 @@ class TopUpBalance(SubscriberFeature):
     Top-up balance is a stock variable. As such, here we calculate the weighted
     balance, weighted by the number of seconds a subscriber held that balance.
     Given that we only learn about changes in balance when a top-up event
-    occurs, this average will be biased upwards. For instance, if a subscriber
-    with zero balance top-up a certain amount and spends the whole balance
-    right away, the subscriber's effective balance during the whole period is
-    0 and so should be its average.
+    occurs, this average will be biased upwards. Unfortunately, we do not have
+    information about depletions to the balance caused by CDR events such as
+    calls, SMS, MDS, etc since this information is not provided by the MNOs.
+    For instance, if a subscriber with zero balance top-up a certain amount and
+    spends the whole balance right away, the subscriber's effective balance
+    during the whole period is 0 and so should be its average. However, because
+    we do not account for topup balance depletions its average balance is
+    biased upwards by the recharge amount.
 
     However, given the nature of the data we take the conservative approach
     that the subscriber holds between top-up events the average balance between
@@ -54,10 +58,6 @@ class TopUpBalance(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    tables : str or list of strings, default 'events.topups'
-        Can be a string of a single table (with the schema)
-        or a list of these. The keyword all is to select all
-        subscriber tables
 
     Examples
     --------
@@ -84,14 +84,13 @@ class TopUpBalance(SubscriberFeature):
         subscriber_identifier="msisdn",
         hours="all",
         subscriber_subset=None,
-        tables="events.topups",
     ):
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.statistic = statistic.lower()
-        self.tables = tables
+        self.tables = "events.topups"
 
         if self.statistic not in valid_stats:
             raise ValueError(

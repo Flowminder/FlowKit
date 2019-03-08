@@ -111,12 +111,9 @@ __all__ = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
-<<<<<<< HEAD
     "TopUpAmount",
     "TopUpBalance",
-=======
     "MDSVolume",
->>>>>>> origin/master
     "ContactReciprocal",
     "ProportionEventReciprocal",
     "ProportionContactReciprocal",

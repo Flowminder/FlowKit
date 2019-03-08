@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 """
-Class for calculating top-up statistics.
+Class for calculating top-up recharge amount statistics.
 """
 
 import warnings
@@ -34,10 +34,6 @@ class TopUpAmount(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    tables : str or list of strings, default 'events.topups'
-        Can be a string of a single table (with the schema)
-        or a list of these. The keyword all is to select all
-        subscriber tables
 
     Examples
     --------
@@ -63,14 +59,13 @@ class TopUpAmount(SubscriberFeature):
         subscriber_identifier="msisdn",
         hours="all",
         subscriber_subset=None,
-        tables="events.topups",
     ):
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
         self.hours = hours
         self.statistic = statistic.lower()
-        self.tables = tables
+        self.tables = "events.topups"
 
         if self.statistic not in valid_stats:
             raise ValueError(
