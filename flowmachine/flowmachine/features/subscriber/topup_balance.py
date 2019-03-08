@@ -198,6 +198,7 @@ class TopUpBalance(SubscriberFeature):
                 ) AS weight,
                 CUME_DIST() OVER (PARTITION BY msisdn ORDER BY datetime) AS cume_dist
             FROM (select * from events.topups) AS U
+            WINDOW msisdn_by_datetime AS (PARTITION BY msisdn ORDER BY datetime)
         )
         SELECT subscriber, balance, weight
         FROM W
