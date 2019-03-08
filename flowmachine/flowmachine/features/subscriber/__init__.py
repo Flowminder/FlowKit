@@ -21,7 +21,7 @@ from .radius_of_gyration import RadiusOfGyration
 from .displacement import Displacement
 from .total_subscriber_events import TotalSubscriberEvents
 from .event_count import EventCount
-from .subscriber_degree import SubscriberDegree, SubscriberInDegree, SubscriberOutDegree
+from .subscriber_degree import SubscriberDegree
 from .subscriber_location_cluster import subscriber_location_cluster, HartiganCluster
 from .most_frequent_location import MostFrequentLocation
 from .last_location import LastLocation
@@ -63,6 +63,7 @@ from .meaningful_locations import (
 )
 
 from .contact_modal_location_distance import ContactModalLocationDistance
+from .mds_volume import MDSVolume
 from .event_type_proportion import ProportionEventType
 
 __all__ = [
@@ -80,8 +81,6 @@ __all__ = [
     "HartiganCluster",
     "UniqueLocationCounts",
     "SubscriberDegree",
-    "SubscriberInDegree",
-    "SubscriberOutDegree",
     "TotalActivePeriodsSubscriber",
     "ContactBalance",
     "EventScore",
@@ -111,7 +110,11 @@ __all__ = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
+<<<<<<< HEAD
     "ContactModalLocationDistance",
+=======
+    "MDSVolume",
+>>>>>>> origin/master
     "ContactReciprocal",
     "ProportionEventReciprocal",
     "ProportionContactReciprocal",
