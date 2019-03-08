@@ -7,6 +7,7 @@ Classes that map cells (or towers or sites) to a spatial unit
 (e.g. versioned-cell, admin*, grid, ...).
 """
 from typing import List
+import re
 
 from . import Query, GeoTable, Grid
 
@@ -23,24 +24,139 @@ def get_alias(column_name):
     >>> get_alias("col")
       "col"
     """
-    column_name_split = column_name.split()
-    if len(column_name_split) == 3 and column_name_split[1].lower() == "as":
-        return column_name_split[2]
-    else:
-        return column_name
+    return re.split(" as ", column_name, flags=re.IGNORECASE)[-1]
 
 
-class SpatialMapping(Query):
+class SpatialUnit(Query):
+    def __init__(self, *, selected_column_names, location_column_names, location_info_table=None, join_clause=""):
+        if type(selected_column_names) is str:
+            self._cols = [selected_column_names]
+        else:
+            self._cols = selected_column_names
+
+        if type(other_column_names) is str:
+            self._loc_cols = [location_column_names]
+        else:
+            self._loc_cols = location_column_names
+
+        missing_cols = [c for c in self._loc_cols if not (c in self.column_names)]
+        if missing_cols:
+            raise ValueError(
+                f"Location columns {missing_cols} are not in returned columns"
+            )
+
+        if location_info_table:
+            self.location_info_table = location_info_table
+        else:
+            self.location_info_table = self.connection.location_table
+        
+        self._join_clause = join_clause
+
+        super().__init__()
+
+    # TODO: Need a method to check whether the required data can be found in the DB
+
+    @property
+    def location_columns(self) -> List[str]:
+        return self._loc_cols
+
+    @property
+    def column_names(self) -> List[str]:
+        return [get_alias(c) for c in self._cols]
+
+    def _make_query(self):
+        columns = ", ".join(self._cols)
+        sql = f"""
+        SELECT
+            {columns}
+        FROM {self.location_info_table}
+        {self._join_clause}
+        """
+
+        return sql
+
+
+class LatLonSpatialUnit(SpatialUnit)
+    def __init__(self):
+        super().__init__(
+            selected_column_names=[
+                "id AS location_id",
+                "date_of_first_service",
+                "date_of_last_service",
+                "ST_X(geom_point::geometry) AS lon",
+                "ST_Y(geom_point::geometry) AS lat",
+            ],
+            location_column_names=["lat", "lon"],
+        )
+
+
+class VersionedCellSpatialUnit(SpatialUnit):
+    def __init__(self):
+        if self.connection.location_table != "infrastructure.cells":
+            raise ValueError("Versioned cell spatial unit is unavailable.")
+        
+        super().__init__(
+            selected_column_names=[
+                "id AS location_id",
+                "date_of_first_service",
+                "date_of_last_service",
+                "version",
+                "ST_X(geom_point::geometry) AS lon",
+                "ST_Y(geom_point::geometry) AS lat",
+            ],
+            location_column_names=["location_id", "version", "lon", "lat"],
+            location_info_table="infrastructure.cells",
+        )
+
+
+class VersionedSiteSpatialUnit(SpatialUnit):
+    def __init__(self):
+        location_table = self.connection.location_table
+
+        sites_alias = "s"
+        if location_table == "infrastructure.sites":
+            cells_alias = sites_alias
+            join_clause = f"""
+            RIGHT JOIN
+            infrastructure.cells AS {cells_alias}
+            ON {sites_alias}.id = {cells_alias}.site_id
+            """
+        elif location_table == "infrastructure.cells":
+            cells_alias = "c"
+            join_clause = ""
+        else:
+            raise ValueError(
+                f"Expected location table to be 'infrastructure.cells' "
+                f"or 'infrastructure.sites', not '{location_table}''"
+            )
+        
+        super().__init__(
+            selected_column_names=[
+                f"{cells_alias}.id AS location_id",
+                f"{sites_alias}.id AS site_id",
+                f"{sites_alias}.date_of_first_service AS date_of_first_service",
+                f"{sites_alias}.date_of_last_service AS date_of_last_service",
+                f"{sites_alias}.version as version",
+                f"ST_X({sites_alias}.geom_point::geometry) AS lon",
+                f"ST_Y({sites_alias}.geom_point::geometry) AS lat",
+            ],
+            location_column_names=["location_id", "version", "lon", "lat"],
+            location_info_table=f"infrastructure.sites AS {sites_alias}",
+            join_clause=join_clause,
+        )
+
+
+class PolygonSpatialUnit(SpatialUnit):
     """
     Class that provides a mapping from cell/site data in the location table to
     spatial regions defined by geography information in a table.
 
     Parameters
     ----------
-    column_name : str or list, optional
+    column_name : str or list
         The name of the column to fetch from the geometry
         table in the database. Can also be a list of names.
-    geom_table : str or flowmachine.Query, optional
+    geom_table : str or flowmachine.Query
         name of the table containing the geography information.
         Can be either the name of a table, with the schema, or
         a flowmachine.Query object.
@@ -136,7 +252,7 @@ class SpatialMapping(Query):
         return sql
 
 
-class AdminSpatialMapping(SpatialMapping):
+class AdminSpatialMapping(PolygonSpatialMapping):
     """
     Maps all cells (aka sites) to an admin region. This is a thin wrapper to
     the more general class SpatialMapping, which assumes that you have
@@ -208,7 +324,7 @@ class AdminSpatialMapping(SpatialMapping):
         return sql
 
 
-class GridSpatialMapping(SpatialMapping):
+class GridSpatialMapping(PolygonSpatialMapping):
     """
     Query representing a mapping between all the sites in the database
     and a grid of arbitrary size.
@@ -225,34 +341,3 @@ class GridSpatialMapping(SpatialMapping):
         super().__init__(
             column_name=["grid_id"], geom_table=self.grid, geom_col="geom_square"
         )
-
-
-class LatLonSpatialMapping(SpatialMapping):
-
-    _columns_from_locinfo_table = (
-        "id AS location_id",
-        "date_of_first_service",
-        "date_of_last_service",
-    )
-
-    def __init__(self):
-        super().__init__(
-            column_name=[
-                "ST_X(geom_point::geometry) AS lon",
-                "ST_Y(geom_point::geometry) AS lat",
-            ],
-            geom_table=self.connection.location_table,
-        )
-
-    @property
-    def location_columns(self) -> List[str]:
-        return ["lon", "lat"]
-
-    def _make_query(self):
-        other_cols = ", ".join(self._columns_from_locinfo_table)
-        columns = ", ".join(self.column_name)
-        sql = f"""
-        SELECT
-            {other_cols},
-            {columns}
-        FROM {self.location_table_fqn}"""
