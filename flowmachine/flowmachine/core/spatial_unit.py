@@ -153,10 +153,10 @@ class PolygonSpatialUnit(SpatialUnit):
 
     Parameters
     ----------
-    column_name : str or list
+    polygon_column_names : str or list
         The name of the column to fetch from the geometry
         table in the database. Can also be a list of names.
-    geom_table : str or flowmachine.Query
+    polygon_table : str or flowmachine.Query
         name of the table containing the geography information.
         Can be either the name of a table, with the schema, or
         a flowmachine.Query object.
@@ -164,95 +164,52 @@ class PolygonSpatialUnit(SpatialUnit):
         column that defines the geography.
     """
 
-    _columns_from_locinfo_table = (
-        "id AS location_id",
-        "version",
-        "date_of_first_service",
-        "date_of_last_service",
-    )
-
-    def __init__(self, *, column_name, geom_table, geom_col="geom"):
-        if type(column_name) is str:
-            self.column_name = [column_name]
+    def __init__(self, *, polygon_column_names, polygon_table, geom_col="geom"):
+        if issubclass(polygon_table.__class__, Query):
+            self.polygon_table = polygon_table
         else:
-            self.column_name = column_name
-        if issubclass(geom_table.__class__, Query):
-            self.geom_table = geom_table
-        else:
-            self.geom_table = GeoTable(name=geom_table, geom_column=geom_col)
+            self.polygon_table = GeoTable(name=polygon_table, geom_column=geom_col)
+        
         self.geom_col = geom_col
-        self.location_info_table_fqn = self.connection.location_table
-        # if the subscriber wants to select a geometry from the sites table there
-        # is no need to join the table with itself.
-        self.requires_join = not (
-            hasattr(self.geom_table, "fully_qualified_table_name")
-            and (
-                self.location_info_table_fqn
-                == self.geom_table.fully_qualified_table_name
-            )
-        )
 
-        super().__init__()
+        location_info_table = self.connection.location_table
 
-    # Need a method to check whether the required data can be found in the DB
-
-    def _other_columns(self):
-        """
-        Helper function which returns the list of returned column names,
-        excluding self.location_columns.
-        """
-        return [get_alias(c) for c in self._columns_from_locinfo_table]
-
-    @property
-    def location_columns(self) -> List[str]:
-        return self.column_name
-
-    @property
-    def location_columns_string(self) -> str:
-        return ", ".join(self.location_columns)
-
-    @property
-    def column_names(self) -> List[str]:
-        return self._other_columns() + self.location_columns
-
-    def _join_clause(self):
-        if self.requires_join:
-            joined_name = "polygon"
-            join = f"""
-            INNER JOIN
-                ({self.geom_table.get_query()}) AS polygon
-            ON ST_within(
-                locinfo.geom_point::geometry,
-                ST_SetSRID(polygon.{self.geom_col}, 4326)::geometry
-            )
-            """
-        else:
+        locinfo_alias = "locinfo"
+        if hasattr(self.polygon_table, "fully_qualified_table_name") and (
+                location_info_table == self.polygon_table.fully_qualified_table_name
+        ):
             # if the subscriber wants to select a geometry from the sites table
             # there is no need to join the table with itself.
-            joined_name = "locinfo"
-            join = ""
+            joined_alias = locinfo_alias
+            join_clause = ""
+        else:
+            joined_alias = "polygon"
+            join_clause = f"""
+            INNER JOIN
+                ({self.polygon_table.get_query()}) AS {joined_alias}
+            ON ST_within(
+                {locinfo_alias}.geom_point::geometry,
+                ST_SetSRID({joined_alias}.{self.geom_col}, 4326)::geometry
+            )
+            """
 
-        return joined_name, join
+        locinfo_column_names = [
+            f"{locinfo_alias}.id AS location_id",
+            f"{locinfo_alias}.version AS version",
+            f"{locinfo_alias}.date_of_first_service AS date_of_first_service",
+            f"{locinfo_alias}.date_of_last_service AS date_of_last_service",
+        ]
+        if type(polygon_columns) is str:
+            polygon_cols = [f"{joined_alias}.{polygon_column_names}"]
+        else:
+            polygon_cols = [f"{joined_alias}.{c}" for c in polygon_column_names]
+        all_column_names = locinfo_column_names + polygon_cols
+        location_column_names = [get_alias(c) for c in polygon_cols]
 
-    def _make_query(self):
-        joined_name, join = self._join_clause()
-        other_cols = ", ".join(f"locinfo.{c}" for c in self._columns_from_locinfo_table)
-        columns = ", ".join(f"{table_name}.{c}" for c in self.column_name)
-
-        # Create a table
-        sql = f"""
-        SELECT
-            {other_cols},
-            {columns}
-        FROM
-            {self.location_info_table_fqn} AS locinfo
-        {join}
-        """
-
-        return sql
+        super().__init__(selected_column_names=all_column_names, location_column_names=location_column_names, location_info_table=f"{location_info_table} AS {locinfo_alias}", join_clause=join_clause)
 
 
-class AdminSpatialMapping(PolygonSpatialMapping):
+class AdminSpatialUnit(PolygonSpatialUnit):
     """
     Maps all cells (aka sites) to an admin region. This is a thin wrapper to
     the more general class SpatialMapping, which assumes that you have
@@ -273,13 +230,16 @@ class AdminSpatialMapping(PolygonSpatialMapping):
         self.level = level
         # If there is no column_name passed then we can use
         # the default, which is of the form admin3pcod.
-        if column_name is None:
+        # If the user has asked for the standard column_name
+        # then we will alias this column as 'pcod', otherwise
+        # we'll won't alias it at all.
+        if (column_name is None) or (column_name == self._get_standard_name()):
             col_name = self._get_standard_name()
         else:
-            col_name = column_name
+            col_name = f"{column_name} AS pcod"
         table = f"geography.admin{self.level}"
 
-        super().__init__(column_name=col_name, geom_table=table)
+        super().__init__(polygon_column_names=col_name, polygon_table=table)
 
     def _get_standard_name(self):
         """
@@ -289,42 +249,8 @@ class AdminSpatialMapping(PolygonSpatialMapping):
 
         return f"admin{self.level}pcod"
 
-    @property
-    def location_columns(self) -> List[str]:
-        # If the user has asked for the standard column_name
-        # then we will alias this column as 'pcod', otherwise
-        # we'll won't alias it at all.
-        if self.column_name[0] == self._get_standard_name():
-            columns = ["pcod"]
-        else:
-            columns = self.column_name
-        return columns
 
-    def _make_query(self):
-        table_name, join = self._join_clause()
-        other_cols = ", ".join(f"locinfo.{c}" for c in self._columns_from_locinfo_table)
-        # If the user has asked for the standard column_name
-        # then we will alias this column as 'pcod', otherwise
-        # we'll won't alias it at all.
-        if self.column_name[0] == self._get_standard_name():
-            col_name = f"{table_name}.{self.column_name[0]} AS pcod"
-        else:
-            col_name = f"{table_name}.{self.column_name[0]}"
-
-        # Create a table
-        sql = f"""
-        SELECT
-            {other_cols},
-            {col_name}
-        FROM
-            {self.location_info_table_fqn} AS locinfo
-        {join}
-        """
-
-        return sql
-
-
-class GridSpatialMapping(PolygonSpatialMapping):
+class GridSpatialUnit(PolygonSpatialUnit):
     """
     Query representing a mapping between all the sites in the database
     and a grid of arbitrary size.
@@ -337,7 +263,6 @@ class GridSpatialMapping(PolygonSpatialMapping):
 
     def __init__(self, *, size):
         self.size = size
-        self.grid = Grid(self.size)
         super().__init__(
-            column_name=["grid_id"], geom_table=self.grid, geom_col="geom_square"
+            polygon_column_names=["grid_id"], polygon_table=Grid(self.size), geom_col="geom_square"
         )
