@@ -50,8 +50,6 @@ class ContactModalLocationDistance(SubscriberFeature):
         subscriber_identifier (typically, msisdn), to limit results to.
     direction : {'in', 'out', 'both'}, default 'out'
         Whether to consider calls made, received, or both. Defaults to 'out'.
-    column_name : str
-        Optionally specify a non-default column name. Required if level is 'polygon'.
 
     Example
     -------
@@ -80,7 +78,6 @@ class ContactModalLocationDistance(SubscriberFeature):
         direction="both",
         hours="all",
         subscriber_subset=None,
-        size=None,
     ):
 
         self.start = start
@@ -122,8 +119,6 @@ class ContactModalLocationDistance(SubscriberFeature):
                 exclude_self_calls=True,
                 subscriber_subset=subscriber_subset,
             )
-
-        print(self.contact_balance_query.get_query())
 
         self.modal_location_query = ModalLocation(
             *[
