@@ -9,7 +9,7 @@ import os
 import pytest
 from quart import request
 
-from app.jwt_auth_callbacks import (
+from flowapi.jwt_auth_callbacks import (
     invalid_token_callback,
     expired_token_callback,
     claims_verification_failed_callback,
@@ -25,7 +25,7 @@ async def test_invalid_token(app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the app, with a mock for the db
+        Pytest fixture providing the flowapi, with a mock for the db
     """
     client, db, log_dir, app = app
     await client.get("/")  # Need to trigger setup
@@ -48,7 +48,7 @@ async def test_expired_token(app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the app, with a mock for the db
+        Pytest fixture providing the flowapi, with a mock for the db
     """
     client, db, log_dir, app = app
     await client.get("/")  # Need to trigger setup
@@ -86,7 +86,7 @@ async def test_claims_verify_fail(app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the app, with a mock for the db
+        Pytest fixture providing the flowapi, with a mock for the db
     """
     client, db, log_dir, app = app
     await client.get("/")  # Need to trigger setup
@@ -109,7 +109,7 @@ async def test_revoked_token(app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the app, with a mock for the db
+        Pytest fixture providing the flowapi, with a mock for the db
     """
     client, db, log_dir, app = app
     await client.get("/")  # Need to trigger setup

@@ -57,17 +57,9 @@ def flowapi_server(logging_config):
     """
     import hypercorn.__main__
 
-    import os
-    import sys
-
-    sys.path.insert(
-        0,
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "flowapi")),
-    )
-
     api_thread = Process(
         target=hypercorn.__main__.main,
-        args=(["--bind", "0.0.0.0:9090", "app.main:create_app()"],),
+        args=(["--bind", "0.0.0.0:9090", "flowapi.main:create_app()"],),
     )
     api_thread.start()
     sleep(2)

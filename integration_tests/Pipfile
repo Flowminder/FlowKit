@@ -18,6 +18,7 @@ sqlalchemy = "*"
 pytest-asyncio = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 flowclient = {editable = true,path = "./../flowclient"}
+flowapi = {editable = true,path = "./../flowapi"}
 approvaltests = "*"
 pytest-cov = "*"
 
