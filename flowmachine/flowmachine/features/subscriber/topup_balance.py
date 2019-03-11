@@ -183,7 +183,7 @@ class TopUpBalance(SubscriberFeature):
                 msisdn AS subscriber,
                 (
                     pre_event_balance +
-                    (LAG(post_event_balance, 1, pre_event_balance) OVER (PARTITION BY msisdn ORDER BY datetime))
+                    (LAG(post_event_balance, 1, pre_event_balance) OVER msisdn_by_datetime)
                 ) / 2 AS balance,
                 post_event_balance,
                 datetime,
