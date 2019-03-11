@@ -109,7 +109,7 @@ class EventCount(SubscriberFeature):
         """
 
 
-class PerLocationEventCount(SubscriberFeature):
+class PerLocationEventStats(SubscriberFeature):
     """
     This class returns the statistics of event count per location per
     subscriber within the period, optionally limited to only incoming or
@@ -164,7 +164,7 @@ class PerLocationEventCount(SubscriberFeature):
     Examples
     --------
 
-    >>> s = PerLocationEventCount("2016-01-01", "2016-01-07")
+    >>> s = PerLocationEventStats("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
 
           subscriber      value
@@ -269,7 +269,7 @@ class PerLocationEventCount(SubscriberFeature):
         """
 
 
-class PerContactEventCount(SubscriberFeature):
+class PerContactEventStats(SubscriberFeature):
     """
     This class returns the statistics of event count per contact per
     subscriber within the period, optionally limited to only incoming or
@@ -287,7 +287,7 @@ class PerContactEventCount(SubscriberFeature):
     Examples
     --------
 
-    >>> s = PerContactEventCount("2016-01-01", "2016-01-07")
+    >>> s = PerContactEventStats("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
 
           subscriber      value

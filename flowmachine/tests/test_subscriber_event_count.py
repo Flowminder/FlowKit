@@ -67,9 +67,9 @@ def test_event_count_errors(kwarg):
         ("variance", "JNK7mk5G1Dy6M2Ya", 0.395_833, {}),
     ],
 )
-def test_per_location_event_count(get_dataframe, statistic, msisdn, want, level):
-    """ Test hand-picked PerLocationEventCount. """
-    query = PerLocationEventCount(
+def test_per_location_event_stats(get_dataframe, statistic, msisdn, want, level):
+    """ Test hand-picked PerLocationEventStats. """
+    query = PerLocationEventStats(
         "2016-01-01", "2016-01-06", statistic=statistic, **level
     )
     df = get_dataframe(query).set_index("subscriber")
@@ -77,11 +77,11 @@ def test_per_location_event_count(get_dataframe, statistic, msisdn, want, level)
 
 
 @pytest.mark.parametrize("kwarg", ["direction", "statistic"])
-def test_per_location_event_count_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in PerLocationEventCount. """
+def test_per_location_event_stats_errors(kwarg):
+    """ Test ValueError is raised for non-compliant kwarg in PerLocationEventStats. """
 
     with pytest.raises(ValueError):
-        query = PerLocationEventCount("2016-01-03", "2016-01-05", **{kwarg: "error"})
+        query = PerLocationEventStats("2016-01-03", "2016-01-05", **{kwarg: "error"})
 
 
 @pytest.mark.parametrize(
@@ -97,19 +97,19 @@ def test_per_location_event_count_errors(kwarg):
         ("variance", "JNK7mk5G1Dy6M2Ya", 2),
     ],
 )
-def test_per_contact_event_count(get_dataframe, statistic, msisdn, want):
-    """ Test hand-picked PerContactEventCount. """
-    query = PerContactEventCount(ContactBalance("2016-01-02", "2016-01-06"), statistic)
+def test_per_contact_event_stats(get_dataframe, statistic, msisdn, want):
+    """ Test hand-picked PerContactEventStats. """
+    query = PerContactEventStats(ContactBalance("2016-01-02", "2016-01-06"), statistic)
     df = get_dataframe(query).set_index("subscriber")
     assert df.value[msisdn] == pytest.approx(want)
 
 
 @pytest.mark.parametrize("kwarg", ["statistic"])
-def test_per_contact_event_count_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in PerContactEventCount. """
+def test_per_contact_event_stats_errors(kwarg):
+    """ Test ValueError is raised for non-compliant kwarg in PerContactEventStats. """
 
     with pytest.raises(ValueError):
-        query = PerContactEventCount(
+        query = PerContactEventStats(
             ContactBalance("2016-01-02", "2016-01-06"), **{kwarg: "error"}
         )
 
