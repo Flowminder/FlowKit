@@ -14,6 +14,7 @@ from flowmachine.core.geotable import GeoTable
 from .init import connect
 from .join_to_location import JoinToLocation
 from .custom_query import CustomQuery
+from .spatial_unit import SpatialUnit
 
 sub_modules = ["errors", "mixins", "api"]
 
@@ -25,6 +26,7 @@ methods = [
     "connect",
     "JoinToLocation",
     "CustomQuery",
+    "SpatialUnit",
 ]
 
 __all__ = methods + sub_modules
