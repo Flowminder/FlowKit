@@ -120,7 +120,7 @@ class TopUpBalance(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", f"value"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
