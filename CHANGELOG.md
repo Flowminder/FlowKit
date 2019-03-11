@@ -6,9 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+
+## [0.4.0]
+### Added
+
 - Dockerised development setup, with support for live reload of `flowmachine` and `flowapi` after source code changes.
 - Pre-commit hook for Python formatting with black.
-- Added new `IntereventPeriod` query classes to FlowMachine.
+- Added new `IntereventPeriod`, `ContactReciprocal`, `ProportionContactReciprocal`, `ProportionEventReciprocal`, `ProportionEventType`, `MDSVolume` query classes to FlowMachine.
 
 ### Changed
 - `CustomQuery` now requires column names to be specified
@@ -17,11 +27,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Changed query class name from `NocturnalCalls` to `NocturnalEvents`.
 - FlowAPI is now an installable python module
 
-### Fixed
-
 ### Removed
 - Arbitrary `Flow` maths
 - `EdgeList` query type
+- Removes query class `ProportionOutgoing` as it becomes redundant with the the introduction of `ProportionEventType`.
 
 
 ## [0.3.0]
@@ -84,7 +93,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.3.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.0...master
+[0.4.0]: https://github.com/Flowminder/FlowKit/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/Flowminder/FlowKit/compare/0.2.2...0.3.0
 [0.2.2]: https://github.com/Flowminder/FlowKit/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/Flowminder/FlowKit/compare/0.2.0...0.2.1
