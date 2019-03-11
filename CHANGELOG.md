@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 
+### Changed
+- FlowAPI now reports queued/running status for queries instead of just accepted
+
+### Fixed
+- Server no longer loses track of queries under heavy load
+
+### Removed
+
+
+## [0.4.0]
+### Added
+
 - Dockerised development setup, with support for live reload of `flowmachine` and `flowapi` after source code changes.
 - Pre-commit hook for Python formatting with black.
 - Added new `IntereventPeriod`, `ContactReciprocal`, `ProportionContactReciprocal`, `ProportionEventReciprocal`, `ProportionEventType`, `MDSVolume` query classes to FlowMachine.
@@ -16,9 +28,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI now reports whether a query is queued or running when polling
 - FlowDB test data and synthetic data images are now available from their own Docker repos (Flowminder/flowdb-testdata, Flowminder/flowdb-synthetic-data)
 - Changed query class name from `NocturnalCalls` to `NocturnalEvents`.
-
-### Fixed
-- Server no longer loses track of queries under heavy load
 
 ### Removed
 - Query objects can no longer be recalculated to cache and must be explicitly removed first
@@ -87,7 +96,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.3.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.0...master
+[0.4.0]: https://github.com/Flowminder/FlowKit/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/Flowminder/FlowKit/compare/0.2.2...0.3.0
 [0.2.2]: https://github.com/Flowminder/FlowKit/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/Flowminder/FlowKit/compare/0.2.0...0.2.1
