@@ -7,7 +7,6 @@
 Class for calculating MDS volume statistics.
 """
 
-import warnings
 
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
@@ -36,10 +35,6 @@ class MDSVolume(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    tables : str or list of strings, default 'events.mds'
-        Can be a string of a single table (with the schema)
-        or a list of these. The keyword all is to select all
-        subscriber tables
 
     Examples
     --------
@@ -66,7 +61,6 @@ class MDSVolume(SubscriberFeature):
         subscriber_identifier="msisdn",
         hours="all",
         subscriber_subset=None,
-        tables="events.mds",
     ):
         self.start = start
         self.stop = stop
@@ -74,7 +68,7 @@ class MDSVolume(SubscriberFeature):
         self.hours = hours
         self.volume = volume
         self.statistic = statistic.lower()
-        self.tables = tables
+        self.tables = "events.mds"
 
         if self.statistic not in valid_stats:
             raise ValueError(
@@ -102,7 +96,7 @@ class MDSVolume(SubscriberFeature):
 
     @property
     def column_names(self):
-        return ["subscriber", f"value"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
