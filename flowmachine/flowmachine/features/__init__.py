@@ -23,7 +23,6 @@ nw = ["TotalNetworkObjects", "AggregateNetworkObjects"]
 subs = [
     "RadiusOfGyration",
     "NocturnalEvents",
-    "TotalSubscriberEvents",
     "FirstLocation",
     "CallDays",
     "ModalLocation",
