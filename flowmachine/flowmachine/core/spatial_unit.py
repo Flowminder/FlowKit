@@ -7,24 +7,9 @@ Classes that map cells (or towers or sites) to a spatial unit
 (e.g. versioned-cell, admin*, grid, ...).
 """
 from typing import List
-import re
 
+from flowmachine.utils import get_alias
 from . import Query, GeoTable, Grid
-
-
-def get_alias(column_name):
-    """
-    Given a column name string, return the alias (if there is one),
-    or return the provided column name if there is no alias.
-
-    Examples
-    --------
-    >>> get_alias("col AS alias")
-      "alias"
-    >>> get_alias("col")
-      "col"
-    """
-    return re.split(" as ", column_name, flags=re.IGNORECASE)[-1]
 
 
 class SpatialUnit(Query):
@@ -201,25 +186,22 @@ class PolygonSpatialUnit(SpatialUnit):
         table in the database. Can also be a list of names.
     polygon_table : str or flowmachine.Query
         name of the table containing the geography information.
-        Can be either the name of a table, with the schema, or
-        a flowmachine.Query object.
+        Can be either the name of a table, with the schema, a flowmachine.Query
+        object, or a string representing a query.
     geom_col : str, default 'geom'
         column that defines the geography.
     """
 
     def __init__(self, *, polygon_column_names, polygon_table, geom_col="geom"):
-        if issubclass(polygon_table.__class__, Query):
-            self.polygon_table = polygon_table
-        else:
-            self.polygon_table = GeoTable(name=polygon_table, geom_column=geom_col)
-
+        self.polygon_table = polygon_table
         self.geom_col = geom_col
 
         location_info_table = self.connection.location_table
 
         locinfo_alias = "locinfo"
-        if hasattr(self.polygon_table, "fully_qualified_table_name") and (
-            location_info_table == self.polygon_table.fully_qualified_table_name
+        if (
+            isinstance(self.polygon_table, str)
+            and location_info_table == self.polygon_table.lower().strip()
         ):
             # if the subscriber wants to select a geometry from the sites table
             # there is no need to join the table with itself.
@@ -229,7 +211,7 @@ class PolygonSpatialUnit(SpatialUnit):
             joined_alias = "polygon"
             join_clause = f"""
             INNER JOIN
-                ({self.polygon_table.get_query()}) AS {joined_alias}
+                {self._get_subtable()} AS {joined_alias}
             ON ST_within(
                 {locinfo_alias}.geom_point::geometry,
                 ST_SetSRID({joined_alias}.{self.geom_col}, 4326)::geometry
@@ -257,6 +239,20 @@ class PolygonSpatialUnit(SpatialUnit):
             location_info_table=f"{location_info_table} AS {locinfo_alias}",
             join_clause=join_clause,
         )
+
+    def _get_subtable(self):
+        """
+        Private method which takes the table and returns a query
+        representing the object. This is necessary as the table can
+        be passed in a variety of ways.
+        """
+
+        if issubclass(self.polygon_table.__class__, Query):
+            return f"({self.polygon_table.get_query()})"
+        elif "select " in self.polygon_table.lower():
+            return f"({self.polygon_table})"
+        else:
+            return self.polygon_table
 
 
 class AdminSpatialUnit(PolygonSpatialUnit):

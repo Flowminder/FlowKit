@@ -19,6 +19,7 @@ from flowmachine.utils import (
     getsecret,
     pretty_sql,
     _makesafe,
+    get_alias,
 )
 
 from flowmachine.utils import time_period_add
@@ -158,3 +159,11 @@ def test_get_secrets_default(monkeypatch):
     the_secret_name = "SECRET"
     secret = getsecret(the_secret_name, the_secret)
     assert the_secret == secret
+
+
+@pytest.mark.parametrize(
+    "column_name, alias",
+    [("column", "column"), ("column AS alias", "alias"), ("column as alias", "alias")],
+)
+def test_get_alias(column_name, alias):
+    assert alias == get_alias(column_name)

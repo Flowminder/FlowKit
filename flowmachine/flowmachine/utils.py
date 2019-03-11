@@ -9,6 +9,7 @@ Various simple utilities.
 
 import datetime
 import logging
+import re
 from contextlib import contextmanager
 from pathlib import Path
 from pglast import prettify
@@ -331,3 +332,18 @@ def _makesafe(x):
     Function that converts input into a PostgreSQL readable.
     """
     return adapt(x).getquoted().decode()
+
+
+def get_alias(column_name):
+    """
+    Given a column name string, return the alias (if there is one),
+    or return the provided column name if there is no alias.
+
+    Examples
+    --------
+    >>> get_alias("col AS alias")
+      "alias"
+    >>> get_alias("col")
+      "col"
+    """
+    return re.split(" as ", column_name, flags=re.IGNORECASE)[-1]
