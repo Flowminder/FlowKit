@@ -11,7 +11,6 @@ another spatial level, such as a grid or an admin region.
 from typing import List
 
 from .query import Query
-from .custom_query import CustomQuery
 from .spatial_unit import SpatialUnit
 
 
@@ -27,8 +26,7 @@ class JoinToLocation(Query):
 
     Parameters
     ----------
-    left : str or flowmachine.Query
-        String to table (with the schema) or else a flowmachine.Query object.
+    left : flowmachine.Query
         This represents a table that can be joined to the cell information
         table. This must have a date column (called time) and a location column
         call 'location_id'.
@@ -52,13 +50,7 @@ class JoinToLocation(Query):
         if not isinstance(spatial_unit, SpatialUnit):
             raise TypeError("spatial_unit must be a SpatialUnit object")
         self.spatial_unit = spatial_unit
-        # If the user passes a string, rather than a flowmachine.Query object
-        # then we'll simply turn this string into a flowmachine.Query object
-        # and proceed as normal.
-        if type(left) is str:
-            self.left = CustomQuery(left, left.column_names)
-        else:
-            self.left = left
+        self.left = left
         self.time_col = time_col
         super().__init__()
 
