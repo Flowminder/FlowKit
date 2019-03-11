@@ -5,8 +5,7 @@
 import asyncpg
 import pytest
 import zmq
-from .context import app
-from app.main import create_app
+from flowapi.main import create_app
 from asynctest import MagicMock, Mock, CoroutineMock
 from datetime import timedelta
 from zmq.asyncio import Context
@@ -111,6 +110,5 @@ def app(monkeypatch, tmpdir, dummy_db_pool):
     monkeypatch.setenv("DB_HOST", "localhost")
     monkeypatch.setenv("DB_PASS", "flowflow")
     monkeypatch.setenv("JWT_SECRET_KEY", "secret")
-    monkeypatch.setenv("CONFIG", "test")
     current_app = create_app()
     yield current_app.test_client(), dummy_db_pool, tmpdir, current_app
