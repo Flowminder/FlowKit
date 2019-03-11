@@ -213,10 +213,8 @@ class PerLocationEventCount(SubscriberFeature):
 
         if self.direction in {"both"}:
             column_list = [self.subscriber_identifier, "location_id"]
-            self.tables = tables
         elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "location_id", "outgoing"]
-            self.tables = self._parse_tables_ensuring_direction_present(tables)
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 

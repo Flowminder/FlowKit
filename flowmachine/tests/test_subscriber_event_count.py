@@ -60,6 +60,7 @@ def test_event_count_errors(kwarg):
         ("sum", "LBlWd64rqnMGv7kY", 22, {}),
         ("avg", "JZoaw2jzvK2QMKYX", 1.333_333, {}),
         ("avg", "JZoaw2jzvK2QMKYX", 1.647_059, {"level": "admin3"}),
+        ("avg", "JZoaw2jzvK2QMKYX", 1.285_714_2, {"direction": "in"}),
         ("max", "DELmRj9Vvl346G50", 4, {}),
         ("min", "9vXy462Ej8V1kpWl", 1, {}),
         ("stddev", "EkpjZe5z37W70QKA", 0.594_089, {}),
