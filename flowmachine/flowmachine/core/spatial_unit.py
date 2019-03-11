@@ -193,15 +193,18 @@ class PolygonSpatialUnit(SpatialUnit):
     """
 
     def __init__(self, *, polygon_column_names, polygon_table, geom_col="geom"):
-        self.polygon_table = polygon_table
+        if isinstance(polygon_table, Query):
+            self.polygon_table = polygon_table
+        else:
+            self.polygon_table = GeoTable(name=polygon_table, geom_column=geom_col)
+
         self.geom_col = geom_col
 
         location_info_table = self.connection.location_table
 
         locinfo_alias = "locinfo"
-        if (
-            isinstance(self.polygon_table, str)
-            and location_info_table == self.polygon_table.lower().strip()
+        if hasattr(self.polygon_table, "fully_qualified_table_name") and (
+            location_info_table == self.polygon_table.fully_qualified_table_name
         ):
             # if the subscriber wants to select a geometry from the sites table
             # there is no need to join the table with itself.
@@ -211,7 +214,7 @@ class PolygonSpatialUnit(SpatialUnit):
             joined_alias = "polygon"
             join_clause = f"""
             INNER JOIN
-                {self._get_subtable()} AS {joined_alias}
+                ({self.polygon_table.get_query()}) AS {joined_alias}
             ON ST_within(
                 {locinfo_alias}.geom_point::geometry,
                 ST_SetSRID({joined_alias}.{self.geom_col}, 4326)::geometry
@@ -239,20 +242,6 @@ class PolygonSpatialUnit(SpatialUnit):
             location_info_table=f"{location_info_table} AS {locinfo_alias}",
             join_clause=join_clause,
         )
-
-    def _get_subtable(self):
-        """
-        Private method which takes the table and returns a query
-        representing the object. This is necessary as the table can
-        be passed in a variety of ways.
-        """
-
-        if issubclass(self.polygon_table.__class__, Query):
-            return f"({self.polygon_table.get_query()})"
-        elif "select " in self.polygon_table.lower():
-            return f"({self.polygon_table})"
-        else:
-            return self.polygon_table
 
 
 class AdminSpatialUnit(PolygonSpatialUnit):

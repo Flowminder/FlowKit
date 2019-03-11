@@ -32,14 +32,6 @@ import pytest
                 "geom_col": "geom_point",
             },
         ),
-        (
-            PolygonSpatialUnit,
-            {
-                "polygon_column_names": "id",
-                "polygon_table": "SELECT * FROM infrastructure.sites",
-                "geom_col": "geom_point",
-            },
-        ),
         (AdminSpatialUnit, {"level": 3}),
         (AdminSpatialUnit, {"level": 3, "column_name": "admin3name"}),
         (GridSpatialUnit, {"size": 5}),
