@@ -301,11 +301,7 @@ class PerContactEventCount(SubscriberFeature):
                  ...        ...
     """
 
-    def __init__(
-        self,
-        contact_balance,
-        statistic="avg",
-    ):
+    def __init__(self, contact_balance, statistic="avg"):
         self.contact_balance = contact_balance
         self.statistic = statistic
 
