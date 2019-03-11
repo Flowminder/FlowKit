@@ -193,7 +193,7 @@ class TopUpBalance(SubscriberFeature):
                         datetime,
                         1,
                         TIMESTAMPTZ '{self.start}'
-                    ) OVER (PARTITION BY msisdn ORDER BY datetime)
+                    ) OVER msisdn_by_datetime
                 ) AS weight,
                 CUME_DIST() OVER msisdn_by_datetime
             FROM (select * from events.topups) AS U
