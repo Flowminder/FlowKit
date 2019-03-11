@@ -42,7 +42,12 @@ structlog.configure(
 async def connect_logger():
     log_level = current_app.config["LOG_LEVEL"]
     log_root = current_app.config["LOG_DIRECTORY"]
-    current_app.logger.setLevel(logging.getLevelName(log_level))
+    logger = logging.getLogger("flowapi")
+    logger.setLevel(log_level)
+    ch = logging.StreamHandler()
+    ch.setLevel(log_level)
+    logger.addHandler(ch)
+    current_app.log = structlog.wrap_logger(logger)
 
     # Logger for authentication
 
@@ -78,13 +83,13 @@ async def connect_logger():
 async def connect_zmq():
     context = Context.instance()
     #  Socket to talk to server
-    current_app.logger.debug("Connecting to FlowMachine server…")
+    current_app.log.debug("Connecting to FlowMachine server…")
     socket = context.socket(zmq.REQ)
     socket.connect(
         f"tcp://{current_app.config['FLOWMACHINE_SERVER']}:{current_app.config['FLOWMACHINE_PORT']}"
     )
     request.socket = socket
-    current_app.logger.debug("Connected.")
+    current_app.log.debug("Connected.")
 
 
 async def add_uuid():
@@ -92,12 +97,12 @@ async def add_uuid():
 
 
 def close_zmq(exc):
-    current_app.logger.debug("Closing connection to FlowMachine server…")
+    current_app.log.debug("Closing connection to FlowMachine server…")
     try:
         request.socket.close()
-        current_app.logger.debug("Closed socket.")
+        current_app.log.debug("Closed socket.")
     except AttributeError:
-        current_app.logger.debug("No socket to close.")
+        current_app.log.debug("No socket to close.")
 
 
 async def create_db():
