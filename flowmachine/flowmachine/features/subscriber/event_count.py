@@ -280,25 +280,11 @@ class PerContactEventCount(SubscriberFeature):
 
     Parameters
     ----------
-    start, stop : str
-         iso-format start and stop datetimes
+    contact_balance: flowmachine.features.ContactBalance
+        An instance of `ContactBalance` which lists the contacts of the
+        targeted subscribers along with the number of events between them.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'avg'
         Defaults to avg, aggregation statistic over the durations.
-    hours : 2-tuple of floats, default 'all'
-        Restrict the analysis to only a certain set
-        of hours within each day.
-    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
-        Either msisdn, or imei, the column that identifies the subscriber.
-    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
-        If provided, string or list of string which are msisdn or imeis to limit
-        results to; or, a query or table which has a column with a name matching
-        subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
-        Whether to consider calls made, received, or both. Defaults to 'out'.
-    tables : str or list of strings, default 'all'
-        Can be a string of a single table (with the schema)
-        or a list of these. The keyword all is to select all
-        subscriber tables
 
     Examples
     --------
@@ -317,26 +303,10 @@ class PerContactEventCount(SubscriberFeature):
 
     def __init__(
         self,
-        start,
-        stop,
         contact_balance,
         statistic="avg",
-        *,
-        hours="all",
-        tables="all",
-        subscriber_identifier="msisdn",
-        direction="both",
-        exclude_self_calls=True,
-        subscriber_subset=None,
     ):
-        self.start = start
-        self.stop = stop
         self.contact_balance = contact_balance
-        self.hours = hours
-        self.tables = tables
-        self.subscriber_identifier = subscriber_identifier
-        self.direction = direction
-        self.exclude_self_calls = exclude_self_calls
         self.statistic = statistic
 
         if self.statistic not in valid_stats:
