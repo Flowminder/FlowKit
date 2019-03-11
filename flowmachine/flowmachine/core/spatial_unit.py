@@ -28,7 +28,34 @@ def get_alias(column_name):
 
 
 class SpatialUnit(Query):
-    def __init__(self, *, selected_column_names, location_column_names, location_info_table=None, join_clause=""):
+    """
+    Base class for all spatial units. Selects columns from the location table,
+    and optionally joins to data in another table.
+
+    Parameters
+    ----------
+    selected_column_names : str or list
+        The name(s) of the column(s) to fetch from the location
+        table in the database.
+    location_column_names : str or list
+        Name(s) of the location-related column(s).
+        Must be a subset of the column_names for this query.
+    location_info_table : str, optional
+        Fully qualified name of the location info table to select from.
+        Defaults to self.connection.location_table
+    join_clause : str, optional
+        Optionally provide a SQL join clause to join data from the
+        location info table to spatial regions in another table.
+    """
+
+    def __init__(
+        self,
+        *,
+        selected_column_names,
+        location_column_names,
+        location_info_table=None,
+        join_clause="",
+    ):
         if type(selected_column_names) is str:
             self._cols = [selected_column_names]
         else:
@@ -39,6 +66,7 @@ class SpatialUnit(Query):
         else:
             self._loc_cols = location_column_names
 
+        # Check that _loc_cols is a subset of column_names
         missing_cols = [c for c in self._loc_cols if not (c in self.column_names)]
         if missing_cols:
             raise ValueError(
@@ -49,7 +77,7 @@ class SpatialUnit(Query):
             self.location_info_table = location_info_table
         else:
             self.location_info_table = self.connection.location_table
-        
+
         self._join_clause = join_clause
 
         super().__init__()
@@ -58,6 +86,9 @@ class SpatialUnit(Query):
 
     @property
     def location_columns(self) -> List[str]:
+        """
+        List of the location-related column names.
+        """
         return self._loc_cols
 
     @property
@@ -76,7 +107,11 @@ class SpatialUnit(Query):
         return sql
 
 
-class LatLonSpatialUnit(SpatialUnit)
+class LatLonSpatialUnit(SpatialUnit):
+    """
+    Class that maps cell location_id to lat-lon coordinates. 
+    """
+
     def __init__(self):
         super().__init__(
             selected_column_names=[
@@ -91,10 +126,14 @@ class LatLonSpatialUnit(SpatialUnit)
 
 
 class VersionedCellSpatialUnit(SpatialUnit):
+    """
+    Class that maps cell location_id to a cell version and lat-lon coordinates.
+    """
+
     def __init__(self):
         if self.connection.location_table != "infrastructure.cells":
             raise ValueError("Versioned cell spatial unit is unavailable.")
-        
+
         super().__init__(
             selected_column_names=[
                 "id AS location_id",
@@ -110,6 +149,10 @@ class VersionedCellSpatialUnit(SpatialUnit):
 
 
 class VersionedSiteSpatialUnit(SpatialUnit):
+    """
+    Class that maps cell location_id to a site version and lat-lon coordinates.
+    """
+
     def __init__(self):
         location_table = self.connection.location_table
 
@@ -129,7 +172,7 @@ class VersionedSiteSpatialUnit(SpatialUnit):
                 f"Expected location table to be 'infrastructure.cells' "
                 f"or 'infrastructure.sites', not '{location_table}''"
             )
-        
+
         super().__init__(
             selected_column_names=[
                 f"{cells_alias}.id AS location_id",
@@ -169,14 +212,14 @@ class PolygonSpatialUnit(SpatialUnit):
             self.polygon_table = polygon_table
         else:
             self.polygon_table = GeoTable(name=polygon_table, geom_column=geom_col)
-        
+
         self.geom_col = geom_col
 
         location_info_table = self.connection.location_table
 
         locinfo_alias = "locinfo"
         if hasattr(self.polygon_table, "fully_qualified_table_name") and (
-                location_info_table == self.polygon_table.fully_qualified_table_name
+            location_info_table == self.polygon_table.fully_qualified_table_name
         ):
             # if the subscriber wants to select a geometry from the sites table
             # there is no need to join the table with itself.
@@ -200,20 +243,27 @@ class PolygonSpatialUnit(SpatialUnit):
             f"{locinfo_alias}.date_of_last_service AS date_of_last_service",
         ]
         if type(polygon_columns) is str:
-            polygon_cols = [f"{joined_alias}.{polygon_column_names}"]
+            polygon_cols = [polygon_column_names]
         else:
-            polygon_cols = [f"{joined_alias}.{c}" for c in polygon_column_names]
-        all_column_names = locinfo_column_names + polygon_cols
+            polygon_cols = polygon_column_names
+        all_column_names = locinfo_column_names + [
+            f"{joined_alias}.{c}" for c in polygon_cols
+        ]
         location_column_names = [get_alias(c) for c in polygon_cols]
 
-        super().__init__(selected_column_names=all_column_names, location_column_names=location_column_names, location_info_table=f"{location_info_table} AS {locinfo_alias}", join_clause=join_clause)
+        super().__init__(
+            selected_column_names=all_column_names,
+            location_column_names=location_column_names,
+            location_info_table=f"{location_info_table} AS {locinfo_alias}",
+            join_clause=join_clause,
+        )
 
 
 class AdminSpatialUnit(PolygonSpatialUnit):
     """
-    Maps all cells (aka sites) to an admin region. This is a thin wrapper to
-    the more general class SpatialMapping, which assumes that you have
-    the standard set-up.
+    Class that maps all cells (aka sites) to an admin region. This is a thin
+    wrapper to the more general class PolygonSpatialUnit, which assumes that
+    you have the standard set-up.
 
     Parameters
     ----------
@@ -234,9 +284,9 @@ class AdminSpatialUnit(PolygonSpatialUnit):
         # then we will alias this column as 'pcod', otherwise
         # we'll won't alias it at all.
         if (column_name is None) or (column_name == self._get_standard_name()):
-            col_name = self._get_standard_name()
+            col_name = f"{self._get_standard_name()} AS pcod"
         else:
-            col_name = f"{column_name} AS pcod"
+            col_name = column_name
         table = f"geography.admin{self.level}"
 
         super().__init__(polygon_column_names=col_name, polygon_table=table)
@@ -264,5 +314,7 @@ class GridSpatialUnit(PolygonSpatialUnit):
     def __init__(self, *, size):
         self.size = size
         super().__init__(
-            polygon_column_names=["grid_id"], polygon_table=Grid(self.size), geom_col="geom_square"
+            polygon_column_names=["grid_id"],
+            polygon_table=Grid(self.size),
+            geom_col="geom_square",
         )
