@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 - Added new `PerLocationEventCount`, `PerContactEventCount` query classes to FlowMachine.
+- Added new `TopUpAmount`, `TopUpBalance` query classes to FlowMachine.
 
 ### Changed
 
