@@ -2054,6 +2054,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../per_contact_event_stats/" title="per_contact_event_stats" class="md-nav__link">
+      per_contact_event_stats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../per_location_event_stats/" title="per_location_event_stats" class="md-nav__link">
+      per_location_event_stats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../radius_of_gyration/" title="radius_of_gyration" class="md-nav__link">
       radius_of_gyration
     </a>
@@ -2126,8 +2150,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../total_active_periods/" title="total_active_periods" class="md-nav__link">
-      total_active_periods
+    <a href="../topup_amount/" title="topup_amount" class="md-nav__link">
+      topup_amount
     </a>
   </li>
 
@@ -2138,8 +2162,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../total_subscriber_events/" title="total_subscriber_events" class="md-nav__link">
-      total_subscriber_events
+    <a href="../topup_balance/" title="topup_balance" class="md-nav__link">
+      topup_balance
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../total_active_periods/" title="total_active_periods" class="md-nav__link">
+      total_active_periods
     </a>
   </li>
 
@@ -2936,7 +2972,7 @@
 <h2 id="class-eventcount">Class <strong>EventCount</strong><a class="headerlink" href="#class-eventcount" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">EventCount</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s1">&#39;msisdn&#39;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tables</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/event_count.py#L13">flowmachine/features/subscriber/event_count.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/subscriber/event_count.py#L15">flowmachine/features/subscriber/event_count.py</a></p>
 <p>This class returns the event count per subscriber within the period, optionally limited to only incoming or outgoing events.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2999,7 +3035,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <p><div class="codehilite"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">EventCount</span><span class="p">(</span><span class="s2">&quot;2016-01-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2016-01-07&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">)</span>
 <span class="n">s</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">()</span>
 </pre></div>
-         subscriber  event_count 0  2ZdMowMXoyMByY07           65 1  MobnrVMDK24wPRzB           81 2  0Ze1l70j0LNgyY4w           57 3  Nnlqka1oevEMvVrm           63 4  4dqenN2oQZExwEK2           59                 ...          ... </p>
+      subscriber        value 2ZdMowMXoyMByY07           65 MobnrVMDK24wPRzB           81 0Ze1l70j0LNgyY4w           57 Nnlqka1oevEMvVrm           63 4dqenN2oQZExwEK2           59              ...          ... </p>
 <h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
 <h4 id="dependency_graph">dependency_graph<a class="headerlink" href="#dependency_graph" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dependency_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analyse</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
