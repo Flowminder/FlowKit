@@ -21,7 +21,9 @@ async def get_geography(aggregation_unit):
     )
     #  Get the reply.
     message = await request.socket.recv_json()
-    current_app.logger.debug(f"Got message: {message}")
+    current_app.flowapi_logger.debug(
+        f"Got message: {message}", request_id=request.request_id
+    )
     try:
         status = message["status"]
     except KeyError:
@@ -37,7 +39,10 @@ async def get_geography(aggregation_unit):
         )
         mimetype = "application/geo+json"
 
-        current_app.logger.debug(f"Returning {aggregation_unit} geography data.")
+        current_app.flowapi_logger.debug(
+            f"Returning {aggregation_unit} geography data.",
+            request_id=request.request_id,
+        )
         return (
             results_streamer,
             200,

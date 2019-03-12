@@ -11,7 +11,7 @@ of postgres.
 
 """
 
-import logging
+
 from concurrent.futures import Future
 from typing import List, Union
 
@@ -20,7 +20,9 @@ import pandas as pd
 from flowmachine.utils import rlock
 from .query import Query
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class ModelResult(Query):

@@ -7,14 +7,16 @@
 Here you find metaclasses for building subscriber features.
 
 """
-import logging
+
 import warnings
 
 from ...core.query import Query
 from ..utilities.spatial_aggregates import JoinedSpatialAggregate
 
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class SubscriberFeature(Query):

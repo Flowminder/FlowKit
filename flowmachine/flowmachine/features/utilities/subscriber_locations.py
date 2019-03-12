@@ -11,7 +11,7 @@ These are used for creating base objects that are
 later used for computing subscriber features.
 
 """
-import logging
+
 
 from .events_tables_union import EventsTablesUnion
 from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
@@ -19,7 +19,9 @@ from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 from ...core.query import Query
 from ...core.join_to_location import JoinToLocation
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class _SubscriberCells(Query):

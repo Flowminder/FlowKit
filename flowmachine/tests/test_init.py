@@ -4,6 +4,7 @@
 
 import logging
 import pytest
+import structlog
 
 from flowmachine import connect
 from flowmachine.core import Query
@@ -49,7 +50,7 @@ def test_log_file_created(tmpdir, monkeypatch):
     monkeypatch.setenv("LOG_DIRECTORY", str(tmpdir))
     monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
     connect()
-    logging.getLogger("flowmachine").error("TEST_MESSAGE")
+    structlog.get_logger("flowmachine").error("TEST_MESSAGE")
     with open(tmpdir.join("flowmachine-debug.log")) as f:
         log_lines = f.readline()
     assert "TEST_MESSAGE" in log_lines

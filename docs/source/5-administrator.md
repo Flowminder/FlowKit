@@ -60,17 +60,20 @@ These values can be overridden when creating a new FlowDB container by setting t
 
 [^1]:By default, this uses the value set for `cache_size` in `cache.cache_config`.
 
-<a name="logging">
 ## Logging and Audit Trails
 
-FlowKit supports structured logging in JSON form for all interactions with FlowAPI, primarily to facilitate audit trails.
+FlowKit supports structured logging in JSON form throughout FlowMachine and FlowAPI. By default both FlowMachine and FlowAPI will only log errors, and audit logs.
+
+Audit trail logs are _always_ written to both stderr and a log file. Error logs are, by default, only written to stderr. 
+
+### Audit Trail Logs
 
 Three kinds of access log are written on each request handled by FlowAPI: authentication, data access at API side, and data access on the FlowMachine side.
 
 
-### Authentication Logs
+#### Authentication Logs
 
-FlowAPI logs all access attempts whether successful or not to stdout, and to a rotating log file. By default, this will be written at `/var/log/flowapi/flowkit-access.log`. The directory the log files are written to can be changed by setting the `LOG_DIRECTORY` environment variable.
+FlowAPI logs all access attempts whether successful or not to stderr, and to a rotating log file. By default, this will be written at `/var/log/flowapi/flowkit-access.log`. The directory the log files are written to can be changed by setting the `LOG_DIRECTORY` environment variable.
 
 Where authentication succeeds, the log message will have a `level` field of `info`, and an `event` type of `AUTHENTICATED`:
 
@@ -101,19 +104,19 @@ In general, access log messages contain at a minimum the route that access was r
 
 If authentication fails, then the reason is also included in the log message, along with any error message and as much information about the request and requester as can be discerned.
 
-### API Usage Logs
+#### API Usage Logs
 
 After a request is successfully authenticated (has a valid token), the _nature_ of the request will be logged at several points. When the request is received, if at any point the request is rejected because the provided token did not grant access, and when the request is fulfilled.
 
-As with the authentication log, the usage log is written to both stdout and a rotating log file. Logs will be written to `query-runs.log` in the same directory as the authentication log.
+As with the authentication log, the usage log is written to both stderr and a rotating log file. Logs will be written to `query-runs.log` in the same directory as the authentication log.
 
-### FlowMachine Usage Logs
+#### FlowMachine Usage Logs
 
 If a request has triggered an action in the FlowMachine backend, logs will also be written there. These logs will include the `request_id` for the API request which originally triggered them.
 
-As with the FlowAPI loggers, these messages are written both to stdout and a rotating log file (`/var/log/flowmachine/query-runs.log`, although the directory can be set using the `LOG_DIRECTORY` environment variable.)
+As with the FlowAPI loggers, these messages are written both to stderr and a rotating log file (`/var/log/flowmachine/query-runs.log`, although the directory can be set using the `LOG_DIRECTORY` environment variable.)
 
-### Complete Logging Cycle
+#### Complete Logging Cycle
 
 A complete logging cycle for a successful request to retrieve a previously run query's results might look like this:
 
@@ -234,12 +237,20 @@ FlowMachine usage log:
 
 Note that the `request_id` field is identical across the five log entries, which lets you match the request across the multiple services.
 
+### Error and Debugging Logs
+
+By default, FlowMachine and FlowAPI write error logs to stderr. For more verbose logging, set the `LOG_LEVEL` environment variable to `debug` when starting the docker container.
+
+FlowMachine also supports writing debug and error logs to a file. To enable this, set the `WRITE_LOG_FILE` environment variable to `TRUE` when starting the FlowMachine container. Logs will be written to `$LOG_DIRECTORY/flowmachine-debug.log` inside the FlowMachine docker container (by default `LOG_DIRECTORY=/var/log/flowmachine`). If the directory specified does not exist, FlowMachine will attempt to create it.
+
+Log messages from FlowMachine will show the `logger` field of the log entry as the Python module that emitted the log entry (e.g. `{'logger':'flowmachine.core.query'..}`. FlowAPI debugging messages set `logger` to `flowapi`.
+
 ### Managing and Monitoring Logs
 
 Because FlowKit employs structured logging, and all log messages are JSON objects, the access and usage logs are easy to use with tools like [Logstash](https://www.elastic.co/products/logstash). Getting FlowKit logs into Logstash is as easy as configuring it to consume the log files generated.
 
 One approach to this is to mount the volumes for `/var/log/flowmachine/` and `/var/log/flowapi/` and expose the log files to Logstash, or a log shipper.
 
-Alternatively, [Filebeat](https://www.elastic.co/docker-kubernetes-container-monitoring) allows you to integrate the logs from stdout directly into your monitoring system.
+Alternatively, [Filebeat](https://www.elastic.co/docker-kubernetes-container-monitoring) allows you to integrate the logs from stderr directly into your monitoring system.
 
    

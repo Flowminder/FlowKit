@@ -8,7 +8,7 @@ Various simple utilities.
 """
 
 import datetime
-import logging
+
 from contextlib import contextmanager
 from pathlib import Path
 from pglast import prettify
@@ -22,7 +22,9 @@ from redis_lock import AlreadyAcquired
 import flowmachine
 from flowmachine.core.errors import BadLevelError
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 def getsecret(key: str, default: str) -> str:
