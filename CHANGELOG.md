@@ -5,15 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Added new `TopUpAmount`, `TopUpBalance`, `PerLocationEventStats`, `PerContactEventStats` query classes to FlowMachine.
 
 ### Changed
 
 ### Fixed
 
 ### Removed
-- Removes query class `TotalSubscriberEvents` as it is superseded by `EventCount`.
 
+## [0.4.1]
+### Added
+- Added `TopUpAmount`, `TopUpBalance` query classes to FlowMachine.
+- Added `PerLocationEventStats`, `PerContactEventStats` to FlowMachine
+
+### Removed
+- Removed `TotalSubscriberEvents` from FlowMachine as it is superseded by `EventCount`.
 
 ## [0.4.0]
 ### Added
@@ -95,7 +100,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.1...master
+[0.4.1]: https://github.com/Flowminder/FlowKit/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/Flowminder/FlowKit/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/Flowminder/FlowKit/compare/0.2.2...0.3.0
 [0.2.2]: https://github.com/Flowminder/FlowKit/compare/0.2.1...0.2.2
