@@ -125,3 +125,10 @@ class MissingDateError(Exception):
         if stop is not None:
             msg += " - {}".format(stop)
         Exception.__init__(self, msg)
+
+
+class MissingColumnsError(Exception):
+    def __init__(self, tables_lacking_columns, columns):
+        Exception.__init__(
+            self, f"Tables {tables_lacking_columns} are missing columns {columns}."
+        )
