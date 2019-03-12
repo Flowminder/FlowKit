@@ -23,7 +23,6 @@ nw = ["TotalNetworkObjects", "AggregateNetworkObjects"]
 subs = [
     "RadiusOfGyration",
     "NocturnalEvents",
-    "TotalSubscriberEvents",
     "FirstLocation",
     "CallDays",
     "ModalLocation",
@@ -55,6 +54,8 @@ subs = [
     "LocationEntropy",
     "ContactEntropy",
     "EventCount",
+    "PerLocationEventStats",
+    "PerContactEventStats",
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
