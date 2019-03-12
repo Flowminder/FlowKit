@@ -18,6 +18,7 @@ pyzmq = "*"
 structlog = "*"
 shapely = "*"
 finist = "*"
+python-rapidjson = "*"
 
 [dev-packages]
 scipy = "*"

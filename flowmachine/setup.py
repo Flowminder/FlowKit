@@ -84,6 +84,7 @@ setup(
         "pyzmq",
         "structlog",
         "shapely",
+        "python-rapidjson",
     ],
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,

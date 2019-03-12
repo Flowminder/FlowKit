@@ -11,7 +11,7 @@ of postgres.
 
 """
 
-import logging
+
 from concurrent.futures import Future
 from time import sleep
 
@@ -28,7 +28,9 @@ from flowmachine.core.errors.flowmachine_errors import (
 from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.core.query import Query
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class ModelResult(Query):

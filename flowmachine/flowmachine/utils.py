@@ -9,7 +9,8 @@ Various simple utilities.
 from time import sleep
 
 import datetime
-import logging
+
+from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 
 from pathlib import Path
 from pglast import prettify
@@ -21,7 +22,9 @@ from typing import List, Union
 import flowmachine
 from flowmachine.core.errors import BadLevelError
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 def getsecret(key: str, default: str) -> str:

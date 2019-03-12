@@ -1,4 +1,3 @@
-import logging
 from copy import deepcopy
 
 import redis
@@ -22,7 +21,9 @@ from flowmachine.features import (
 )
 from flowmachine.features.utilities.subscriber_locations import subscriber_locations
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 query_class_map = {

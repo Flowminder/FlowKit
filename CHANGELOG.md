@@ -14,6 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
+## [0.4.2]
+### Changed
+- `MDSVolume` no longer allows specifying the table, and will always use the `mds` table.
+- All FlowMachine logs are now in structured json form
+- FlowAPI now uses structured logs for debugging messages
+
 ## [0.4.1]
 ### Added
 - Added `TopUpAmount`, `TopUpBalance` query classes to FlowMachine.
@@ -35,6 +41,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI now reports whether a query is queued or running when polling
 - FlowDB test data and synthetic data images are now available from their own Docker repos (Flowminder/flowdb-testdata, Flowminder/flowdb-synthetic-data)
 - Changed query class name from `NocturnalCalls` to `NocturnalEvents`.
+
+### Fixed
 - FlowAPI is now an installable python module
 
 ### Removed
@@ -47,7 +55,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.3.0]
 ### Added
 - API route for retrieving geography data from FlowDB
-
 - Aggregated meaningful locations are now available via FlowAPI
 - Origin-destination matrices between meaningful locations are now available via FlowAPI
 - Added new `MeaningfulLocations`, `MeaningfulLocationsAggregate` and `MeaningfulLocationsOD` query classes to FlowMachine
@@ -104,7 +111,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.1...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.2...master
+[0.4.2]: https://github.com/Flowminder/FlowKit/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/Flowminder/FlowKit/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/Flowminder/FlowKit/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/Flowminder/FlowKit/compare/0.2.2...0.3.0

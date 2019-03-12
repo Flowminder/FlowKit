@@ -24,7 +24,9 @@ async def run_query():
 
     #  Get the reply.
     message = await request.socket.recv_json()
-    current_app.logger.debug(f"Received reply {message}")
+    current_app.flowapi_logger.debug(
+        f"Received reply {message}", request_id=request.request_id
+    )
 
     if "id" in message:
         d = {"Location": url_for(f"query.poll_query", query_id=message["id"])}
@@ -64,7 +66,9 @@ async def get_query(query_id):
         {"request_id": request.request_id, "action": "get_sql", "query_id": query_id}
     )
     message = await request.socket.recv_json()
-    current_app.logger.debug(f"Got message: {message}")
+    current_app.flowapi_logger.debug(
+        f"Got message: {message}", request_id=request.request_id
+    )
     try:
         status = message["status"]
     except KeyError:
@@ -78,7 +82,9 @@ async def get_query(query_id):
         )
         mimetype = "application/json"
 
-        current_app.logger.debug(f"Returning result of query {query_id}.")
+        current_app.flowapi_logger.debug(
+            f"Returning result of query {query_id}.", request_id=request.request_id
+        )
         return (
             results_streamer,
             200,

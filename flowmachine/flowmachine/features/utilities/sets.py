@@ -6,7 +6,7 @@
 Utility classes for subsetting CDRs.
 
 """
-import logging
+
 from typing import List
 
 from .event_table_subset import EventTableSubset
@@ -16,7 +16,9 @@ from flowmachine.utils import get_columns_for_level
 
 from numpy import inf
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 valid_subscriber_identifiers = ("msisdn", "imei", "imsi")
 
 

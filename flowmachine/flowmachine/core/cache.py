@@ -7,7 +7,7 @@
 """
 Functions which deal with inspecting and managing the query cache.
 """
-import logging
+
 import pickle
 
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
@@ -29,7 +29,9 @@ if TYPE_CHECKING:
     from .query import Query
     from .connection import Connection
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 def write_query_to_cache(

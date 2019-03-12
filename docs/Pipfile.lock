@@ -804,6 +804,32 @@
             ],
             "version": "==0.13"
         },
+        "python-rapidjson": {
+            "hashes": [
+                "sha256:0643d0350a02db7d292ecb62ec9e71d9ae9d591ee3023a0a1a076e0b8596f372",
+                "sha256:0d80a6b2a6c2ae1541e10a871462b0c3a7a94276c2129d06f2cf0f41331e78f8",
+                "sha256:1bbf5245f1ffd1c4f935755962ab40c917ea97dff32e223f36ca079da87c9022",
+                "sha256:1bcf53c99d110a7489f4cf938162f8117d34dd8a7324e1ca30b7eaffd6c780ca",
+                "sha256:228873f709991c1ff4172e59fe0b14b5dd98855b4408267cffed544ec120489f",
+                "sha256:243e88f9951998dcac4ce1a2ec72b097461b32196dd662736d9d654dea3a5519",
+                "sha256:4d9dd53dd298f4bb2e3595ad761b3e06b1db7b21f4c187c85bb50f4a8c453b38",
+                "sha256:4e13963d4491e0835802598a00324dcdc3cc62fe7f8590894dee1299900ce89e",
+                "sha256:5da843323b270b5fffec8db35c3481da66d5098390745471f6b2b4c55750258d",
+                "sha256:66def431459287561c9b86a85e42459bea0059961850a14784ebdcde55b50fce",
+                "sha256:6e90c5d7e9b6d575ded78135ea986f54d82c063c887649954a3006d3b852985c",
+                "sha256:7beff614a90a716dc891f074528fb93a0208d930b2e0a86007de3510135b17e7",
+                "sha256:8cc087906963bd362fd09ee5c1111a952a5a7172b71429d9f52533ac12f34d67",
+                "sha256:8f2475cf2f5f1ad3ccf3e415453816cce08ae88c7c97bceee7811d2a7c6ab20e",
+                "sha256:a106ca99f1f20d811a3d028322501aefeb8af5ff333e3450aa4376807d710fbf",
+                "sha256:a80b6d4f5fd5533bc677bc7e1bb6222dcaea979270f21a335ea2ababc9dc2068",
+                "sha256:c416049f28e864c85ad51f78d7ad17632b2505e977ebbc337247d50981a01982",
+                "sha256:d9c1411b25600ea65bb534ad75bf4ab6efd9627abd86872f0e5453ff42220d06",
+                "sha256:da45731d4843ec3d32bcc98213f6abeb07b36720e501dc1c230258be8407661d",
+                "sha256:ea20af1aececb0ad13a7a14237898d6a0cfc321eb6fdbd6c9fb33a77c42f1f7d",
+                "sha256:fc022efe8bfc281f1ae4844a9fa2cc64f3e4513da362c6866ae5c3a9434c1c92"
+            ],
+            "version": "==0.7.0"
+        },
         "pytoml": {
             "hashes": [
                 "sha256:ca2d0cb127c938b8b76a9a0d0f855cf930c1d50cc3a0af6d3595b566519a1013"

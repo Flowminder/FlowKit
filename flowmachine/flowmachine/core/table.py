@@ -7,7 +7,7 @@
 Simple utility class that represents arbitrary tables in the
 database.
 """
-import logging
+
 from typing import List
 
 from flowmachine.core.query_state import QueryStateMachine
@@ -15,7 +15,9 @@ from .errors import NotConnectedError
 from .query import Query
 from .subset import subset_factory
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class Table(Query):

@@ -7,10 +7,12 @@
 
 import asyncio
 import logging
+
 import os
 import signal
 from logging.handlers import TimedRotatingFileHandler
-from typing import Any
+
+import structlog
 
 import zmq
 from zmq.asyncio import Context
@@ -25,26 +27,8 @@ from .query_proxy import (
 )
 from .zmq_interface import ZMQMultipartMessage, ZMQInterfaceError
 
-import structlog
 
-structlog.configure(
-    processors=[
-        structlog.stdlib.filter_by_level,
-        structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(),
-    ],
-    context_class=dict,
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    wrapper_class=structlog.stdlib.BoundLogger,
-    cache_logger_on_first_use=True,
-)
-
-logger = logging.getLogger("flowmachine").getChild(__name__)
+logger = structlog.get_logger(__name__)
 # Logger for all queries run or accessed
 query_run_log = logging.getLogger("flowmachine-server")
 query_run_log.setLevel(logging.INFO)

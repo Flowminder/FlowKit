@@ -8,12 +8,13 @@ This is the base class that defines any query on our database.  It simply
 defines methods that returns the query as a string and as a pandas dataframe.
 
 """
-import json
+import rapidjson as json
 import pickle
-import logging
 import weakref
 from concurrent.futures import Future
 
+
+import structlog
 from typing import List, Union
 
 import psycopg2
@@ -26,12 +27,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.core.cache import touch_cache
-from flowmachine.core.errors.flowmachine_errors import (
-    QueryCancelledException,
-    QueryErroredException,
-    QueryResetFailedException,
-    StoreFailedException,
-)
+from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
@@ -42,7 +38,7 @@ from flowmachine.utils import _sleep
 
 from flowmachine.core.cache import write_query_to_cache
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+logger = structlog.get_logger(__name__)
 
 # This is the maximum length that postgres will allow for its
 # table name. This should only be changed if postgres is updated
