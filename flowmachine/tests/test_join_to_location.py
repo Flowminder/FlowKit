@@ -12,14 +12,24 @@ from flowmachine.features import subscriber_locations
 from flowmachine.core import JoinToLocation
 
 
-def test_join_to_location_column_names(exemplar_level_param):
+@pytest.mark.parametrize(
+    "spatial_unit",
+    [
+        AdminSpatialUnit(level=2),
+        AdminSpatialUnit(level=2, column_name="admin2name"),
+        VersionedSiteSpatialUnit(),
+        VersionedCellSpatialUnit(),
+        LatLonSpatialUnit(),
+        GridSpatialUnit(size=5),
+        PolygonSpatialUnit(
+            polygon_column_names="admin3pcod", polygon_table="geography.admin3"
+        ),
+    ],
+)
+def test_join_to_location_column_names(spatial_unit):
     """ Test that JoinToLocation's column_names property is accurate."""
-    if "cell" == exemplar_level_param["level"]:
-        pytest.skip(
-            "Cell level not valid for JoinToLocation"
-        )  # cell level not valid for JoinToLocation
     table = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
-    joined = JoinToLocation(table, **exemplar_level_param)
+    joined = JoinToLocation(table, spatial_unit=spatial_unit)
     assert joined.head(0).columns.tolist() == joined.column_names
 
 
@@ -42,7 +52,7 @@ def test_join_with_versioned_cells(get_dataframe, get_length):
     Test that flowmachine.JoinToLocation can fetch the cell version.
     """
     ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
-    df = get_dataframe(JoinToLocation(ul, level="versioned-cell"))
+    df = get_dataframe(JoinToLocation(ul, spatial_unit=VersionedCellSpatialUnit()))
     # As our database is complete we should not drop any rows
     assert len(df) == get_length(ul)
     # These should all be version zero, these are the towers before the changeover date, or those that
@@ -65,7 +75,7 @@ def test_join_with_lat_lon(get_dataframe):
     Test that flowmachine.JoinToLocation can get the lat-lon values of the cell
     """
     ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
-    df = get_dataframe(JoinToLocation(ul, level="lat-lon"))
+    df = get_dataframe(JoinToLocation(ul, spatial_unit=LatLonSpatialUnit()))
 
     expected_cols = sorted(["subscriber", "time", "location_id", "lat", "lon"])
     assert sorted(df.columns) == expected_cols
@@ -91,10 +101,11 @@ def test_join_with_polygon(get_dataframe, get_length):
     ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
     j = JoinToLocation(
         ul,
-        level="polygon",
-        column_name="admin3pcod",
-        polygon_table="geography.admin3",
-        geom_col="geom",
+        spatial_unit=PolygonSpatialUnit(
+            polygon_column_names="admin3pcod",
+            polygon_table="geography.admin3",
+            geom_col="geom",
+        ),
     )
     df = get_dataframe(j)
 
@@ -108,7 +119,7 @@ def test_join_to_admin(get_dataframe, get_length):
     Test that flowmachine.JoinToLocation can join to a admin region.
     """
     ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
-    df = get_dataframe(JoinToLocation(ul, level="admin3"))
+    df = get_dataframe(JoinToLocation(ul, spatial_unit=AdminSpatialUnit(level=3)))
     assert len(df) == get_length(ul)
     expected_cols = sorted(["subscriber", "time", "location_id", "pcod"])
     assert sorted(df.columns) == expected_cols
@@ -119,5 +130,5 @@ def test_join_to_grid(get_dataframe, get_length):
     Test that we can join to a grid square
     """
     ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
-    df = get_dataframe(JoinToLocation(ul, level="grid", size=50))
+    df = get_dataframe(JoinToLocation(ul, spatial_unit=GridSpatialUnit(size=50)))
     assert len(df) == get_length(ul)
