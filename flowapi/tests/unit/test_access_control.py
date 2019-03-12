@@ -18,7 +18,7 @@ async def test_protected_get_routes(route, app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the app, with a mock for the db
+        Pytest fixture providing the flowapi, with a mock for the db
     route: str
         Route to test
     """

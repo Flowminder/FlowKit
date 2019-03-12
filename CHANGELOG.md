@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Added new `TopUpAmount`, `TopUpBalance` query classes to FlowMachine.
 
 ### Changed
 - FlowAPI now reports queued/running status for queries instead of just accepted
@@ -20,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Dockerised development setup, with support for live reload of `flowmachine` and `flowapi` after source code changes.
 - Pre-commit hook for Python formatting with black.
-- Added new `IntereventPeriod`, `ContactReciprocal`, `ProportionContactReciprocal`, `ProportionEventReciprocal`, `ProportionEventType`, `MDSVolume` query classes to FlowMachine.
+- Added new `IntereventPeriod`, `ContactReciprocal`, `ProportionContactReciprocal`, `ProportionEventReciprocal`, `ProportionEventType` and `MDSVolume` query classes to FlowMachine.
 
 ### Changed
 - `CustomQuery` now requires column names to be specified
@@ -28,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI now reports whether a query is queued or running when polling
 - FlowDB test data and synthetic data images are now available from their own Docker repos (Flowminder/flowdb-testdata, Flowminder/flowdb-synthetic-data)
 - Changed query class name from `NocturnalCalls` to `NocturnalEvents`.
+- FlowAPI is now an installable python module
 
 ### Removed
 - Query objects can no longer be recalculated to cache and must be explicitly removed first

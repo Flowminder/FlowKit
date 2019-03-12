@@ -7,8 +7,8 @@
 
 if [ -e /run/secrets/cert-flowkit.pem ];
 then
-    hypercorn --bind 0.0.0.0:9090 --certfile /run/secrets/cert-flowkit.pem --keyfile /run/secrets/cert-flowkit.pem "app.main:create_app()"
+    hypercorn --bind 0.0.0.0:9090 --certfile /run/secrets/cert-flowkit.pem --keyfile /run/secrets/cert-flowkit.pem "flowapi.main:create_app()"
 else
     echo "WARNING: No certificate file provided. Communications with the API server will NOT BE SECURE."
-    hypercorn --bind 0.0.0.0:9090 "app.main:create_app()"
+    hypercorn --bind 0.0.0.0:9090 "flowapi.main:create_app()"
 fi
