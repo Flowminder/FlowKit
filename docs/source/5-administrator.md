@@ -241,7 +241,7 @@ Note that the `request_id` field is identical across the five log entries, which
 
 By default, FlowMachine and FlowAPI write error logs to stderr. For more verbose logging, set the `LOG_LEVEL` environment variable to `debug` when starting the docker container.
 
-FlowMachine also supports writing debug and error logs to a file. To enable this, set the `WRITE_LOG_FILE` environment variable to `TRUE` when starting the FlowMachine container. Logs will be written to `$LOG_DIRECTORY/flowmachine-debug.log` (by default `LOG_DIRECTORY=/var/log/flowmachine`). If the directory specified does not exist, FlowMachine will attempt to create it.
+FlowMachine also supports writing debug and error logs to a file. To enable this, set the `WRITE_LOG_FILE` environment variable to `TRUE` when starting the FlowMachine container. Logs will be written to `$LOG_DIRECTORY/flowmachine-debug.log` inside the FlowMachine docker container (by default `LOG_DIRECTORY=/var/log/flowmachine`). If the directory specified does not exist, FlowMachine will attempt to create it.
 
 Log messages from FlowMachine will show the `logger` field of the log entry as the Python module that emitted the log entry (e.g. `{'logger':'flowmachine.core.query'..}`. FlowAPI debugging messages set `logger` to `flowapi`.
 
