@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.3.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.0.2">
     
     
       
@@ -40,9 +40,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.572ca0f0.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.982221ab.css">
       
-        <link rel="stylesheet" href="../../../../../assets/stylesheets/application-palette.22915126.css">
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/application-palette.224b79ff.css">
       
       
         
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../../assets/javascripts/modernizr.962652e9.js"></script>
+      <script src="../../../../../assets/javascripts/modernizr.1f0bcf2b.js"></script>
     
     
       
@@ -127,20 +127,16 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
-            
-              <span class="md-header-nav__topic">
-                FlowKit
-              </span>
-              <span class="md-header-nav__topic">
-                zmq_interface
-              </span>
-            
+            <span class="md-header-nav__topic">
+              FlowKit
+            </span>
+            <span class="md-header-nav__topic">
+              zmq_interface
+            </span>
           
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
-        
-          
         
       </div>
       
@@ -151,20 +147,18 @@
 
   
 
-
-  <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      Flowminder/FlowKit
+<a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
           </div>
         </div>
       
@@ -200,20 +194,18 @@
 
   
 
-
-  <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      Flowminder/FlowKit
+<a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
     </div>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -2074,23 +2066,23 @@
                 
                 <h1 id="flowmachinecoreserverzmq_interface">flowmachine.core.server.zmq_interface<a class="headerlink" href="#flowmachinecoreserverzmq_interface" title="Permanent link">&para;</a></h1>
 <h2 id="class-zmqinterfaceerror">Class <strong>ZMQInterfaceError</strong><a class="headerlink" href="#class-zmqinterfaceerror" title="Permanent link">&para;</a></h2>
-<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/zmq_interface.py#L8">flowmachine/core/server/zmq_interface.py</a></p>
+<p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/zmq_interface.py#L10">flowmachine/core/server/zmq_interface.py</a></p>
 <p>Custom exception to indicate an error when receiving or sending flowmachine-related messages via zmq.</p>
 <h2 id="class-zmqmultipartmessage">Class <strong>ZMQMultipartMessage</strong><a class="headerlink" href="#class-zmqmultipartmessage" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">ZMQMultipartMessage</span><span class="p">(</span><span class="n">multipart_msg</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/zmq_interface.py#L15">flowmachine/core/server/zmq_interface.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/zmq_interface.py#L17">flowmachine/core/server/zmq_interface.py</a></p>
 <p>Helper class which encapsulates the receiving and sending of multipart messages via zeromq. This serves as the external connection point between flowmachine and the external zmq loop.
 Its responsibility is to receive a multipart message obtained from ZMQ, deconstruct it into the return address and the actual message, and to send back replies over the socket.</p>
 <h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
 <h4 id="send_reply_async">send_reply_async<a class="headerlink" href="#send_reply_async" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">send_reply_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">,</span> <span class="n">reply_coroutine</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/zmq_interface.py#L32">flowmachine/core/server/zmq_interface.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/zmq_interface.py#L34">flowmachine/core/server/zmq_interface.py</a></p>
 <h2 id="send_reply">send_reply<a class="headerlink" href="#send_reply" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">send_reply</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">return_address</span><span class="p">,</span> <span class="n">reply_coroutine</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/zmq_interface.py#L86">flowmachine/core/server/zmq_interface.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/zmq_interface.py#L88">flowmachine/core/server/zmq_interface.py</a></p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
@@ -2169,7 +2161,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
           Material for MkDocs</a>
       </div>
       
-        
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../../assets/fonts/font-awesome.css">
     
@@ -2179,14 +2170,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
     
   </div>
 
-      
     </div>
   </div>
 </footer>
       
     </div>
     
-      <script src="../../../../../assets/javascripts/application.a353778b.js"></script>
+      <script src="../../../../../assets/javascripts/application.d9aa80ab.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../../.."}})</script>
       

@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.3.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.0.2">
     
     
       
@@ -40,9 +40,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.572ca0f0.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.982221ab.css">
       
-        <link rel="stylesheet" href="../../../../../assets/stylesheets/application-palette.22915126.css">
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/application-palette.224b79ff.css">
       
       
         
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../../../../../assets/javascripts/modernizr.962652e9.js"></script>
+      <script src="../../../../../assets/javascripts/modernizr.1f0bcf2b.js"></script>
     
     
       
@@ -127,20 +127,16 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
-            
-              <span class="md-header-nav__topic">
-                FlowKit
-              </span>
-              <span class="md-header-nav__topic">
-                server
-              </span>
-            
+            <span class="md-header-nav__topic">
+              FlowKit
+            </span>
+            <span class="md-header-nav__topic">
+              server
+            </span>
           
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
-        
-          
         
       </div>
       
@@ -151,20 +147,18 @@
 
   
 
-
-  <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      Flowminder/FlowKit
+<a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
           </div>
         </div>
       
@@ -200,20 +194,18 @@
 
   
 
-
-  <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      Flowminder/FlowKit
+<a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
     </div>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -2078,7 +2070,7 @@
 <h2 id="get_next_zmq_message">get_next_zmq_message<a class="headerlink" href="#get_next_zmq_message" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">get_next_zmq_message</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L209">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L193">flowmachine/core/server/server.py</a></p>
 <p>Listen on the given zmq socket and return the next multipart message received.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2097,7 +2089,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="get_reply_for_message">get_reply_for_message<a class="headerlink" href="#get_reply_for_message" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">get_reply_for_message</span><span class="p">(</span><span class="n">zmq_msg</span><span class="p">:</span> <span class="n">flowmachine</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">zmq_interface</span><span class="o">.</span><span class="n">ZMQMultipartMessage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L63">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L47">flowmachine/core/server/server.py</a></p>
 <p>Dispatches the message to the appropriate handling function based on the specified action and returns the reply.</p>
 <h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2116,11 +2108,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="main">main<a class="headerlink" href="#main" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">main</span><span class="p">()</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L229">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L213">flowmachine/core/server/server.py</a></p>
 <h2 id="recv">recv<a class="headerlink" href="#recv" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">recv</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L162">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L146">flowmachine/core/server/server.py</a></p>
 <p>Listen for messages coming in via zeromq on the given port, and dispatch them.</p>
                 
                   
@@ -2185,7 +2177,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
           Material for MkDocs</a>
       </div>
       
-        
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../../../../assets/fonts/font-awesome.css">
     
@@ -2195,14 +2186,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
     
   </div>
 
-      
     </div>
   </div>
 </footer>
       
     </div>
     
-      <script src="../../../../../assets/javascripts/application.a353778b.js"></script>
+      <script src="../../../../../assets/javascripts/application.d9aa80ab.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../../.."}})</script>
       

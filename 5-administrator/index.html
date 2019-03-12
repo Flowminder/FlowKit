@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.3.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.0.2">
     
     
       
@@ -40,9 +40,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.572ca0f0.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.982221ab.css">
       
-        <link rel="stylesheet" href="../assets/stylesheets/application-palette.22915126.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.224b79ff.css">
       
       
         
@@ -51,7 +51,7 @@
       
     
     
-      <script src="../assets/javascripts/modernizr.962652e9.js"></script>
+      <script src="../assets/javascripts/modernizr.1f0bcf2b.js"></script>
     
     
       
@@ -127,20 +127,16 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
-            
-              <span class="md-header-nav__topic">
-                FlowKit
-              </span>
-              <span class="md-header-nav__topic">
-                Administrator
-              </span>
-            
+            <span class="md-header-nav__topic">
+              FlowKit
+            </span>
+            <span class="md-header-nav__topic">
+              Administrator
+            </span>
           
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
-        
-          
         
       </div>
       
@@ -151,20 +147,18 @@
 
   
 
-
-  <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      Flowminder/FlowKit
+<a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
           </div>
         </div>
       
@@ -200,20 +194,18 @@
 
   
 
-
-  <a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      Flowminder/FlowKit
+<a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
     </div>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -354,6 +346,14 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#audit-trail-logs" title="Audit Trail Logs" class="md-nav__link">
+    Audit Trail Logs
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#authentication-logs" title="Authentication Logs" class="md-nav__link">
     Authentication Logs
   </a>
@@ -377,6 +377,18 @@
           <li class="md-nav__item">
   <a href="#complete-logging-cycle" title="Complete Logging Cycle" class="md-nav__link">
     Complete Logging Cycle
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-and-debugging-logs" title="Error and Debugging Logs" class="md-nav__link">
+    Error and Debugging Logs
   </a>
   
 </li>
@@ -2064,6 +2076,14 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#audit-trail-logs" title="Audit Trail Logs" class="md-nav__link">
+    Audit Trail Logs
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#authentication-logs" title="Authentication Logs" class="md-nav__link">
     Authentication Logs
   </a>
@@ -2087,6 +2107,18 @@
           <li class="md-nav__item">
   <a href="#complete-logging-cycle" title="Complete Logging Cycle" class="md-nav__link">
     Complete Logging Cycle
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-and-debugging-logs" title="Error and Debugging Logs" class="md-nav__link">
+    Error and Debugging Logs
   </a>
   
 </li>
@@ -2151,12 +2183,13 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
 </div>
 <p><code>cache_size</code> is the maximum size in bytes that the cache tables should occupy on disk. These settings default to 1000.0, and 10% of available space on the drive where <code>/var/lib/postgresql/data</code> is located.</p>
 <p>These values can be overridden when creating a new FlowDB container by setting the <code>CACHE_SIZE</code> and <code>CACHE_HALF_LIFE</code> environment variables for the container, set by updating the <code>cache.cache_config</code> table after connecting directly to FlowDB, or modified using the cache submodule.</p>
-<p><a name="logging"></p>
 <h2 id="logging-and-audit-trails">Logging and Audit Trails<a class="headerlink" href="#logging-and-audit-trails" title="Permanent link">&para;</a></h2>
-<p>FlowKit supports structured logging in JSON form for all interactions with FlowAPI, primarily to facilitate audit trails.</p>
+<p>FlowKit supports structured logging in JSON form throughout FlowMachine and FlowAPI. By default both FlowMachine and FlowAPI will only log errors, and audit logs.</p>
+<p>Audit trail logs are <em>always</em> written to both stderr and a log file. Error logs are, by default, only written to stderr. </p>
+<h3 id="audit-trail-logs">Audit Trail Logs<a class="headerlink" href="#audit-trail-logs" title="Permanent link">&para;</a></h3>
 <p>Three kinds of access log are written on each request handled by FlowAPI: authentication, data access at API side, and data access on the FlowMachine side.</p>
-<h3 id="authentication-logs">Authentication Logs<a class="headerlink" href="#authentication-logs" title="Permanent link">&para;</a></h3>
-<p>FlowAPI logs all access attempts whether successful or not to stdout, and to a rotating log file. By default, this will be written at <code>/var/log/flowapi/flowkit-access.log</code>. The directory the log files are written to can be changed by setting the <code>LOG_DIRECTORY</code> environment variable.</p>
+<h4 id="authentication-logs">Authentication Logs<a class="headerlink" href="#authentication-logs" title="Permanent link">&para;</a></h4>
+<p>FlowAPI logs all access attempts whether successful or not to stderr, and to a rotating log file. By default, this will be written at <code>/var/log/flowapi/flowkit-access.log</code>. The directory the log files are written to can be changed by setting the <code>LOG_DIRECTORY</code> environment variable.</p>
 <p>Where authentication succeeds, the log message will have a <code>level</code> field of <code>info</code>, and an <code>event</code> type of <code>AUTHENTICATED</code>:</p>
 <div class="codehilite"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;fe1d5dd2-ddfb-4b34-9d1e-4ebfc205d64c&quot;</span><span class="p">,</span>
@@ -2182,13 +2215,13 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
 
 <p>In general, access log messages contain at a minimum the route that access was requested to, any json payload, source IP address for the request, and a timestamp. Every request <em>also</em> has a <em>unique id</em>, which will be the same across all log entries related to that request.</p>
 <p>If authentication fails, then the reason is also included in the log message, along with any error message and as much information about the request and requester as can be discerned.</p>
-<h3 id="api-usage-logs">API Usage Logs<a class="headerlink" href="#api-usage-logs" title="Permanent link">&para;</a></h3>
+<h4 id="api-usage-logs">API Usage Logs<a class="headerlink" href="#api-usage-logs" title="Permanent link">&para;</a></h4>
 <p>After a request is successfully authenticated (has a valid token), the <em>nature</em> of the request will be logged at several points. When the request is received, if at any point the request is rejected because the provided token did not grant access, and when the request is fulfilled.</p>
-<p>As with the authentication log, the usage log is written to both stdout and a rotating log file. Logs will be written to <code>query-runs.log</code> in the same directory as the authentication log.</p>
-<h3 id="flowmachine-usage-logs">FlowMachine Usage Logs<a class="headerlink" href="#flowmachine-usage-logs" title="Permanent link">&para;</a></h3>
+<p>As with the authentication log, the usage log is written to both stderr and a rotating log file. Logs will be written to <code>query-runs.log</code> in the same directory as the authentication log.</p>
+<h4 id="flowmachine-usage-logs">FlowMachine Usage Logs<a class="headerlink" href="#flowmachine-usage-logs" title="Permanent link">&para;</a></h4>
 <p>If a request has triggered an action in the FlowMachine backend, logs will also be written there. These logs will include the <code>request_id</code> for the API request which originally triggered them.</p>
-<p>As with the FlowAPI loggers, these messages are written both to stdout and a rotating log file (<code>/var/log/flowmachine/query-runs.log</code>, although the directory can be set using the <code>LOG_DIRECTORY</code> environment variable.)</p>
-<h3 id="complete-logging-cycle">Complete Logging Cycle<a class="headerlink" href="#complete-logging-cycle" title="Permanent link">&para;</a></h3>
+<p>As with the FlowAPI loggers, these messages are written both to stderr and a rotating log file (<code>/var/log/flowmachine/query-runs.log</code>, although the directory can be set using the <code>LOG_DIRECTORY</code> environment variable.)</p>
+<h4 id="complete-logging-cycle">Complete Logging Cycle<a class="headerlink" href="#complete-logging-cycle" title="Permanent link">&para;</a></h4>
 <p>A complete logging cycle for a successful request to retrieve a previously run query's results might look like this:</p>
 <p>FlowAPI access log:</p>
 <div class="codehilite"><pre><span></span><span class="p">{</span>
@@ -2300,10 +2333,14 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
 </pre></div>
 
 <p>Note that the <code>request_id</code> field is identical across the five log entries, which lets you match the request across the multiple services.</p>
+<h3 id="error-and-debugging-logs">Error and Debugging Logs<a class="headerlink" href="#error-and-debugging-logs" title="Permanent link">&para;</a></h3>
+<p>By default, FlowMachine and FlowAPI write error logs to stderr. For more verbose logging, set the <code>LOG_LEVEL</code> environment variable to <code>debug</code> when starting the docker container.</p>
+<p>FlowMachine also supports writing debug and error logs to a file. To enable this, set the <code>WRITE_LOG_FILE</code> environment variable to <code>TRUE</code> when starting the FlowMachine container. Logs will be written to <code>$LOG_DIRECTORY/flowmachine-debug.log</code> inside the FlowMachine docker container (by default <code>LOG_DIRECTORY=/var/log/flowmachine</code>). If the directory specified does not exist, FlowMachine will attempt to create it.</p>
+<p>Log messages from FlowMachine will show the <code>logger</code> field of the log entry as the Python module that emitted the log entry (e.g. <code>{'logger':'flowmachine.core.query'..}</code>. FlowAPI debugging messages set <code>logger</code> to <code>flowapi</code>.</p>
 <h3 id="managing-and-monitoring-logs">Managing and Monitoring Logs<a class="headerlink" href="#managing-and-monitoring-logs" title="Permanent link">&para;</a></h3>
 <p>Because FlowKit employs structured logging, and all log messages are JSON objects, the access and usage logs are easy to use with tools like <a href="https://www.elastic.co/products/logstash">Logstash</a>. Getting FlowKit logs into Logstash is as easy as configuring it to consume the log files generated.</p>
 <p>One approach to this is to mount the volumes for <code>/var/log/flowmachine/</code> and <code>/var/log/flowapi/</code> and expose the log files to Logstash, or a log shipper.</p>
-<p>Alternatively, <a href="https://www.elastic.co/docker-kubernetes-container-monitoring">Filebeat</a> allows you to integrate the logs from stdout directly into your monitoring system.</p>
+<p>Alternatively, <a href="https://www.elastic.co/docker-kubernetes-container-monitoring">Filebeat</a> allows you to integrate the logs from stderr directly into your monitoring system.</p>
 <div class="footnote">
 <hr />
 <ol>
@@ -2375,7 +2412,6 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
           Material for MkDocs</a>
       </div>
       
-        
   <div class="md-footer-social">
     <link rel="stylesheet" href="../assets/fonts/font-awesome.css">
     
@@ -2385,14 +2421,13 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
     
   </div>
 
-      
     </div>
   </div>
 </footer>
       
     </div>
     
-      <script src="../assets/javascripts/application.a353778b.js"></script>
+      <script src="../assets/javascripts/application.d9aa80ab.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
