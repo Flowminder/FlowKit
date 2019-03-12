@@ -64,7 +64,7 @@ These values can be overridden when creating a new FlowDB container by setting t
 
 FlowKit supports structured logging in JSON form throughout FlowMachine and FlowAPI. By default both FlowMachine and FlowAPI will only log errors, and audit logs.
 
-Audit trail logs are _always_ written to both stdout and a log file. Error logs are, by default, only written to stdout. 
+Audit trail logs are _always_ written to both stderr and a log file. Error logs are, by default, only written to stderr. 
 
 ### Audit Trail Logs
 
@@ -73,7 +73,7 @@ Three kinds of access log are written on each request handled by FlowAPI: authen
 
 #### Authentication Logs
 
-FlowAPI logs all access attempts whether successful or not to stdout, and to a rotating log file. By default, this will be written at `/var/log/flowapi/flowkit-access.log`. The directory the log files are written to can be changed by setting the `LOG_DIRECTORY` environment variable.
+FlowAPI logs all access attempts whether successful or not to stderr, and to a rotating log file. By default, this will be written at `/var/log/flowapi/flowkit-access.log`. The directory the log files are written to can be changed by setting the `LOG_DIRECTORY` environment variable.
 
 Where authentication succeeds, the log message will have a `level` field of `info`, and an `event` type of `AUTHENTICATED`:
 
@@ -108,13 +108,13 @@ If authentication fails, then the reason is also included in the log message, al
 
 After a request is successfully authenticated (has a valid token), the _nature_ of the request will be logged at several points. When the request is received, if at any point the request is rejected because the provided token did not grant access, and when the request is fulfilled.
 
-As with the authentication log, the usage log is written to both stdout and a rotating log file. Logs will be written to `query-runs.log` in the same directory as the authentication log.
+As with the authentication log, the usage log is written to both stderr and a rotating log file. Logs will be written to `query-runs.log` in the same directory as the authentication log.
 
 #### FlowMachine Usage Logs
 
 If a request has triggered an action in the FlowMachine backend, logs will also be written there. These logs will include the `request_id` for the API request which originally triggered them.
 
-As with the FlowAPI loggers, these messages are written both to stdout and a rotating log file (`/var/log/flowmachine/query-runs.log`, although the directory can be set using the `LOG_DIRECTORY` environment variable.)
+As with the FlowAPI loggers, these messages are written both to stderr and a rotating log file (`/var/log/flowmachine/query-runs.log`, although the directory can be set using the `LOG_DIRECTORY` environment variable.)
 
 #### Complete Logging Cycle
 
@@ -239,7 +239,7 @@ Note that the `request_id` field is identical across the five log entries, which
 
 ### Error and Debugging Logs
 
-By default, FlowMachine and FlowAPI write error logs to stdout. For more verbose logging, set the `LOG_LEVEL` environment variable to `debug` when starting the docker container.
+By default, FlowMachine and FlowAPI write error logs to stderr. For more verbose logging, set the `LOG_LEVEL` environment variable to `debug` when starting the docker container.
 
 FlowMachine also supports writing debug and error logs to a file. To enable this, set the `WRITE_LOG_FILE` environment variable to `TRUE` when starting the FlowMachine container. Logs will be written to `$LOG_DIRECTORY/flowmachine-debug.log` (by default `LOG_DIRECTORY=/var/log/flowmachine`). If the directory specified does not exist, FlowMachine will attempt to create it.
 
@@ -251,6 +251,6 @@ Because FlowKit employs structured logging, and all log messages are JSON object
 
 One approach to this is to mount the volumes for `/var/log/flowmachine/` and `/var/log/flowapi/` and expose the log files to Logstash, or a log shipper.
 
-Alternatively, [Filebeat](https://www.elastic.co/docker-kubernetes-container-monitoring) allows you to integrate the logs from stdout directly into your monitoring system.
+Alternatively, [Filebeat](https://www.elastic.co/docker-kubernetes-container-monitoring) allows you to integrate the logs from stderr directly into your monitoring system.
 
    
