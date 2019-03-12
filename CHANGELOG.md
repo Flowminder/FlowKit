@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Added new `TopUpAmount`, `TopUpBalance` query classes to FlowMachine.
 
 ### Changed
 - All FlowMachine logs are now in structured json form
@@ -20,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Dockerised development setup, with support for live reload of `flowmachine` and `flowapi` after source code changes.
 - Pre-commit hook for Python formatting with black.
-- Added new `IntereventPeriod`, `ContactReciprocal`, `ProportionContactReciprocal`, `ProportionEventReciprocal`, `ProportionEventType`, `MDSVolume` query classes to FlowMachine.
+- Added new `IntereventPeriod`, `ContactReciprocal`, `ProportionContactReciprocal`, `ProportionEventReciprocal`, `ProportionEventType` and `MDSVolume` query classes to FlowMachine.
 
 ### Changed
 - `CustomQuery` now requires column names to be specified

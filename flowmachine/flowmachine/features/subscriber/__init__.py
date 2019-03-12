@@ -62,6 +62,8 @@ from .meaningful_locations import (
     MeaningfulLocationsOD,
 )
 
+from .topup_amount import TopUpAmount
+from .topup_balance import TopUpBalance
 from .mds_volume import MDSVolume
 from .event_type_proportion import ProportionEventType
 
@@ -109,6 +111,8 @@ __all__ = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
+    "TopUpAmount",
+    "TopUpBalance",
     "MDSVolume",
     "ContactReciprocal",
     "ProportionEventReciprocal",
