@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added new `TopUpAmount`, `TopUpBalance` query classes to FlowMachine.
 
 ### Changed
-- `MDSVolume` no longer allows specifying the table, and will always use the mds table.
+- `MDSVolume` no longer allows specifying the table, and will always use the `mds` table.
 
 ### Fixed
 
