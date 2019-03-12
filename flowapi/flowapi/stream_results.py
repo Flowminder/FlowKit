@@ -27,7 +27,7 @@ async def stream_result_as_json(
         Encoded lines of JSON
 
     """
-    logger = current_app.log
+    logger = current_app.flowapi_logger
     pool = current_app.pool
     prefix = "{"
     if additional_elements:

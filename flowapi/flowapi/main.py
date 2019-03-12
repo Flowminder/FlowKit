@@ -47,7 +47,8 @@ async def connect_logger():
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
     logger.addHandler(ch)
-    current_app.log = structlog.wrap_logger(logger)
+    # Debug logger. Quart doesn't allow us to override current_app.logger, but won't use it by default.
+    current_app.flowapi_logger = structlog.wrap_logger(logger)
 
     # Logger for authentication
 
@@ -83,13 +84,13 @@ async def connect_logger():
 async def connect_zmq():
     context = Context.instance()
     #  Socket to talk to server
-    current_app.log.debug("Connecting to FlowMachine server…")
+    current_app.flowapi_logger.debug("Connecting to FlowMachine server…")
     socket = context.socket(zmq.REQ)
     socket.connect(
         f"tcp://{current_app.config['FLOWMACHINE_SERVER']}:{current_app.config['FLOWMACHINE_PORT']}"
     )
     request.socket = socket
-    current_app.log.debug("Connected.")
+    current_app.flowapi_logger.debug("Connected.")
 
 
 async def add_uuid():
@@ -97,12 +98,12 @@ async def add_uuid():
 
 
 def close_zmq(exc):
-    current_app.log.debug("Closing connection to FlowMachine server…")
+    current_app.flowapi_logger.debug("Closing connection to FlowMachine server…")
     try:
         request.socket.close()
-        current_app.log.debug("Closed socket.")
+        current_app.flowapi_logger.debug("Closed socket.")
     except AttributeError:
-        current_app.log.debug("No socket to close.")
+        current_app.flowapi_logger.debug("No socket to close.")
 
 
 async def create_db():
