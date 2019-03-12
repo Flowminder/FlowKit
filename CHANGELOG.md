@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Added new `TopUpAmount`, `TopUpBalance` query classes to FlowMachine.
+- Added new `TopUpAmount`, `TopUpBalance`, `PerLocationEventStats`, `PerContactEventStats` query classes to FlowMachine.
 
 ### Changed
 - All FlowMachine logs are now in structured json form
@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 ### Removed
+- Removes query class `TotalSubscriberEvents` as it is superseded by `EventCount`.
 
 
 ## [0.4.0]
