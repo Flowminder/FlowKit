@@ -19,7 +19,7 @@ from flowmachine.utils import (
     getsecret,
     pretty_sql,
     _makesafe,
-    get_alias,
+    get_name_and_alias,
 )
 
 from flowmachine.utils import time_period_add
@@ -165,5 +165,5 @@ def test_get_secrets_default(monkeypatch):
     "column_name, alias",
     [("column", "column"), ("column AS alias", "alias"), ("column as alias", "alias")],
 )
-def test_get_alias(column_name, alias):
-    assert alias == get_alias(column_name)
+def test_get_name_and_alias(column_name, alias):
+    assert ("column", alias) == get_name_and_alias(column_name)

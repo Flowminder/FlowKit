@@ -7,12 +7,13 @@ Classes that map cells (or towers or sites) to a spatial unit
 (e.g. versioned-cell, admin*, grid, ...).
 """
 from typing import List
+from abc import ABCMeta, abstractmethod
 
-from flowmachine.utils import get_alias
+from flowmachine.utils import get_name_and_alias
 from . import Query, GeoTable, Grid
 
 
-class SpatialUnit(Query):
+class SpatialUnit(Query, metaclass=ABCMeta):
     """
     Base class for all spatial units. Selects columns from the location table,
     and optionally joins to data in another table.
@@ -78,7 +79,28 @@ class SpatialUnit(Query):
 
     @property
     def column_names(self) -> List[str]:
-        return [get_alias(c) for c in self._cols]
+        return [get_name_and_alias(c)[1] for c in self._cols]
+    
+    @abstractmethod
+    def geo_augment(self, query):
+        """
+        Given a query object (which is assumed to be a JoinToLocation object,
+        joined to this spatial unit), return a version of the query augmented
+        with a geom column and a gid column.
+
+        Parameters
+        ----------
+        query : flowmachine.Query
+            The query to augment with geom and gid columns
+        
+        Returns
+        -------
+        str
+            A version of this query with geom and gid columns
+        list
+            The columns this query contains
+        """
+        raise NotImplementedError
 
     def _make_query(self):
         columns = ", ".join(self._cols)
@@ -109,6 +131,17 @@ class LatLonSpatialUnit(SpatialUnit):
             location_column_names=["lat", "lon"],
         )
 
+    def geo_augment(self, query):
+        sql = f"""
+        SELECT 
+            row_number() over() AS gid,
+            *, 
+            ST_SetSRID(ST_Point(lon, lat), 4326) AS geom
+        FROM ({query.get_query()}) AS L
+        """
+        cols = list(set(query.column_names + ["gid", "geom"]))
+        return sql, cols
+
 
 class VersionedCellSpatialUnit(SpatialUnit):
     """
@@ -131,6 +164,20 @@ class VersionedCellSpatialUnit(SpatialUnit):
             location_column_names=["location_id", "version", "lon", "lat"],
             location_info_table="infrastructure.cells",
         )
+
+    def geo_augment(self, query):
+    sql = f"""
+    SELECT 
+        row_number() OVER () AS gid, 
+        geom_point AS geom, 
+        U.*
+    FROM ({query.get_query()}) AS U
+    LEFT JOIN infrastructure.cells AS S
+        ON U.location_id = S.id AND
+            U.version = S.version
+    """
+    cols = list(set(query.column_names + ["gid", "geom"]))
+    return sql, cols
 
 
 class VersionedSiteSpatialUnit(SpatialUnit):
@@ -172,6 +219,20 @@ class VersionedSiteSpatialUnit(SpatialUnit):
             location_info_table=f"infrastructure.sites AS {sites_alias}",
             join_clause=join_clause,
         )
+
+    def geo_augment(self, query):
+        sql = f"""
+        SELECT 
+            row_number() OVER () AS gid, 
+            geom_point AS geom, 
+            U.*
+        FROM ({query.get_query()}) AS U
+        LEFT JOIN infrastructure.sites AS S
+            ON U.site_id = S.id AND
+                U.version = S.version
+        """
+        cols = list(set(query.column_names + ["gid", "geom"]))
+        return sql, cols
 
 
 class PolygonSpatialUnit(SpatialUnit):
@@ -227,14 +288,14 @@ class PolygonSpatialUnit(SpatialUnit):
             f"{locinfo_alias}.date_of_first_service AS date_of_first_service",
             f"{locinfo_alias}.date_of_last_service AS date_of_last_service",
         ]
-        if type(polygon_columns) is str:
-            polygon_cols = [polygon_column_names]
+        if type(polygon_column_names) is str:
+            self.polygon_column_names = [polygon_column_names]
         else:
-            polygon_cols = polygon_column_names
+            self.polygon_column_names = polygon_column_names
         all_column_names = locinfo_column_names + [
-            f"{joined_alias}.{c}" for c in polygon_cols
+            f"{joined_alias}.{c}" for c in self.polygon_column_names
         ]
-        location_column_names = [get_alias(c) for c in polygon_cols]
+        location_column_names = [get_name_and_alias(c)[1] for c in self.polygon_column_names]
 
         super().__init__(
             selected_column_names=all_column_names,
@@ -242,6 +303,20 @@ class PolygonSpatialUnit(SpatialUnit):
             location_info_table=f"{location_info_table} AS {locinfo_alias}",
             join_clause=join_clause,
         )
+    
+    def geo_augment(self, query):
+        r_col_name, l_col_name = get_name_and_alias(self.polygon_column_names[0])
+        sql = f"""
+        SELECT 
+            row_number() OVER () as gid, 
+            {self.geom_col} AS geom, 
+            U.*
+        FROM ({query.get_query()}) AS U
+        LEFT JOIN ({self.polygon_table.get_query()}) AS G
+            ON U.{l_col_name} = G.{r_col_name}
+        """
+        cols = list(set(query.column_names + ["gid", "geom"]))
+        return sql, cols
 
 
 class AdminSpatialUnit(PolygonSpatialUnit):

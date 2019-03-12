@@ -334,16 +334,20 @@ def _makesafe(x):
     return adapt(x).getquoted().decode()
 
 
-def get_alias(column_name):
+def get_name_and_alias(column_name):
     """
-    Given a column name string, return the alias (if there is one),
-    or return the provided column name if there is no alias.
+    Given a column name string, return the column name and alias (if there is
+    one), or return the provided column name twice if there is no alias.
 
     Examples
     --------
-    >>> get_alias("col AS alias")
-      "alias"
-    >>> get_alias("col")
-      "col"
+    >>> get_name_and_alias("col AS alias")
+      ('col', 'alias')
+    >>> get_name_and_alias("col")
+      ('col', 'col')
     """
-    return re.split(" as ", column_name, flags=re.IGNORECASE)[-1]
+    column_name_split = re.split(" as ", column_name, flags=re.IGNORECASE)
+    if len(column_name_split) == 1:
+        return column_name_split[0].strip(), column_name_split[0].strip()
+    else:
+        return column_name_split[0].strip(), column_name_split[-1].strip()
