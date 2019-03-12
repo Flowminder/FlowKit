@@ -19,7 +19,7 @@ from .location_visits import LocationVisits
 from .day_trajectories import DayTrajectories
 from .radius_of_gyration import RadiusOfGyration
 from .displacement import Displacement
-from .total_subscriber_events import TotalSubscriberEvents
+from .event_count import EventCount
 from .event_count import EventCount
 from .subscriber_degree import SubscriberDegree
 from .subscriber_location_cluster import subscriber_location_cluster, HartiganCluster
@@ -66,11 +66,12 @@ from .topup_amount import TopUpAmount
 from .topup_balance import TopUpBalance
 from .mds_volume import MDSVolume
 from .event_type_proportion import ProportionEventType
+from .per_contact_event_stats import PerContactEventStats
+from .per_location_event_stats import PerLocationEventStats
 
 __all__ = [
     "RadiusOfGyration",
     "NocturnalEvents",
-    "TotalSubscriberEvents",
     "FirstLocation",
     "CallDays",
     "ModalLocation",
@@ -103,6 +104,8 @@ __all__ = [
     "LocationEntropy",
     "ContactEntropy",
     "EventCount",
+    "PerLocationEventStats",
+    "PerContactEventStats",
     "MeaningfulLocations",
     "MeaningfulLocationsAggregate",
     "MeaningfulLocationsOD",
