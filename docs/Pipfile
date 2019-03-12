@@ -18,18 +18,20 @@ geopandas = "*"
 numpydoc = "*"
 black = "==18.9b0"
 click = "*"
-"d3609ea" = {editable = true, path = "./../flowmachine"}
+d3609ea = {editable = true,path = "./../flowmachine"}
 descartes = "*"
 seaborn = "*"
-"3ff404a" = {editable = true, path = "./../flowclient"}
+3ff404a = {editable = true,path = "./../flowclient"}
 mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
 quart = "*"
 python-dotenv = "*"
 structlog = "*"
+folium = "*"
 
 [dev-packages]
+jupyterlab = "*"
 
 [requires]
 python_version = "3.7"
