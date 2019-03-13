@@ -25,6 +25,7 @@ from .query_proxy import (
     construct_query_object,
     InvalidGeographyError,
 )
+from .query_schemas import FlowmachineQuerySchema
 from .zmq_interface import ZMQMultipartMessage, ZMQInterfaceError
 
 
@@ -135,11 +136,12 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
         elif "get_available_queries" == action:
             logger.debug(f"Trying to get available queries. Message: {zmq_msg.msg_str}")
             query_run_log.info("get_available_queries", **run_log_dict)
+            available_queries = list(FlowmachineQuerySchema.type_schemas.keys())
             reply = {
                 "status": "accepted",
                 "msg": "",
                 # TODO: don't hard-code this!
-                "data": {"available_queries": ["daily_location", "modal_location"]},
+                "data": {"available_queries": available_queries},
             }
 
         else:
