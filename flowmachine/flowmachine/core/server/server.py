@@ -134,7 +134,11 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
 
         else:
             logger.debug(f"Unknown action: '{action}'")
-            reply = {"status": "error", "error": f"Unknown action: '{action}'"}
+            reply = {
+                "status": "error",
+                "msg": f"Unknown action: '{action}'",
+                "data": {},
+            }
 
     except KeyError as e:
         reply = {"status": "error", "error": f"Missing key {e}"}
