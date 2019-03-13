@@ -18,6 +18,10 @@ if [ -f /opt/synthetic_data/generate_synthetic_data.py ]; then
       --n-cells ${N_CELLS} \
       --n-calls ${N_CALLS} \
       --n-days ${N_DAYS} \
+      --n-tacs ${N_TACS} \
+      --n-mds ${N_MDS} \
+      --n-sms ${N_SMS} \
+      --n-sites ${N_SITES} \
       --output-root-dir ${OUTPUT_ROOT_DIR}
 fi
 

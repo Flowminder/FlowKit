@@ -17,7 +17,6 @@ Makes use of the tohu module for generation of random data.
 """
 
 import os
-import pandas as pd
 import argparse
 import datetime
 
@@ -144,7 +143,9 @@ if __name__ == "__main__":
     """
     )
 
-    for date in pd.date_range("2016-01-01", periods=num_days):
+    for date in (
+        datetime.date(2016, 1, 1) + datetime.timedelta(days=i) for i in range(num_days)
+    ):
         table = date.strftime("%Y%m%d")
         end_date = (date + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
         # calls
@@ -237,8 +238,11 @@ if __name__ == "__main__":
             )
 
     for sub in ("calls", "sms", "mds"):
-        if args[f"n_{sum}"] > 0:
-            for date in pd.date_range("2016-01-01", periods=num_days):
+        if getattr(args, f"n_{sub}") > 0:
+            for date in (
+                datetime.date(2016, 1, 1) + datetime.timedelta(days=i)
+                for i in range(num_days)
+            ):
                 table = date.strftime("%Y%m%d")
                 if args.cluster:
                     sql.append(
