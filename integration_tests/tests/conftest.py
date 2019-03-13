@@ -11,6 +11,7 @@ import pytest
 import os
 
 import flowmachine
+import zmq
 
 
 from flowmachine.core import Connection, Query
@@ -168,6 +169,37 @@ def zmq_url(zmq_host, zmq_port):
     `FLOWMACHINE_HOST` and `FLOWMACHINE_PORT`, respectively).
     """
     return f"tcp://{zmq_host}:{zmq_port}"
+
+
+@pytest.fixture
+def send_zmq_message_and_receive_reply(zmq_host, zmq_port):
+    def send_zmq_message_and_receive_reply_impl(msg):
+        """
+        Helper function to send JSON messages to the flowmachine server (via zmq) and receive a reply.
+
+        This is mainly useful for interactive testing and debugging.
+
+        Parameters
+        ----------
+        msg : dict
+            Dictionary representing a valid zmq message.
+
+        Example
+        -------
+        >>> msg = {"action": "ping"}
+        >>> send_zmq_message_and_receive_reply(msg)
+        {"status": "success", "msg": "pong"}
+        """
+
+        context = zmq.Context.instance()
+        socket = context.socket(zmq.REQ)
+        socket.connect(f"tcp://{zmq_host}:{zmq_port}")
+        print(f"Sending message: {msg}")
+        socket.send_json(msg)
+        reply = socket.recv_json()
+        return reply
+
+    return send_zmq_message_and_receive_reply_impl
 
 
 @pytest.fixture(scope="session")
