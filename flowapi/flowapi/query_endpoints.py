@@ -16,7 +16,7 @@ async def run_query():
     request.socket.send_json(
         {
             "request_id": request.request_id,
-            "action": "run_query",
+            "action": "run_query_OLD",
             "query_kind": json_data["query_kind"],
             "params": json_data["params"],
         }

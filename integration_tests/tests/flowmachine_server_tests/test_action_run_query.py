@@ -32,7 +32,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
     Run daily_location query and check the resulting table contains the expected rows.
     """
     msg_run_query = {
-        "action": "run_query",
+        "action": "run_query_OLD",
         "query_kind": "daily_location",
         "params": {
             "date": "2016-01-01",
@@ -140,7 +140,7 @@ async def test_run_query_with_wrong_parameters(
     Run daily_location query and check the resulting table contains the expected rows.
     """
     msg_run_query = {
-        "action": "run_query",
+        "action": "run_query_OLD",
         "query_kind": "daily_location",
         "params": params,
         "request_id": "DUMMY_ID",

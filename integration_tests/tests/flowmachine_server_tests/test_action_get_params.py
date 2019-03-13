@@ -32,7 +32,7 @@ async def test_get_params(params, zmq_url):
     # Run daily_location query.
     #
     msg_run_query = {
-        "action": "run_query",
+        "action": "run_query_OLD",
         "query_kind": "daily_location",
         "params": params,
         "request_id": "DUMMY_ID",

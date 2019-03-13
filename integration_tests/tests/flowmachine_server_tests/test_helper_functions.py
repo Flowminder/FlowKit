@@ -15,7 +15,7 @@ def test_send_message_and_receive_reply(zmq_host, zmq_port):
 
     # Check that FM_EXAMPLE_MESSAGE contains the expected message
     msg_expected = {
-        "action": "run_query",
+        "action": "run_query_OLD",
         "query_kind": "daily_location",
         "request_id": "DUMMY_ID",
         "params": {

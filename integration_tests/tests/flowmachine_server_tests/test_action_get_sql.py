@@ -15,7 +15,7 @@ async def test_get_sql(zmq_url):
     # Run daily_location query.
     #
     msg_run_query = {
-        "action": "run_query",
+        "action": "run_query_OLD",
         "query_kind": "daily_location",
         "params": {
             "date": "2016-01-01",
