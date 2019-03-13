@@ -74,6 +74,14 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             logger.debug(f"Received 'ping'. Message: {zmq_msg.msg_str}")
             query_run_log.info("ping", **run_log_dict)
             reply = {"status": "accepted", "msg": "pong", "data": {}}
+        elif "run_query" == action:
+            logger.debug(f"Trying to run query.  Message: {zmq_msg.msg_str}")
+            query_id = (
+                "4503884d13687efd7ff25163b462596a"
+            )  # FIXME: don't hard-code this!
+            query_run_log.info("run_query_OLD", query_id=query_id, **run_log_dict)
+            reply = {"status": "accepted", "data": {"query_id": query_id}}
+
         elif "run_query_OLD" == action:
             logger.debug(f"Trying to run query.  Message: {zmq_msg.msg_str}")
 
