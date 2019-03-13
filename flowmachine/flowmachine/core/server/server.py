@@ -68,7 +68,11 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             request_id=zmq_msg.api_request_id,
             params=zmq_msg.action_params,
         )
-        if "run_query" == action:
+        if "ping" == action:
+            logger.debug(f"Received 'ping'. Message: {zmq_msg.msg_str}")
+            query_run_log.info("ping", **run_log_dict)
+            reply = {"status": "accepted", "msg": "pong", "data": {}}
+        elif "run_query" == action:
             logger.debug(f"Trying to run query.  Message: {zmq_msg.msg_str}")
 
             query_proxy = QueryProxy(
