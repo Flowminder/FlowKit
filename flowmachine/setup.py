@@ -71,6 +71,7 @@ setup(
     install_requires=[
         "SQLAlchemy",
         "cachetools",
+        "marshmallow-oneofschema",
         "numpy",
         "networkx",
         "pandas",

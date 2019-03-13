@@ -19,6 +19,7 @@ structlog = "*"
 shapely = "*"
 finist = "*"
 python-rapidjson = "*"
+marshmallow-oneofschema = "*"
 
 [dev-packages]
 scipy = "*"
@@ -40,3 +41,6 @@ watchdog = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
