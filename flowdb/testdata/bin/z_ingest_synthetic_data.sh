@@ -17,9 +17,6 @@ if [ -f /opt/synthetic_data/generate_synthetic_data.py ]; then
       --n-subscribers ${N_SUBSCRIBERS} \
       --n-cells ${N_CELLS} \
       --n-calls ${N_CALLS} \
-      --subscribers-seed ${SUBSCRIBERS_SEED} \
-      --cells-seed ${CELLS_SEED} \
-      --calls-seed ${CALLS_SEED} \
       --n-days ${N_DAYS} \
       --output-root-dir ${OUTPUT_ROOT_DIR}
 fi

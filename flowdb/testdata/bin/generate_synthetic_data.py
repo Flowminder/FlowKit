@@ -18,16 +18,19 @@ Makes use of the tohu module for generation of random data.
 
 import os
 import pandas as pd
-from tohu import *
 import argparse
 import datetime
-from concurrent.futures import ProcessPoolExecutor
 
-# here = os.path.dirname(os.path.abspath(__file__))
 
 parser = argparse.ArgumentParser(description="Flowminder Synthetic CDR Generator\n")
 parser.add_argument(
     "--n-subscribers", type=int, default=4000, help="Number of subscribers to generate."
+)
+parser.add_argument(
+    "--n-tacs", type=int, default=4000, help="Number of phone models to generate."
+)
+parser.add_argument(
+    "--n-sites", type=int, default=1000, help="Number of sites to generate."
 )
 parser.add_argument(
     "--n-cells", type=int, default=1000, help="Number of cells to generate."
@@ -36,223 +39,46 @@ parser.add_argument(
     "--n-calls", type=int, default=200_000, help="Number of calls to generate per day."
 )
 parser.add_argument(
-    "--subscribers-seed",
-    type=int,
-    default=12345,
-    help="Random seed for subscriber generation.",
+    "--n-sms", type=int, default=200_000, help="Number of sms to generate per day."
 )
 parser.add_argument(
-    "--calls-seed", type=int, default=22222, help="Random seed for calls generation."
-)
-parser.add_argument(
-    "--cells-seed", type=int, default=99999, help="Random seed for cell generation."
+    "--n-mds", type=int, default=200_000, help="Number of mds to generate per day."
 )
 parser.add_argument(
     "--n-days", type=int, default=7, help="Number of days of data to generate."
 )
 parser.add_argument(
+    "--cluster", action="store_true", help="Cluster tables on msisdn index."
+)
+parser.add_argument(
     "--output-root-dir",
     type=str,
     default="",
-    help="Root directory under which output .csv and .sql files are stored (in appropriate subfolders).",
+    help="Root directory under which output .sql is stored (in appropriate subfolders).",
 )
 
 
-class CellGenerator(CustomGenerator):
-    cell_id = DigitString(length=8)
-    site_id = Sequential(prefix="", digits=1)
-    version = SelectOne([0, 1, 2])
-    date_of_first_service = Constant("2016-01-01")
-    date_of_last_service = Constant("")
-    longitude, latitude = GeoJSONGeolocation(
-        "/opt/synthetic_data/NPL_admbnda_adm3_Districts_simplified.geojson"
-    ).split()
-
-
-class SubscriberGenerator(CustomGenerator):
-    msisdn = HashDigest(length=40)
-    imei = HashDigest(length=40)
-    imsi = HashDigest(length=40)
-    tac = DigitString(length=5)
-    int_prefix = DigitString(length=5)
-
-
-class CallEventGenerator(CustomGenerator):
-    def __init__(self, *, subscribers, cells, date):
-        self.a_party = SelectOne(subscribers)
-        self.b_party = SelectOne(subscribers)
-        self.cell_from = SelectOne(cells)
-        self.cell_to = SelectOne(cells)
-
-        self.start_time = Timestamp(date=date)
-        self.duration = Integer(0, 2600)
-        self.call_id = HashDigest(length=8)
-
-        super().__init__(subscribers, cells, date)
-
-
-def convert_to_two_line_format(df):
-    """
-    Given a dataframe with calls in one-line format (i.e., with a-party
-    and b-party noth in the same row), return a dataframe with the same
-    calls in two-line format (with a-party and b-party information split
-    across two separate lines for each call).
-
-    Note that this is not the most efficient implementation but it is
-    sufficient for our purposes.
-    """
-    df_outgoing = df[
-        [
-            "start_time",
-            "msisdn_to",
-            "id",
-            "msisdn_from",
-            "cell_id_from",
-            "duration",
-            "tac_from",
-        ]
-    ].copy()
-    df_outgoing = df_outgoing.rename(
-        columns={
-            "msisdn_to": "msisdn_counterpart",
-            "msisdn_from": "msisdn",
-            "cell_id_from": "location_id",
-            "tac_from": "tac",
-        }
-    )
-    df_outgoing.loc[:, "outgoing"] = True
-
-    df_incoming = df[
-        [
-            "start_time",
-            "msisdn_from",
-            "id",
-            "msisdn_to",
-            "cell_id_to",
-            "duration",
-            "tac_to",
-        ]
-    ].copy()
-    df_incoming = df_incoming.rename(
-        columns={
-            "msisdn_from": "msisdn_counterpart",
-            "msisdn_to": "msisdn",
-            "cell_id_to": "location_id",
-            "tac_to": "tac",
-        }
-    )
-    df_incoming.loc[:, "outgoing"] = False
-
-    columns = [
-        "start_time",
-        "msisdn_counterpart",
-        "id",
-        "msisdn",
-        "location_id",
-        "outgoing",
-        "duration",
-        "tac",
-    ]
-    df_full = pd.concat([df_outgoing, df_incoming])
-    df_full = df_full[columns]  # bring columns into expected order
-    return df_full
-
-
-def write_day_csv(subscribers, cells, date, num_calls, call_seed, output_root_dir):
-    """
-    Generate a day of data and write it to a csv, return the sql to ingest it.
-
-    Parameters
-    ----------
-    subscribers: list
-        List of objects with msisdn, imei, imsi, tac and int_prefix attributes
-    cells: list
-        List of objects with cell_id, site_id, version, date_of_first_service, date_of_last_service,
-        lon, and lat attributes.
-    date: datetime.date
-        Date calls should occur on
-    num_calls: int
-        Number of calls to generate
-    call_seed: int
-        Random seed to use for generating calls
-    outut_root_dir: str
-        Root directory under which output CSV files are stored (in appropriate subfolders).
-
-    Returns
-    -------
-    str
-        SQL command string which will ingest the written CSV file.
-    """
-    ceg = CallEventGenerator(
-        subscribers=subscribers, cells=cells, date=date.strftime("%Y-%m-%d")
-    )
-    fields = {
-        "id": "call_id",
-        "start_time": "start_time",
-        "duration": "duration",
-        "msisdn_from": "a_party.msisdn",
-        "msisdn_to": "b_party.msisdn",
-        "tac_from": "a_party.tac",
-        "tac_to": "b_party.tac",
-        "cell_id_from": "cell_from.cell_id",
-        "cell_id_to": "cell_to.cell_id",
-    }
-    os.makedirs(f"{output_root_dir}/data/records/calls", exist_ok=True)
-    fpath = f"{output_root_dir}/data/records/calls/calls_{date.strftime('%Y%m%d')}.csv"
-    calls_df = ceg.generate(num_calls, seed=call_seed).to_df(fields=fields)
-    calls_df_twoline = convert_to_two_line_format(calls_df)
-    calls_df_twoline.to_csv(fpath, index=False)
-
-    ingest_sql = """
-        BEGIN;
-            CREATE TABLE IF NOT EXISTS events.calls_{table} (
-                    CHECK ( datetime >= '{table}'::TIMESTAMPTZ
-                    AND datetime < '{end_date}'::TIMESTAMPTZ)
-                ) INHERITS (events.calls);
-
-                COPY events.calls_{table}( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration,tac )
-                    FROM '{output_root_dir}/data/records/calls/calls_{table}.csv'
-                        WITH DELIMITER ','
-                        CSV HEADER;
-                CREATE INDEX ON events.calls_{table} (msisdn);
-
-            CREATE INDEX ON events.calls_{table} (msisdn_counterpart);
-            CREATE INDEX ON events.calls_{table} (tac);
-            CREATE INDEX ON events.calls_{table} (location_id);
-            CREATE INDEX ON events.calls_{table} (datetime);
-            CLUSTER events.calls_{table} USING calls_{table}_msisdn_idx;
-            ANALYZE events.calls_{table};
-        COMMIT;""".format(
-        output_root_dir=output_root_dir,
-        table=date.strftime("%Y%m%d"),
-        end_date=(date + datetime.timedelta(days=1)).strftime("%Y%m%d"),
-    )
-    return ingest_sql
-
-
-def write_ingest_sql(tables, output_root_dir):
+def write_ingest_sql(sql, output_root_dir):
     """
     Write to `{output_root_dir}/sql/syntheticdata/ingest_calls.sql` an ingestion
     script that wraps the list of table creation statements provided in tables.
 
     Parameters
     ----------
-    tables: list of str
+    sql: list of str
         List of SQL strings, each of which is a table creation statement.
     """
-    ingest_head = """
+    sql = "\n".join(sql)
+    ingest_sql = f"""
         BEGIN;
-        DELETE FROM events.calls;"""
-    ingest_tail = """
-        ANALYZE events.calls;
-        INSERT INTO available_tables (table_name, has_locations, has_subscribers, has_counterparts) VALUES ('calls', true, true, true)
-        ON conflict (table_name)
-        DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;
-        COMMIT;"""
+        DELETE FROM events.calls;
+        {sql}
+        COMMIT;
+    """
     output_dir = os.path.join(output_root_dir, "sql", "syntheticdata")
     os.makedirs(output_dir, exist_ok=True)
     with open(f"{output_dir}/ingest_calls.sql", "w") as fout:
-        fout.write("\n".join([ingest_head] + tables + [ingest_tail]))
+        fout.write(ingest_sql)
 
 
 if __name__ == "__main__":
@@ -260,44 +86,171 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
     num_subscribers = args.n_subscribers
+    num_sites = args.n_sites
     num_cells = args.n_cells
     num_calls = args.n_calls
+    num_sms = args.n_sms
+    num_mds = args.n_mds
+    num_days = args.n_days
+    num_tacs = args.n_tacs
 
-    subscriber_seed = args.subscribers_seed
-    cell_seed = args.cells_seed
-    call_seed = args.calls_seed
-
-    output_root_dir = args.output_root_dir
-    os.makedirs(os.path.join(output_root_dir, "data", "infrastructure"), exist_ok=True)
-
-    print("Generating {} subscribers.".format(num_subscribers))
-    sg = SubscriberGenerator()
-    subscribers = list(sg.generate(num_subscribers, seed=subscriber_seed))
-
-    print("Generating {} cells.".format(num_cells))
-    cg = CellGenerator()
-    cells = cg.generate(num_cells, seed=cell_seed)
-    cells.to_csv(
-        os.path.join(output_root_dir, "data", "infrastructure", "cells.csv"),
-        fields=[
-            "cell_id",
-            "site_id",
-            "version",
-            "longitude",
-            "latitude",
-            "date_of_first_service",
-            "date_of_last_service",
-        ],
+    sql = []
+    sql.append(
+        f"""CREATE TEMPORARY TABLE tmp_sites as 
+        select row_number() over() as rid, md5(uuid_generate_v4()::text) as id, 
+        0 as version, (date '2015-01-01' + random() * interval '1 year')::date as date_of_first_service,
+        (p).geom as geom_point from (select st_dumppoints(ST_GeneratePoints(geom, {num_sites})) as p from geography.admin0) _;"""
+    )
+    sql.append(
+        "INSERT INTO infrastructure.sites (id, version, date_of_first_service, geom_point) SELECT id, version, date_of_first_service, geom_point FROM tmp_sites;"
     )
 
-    print("Generating {} days of calls.".format(args.n_days))
-    dates = pd.date_range(start="2016-01-01", periods=args.n_days)
+    sql.append(
+        f"""CREATE TEMPORARY TABLE tmp_cells as
+    select md5(uuid_generate_v4()::text) as id, version, tmp_sites.id as site_id, date_of_first_service, geom_point from tmp_sites
+    union all
+    select md5(uuid_generate_v4()::text) as id, version, tmp_sites.id as site_id, date_of_first_service, geom_point from
+    (
+      select floor(random() * {num_sites} + 1)::integer as id
+      from generate_series(1, {int(num_cells * 1.1)}) -- Preserve duplicates
+    ) rands
+    inner JOIN tmp_sites
+    ON rands.id=tmp_sites.rid
+    limit {num_cells - num_sites};"""
+    )
+    sql.append(
+        "INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) SELECT id, version, site_id, date_of_first_service, geom_point FROM tmp_cells;"
+    )
 
-    def write_f(seed_inc, date):
-        return write_day_csv(
-            subscribers, cells, date, num_calls, call_seed + seed_inc, output_root_dir
-        )
+    sql.append(
+        f"""create temporary table tacs as
+    (select row_number() over() as tac, 
+    (ARRAY['Nokia', 'Huawei', 'Apple', 'Samsung', 'Sony', 'LG', 'Google', 'Xiaomi', 'ZTE'])[floor((random()*9 + 1))::int] as brand, 
+    uuid_generate_v4()::text as model, 
+    (ARRAY['Smart', 'Feature', 'Basic'])[floor((random()*3 + 1))::int] as  hnd_type 
+    FROM generate_series(1, {num_tacs}));"""
+    )
+    sql.append(
+        "INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) SELECT tac as id, brand, model, hnd_type FROM tacs;"
+    )
 
-    with ProcessPoolExecutor() as pool:
-        tables = list(pool.map(write_f, *zip(*enumerate(dates))))
-    write_ingest_sql(tables, output_root_dir)
+    sql.append(
+        f"""
+    create temporary table subs as
+    (select row_number() over() as id, md5(uuid_generate_v4()::text) as msisdn, md5(uuid_generate_v4()::text) as imei, 
+    md5(uuid_generate_v4()::text) as imsi, floor(random() * {num_tacs} + 1)::integer as tac 
+    FROM generate_series(1, {num_subscribers}));
+    CREATE INDEX on subs (id);
+    """
+    )
+
+    for date in pd.date_range("2016-01-01", periods=num_days):
+        table = date.strftime("%Y%m%d")
+        end_date = (date + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        # calls
+        if num_calls > 0:
+            sql.append(
+                f"""
+            CREATE TABLE IF NOT EXISTS events.calls_{table} (
+                                CHECK ( datetime >= '{table}'::TIMESTAMPTZ
+                                AND datetime < '{end_date}'::TIMESTAMPTZ)
+                            ) INHERITS (events.calls);
+        
+            with calls as 
+            (SELECT uuid_generate_v4()::text as id, caller.msisdn as caller_msisdn, caller.tac as caller_tac, caller.imsi as caller_imsi, caller.imei as imei, callee.msisdn as callee_msisdn, callee.tac as callee_tac, callee.imsi as callee_imsi, callee.imei as imei, caller_cell, callee_cell, start_time, duration FROM
+            (select *, case when caller_id != callee_id then floor(random() * {num_cells} + 1)::integer ELSE caller_cell END as callee_cell, (date '{table}' + random() * interval '1 day') as start_time, round(random()*2600)::integer as duration FROM
+            (select *, floor(random() * {num_cells} + 1)::integer as caller_cell FROM
+            (select floor(random() * {num_subscribers} + 1)::integer as caller_id, floor(random() * {num_subscribers} + 1)::integer as callee_id FROM generate_series(1, {num_calls})) _) _) calls
+            LEFT JOIN subs as caller ON calls.caller_id = caller.id
+            LEFT JOIN subs as callee ON calls.callee_id = callee.id)
+        
+            INSERT INTO events.calls_{table} (id, outgoing, duration, datetime, msisdn, tac, imsi, location_id, msisdn_counterpart)
+                SELECT * FROM (
+                    SELECT id, true as outgoing, duration, start_time as datetime, caller_msisdn as msisdn, caller_tac as tac, caller_imsi as imsi, caller_cell as location_id, callee_msisdn as msisdn_counterpart 
+                FROM calls
+                UNION ALL
+                SELECT id, false as outgoing, duration, start_time as datetime, callee_msisdn as msisdn, callee_tac as tac, callee_imsi as imsi, callee_cell as location_id, caller_msisdn as msisdn_counterpart
+                FROM calls) _ ORDER BY datetime ASC, msisdn;
+        
+            CREATE INDEX ON events.calls_{table} (msisdn);
+            CREATE INDEX ON events.calls_{table} (msisdn_counterpart);
+            CREATE INDEX ON events.calls_{table} (tac);
+            CREATE INDEX ON events.calls_{table} (location_id);
+            CREATE INDEX ON events.calls_{table} (datetime);
+            """
+            )
+        if num_sms > 0:
+            sql.append(
+                f"""
+            CREATE TABLE IF NOT EXISTS events.sms_{table} (
+                                        CHECK ( datetime >= '{table}'::TIMESTAMPTZ
+                                        AND datetime < '{end_date}'::TIMESTAMPTZ)
+                                    ) INHERITS (events.sms);
+            with sms as
+            (SELECT uuid_generate_v4()::text as id, caller.msisdn as caller_msisdn, caller.tac as caller_tac, caller.imsi as caller_imsi, caller.imei as imei, callee.msisdn as callee_msisdn, callee.tac as callee_tac, callee.imsi as callee_imsi, callee.imei as imei, caller_cell, callee_cell, start_time FROM
+            (select *, case when caller_id != callee_id then round(random() * {num_cells} + 1)::integer ELSE caller_cell END as callee_cell, (date '{table}' + random() * interval '1 day') as start_time FROM
+            (select *, round(random() * {num_cells} + 1)::integer as caller_cell FROM
+            (select floor(random() * {num_subscribers} + 1)::integer as caller_id, floor(random() * {num_subscribers} + 1)::integer as callee_id FROM generate_series(1, {num_sms})) _) _) calls
+            LEFT JOIN subs as caller ON calls.caller_id = caller.id
+            LEFT JOIN subs as callee ON calls.callee_id = callee.id)
+    
+            INSERT INTO events.sms_{table} (id, outgoing, datetime, msisdn, tac, imsi, location_id, msisdn_counterpart)
+    
+            SELECT * FROM (SELECT id, true as outgoing, start_time as datetime, caller_msisdn as msisdn, caller_tac as tac, caller_imsi as imsi, caller_cell as location_id, callee_msisdn as msisdn_counterpart
+            FROM sms
+            UNION ALL
+            SELECT id, false as outgoing, start_time as datetime, callee_msisdn as msisdn, callee_tac as tac, callee_imsi as imsi, callee_cell as location_id, caller_msisdn as msisdn_counterpart
+            FROM sms) _ ORDER BY datetime ASC, msisdn;
+    
+            CREATE INDEX ON events.sms_{table} (msisdn);
+            CREATE INDEX ON events.sms_{table} (tac);
+            CREATE INDEX ON events.sms_{table} (location_id);
+            CREATE INDEX ON events.sms_{table} (datetime);
+    
+            """
+            )
+        if num_mds > 0:
+            sql.append(
+                f"""
+            CREATE TABLE IF NOT EXISTS events.mds_{table} (
+                                        CHECK ( datetime >= '{table}'::TIMESTAMPTZ
+                                        AND datetime < '{end_date}'::TIMESTAMPTZ)
+                                    ) INHERITS (events.mds);
+            
+            INSERT INTO events.mds_{table} (msisdn, tac, imsi, imei, volume_upload, volume_download, volume_total, location_id, datetime, duration)
+            SELECT msisdn, tac, imsi, imei, volume_upload, volume_download, 
+            volume_upload + volume_download as volume_total, 
+            floor(random() * {num_cells} + 1)::integer as location_id, 
+            (date '{table}' + random() * interval '1 day') as datetime, round(random() * 260)::integer as duration FROM
+            (
+                select floor(random() * {num_subscribers} + 1)::integer as id, round(random() * 100000)::integer as volume_upload, 
+                round(random() * 100000)::integer as volume_download FROM generate_series(1, {num_mds})) _
+            LEFT JOIN
+            subs
+            USING (id) ORDER BY datetime ASC, msisdn;
+    
+            CREATE INDEX ON events.mds_{table} (msisdn);
+            CREATE INDEX ON events.mds_{table} (tac);
+            CREATE INDEX ON events.mds_{table} (location_id);
+            CREATE INDEX ON events.mds_{table} (datetime);
+            """
+            )
+
+    for sub in ("calls", "sms", "mds"):
+        if args[f"n_{sum}"] > 0:
+            for date in pd.date_range("2016-01-01", periods=num_days):
+                table = date.strftime("%Y%m%d")
+                if args.cluster:
+                    sql.append(
+                        f"CLUSTER events.{sub}_{table} USING {sub}_{table}_msisdn_idx;"
+                    )
+                sql.append(f"ANALYZE events.{sub}_{table};")
+            sql.append(
+                f"""
+            INSERT INTO available_tables (table_name, has_locations, has_subscribers, has_counterparts) VALUES ('{sub}', true, true, true)
+            ON conflict (table_name)
+            DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;
+            """
+            )
+        sql.append(f"ANALYZE events.{sub};")
+    write_ingest_sql(sql, args.output_root_dir)

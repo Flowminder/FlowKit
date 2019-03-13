@@ -63,8 +63,11 @@ defaults:
     - image: flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID
       environment:
         N_DAYS: 3
-        N_USERS: 400
+        N_SUBSCRIBERS: 400
         N_CELLS: 100
+        N_SITES: 100
+        N_SMS: 0
+        N_MDS: 0
         N_CALLS: 2000
         FM_PASSWORD: foo
         API_PASSWORD: foo
