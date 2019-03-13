@@ -20,6 +20,7 @@ shapely = "*"
 finist = "*"
 python-rapidjson = "*"
 marshmallow-oneofschema = "*"
+apispec-oneofschema = "*"
 
 [dev-packages]
 scipy = "*"
