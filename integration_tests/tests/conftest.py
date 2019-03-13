@@ -144,18 +144,18 @@ def access_token_builder():
 def zmq_host():
     """
     Return the host on which zmq is running. This is either the value of
-    the environment variable FLOWMACHINE_ZMQ_HOST or else 'localhost'.
+    the environment variable FLOWMACHINE_HOST or else 'localhost'.
     """
-    return os.getenv("FLOWMACHINE_ZMQ_HOST", "localhost")
+    return os.getenv("FLOWMACHINE_HOST", "localhost")
 
 
 @pytest.fixture(scope="session")
 def zmq_port():
     """
     Return the port on which zmq is running. This is either the value of
-    the environment variable FLOWMACHINE_ZMQ_PORT or else 5555.
+    the environment variable FLOWMACHINE_PORT or else 5555.
     """
-    return os.getenv("FLOWMACHINE_ZMQ_PORT", "5555")
+    return os.getenv("FLOWMACHINE_PORT", "5555")
 
 
 @pytest.fixture(scope="session")
@@ -165,7 +165,7 @@ def zmq_url(zmq_host, zmq_port):
     This is constructed as "tcp://<zmq_host>:<zmq_port>", where the
     host and port are provided by the `zmq_host` and `zmq_port`
     fixtures (which read the values from the environment variables
-    `FLOWMACHINE_ZMQ_HOST` and `FLOWMACHINE_ZMQ_PORT`, respectively).
+    `FLOWMACHINE_HOST` and `FLOWMACHINE_PORT`, respectively).
     """
     return f"tcp://{zmq_host}:{zmq_port}"
 
