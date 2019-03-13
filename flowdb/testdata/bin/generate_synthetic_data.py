@@ -108,14 +108,15 @@ if __name__ == "__main__":
         f"""CREATE TEMPORARY TABLE tmp_cells as
     select md5(uuid_generate_v4()::text) as id, version, tmp_sites.id as site_id, date_of_first_service, geom_point from tmp_sites
     union all
-    select md5(uuid_generate_v4()::text) as id, version, tmp_sites.id as site_id, date_of_first_service, geom_point from
+    select * from 
+    (select md5(uuid_generate_v4()::text) as id, version, tmp_sites.id as site_id, date_of_first_service, geom_point from
     (
       select floor(random() * {num_sites} + 1)::integer as id
       from generate_series(1, {int(num_cells * 1.1)}) -- Preserve duplicates
     ) rands
     inner JOIN tmp_sites
     ON rands.id=tmp_sites.rid
-    limit {num_cells - num_sites};"""
+    limit {num_cells - num_sites}) _;"""
     )
     sql.append(
         "INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) SELECT id, version, site_id, date_of_first_service, geom_point FROM tmp_cells;"
