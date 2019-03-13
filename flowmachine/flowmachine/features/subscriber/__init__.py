@@ -62,6 +62,7 @@ from .meaningful_locations import (
     MeaningfulLocationsOD,
 )
 
+from .interevent_period import IntereventPeriod
 from .topup_amount import TopUpAmount
 from .topup_balance import TopUpBalance
 from .mds_volume import MDSVolume
@@ -114,6 +115,7 @@ __all__ = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
+    "IntereventPeriod",
     "TopUpAmount",
     "TopUpBalance",
     "MDSVolume",
