@@ -23,6 +23,19 @@
             ],
             "version": "==0.4.0"
         },
+        "apispec": {
+            "hashes": [
+                "sha256:57a7b81fd19fff0663a7e5ffd196eaea79b5364151ed2b65533be36d55e0229c",
+                "sha256:b45def53903516e67e8584ee41f34bc60c3e4acace6892b69340293ea20f3caa"
+            ],
+            "version": "==1.0.0"
+        },
+        "apispec-oneofschema": {
+            "hashes": [
+                "sha256:a02d1ae2279dbf5b64ce8459728d4c8ca674548c509fae45c95f9f4dd45f454f"
+            ],
+            "version": "==2.0.2"
+        },
         "approvaltests": {
             "hashes": [
                 "sha256:15c18543f68dcdb124295b9fc0135096f86a9d973381ff5936e40a4457c02038"
