@@ -76,9 +76,16 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             reply = {"status": "accepted", "msg": "pong", "data": {}}
         elif "run_query" == action:
             logger.debug(f"Trying to run query.  Message: {zmq_msg.msg_str}")
-            query_id = (
-                "4503884d13687efd7ff25163b462596a"
-            )  # FIXME: don't hard-code this!
+
+            # FIXME: don't hard-code these query_id values!
+            query_kind = zmq_msg.action_params["data"]["query_kind"]
+            if query_kind == "daily_location":
+                query_id = "4503884d13687efd7ff25163b462596a"
+            elif query_kind == "modal_location":
+                query_id = "2fd6df01e9bb630117e7c87b5eed7fd0"
+            else:
+                raise NotImplementedError()
+
             query_run_log.info("run_query_OLD", query_id=query_id, **run_log_dict)
             reply = {"status": "accepted", "data": {"query_id": query_id}}
 
