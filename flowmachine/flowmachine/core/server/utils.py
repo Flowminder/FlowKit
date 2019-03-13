@@ -29,7 +29,7 @@ def send_message_and_receive_reply(msg, port=5555, host="localhost"):
     -------
 
     >>> msg = {
-    ...     "action": "run_query",
+    ...     "action": "run_query_OLD",
     ...     "query_kind": "daily_location",
     ...     "request_id": "DUMMY_ID",
     ...      "params": {"date": "2016-01-01", "daily_location_method": "last", "aggregation_unit": "admin3", "subscriber_subset": "all"}
@@ -51,7 +51,7 @@ def send_message_and_receive_reply(msg, port=5555, host="localhost"):
 
 
 FM_EXAMPLE_MESSAGE = {
-    "action": "run_query",
+    "action": "run_query_OLD",
     "query_kind": "daily_location",
     "request_id": "DUMMY_ID",
     "params": {
