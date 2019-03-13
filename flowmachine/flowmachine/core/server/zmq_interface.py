@@ -27,7 +27,7 @@ class ZMQMultipartMessage:
     def __init__(self, multipart_msg):
         # Deconstruct multipart message into return address and the actual message
         self.return_address, self.msg_str = self._get_parts(multipart_msg)
-        self.action, self.action_params, self.api_request_id = self._deconstruct_message_string(
+        self.action, self.action_params, self.api_request_id, self.action_data = self._deconstruct_message_string(
             self.msg_str
         )
 
@@ -82,7 +82,9 @@ class ZMQMultipartMessage:
             logger.debug(error_msg)
             raise ZMQInterfaceError(error_msg)
 
-        return action, action_params, api_request_id
+        action_data = msg.pop("data", None)
+
+        return action, action_params, api_request_id, action_data
 
 
 async def send_reply(socket, return_address, reply_coroutine):

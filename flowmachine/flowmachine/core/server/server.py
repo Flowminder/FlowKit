@@ -15,6 +15,7 @@ import zmq
 from apispec import APISpec
 from apispec_oneofschema import MarshmallowPlugin
 from logging.handlers import TimedRotatingFileHandler
+from marshmallow import ValidationError
 from zmq.asyncio import Context
 
 from flowmachine.core import connect
@@ -28,6 +29,7 @@ from .query_proxy import (
 )
 from .query_schemas import FlowmachineQuerySchema
 from .zmq_interface import ZMQMultipartMessage, ZMQInterfaceError
+from .zmq_helpers import ZMQReply
 
 
 logger = structlog.get_logger(__name__)
@@ -45,6 +47,34 @@ fh = TimedRotatingFileHandler(os.path.join(log_root, "query-runs.log"), when="mi
 fh.setLevel(logging.INFO)
 query_run_log.addHandler(fh)
 query_run_log = structlog.wrap_logger(query_run_log)
+
+
+class FlowmachineServerError(Exception):
+    """
+    Exception which indicates an error during zmq message processing.
+    """
+
+    def __init__(self, error_msg):
+        super().__init__(error_msg)
+        self.error_msg = error_msg
+
+
+def action_handler__run_query(params):
+    """
+    Handler for the 'run_query' action.
+
+    Constructs a flowmachine query object, sets it running and returns the query_id.
+    """
+    try:
+        query_obj = FlowmachineQuerySchema().load(params)
+        reply = ZMQReply(status="accepted", data={"query_id": query_obj.query_id})
+    except ValidationError as exc:
+        reply = ZMQReply(status="error", msg="", data=exc.messages)
+
+    return reply
+
+
+ACTION_HANDLERS = {"run_query": action_handler__run_query}
 
 
 async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
@@ -77,17 +107,23 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
         elif "run_query" == action:
             logger.debug(f"Trying to run query.  Message: {zmq_msg.msg_str}")
 
-            # FIXME: don't hard-code these query_id values!
-            query_kind = zmq_msg.action_params["data"]["query_kind"]
-            if query_kind == "daily_location":
-                query_id = "4503884d13687efd7ff25163b462596a"
-            elif query_kind == "modal_location":
-                query_id = "2fd6df01e9bb630117e7c87b5eed7fd0"
-            else:
-                raise NotImplementedError()
+            action_handler_func = ACTION_HANDLERS[action]
+            action_data = zmq_msg.action_data
+            handler_args = [] if action_data is None else [action_data]
+            try:
+                reply = action_handler_func(*handler_args)
+            except TypeError:
+                error_msg = f"Internal flowmachine server error: wrong arguments passed to handler for action '{action}'."
+                return ZMQReply(status="error", msg=error_msg).as_json()
 
-            query_run_log.info("run_query_OLD", query_id=query_id, **run_log_dict)
-            reply = {"status": "accepted", "data": {"query_id": query_id}}
+            if not isinstance(reply, ZMQReply):
+                error_msg = f"Internal flowmachine server error: handler for action '{action}' returned an invalid reply."
+                return ZMQReply(status="error", msg=error_msg).as_json()
+
+            query_run_log.info(
+                "run_query_OLD", query_id=reply.data["query_id"], **run_log_dict
+            )
+            reply = reply.as_json()
 
         elif "run_query_OLD" == action:
             logger.debug(f"Trying to run query.  Message: {zmq_msg.msg_str}")
