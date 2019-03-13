@@ -7,15 +7,16 @@
 
 import asyncio
 import logging
-
 import os
 import signal
-from logging.handlers import TimedRotatingFileHandler
-
 import structlog
-
 import zmq
+
+from apispec import APISpec
+from apispec_oneofschema import MarshmallowPlugin
+from logging.handlers import TimedRotatingFileHandler
 from zmq.asyncio import Context
+
 from flowmachine.core import connect
 from flowmachine.core.query_state import QueryState
 from .query_proxy import (
@@ -140,8 +141,28 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             reply = {
                 "status": "accepted",
                 "msg": "",
-                # TODO: don't hard-code this!
                 "data": {"available_queries": available_queries},
+            }
+
+        elif "get_query_schemas" == action:
+            logger.debug(
+                f"Trying to get schemas for flowmachine queries. Message: {zmq_msg.msg_str}"
+            )
+            query_run_log.info("get_query_schemas", **run_log_dict)
+            spec = APISpec(
+                title="FlowAPI",
+                version="1.0.0",
+                openapi_version="3.0.2",
+                plugins=[MarshmallowPlugin()],
+            )
+            spec.components.schema(
+                "FlowmachineQuerySchema", schema=FlowmachineQuerySchema
+            )
+            schemas_spec = spec.to_dict()["components"]["schemas"]
+            reply = {
+                "status": "accepted",
+                "msg": "",
+                "data": {"query_schemas": schemas_spec},
             }
 
         else:
