@@ -132,6 +132,16 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             query_run_log.info("get_geography", **run_log_dict)
             reply = {"status": QueryState.COMPLETED, "sql": sql}
 
+        elif "get_available_queries" == action:
+            logger.debug(f"Trying to get available queries. Message: {zmq_msg.msg_str}")
+            query_run_log.info("get_available_queries", **run_log_dict)
+            reply = {
+                "status": "accepted",
+                "msg": "",
+                # TODO: don't hard-code this!
+                "data": {"available_queries": ["daily_location", "modal_location"]},
+            }
+
         else:
             logger.debug(f"Unknown action: '{action}'")
             reply = {
