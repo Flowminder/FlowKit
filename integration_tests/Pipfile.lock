@@ -266,6 +266,20 @@
             ],
             "version": "==1.1.1"
         },
+        "marshmallow": {
+            "hashes": [
+                "sha256:f2668d41a817aaaf6106d9922479bd1a97cae240dfac0eb7e320e0c29148a084",
+                "sha256:f8e51314623247b5c444e460b2bbb04aee102ca1ce7fb27bb16e3107cb81dfe9"
+            ],
+            "version": "==2.19.0"
+        },
+        "marshmallow-oneofschema": {
+            "hashes": [
+                "sha256:5b645dcb582657362362c6ad9fce5afa5ac31837cac2fe63b8eabf47995dd944",
+                "sha256:a8b7db820304bd8d9d954f5fe6522bfa89c003dac12fa0e76edddc244901f2f8"
+            ],
+            "version": "==1.0.5"
+        },
         "more-itertools": {
             "hashes": [
                 "sha256:0125e8f60e9e031347105eb1682cef932f5e97d7b9a1a28d9bf00c22a5daef40",
