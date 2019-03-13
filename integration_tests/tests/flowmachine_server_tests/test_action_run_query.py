@@ -12,20 +12,6 @@ from .helpers import (
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
-def test_bail_out_if_pytest_asyncio_is_not_installed(event_loop):
-    """
-    This is a "smoke test" to check that the integration tests are being run under asyncio.
-    We do this by checking for the existence of the 'event_loop' fixture, which only exists
-    if pytest-asyncio is installed.
-    """
-    if not isinstance(event_loop, asyncio.AbstractEventLoop):
-        raise RuntimeError(
-            "Expecting 'event_loop' fixture from pytest-asyncio. Please ensure that pytest-asyncio is installed."
-        )
-    else:
-        logger.debug("Confirming that pytest-asyncio is installed")
-
-
 @pytest.mark.asyncio
 async def test_run_query(zmq_url, fm_conn, redis):
     """
