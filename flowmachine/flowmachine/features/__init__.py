@@ -64,6 +64,7 @@ subs = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
+    "IntereventPeriod",
     "TopUpAmount",
     "TopUpBalance",
     "MDSVolume",
