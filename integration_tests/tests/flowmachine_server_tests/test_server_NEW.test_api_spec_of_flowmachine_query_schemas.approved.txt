@@ -1,0 +1,97 @@
+{
+  "DailyLocation": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "date": {
+        "format": "date",
+        "type": "string"
+      },
+      "method": {
+        "enum": [
+          "last",
+          "most-common"
+        ],
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "date",
+      "method"
+    ],
+    "type": "object"
+  },
+  "FlowmachineQuerySchema": {
+    "discriminator": {
+      "mapping": {
+        "daily_location": "#/components/schemas/DailyLocation",
+        "modal_location": "#/components/schemas/ModalLocation"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/ModalLocation"
+      }
+    ]
+  },
+  "InputToModalLocation": {
+    "discriminator": {
+      "mapping": {
+        "daily_location": "#/components/schemas/DailyLocation"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DailyLocation"
+      }
+    ]
+  },
+  "ModalLocation": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "locations": {
+        "items": {
+          "$ref": "#/components/schemas/InputToModalLocation"
+        },
+        "minItems": 1,
+        "type": "array"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "type": "object"
+  }
+}

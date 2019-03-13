@@ -2,18 +2,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
+from approvaltests.reporters.generic_diff_reporter_factory import (
+    GenericDiffReporterFactory,
+)
 from datetime import timedelta
 from multiprocessing import Process
 from time import sleep
 
 import pytest
 import os
-
-import flowmachine
+import requests
 import zmq
 
-
+import flowmachine
 from flowmachine.core import Connection, Query
 from flowmachine.core.cache import reset_cache
 import flowmachine.core.server.server
@@ -264,3 +265,9 @@ def reset_cache_schema(fm_conn):
     print("[DDD] Recreating cache schema... ", end="", flush=True)
     reset_cache(fm_conn)
     print("Done.")
+
+
+@pytest.fixture(scope="session")
+def diff_reporter():
+    diff_reporter_factory = GenericDiffReporterFactory()
+    return diff_reporter_factory.get("opendiff")
