@@ -55,3 +55,25 @@ def test_api_spec_of_flowmachine_query_schemas(
         reply["data"]["query_schemas"], indent=2, sort_keys=True
     )
     verify(spec_as_json_string, diff_reporter)
+
+
+def test_run_daily_location_query(send_zmq_message_and_receive_reply):
+    """
+    Can run daily location query and receive successful response including the query_id.
+    """
+    msg = {
+        "action": "run_query",
+        "data": {
+            "query_kind": "daily_location",
+            "date": "2016-01-01",
+            "method": "most-common",
+            "aggregation_unit": "admin3",
+            "subscriber_subset": None,
+        },
+        "request_id": "DUMMY_ID",
+    }
+    reply = send_zmq_message_and_receive_reply(msg)
+
+    assert "accepted" == reply["status"]
+    assert "4503884d13687efd7ff25163b462596a" == reply["data"]["query_id"]
+    assert ["query_id"] == list(reply["data"].keys())
