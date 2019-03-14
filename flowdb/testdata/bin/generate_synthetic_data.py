@@ -310,7 +310,7 @@ if __name__ == "__main__":
             """,
                 )
             )
-        sql.append((f"Analyzing {sub}", f"ANALYZE events.{sub};"))
+        post_sql.append((f"Analyzing {sub}", f"ANALYZE events.{sub};"))
 
     cleanup_sql = []
     for tbl in ("tmp_cells", "subs", "tacs"):
