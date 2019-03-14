@@ -274,6 +274,7 @@ if __name__ == "__main__":
 
     post_sql = []
     attach_sql = []
+    post_attach_sql = []
     for sub in ("calls", "sms", "mds"):
         if getattr(args, f"n_{sub}") > 0:
             for date in (
@@ -310,7 +311,7 @@ if __name__ == "__main__":
             """,
                 )
             )
-        post_sql.append((f"Analyzing {sub}", f"ANALYZE events.{sub};"))
+        post_attach_sql.append((f"Analyzing {sub}", f"ANALYZE events.{sub};"))
 
     cleanup_sql = []
     for tbl in ("tmp_cells", "subs", "tacs"):
@@ -329,4 +330,6 @@ if __name__ == "__main__":
         list(tp.map(do_exec, post_sql))
     for s in attach_sql + cleanup_sql:
         do_exec(s)
+    with ThreadPoolExecutor(cpu_count()) as tp:
+        list(tp.map(do_exec, post_attach_sql))
     print(f"Total runtime: {datetime.datetime.now() - start_time}")
