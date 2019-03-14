@@ -18,17 +18,17 @@ async def test_run_query(zmq_url, fm_conn, redis):
     Run daily_location query and check the resulting table contains the expected rows.
     """
     msg_run_query = {
-        "action": "run_query_OLD",
-        "query_kind": "daily_location",
+        "action": "run_query",
         "params": {
+            "query_kind": "daily_location",
             "date": "2016-01-01",
-            "daily_location_method": "last",
+            "method": "last",
             "aggregation_unit": "admin3",
-            "subscriber_subset": "all",
+            "subscriber_subset": None,
         },
         "request_id": "DUMMY_ID",
     }
-    expected_query_id = "e39b0d45bc6b46b7700c67cd52f00455"
+    expected_query_id = "f1bbf562d0908607d7f270a32bcb6d38"
 
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
@@ -41,8 +41,9 @@ async def test_run_query(zmq_url, fm_conn, redis):
     # and a redis lookup was created for the query id.
     #
     reply = send_message_and_get_reply(zmq_url, msg_run_query)
-    assert reply["status"] in ("executing", "queued", "completed")
-    assert expected_query_id == reply["id"]
+    #assert reply["status"] in ("executing", "queued", "completed")
+    assert reply["status"] in ("accepted")
+    assert expected_query_id == reply["data"]["query_id"]
     assert redis.exists(expected_query_id)
 
     #
