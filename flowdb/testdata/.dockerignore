@@ -16,9 +16,7 @@
 
 # And un-exclude only those folders and files that are needed for
 # building the flowdb_synthetic_data image:
-!Pipfile
-!Pipfile.lock
+!./synthetic_data/Pipfile
+!./synthetic_data/Pipfile.lock
 !./bin/generate_synthetic_data.py
 !./bin/z_ingest_synthetic_data.sh
-!./synthetic_data/sql/*
-!./synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson

@@ -8,22 +8,7 @@
 set -e
 export PGUSER="$POSTGRES_USER"
 
-#
-#  Generate synthetic data
-#
 
-if [ -f /opt/synthetic_data/generate_synthetic_data.py ]; then
-  python3 /opt/synthetic_data/generate_synthetic_data.py \
-      --n-subscribers ${N_SUBSCRIBERS} \
-      --n-cells ${N_CELLS} \
-      --n-calls ${N_CALLS} \
-      --n-days ${N_DAYS} \
-      --n-tacs ${N_TACS} \
-      --n-mds ${N_MDS} \
-      --n-sms ${N_SMS} \
-      --n-sites ${N_SITES} \
-      --output-root-dir ${OUTPUT_ROOT_DIR}
-fi
 
 
 #
@@ -49,4 +34,21 @@ if [ $count != 0 ]; then
   else
       echo "$DIR is empty."
   fi
+fi
+
+#
+#  Generate synthetic data
+#
+
+if [ -f /opt/synthetic_data/generate_synthetic_data.py ]; then
+  python3 /opt/synthetic_data/generate_synthetic_data.py \
+      --n-subscribers ${N_SUBSCRIBERS} \
+      --n-cells ${N_CELLS} \
+      --n-calls ${N_CALLS} \
+      --n-days ${N_DAYS} \
+      --n-tacs ${N_TACS} \
+      --n-mds ${N_MDS} \
+      --n-sms ${N_SMS} \
+      --n-sites ${N_SITES} \
+      --output-root-dir ${OUTPUT_ROOT_DIR}
 fi
