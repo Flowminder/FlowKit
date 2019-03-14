@@ -100,7 +100,8 @@ if __name__ == "__main__":
         start = datetime.datetime.now()
         trans.execute(
             f"""CREATE TABLE tmp_cells as
-            select md5(uuid_generate_v4()::text) as id, version, tmp_sites.id as site_id, date_of_first_service, geom_point from tmp_sites
+            SELECT row_number() over() as rid, * FROM
+            (select md5(uuid_generate_v4()::text) as id, version, tmp_sites.id as site_id, date_of_first_service, geom_point from tmp_sites
             union all
             select * from 
             (select md5(uuid_generate_v4()::text) as id, version, tmp_sites.id as site_id, date_of_first_service, geom_point from
@@ -110,7 +111,9 @@ if __name__ == "__main__":
             ) rands
             inner JOIN tmp_sites
             ON rands.id=tmp_sites.rid
-            limit {num_cells - num_sites}) _;"""
+            limit {num_cells - num_sites}) _) _;
+            CREATE INDEX ON tmp_cells (rid);
+            """
         )
         trans.execute(
             "INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) SELECT id, version, site_id, date_of_first_service, geom_point FROM tmp_cells;"
@@ -186,12 +189,15 @@ if __name__ == "__main__":
             LEFT JOIN subs as callee ON calls.callee_id = callee.id)
         
             INSERT INTO events.calls_{table} (id, outgoing, duration, datetime, msisdn, tac, imsi, location_id, msisdn_counterpart)
-                SELECT * FROM (
+                SELECT two_lined_calls.id, outgoing, duration, datetime, msisdn, tac, imsi, tmp_cells.id, msisdn_counterpart FROM (
                     SELECT id, true as outgoing, duration, start_time as datetime, caller_msisdn as msisdn, caller_tac as tac, caller_imsi as imsi, caller_cell as location_id, callee_msisdn as msisdn_counterpart 
                 FROM calls
                 UNION ALL
                 SELECT id, false as outgoing, duration, start_time as datetime, callee_msisdn as msisdn, callee_tac as tac, callee_imsi as imsi, callee_cell as location_id, caller_msisdn as msisdn_counterpart
-                FROM calls) _ ORDER BY datetime ASC, msisdn;
+                FROM calls) two_lined_calls
+                LEFT JOIN tmp_cells
+                ON tmp_cells.rid = two_lined_calls.location_id
+                 ORDER BY datetime ASC, msisdn;
         
             CREATE INDEX ON events.calls_{table} (msisdn);
             CREATE INDEX ON events.calls_{table} (msisdn_counterpart);
@@ -217,11 +223,15 @@ if __name__ == "__main__":
     
             INSERT INTO events.sms_{table} (id, outgoing, datetime, msisdn, tac, imsi, location_id, msisdn_counterpart)
     
-            SELECT * FROM (SELECT id, true as outgoing, start_time as datetime, caller_msisdn as msisdn, caller_tac as tac, caller_imsi as imsi, caller_cell as location_id, callee_msisdn as msisdn_counterpart
+            SELECT two_lined_sms.id, outgoing, datetime, msisdn, tac, imsi, tmp_cells.id as location_id, msisdn_counterpart
+            FROM
+            (SELECT * FROM (SELECT id, true as outgoing, start_time as datetime, caller_msisdn as msisdn, caller_tac as tac, caller_imsi as imsi, caller_cell as location_id, callee_msisdn as msisdn_counterpart
             FROM sms
             UNION ALL
             SELECT id, false as outgoing, start_time as datetime, callee_msisdn as msisdn, callee_tac as tac, callee_imsi as imsi, callee_cell as location_id, caller_msisdn as msisdn_counterpart
-            FROM sms) _ ORDER BY datetime ASC, msisdn;
+            FROM sms) _ ORDER BY datetime ASC, msisdn) two_lined_sms
+            LEFT JOIN tmp_cells
+            ON tmp_cells.rid=two_lined_sms.location_id;
     
             CREATE INDEX ON events.sms_{table} (msisdn);
             CREATE INDEX ON events.sms_{table} (tac);
@@ -239,7 +249,8 @@ if __name__ == "__main__":
             
             
             INSERT INTO events.mds_{table} (msisdn, tac, imsi, imei, volume_upload, volume_download, volume_total, location_id, datetime, duration)
-            SELECT msisdn, tac, imsi, imei, volume_upload, volume_download, 
+            SELECT msisdn, tac, imsi, imei, volume_upload, volume_download, volume_total, tmp_cells.id as location_id, datetime, duration FROM
+            (SELECT msisdn, tac, imsi, imei, volume_upload, volume_download, 
             volume_upload + volume_download as volume_total, 
             floor(random() * {num_cells} + 1)::integer as location_id, 
             (date '{table}' + random() * interval '1 day') as datetime, round(random() * 260)::integer as duration FROM
@@ -248,7 +259,10 @@ if __name__ == "__main__":
                 round(random() * 100000)::integer as volume_download FROM generate_series(1, {num_mds})) _
             LEFT JOIN
             subs
-            USING (id) ORDER BY datetime ASC, msisdn;
+            USING (id)) mds
+            LEFT JOIN tmp_cells
+            ON tmp_cells.rid=mds.location_id
+            ORDER BY datetime ASC, msisdn;
     
             CREATE INDEX ON events.mds_{table} (msisdn);
             CREATE INDEX ON events.mds_{table} (tac);
