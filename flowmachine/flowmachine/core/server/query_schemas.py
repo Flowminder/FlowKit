@@ -72,7 +72,7 @@ class FlowmachineQuerySchema(OneOfSchema):
 #
 
 
-class Query:
+class BaseExposedQuery:
     """
     Base class for flowmachine queries.
     """
@@ -87,7 +87,7 @@ class Query:
         return marshmallow_schema.dump(self)
 
 
-class DailyLocationExposed(Query):
+class DailyLocationExposed(BaseExposedQuery):
 
     __schema__ = DailyLocationSchema
 
@@ -98,7 +98,7 @@ class DailyLocationExposed(Query):
         self.subscriber_subset = subscriber_subset
 
 
-class ModalLocationExposed(Query):
+class ModalLocationExposed(BaseExposedQuery):
 
     __schema__ = ModalLocationSchema
 
