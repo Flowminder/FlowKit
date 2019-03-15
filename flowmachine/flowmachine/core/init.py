@@ -250,4 +250,4 @@ def _start_threadpool(*, thread_pool_size=None):
     ThreadPoolExecutor
 
     """
-    Query.tp = ThreadPoolExecutor(thread_pool_size)
+    Query.thread_pool_executor = ThreadPoolExecutor(thread_pool_size)
