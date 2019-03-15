@@ -41,7 +41,7 @@ def get_reply_for_message(msg_str):
     return reply.as_json()
 
 
-def receive_next_zmq_message_and_send_back_reply(socket):
+async def receive_next_zmq_message_and_send_back_reply(socket):
     """
     Listen on the given zmq socket for the next multipart message, .
 
@@ -76,7 +76,7 @@ def receive_next_zmq_message_and_send_back_reply(socket):
         )
         return
 
-    return_address, empty_delimiter, msg_str = multipart_msg
+    return_address, empty_delimiter, msg_contents = multipart_msg
 
     if empty_delimiter != b"":
         logger.error(
@@ -88,16 +88,51 @@ def receive_next_zmq_message_and_send_back_reply(socket):
     #
     # We have received a correctly formatted message. Calculate the reply ...
     #
-    reply_json = get_reply_for_message(msg_str)
+    # reply_json = get_reply_for_message(msg_str)
+    # breakpoint()
+    # reply_coroutine = get_reply_for_message(msg_str)
+    # reply_json = await reply_coroutine
 
     #
     # ... and return the reply back to the sender.
     #
-    logger.debug(f"Sending reply to recipient {return_address}: {reply_json}")
+    # asyncio.create_task(send_reply(socket, return_address, reply_coroutine))
+    # socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
+    # breakpoint()
+    print("[DDD] About to send reply...")
+    asyncio.create_task(send_reply_for_message(socket, return_address, msg_contents))
+
+
+async def send_reply_for_message(socket, return_address, msg_contents):
+    # breakpoint()
+    print("[DDD] Inside send_reply_for_message()")
+    reply_json = await get_reply_for_message(msg_contents)
     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
 
 
-def recv(port):
+# async def send_reply(socket, return_address, reply_coroutine):
+#     """
+#
+#     Parameters
+#     ----------
+#     socket : zmq.asyncio.Socket
+#         zmq socket to use for sending the message
+#     reply_coroutine : awaitable
+#         Coroutine which will eventually return a dict
+#
+#     Returns
+#     -------
+#     None
+#     """
+#     logger.debug(f"Awaiting {reply_coroutine}")
+#     reply_json = await reply_coroutine
+#     logger.debug(f"Sending reply to recipient {return_address}: {reply_json}")
+#     #logger.debug(f"Returning message {reply} to {return_address}")
+#     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
+#     #logger.debug(f"Sent {[return_address, b'', dumps(reply).encode()]}")
+
+
+async def recv(port):
     """
     Main receive-and-reply loop. Listens to zmq messages on the given port,
     processes them and sends back a reply with the result or an error message.
@@ -110,7 +145,7 @@ def recv(port):
 
     try:
         while True:
-            receive_next_zmq_message_and_send_back_reply(socket)
+            await receive_next_zmq_message_and_send_back_reply(socket)
     except Exception as exc:
         logger.debug(f"Received exception: {exc}")
         logger.error("Flowmachine server died unexpectedly.")
