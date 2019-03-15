@@ -93,6 +93,15 @@ class BaseExposedQuery:
 
     @property
     def query_params(self):
+        """
+        Return the parameters from which the query is constructed. Note that this
+        includes the parameters of any subqueries of which it is composed.
+
+        Returns
+        -------
+        dict
+            JSON representation of the query parameters, including those of subqueries.
+        """
         marshmallow_schema = self.__schema__()
         return marshmallow_schema.dump(self)
 
