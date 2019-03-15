@@ -183,6 +183,32 @@ class Query(metaclass=ABCMeta):
         """
         return self._cache
 
+    @property
+    def query_state(self):
+        """
+        Return the current query state.
+
+        Returns
+        -------
+        flowmachine.core.query_state.QueryState
+            The current query state
+        """
+        state_machine = QueryStateMachine(self.redis, self.md5)
+        return state_machine.current_query_state
+
+    @property
+    def query_state_str(self):
+        """
+        Return the current query state as a string
+
+        Returns
+        -------
+        str
+            The current query state. The possible values are the ones
+            defined in `flowmachine.core.query_state.QueryState`.
+        """
+        return self.query_state.value
+
     def get_query(self):
         """
         Returns a  string representing an SQL query. The string will point
