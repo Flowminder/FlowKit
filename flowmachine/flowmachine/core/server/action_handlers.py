@@ -18,6 +18,8 @@ from apispec import APISpec
 from apispec_oneofschema import MarshmallowPlugin
 from marshmallow import ValidationError
 
+from flowmachine.core import Query
+from flowmachine.core.query_state import QueryStateMachine
 from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema
 from .zmq_helpers import ZMQReply
@@ -70,12 +72,30 @@ def action_handler__run_query(**action_params):
     """
     try:
         query_obj = FlowmachineQuerySchema().load(action_params)
-        # TODO: set query running!
-        reply = ZMQReply(status="accepted", data={"query_id": query_obj.query_id})
     except ValidationError as exc:
-        reply = ZMQReply(status="error", msg="", data=exc.messages)
+        return ZMQReply(status="error", msg="", data=exc.messages)
 
-    return reply
+    # Set the query running (it's safe to call this even if the query was set running before)
+    query_obj.store_async()
+
+    return ZMQReply(status="accepted", data={"query_id": query_obj.query_id})
+
+
+def action_handler__poll_query(
+    query_id, query_kind
+):  # FIXME: the argument query_kind only exists for legacy reasons and is not needed any more. It should be removed!
+    """
+    Handler for the 'poll_query' action.
+
+    Returns the status of the query with the given `query_id`.
+    """
+    redis = Query.redis
+    q_state_machine = QueryStateMachine(redis, query_id)
+    reply_data = {
+        "query_id": query_id,
+        "query_state": q_state_machine.current_query_state,
+    }
+    return ZMQReply(status="done", data=reply_data)
 
 
 ACTION_HANDLERS = {
@@ -83,6 +103,7 @@ ACTION_HANDLERS = {
     "get_available_queries": action_handler__get_available_queries,
     "get_query_schemas": action_handler__get_query_schemas,
     "run_query": action_handler__run_query,
+    "poll_query": action_handler__poll_query,
 }
 
 

@@ -1,5 +1,6 @@
 import json
 
+from abc import ABCMeta, abstractmethod
 from hashlib import md5
 from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Length
@@ -87,7 +88,7 @@ class FlowmachineQuerySchema(OneOfSchema):
 #
 
 
-class BaseExposedQuery:
+class BaseExposedQuery(metaclass=ABCMeta):
     """
     Base class for exposed flowmachine queries.
 
@@ -97,10 +98,37 @@ class BaseExposedQuery:
     """
 
     @property
+    @abstractmethod
     def __schema__(self):
         raise NotImplementedError(
             f"Class {self.__class__.__name__} does not have the __schema__ property set."
         )
+
+    @property
+    @abstractmethod
+    def _flowmachine_query_obj(self):
+        """
+        Return the underlying flowmachine query object which this class exposes.
+
+        Returns
+        -------
+        Query
+        """
+        raise NotImplementedError(
+            f"Class {self.__class__.__name__} does not have the fm_query_obj property set."
+        )
+
+    def store_async(self):
+        """
+        Store this query using a background thread.
+
+        Returns
+        -------
+        Future
+            Future object representing the calculation.
+
+        """
+        return self._flowmachine_query_obj.store()
 
     @property
     def query_id(self):
@@ -143,6 +171,24 @@ class DailyLocationExposed(BaseExposedQuery):
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
 
+    @property
+    def _flowmachine_query_obj(self):
+        """
+        Return the underlying flowmachine daily_location object.
+
+        Returns
+        -------
+        Query
+        """
+        from flowmachine.features import daily_location
+
+        return daily_location(
+            date=self.date,
+            level=self.aggregation_unit,
+            method=self.method,
+            subscriber_subset=self.subscriber_subset,
+        )
+
 
 class ModalLocationExposed(BaseExposedQuery):
 
@@ -152,3 +198,17 @@ class ModalLocationExposed(BaseExposedQuery):
         self.locations = locations
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
+
+    @property
+    def _flowmachine_query_obj(self):
+        """
+        Return the underlying flowmachine ModalLocation object.
+
+        Returns
+        -------
+        ModalLocation
+        """
+        from flowmachine.features import ModalLocation
+
+        locations = [loc._flowmachine_query_obj for loc in self.locations]
+        return ModalLocation(*locations)

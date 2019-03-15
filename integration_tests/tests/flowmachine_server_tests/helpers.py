@@ -12,9 +12,8 @@ def poll_until_done(port, query_id, max_tries=100):
     query with id `query_id` until the return status is "completed".
     """
     msg_poll_query = {
-        "action": "poll",
-        "query_kind": "daily_location",
-        "query_id": query_id,
+        "action": "poll_query",
+        "params": {"query_kind": "daily_location", "query_id": query_id},
         "request_id": "DUMMY_ID",
     }
 
