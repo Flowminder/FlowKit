@@ -55,7 +55,7 @@ class DummyQuery(Query):
 def test_blocks(blocking_state, monkeypatch, dummy_redis):
     """Test that states which alter the executing state of the query block."""
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
-    dummy_redis._store[state_machine.state_machine._name] = blocking_state.encode()
+    dummy_redis.set(state_machine.state_machine._name, blocking_state)
     monkeypatch.setattr(
         flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
@@ -104,7 +104,7 @@ def test_non_blocking(monkeypatch):
 def test_non_blocks(non_blocking_state, expected_return, monkeypatch, dummy_redis):
     """Test that states which don't alter the executing state of the query don't block."""
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
-    dummy_redis._store[state_machine.state_machine._name] = non_blocking_state.encode()
+    dummy_redis.set(state_machine.state_machine._name, non_blocking_state)
     monkeypatch.setattr(
         flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
@@ -130,7 +130,7 @@ def test_non_blocks(non_blocking_state, expected_return, monkeypatch, dummy_redi
 def test_query_cancellation(start_state, succeeds, dummy_redis):
     """Test the cancel method works as expected."""
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
-    dummy_redis._store[state_machine.state_machine._name] = start_state.encode()
+    dummy_redis.set(state_machine.state_machine._name, start_state)
     state_machine.cancel()
     assert succeeds == state_machine.is_cancelled
 

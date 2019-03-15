@@ -123,10 +123,10 @@ def test_poll(dummy_redis, monkeypatch):
     # based on whether a redis lock and/or the cache table exists.
     #
     qsm = QueryStateMachine(dummy_redis, query_id=q.md5)
-    dummy_redis._store[qsm.state_machine._name] = QueryState.EXECUTING.value.encode()
+    dummy_redis.set(qsm.state_machine._name, QueryState.EXECUTING.value)
     assert QueryState.EXECUTING.value == query_proxy.poll()
 
-    dummy_redis._store[qsm.state_machine._name] = QueryState.COMPLETED.value.encode()
+    dummy_redis.set(qsm.state_machine._name, QueryState.COMPLETED.value)
     mock_func_cache_table_exists.return_value = False
     assert "awol" == query_proxy.poll()
     mock_func_cache_table_exists.return_value = True
@@ -230,6 +230,6 @@ def test_get_sql_errors(current_state, expected_error, dummy_redis, monkeypatch)
     )
     # Set query state
     qsm = QueryStateMachine(dummy_redis, query_id=q.md5)
-    dummy_redis._store[qsm.state_machine._name] = current_state.encode()
+    dummy_redis.set(qsm.state_machine._name, current_state)
     with pytest.raises(expected_error):
         sql = query_proxy.get_sql()
