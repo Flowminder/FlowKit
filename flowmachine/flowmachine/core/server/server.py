@@ -17,6 +17,7 @@ import structlog
 import zmq
 from zmq.asyncio import Context
 from flowmachine.core import connect
+from flowmachine.core.query_state import QueryState
 from .query_proxy import (
     QueryProxy,
     MissingQueryError,
@@ -75,7 +76,7 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             )
             query_id = query_proxy.run_query_async()
             query_run_log.info("run_query", query_id=query_id, **run_log_dict)
-            reply = {"status": "accepted", "id": query_id}
+            reply = {"status": query_proxy.poll(), "id": query_id}
 
         elif "poll" == action:
             logger.debug(f"Trying to poll query.  Message: {zmq_msg.msg_str}")
@@ -91,7 +92,7 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             query_proxy = QueryProxy.from_query_id(query_id)
             sql = query_proxy.get_sql()
             query_run_log.info("get_sql", query_id=query_id, **run_log_dict)
-            reply = {"status": "done", "sql": sql}
+            reply = {"status": query_proxy.poll(), "sql": sql}
 
         elif "get_params" == action:
             logger.debug(f"Trying to get query parameters. Message: {zmq_msg.msg_str}")
@@ -125,7 +126,7 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             # Explicitly project to WGS84 (SRID=4326) to conform with GeoJSON standard
             sql = q.geojson_query(crs=4326)
             query_run_log.info("get_geography", **run_log_dict)
-            reply = {"status": "done", "sql": sql}
+            reply = {"status": QueryState.COMPLETED, "sql": sql}
 
         else:
             logger.debug(f"Unknown action: '{action}'")

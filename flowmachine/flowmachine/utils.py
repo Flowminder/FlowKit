@@ -6,18 +6,18 @@
 """
 Various simple utilities.
 """
+from time import sleep
 
 import datetime
 
-from contextlib import contextmanager
+from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
+
 from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
-from threading import get_ident
-from typing import List, Union
 
-import redis_lock
-from redis_lock import AlreadyAcquired
+
+from typing import List, Union
 
 import flowmachine
 from flowmachine.core.errors import BadLevelError
@@ -245,39 +245,50 @@ def proj4string(conn, crs=None):
     return proj4_string.strip()
 
 
-@contextmanager
-def rlock(redis_client, lock_id, holder_id=None):
+def verify_columns_exist_in_all_tables(conn, tables, columns):
     """
-    A reentrant lock(ish). This lock can be reacquired using the same
-    holder_id as that which currently holds it.
+    Parse a list of tables ensuring that certain columns are present.
 
     Parameters
     ----------
-    redis_client : redis.StrictRedis
-        Client for a redis
-    lock_id : str
-        Identifier of the lock to try and acquire
-    holder_id : bytes
-        Identifier of the holder, defaults to `get_ident()`
+    conn : Connection
+        FlowMachine db connection to use to get the subscriber_tables.
+    tables : str or list of strings, default 'all'
+        Can be a sting of a single table (with the schema) or a list of these.
+        The keyword all is to select all subscriber tables
+    columns : str or list
+        A string or list of strings with the column names that must be present.
 
-    Notes
-    -----
-    Not a true reentrant lock because being held n times by one holder
-    requires only 1 release. Only the _first_ holder can release.
+    Returns
+    -------
+    None
+        The functions returns None when all columns exist in all tables.
 
+    Raises
+    ------
+    MissingColumnsError
+        If any column does not exist in any of the tables.
     """
-    if holder_id is None:
-        holder_id = f"{get_ident()}".encode()
-    logger.debug(f"My lock holder id is {holder_id}")
-    logger.debug(
-        f"Getting lock id {lock_id}. Currently held by {redis_lock.Lock(redis_client, lock_id, id=holder_id).get_owner_id()}"
-    )
-    try:
-        with redis_lock.Lock(redis_client, lock_id, id=holder_id):
-            yield
-    except AlreadyAcquired:
-        yield
-    logger.debug(f"{holder_id} released lock id {lock_id}.")
+
+    if isinstance(tables, str) and tables.lower() == "all":
+        tables = [f"events.{t}" for t in conn.subscriber_tables]
+    elif type(tables) is str:
+        tables = [tables]
+    else:
+        tables = tables
+
+    if isinstance(columns, str):
+        columns = [columns]
+
+    tables_lacking_columns = []
+    for t in tables:
+        for c in columns:
+            if c not in flowmachine.core.Table(t).column_names:
+                tables_lacking_columns.append(t)
+                break
+
+    if tables_lacking_columns:
+        raise MissingColumnsError(tables_lacking_columns, columns)
 
 
 def pretty_sql(
@@ -333,3 +344,9 @@ def _makesafe(x):
     Function that converts input into a PostgreSQL readable.
     """
     return adapt(x).getquoted().decode()
+
+
+def _sleep(seconds_to_sleep):
+    # Private function to facilitate testing
+    # monkeypatch this to avoid needing to monkeypatch time.sleep
+    sleep(seconds_to_sleep)

@@ -31,7 +31,7 @@ async def get_geography(aggregation_unit):
             jsonify({"status": "Error", "msg": "Server responded without status"}),
             500,
         )
-    if status == "done":
+    if status == "completed":
         results_streamer = stream_with_context(stream_result_as_json)(
             message["sql"],
             result_name="features",

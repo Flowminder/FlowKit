@@ -18,10 +18,11 @@ geopandas = "*"
 numpydoc = "*"
 black = "==18.9b0"
 click = "*"
-"d3609ea" = {editable = true, path = "./../flowmachine"}
+flowmachine = {editable = true, path = "./../flowmachine"}
 descartes = "*"
 seaborn = "*"
-"3ff404a" = {editable = true, path = "./../flowclient"}
+flowclient = {editable = true, path = "./../flowclient"}
+flowapi = {editable = true, path = "./../flowapi"}
 mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"

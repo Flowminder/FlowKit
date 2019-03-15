@@ -71,6 +71,6 @@ def test_generic_status_code_unknown_error(json_failure, session_mock, token):
     connection = flowclient.connect("DUMMY_API", token)
     with pytest.raises(
         FlowclientConnectionError,
-        match="Something went wrong: Unknown error. API returned with status code: 418",
+        match="Something went wrong: Unknown error. API returned with status code: 418 and status 'Unknown status'",
     ):
         connection.get_url("DUMMY_ROUTE")

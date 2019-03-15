@@ -144,6 +144,12 @@
             ],
             "version": "==4.3.2"
         },
+        "finist": {
+            "hashes": [
+                "sha256:795fc4d9f73e6e0e1af4c151d577f4a7b31bd591cd7163e1a99bb4a17faf2742"
+            ],
+            "version": "==0.1.2"
+        },
         "flask": {
             "hashes": [
                 "sha256:2271c0070dbcb5275fad4a82e29f23ab92682dc45f9dfbc22c02ba9b9322ce48",
@@ -499,13 +505,6 @@
                 "sha256:fc022efe8bfc281f1ae4844a9fa2cc64f3e4513da362c6866ae5c3a9434c1c92"
             ],
             "version": "==0.7.0"
-        },
-        "python-redis-lock": {
-            "hashes": [
-                "sha256:5316d473ce6ce86a774b9f9c110d84c3a9bd1a2abfda5d99e9c0c8a872a8e6d6",
-                "sha256:f0649c49341fa943f19b8fbe93c3457df8a0a85006c88134465a16401fd1e553"
-            ],
-            "version": "==3.3.1"
         },
         "pytoml": {
             "hashes": [

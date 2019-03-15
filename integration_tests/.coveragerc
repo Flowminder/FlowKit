@@ -13,6 +13,7 @@ omit =
     */_version.py
     */versioneer.py
     *__init__*
+    */setup.py
 
 exclude_lines =
     if __name__ == '__main__':

@@ -45,26 +45,3 @@ def flowmachine_connect():
     Query.connection = Mock()
     Query.redis = Mock()
     print("Replacing connections with mocks.")
-
-
-class DummyRedis:
-    """
-    Drop-in replacement for redis.
-    """
-
-    def __init__(self):
-        self._store = {}
-
-    def set(self, key, value):
-        self._store[key] = value.encode()
-
-    def get(self, key):
-        return self._store.get(key, None)
-
-    def keys(self):
-        return sorted(self._store.keys())
-
-
-@pytest.fixture(scope="function")
-def dummy_redis():
-    return DummyRedis()
