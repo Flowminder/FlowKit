@@ -5,10 +5,24 @@ from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
+from flowmachine.core.dummy_query import DummyQuery
+
 
 #
 # Flowmachine query schemas
 #
+
+
+class DummyQuerySchema(Schema):
+    """
+    Dummy query useful for testing.
+    """
+
+    dummy_param = fields.String(required=True)
+
+    @post_load
+    def make_query_object(self, params):
+        return DummyQueryExposed(**params)
 
 
 class DailyLocationSchema(Schema):
@@ -56,6 +70,7 @@ class FlowmachineQuerySchema(OneOfSchema):
     type_schemas = {
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
+        "dummy_query": DummyQuerySchema,
     }
 
     def get_obj_type(self, obj):
@@ -104,6 +119,18 @@ class BaseExposedQuery:
         """
         marshmallow_schema = self.__schema__()
         return marshmallow_schema.dump(self)
+
+
+class DummyQueryExposed(BaseExposedQuery):
+
+    __schema__ = DummyQuerySchema
+
+    def __init__(self, dummy_param):
+        self.dummy_param = dummy_param
+
+    @property
+    def _flowmachine_query_obj(self):
+        return DummyQuery(dummy_param=self.dummy_param)
 
 
 class DailyLocationExposed(BaseExposedQuery):
