@@ -873,8 +873,7 @@ class Query(metaclass=ABCMeta):
             logger.debug(
                 f"Query '{self.md5}' is being reset from elsewhere, waiting for reset to finish."
             )
-            while q_state_machine.is_resetting:
-                _sleep(1)
+            q_state_machine.wait_until_complete()
         if not q_state_machine.is_known:
             raise QueryResetFailedException(self.md5)
 
