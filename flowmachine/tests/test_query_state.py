@@ -28,16 +28,16 @@ class DummyQuery(Query):
 
     Parameters
     ----------
-    x : str
+    dummy_id : str
         Id to distringuish this query
     sleep_time : int, default 5
         Number of seconds to block in _make_query
 
     """
 
-    def __init__(self, x, sleep_time=5):
+    def __init__(self, dummy_id, sleep_time=5):
 
-        self.x = x
+        self.dummy_id = dummy_id
         self.sleep_time = sleep_time
         super().__init__()
 
@@ -71,7 +71,7 @@ def test_no_limit_on_blocks(monkeypatch):
     monkeypatch.setattr(
         flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
-    dummies = [DummyQuery(x) for x in range(50)]
+    dummies = [DummyQuery(dummy_id=x) for x in range(50)]
     [dummy.store() for dummy in dummies]
 
     with pytest.raises(BlockingIOError):
@@ -82,7 +82,7 @@ def test_non_blocking(monkeypatch):
     """Test that states which do not alter the executing state of the query don't block."""
 
     flowmachine.connect()
-    dummies = [DummyQuery(x) for x in range(50)]
+    dummies = [DummyQuery(dummy_id=x) for x in range(50)]
     [dummy.store() for dummy in dummies]
     monkeypatch.setattr(
         flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
@@ -144,7 +144,7 @@ def test_query_cancellation(start_state, succeeds, dummy_redis):
 )
 def test_store_exceptions(fail_event, expected_exception):
     """Test that exceptions are raised when watching a store op triggered elsewhere."""
-    q = DummyQuery(1, sleep_time=5)
+    q = DummyQuery(dummy_id=1, sleep_time=5)
     qsm = QueryStateMachine(q.redis, q.md5)
     # Mark the query as having begun executing elsewhere
     qsm.enqueue()
@@ -160,7 +160,7 @@ def test_drop_query_blocks(monkeypatch):
     monkeypatch.setattr(
         flowmachine.core.query, "_sleep", Mock(side_effect=BlockingIOError)
     )
-    q = DummyQuery(1, sleep_time=5)
+    q = DummyQuery(dummy_id=1, sleep_time=5)
     qsm = QueryStateMachine(q.redis, q.md5)
     # Mark the query as in the process of resetting
     qsm.enqueue()
@@ -173,7 +173,7 @@ def test_drop_query_blocks(monkeypatch):
 
 def test_drop_query_errors(monkeypatch):
     """Test that resetting a query's cache will error if in a state where that isn't possible."""
-    q = DummyQuery(1, sleep_time=5)
+    q = DummyQuery(dummy_id=1, sleep_time=5)
     qsm = QueryStateMachine(q.redis, q.md5)
     # Mark the query as in the process of resetting
     qsm.enqueue()
