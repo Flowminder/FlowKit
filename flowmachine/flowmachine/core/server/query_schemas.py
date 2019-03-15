@@ -78,6 +78,12 @@ class BaseExposedQuery:
     """
 
     @property
+    def __schema__(self):
+        raise NotImplementedError(
+            f"Class {self.__class__.__name__} does not have the __schema__ property set."
+        )
+
+    @property
     def query_id(self):
         return md5(json.dumps(self.query_params, sort_keys=True).encode()).hexdigest()
 
