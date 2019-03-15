@@ -47,9 +47,9 @@ def write_query_to_cache(
 ) -> "Query":
     """
     Write a Query object into a postgres table and update the cache metadata about it.
-    Attempts to update the query's state in redis to executing, and if successful, tries to run
-    it. If unable to update the state to executing, will block until the query is in a completed,
-    errored, or cancelled state.
+    Attempts to update the query's state in redis to `executing`, and if successful, tries to run
+    it. If unable to update the state to `executing`, will block until the query is in a `completed`,
+    `errored`, or `cancelled` state.
 
     Parameters
     ----------
