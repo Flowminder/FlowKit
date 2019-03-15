@@ -74,7 +74,11 @@ class FlowmachineQuerySchema(OneOfSchema):
 
 class BaseExposedQuery:
     """
-    Base class for flowmachine queries.
+    Base class for exposed flowmachine queries.
+
+    Note: these classes are not meant to be instantiated directly!
+    Instead, they are instantiated automatically through the query
+    schema classes above.
     """
 
     @property
