@@ -171,7 +171,7 @@ def test_drop_query_blocks(monkeypatch):
         q.invalidate_db_cache()
 
 
-def test_drop_query_errors(monkeypatch):
+def test_drop_query_errors():
     """Test that resetting a query's cache will error if in a state where that isn't possible."""
     q = DummyQuery(dummy_id=1, sleep_time=5)
     qsm = QueryStateMachine(q.redis, q.md5)
