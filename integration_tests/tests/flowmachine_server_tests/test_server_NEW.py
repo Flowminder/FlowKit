@@ -36,7 +36,9 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
     expected_reply = {
         "status": "done",
         "msg": "",
-        "data": {"available_queries": ["daily_location", "modal_location"]},
+        "data": {
+            "available_queries": ["daily_location", "modal_location", "dummy_query"]
+        },
     }
     assert expected_reply == reply
 
@@ -75,7 +77,7 @@ def test_run_daily_location_query(send_zmq_message_and_receive_reply):
     reply = send_zmq_message_and_receive_reply(msg)
 
     assert "accepted" == reply["status"]
-    assert "4503884d13687efd7ff25163b462596a" == reply["data"]["query_id"]
+    assert "7401bba3acebc2c41bd9f79014bef4e9" == reply["data"]["query_id"]
     assert ["query_id"] == list(reply["data"].keys())
 
 
@@ -111,5 +113,5 @@ def test_run_modal_location_query(send_zmq_message_and_receive_reply):
     reply = send_zmq_message_and_receive_reply(msg)
 
     assert "accepted" == reply["status"]
-    assert "2fd6df01e9bb630117e7c87b5eed7fd0" == reply["data"]["query_id"]
+    assert "cf22a8a2468ab22743f9e8c3da0044db" == reply["data"]["query_id"]
     assert ["query_id"] == list(reply["data"].keys())

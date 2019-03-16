@@ -36,10 +36,22 @@
     ],
     "type": "object"
   },
+  "DummyQuery": {
+    "properties": {
+      "dummy_param": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "dummy_param"
+    ],
+    "type": "object"
+  },
   "FlowmachineQuerySchema": {
     "discriminator": {
       "mapping": {
         "daily_location": "#/components/schemas/DailyLocation",
+        "dummy_query": "#/components/schemas/DummyQuery",
         "modal_location": "#/components/schemas/ModalLocation"
       },
       "propertyName": "query_kind"
@@ -50,6 +62,9 @@
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
+      },
+      {
+        "$ref": "#/components/schemas/DummyQuery"
       }
     ]
   },
