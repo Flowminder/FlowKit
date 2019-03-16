@@ -22,7 +22,7 @@ def poll_until_done(port, query_id, max_tries=100):
             raise RuntimeError("Timeout reached but query is not done. Aborting.")
         print(f"[DDD] Polling query {query_id}...")
         reply = send_message_and_get_reply(port, msg_poll_query)
-        if "completed" == reply["status"]:
+        if "completed" == reply["data"]["query_state"]:
             break
         time.sleep(0.1)
 
