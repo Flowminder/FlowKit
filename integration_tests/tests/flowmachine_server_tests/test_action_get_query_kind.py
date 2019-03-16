@@ -6,20 +6,23 @@ from .helpers import poll_until_done, send_message_and_get_reply
 # TODO: add test for code path that raises QueryProxyError with the 'get_params' action
 
 
+@pytest.mark.skip(reason="The 'get_query_kind' action will likely be removed soon.")
 @pytest.mark.parametrize(
     "params",
     [
         {
+            "query_kind": "daily_location",
             "date": "2016-01-01",
-            "daily_location_method": "last",
+            "method": "last",
             "aggregation_unit": "admin3",
-            "subscriber_subset": "all",
+            "subscriber_subset": None,
         },
         {
+            "query_kind": "daily_location",
             "date": "2016-01-04",
-            "daily_location_method": "most-common",
+            "method": "most-common",
             "aggregation_unit": "admin1",
-            "subscriber_subset": "all",
+            "subscriber_subset": None,
         },
     ],
 )
@@ -31,16 +34,12 @@ async def test_get_query_kind(params, zmq_url):
     #
     # Run daily_location query.
     #
-    msg_run_query = {
-        "action": "run_query_OLD",
-        "query_kind": "daily_location",
-        "params": params,
-        "request_id": "DUMMY_ID",
-    }
+    msg_run_query = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
     reply = send_message_and_get_reply(zmq_url, msg_run_query)
-    query_id = reply["id"]
-    assert reply["status"] in ("executing", "queued", "completed")
+    # assert reply["status"] in ("executing", "queued", "completed")
+    assert reply["status"] in ("accepted")
+    query_id = reply["data"]["query_id"]
 
     #
     # Wait until the query has finished.
@@ -52,14 +51,16 @@ async def test_get_query_kind(params, zmq_url):
     #
     msg_get_params = {
         "action": "get_query_kind",
-        "query_id": query_id,
+        "params": {"query_id": query_id},
         "request_id": "DUMMY_ID",
     }
 
     reply = send_message_and_get_reply(zmq_url, msg_get_params)
-    assert {"id": query_id, "query_kind": "daily_location"} == reply
+    assert "done" == reply["status"]
+    assert {"query_id": query_id, "query_kind": "daily_location"} == reply["data"]
 
 
+@pytest.mark.skip(reason="The 'get_query_kind' action will likely be removed soon.")
 @pytest.mark.asyncio
 async def test_get_query_kind_for_nonexistent_query_id(zmq_url):
     """
@@ -70,7 +71,7 @@ async def test_get_query_kind_for_nonexistent_query_id(zmq_url):
     #
     msg_get_sql = {
         "action": "get_query_kind",
-        "query_id": "FOOBAR",
+        "params": {"query_id": "FOOBAR"},
         "request_id": "DUMMY_ID",
     }
 
