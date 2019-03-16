@@ -37,5 +37,5 @@ def get_config():
         LOG_LEVEL=logging.getLevelName(os.getenv("LOG_LEVEL", "error").upper()),
         FLOWMACHINE_SERVER=os.getenv("FLOWMACHINE_SERVER", "localhost"),
         FLOWMACHINE_PORT=os.getenv("FLOWMACHINE_PORT", "5555"),
-        FLOWDB_DSN=f'postgres://{getsecret("API_FLOWDB_USER", os.getenv("FLOWDB_USER"))}:{getsecret("API_DB_PASS", os.getenv("DB_PASS"))}@{os.getenv("DB_HOST")}:{os.getenv("FLOWDB_PORT", 5432)}/flowdb',
+        FLOWDB_DSN=f'postgres://{getsecret("API_FLOWDB_USER", os.getenv("FLOWDB_USER"))}:{getsecret("API_DB_PASS", os.getenv("DB_PASS"))}@{os.getenv("FLOWDB_HOST")}:{os.getenv("FLOWDB_PORT", 5432)}/flowdb',
     )

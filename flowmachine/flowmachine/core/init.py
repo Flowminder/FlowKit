@@ -124,7 +124,7 @@ def connect(
     )
     db_pw = getsecret("DB_PW", os.getenv("DB_PW", "foo")) if db_pw is None else db_pw
     db_host = (
-        getsecret("DB_HOST", os.getenv("DB_HOST", "localhost"))
+        getsecret("FLOWDB_HOST", os.getenv("FLOWDB_HOST", "localhost"))
         if db_host is None
         else db_host
     )
