@@ -63,7 +63,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
     monkeypatch.setenv("WRITE_LOG_FILE", "DUMMY_ENV_WRITE_LOG_FILE")
     monkeypatch.setenv("FLOWDB_PORT", 7777)
-    monkeypatch.setenv("DB_USER", "DUMMY_ENV_DB_USER")
+    monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
     monkeypatch.setenv("DB_HOST", "DUMMY_ENV_DB_HOST")
     monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
@@ -113,7 +113,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
     monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
     monkeypatch.setenv("FLOWDB_PORT", 6969)
-    monkeypatch.setenv("DB_USER", "DUMMY_ENV_DB_USER")
+    monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
     monkeypatch.setenv("DB_HOST", "DUMMY_ENV_DB_HOST")
     monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
@@ -129,7 +129,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     core_init_logging_mock.assert_called_with("DUMMY_ENV_LOG_LEVEL", True)
     core_init_Connection_mock.assert_called_with(
         6969,
-        "DUMMY_ENV_DB_USER",
+        "DUMMY_ENV_FLOWDB_USER",
         "DUMMY_ENV_DB_PW",
         "DUMMY_ENV_DB_HOST",
         "DUMMY_ENV_DB_NAME",

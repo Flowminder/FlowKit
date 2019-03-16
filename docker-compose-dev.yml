@@ -127,7 +127,7 @@ services:
       - ${FLOWAPI_PORT:-9090}:9090
     environment:
       - SERVER=flowmachine
-      - DB_USER=reporter
+      - FLOWDB_USER=reporter
       - DB_PASS=${REPORTER_PASSWORD:-foo}
       - DB_HOST=${DB_HOST:-flowdb}
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
