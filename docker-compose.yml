@@ -57,7 +57,7 @@ services:
       - SERVER=flowmachine
       - LOG_LEVEL=${LOG_LEVEL:-error}
       - FLOWDB_USER=reporter
-      - DB_PASS=${API_PASSWORD:-foo}
+      - FLOWDB_PASS=${API_PASSWORD:-foo}
       - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}

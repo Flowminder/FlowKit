@@ -128,7 +128,7 @@ services:
     environment:
       - SERVER=flowmachine
       - FLOWDB_USER=reporter
-      - DB_PASS=${REPORTER_PASSWORD:-foo}
+      - FLOWDB_PASS=${REPORTER_PASSWORD:-foo}
       - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-secret}
