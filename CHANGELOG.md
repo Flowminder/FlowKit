@@ -8,11 +8,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - FlowAPI now reports queued/running status for queries instead of just accepted
+- The following environment variables have been renamed:
+    - `DB_USER` -> `FLOWDB_USER`
+    - `DB_USER` -> `FLOWDB_HOST`
+    - `DB_PASS` -> `FLOWDB_PASS`
+    - `DB_PW` -> `FLOWDB_PASS`
+    - `API_DB_USER` -> `FLOWAPI_DB_USER`
+    - `API_DB_PASS` -> `FLOWAPI_DB_PASS`
+    - `FM_DB_USER` -> `FLOWMACHINE_DB_USER`
+    - `FM_DB_PASS` -> `FLOWMACHINE_DB_PASS`
 
 ### Fixed
 - Server no longer loses track of queries under heavy load
 
 ### Removed
+
+- The environment variable `DB_NAME` has been removed.
 
 ## [0.4.2]
 ### Changed
