@@ -44,10 +44,10 @@ then
     FM_USER=$(< /run/secrets/FLOWMACHINE_DB_USER)
 fi
 
-if [ -e /run/secrets/FM_DB_PASS ];
+if [ -e /run/secrets/FLOWMACHINE_DB_PASS ];
 then
     echo "Using secrets for analyst password."
-    FM_PASSWORD=$(< /run/secrets/FM_DB_PASS)
+    FM_PASSWORD=$(< /run/secrets/FLOWMACHINE_DB_PASS)
 fi
 
 if [ -e /run/secrets/FLOWAPI_DB_USER ];

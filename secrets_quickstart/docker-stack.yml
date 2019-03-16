@@ -12,7 +12,7 @@ secrets:
     external: true
   FLOWMACHINE_DB_USER: # Database user for FlowMachine
     external: true
-  FM_DB_PASS: # Password for FlowDB
+  FLOWMACHINE_DB_PASS: # Password for FlowDB
     external: true
   POSTGRES_PASSWORD_FILE: # Postgres superuser password
     external: true
@@ -33,7 +33,7 @@ services:
           - FLOWAPI_DB_USER
           - FLOWAPI_DB_PASS
           - FLOWMACHINE_DB_USER
-          - FM_DB_PASS
+          - FLOWMACHINE_DB_PASS
         tty: true
         shm_size: 1G
         stdin_open: true
@@ -50,7 +50,7 @@ services:
             - DEBUG=${FM_DEBUG:-False}
         secrets:
           - FLOWMACHINE_DB_USER
-          - FM_DB_PASS
+          - FLOWMACHINE_DB_PASS
           - REDIS_PASSWORD_FILE
         networks:
           - db
