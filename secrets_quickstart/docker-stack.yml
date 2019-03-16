@@ -10,7 +10,7 @@ secrets:
     external: true
   API_DB_PASS: # Password for the FlowAPI database user
     external: true
-  FM_DB_USER: # Database user for FlowMachine
+  FLOWMACHINE_DB_USER: # Database user for FlowMachine
     external: true
   FM_DB_PASS: # Password for FlowDB
     external: true
@@ -32,7 +32,7 @@ services:
           - POSTGRES_PASSWORD_FILE
           - FLOWAPI_DB_USER
           - API_DB_PASS
-          - FM_DB_USER
+          - FLOWMACHINE_DB_USER
           - FM_DB_PASS
         tty: true
         shm_size: 1G
@@ -49,7 +49,7 @@ services:
             - LOG_LEVEL=${LOG_LEVEL:-error}
             - DEBUG=${FM_DEBUG:-False}
         secrets:
-          - FM_DB_USER
+          - FLOWMACHINE_DB_USER
           - FM_DB_PASS
           - REDIS_PASSWORD_FILE
         networks:

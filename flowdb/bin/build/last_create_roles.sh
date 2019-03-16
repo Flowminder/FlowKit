@@ -38,10 +38,10 @@ then
     exit 1
 fi
 
-if [ -e /run/secrets/FM_DB_USER ];
+if [ -e /run/secrets/FLOWMACHINE_DB_USER ];
 then
     echo "Using secrets for analyst user."
-    FM_USER=$(< /run/secrets/FM_DB_USER)
+    FM_USER=$(< /run/secrets/FLOWMACHINE_DB_USER)
 fi
 
 if [ -e /run/secrets/FM_DB_PASS ];

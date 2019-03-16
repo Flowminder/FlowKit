@@ -166,7 +166,7 @@ The stack expects you to provide seven secrets:
  
     The password that the API will use to connect to FlowDB
 
- - FM_DB_USER
+ - FLOWMACHINE_DB_USER
  
     The username that FlowMachine will use to connect to FlowDB
 
@@ -220,7 +220,7 @@ cd secrets_quickstart
 docker login
 docker swarm init
 openssl rand -base64 16 | docker secret create FM_DB_PASS -
-echo "fm" | docker secret create FM_DB_USER -
+echo "fm" | docker secret create FLOWMACHINE_DB_USER -
 echo "api" | docker secret create FLOWAPI_DB_USER -
 openssl rand -base64 16 | docker secret create API_DB_PASS -
 openssl rand -base64 16 | docker secret create POSTGRES_PASSWORD_FILE -
