@@ -442,8 +442,6 @@ def location_event_counts(
     dict
         Dict which functions as the query specification
     """
-    if subscriber_subset is None:
-        subscriber_subset = "all"
     return {
         "query_kind": "location_event_counts",
         "params": {
@@ -486,8 +484,6 @@ def daily_location(
         Dict which functions as the query specification
 
     """
-    if subscriber_subset is None:
-        subscriber_subset = "all"
     return {
         "query_kind": "daily_location",
         "params": {
@@ -557,8 +553,6 @@ def _meaningful_locations(
     dict
          Dict which functions as the query specification
     """
-    if subscriber_subset is None:
-        subscriber_subset = "all"
     return {
         "query_kind": "meaningful_locations",
         "params": {

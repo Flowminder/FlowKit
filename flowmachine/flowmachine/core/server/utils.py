@@ -32,7 +32,7 @@ def send_message_and_receive_reply(msg, port=5555, host="localhost"):
     ...     "action": "run_query_OLD",
     ...     "query_kind": "daily_location",
     ...     "request_id": "DUMMY_ID",
-    ...      "params": {"date": "2016-01-01", "daily_location_method": "last", "aggregation_unit": "admin3", "subscriber_subset": "all"}
+    ...      "params": {"date": "2016-01-01", "method": "last", "aggregation_unit": "admin3", "subscriber_subset": None}
     ... }
 
     >>> send_message_and_receive_reply(msg)
