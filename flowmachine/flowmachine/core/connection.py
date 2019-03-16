@@ -108,6 +108,7 @@ class Connection:
         self.engine = sqlalchemy.create_engine(
             conn_str,
             echo=False,
+            strategy="threadlocal",
             pool_size=pool_size,
             max_overflow=overflow,
             pool_timeout=None,
