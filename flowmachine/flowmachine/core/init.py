@@ -165,12 +165,13 @@ def connect(
         _init_logging(log_level, write_log_file)
         if conn is None:
             conn = Connection(
-                db_port,
-                db_user,
-                db_pw,
-                db_host,
-                db_connection_pool_size,
-                db_connection_pool_overflow,
+                host=db_host,
+                port=db_port,
+                user=db_user,
+                password=db_pw,
+                database="flowdb",
+                pool_size=db_connection_pool_size,
+                overflow=db_connection_pool_overflow,
             )
         Query.connection = conn
 
