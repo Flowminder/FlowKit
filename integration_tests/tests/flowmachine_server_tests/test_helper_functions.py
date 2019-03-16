@@ -15,15 +15,15 @@ def test_send_message_and_receive_reply(zmq_host, zmq_port):
 
     # Check that FM_EXAMPLE_MESSAGE contains the expected message
     msg_expected = {
-        "action": "run_query_OLD",
-        "query_kind": "daily_location",
-        "request_id": "DUMMY_ID",
+        "action": "run_query",
         "params": {
+            "query_kind": "daily_location",
             "date": "2016-01-01",
-            "daily_location_method": "last",
+            "method": "last",
             "aggregation_unit": "admin3",
-            "subscriber_subset": "all",
+            "subscriber_subset": None,
         },
+        "request_id": "DUMMY_ID",
     }
     assert msg_expected == FM_EXAMPLE_MESSAGE
 
@@ -31,5 +31,6 @@ def test_send_message_and_receive_reply(zmq_host, zmq_port):
     reply = send_message_and_receive_reply(
         FM_EXAMPLE_MESSAGE, host=zmq_host, port=zmq_port
     )
-    assert "e39b0d45bc6b46b7700c67cd52f00455" == reply["id"]
-    assert reply["status"] in ("executing", "queued", "completed")
+    assert "e39b0d45bc6b46b7700c67cd52f00455" == reply["data"]["query_id"]
+    # assert reply["status"] in ("executing", "queued", "completed")
+    assert reply["status"] in ("accepted")
