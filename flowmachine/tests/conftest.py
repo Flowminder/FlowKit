@@ -149,7 +149,7 @@ def clean_env(monkeypatch):
     monkeypatch.delenv("WRITE_LOG_FILE", raising=False)
     monkeypatch.delenv("FLOWDB_PORT", raising=False)
     monkeypatch.delenv("FLOWDB_USER", raising=False)
-    monkeypatch.delenv("DB_PW", raising=False)
+    monkeypatch.delenv("FLOWDB_PASS", raising=False)
     monkeypatch.delenv("FLOWDB_HOST", raising=False)
     monkeypatch.delenv("DB_CONNECTION_POOL_SIZE", raising=False)
     monkeypatch.delenv("DB_CONNECTION_POOL_OVERFLOW", raising=False)

@@ -64,7 +64,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("WRITE_LOG_FILE", "DUMMY_ENV_WRITE_LOG_FILE")
     monkeypatch.setenv("FLOWDB_PORT", 7777)
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
-    monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
+    monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
     monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 7777)
@@ -79,7 +79,7 @@ def test_param_priority(mocked_connections, monkeypatch):
         write_log_file=False,
         db_port=1234,
         db_user="dummy_db_user",
-        db_pw="dummy_db_pw",
+        db_pass="dummy_db_pass",
         db_host="dummy_db_host",
         db_connection_pool_size=6789,
         db_connection_pool_overflow=1011,
@@ -89,7 +89,13 @@ def test_param_priority(mocked_connections, monkeypatch):
     )
     core_init_logging_mock.assert_called_with("dummy_log_level", False)
     core_init_Connection_mock.assert_called_with(
-        1234, "dummy_db_user", "dummy_db_pw", "dummy_db_host", 6789, 1011
+        port=1234,
+        user="dummy_db_user",
+        password="dummy_db_pass",
+        host="dummy_db_host",
+        database="flowdb",
+        pool_size=6789,
+        overflow=1011,
     )
     core_init_StrictRedis_mock.assert_called_with(
         host="dummy_redis_host", port=1213, password="dummy_redis_password"
@@ -106,7 +112,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
     monkeypatch.setenv("FLOWDB_PORT", 6969)
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
-    monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
+    monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
     monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 2020)
@@ -119,12 +125,13 @@ def test_env_priority(mocked_connections, monkeypatch):
     connect()
     core_init_logging_mock.assert_called_with("DUMMY_ENV_LOG_LEVEL", True)
     core_init_Connection_mock.assert_called_with(
-        6969,
-        "DUMMY_ENV_FLOWDB_USER",
-        "DUMMY_ENV_DB_PW",
-        "DUMMY_ENV_FLOWDB_HOST",
-        7777,
-        2020,
+        port=6969,
+        user="DUMMY_ENV_FLOWDB_USER",
+        password="DUMMY_ENV_FLOWDB_PASS",
+        host="DUMMY_ENV_FLOWDB_HOST",
+        database="flowdb",
+        pool_size=7777,
+        overflow=2020,
     )
     core_init_StrictRedis_mock.assert_called_with(
         host="DUMMY_ENV_REDIS_HOST", port=5050, password="DUMMY_ENV_REDIS_PASSWORD"
@@ -143,7 +150,13 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     connect()
     core_init_logging_mock.assert_called_with("error", False)
     core_init_Connection_mock.assert_called_with(
-        9000, "analyst", "foo", "localhost", "flowdb", 5, 1
+        port=9000,
+        user="analyst",
+        password="foo",
+        host="localhost",
+        database="flowdb",
+        pool_size=5,
+        overflow=1,
     )
     core_init_StrictRedis_mock.assert_called_with(
         host="localhost", port=6379, password="fm_redis"
