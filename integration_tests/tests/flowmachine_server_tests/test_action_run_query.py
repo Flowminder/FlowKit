@@ -147,13 +147,14 @@ async def test_wrongly_formatted_zmq_message(zmq_url):
     # msg = {"query_kind": "daily_location", "params": {"date": "2016-01-01", "daily_location_method": "last", "aggregation_unit": "admin3", "subscriber_subset": "all"}}
     msg = {
         "foo": "bar",
-        "query_kind": "daily_location",
         "params": {
+            "query_kind": "daily_location",
             "date": "2016-01-01",
             "method": "last",
             "aggregation_unit": "admin3",
-            "subscriber_subset": "all",
+            "subscriber_subset": None,
         },
+        "request_id": "DUMMY_ID",
     }
 
     reply = send_message_and_get_reply(zmq_url, msg)
