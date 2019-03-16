@@ -459,7 +459,7 @@ def location_event_counts(
 def daily_location(
     date: str,
     aggregation_unit: str,
-    daily_location_method: str,
+    method: str,
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -471,7 +471,7 @@ def daily_location(
         ISO format date to get the daily location for, e.g. "2016-01-01"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
-    daily_location_method : str
+    method : str
         Method to use for daily location, one of 'last' or 'most-common'
     subscriber_subset : dict or None
         Subset of subscribers to retrieve daily locations for. Must be None
@@ -489,7 +489,7 @@ def daily_location(
         "params": {
             "date": date,
             "aggregation_unit": aggregation_unit,
-            "daily_location_method": daily_location_method,
+            "method": method,
             "subscriber_subset": subscriber_subset,
         },
     }
@@ -950,7 +950,7 @@ def modal_location_from_dates(
     start_date: str,
     stop_date: str,
     aggregation_unit: str,
-    daily_location_method: str,
+    method: str,
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -964,7 +964,7 @@ def modal_location_from_dates(
         ISO format date that begins the period, e.g. "2016-01-07"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
-    daily_location_method : str
+    method : str
         Method to use for daily locations, one of 'last' or 'most-common'
     subscriber_subset : dict or None
         Subset of subscribers to retrieve modal locations for. Must be None
@@ -984,7 +984,7 @@ def modal_location_from_dates(
         daily_location(
             date,
             aggregation_unit=aggregation_unit,
-            daily_location_method=daily_location_method,
+            method=method,
             subscriber_subset=subscriber_subset,
         )
         for date in dates
