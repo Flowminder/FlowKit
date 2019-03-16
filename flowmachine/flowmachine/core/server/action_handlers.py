@@ -20,6 +20,7 @@ from marshmallow import ValidationError
 
 from flowmachine.core import Query
 from flowmachine.core.query_state import QueryStateMachine
+from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema
 from .zmq_helpers import ZMQReply
@@ -73,7 +74,11 @@ def action_handler__run_query(**action_params):
     try:
         query_obj = FlowmachineQuerySchema().load(action_params)
     except ValidationError as exc:
-        return ZMQReply(status="error", msg="", data=exc.messages)
+        # The dictionary of marshmallow errors can contain integers as keys,
+        # which will raise an error when converting to JSON (where the keys
+        # must be strings). Therefore we transform the keys to strings here.
+        error_messages = convert_dict_keys_to_strings(exc.messages)
+        return ZMQReply(status="error", msg="", data=error_messages)
 
     # Set the query running (it's safe to call this even if the query was set running before)
     query_id = query_obj.store_async()
