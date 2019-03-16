@@ -56,10 +56,10 @@ then
     API_USER=$(< /run/secrets/FLOWAPI_DB_USER)
 fi
 
-if [ -e /run/secrets/API_DB_PASS ];
+if [ -e /run/secrets/FLOWAPI_DB_PASS ];
 then
     echo "Using secrets for reporter password."
-    API_PASSWORD=$(< /run/secrets/API_DB_PASS)
+    API_PASSWORD=$(< /run/secrets/FLOWAPI_DB_PASS)
 fi
 
 psql --dbname="$POSTGRES_DB" -c "REVOKE CONNECT ON DATABASE $POSTGRES_DB FROM PUBLIC;"

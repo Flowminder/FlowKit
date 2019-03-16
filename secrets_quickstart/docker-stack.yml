@@ -8,7 +8,7 @@ secrets:
     external: true
   FLOWAPI_DB_USER: # Database user used by FlowAPI
     external: true
-  API_DB_PASS: # Password for the FlowAPI database user
+  FLOWAPI_DB_PASS: # Password for the FlowAPI database user
     external: true
   FLOWMACHINE_DB_USER: # Database user for FlowMachine
     external: true
@@ -31,7 +31,7 @@ services:
         secrets:
           - POSTGRES_PASSWORD_FILE
           - FLOWAPI_DB_USER
-          - API_DB_PASS
+          - FLOWAPI_DB_PASS
           - FLOWMACHINE_DB_USER
           - FM_DB_PASS
         tty: true
@@ -68,7 +68,7 @@ services:
           - cert-flowkit.pem
           - JWT_SECRET_KEY
           - FLOWAPI_DB_USER
-          - API_DB_PASS
+          - FLOWAPI_DB_PASS
         networks:
           - zero
           - db
