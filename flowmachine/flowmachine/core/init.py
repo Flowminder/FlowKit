@@ -182,7 +182,7 @@ def connect(
         Query.redis = redis.StrictRedis(
             host=redis_host, port=redis_port, password=redis_pw
         )
-        _start_threadpool(db_connection_pool_size)
+        _start_threadpool(thread_pool_size=db_connection_pool_size)
 
         print(f"FlowMachine version: {flowmachine.__version__}")
 
@@ -235,7 +235,7 @@ def _init_logging(log_level, write_log_file):
         logger.info(f"Added log file handler, logging to {log_file}")
 
 
-def _start_threadpool(thread_pool_size=None):
+def _start_threadpool(*, thread_pool_size=None):
     """
     Start the threadpool flowmachine uses for executing queries
     asynchronously.
