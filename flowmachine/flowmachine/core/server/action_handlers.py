@@ -76,9 +76,9 @@ def action_handler__run_query(**action_params):
         return ZMQReply(status="error", msg="", data=exc.messages)
 
     # Set the query running (it's safe to call this even if the query was set running before)
-    query_obj.store_async()
+    query_id = query_obj.store_async()
 
-    return ZMQReply(status="accepted", data={"query_id": query_obj.query_id})
+    return ZMQReply(status="accepted", data={"query_id": query_id})
 
 
 def action_handler__poll_query(
