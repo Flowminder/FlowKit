@@ -65,7 +65,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("FLOWDB_PORT", 7777)
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
-    monkeypatch.setenv("DB_HOST", "DUMMY_ENV_DB_HOST")
+    monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
     monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 7777)
@@ -115,7 +115,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("FLOWDB_PORT", 6969)
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
-    monkeypatch.setenv("DB_HOST", "DUMMY_ENV_DB_HOST")
+    monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
     monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 2020)
@@ -131,7 +131,7 @@ def test_env_priority(mocked_connections, monkeypatch):
         6969,
         "DUMMY_ENV_FLOWDB_USER",
         "DUMMY_ENV_DB_PW",
-        "DUMMY_ENV_DB_HOST",
+        "DUMMY_ENV_FLOWDB_HOST",
         "DUMMY_ENV_DB_NAME",
         7777,
         2020,

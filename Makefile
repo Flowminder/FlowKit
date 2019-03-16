@@ -21,7 +21,7 @@
 DOCKER_COMPOSE_FILE_DEV ?= docker-compose-dev.yml
 FLOWDB_SERVICES ?= flowdb_testdata
 DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth redis
-export DB_HOST=$(word 1, $(FLOWDB_SERVICES))
+export FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
 
 
 all:

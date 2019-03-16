@@ -36,7 +36,7 @@ services:
     restart: always
     environment:
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
-      - DB_HOST=${DB_HOST:-flowdb}
+      - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
       - LOG_LEVEL=${LOG_LEVEL:-error}
       - DEBUG=${FM_DEBUG:-False}
       - REDIS_HOST=${REDIS_HOST:-redis}
@@ -58,7 +58,7 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-error}
       - FLOWDB_USER=reporter
       - DB_PASS=${API_PASSWORD:-foo}
-      - DB_HOST=${DB_HOST:-flowdb}
+      - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}
     volumes:

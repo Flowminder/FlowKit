@@ -107,7 +107,7 @@ def app(monkeypatch, tmpdir, dummy_db_pool):
     monkeypatch.setenv("LOG_DIRECTORY", str(tmpdir))
     monkeypatch.setenv("SERVER", "localhost")
     monkeypatch.setenv("FLOWDB_USER", "flowdb")
-    monkeypatch.setenv("DB_HOST", "localhost")
+    monkeypatch.setenv("FLOWDB_HOST", "localhost")
     monkeypatch.setenv("DB_PASS", "flowflow")
     monkeypatch.setenv("JWT_SECRET_KEY", "secret")
     current_app = create_app()

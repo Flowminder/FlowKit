@@ -108,7 +108,7 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-debug}
       - DEBUG=${FM_DEBUG:-True}
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
-      - DB_HOST=${DB_HOST:-flowdb}
+      - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PASSWORD=${REDIS_PASSWORD:-fm_redis}
     restart: always
@@ -129,7 +129,7 @@ services:
       - SERVER=flowmachine
       - FLOWDB_USER=reporter
       - DB_PASS=${REPORTER_PASSWORD:-foo}
-      - DB_HOST=${DB_HOST:-flowdb}
+      - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-secret}
       - LOG_LEVEL=${LOG_LEVEL:-debug}

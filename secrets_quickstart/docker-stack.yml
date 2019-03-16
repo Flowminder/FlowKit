@@ -45,7 +45,7 @@ services:
         image: "flowminder/flowmachine:${CIRCLE_BRANCH:-latest}"
         environment:
             - FLOWDB_PORT=5432
-            - DB_HOST=flowdb
+            - FLOWDB_HOST=flowdb
             - LOG_LEVEL=${LOG_LEVEL:-error}
             - DEBUG=${FM_DEBUG:-False}
         secrets:
@@ -63,7 +63,7 @@ services:
         environment:
             - SERVER=flowmachine
             - LOG_LEVEL=${LOG_LEVEL:-error}
-            - DB_HOST=flowdb
+            - FLOWDB_HOST=flowdb
         secrets:
           - cert-flowkit.pem
           - JWT_SECRET_KEY
