@@ -56,7 +56,7 @@ services:
     environment:
       - SERVER=flowmachine
       - LOG_LEVEL=${LOG_LEVEL:-error}
-      - DB_USER=reporter
+      - FLOWDB_USER=reporter
       - DB_PASS=${API_PASSWORD:-foo}
       - DB_HOST=${DB_HOST:-flowdb}
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
