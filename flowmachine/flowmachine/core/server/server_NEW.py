@@ -86,27 +86,32 @@ async def receive_next_zmq_message_and_send_back_reply(socket):
         return
 
     #
-    # We have received a correctly formatted message. Calculate the reply ...
-    #
-    # reply_json = get_reply_for_message(msg_str)
-    # breakpoint()
-    # reply_coroutine = get_reply_for_message(msg_str)
-    # reply_json = await reply_coroutine
-
-    #
-    # ... and return the reply back to the sender.
-    #
-    # asyncio.create_task(send_reply(socket, return_address, reply_coroutine))
-    # socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
-    # breakpoint()
-    print("[DDD] About to send reply...")
-    asyncio.create_task(send_reply_for_message(socket, return_address, msg_contents))
+    # We have received a correctly formatted message. Create a background
+    # task which calculates the reply and returns it back to the sender.
+    logger.debug(
+        f"Creating background task to calculate reply and return it to the sender."
+    )
+    await asyncio.create_task(
+        calculate_and_send_reply_for_message(socket, return_address, msg_contents)
+    )
 
 
-async def send_reply_for_message(socket, return_address, msg_contents):
-    # breakpoint()
-    print("[DDD] Inside send_reply_for_message()")
-    reply_json = await get_reply_for_message(msg_contents)
+async def calculate_and_send_reply_for_message(socket, return_address, msg_contents):
+    """
+    Calculate the reply to a zmq message and return the result to the sender.
+    This function is a small wrapper around `get_reply_for_message` which can
+    be executed as an asyncio background task.
+
+    Parameters
+    ----------
+    socket : zmq.asyncio.Socket
+        The zmq socket to use for sending the reply.
+    return_address : bytes
+        The zmq return address to which to send the reply.
+    msg_contents : str
+        JSON string with the message contents.
+    """
+    reply_json = get_reply_for_message(msg_contents)
     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
 
 
