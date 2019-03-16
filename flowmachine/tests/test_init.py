@@ -101,7 +101,7 @@ def test_param_priority(mocked_connections, monkeypatch):
         host="dummy_redis_host", port=1213, password="dummy_redis_password"
     )
     core_init_start_threadpool_mock.assert_called_with(
-        6789
+        thread_pool_size=6789
     )  # for the time being, we should have num_threads = num_db_connections
 
 
@@ -137,7 +137,7 @@ def test_env_priority(mocked_connections, monkeypatch):
         host="DUMMY_ENV_REDIS_HOST", port=5050, password="DUMMY_ENV_REDIS_PASSWORD"
     )
     core_init_start_threadpool_mock.assert_called_with(
-        7777
+        thread_pool_size=7777
     )  # for the time being, we should have num_threads = num_db_connections
 
 
@@ -162,5 +162,5 @@ def test_connect_defaults(mocked_connections, monkeypatch):
         host="localhost", port=6379, password="fm_redis"
     )
     core_init_start_threadpool_mock.assert_called_with(
-        5
+        thread_pool_size=5
     )  # for the time being, we should have num_threads = num_db_connections
