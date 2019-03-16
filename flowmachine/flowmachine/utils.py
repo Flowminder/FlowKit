@@ -350,3 +350,28 @@ def _sleep(seconds_to_sleep):
     # Private function to facilitate testing
     # monkeypatch this to avoid needing to monkeypatch time.sleep
     sleep(seconds_to_sleep)
+
+
+def convert_dict_keys_to_strings(input_dict):
+    """
+    Return a copy of the input dictionary where all keys are converted to strings.
+    This is necessary if the dictionary needs to be valid JSON.
+
+    Parameters
+    ----------
+    input_dict : dict
+        The input dictionary.
+
+    Returns
+    -------
+    dict
+        A copy of `input_dict` with all keys converted to strings.
+    """
+    result = {}
+    for key, value in input_dict.items():
+        new_key = str(key)
+        if isinstance(value, dict):
+            result[new_key] = convert_dict_keys_to_strings(value)
+        else:
+            result[new_key] = value
+    return result
