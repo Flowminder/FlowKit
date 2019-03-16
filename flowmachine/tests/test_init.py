@@ -66,7 +66,6 @@ def test_param_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
     monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
-    monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 7777)
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
@@ -82,7 +81,6 @@ def test_param_priority(mocked_connections, monkeypatch):
         db_user="dummy_db_user",
         db_pw="dummy_db_pw",
         db_host="dummy_db_host",
-        db_name="dummy_db_name",
         db_connection_pool_size=6789,
         db_connection_pool_overflow=1011,
         redis_host="dummy_redis_host",
@@ -91,13 +89,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     )
     core_init_logging_mock.assert_called_with("dummy_log_level", False)
     core_init_Connection_mock.assert_called_with(
-        1234,
-        "dummy_db_user",
-        "dummy_db_pw",
-        "dummy_db_host",
-        "dummy_db_name",
-        6789,
-        1011,
+        1234, "dummy_db_user", "dummy_db_pw", "dummy_db_host", 6789, 1011
     )
     core_init_StrictRedis_mock.assert_called_with(
         host="dummy_redis_host", port=1213, password="dummy_redis_password"
@@ -116,7 +108,6 @@ def test_env_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("DB_PW", "DUMMY_ENV_DB_PW")
     monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
-    monkeypatch.setenv("DB_NAME", "DUMMY_ENV_DB_NAME")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 2020)
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
@@ -132,7 +123,6 @@ def test_env_priority(mocked_connections, monkeypatch):
         "DUMMY_ENV_FLOWDB_USER",
         "DUMMY_ENV_DB_PW",
         "DUMMY_ENV_FLOWDB_HOST",
-        "DUMMY_ENV_DB_NAME",
         7777,
         2020,
     )

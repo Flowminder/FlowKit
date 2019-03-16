@@ -36,7 +36,6 @@ def connect(
     db_user: Union[str, None] = None,
     db_pw: Union[str, None] = None,
     db_host: Union[str, None] = None,
-    db_name: Union[str, None] = None,
     db_connection_pool_size: Union[int, None] = None,
     db_connection_pool_overflow: Union[int, None] = None,
     redis_host: Union[str, None] = None,
@@ -66,8 +65,6 @@ def connect(
         Password to connect to flowdb
     db_host : str, default "localhost"
         Hostname of flowdb server
-    db_name : str, default "flowdb"
-        Name of database to connect to.
     db_connection_pool_size : int, default 5
         Default number of database connections to use
     db_connection_pool_overflow : int, default 1
@@ -128,11 +125,6 @@ def connect(
         if db_host is None
         else db_host
     )
-    db_name = (
-        getsecret("DB_NAME", os.getenv("DB_NAME", "flowdb"))
-        if db_name is None
-        else db_name
-    )
     db_connection_pool_size = (
         int(
             getsecret(
@@ -177,7 +169,6 @@ def connect(
                 db_user,
                 db_pw,
                 db_host,
-                db_name,
                 db_connection_pool_size,
                 db_connection_pool_overflow,
             )
@@ -191,7 +182,7 @@ def connect(
         print(f"FlowMachine version: {flowmachine.__version__}")
 
         print(
-            f"Flowdb running on: {db_host}:{db_port}/{db_name} (connecting user: {db_user})"
+            f"Flowdb running on: {db_host}:{db_port}/flowdb (connecting user: {db_user})"
         )
     return Query.connection
 

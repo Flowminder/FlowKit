@@ -151,7 +151,6 @@ def clean_env(monkeypatch):
     monkeypatch.delenv("FLOWDB_USER", raising=False)
     monkeypatch.delenv("DB_PW", raising=False)
     monkeypatch.delenv("FLOWDB_HOST", raising=False)
-    monkeypatch.delenv("DB_NAME", raising=False)
     monkeypatch.delenv("DB_CONNECTION_POOL_SIZE", raising=False)
     monkeypatch.delenv("DB_CONNECTION_POOL_OVERFLOW", raising=False)
     monkeypatch.delenv("REDIS_HOST", raising=False)
