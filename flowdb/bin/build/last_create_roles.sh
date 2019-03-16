@@ -50,10 +50,10 @@ then
     FM_PASSWORD=$(< /run/secrets/FM_DB_PASS)
 fi
 
-if [ -e /run/secrets/API_DB_USER ];
+if [ -e /run/secrets/FLOWAPI_DB_USER ];
 then
     echo "Using secrets for reporter user."
-    API_USER=$(< /run/secrets/API_DB_USER)
+    API_USER=$(< /run/secrets/FLOWAPI_DB_USER)
 fi
 
 if [ -e /run/secrets/API_DB_PASS ];

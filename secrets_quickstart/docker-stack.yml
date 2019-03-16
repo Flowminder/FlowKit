@@ -6,7 +6,7 @@ version: '3.1'
 secrets:
   cert-flowkit.pem: # SSL Certificate used to serve FlowAPI over https
     external: true
-  API_DB_USER: # Database user used by FlowAPI
+  FLOWAPI_DB_USER: # Database user used by FlowAPI
     external: true
   API_DB_PASS: # Password for the FlowAPI database user
     external: true
@@ -30,7 +30,7 @@ services:
         image: "flowminder/flowdb-testdata:${CIRCLE_BRANCH:-latest}"
         secrets:
           - POSTGRES_PASSWORD_FILE
-          - API_DB_USER
+          - FLOWAPI_DB_USER
           - API_DB_PASS
           - FM_DB_USER
           - FM_DB_PASS
@@ -67,7 +67,7 @@ services:
         secrets:
           - cert-flowkit.pem
           - JWT_SECRET_KEY
-          - API_DB_USER
+          - FLOWAPI_DB_USER
           - API_DB_PASS
         networks:
           - zero
