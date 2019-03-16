@@ -51,13 +51,13 @@ def send_message_and_receive_reply(msg, port=5555, host="localhost"):
 
 
 FM_EXAMPLE_MESSAGE = {
-    "action": "run_query_OLD",
-    "query_kind": "daily_location",
-    "request_id": "DUMMY_ID",
+    "action": "run_query",
     "params": {
+        "query_kind": "daily_location",
         "date": "2016-01-01",
-        "daily_location_method": "last",
+        "method": "last",
         "aggregation_unit": "admin3",
-        "subscriber_subset": "all",
+        "subscriber_subset": None,
     },
+    "request_id": "DUMMY_ID",
 }
