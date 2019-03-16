@@ -144,7 +144,6 @@ async def test_run_query_with_wrong_parameters(
 async def test_wrongly_formatted_zmq_message(zmq_url):
     """
     """
-    # msg = {"query_kind": "daily_location", "params": {"date": "2016-01-01", "daily_location_method": "last", "aggregation_unit": "admin3", "subscriber_subset": "all"}}
     msg = {
         "foo": "bar",
         "params": {

@@ -15,18 +15,14 @@ from .utils import permissions_types, aggregation_types
     [
         (
             "daily_location",
-            {
-                "date": "2016-01-01",
-                "aggregation_unit": "admin3",
-                "daily_location_method": "last",
-            },
+            {"date": "2016-01-01", "aggregation_unit": "admin3", "method": "last"},
         ),
         (
             "daily_location",
             {
                 "date": "2016-01-01",
                 "aggregation_unit": "admin3",
-                "daily_location_method": "most-common",
+                "method": "most-common",
                 "subscriber_subset": None,
             },
         ),
