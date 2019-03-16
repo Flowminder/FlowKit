@@ -101,15 +101,6 @@ def action_handler__poll_query(query_id):
     return ZMQReply(status="done", data=reply_data)
 
 
-ACTION_HANDLERS = {
-    "ping": action_handler__ping,
-    "get_available_queries": action_handler__get_available_queries,
-    "get_query_schemas": action_handler__get_query_schemas,
-    "run_query": action_handler__run_query,
-    "poll_query": action_handler__poll_query,
-}
-
-
 def get_action_handler(action):
     try:
         return ACTION_HANDLERS[action]
@@ -135,10 +126,7 @@ def perform_action(action_name, action_params):
     """
 
     # Determine the handler function associated with this action
-    try:
-        action_handler_func = ACTION_HANDLERS[action_name]
-    except KeyError:
-        raise FlowmachineServerError(f"Unknown action: '{action_name}'")
+    action_handler_func = get_action_handler(action_name)
 
     # Run the action handler to obtain the reply
     try:
@@ -153,3 +141,12 @@ def perform_action(action_name, action_params):
         raise FlowmachineServerError(error_msg)
 
     return reply
+
+
+ACTION_HANDLERS = {
+    "ping": action_handler__ping,
+    "get_available_queries": action_handler__get_available_queries,
+    "get_query_schemas": action_handler__get_query_schemas,
+    "run_query": action_handler__run_query,
+    "poll_query": action_handler__poll_query,
+}
