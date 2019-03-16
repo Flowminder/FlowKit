@@ -13,7 +13,7 @@ def poll_until_done(port, query_id, max_tries=100):
     """
     msg_poll_query = {
         "action": "poll_query",
-        "params": {"query_kind": "daily_location", "query_id": query_id},
+        "params": {"query_id": query_id},
         "request_id": "DUMMY_ID",
     }
 

@@ -86,9 +86,7 @@ def action_handler__run_query(**action_params):
     return ZMQReply(status="accepted", data={"query_id": query_id})
 
 
-def action_handler__poll_query(
-    query_id, query_kind
-):  # FIXME: the argument query_kind only exists for legacy reasons and is not needed any more. It should be removed!
+def action_handler__poll_query(query_id):
     """
     Handler for the 'poll_query' action.
 
