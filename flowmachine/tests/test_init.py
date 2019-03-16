@@ -62,14 +62,14 @@ def test_param_priority(mocked_connections, monkeypatch):
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
     monkeypatch.setenv("WRITE_LOG_FILE", "DUMMY_ENV_WRITE_LOG_FILE")
-    monkeypatch.setenv("FLOWDB_PORT", 7777)
+    monkeypatch.setenv("FLOWDB_PORT", "7777")
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
     monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
-    monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
-    monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 7777)
+    monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", "7777")
+    monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", "7777")
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
-    monkeypatch.setenv("REDIS_PORT", 7777)
+    monkeypatch.setenv("REDIS_PORT", "7777")
     monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
@@ -110,14 +110,14 @@ def test_env_priority(mocked_connections, monkeypatch):
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
     monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
-    monkeypatch.setenv("FLOWDB_PORT", 6969)
+    monkeypatch.setenv("FLOWDB_PORT", "6969")
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
     monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
-    monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", 7777)
-    monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", 2020)
+    monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", "7777")
+    monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", "2020")
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
-    monkeypatch.setenv("REDIS_PORT", 5050)
+    monkeypatch.setenv("REDIS_PORT", "5050")
     monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
