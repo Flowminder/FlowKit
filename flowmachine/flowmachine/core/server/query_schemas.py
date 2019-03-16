@@ -132,7 +132,14 @@ class BaseExposedQuery(metaclass=ABCMeta):
 
     @property
     def query_id(self):
-        return md5(json.dumps(self.query_params, sort_keys=True).encode()).hexdigest()
+        # TODO: Ideally we'd like to return the md5 hash of the query parameters
+        # as known to the marshmallow schema:
+        #    return md5(json.dumps(self.query_params, sort_keys=True).encode()).hexdigest()
+        #
+        # However, the resulting md5 hash is different from the one produced internally
+        # by flowmachine.core.Query.md5, and the latter is currently being used by
+        # the QueryStateMachine, so we need to use it to check the query state.
+        return self._flowmachine_query_obj.md5
 
     @property
     def query_params(self):
