@@ -115,28 +115,6 @@ async def calculate_and_send_reply_for_message(socket, return_address, msg_conte
     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
 
 
-# async def send_reply(socket, return_address, reply_coroutine):
-#     """
-#
-#     Parameters
-#     ----------
-#     socket : zmq.asyncio.Socket
-#         zmq socket to use for sending the message
-#     reply_coroutine : awaitable
-#         Coroutine which will eventually return a dict
-#
-#     Returns
-#     -------
-#     None
-#     """
-#     logger.debug(f"Awaiting {reply_coroutine}")
-#     reply_json = await reply_coroutine
-#     logger.debug(f"Sending reply to recipient {return_address}: {reply_json}")
-#     #logger.debug(f"Returning message {reply} to {return_address}")
-#     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
-#     #logger.debug(f"Sent {[return_address, b'', dumps(reply).encode()]}")
-
-
 async def recv(port):
     """
     Main receive-and-reply loop. Listens to zmq messages on the given port,
