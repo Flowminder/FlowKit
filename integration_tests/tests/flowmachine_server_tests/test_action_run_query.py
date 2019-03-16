@@ -79,64 +79,64 @@ async def test_run_query(zmq_url, fm_conn, redis):
 
 
 @pytest.mark.parametrize(
-    "params, expected_error_msg",
+    "params, expected_error_messages",
     [
         (
             {
+                "query_kind": "daily_location",
                 "date": "2000-88-99",
-                "daily_location_method": "last",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": "all",
-            },
-            "month must be in 1..12",
-        ),
-        (
-            {
-                "date": "2016-01-01",
-                "daily_location_method": "FOOBAR",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": "all",
-            },
-            "Unrecognised method 'FOOBAR', must be one of: ['last', 'most-common']",
-        ),
-        (
-            {
-                "date": "2016-01-01",
-                "daily_location_method": "last",
-                "aggregation_unit": "admin9999",
-                "subscriber_subset": "all",
-            },
-            "Unrecognised level 'admin9999', must be one of: ['admin0', 'admin1', 'admin2', 'admin3', 'admin4']",
-        ),
-        (
-            {
-                "date": "2016-01-01",
-                "daily_location_method": "last",
+                "method": "last",
                 "aggregation_unit": "admin3",
                 "subscriber_subset": None,
             },
-            "Cannot construct daily_location subset from given input: None",
+            {"0": {"date": ["Not a valid date."]}},
+        ),
+        (
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "FOOBAR",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
+            {"0": {"method": ["Not a valid choice."]}},
+        ),
+        (
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin9999",
+                "subscriber_subset": None,
+            },
+            {"0": {"aggregation_unit": ["Not a valid choice."]}},
+        ),
+        (
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": "virtually_all_subscribers",
+            },
+            {"0": {"subscriber_subset": ["Not a valid choice."]}},
         ),
     ],
 )
 @pytest.mark.asyncio
 async def test_run_query_with_wrong_parameters(
-    params, expected_error_msg, zmq_url, fm_conn
+    params, expected_error_messages, zmq_url
 ):
     """
-    Run daily_location query and check the resulting table contains the expected rows.
+    Run daily_location query and check that the resulting table contains the expected rows.
     """
-    msg_run_query = {
-        "action": "run_query_OLD",
-        "query_kind": "daily_location",
-        "params": params,
-        "request_id": "DUMMY_ID",
-    }
+    msg_run_query = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
     reply = send_message_and_get_reply(zmq_url, msg_run_query)
-    expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
+    # expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
+    # expected_reason = "Message contains unexpected key(s): ['query_kind'], 'data': {}"
     assert "error" == reply["status"]
-    assert expected_reason == reply["error"]
+    assert expected_error_messages == reply["data"]
 
 
 @pytest.mark.skip(reason="Cannot currently test this because the sender hangs")
@@ -150,7 +150,7 @@ async def test_wrongly_formatted_zmq_message(zmq_url):
         "query_kind": "daily_location",
         "params": {
             "date": "2016-01-01",
-            "daily_location_method": "last",
+            "method": "last",
             "aggregation_unit": "admin3",
             "subscriber_subset": "all",
         },
