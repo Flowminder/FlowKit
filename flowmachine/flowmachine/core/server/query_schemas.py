@@ -128,7 +128,26 @@ class BaseExposedQuery(metaclass=ABCMeta):
             Future object representing the calculation.
 
         """
-        return self._flowmachine_query_obj.store()
+        q = self._flowmachine_query_obj
+        q.store()
+
+        # FIXME: currently we also aggregate the query here, but this is not
+        # the place to do this. Instead, there should be a separate query_kind
+        # to perform the spatial aggregation. Once we have this, the following
+        # code block should be removed and simply `q.md5` be returned as the
+        # query_id.
+        try:
+            # In addition to the actual query, also set an aggregated version running.
+            # This is the one which we return via the API so that we don't expose any
+            # individual-level data.
+            q_agg = q.aggregate()
+            q_agg.store()
+            query_id = q_agg.md5
+        except AttributeError:
+            # This can happen for flows, which doesn't support aggregation
+            query_id = q.md5
+
+        return query_id
 
     @property
     def query_id(self):
