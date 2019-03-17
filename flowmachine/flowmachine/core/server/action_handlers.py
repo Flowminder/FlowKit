@@ -81,6 +81,17 @@ def action_handler__run_query(**action_params):
         error_messages = convert_dict_keys_to_strings(exc.messages)
         return ZMQReply(status="error", msg="", data=error_messages)
 
+    # Sanity check: when query_obj above was created it should have automatically
+    # registered the query info lookup. However, this is contingent on the fact
+    # that any subclass of BaseExposedQuery calls super().__init__() at the end
+    # of its own __init__() method (see comment in BaseExposedQuery.__init__()).
+    # We should add a metaclass which does this automatically, but until then it
+    # is safer to verify here that the query info lookup really exists.
+    q_info_lookup = QueryInfoLookup(Query.redis)
+    if not q_info_lookup.query_is_known(query_obj.query_id):
+        error_msg = f"Internal flowmachine server error: query info is missing for query_id '{query_obj.query_id}'"
+        return ZMQReply(status="error", msg=error_msg)
+
     # Set the query running (it's safe to call this even if the query was set running before)
     query_id = query_obj.store_async()
 
@@ -93,8 +104,7 @@ def action_handler__poll_query(query_id):
 
     Returns the status of the query with the given `query_id`.
     """
-    redis = Query.redis
-    q_state_machine = QueryStateMachine(redis, query_id)
+    q_state_machine = QueryStateMachine(Query.redis, query_id)
     reply_data = {
         "query_id": query_id,
         "query_state": q_state_machine.current_query_state,
