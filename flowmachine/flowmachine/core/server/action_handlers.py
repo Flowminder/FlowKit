@@ -19,6 +19,7 @@ from apispec_oneofschema import MarshmallowPlugin
 from marshmallow import ValidationError
 
 from flowmachine.core import Query
+from flowmachine.core.query_info_lookup import QueryInfoLookup
 from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
@@ -101,6 +102,19 @@ def action_handler__poll_query(query_id):
     return ZMQReply(status="done", data=reply_data)
 
 
+def action_handler__get_query_kind(query_id):
+    """
+    Handler for the 'poll_kind' action.
+
+    Returns query kind of the query with the given `query_id`.
+    """
+    redis = Query.redis
+    q_info_lookup = QueryInfoLookup(redis)
+    query_kind = q_info_lookup.get_query_kind(query_id)
+    reply_data = {"query_id": query_id, "query_kind": query_kind}
+    return ZMQReply(status="done", data=reply_data)
+
+
 def get_action_handler(action):
     try:
         return ACTION_HANDLERS[action]
@@ -149,4 +163,5 @@ ACTION_HANDLERS = {
     "get_query_schemas": action_handler__get_query_schemas,
     "run_query": action_handler__run_query,
     "poll_query": action_handler__poll_query,
+    "get_query_kind": action_handler__get_query_kind,
 }
