@@ -6,7 +6,6 @@ from .helpers import poll_until_done, send_message_and_get_reply
 # TODO: add test for code path that raises QueryProxyError with the 'get_params' action
 
 
-@pytest.mark.skip(reason="The 'get_query_kind' action will likely be removed soon.")
 @pytest.mark.parametrize(
     "params",
     [
@@ -29,7 +28,7 @@ from .helpers import poll_until_done, send_message_and_get_reply
 @pytest.mark.asyncio
 async def test_get_query_kind(params, zmq_url):
     """
-    Running 'get_params' against an existing query_id returns the expected parameters with which the query was run.
+    Running 'get_query_kind' against an existing query_id returns the expected query kind.
     """
     #
     # Run daily_location query.
@@ -49,22 +48,23 @@ async def test_get_query_kind(params, zmq_url):
     #
     # Get query result.
     #
-    msg_get_params = {
+    msg = {
         "action": "get_query_kind",
         "params": {"query_id": query_id},
         "request_id": "DUMMY_ID",
     }
 
-    reply = send_message_and_get_reply(zmq_url, msg_get_params)
+    reply = send_message_and_get_reply(zmq_url, msg)
     assert "done" == reply["status"]
-    assert {"query_id": query_id, "query_kind": "daily_location"} == reply["data"]
+    assert query_id == reply["data"]["query_id"]
+    assert "daily_location" == reply["data"]["query_kind"]
 
 
 @pytest.mark.skip(reason="The 'get_query_kind' action will likely be removed soon.")
 @pytest.mark.asyncio
 async def test_get_query_kind_for_nonexistent_query_id(zmq_url):
     """
-    Running 'get_params' on a non-existent query id returns an error.
+    Running 'get_query_kind' on a non-existent query id returns an error.
     """
     #
     # Try getting query result for nonexistent ID.
