@@ -11,6 +11,12 @@ class QueryInfoLookupError(Exception):
     """
 
 
+class UnkownQueryIdError(QueryInfoLookupError):
+    """
+    Exception indicating an error with the query info lookup.
+    """
+
+
 class QueryInfoLookup:
     """
     Implements a lookup from the query_id to query parameters and vice versa (backed by redis).
@@ -39,7 +45,7 @@ class QueryInfoLookup:
     def get_query_params(self, query_id: str):
         query_params_str = self.redis_client.get(query_id)
         if query_params_str is None:
-            raise QueryInfoLookupError(f"Unknown query_id: '{query_id}'")
+            raise UnkownQueryIdError(f"Unknown query_id: '{query_id}'")
         return rapidjson.loads(query_params_str)
 
     def get_query_kind(self, query_id: str):
