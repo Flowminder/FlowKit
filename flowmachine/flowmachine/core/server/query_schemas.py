@@ -1,12 +1,12 @@
-import json
-
+from copy import deepcopy
 from abc import ABCMeta, abstractmethod
-from hashlib import md5
 from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
+from flowmachine.core import Query
 from flowmachine.core.dummy_query import DummyQuery
+from flowmachine.core.query_info_lookup import QueryInfoLookup
 
 
 #
@@ -79,8 +79,12 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "daily_location"
         elif isinstance(obj, ModalLocationExposed):
             return "modal_location"
+        elif isinstance(obj, DummyQueryExposed):
+            return "dummy_query"
         else:
-            raise Exception("Unknown object type: {obj.__class__.__name__}")
+            raise ValueError(
+                f"Object type '{obj.__class__.__name__}' not registered in FlowmachineQuerySchema."
+            )
 
 
 #
@@ -93,9 +97,19 @@ class BaseExposedQuery(metaclass=ABCMeta):
     Base class for exposed flowmachine queries.
 
     Note: these classes are not meant to be instantiated directly!
-    Instead, they are instantiated automatically through the query
-    schema classes above.
+    Instead, they are instantiated automatically through the class
+    FlowmachineQuerySchema above. Example:
+
+        FlowmachineQuerySchema().load({"query_kind": "dummy_query", "dummy_param": "foobar"})
     """
+
+    def __init__(self):
+        # TODO: we rely on the fact that subclasses call super().__init__() at
+        # the end of their own __init__() methods. This is potentially error-prone
+        # if users forget to do this when adding their own query classes. We should
+        # add a simple metaclass for BaseExposedQuery which ensures that this is done
+        # automatically.
+        self._create_query_info_lookup()
 
     @property
     @abstractmethod
@@ -143,6 +157,16 @@ class BaseExposedQuery(metaclass=ABCMeta):
             q_agg = q.aggregate()
             q_agg.store()
             query_id = q_agg.md5
+            # FIXME: this is a big hack to register the query info lookup also
+            # for the aggregated query. This should not be necessary any more once
+            # this whole code block is removed (see fixme comment above). To make
+            # it obvious that it is the lookup of an aggregated query we artificially
+            # insert two additional keys 'is_aggregate' and 'non_aggregated_query_id'.
+            q_agg_info_lookup = QueryInfoLookup(Query.redis)
+            query_params_agg = deepcopy(self.query_params)
+            query_params_agg["is_aggregate"] = True
+            query_params_agg["non_aggregated_query_id"] = self.query_id
+            q_agg_info_lookup.register_query(q_agg.md5, self.query_params)
         except AttributeError:
             # This can happen for flows, which doesn't support aggregation
             query_id = q.md5
@@ -164,15 +188,26 @@ class BaseExposedQuery(metaclass=ABCMeta):
     def query_params(self):
         """
         Return the parameters from which the query is constructed. Note that this
-        includes the parameters of any subqueries of which it is composed.
+        includes the the parameters of any subqueries of which it is composed.
 
         Returns
         -------
         dict
             JSON representation of the query parameters, including those of subqueries.
         """
-        marshmallow_schema = self.__schema__()
-        return marshmallow_schema.dump(self)
+        # marshmallow_schema = self.__schema__()
+        # return marshmallow_schema.dump(self)
+        # return FlowmachineQuerySchema().load({"query_kind": "dummy_query", "dummy_param": "foobar"})
+        return FlowmachineQuerySchema().dump(self)
+
+    def _create_query_info_lookup(self):
+        """
+        Create the query info lookup between query_id and query parameters, so that
+        we can get information about the query later using only its query_id.
+        """
+        # TODO: is this the right place for this or should this happen somewhere else?!
+        q_info_lookup = QueryInfoLookup(Query.redis)
+        q_info_lookup.register_query(self.query_id, self.query_params)
 
 
 class DummyQueryExposed(BaseExposedQuery):
@@ -181,6 +216,7 @@ class DummyQueryExposed(BaseExposedQuery):
 
     def __init__(self, dummy_param):
         self.dummy_param = dummy_param
+        super().__init__()  # NOTE: this must be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):
@@ -196,6 +232,7 @@ class DailyLocationExposed(BaseExposedQuery):
         self.method = method
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
+        super().__init__()  # NOTE: this must be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):
@@ -224,6 +261,7 @@ class ModalLocationExposed(BaseExposedQuery):
         self.locations = locations
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
+        super().__init__()  # NOTE: this must be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):
