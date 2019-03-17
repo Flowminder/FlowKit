@@ -60,7 +60,6 @@ async def test_get_query_kind(params, zmq_url):
     assert "daily_location" == reply["data"]["query_kind"]
 
 
-@pytest.mark.skip(reason="The 'get_query_kind' action will likely be removed soon.")
 @pytest.mark.asyncio
 async def test_get_query_kind_for_nonexistent_query_id(zmq_url):
     """
@@ -77,7 +76,7 @@ async def test_get_query_kind_for_nonexistent_query_id(zmq_url):
 
     reply = send_message_and_get_reply(zmq_url, msg_get_sql)
     assert {
-        "status": "awol",
-        "id": "FOOBAR",
-        "error": "Unknown query id: FOOBAR",
+        "status": "error",
+        "data": {"query_id": "FOOBAR", "query_state": "awol"},
+        "msg": "Unknown query id: 'FOOBAR'",
     } == reply

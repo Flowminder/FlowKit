@@ -19,7 +19,7 @@ from apispec_oneofschema import MarshmallowPlugin
 from marshmallow import ValidationError
 
 from flowmachine.core import Query
-from flowmachine.core.query_info_lookup import QueryInfoLookup
+from flowmachine.core.query_info_lookup import QueryInfoLookup, UnkownQueryIdError
 from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
@@ -120,7 +120,14 @@ def action_handler__get_query_kind(query_id):
     """
     redis = Query.redis
     q_info_lookup = QueryInfoLookup(redis)
-    query_kind = q_info_lookup.get_query_kind(query_id)
+    try:
+        query_kind = q_info_lookup.get_query_kind(query_id)
+    except UnkownQueryIdError:
+        reply_data = {"query_id": query_id, "query_state": "awol"}
+        return ZMQReply(
+            status="error", msg=f"Unknown query id: '{query_id}'", data=reply_data
+        )
+
     reply_data = {"query_id": query_id, "query_kind": query_kind}
     return ZMQReply(status="done", data=reply_data)
 
