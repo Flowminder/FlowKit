@@ -81,7 +81,7 @@ def action_handler__run_query(**action_params):
         error_messages = convert_dict_keys_to_strings(exc.messages)
         return ZMQReply(status="error", msg="", data=error_messages)
 
-    # Sanity check: when query_obj above was created it should have automatically
+    # FIXME: Sanity check: when query_obj above was created it should have automatically
     # registered the query info lookup. However, this is contingent on the fact
     # that any subclass of BaseExposedQuery calls super().__init__() at the end
     # of its own __init__() method (see comment in BaseExposedQuery.__init__()).
