@@ -1,0 +1,47 @@
+import rapidjson
+import structlog
+from redis import StrictRedis
+
+logger = structlog.get_logger(__name__)
+
+
+class QueryInfoLookupError(Exception):
+    """
+    Exception indicating an error with the query info lookup.
+    """
+
+
+class QueryInfoLookup:
+    """
+    Implements a lookup from the query_id to query parameters and vice versa (backed by redis).
+    """
+
+    def __init__(self, redis_client: StrictRedis):
+        self.redis_client = redis_client
+
+    def register_query(self, query_id: str, query_params: dict):
+        logger.debug(
+            f"Registering query lookup for query_id='{query_id}' with query_params {query_params}"
+        )
+
+        if "query_kind" not in query_params:
+            raise QueryInfoLookupError(
+                "Query params must contain a 'query_kind' entry."
+            )
+        query_params_str = rapidjson.dumps(query_params)
+        self.redis_client.set(query_id, query_params_str)
+        self.redis_client.set(query_params_str, query_id)
+
+    def query_is_known(self, query_id: str):
+        is_known = self.redis_client.get(query_id) is not None
+        return is_known
+
+    def get_query_params(self, query_id: str):
+        query_params_str = self.redis_client.get(query_id)
+        if query_params_str is None:
+            raise QueryInfoLookupError(f"Unknown query_id: '{query_id}'")
+        return rapidjson.loads(query_params_str)
+
+    def get_query_kind(self, query_id: str):
+        query_params = self.get_query_params(query_id)
+        return query_params["query_kind"]
