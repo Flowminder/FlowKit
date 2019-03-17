@@ -32,8 +32,8 @@ def get_reply_for_message(msg_str):
     """
 
     try:
-        action, action_params = parse_zmq_message(msg_str)
-        reply = perform_action(action, action_params)
+        action_name, action_params = parse_zmq_message(msg_str)
+        reply = perform_action(action_name, action_params)
     except FlowmachineServerError as exc:
         return ZMQReply(status="error", msg=exc.error_msg).as_json()
 
