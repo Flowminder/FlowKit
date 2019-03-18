@@ -19,8 +19,9 @@ from apispec_oneofschema import MarshmallowPlugin
 from marshmallow import ValidationError
 
 from flowmachine.core import Query
+from flowmachine.core.cache import get_query_object_by_id
 from flowmachine.core.query_info_lookup import QueryInfoLookup, UnkownQueryIdError
-from flowmachine.core.query_state import QueryStateMachine
+from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema
@@ -114,12 +115,11 @@ def action_handler__poll_query(query_id):
 
 def action_handler__get_query_kind(query_id):
     """
-    Handler for the 'poll_kind' action.
+    Handler for the 'poll_query' action.
 
     Returns query kind of the query with the given `query_id`.
     """
-    redis = Query.redis
-    q_info_lookup = QueryInfoLookup(redis)
+    q_info_lookup = QueryInfoLookup(Query.redis)
     try:
         query_kind = q_info_lookup.get_query_kind(query_id)
     except UnkownQueryIdError:
@@ -130,6 +130,59 @@ def action_handler__get_query_kind(query_id):
 
     reply_data = {"query_id": query_id, "query_kind": query_kind}
     return ZMQReply(status="done", data=reply_data)
+
+
+def action_handler__get_sql(query_id):
+    """
+    Handler for the 'get_sql' action.
+
+    Returns a SQL string which can be run against flowdb to obtain
+    the result of the query with given `query_id`.
+    """
+    # TODO: currently we can't use QueryStateMachine to determine whether
+    # the query_id belongs to a valid query object, so we need to check it
+    # manually. Would be good to add a QueryState.UNKNOWN so that we can
+    # avoid this separate treatment.
+    q_info_lookup = QueryInfoLookup(Query.redis)
+    if not q_info_lookup.query_is_known(query_id):
+        msg = f"Unknown query id: '{query_id}'"
+        reply_data = {"query_id": query_id, "query_state": "awol"}
+        return ZMQReply(status="error", msg=msg, data=reply_data)
+
+    query_state = QueryStateMachine(Query.redis, query_id).current_query_state
+
+    if query_state == QueryState.EXECUTING:
+        msg = f"Query with id '{query_id}' is still running."
+        reply_data = {"query_id": query_id, "query_state": query_state}
+        return ZMQReply(status="error", msg=msg, data=reply_data)
+    elif query_state == QueryState.QUEUED:
+        msg = f"Query with id '{query_id}' is still queued."
+        reply_data = {"query_id": query_id, "query_state": query_state}
+        return ZMQReply(status="error", msg=msg, data=reply_data)
+    elif query_state == QueryState.ERRORED:
+        msg = f"Query with id '{query_id}' is failed."
+        reply_data = {"query_id": query_id, "query_state": query_state}
+        return ZMQReply(status="error", msg=msg, data=reply_data)
+    elif query_state == QueryState.CANCELLED:
+        msg = f"Query with id '{query_id}' was cancelled."
+        reply_data = {"query_id": query_id, "query_state": query_state}
+        return ZMQReply(status="error", msg=msg, data=reply_data)
+    elif query_state == QueryState.RESETTING:
+        msg = f"Query with id '{query_id}' is being removed from cache."
+        reply_data = {"query_id": query_id, "query_state": query_state}
+        return ZMQReply(status="error", msg=msg, data=reply_data)
+    elif query_state == QueryState.KNOWN:
+        msg = f"Query with id '{query_id}' has not been run yet, or was reset."
+        reply_data = {"query_id": query_id, "query_state": query_state}
+        return ZMQReply(status="error", msg=msg, data=reply_data)
+    elif query_state == QueryState.COMPLETED:
+        q = get_query_object_by_id(Query.connection, query_id)
+        sql = q.get_query()
+        reply_data = {"query_id": query_id, "sql": sql}
+        return ZMQReply(status="done", data=reply_data)
+    else:
+        msg = f"Unknown state for query with id '{query_id}'. Got {query_state}."
+        return ZMQReply(status="error", msg=msg)
 
 
 def get_action_handler(action):
@@ -181,4 +234,5 @@ ACTION_HANDLERS = {
     "run_query": action_handler__run_query,
     "poll_query": action_handler__poll_query,
     "get_query_kind": action_handler__get_query_kind,
+    "get_sql_for_query_result": action_handler__get_sql,
 }
