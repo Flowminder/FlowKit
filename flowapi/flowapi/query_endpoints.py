@@ -69,27 +69,41 @@ async def poll_query(query_id):
 @blueprint.route("/get/<query_id>")
 @check_claims("get_result")
 async def get_query_result(query_id):
-    request.socket.send_json(
-        {
-            "request_id": request.request_id,
-            "action": "get_sql_for_query_result",
-            "query_id": query_id,
-        }
-    )
-    message = await request.socket.recv_json()
+    msg = {
+        "request_id": request.request_id,
+        "action": "get_sql_for_query_result",
+        "params": {"query_id": query_id},
+    }
+    request.socket.send_json(msg)
+    breakpoint()
+    reply = await request.socket.recv_json()
     current_app.flowapi_logger.debug(
-        f"Got message: {message}", request_id=request.request_id
+        f"Received reply: {reply}", request_id=request.request_id
     )
-    try:
-        status = message["status"]
-    except KeyError:
-        return (
-            jsonify({"status": "Error", "msg": "Server responded without status"}),
-            500,
-        )
-    if message["status"] == "completed":
+
+    if reply["status"] == "error":
+        # TODO: check that this path is fully tested!
+        query_state = reply["data"]["query_state"]
+        if query_state in ("executing", "queued"):
+            return jsonify({}), 202
+        elif query_state == "errored":
+            return (
+                jsonify({"status": "Error", "msg": reply["error"]}),
+                403,
+            )  # TODO: should this be 403?
+        elif query_state in ("awol", "known"):
+            return (jsonify({"status": "Error", "msg": reply["error"]}), 404)
+        else:
+            return (
+                jsonify(
+                    {"status": "Error", "msg": f"Unexpected query state: {query_state}"}
+                ),
+                500,
+            )
+    else:
+        sql = reply["data"]["sql"]
         results_streamer = stream_with_context(stream_result_as_json)(
-            message["sql"], additional_elements={"query_id": query_id}
+            sql, additional_elements={"query_id": query_id}
         )
         mimetype = "application/json"
 
@@ -105,11 +119,3 @@ async def get_query_result(query_id):
                 "Content-type": mimetype,
             },
         )
-    elif message["status"] in ("executing", "queued"):
-        return jsonify({}), 202
-    elif message["status"] == "errored":
-        return jsonify({"status": "Error", "msg": message["error"]}), 403
-    elif status in ("awol", "known"):
-        return (jsonify({"status": "Error", "msg": message["error"]}), 404)
-    else:
-        return jsonify({"status": "Error", "msg": f"Unexpected status: {status}"}), 500
