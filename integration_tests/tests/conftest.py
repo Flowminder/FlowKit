@@ -68,23 +68,34 @@ def flowapi_server(logging_config):
     sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
 
 
-@pytest.fixture
-def api_host():
+@pytest.fixture(scope="session")
+def flowapi_host():
     """
-    Fixture for getting the url of the available API server.
-    Primarily to allow the tests to run locally, or in a docker container.
+    Return the host on which flowapi is running. This is either the value of
+    the environment variable FLOWAPI_HOST or else 'localhost'.
+    """
+    return os.getenv("FLOWAPI_HOST", "localhost")
 
-    Returns
-    -------
-    str
-        URL of running API container
+
+@pytest.fixture(scope="session")
+def flowapi_port():
     """
-    in_docker_host = "http://flowapi:9090"
-    try:
-        requests.get(in_docker_host, verify=False)
-        return in_docker_host
-    except requests.ConnectionError:
-        return "http://localhost:9090"
+    Return the port on which flowapi is running. This is either the value of
+    the environment variable FLOWAPI_PORT or else 9090.
+    """
+    return os.getenv("FLOWAPI_PORT", "9090")
+
+
+@pytest.fixture
+def flowapi_url():
+    """
+    Fixture for getting the url where FlowAPI is running. This is
+    constructed as "http://<flowapi_host>:<flowapi_port>", where the
+    host and port are provided by the `floawpi_host` and `flowapi_port`
+    fixtures (which read the values from the environment variables
+    `FLOWAPI_HOST` and `FLOWAPI_PORT`, respectively).
+    """
+    return f"http://{flowapi_host}:{flowapi_port}"
 
 
 @pytest.fixture
