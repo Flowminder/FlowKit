@@ -486,12 +486,10 @@ def daily_location(
     """
     return {
         "query_kind": "daily_location",
-        "params": {
-            "date": date,
-            "aggregation_unit": aggregation_unit,
-            "method": method,
-            "subscriber_subset": subscriber_subset,
-        },
+        "date": date,
+        "aggregation_unit": aggregation_unit,
+        "method": method,
+        "subscriber_subset": subscriber_subset,
     }
 
 
