@@ -74,3 +74,17 @@ def test_retrieve_query_kind(dummy_redis):
     )
 
     assert "dummy_query" == q_info_lookup.get_query_kind("dummy_id")
+
+
+def test_retrieve_query_parameters(dummy_redis):
+    """
+    Test that we can retrieve the query parameters after registering a query.
+    """
+    q_info_lookup = QueryInfoLookup(dummy_redis)
+    q_info_lookup.register_query(
+        query_id="dummy_id",
+        query_params={"query_kind": "dummy_query", "dummy_param": "some_value"},
+    )
+
+    expected_query_params = {"query_kind": "dummy_query", "dummy_param": "some_value"}
+    assert expected_query_params == q_info_lookup.get_query_params("dummy_id")
