@@ -20,6 +20,7 @@ shapely = "*"
 finist = "*"
 python-rapidjson = "*"
 marshmallow = "==3.0.0rc4"
+marshmallow-oneofschema = {ref = "master", git = "https://github.com/marshmallow-code/marshmallow-oneofschema.git"}
 
 [dev-packages]
 scipy = "*"

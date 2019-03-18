@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c05ab9833435e5cbf95ff64b4b48cbe60e6c1d97dd2bd92ecd9231d0ad949029"
+            "sha256": "8a339f3e95eab8098d7bf50507b6de9cf0c2be30907b49db067497de10da0135"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -45,6 +45,10 @@
             ],
             "index": "pypi",
             "version": "==3.0.0rc4"
+        },
+        "marshmallow-oneofschema": {
+            "git": "https://github.com/marshmallow-code/marshmallow-oneofschema.git",
+            "ref": "d8226ce1f7dcc599220142fba220f49dc27f9806"
         },
         "networkx": {
             "hashes": [
