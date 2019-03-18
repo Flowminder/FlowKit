@@ -36,34 +36,33 @@ def check_claims(claim_type):
                 json_payload=json_payload,
             )
 
-            # Get query kind
-            query_kind = (
-                "NA" if json_payload is None else json_payload.get("query_kind", "NA")
-            )
-            try:  # Get the query kind from the backend
-                request.socket.send_json(
-                    {
-                        "request_id": request.request_id,
-                        "action": "get_query_kind",
-                        "params": {"query_id": kwargs["query_id"]},
-                    }
-                )
-                message = await request.socket.recv_json()
-                if "query_kind" in message["data"]:
-                    query_kind = message["data"]["query_kind"]
-                else:
-                    return jsonify({}), 404  # query does not exist
-            except KeyError:
-                if query_kind == "NA":
+            # TODO: make the claim type an enum!
+            if claim_type == "run":
+                try:
+                    query_kind = json_payload["query_kind"]
+                except KeyError:
+                    error_msg = "Query kind must be specified when running a query."
+                    return jsonify({"msg": error_msg}), 400
+            elif claim_type in ["poll", "get_result"]:
+                # Ask flowmachine server for the query kind of the given query_id
+                try:
+                    query_id = kwargs["query_id"]
+                except KeyError:
                     return (
-                        jsonify(
-                            {
-                                "status": "Error",
-                                "msg": "Expected 'query_kind' parameter.",
-                            }
-                        ),
-                        400,
-                    )
+                        jsonify({}),
+                        500,
+                    )  # internal server error; this should not happen
+
+                msg = {
+                    "request_id": request.request_id,
+                    "action": "get_query_kind",
+                    "params": {"query_id": kwargs["query_id"]},
+                }
+                request.socket.send_json(msg)
+                reply = await request.socket.recv_json()
+                query_kind = reply["data"]["query_kind"]
+            else:
+                return jsonify({"msg": f"Unsupported claim type: {claim_type}"})
 
             # Get claims
             claims = get_jwt_claims().get(query_kind, {})
