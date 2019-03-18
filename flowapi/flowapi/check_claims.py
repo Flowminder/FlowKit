@@ -101,21 +101,25 @@ def check_claims(claim_type):
                 request.socket.send_json(
                     {
                         "request_id": request.request_id,
-                        "action": "get_params",
-                        "query_id": kwargs["query_id"],
+                        "action": "get_query_params",
+                        "params": {"query_id": kwargs["query_id"]},
                     }
                 )
                 message = await request.socket.recv_json()
-                if "params" not in message:
+                if message["status"] == "error":
+                    # TODO: check that the error is due to an unknown query and not due to a different error.
                     return jsonify({}), 404
+
                 try:
-                    aggregation_unit = message["params"]["aggregation_unit"]
+                    aggregation_unit = message["data"]["query_params"][
+                        "aggregation_unit"
+                    ]
                 except KeyError:
                     return (
                         jsonify(
                             {
                                 "status": "Error",
-                                "msg": "Missing parameter: 'aggregation_unit'",
+                                "msg": "Missing query parameter: 'aggregation_unit'",
                             }
                         ),
                         500,
