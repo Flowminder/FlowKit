@@ -1,6 +1,7 @@
 import pytest
 
-from .helpers import poll_until_done, send_message_and_get_reply
+from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from .helpers import poll_until_done
 
 
 # TODO: add test for code path that raises QueryProxyError with the 'get_params' action
@@ -27,7 +28,7 @@ from .helpers import poll_until_done, send_message_and_get_reply
     ],
 )
 @pytest.mark.asyncio
-async def test_get_params(params, zmq_url):
+async def test_get_params(params, zmq_port, zmq_host):
     """
     Running 'get_params' against an existing query_id returns the expected parameters with which the query was run.
     """
@@ -36,7 +37,9 @@ async def test_get_params(params, zmq_url):
     #
     msg_run_query = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
-    reply = send_message_and_get_reply(zmq_url, msg_run_query)
+    reply = send_zmq_message_and_receive_reply(
+        msg_run_query, port=zmq_port, host=zmq_host
+    )
     query_id = reply["data"]["query_id"]
     # assert reply["status"] in ("executing", "queued", "completed")
     assert reply["status"] == "accepted"
@@ -44,7 +47,7 @@ async def test_get_params(params, zmq_url):
     #
     # Wait until the query has finished.
     #
-    poll_until_done(zmq_url, query_id)
+    poll_until_done(zmq_port, query_id)
 
     #
     # Get query result.
@@ -55,13 +58,15 @@ async def test_get_params(params, zmq_url):
         "request_id": "DUMMY_ID",
     }
 
-    reply = send_message_and_get_reply(zmq_url, msg_get_params)
+    reply = send_zmq_message_and_receive_reply(
+        msg_get_params, port=zmq_port, host=zmq_host
+    )
     assert {"id": query_id, "params": params} == reply
 
 
 @pytest.mark.skip(reason="The 'get_params' action will likely be removed soon.")
 @pytest.mark.asyncio
-async def test_get_params_for_nonexistent_query_id(zmq_url):
+async def test_get_params_for_nonexistent_query_id(zmq_port, zmq_host):
     """
     Running 'get_params' on a non-existent query id returns an error.
     """
@@ -74,7 +79,9 @@ async def test_get_params_for_nonexistent_query_id(zmq_url):
         "request_id": "DUMMY_ID",
     }
 
-    reply = send_message_and_get_reply(zmq_url, msg_get_sql)
+    reply = send_zmq_message_and_receive_reply(
+        msg_get_sql, port=zmq_port, host=zmq_host
+    )
     assert {
         "status": "awol",
         "id": "FOOBAR",

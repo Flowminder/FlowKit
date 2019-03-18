@@ -1,11 +1,10 @@
 import pytest
 
-from .helpers import send_message_and_get_reply
+from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 
 
 @pytest.mark.asyncio
-async def test_poll_existing_query(zmq_url):
-    # def test_poll_query_with_nonexistent_query_id_fails(zmq_url):
+async def test_poll_existing_query(zmq_port, zmq_host):
     """
     Polling a query with non-existent query id returns expected error.
     """
@@ -15,7 +14,7 @@ async def test_poll_existing_query(zmq_url):
         "params": {"query_kind": "dummy_query", "dummy_param": "foobar"},
         "request_id": "DUMMY_ID",
     }
-    reply = send_message_and_get_reply(zmq_url, msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     expected_reply = {
         "status": "accepted",
         "msg": "",
@@ -28,7 +27,7 @@ async def test_poll_existing_query(zmq_url):
         "params": {"query_id": expected_query_id},
         "request_id": "DUMMY_ID",
     }
-    reply = send_message_and_get_reply(zmq_url, msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     expected_reply = {
         "status": "done",
         "msg": "",
@@ -41,7 +40,7 @@ async def test_poll_existing_query(zmq_url):
     reason="TODO: how to determine a missing query using QueryStateMachine?"
 )
 @pytest.mark.asyncio
-async def test_poll_query_with_nonexistent_query_id_fails(zmq_url):
+async def test_poll_query_with_nonexistent_query_id_fails(zmq_port, zmq_host):
     """
     Polling a query with non-existent query id returns expected error.
     """
@@ -51,7 +50,7 @@ async def test_poll_query_with_nonexistent_query_id_fails(zmq_url):
         "request_id": "DUMMY_ID",
     }
 
-    reply = send_message_and_get_reply(zmq_url, msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert {
         "status": "error",
         "data": {"query_id": "FOOBAR", "query_state": "awol"},

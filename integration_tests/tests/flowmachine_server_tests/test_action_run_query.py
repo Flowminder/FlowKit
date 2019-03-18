@@ -2,18 +2,14 @@ import asyncio
 import logging
 import pytest
 
-from .helpers import (
-    cache_schema_is_empty,
-    get_cache_tables,
-    poll_until_done,
-    send_message_and_get_reply,
-)
+from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
 @pytest.mark.asyncio
-async def test_run_query(zmq_url, fm_conn, redis):
+async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     """
     Run daily_location query and check the resulting table contains the expected rows.
     """
@@ -40,7 +36,9 @@ async def test_run_query(zmq_url, fm_conn, redis):
     # Send message to run the daily_location query, check it was accepted
     # and a redis lookup was created for the query id.
     #
-    reply = send_message_and_get_reply(zmq_url, msg_run_query)
+    reply = send_zmq_message_and_receive_reply(
+        msg_run_query, port=zmq_port, host=zmq_host
+    )
     # assert reply["status"] in ("executing", "queued", "completed")
     assert reply["status"] in ("accepted")
     assert expected_query_id == reply["data"]["query_id"]
@@ -49,7 +47,7 @@ async def test_run_query(zmq_url, fm_conn, redis):
     #
     # Wait until the query has finished.
     #
-    poll_until_done(zmq_url, expected_query_id)
+    poll_until_done(zmq_port, expected_query_id)
 
     #
     # Check that a cache table for the query result was created
@@ -125,14 +123,16 @@ async def test_run_query(zmq_url, fm_conn, redis):
 )
 @pytest.mark.asyncio
 async def test_run_query_with_wrong_parameters(
-    params, expected_error_messages, zmq_url
+    params, expected_error_messages, zmq_port, zmq_host
 ):
     """
     Run daily_location query and check that the resulting table contains the expected rows.
     """
     msg_run_query = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
-    reply = send_message_and_get_reply(zmq_url, msg_run_query)
+    reply = send_zmq_message_and_receive_reply(
+        msg_run_query, port=zmq_port, host=zmq_host
+    )
     # expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
     # expected_reason = "Message contains unexpected key(s): ['query_kind'], 'data': {}"
     assert "error" == reply["status"]
@@ -141,7 +141,7 @@ async def test_run_query_with_wrong_parameters(
 
 @pytest.mark.skip(reason="Cannot currently test this because the sender hangs")
 @pytest.mark.asyncio
-async def test_wrongly_formatted_zmq_message(zmq_url):
+async def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
     """
     """
     msg = {
@@ -156,5 +156,5 @@ async def test_wrongly_formatted_zmq_message(zmq_url):
         "request_id": "DUMMY_ID",
     }
 
-    reply = send_message_and_get_reply(zmq_url, msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert False
