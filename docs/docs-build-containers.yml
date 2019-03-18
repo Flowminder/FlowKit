@@ -21,6 +21,8 @@ services:
       - N_CALLS=20000
       - N_SMS=20000
       - N_MDS=100000
+      - DISASTER_START=2016-02-01
+      - DISASTER_END=2016-03-01
     tty: true
     shm_size: 1G
     ports:
