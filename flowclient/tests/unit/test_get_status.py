@@ -4,15 +4,19 @@
 
 from unittest.mock import Mock
 
+import pytest
+
 from flowclient.client import get_status
 
 
-def test_get_status_reports_running():
-    """ Test that status code 202 is interpreted as query running. """
+@pytest.mark.parametrize("running_status", ["queued", "executing"])
+def test_get_status_reports_running(running_status):
+    """ Test that status code 202 is interpreted as query running or queued. """
     con_mock = Mock()
     con_mock.get_url.return_value = Mock(status_code=202)
+    con_mock.get_url.return_value.json.return_value = {"status": running_status}
     status = get_status(con_mock, "foo")
-    assert status == "Running"
+    assert status == running_status
 
 
 def test_get_status_reports_finished():

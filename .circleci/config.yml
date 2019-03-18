@@ -39,11 +39,11 @@ defaults:
         FLOWDB_PORT: 5432
         MPLBACKEND: "agg"
         REDIS_HOST: "localhost"
-        QUART_APP: "app.main:create_app()"
-        DB_USER: analyst
+        QUART_APP: "flowapi.main:create_app()"
+        FLOWDB_USER: analyst
         LOG_DIRECTORY: "."
         SERVER: localhost
-        DB_HOST: localhost
+        FLOWDB_HOST: localhost
         JWT_SECRET_KEY: secret
     - image: flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID
       environment:
@@ -316,7 +316,7 @@ jobs:
       - run:
           name: Run API unit tests
           command: |
-            pipenv run python -m pytest --junitxml=test_results/pytest/results.xml --cov=app/ \
+            pipenv run python -m pytest --junitxml=test_results/pytest/results.xml --cov=flowapi/ \
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results

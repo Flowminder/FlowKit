@@ -11,16 +11,26 @@ of postgres.
 
 """
 
-import logging
+
 from concurrent.futures import Future
+from time import sleep
+
 from typing import List, Union
 
 import pandas as pd
+from sqlalchemy.engine import Engine
 
-from flowmachine.utils import rlock
-from .query import Query
+from flowmachine.core.cache import write_query_to_cache
+from flowmachine.core.errors.flowmachine_errors import (
+    QueryCancelledException,
+    QueryErroredException,
+)
+from flowmachine.core.query_state import QueryStateMachine
+from flowmachine.core.query import Query
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class ModelResult(Query):
@@ -115,9 +125,7 @@ class ModelResult(Query):
         except AttributeError:
             return super().column_names
 
-    def to_sql(
-        self, name: str, schema: Union[str, None] = None, force: bool = False
-    ) -> Future:
+    def to_sql(self, name: str, schema: Union[str, None] = None) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -128,8 +136,6 @@ class ModelResult(Query):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
 
         Returns
         -------
@@ -148,28 +154,28 @@ class ModelResult(Query):
             except AttributeError:
                 raise ValueError("Not computed yet.")
 
-        def do_query() -> ModelResult:
-            logger.debug("Getting storage lock.")
-            with rlock(self.redis, self.md5):
-                logger.debug("Obtained storage lock.")
-                con = self.connection.engine
-                if force:
-                    self.invalidate_db_cache(name, schema=schema)
-                try:
-                    with con.begin():
-                        logger.debug("Using pandas to store.")
-                        self._df.to_sql(name, con, schema=schema, index=False)
-                        if schema == "cache":
-                            self._db_store_cache_metadata(compute_time=self._runtime)
-                except AttributeError:
-                    logger.debug(
-                        "No dataframe to store, presumably because this"
-                        " was retrieved from the db."
-                    )
-            logger.debug("Released storage lock.")
-            return self
+        def write_model_result(query_ddl_ops: List[str], connection: Engine) -> float:
+            self._df.to_sql(name, connection, schema=schema, index=False)
+            QueryStateMachine(self.redis, self.md5).finish()
+            return self._runtime
 
-        store_future = self.tp.submit(do_query)
+        current_state, changed_to_queue = QueryStateMachine(
+            self.redis, self.md5
+        ).enqueue()
+        logger.debug(
+            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+        )
+        # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
+        store_future = self.tp.submit(
+            write_query_to_cache,
+            name=name,
+            schema=schema,
+            query=self,
+            connection=self.connection,
+            redis=self.redis,
+            ddl_ops_func=lambda *x: [],
+            write_func=write_model_result,
+        )
         return store_future
 
     def _make_query(self):

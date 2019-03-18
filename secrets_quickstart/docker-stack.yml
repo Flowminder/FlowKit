@@ -6,13 +6,13 @@ version: '3.1'
 secrets:
   cert-flowkit.pem: # SSL Certificate used to serve FlowAPI over https
     external: true
-  API_DB_USER: # Database user used by FlowAPI
+  FLOWAPI_DB_USER: # Database user used by FlowAPI
     external: true
-  API_DB_PASS: # Password for the FlowAPI database user
+  FLOWAPI_DB_PASS: # Password for the FlowAPI database user
     external: true
-  FM_DB_USER: # Database user for FlowMachine
+  FLOWMACHINE_DB_USER: # Database user for FlowMachine
     external: true
-  FM_DB_PASS: # Password for FlowDB
+  FLOWMACHINE_DB_PASS: # Password for FlowDB
     external: true
   POSTGRES_PASSWORD_FILE: # Postgres superuser password
     external: true
@@ -30,10 +30,10 @@ services:
         image: "flowminder/flowdb-testdata:${CIRCLE_BRANCH:-latest}"
         secrets:
           - POSTGRES_PASSWORD_FILE
-          - API_DB_USER
-          - API_DB_PASS
-          - FM_DB_USER
-          - FM_DB_PASS
+          - FLOWAPI_DB_USER
+          - FLOWAPI_DB_PASS
+          - FLOWMACHINE_DB_USER
+          - FLOWMACHINE_DB_PASS
         tty: true
         shm_size: 1G
         stdin_open: true
@@ -45,12 +45,12 @@ services:
         image: "flowminder/flowmachine:${CIRCLE_BRANCH:-latest}"
         environment:
             - FLOWDB_PORT=5432
-            - DB_HOST=flowdb
+            - FLOWDB_HOST=flowdb
             - LOG_LEVEL=${LOG_LEVEL:-error}
             - DEBUG=${FM_DEBUG:-False}
         secrets:
-          - FM_DB_USER
-          - FM_DB_PASS
+          - FLOWMACHINE_DB_USER
+          - FLOWMACHINE_DB_PASS
           - REDIS_PASSWORD_FILE
         networks:
           - db
@@ -63,12 +63,12 @@ services:
         environment:
             - SERVER=flowmachine
             - LOG_LEVEL=${LOG_LEVEL:-error}
-            - DB_HOST=flowdb
+            - FLOWDB_HOST=flowdb
         secrets:
           - cert-flowkit.pem
           - JWT_SECRET_KEY
-          - API_DB_USER
-          - API_DB_PASS
+          - FLOWAPI_DB_USER
+          - FLOWAPI_DB_PASS
         networks:
           - zero
           - db

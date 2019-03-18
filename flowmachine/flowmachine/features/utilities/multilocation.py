@@ -11,13 +11,14 @@ dailylocations objects, although they can be.
 
 """
 
-import logging
 
 from flowmachine.utils import parse_datestring, get_columns_for_level
 
 from ...core import CustomQuery
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class MultiLocation:

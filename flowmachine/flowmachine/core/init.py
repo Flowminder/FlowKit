@@ -5,12 +5,11 @@
 # -*- coding: utf-8 -*-
 """
 This module provides initial setup routines for flowmachine. From a user
-perspective, only the `start` method is relevant.
+perspective, only the `connect` method is relevant.
 
 From a developer perspective, this is where one-time operations
-should live - for example creating postgres functions.
+should live - for example configuring loggers.
 """
-
 
 import logging
 import os
@@ -25,7 +24,9 @@ from typing import Union
 from flowmachine.utils import getsecret
 from . import Connection, Query
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 def connect(
@@ -33,9 +34,8 @@ def connect(
     write_log_file: Union[bool, None] = None,
     db_port: Union[int, None] = None,
     db_user: Union[str, None] = None,
-    db_pw: Union[str, None] = None,
+    db_pass: Union[str, None] = None,
     db_host: Union[str, None] = None,
-    db_name: Union[str, None] = None,
     db_connection_pool_size: Union[int, None] = None,
     db_connection_pool_overflow: Union[int, None] = None,
     redis_host: Union[str, None] = None,
@@ -61,12 +61,10 @@ def connect(
         Port number to connect to flowdb
     db_user : str, default "analyst"
         Name of user to connect to flowdb as
-    db_pw : str, default "foo"
+    db_pass : str, default "foo"
         Password to connect to flowdb
     db_host : str, default "localhost"
         Hostname of flowdb server
-    db_name : str, default "flowdb"
-        Name of database to connect to.
     db_connection_pool_size : int, default 5
         Default number of database connections to use
     db_connection_pool_overflow : int, default 1
@@ -75,6 +73,8 @@ def connect(
         Hostname for redis server.
     redis_port : int, default 6379
         Port the redis server is available on
+    redis_password : str, default "fm_redis"
+        Password for the redis instance
     conn : flowmachine.core.Connection
         Optionally provide an existing Connection object to use, overriding any the db options specified here.
 
@@ -115,20 +115,19 @@ def connect(
         else db_port
     )
     db_user = (
-        getsecret("DB_USER", os.getenv("DB_USER", "analyst"))
+        getsecret("FLOWDB_USER", os.getenv("FLOWDB_USER", "analyst"))
         if db_user is None
         else db_user
     )
-    db_pw = getsecret("DB_PW", os.getenv("DB_PW", "foo")) if db_pw is None else db_pw
+    db_pass = (
+        getsecret("FLOWDB_PASS", os.getenv("FLOWDB_PASS", "foo"))
+        if db_pass is None
+        else db_pass
+    )
     db_host = (
-        getsecret("DB_HOST", os.getenv("DB_HOST", "localhost"))
+        getsecret("FLOWDB_HOST", os.getenv("FLOWDB_HOST", "localhost"))
         if db_host is None
         else db_host
-    )
-    db_name = (
-        getsecret("DB_NAME", os.getenv("DB_NAME", "flowdb"))
-        if db_name is None
-        else db_name
     )
     db_connection_pool_size = (
         int(
@@ -170,25 +169,25 @@ def connect(
         _init_logging(log_level, write_log_file)
         if conn is None:
             conn = Connection(
-                db_port,
-                db_user,
-                db_pw,
-                db_host,
-                db_name,
-                db_connection_pool_size,
-                db_connection_pool_overflow,
+                host=db_host,
+                port=db_port,
+                user=db_user,
+                password=db_pass,
+                database="flowdb",
+                pool_size=db_connection_pool_size,
+                overflow=db_connection_pool_overflow,
             )
         Query.connection = conn
 
         Query.redis = redis.StrictRedis(
             host=redis_host, port=redis_port, password=redis_pw
         )
-        _start_threadpool(db_connection_pool_size)
+        _start_threadpool(thread_pool_size=db_connection_pool_size)
 
         print(f"FlowMachine version: {flowmachine.__version__}")
 
         print(
-            f"Flowdb running on: {db_host}:{db_port}/{db_name} (connecting user: {db_user})"
+            f"Flowdb running on: {db_host}:{db_port}/flowdb (connecting user: {db_user})"
         )
     return Query.connection
 
@@ -216,14 +215,10 @@ def _init_logging(log_level, write_log_file):
     except (AttributeError, TypeError):
         log_level = logging.ERROR
     true_log_level = logging.getLevelName(log_level)
-    formatter = logging.Formatter(
-        "%(asctime)s %(name)s %(levelname)s %(threadName)s %(message)s"
-    )
     logger = logging.getLogger("flowmachine")
     logger.setLevel(true_log_level)
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
-    ch.setFormatter(formatter)
     logger.addHandler(ch)
     logger.info(f"Logger created with level {true_log_level}")
     if write_log_file:
@@ -236,12 +231,11 @@ def _init_logging(log_level, write_log_file):
         log_file = os.path.join(log_root, "flowmachine-debug.log")
         fh = TimedRotatingFileHandler(log_file, when="midnight")
         fh.setLevel(true_log_level)
-        fh.setFormatter(formatter)
         logger.addHandler(fh)
         logger.info(f"Added log file handler, logging to {log_file}")
 
 
-def _start_threadpool(thread_pool_size=None):
+def _start_threadpool(*, thread_pool_size=None):
     """
     Start the threadpool flowmachine uses for executing queries
     asynchronously.

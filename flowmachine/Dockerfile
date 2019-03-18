@@ -12,7 +12,7 @@ RUN pipenv install --skip-lock .
 CMD ["pipenv", "run", "flowmachine"]
 ENV LOG_LEVEL=error
 ENV FLOWDB_PORT=5432
-ENV DB_HOST=flowdb
-ENV DB_USER=analyst
-ENV DB_PASS=flowflow
+ENV FLOWDB_HOST=flowdb
+ENV FLOWDB_USER=analyst
+ENV FLOWDB_PASS=flowflow
 ENV DEBUG=False

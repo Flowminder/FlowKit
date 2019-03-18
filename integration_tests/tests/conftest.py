@@ -21,8 +21,25 @@ import flowmachine.core.server.server
 import quart.flask_patch
 
 
+@pytest.fixture(scope="session")
+def logging_config(tmpdir_factory):
+    """
+    Fixture which configures logging for flowmachine and flowapi.
+    Creates a temporary directory for log files to be written to, and sets the log level to debug.
+    """
+    tmpdir = tmpdir_factory.mktemp("logs")
+    from _pytest.monkeypatch import MonkeyPatch
+
+    mpatch = MonkeyPatch()
+    mpatch.setenv("LOG_DIRECTORY", str(tmpdir))
+    mpatch.setenv("LOG_LEVEL", "debug")
+    print(f"Logs will be written to {tmpdir}")
+    yield
+    mpatch.undo()
+
+
 @pytest.fixture(scope="session", autouse=True)
-def flowmachine_server():
+def flowmachine_server(logging_config):
     """
     Starts a flowmachine server in a separate process for the tests to talk to.
     """
@@ -34,23 +51,15 @@ def flowmachine_server():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def flowapi_server():
+def flowapi_server(logging_config):
     """
     Starts a FlowAPI server in a separate process for the tests to talk to.
     """
     import hypercorn.__main__
 
-    import os
-    import sys
-
-    sys.path.insert(
-        0,
-        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "flowapi")),
-    )
-
     api_thread = Process(
         target=hypercorn.__main__.main,
-        args=(["--bind", "0.0.0.0:9090", "app.main:create_app()"],),
+        args=(["--bind", "0.0.0.0:9090", "flowapi.main:create_app()"],),
     )
     api_thread.start()
     sleep(2)

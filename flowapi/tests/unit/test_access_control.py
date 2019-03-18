@@ -18,7 +18,7 @@ async def test_protected_get_routes(route, app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the app, with a mock for the db
+        Pytest fixture providing the flowapi, with a mock for the db
     route: str
         Route to test
     """
@@ -74,7 +74,7 @@ async def test_granular_poll_access(
     responses = {}
     for q_kind in query_kinds:
         dummy_zmq_server.side_effect = return_once(
-            {"id": 10, "query_kind": q_kind}, then={"id": 10, "status": "done"}
+            {"id": 10, "query_kind": q_kind}, then={"id": 10, "status": "completed"}
         )
         response = await client.get(
             f"/api/0/poll/0",
@@ -110,7 +110,7 @@ async def test_granular_json_access(
         dummy_zmq_server.side_effect = (
             {"id": 10, "query_kind": q_kind},
             {"id": 10, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-            {"sql": "SELECT 1;", "status": "done"},
+            {"sql": "SELECT 1;", "status": "completed"},
         )
         response = await client.get(
             f"/api/0/get/0",
@@ -141,7 +141,7 @@ async def test_no_result_access_without_both_claims(
     dummy_zmq_server.side_effect = (
         {"id": 10, "query_kind": "DUMMY_QUERY_KIND"},
         {"id": 10, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-        {"query": "SELECT 1;", "status": "done"},
+        {"query": "SELECT 1;", "status": "completed"},
     )
     response = await client.get(
         f"/api/0/get/0",

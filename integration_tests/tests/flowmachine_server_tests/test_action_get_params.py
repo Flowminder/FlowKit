@@ -40,7 +40,7 @@ async def test_get_params(params, zmq_url):
 
     reply = send_message_and_get_reply(zmq_url, msg_run_query)
     query_id = reply["id"]
-    assert {"status": "accepted", "id": query_id} == reply
+    assert reply["status"] in ("executing", "queued", "completed")
 
     #
     # Wait until the query has finished.

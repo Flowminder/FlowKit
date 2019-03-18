@@ -40,17 +40,11 @@ else
 	export PIPENV_DONT_LOAD_ENV=1
 fi
 
-pushd ../flowmachine
-pipenv install -d
+pipenv install
 pipenv run flowmachine &
 echo "Started FlowMachine."
-popd
-pushd ../flowapi
-pipenv install -d
 pipenv run quart run --port 9090 &
 echo "Started FlowAPI."
-popd
 echo "Starting build."
 
-pipenv install
 BRANCH=${CIRCLE_BRANCH:="master"} pipenv run mkdocs "${@:-build}"

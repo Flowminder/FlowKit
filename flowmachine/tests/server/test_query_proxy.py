@@ -1,7 +1,12 @@
 import pytest
 from unittest.mock import Mock
 
-from flowmachine.core.server.query_proxy import QueryProxy, QueryProxyError
+from flowmachine.core.query_state import QueryStateMachine, QueryState
+from flowmachine.core.server.query_proxy import (
+    QueryProxy,
+    QueryProxyError,
+    MissingQueryError,
+)
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location
 
@@ -108,9 +113,6 @@ def test_poll(dummy_redis, monkeypatch):
         func_construct_query_object=dummy_construct_query_object,
     )
 
-    mock_func_has_lock = Mock()
-    query_proxy.redis_interface.has_lock = mock_func_has_lock
-
     #
     # Run the query and get the query id
     #
@@ -120,14 +122,15 @@ def test_poll(dummy_redis, monkeypatch):
     # Poll the query a few times and check the return status is as expectd
     # based on whether a redis lock and/or the cache table exists.
     #
-    mock_func_has_lock.return_value = True
-    assert "running" == query_proxy.poll()
+    qsm = QueryStateMachine(dummy_redis, query_id=q.md5)
+    dummy_redis.set(qsm.state_machine._name, QueryState.EXECUTING.value)
+    assert QueryState.EXECUTING.value == query_proxy.poll()
 
-    mock_func_has_lock.return_value = False
+    dummy_redis.set(qsm.state_machine._name, QueryState.COMPLETED.value)
     mock_func_cache_table_exists.return_value = False
     assert "awol" == query_proxy.poll()
     mock_func_cache_table_exists.return_value = True
-    assert "done" == query_proxy.poll()
+    assert "completed" == query_proxy.poll()
 
 
 def test_get_sql(dummy_redis, monkeypatch):
@@ -138,6 +141,7 @@ def test_get_sql(dummy_redis, monkeypatch):
     # This serves as a drop-in replacement for 'construct_query_object' in
     # flowmachine.core.server.query_proxy.
     q = Mock(spec=Query)
+    q.md5 = "dummy_query_id"
 
     def dummy_construct_query_object(query_kind, params):
         return q
@@ -157,7 +161,11 @@ def test_get_sql(dummy_redis, monkeypatch):
         "flowmachine.core.server.query_proxy.cache_table_exists",
         lambda connection, query_id: True,
     )
-    query_proxy.redis_interface.has_lock = lambda query_id: False
+    # Advance query state to executed
+    qsm = QueryStateMachine(dummy_redis, query_id=q.md5)
+    qsm.enqueue()
+    qsm.execute()
+    qsm.finish()
     monkeypatch.setattr(
         "flowmachine.core.server.query_proxy.get_sql_for_query_id",
         lambda query_id: "SELECT * FROM dummy_table",
@@ -168,10 +176,60 @@ def test_get_sql(dummy_redis, monkeypatch):
     #
     query_proxy.run_query_async()
     q.store.assert_called_once_with()
-    assert "done" == query_proxy.poll()
+    assert "completed" == query_proxy.poll()
 
     #
     # Get SQL code and check it is as expected
     #
     sql = query_proxy.get_sql()
     assert "SELECT * FROM dummy_table" == sql
+
+
+@pytest.mark.parametrize(
+    "current_state, expected_error",
+    [
+        (QueryState.KNOWN, MissingQueryError),
+        (QueryState.QUEUED, QueryProxyError),
+        (QueryState.CANCELLED, QueryProxyError),
+        (QueryState.RESETTING, QueryProxyError),
+        (QueryState.EXECUTING, QueryProxyError),
+        (Mock(), QueryProxyError),
+    ],
+)
+def test_get_sql_errors(current_state, expected_error, dummy_redis, monkeypatch):
+    """
+    Running get_sql raises expected exceptions.
+    """
+    # Define mock query object and a function which returns it when called.
+    # This serves as a drop-in replacement for 'construct_query_object' in
+    # flowmachine.core.server.query_proxy.
+    q = Mock(spec=Query)
+    q.md5 = "dummy_query_id"
+
+    def dummy_construct_query_object(query_kind, params):
+        return q
+
+    #
+    # Construct query proxy
+    #
+    query_proxy = QueryProxy(
+        "dummy_query",
+        {"param": "some_value"},
+        redis=dummy_redis,
+        func_construct_query_object=dummy_construct_query_object,
+    )
+    #
+    # Run the query and get the query id
+    #
+    query_id = query_proxy.run_query_async()
+
+    # Set conditions for this test
+    monkeypatch.setattr(
+        "flowmachine.core.server.query_proxy.cache_table_exists",
+        lambda connection, query_id: True,
+    )
+    # Set query state
+    qsm = QueryStateMachine(dummy_redis, query_id=q.md5)
+    dummy_redis.set(qsm.state_machine._name, current_state)
+    with pytest.raises(expected_error):
+        sql = query_proxy.get_sql()

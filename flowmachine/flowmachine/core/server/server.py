@@ -7,14 +7,17 @@
 
 import asyncio
 import logging
+
 import os
 import signal
 from logging.handlers import TimedRotatingFileHandler
-from typing import Any
+
+import structlog
 
 import zmq
 from zmq.asyncio import Context
 from flowmachine.core import connect
+from flowmachine.core.query_state import QueryState
 from .query_proxy import (
     QueryProxy,
     MissingQueryError,
@@ -24,26 +27,8 @@ from .query_proxy import (
 )
 from .zmq_interface import ZMQMultipartMessage, ZMQInterfaceError
 
-import structlog
 
-structlog.configure(
-    processors=[
-        structlog.stdlib.filter_by_level,
-        structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(),
-    ],
-    context_class=dict,
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    wrapper_class=structlog.stdlib.BoundLogger,
-    cache_logger_on_first_use=True,
-)
-
-logger = logging.getLogger("flowmachine").getChild(__name__)
+logger = structlog.get_logger(__name__)
 # Logger for all queries run or accessed
 query_run_log = logging.getLogger("flowmachine-server")
 query_run_log.setLevel(logging.INFO)
@@ -91,7 +76,7 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             )
             query_id = query_proxy.run_query_async()
             query_run_log.info("run_query", query_id=query_id, **run_log_dict)
-            reply = {"status": "accepted", "id": query_id}
+            reply = {"status": query_proxy.poll(), "id": query_id}
 
         elif "poll" == action:
             logger.debug(f"Trying to poll query.  Message: {zmq_msg.msg_str}")
@@ -107,7 +92,7 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             query_proxy = QueryProxy.from_query_id(query_id)
             sql = query_proxy.get_sql()
             query_run_log.info("get_sql", query_id=query_id, **run_log_dict)
-            reply = {"status": "done", "sql": sql}
+            reply = {"status": query_proxy.poll(), "sql": sql}
 
         elif "get_params" == action:
             logger.debug(f"Trying to get query parameters. Message: {zmq_msg.msg_str}")
@@ -141,7 +126,7 @@ async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
             # Explicitly project to WGS84 (SRID=4326) to conform with GeoJSON standard
             sql = q.geojson_query(crs=4326)
             query_run_log.info("get_geography", **run_log_dict)
-            reply = {"status": "done", "sql": sql}
+            reply = {"status": QueryState.COMPLETED, "sql": sql}
 
         else:
             logger.debug(f"Unknown action: '{action}'")

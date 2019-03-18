@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logging
+
 import pandas as pd
 import warnings
 from sqlalchemy import select, between, extract, or_
@@ -19,7 +19,9 @@ from ...core.sqlalchemy_utils import (
 from flowmachine.utils import list_of_dates
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class EventTableSubset(Query):
