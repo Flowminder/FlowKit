@@ -7,7 +7,6 @@ from .helpers import poll_until_done
 # TODO: add test for code path that raises QueryProxyError with the 'get_sql' action
 
 
-@pytest.mark.skip(reason="The 'get_sql' action will likely be removed soon.")
 @pytest.mark.asyncio
 async def test_get_sql(zmq_port, zmq_host):
     """
@@ -42,17 +41,15 @@ async def test_get_sql(zmq_port, zmq_host):
     # Get query result.
     #
     msg = {
-        "action": "get_sql",
+        "action": "get_sql_for_query_result",
         "params": {"query_id": expected_query_id},
         "request_id": "DUMMY_ID",
     }
-
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert "done" == reply["status"]
     assert f"SELECT * FROM cache.x{expected_query_id}" == reply["data"]["sql"]
 
 
-@pytest.mark.skip(reason="The 'get_sql' action will likely be removed soon.")
 @pytest.mark.asyncio
 async def test_get_sql_for_nonexistent_query_id(zmq_port, zmq_host):
     """
@@ -62,14 +59,15 @@ async def test_get_sql_for_nonexistent_query_id(zmq_port, zmq_host):
     # Try getting query result for nonexistent ID.
     #
     msg = {
-        "action": "get_sql",
+        "action": "get_sql_for_query_result",
         "params": {"query_id": "FOOBAR"},
         "request_id": "DUMMY_ID",
     }
 
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
-    assert {
-        "status": "awol",
-        "id": "FOOBAR",
-        "error": "Unknown query id: FOOBAR",
-    } == reply
+    expected_reply = {
+        "status": "error",
+        "msg": "Unknown query id: 'FOOBAR'",
+        "data": {"query_id": "FOOBAR", "query_state": "awol"},
+    }
+    assert expected_reply == reply
