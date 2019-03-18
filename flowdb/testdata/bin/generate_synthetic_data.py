@@ -174,6 +174,108 @@ if __name__ == "__main__":
         )
         print(f"Done. Runtime: {datetime.datetime.now() - start}")
 
+    print("Assigning subscriber home regions.")
+    start = datetime.datetime.now()
+    with engine.begin() as trans:
+        trans.execute(
+            f"""CREATE TABLE homes AS (
+        SELECT h.*, cells FROM
+        (SELECT '2016-01-01'::date as home_date, id, admin3pcod as home_id FROM (
+        SELECT *, floor(random() * 75 + 1)::integer as admin_id FROM subs
+        ) subscribers
+        LEFT JOIN
+        (SELECT row_number() over() as admin_id, admin3pcod FROM 
+        geography.admin3
+        ) geo
+        ON geo.admin_id=subscribers.admin_id) h
+        LEFT JOIN 
+        (select admin3pcod, array_agg(rid) as cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
+        ON admin3pcod=home_id
+        )
+        """
+        )
+        trans.execute("CREATE INDEX ON homes (id);")
+        trans.execute("CREATE INDEX ON homes (home_date);")
+        trans.execute("CREATE INDEX ON homes (home_date, id);")
+    for date in (
+        datetime.date(2016, 1, 2) + datetime.timedelta(days=i) for i in range(num_days)
+    ):
+        with engine.begin() as trans:
+            if (
+                pcode_to_knock_out
+                and disaster_start_date
+                and disaster_start_date <= date <= disaster_end_date
+            ):
+                trans.execute(
+                    f"""INSERT INTO homes
+                                        SELECT h.*, cells FROM
+                                        (SELECT '{date.strftime(
+                        "%Y-%m-%d")}'::date as home_date, id, CASE WHEN (random() > 0.99 OR home_id = ANY((array(select admin3.admin3pcod FROM geography.admin3 WHERE admin2pcod = '{pcode_to_knock_out}')))) THEN admin3pcod ELSE home_id END as home_id FROM (
+                                        SELECT *, floor(random() * 74 + 1)::integer as admin_id FROM homes
+                                        WHERE home_date='{(date - datetime.timedelta(days=1)).strftime(
+                        "%Y-%m-%d")}'::date
+                                        ) subscribers
+                                        LEFT JOIN
+                                        (SELECT row_number() over() as admin_id, admin3pcod FROM 
+                                        geography.admin3
+                                        WHERE admin2pcod!='{pcode_to_knock_out}'
+                                        ) geo
+                                        ON geo.admin_id=subscribers.admin_id) h
+                                        LEFT JOIN 
+                                                (select admin3pcod, array_agg(rid) as cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
+                                                ON admin3pcod=home_id
+                                        """
+                )
+            else:
+                trans.execute(
+                    f"""INSERT INTO homes
+                        SELECT h.*, cells FROM
+                        (SELECT '{date.strftime("%Y-%m-%d")}'::date as home_date, id, CASE WHEN (random() > 0.99) THEN admin3pcod ELSE home_id END as home_id FROM (
+                        SELECT *, floor(random() * 75 + 1)::integer as admin_id FROM homes
+                        WHERE home_date='{(date - datetime.timedelta(days=1)).strftime("%Y-%m-%d")}'::date
+                        ) subscribers
+                        LEFT JOIN
+                        (SELECT row_number() over() as admin_id, admin3pcod FROM 
+                        geography.admin3
+                        ) geo
+                        ON geo.admin_id=subscribers.admin_id) h
+                        LEFT JOIN 
+                                (select admin3pcod, array_agg(rid) as cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
+                                ON admin3pcod=home_id
+                        """
+                )
+    print(f"Done. Runtime: {datetime.datetime.now() - start}")
+
+    with engine.begin() as trans:
+        trans.execute(
+            "CREATE TABLE available_cells AS (SELECT '2016-01-01'::date as day, array_agg(rid) FROM tmp_cells);"
+        )
+
+    print("Generating disaster.")
+    for date in (
+        datetime.date(2016, 1, 2) + datetime.timedelta(days=i) for i in range(num_days)
+    ):
+        with engine.begin() as trans:
+            if (
+                pcode_to_knock_out
+                and disaster_start_date
+                and disaster_start_date <= date <= disaster_end_date
+            ):
+                trans.execute(
+                    f"""
+                INSERT INTO available_cells SELECT '{date.strftime("%Y-%m-%d")}'::date, array_agg(tmp_cells.rid) as cells FROM tmp_cells INNER JOIN (SELECT * FROM geography.admin2 WHERE admin2pcod != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom);
+                """
+                )
+            else:
+                trans.execute(
+                    f"""
+                            INSERT INTO available_cells SELECT '{date.strftime(
+                    "%Y-%m-%d")}'::date, array_agg(tmp_cells.rid) as cells FROM tmp_cells;
+                            """
+                )
+    with engine.begin() as trans:
+        trans.execute("CREATE INDEX ON available_cells (day);")
+
     if pcode_to_knock_out:
         print("Marking cells to knock out.")
         start = datetime.datetime.now()
@@ -217,40 +319,61 @@ if __name__ == "__main__":
     ):
         table = date.strftime("%Y%m%d")
         end_date = (date + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-        cell_col_to_use = "rid"
-        num_cells_avail = num_cells
-        if (
-            pcode_to_knock_out
-            and disaster_start_date
-            and disaster_start_date <= date <= disaster_end_date
-        ):
-            cell_col_to_use = "rid_knockout"
-            num_cells_avail = number_of_not_knocked_out_cells
+
         # calls
         if num_calls > 0:
             sql.append(
                 (
-                    f"Generating {num_calls} calls for {date}, selecting from {num_cells_avail} cells.",
+                    f"Generating {num_calls} calls for {date}.",
                     f"""
-      
+            WITH interactions as 
+            (SELECT uuid_generate_v4()::text as id, caller.msisdn as caller_msisdn, 
+            caller.tac as caller_tac, caller.imsi as caller_imsi, caller.imei as caller_imei, 
+            callee.msisdn as callee_msisdn, callee.tac as callee_tac, 
+            callee.imsi as callee_imsi, callee.imei as callee_imei, 
+            floor(random() * array_length(caller_cells, 1) + 1) as caller_cell, 
+            floor(random() * array_length(callee_cells, 1) + 1) as callee_cell,
+             (date '{table}' + random() * interval '1 day') as start_time
+             FROM
+            (
+                SELECT 
+                floor(random() * (select count(*) from subs) + 1)::integer as caller_id, 
+                floor(random() * (select count(*) from subs) + 1)::integer as callee_id FROM 
+                generate_series(1, {num_calls})) call_pairs
+                LEFT JOIN 
+                (SELECT id,
+                    CASE WHEN (random() > 0.99) THEN
+                        (SELECT cells FROM available_cells WHERE day='{table}'::date)
+                    ELSE 
+                        cells
+                    END as caller_cells 
+                    FROM homes WHERE home_date='{table}'::date) caller_homes
+                ON call_pairs.caller_id=caller_homes.id
+                LEFT JOIN 
+                (SELECT id, 
+                    CASE WHEN (random() > 0.99) THEN
+                        (SELECT cells FROM available_cells WHERE day='{table}'::date)
+                    ELSE 
+                        cells
+                    END as callee_cells  
+                    FROM homes WHERE home_date='{table}'::date) callee_homes
+                ON call_pairs.callee_id=callee_homes.id
+                LEFT JOIN subs as caller ON call_pairs.caller_id = caller.id
+                LEFT JOIN subs as callee ON call_pairs.callee_id = callee.id),
         
-            with calls as 
-            (SELECT uuid_generate_v4()::text as id, caller.msisdn as caller_msisdn, caller.tac as caller_tac, caller.imsi as caller_imsi, caller.imei as imei, callee.msisdn as callee_msisdn, callee.tac as callee_tac, callee.imsi as callee_imsi, callee.imei as imei, caller_cell, callee_cell, start_time, duration FROM
-            (select *, case when caller_id != callee_id then floor(random() * {num_cells_avail} + 1)::integer ELSE caller_cell END as callee_cell, (date '{table}' + random() * interval '1 day') as start_time, round(random()*2600)::integer as duration FROM
-            (select *, floor(random() * {num_cells_avail} + 1)::integer as caller_cell FROM
-            (select floor(random() * {num_subscribers} + 1)::integer as caller_id, floor(random() * {num_subscribers} + 1)::integer as callee_id FROM generate_series(1, {num_calls})) _) _) calls
-            LEFT JOIN subs as caller ON calls.caller_id = caller.id
-            LEFT JOIN subs as callee ON calls.callee_id = callee.id)
+            calls as 
+            (SELECT interactions.*,  
+                round(random()*2600)::integer as duration FROM interactions)
         
-            INSERT INTO events.calls_{table} (id, outgoing, duration, datetime, msisdn, tac, imsi, location_id, msisdn_counterpart)
-                SELECT two_lined_calls.id, outgoing, duration, datetime, msisdn, tac, imsi, tmp_cells.id, msisdn_counterpart FROM (
-                    SELECT id, true as outgoing, duration, start_time as datetime, caller_msisdn as msisdn, caller_tac as tac, caller_imsi as imsi, caller_cell as location_id, callee_msisdn as msisdn_counterpart 
+            INSERT INTO events.calls_{table} (id, outgoing, duration, datetime, msisdn, tac, imsi, imei, location_id, msisdn_counterpart)
+                SELECT two_lined_calls.id, outgoing, duration, datetime, msisdn, tac, imsi, imei,  tmp_cells.id, msisdn_counterpart FROM (
+                    SELECT id, true as outgoing, duration, start_time as datetime, caller_msisdn as msisdn, caller_tac as tac, caller_imsi as imsi, caller_imei as imei, caller_cell as location_id, callee_msisdn as msisdn_counterpart 
                 FROM calls
                 UNION ALL
-                SELECT id, false as outgoing, duration, start_time as datetime, callee_msisdn as msisdn, callee_tac as tac, callee_imsi as imsi, callee_cell as location_id, caller_msisdn as msisdn_counterpart
+                SELECT id, false as outgoing, duration, start_time as datetime, callee_msisdn as msisdn, callee_tac as tac, callee_imsi as imsi, callee_imei as imei, callee_cell as location_id, caller_msisdn as msisdn_counterpart
                 FROM calls) two_lined_calls
                 LEFT JOIN tmp_cells
-                ON tmp_cells.{cell_col_to_use} = two_lined_calls.location_id
+                ON tmp_cells.rid = two_lined_calls.location_id
                  ORDER BY datetime ASC, msisdn;
         
             CREATE INDEX ON events.calls_{table} (msisdn);
@@ -264,28 +387,54 @@ if __name__ == "__main__":
         if num_sms > 0:
             sql.append(
                 (
-                    f"Generating {num_sms} sms for {date}, selecting from {num_cells_avail} cells.",
+                    f"Generating {num_sms} sms for {date}.",
                     f"""
-            
-            with sms as
-            (SELECT uuid_generate_v4()::text as id, caller.msisdn as caller_msisdn, caller.tac as caller_tac, caller.imsi as caller_imsi, caller.imei as imei, callee.msisdn as callee_msisdn, callee.tac as callee_tac, callee.imsi as callee_imsi, callee.imei as imei, caller_cell, callee_cell, start_time FROM
-            (select *, case when caller_id != callee_id then round(random() * {num_cells_avail} + 1)::integer ELSE caller_cell END as callee_cell, (date '{table}' + random() * interval '1 day') as start_time FROM
-            (select *, round(random() * {num_cells_avail} + 1)::integer as caller_cell FROM
-            (select floor(random() * {num_subscribers} + 1)::integer as caller_id, floor(random() * {num_subscribers} + 1)::integer as callee_id FROM generate_series(1, {num_sms})) _) _) calls
-            LEFT JOIN subs as caller ON calls.caller_id = caller.id
-            LEFT JOIN subs as callee ON calls.callee_id = callee.id)
+            WITH interactions as 
+            (SELECT uuid_generate_v4()::text as id, caller.msisdn as caller_msisdn, 
+            caller.tac as caller_tac, caller.imsi as caller_imsi, caller.imei as caller_imei, 
+            callee.msisdn as callee_msisdn, callee.tac as callee_tac, 
+            callee.imsi as callee_imsi, callee.imei as callee_imei, 
+            floor(random() * array_length(caller_cells, 1) + 1) as caller_cell, 
+            floor(random() * array_length(callee_cells, 1) + 1) as callee_cell,
+            (date '{table}' + random() * interval '1 day') as start_time
+             FROM
+            (
+                SELECT 
+                floor(random() * (select count(*) from subs) + 1)::integer as caller_id, 
+                floor(random() * (select count(*) from subs) + 1)::integer as callee_id FROM 
+                generate_series(1, {num_sms})) call_pairs
+                LEFT JOIN 
+                (SELECT id,
+                    CASE WHEN (random() > 0.99) THEN
+                        (SELECT cells FROM available_cells WHERE day='{table}'::date)
+                    ELSE 
+                        cells
+                    END as caller_cells 
+                    FROM homes WHERE home_date='{table}'::date) caller_homes
+                ON call_pairs.caller_id=caller_homes.id
+                LEFT JOIN 
+                (SELECT id, 
+                    CASE WHEN (random() > 0.99) THEN
+                        (SELECT cells FROM available_cells WHERE day='{table}'::date)
+                    ELSE 
+                        cells
+                    END as callee_cells  
+                    FROM homes WHERE home_date='{table}'::date) callee_homes
+                ON call_pairs.callee_id=callee_homes.id
+                LEFT JOIN subs as caller ON call_pairs.caller_id = caller.id
+                LEFT JOIN subs as callee ON call_pairs.callee_id = callee.id)
+     
+            INSERT INTO events.sms_{table} (id, outgoing, datetime, msisdn, tac, imsi, imei, location_id, msisdn_counterpart)
     
-            INSERT INTO events.sms_{table} (id, outgoing, datetime, msisdn, tac, imsi, location_id, msisdn_counterpart)
-    
-            SELECT two_lined_sms.id, outgoing, datetime, msisdn, tac, imsi, tmp_cells.id as location_id, msisdn_counterpart
+            SELECT two_lined_sms.id, outgoing, datetime, msisdn, tac, imsi, imei, tmp_cells.id as location_id, msisdn_counterpart
             FROM
-            (SELECT * FROM (SELECT id, true as outgoing, start_time as datetime, caller_msisdn as msisdn, caller_tac as tac, caller_imsi as imsi, caller_cell as location_id, callee_msisdn as msisdn_counterpart
-            FROM sms
+            (SELECT * FROM (SELECT id, true as outgoing, start_time as datetime, caller_msisdn as msisdn, caller_tac as tac, caller_imsi as imsi, caller_imei as imei, caller_cell as location_id, callee_msisdn as msisdn_counterpart
+            FROM interactions
             UNION ALL
-            SELECT id, false as outgoing, start_time as datetime, callee_msisdn as msisdn, callee_tac as tac, callee_imsi as imsi, callee_cell as location_id, caller_msisdn as msisdn_counterpart
-            FROM sms) _ ORDER BY datetime ASC, msisdn) two_lined_sms
+            SELECT id, false as outgoing, start_time as datetime, callee_msisdn as msisdn, callee_tac as tac, callee_imsi as imsi, callee_imei as imei, callee_cell as location_id, caller_msisdn as msisdn_counterpart
+            FROM interactions) _ ORDER BY datetime ASC, msisdn) two_lined_sms
             LEFT JOIN tmp_cells
-            ON tmp_cells.{cell_col_to_use}=two_lined_sms.location_id;
+            ON tmp_cells.rid=two_lined_sms.location_id;
     
             CREATE INDEX ON events.sms_{table} (msisdn);
             CREATE INDEX ON events.sms_{table} (tac);
@@ -298,25 +447,45 @@ if __name__ == "__main__":
         if num_mds > 0:
             sql.append(
                 (
-                    f"Generating {num_mds} mds for {date}, selecting from {num_cells_avail} cells.",
+                    f"Generating {num_mds} mds for {date}.",
                     f"""
+
+            WITH interactions as 
+            (SELECT caller.msisdn as msisdn, 
+            caller.tac as tac, caller.imsi as imsi, caller.imei as imei, 
+            floor(random() * array_length(caller_cells, 1) + 1) as caller_cell,
+             (date '{table}' + random() * interval '1 day') as start_time
+             FROM
+            (
+                SELECT 
+                floor(random() * (select count(*) from subs) + 1)::integer as caller_id, 
+                generate_series(1, {num_mds})) call_pairs
+                LEFT JOIN 
+                (SELECT id,
+                    CASE WHEN (random() > 0.99) THEN
+                        (SELECT cells FROM available_cells WHERE day='{table}'::date)
+                    ELSE 
+                        cells
+                    END as caller_cells 
+                    FROM homes WHERE home_date='{table}'::date) caller_homes
+                ON call_pairs.caller_id=caller_homes.id
+                LEFT JOIN subs as caller ON call_pairs.caller_id = caller.id
+                )
             
             
             INSERT INTO events.mds_{table} (msisdn, tac, imsi, imei, volume_upload, volume_download, volume_total, location_id, datetime, duration)
-            SELECT msisdn, tac, imsi, imei, volume_upload, volume_download, volume_total, tmp_cells.id as location_id, datetime, duration FROM
+            SELECT msisdn, tac, imsi, imei, volume_upload, volume_download, volume_total, location_id, datetime, duration FROM
             (SELECT msisdn, tac, imsi, imei, volume_upload, volume_download, 
             volume_upload + volume_download as volume_total, 
-            floor(random() * {num_cells_avail} + 1)::integer as location_id, 
+            tmp_cells.id as location_id, 
             (date '{table}' + random() * interval '1 day') as datetime, round(random() * 260)::integer as duration FROM
             (
-                select floor(random() * {num_subscribers} + 1)::integer as id, round(random() * 100000)::integer as volume_upload, 
-                round(random() * 100000)::integer as volume_download FROM generate_series(1, {num_mds})) _
-            LEFT JOIN
-            subs
-            USING (id)) mds
+                select *, floor(random() * {num_subscribers} + 1)::integer as id, round(random() * 100000)::integer as volume_upload, 
+                round(random() * 100000)::integer as volume_download FROM interactions
+                ) as mds
             LEFT JOIN tmp_cells
-            ON tmp_cells.{cell_col_to_use}=mds.location_id
-            ORDER BY datetime ASC, msisdn;
+            ON tmp_cells.rid=mds.caller_cell
+            ORDER BY datetime ASC, msisdn) _;
     
             CREATE INDEX ON events.mds_{table} (msisdn);
             CREATE INDEX ON events.mds_{table} (tac);
@@ -368,7 +537,7 @@ if __name__ == "__main__":
         post_attach_sql.append((f"Analyzing {sub}", f"ANALYZE events.{sub};"))
 
     cleanup_sql = []
-    for tbl in ("tmp_cells", "subs", "tacs"):
+    for tbl in ("tmp_cells", "subs", "tacs", "available_cells", "homes"):
         cleanup_sql.append((f"Dropping {tbl}", f"DROP TABLE {tbl};"))
 
     def do_exec(args):
