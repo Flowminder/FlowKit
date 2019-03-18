@@ -14,12 +14,7 @@ blueprint = Blueprint("query", __name__)
 async def run_query():
     json_data = await request.json
     request.socket.send_json(
-        {
-            "request_id": request.request_id,
-            "action": "run_query_OLD",
-            "query_kind": json_data["query_kind"],
-            "params": json_data["params"],
-        }
+        {"request_id": request.request_id, "action": "run_query", "params": json_data}
     )
 
     #  Get the reply.
@@ -28,11 +23,16 @@ async def run_query():
         f"Received reply {message}", request_id=request.request_id
     )
 
-    if "id" in message:
-        d = {"Location": url_for(f"query.poll_query", query_id=message["id"])}
+    if message["status"] == "error":
+        return jsonify({"status": "Error", "msg": message["msg"]}), 403
+    elif message["status"] == "accepted":
+        assert "query_id" in message["data"]
+        d = {
+            "Location": url_for(
+                f"query.poll_query", query_id=message["data"]["query_id"]
+            )
+        }
         return jsonify({}), 202, d
-    elif "error" in message:
-        return jsonify({"status": "Error", "msg": message["error"]}), 403
     else:
         return jsonify({}), 403
 
