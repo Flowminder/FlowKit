@@ -14,7 +14,7 @@ from . import Query, GeoTable
 from .grid import Grid
 
 
-class SpatialUnit(Query, metaclass=ABCMeta):
+class BaseSpatialUnit(Query, metaclass=ABCMeta):
     """
     Base class for all spatial units. Selects columns from the location table,
     and optionally joins to data in another table.
@@ -48,7 +48,7 @@ class SpatialUnit(Query, metaclass=ABCMeta):
         else:
             self._cols = selected_column_names
 
-        if type(other_column_names) is str:
+        if type(location_column_names) is str:
             self._loc_cols = [location_column_names]
         else:
             self._loc_cols = location_column_names
@@ -103,6 +103,38 @@ class SpatialUnit(Query, metaclass=ABCMeta):
         """
         raise NotImplementedError
 
+    def distance_matrix_query(self, return_geometry):
+        """
+        A query that calculates the complete distance matrix between all
+        elements of this spatial unit. Distance is returned in km.
+
+        Parameters
+        ----------
+        return_geometry : bool
+            If True, geometries are returned in query
+            (represented as WKB in a dataframe)
+
+        Returns
+        -------
+        str
+            SQL query string
+
+        """
+        raise NotImplementedError(
+            f"Spatial units of type {type(self).__name__} do not support distance_matrix_query at this time."
+        )
+
+    def distance_matrix_columns(self, return_geometry=False):
+        """
+        List of columns for self.distance_matrix_query
+        """
+        col_names = [f"{c}_from" for c in self.location_columns]
+        col_names += [f"{c}_to" for c in self.location_columns]
+        col_names += ["distance"]
+        if return_geometry:
+            col_names += ["geom_origin", "geom_destination"]
+        return col_names
+
     def _make_query(self):
         columns = ", ".join(self._cols)
         sql = f"""
@@ -115,7 +147,7 @@ class SpatialUnit(Query, metaclass=ABCMeta):
         return sql
 
 
-class LatLonSpatialUnit(SpatialUnit):
+class LatLonSpatialUnit(BaseSpatialUnit):
     """
     Class that maps cell location_id to lat-lon coordinates. 
     """
@@ -144,7 +176,7 @@ class LatLonSpatialUnit(SpatialUnit):
         return sql, cols
 
 
-class VersionedCellSpatialUnit(SpatialUnit):
+class VersionedCellSpatialUnit(BaseSpatialUnit):
     """
     Class that maps cell location_id to a cell version and lat-lon coordinates.
     """
@@ -180,8 +212,41 @@ class VersionedCellSpatialUnit(SpatialUnit):
         cols = list(set(query.column_names + ["gid", "geom"]))
         return sql, cols
 
+    def distance_matrix_query(self, return_geometry=False):
+        return_geometry_statement = ""
+        if return_geometry:
+            return_geometry_statement = """
+                ,
+                A.geom_point AS geom_origin,
+                B.geom_point AS geom_destination
+            """
 
-class VersionedSiteSpatialUnit(SpatialUnit):
+        sql = f"""
+
+            SELECT
+                A.id AS location_id_from,
+                A.version AS version_from,
+                B.id AS location_id_to,
+                B.version AS version_to,
+                ST_X(A.geom_point::geometry) AS lon_from,
+                ST_Y(A.geom_point::geometry) AS lat_from,
+                ST_X(B.geom_point::geometry) AS lon_to,
+                ST_Y(B.geom_point::geometry) AS lat_to,
+                ST_Distance(
+                    A.geom_point::geography, 
+                    B.geom_point::geography
+                ) / 1000 AS distance
+                {return_geometry_statement}
+            FROM infrastructure.cells AS A
+            CROSS JOIN infrastructure.cells AS B
+            ORDER BY distance DESC
+            
+        """
+
+        return sql
+
+
+class VersionedSiteSpatialUnit(BaseSpatialUnit):
     """
     Class that maps cell location_id to a site version and lat-lon coordinates.
     """
@@ -212,11 +277,11 @@ class VersionedSiteSpatialUnit(SpatialUnit):
                 f"{sites_alias}.id AS site_id",
                 f"{sites_alias}.date_of_first_service AS date_of_first_service",
                 f"{sites_alias}.date_of_last_service AS date_of_last_service",
-                f"{sites_alias}.version as version",
+                f"{sites_alias}.version AS version",
                 f"ST_X({sites_alias}.geom_point::geometry) AS lon",
                 f"ST_Y({sites_alias}.geom_point::geometry) AS lat",
             ],
-            location_column_names=["location_id", "version", "lon", "lat"],
+            location_column_names=["site_id", "version", "lon", "lat"],
             location_info_table=f"infrastructure.sites AS {sites_alias}",
             join_clause=join_clause,
         )
@@ -235,8 +300,41 @@ class VersionedSiteSpatialUnit(SpatialUnit):
         cols = list(set(query.column_names + ["gid", "geom"]))
         return sql, cols
 
+    def distance_matrix_query(self, return_geometry=False):
+        return_geometry_statement = ""
+        if return_geometry:
+            return_geometry_statement = """
+                ,
+                A.geom_point AS geom_origin,
+                B.geom_point AS geom_destination
+            """
 
-class PolygonSpatialUnit(SpatialUnit):
+        sql = f"""
+
+            SELECT
+                A.id AS site_id_from,
+                A.version AS version_from,
+                B.id AS site_id_to,
+                B.version AS version_to,
+                ST_X(A.geom_point::geometry) AS lon_from,
+                ST_Y(A.geom_point::geometry) AS lat_from,
+                ST_X(B.geom_point::geometry) AS lon_to,
+                ST_Y(B.geom_point::geometry) AS lat_to,
+                ST_Distance(
+                    A.geom_point::geography, 
+                    B.geom_point::geography
+                ) / 1000 AS distance
+                {return_geometry_statement}
+            FROM infrastructure.sites AS A
+            CROSS JOIN infrastructure.sites AS B
+            ORDER BY distance DESC
+            
+        """
+
+        return sql
+
+
+class PolygonSpatialUnit(BaseSpatialUnit):
     """
     Class that provides a mapping from cell/site data in the location table to
     spatial regions defined by geography information in a table.

@@ -12,6 +12,7 @@ from typing import List
 from flowmachine.utils import get_columns_for_level
 from ...core.query import Query
 from ...core.mixins import GraphMixin
+from ...core.spatial_unit import VersionedCellSpatialUnit
 
 
 class DistanceMatrix(GraphMixin, Query):
@@ -21,13 +22,17 @@ class DistanceMatrix(GraphMixin, Query):
     computation of distance travelled, area of influence, 
     and other features.
 
-    Distance is returned in Km.
+    This calls the SpatialUnit.distance_matrix_query method.
+    Note: this method is only implemented for the VersionedCellSpatialUnit and
+    VersionedSiteSpatialUnit at this time.
+
+    Distance is returned in km.
 
     Parameters
     ----------
-    level : str, default "versioned-cell"
-        Point locations (either versioned-site or versioned-cell) to compute
-        distances for.
+    spatial_unit : SpatialUnit or None, default None
+        Locations to compute distances for.
+        If None, defaults to VersionedCellSpatialUnit().
 
     return_geometry : bool
         If True, geometries are returned in query
@@ -35,101 +40,24 @@ class DistanceMatrix(GraphMixin, Query):
         is an useful option if one is computing
         other geographic properties out of the
 
-    Examples
-    --------
-    >>> DistanceMatrix().get_dataframe()
-        origin   destination   distance
-    0   8wPojr   GN2k0G        789.232397
-    1   GN2k0G   8wPojr        789.232397
-    2   8wPojr   j1m77j        786.102789
-    3   j1m77j   8wPojr        786.102789
-    4   DbWg4K   8wPojr        757.977718
-
     """
 
-    def __init__(self, level="versioned-cell", return_geometry=False):
-
-        if level not in {"versioned-site", "versioned-cell"}:
-            raise ValueError("Only point locations are supported at this time.")
-        self.level = level
+    def __init__(self, spatial_unit=None, return_geometry=False):
+        if spatial_unit is None:
+            self.spatial_unit = VersionedCellSpatialUnit()
+        else:
+            self.spatial_unit = spatial_unit
         self.return_geometry = return_geometry
 
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        cols = get_columns_for_level(self.level)
-
-        try:
-            cols.remove("lat")
-            cols.remove("lon")
-        except ValueError:
-            pass  # Nothing to remove
-
-        col_names = [f"{c}_from" for c in cols]
-        col_names += [f"{c}_to" for c in cols]
-        col_names += [f"{c}_from" for c in ("lon", "lat")]
-        col_names += [f"{c}_to" for c in ("lon", "lat")]
-        col_names += ["distance"]
-        if self.return_geometry:
-            col_names += ["geom_origin", "geom_destination"]
-        return col_names
+        return self.spatial_unit.distance_matrix_columns(
+            return_geometry=self.return_geometry
+        )
 
     def _make_query(self):
-        cols = get_columns_for_level(self.level)
-        sql_location_table = "SELECT * FROM infrastructure." + (
-            "sites" if self.level == "versioned-site" else "cells"
+        return self.spatial_unit.distance_matrix_query(
+            return_geometry=self.return_geometry
         )
-        try:
-            cols.remove("lat")
-            cols.remove("lon")
-        except ValueError:
-            pass  # Nothing to remove
-
-        from_cols = ", ".join(
-            "A.{c_id_safe} AS {c}_from".format(
-                c_id_safe="id" if c.endswith("id") else c, c=c
-            )
-            for c in cols
-        )
-        to_cols = ", ".join(
-            "B.{c_id_safe} AS {c}_to".format(
-                c_id_safe="id" if c.endswith("id") else c, c=c
-            )
-            for c in cols
-        )
-
-        return_geometry_statement = ""
-        if self.return_geometry:
-            return_geometry_statement = """
-                ,
-                A.geom_point AS geom_origin,
-                B.geom_point AS geom_destination
-            """
-
-        sql = """
-
-            SELECT
-                {froms},
-                {tos},
-                ST_X(A.geom_point::geometry) AS lon_from,
-                ST_Y(A.geom_point::geometry) AS lat_from,
-                ST_X(B.geom_point::geometry) AS lon_to,
-                ST_Y(B.geom_point::geometry) AS lat_to,
-                ST_Distance(
-                    A.geom_point::geography, 
-                    B.geom_point::geography
-                ) / 1000 AS distance
-                {return_geometry_statement}
-            FROM ({location_table_statement}) AS A
-            CROSS JOIN ({location_table_statement}) AS B
-            ORDER BY distance DESC
-            
-        """.format(
-            location_table_statement=sql_location_table,
-            froms=from_cols,
-            tos=to_cols,
-            return_geometry_statement=return_geometry_statement,
-        )
-
-        return sql
