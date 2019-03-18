@@ -43,11 +43,22 @@ def flowmachine_server(logging_config):
     """
     Starts a flowmachine server in a separate process for the tests to talk to.
     """
-    fm_thread = Process(target=flowmachine.core.server.server.main)
-    fm_thread.start()
-    yield
-    fm_thread.terminate()
-    sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
+    disable_autostart_servers = (
+        os.getenv(
+            "FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS", "FALSE"
+        ).upper()
+        == "TRUE"
+    )
+    if disable_autostart_servers:
+        yield  # need to yield something from either branch of the if statement
+    else:
+        fm_thread = Process(target=flowmachine.core.server.server.main)
+        fm_thread.start()
+        yield
+        fm_thread.terminate()
+        sleep(
+            2
+        )  # Wait a moment to make sure coverage of subprocess finishes being written
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -55,17 +66,28 @@ def flowapi_server(logging_config):
     """
     Starts a FlowAPI server in a separate process for the tests to talk to.
     """
-    import hypercorn.__main__
-
-    api_thread = Process(
-        target=hypercorn.__main__.main,
-        args=(["--bind", "0.0.0.0:9090", "flowapi.main:create_app()"],),
+    disable_autostart_servers = (
+        os.getenv(
+            "FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS", "FALSE"
+        ).upper()
+        == "TRUE"
     )
-    api_thread.start()
-    sleep(2)
-    yield
-    api_thread.terminate()
-    sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
+    if disable_autostart_servers:
+        yield  # need to yield something from either branch of the if statement
+    else:
+        import hypercorn.__main__
+
+        api_thread = Process(
+            target=hypercorn.__main__.main,
+            args=(["--bind", "0.0.0.0:9090", "flowapi.main:create_app()"],),
+        )
+        api_thread.start()
+        sleep(2)
+        yield
+        api_thread.terminate()
+        sleep(
+            2
+        )  # Wait a moment to make sure coverage of subprocess finishes being written
 
 
 @pytest.fixture(scope="session")
@@ -87,7 +109,7 @@ def flowapi_port():
 
 
 @pytest.fixture
-def flowapi_url():
+def flowapi_url(flowapi_host, flowapi_port):
     """
     Fixture for getting the url where FlowAPI is running. This is
     constructed as "http://<flowapi_host>:<flowapi_port>", where the
