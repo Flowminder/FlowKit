@@ -38,22 +38,32 @@ async def run_query():
 @check_claims("poll")
 async def poll_query(query_id):
     request.socket.send_json(
-        {"request_id": request.request_id, "action": "poll", "query_id": query_id}
+        {
+            "request_id": request.request_id,
+            "action": "poll_query",
+            "params": {"query_id": query_id},
+        }
     )
-    message = await request.socket.recv_json()
+    reply = await request.socket.recv_json()
 
-    if message["status"] == "completed":
-        return (
-            jsonify({}),
-            303,
-            {"Location": url_for(f"query.get_query_result", query_id=message["id"])},
-        )
-    elif message["status"] in ("executing", "queued"):
-        return jsonify({"status": message["status"]}), 202
-    elif message["status"] in ("errored", "cancelled"):
-        return jsonify({"status": message["status"]}), 500
+    if reply["status"] == "error":
+        return jsonify({"status": "error", "msg": reply[""]})
     else:
-        return jsonify({"status": message["status"]}), 404
+        assert reply["status"] == "done"
+        query_state = reply["data"]["query_state"]
+        if query_state == "completed":
+            return (
+                jsonify({}),
+                303,
+                {"Location": url_for(f"query.get_query_result", query_id=query_id)},
+            )
+        elif query_state in ("executing", "queued"):
+            return jsonify({"status": query_state, "msg": reply["msg"]}), 202
+        elif query_state in ("errored", "cancelled"):
+            return jsonify({"status": query_state, "msg": reply["msg"]}), 500
+        else:  # TODO: would be good to have an explicit query state for this, too!
+            # breakpoint()
+            return jsonify({"status": query_state, "msg": reply["msg"]}), 404
 
 
 @blueprint.route("/get/<query_id>")
