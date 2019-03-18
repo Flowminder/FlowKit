@@ -50,5 +50,8 @@ if [ -f /opt/synthetic_data/generate_synthetic_data.py ]; then
       --n-mds ${N_MDS} \
       --n-sms ${N_SMS} \
       --n-sites ${N_SITES} \
+      --disaster-zone "524 4 12" \
+      --disaster-start-date ${DISASTER_START:-"2015-01-01"} \
+      --disaster-end-date ${DISASTER_END:-"2015-01-01"} \
       --output-root-dir ${OUTPUT_ROOT_DIR}
 fi
