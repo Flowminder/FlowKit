@@ -55,11 +55,7 @@ class ContactReferenceLocationStats(SubscriberFeature):
     """
 
     def __init__(
-        self,
-        contact_balance,
-        contact_locations,
-        statistic="avg",
-        geom_column=None,
+        self, contact_balance, contact_locations, statistic="avg", geom_column=None
     ):
 
         self.statistic = statistic.lower()
@@ -75,14 +71,20 @@ class ContactReferenceLocationStats(SubscriberFeature):
         self.geom_column = geom_column
 
         if "subscriber" not in self.contact_locations_query.column_names:
-            raise ValueError("The contact locations query must have a subscriber column.")
+            raise ValueError(
+                "The contact locations query must have a subscriber column."
+            )
 
         if self.geom_column is None:
             level = getattr(self.contact_locations_query, "level", None)
             if level is None:
-                raise ValueError("The contact locations must have a spatial level whenever the geometry column is not specified.")
+                raise ValueError(
+                    "The contact locations must have a spatial level whenever the geometry column is not specified."
+                )
             if not level in ["versioned-cell", "versioned-site", "lat-lon"]:
-                raise ValueError(f"The {level} for the contact_locations_query is not supported.")
+                raise ValueError(
+                    f"The {level} for the contact_locations_query is not supported."
+                )
 
         super().__init__()
 
