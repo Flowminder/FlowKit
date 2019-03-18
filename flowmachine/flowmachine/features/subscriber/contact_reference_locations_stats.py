@@ -20,36 +20,24 @@ from flowmachine.utils import get_columns_for_level, list_of_dates
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
 
-class ContactModalLocationDistance(SubscriberFeature):
+class ContactReferenceLocationStats(SubscriberFeature):
     """
-    This class calculates statistics for the distance between subscriber's own modal
-    location and its contacts' modal location.
+    This class calculates statistics of the distance between a subscriber's reference point and its contacts' reference point.
 
     Parameters
     ----------
-    start, stop : str
-         iso-format start and stop datetimes
+    contact_balance: flowmachine.features.ContactBalance
+        An instance of `ContactBalance` which lists the contacts of the
+        targeted subscribers along with the number of events between them.
+    contact_locations: flowmachine.core.Query
+        A flowmachine Query instance that contains a subscriber column. In
+        addition to that the query must have a spatial level or the target
+        geometry column that contains the subscribers' reference locations.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
-    method : str, default 'last'
-        The method by which to calculate the location of the subscriber.
-        This can be either 'most-common' or last. 'most-common' is
-        simply the modal location of the subscribers, whereas 'lsat' is
-        the location of the subscriber at the time of the final call in
-        the data.
-    contact_balance: features.subscriber.ContactBalance, default None.
-        An instance of ContactBalance. If an instance is not provide, the
-        ContactBalance is instantiated with the same parameters as for the
-        features.subscriber.ModalLocation
-    hours : 2-tuple of floats, default 'all'
-        Restrict the analysis to only a certain set
-        of hours within each day.
-    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
-        If provided, string or list of string which are msisdn or imeis to limit
-        results to; or, a query or table which has a column with a name matching
-        subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
-        Whether to consider calls made, received, or both. Defaults to 'out'.
+    geom_column:
+        The column containing the subscribers' reference locations. This is
+        only required if the Query does not contain a spatial level.
 
     Example
     -------
@@ -68,24 +56,11 @@ class ContactModalLocationDistance(SubscriberFeature):
 
     def __init__(
         self,
-        start,
-        stop,
+        contact_balance,
+        contact_locations,
         statistic="avg",
-        method="last",
-        *,
-        contact_balance=None,
-        tables="all",
-        direction="both",
-        hours="all",
-        subscriber_subset=None,
+        geom_column=None,
     ):
-
-        self.start = start
-        self.stop = stop
-        self.direction = direction
-        self.hours = hours
-        self.tables = tables
-        self.method = method
 
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
@@ -95,47 +70,19 @@ class ContactModalLocationDistance(SubscriberFeature):
                 )
             )
 
-        self.distance_matrix_query = DistanceMatrix(level="versioned-cell")
+        self.contact_locations_query = contact_locations
+        self.contact_balance_query = contact_balance
+        self.geom_column = geom_column
 
-        if not contact_balance is None:
-            if contact_balance.subscriber_identifier not in {"msisdn"}:
-                raise ValueError(
-                    f"""
-                The only `subscriber_identifier` allowed is the msisdn, because
-                it is the only identifier capable of identifying counterparts
-                for all transation types. Please use a ContactBalance
-                instantiated with msisdn for the `subscriber_identifier`.
-                """
-                )
-            self.contact_balance_query = contact_balance
-        else:
-            self.contact_balance_query = ContactBalance(
-                self.start,
-                self.stop,
-                hours=self.hours,
-                tables=self.tables,
-                subscriber_identifier="msisdn",
-                direction=self.direction,
-                exclude_self_calls=True,
-                subscriber_subset=subscriber_subset,
-            )
+        if "subscriber" not in self.contact_locations_query.column_names:
+            raise ValueError("The contact locations query must have a subscriber column.")
 
-        self.modal_location_query = ModalLocation(
-            *[
-                daily_location(
-                    d,
-                    level="versioned-cell",
-                    hours=self.hours,
-                    method=self.method,
-                    table=self.tables,
-                    subscriber_identifier="msisdn",
-                    subscriber_subset=self.contact_balance_query.counterparts_subset(
-                        include_subscribers=True
-                    ),
-                )
-                for d in list_of_dates(self.start, self.stop)
-            ]
-        )
+        if self.geom_column is None:
+            level = getattr(self.contact_locations_query, "level", None)
+            if level is None:
+                raise ValueError("The contact locations must have a spatial level whenever the geometry column is not specified.")
+            if not level in ["versioned-cell", "versioned-site", "lat-lon"]:
+                raise ValueError(f"The {level} for the contact_locations_query is not supported.")
 
         super().__init__()
 
@@ -145,38 +92,38 @@ class ContactModalLocationDistance(SubscriberFeature):
 
     def _make_query(self):
 
-        loc_cols = get_columns_for_level(self.modal_location_query.level)
-
-        subscriber_loc_cols_before_merge = ", ".join(
-            [f"M.{i} AS subscriber_{i}" for i in loc_cols]
-        )
-        subscriber_loc_cols_after_merge = ", ".join(
-            [f"C.subscriber_{i}" for i in loc_cols]
-        )
-        counterpart_loc_cols = ", ".join(
-            [f"M.{i} AS msisdn_counterpart_{i}" for i in loc_cols]
-        )
-
-        last_merge_clause = " AND ".join(
-            [f"C.subscriber_{i} = D.{i}_from" for i in loc_cols]
-            + [f"C.msisdn_counterpart_{i} = D.{i}_to" for i in loc_cols]
-        )
+        if self.geom_column:
+            loc_cols = lambda table: f"{table}.{self.geom_column}"
+        else:
+            loc_cols = lambda table: f"ST_POINT({table}.lon, {table}.lat)"
 
         sql = f"""
+        WITH L AS (
+                SELECT C.subscriber, C.msisdn_counterpart, C.subscriber_geom_point, {loc_cols('L')} AS msisdn_counterpart_geom_point
+                FROM (
+                    SELECT C.subscriber, C.msisdn_counterpart, {loc_cols('L')} AS subscriber_geom_point
+                    FROM ({self.contact_balance_query.get_query()}) C
+                    JOIN ({self.contact_locations_query.get_query()}) L
+                    ON C.subscriber = L.subscriber
+                ) C
+                JOIN ({self.contact_locations_query.get_query()}) L
+                ON C.msisdn_counterpart = L.subscriber
+        ),
+        D AS (
+            SELECT
+                subscriber_geom_point, msisdn_counterpart_geom_point,
+                ST_Distance(subscriber_geom_point::geography, msisdn_counterpart_geom_point::geography) / 1000 AS distance
+            FROM (SELECT DISTINCT subscriber_geom_point, msisdn_counterpart_geom_point FROM L) L
+        )
         SELECT subscriber, {self.statistic}(distance) AS value
         FROM (
             SELECT C.subscriber, C.msisdn_counterpart, D.distance
-            FROM (
-                SELECT C.subscriber, C.msisdn_counterpart, {subscriber_loc_cols_after_merge}, {counterpart_loc_cols}
-                FROM (
-                    SELECT C.subscriber, C.msisdn_counterpart, {subscriber_loc_cols_before_merge}
-                    FROM ({self.contact_balance_query.get_query()}) C
-                    JOIN ({self.modal_location_query.get_query()}) M
-                    ON C.subscriber = M.subscriber
-                ) C JOIN ({self.modal_location_query.get_query()}) M
-                ON C.msisdn_counterpart = M.subscriber
-            ) C JOIN ({self.distance_matrix_query.get_query()}) D
-            ON {last_merge_clause}
+            FROM ({self.contact_balance_query.get_query()}) C, L, D
+            WHERE
+                C.subscriber = L.subscriber AND
+                C.msisdn_counterpart = L.msisdn_counterpart AND
+                L.subscriber_geom_point = D.subscriber_geom_point AND
+                L.msisdn_counterpart_geom_point = D.msisdn_counterpart_geom_point
         ) D
         GROUP BY subscriber
         """
