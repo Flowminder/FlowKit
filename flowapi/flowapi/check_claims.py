@@ -45,14 +45,14 @@ def check_claims(claim_type):
                     {
                         "request_id": request.request_id,
                         "action": "get_query_kind",
-                        "query_id": kwargs["query_id"],
+                        "params": {"query_id": kwargs["query_id"]},
                     }
                 )
                 message = await request.socket.recv_json()
-                if "query_kind" in message:
-                    query_kind = message["query_kind"]
+                if "query_kind" in message["data"]:
+                    query_kind = message["data"]["query_kind"]
                 else:
-                    return jsonify({}), 404
+                    return jsonify({}), 404  # query does not exist
             except KeyError:
                 if query_kind == "NA":
                     return (
