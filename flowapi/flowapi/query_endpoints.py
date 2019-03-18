@@ -75,7 +75,6 @@ async def get_query_result(query_id):
         "params": {"query_id": query_id},
     }
     request.socket.send_json(msg)
-    breakpoint()
     reply = await request.socket.recv_json()
     current_app.flowapi_logger.debug(
         f"Received reply: {reply}", request_id=request.request_id
