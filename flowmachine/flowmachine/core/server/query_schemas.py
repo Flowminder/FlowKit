@@ -9,9 +9,11 @@ from flowmachine.core.dummy_query import DummyQuery
 from flowmachine.core.query_info_lookup import QueryInfoLookup
 
 
-#
-# Flowmachine query schemas
-#
+###############################
+#                             #
+#  Flowmachine query schemas  #
+#                             #
+###############################
 
 
 class DummyQuerySchema(Schema):
@@ -66,6 +68,13 @@ class ModalLocationSchema(Schema):
         return ModalLocationExposed(**data)
 
 
+class MeaningfulLocationsAggregateSchema(Schema):
+    meaningful_locations = fields.Nested(MeaningfulLocationsSchema)
+    aggregation_unit = fields.String(
+        validate=OneOf(["admin0", "admin1", "admin2", "admin3"])
+    )
+
+
 class FlowmachineQuerySchema(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {
@@ -87,9 +96,13 @@ class FlowmachineQuerySchema(OneOfSchema):
             )
 
 
-#
-# Flowmachine query objects
-#
+####################################################
+#                                                  #
+#  Flowmachine exposed query objects               #
+#                                                  #
+#  These are constructed using the schemas above.  #
+#                                                  #
+####################################################
 
 
 class BaseExposedQuery(metaclass=ABCMeta):
@@ -216,7 +229,7 @@ class DummyQueryExposed(BaseExposedQuery):
 
     def __init__(self, dummy_param):
         self.dummy_param = dummy_param
-        super().__init__()  # NOTE: this must be called at the end of the __init__() method of any subclass of BaseExposedQuery
+        super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):
@@ -232,7 +245,7 @@ class DailyLocationExposed(BaseExposedQuery):
         self.method = method
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
-        super().__init__()  # NOTE: this must be called at the end of the __init__() method of any subclass of BaseExposedQuery
+        super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):
@@ -261,7 +274,7 @@ class ModalLocationExposed(BaseExposedQuery):
         self.locations = locations
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
-        super().__init__()  # NOTE: this must be called at the end of the __init__() method of any subclass of BaseExposedQuery
+        super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):
@@ -276,3 +289,29 @@ class ModalLocationExposed(BaseExposedQuery):
 
         locations = [loc._flowmachine_query_obj for loc in self.locations]
         return ModalLocation(*locations)
+
+
+class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
+
+    __schema__ = MeaningfulLocationsAggregateSchema
+
+    def __init__(self, *, meaningful_locations, aggregation_unit):
+        self.meaningful_locations = meaningful_locations
+        self.aggregation_unit = aggregation_unit
+        super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
+
+    @property
+    def _flowmachine_query_obj(self):
+        """
+        Return the underlying flowmachine MeaningfulLocationsAggregate object.
+
+        Returns
+        -------
+        ModalLocation
+        """
+        from flowmachine.features import MeaningfulLocationsAggregate
+
+        meaningful_locations = self.meaningful_locations._flowmachine_query_obj
+        return MeaningfulLocationsAggregate(
+            meaningful_locations=meaningful_locations, level=self.aggregation_unit
+        )
