@@ -23,6 +23,8 @@ async def run_query():
     )
 
     if reply["status"] == "error":
+        # TODO: currently the reply msg is empty; we should either pass on the message payload (which contains
+        #       further information about the error) or add a non-empty human-readable error message.
         return jsonify({"status": "Error", "msg": reply["msg"]}), 403
     elif reply["status"] == "accepted":
         assert "query_id" in reply["data"]
@@ -89,7 +91,7 @@ async def get_query_result(query_id):
             return (
                 jsonify({"status": "Error", "msg": reply["error"]}),
                 403,
-            )  # TODO: should this be 403?
+            )  # TODO: should this really be 403?
         elif query_state in ("awol", "known"):
             return (jsonify({"status": "Error", "msg": reply["error"]}), 404)
         else:
