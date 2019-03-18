@@ -4,10 +4,10 @@
 
 import zmq
 
-__all__ = ["send_message_and_receive_reply", "FM_EXAMPLE_MESSAGE"]
+__all__ = ["send_zmq_message_and_receive_reply", "FM_EXAMPLE_MESSAGE"]
 
 
-def send_message_and_receive_reply(msg, port=5555, host="localhost"):
+def send_zmq_message_and_receive_reply(msg, port=5555, host="localhost"):
     """
     Helper function to send JSON messages to the flowmachine server (via zmq) and receive a reply.
 
@@ -35,10 +35,10 @@ def send_message_and_receive_reply(msg, port=5555, host="localhost"):
     ...      "params": {"date": "2016-01-01", "method": "last", "aggregation_unit": "admin3", "subscriber_subset": None}
     ... }
 
-    >>> send_message_and_receive_reply(msg)
+    >>> send_zmq_message_and_receive_reply(msg)
     {'status': 'accepted', 'id': 'ddc61a04f608dee16fff0655f91c2057'}
 
-    >>> send_message_and_receive_reply({"action": "get_sql", "request_id": "DUMMY_ID", "query_id": "ddc61a04f608dee16fff0655f91c2057"})
+    >>> send_zmq_message_and_receive_reply({"action": "get_sql", "request_id": "DUMMY_ID", "query_id": "ddc61a04f608dee16fff0655f91c2057"})
     {'status': 'done', 'sql': 'SELECT * FROM cache.xddc61a04f608dee16fff0655f91c2057'}
     """
     context = zmq.Context.instance()

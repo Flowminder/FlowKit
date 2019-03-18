@@ -1,6 +1,7 @@
 import pytest
 
-from .helpers import poll_until_done, send_message_and_get_reply
+from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from .helpers import poll_until_done
 
 
 # TODO: add test for code path that raises QueryProxyError with the 'get_sql' action
@@ -8,14 +9,14 @@ from .helpers import poll_until_done, send_message_and_get_reply
 
 @pytest.mark.skip(reason="The 'get_sql' action will likely be removed soon.")
 @pytest.mark.asyncio
-async def test_get_sql(zmq_url):
+async def test_get_sql(zmq_port, zmq_host):
     """
     Running 'get_sql' on finished query returns the expected result.
     """
     #
     # Run daily_location query.
     #
-    msg_run_query = {
+    msg = {
         "action": "run_query",
         "params": {
             "query_kind": "daily_location",
@@ -28,45 +29,45 @@ async def test_get_sql(zmq_url):
     }
     expected_query_id = "e39b0d45bc6b46b7700c67cd52f00455"
 
-    reply = send_message_and_get_reply(zmq_url, msg_run_query)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     # assert reply["status"] in ("executing", "queued", "completed")
     assert reply["status"] in ("accepted")
 
     #
     # Wait until the query has finished.
     #
-    poll_until_done(zmq_url, expected_query_id)
+    poll_until_done(zmq_port, expected_query_id)
 
     #
     # Get query result.
     #
-    msg_get_sql = {
+    msg = {
         "action": "get_sql",
         "params": {"query_id": expected_query_id},
         "request_id": "DUMMY_ID",
     }
 
-    reply = send_message_and_get_reply(zmq_url, msg_get_sql)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert "done" == reply["status"]
     assert f"SELECT * FROM cache.x{expected_query_id}" == reply["data"]["sql"]
 
 
 @pytest.mark.skip(reason="The 'get_sql' action will likely be removed soon.")
 @pytest.mark.asyncio
-async def test_get_sql_for_nonexistent_query_id(zmq_url):
+async def test_get_sql_for_nonexistent_query_id(zmq_port, zmq_host):
     """
     Polling a query with non-existent query id returns expected error.
     """
     #
     # Try getting query result for nonexistent ID.
     #
-    msg_get_sql = {
+    msg = {
         "action": "get_sql",
         "params": {"query_id": "FOOBAR"},
         "request_id": "DUMMY_ID",
     }
 
-    reply = send_message_and_get_reply(zmq_url, msg_get_sql)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert {
         "status": "awol",
         "id": "FOOBAR",

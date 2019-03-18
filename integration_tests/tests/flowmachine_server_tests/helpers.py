@@ -2,8 +2,9 @@ import itertools
 import zmq
 import textwrap
 import time
-
 from sqlalchemy import inspect
+
+from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 
 
 def poll_until_done(port, query_id, max_tries=100):
@@ -11,7 +12,8 @@ def poll_until_done(port, query_id, max_tries=100):
     Send zmq message to flowmachine on port `port` which polls the
     query with id `query_id` until the return status is "completed".
     """
-    msg_poll_query = {
+    host = "localhost"
+    msg = {
         "action": "poll_query",
         "params": {"query_id": query_id},
         "request_id": "DUMMY_ID",
@@ -21,38 +23,10 @@ def poll_until_done(port, query_id, max_tries=100):
         if i > max_tries:
             raise RuntimeError("Timeout reached but query is not done. Aborting.")
         print(f"[DDD] Polling query {query_id}...")
-        reply = send_message_and_get_reply(port, msg_poll_query)
+        reply = send_zmq_message_and_receive_reply(msg, port=port, host=host)
         if "completed" == reply["data"]["query_state"]:
             break
         time.sleep(0.1)
-
-
-# TODO: This is almost identical to the new helper function `send_message_and_receive_reply` in flowmachine.core.server.utils
-#       We should probably remove the helper function here and switch the tests to using the other.
-def send_message_and_get_reply(zmq_url, msg):
-    """
-    Send message `msg` to zeromq instance on the given port and return the reply.
-
-    Parameters
-    ----------
-    zmq_url : str
-        Connection string for zeromq. Example: "tcp://localhost:5555"
-    msg : dict
-        JSON representation of the message to be sent.
-
-    Returns
-    -------
-    dict
-        Reply received from zeromq.
-    """
-    context = zmq.Context.instance()
-    socket = context.socket(zmq.REQ)
-    socket.connect(zmq_url)
-    print(f"[DDD] Sending message to zeromq at {zmq_url}")
-    socket.send_json(msg)
-    reply = socket.recv_json()
-    print(f"[DDD] Received reply: {reply}")
-    return reply
 
 
 def get_cache_tables(fm_conn, exclude_internal_tables=True):

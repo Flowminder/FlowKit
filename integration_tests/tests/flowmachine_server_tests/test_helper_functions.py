@@ -3,12 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.core.server.utils import (
-    send_message_and_receive_reply,
+    send_zmq_message_and_receive_reply,
     FM_EXAMPLE_MESSAGE,
 )
 
 
-def test_send_message_and_receive_reply(zmq_host, zmq_port):
+def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
     """
     Reply from the flowmachine server to the example message stored in `FM_EXAMPLE_MESSAGE` is as expected.
     """
@@ -28,7 +28,7 @@ def test_send_message_and_receive_reply(zmq_host, zmq_port):
     assert msg_expected == FM_EXAMPLE_MESSAGE
 
     # Check that the flowmachine server sends the expected reply
-    reply = send_message_and_receive_reply(
+    reply = send_zmq_message_and_receive_reply(
         FM_EXAMPLE_MESSAGE, host=zmq_host, port=zmq_port
     )
     assert "e39b0d45bc6b46b7700c67cd52f00455" == reply["data"]["query_id"]
