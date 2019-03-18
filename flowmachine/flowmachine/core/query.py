@@ -13,6 +13,7 @@ import pickle
 import weakref
 from concurrent.futures import Future
 
+
 import structlog
 from typing import List, Union
 
@@ -22,15 +23,20 @@ import pandas as pd
 
 from hashlib import md5
 
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.core.cache import touch_cache
-from flowmachine.utils import rlock
+from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
+from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
-from .errors import NameTooLongError, NotConnectedError
+from flowmachine.core.errors import NameTooLongError, NotConnectedError
 
 import flowmachine
+from flowmachine.utils import _sleep
+
+from flowmachine.core.cache import write_query_to_cache
 
 logger = structlog.get_logger(__name__)
 
@@ -191,16 +197,19 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
-            with rlock(self.redis, self.md5):
-                if self.connection.has_table(schema=schema, name=name):
-                    try:
-                        touch_cache(self.connection, self.md5)
-                    except ValueError:
-                        pass  # Cache record not written yet, which can happen for Models
-                        # which will call through to this method from their `_make_query` method while writing metadata.
-                    # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
-                    # as the cache metadata transaction isn't complete!
-                    return "SELECT * FROM {}".format(table_name)
+            state_machine = QueryStateMachine(self.redis, self.md5)
+            state_machine.wait_until_complete()
+            if state_machine.is_completed and self.connection.has_table(
+                schema=schema, name=name
+            ):
+                try:
+                    touch_cache(self.connection, self.md5)
+                except ValueError:
+                    pass  # Cache record not written yet, which can happen for Models
+                    # which will call through to this method from their `_make_query` method while writing metadata.
+                # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
+                # as the cache metadata transaction isn't complete!
+                return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
         return self._make_query()
@@ -264,7 +273,6 @@ class Query(metaclass=ABCMeta):
         -------
         list of str
             List of the column names of this query.
-
         """
         pass
 
@@ -272,10 +280,11 @@ class Query(metaclass=ABCMeta):
     def column_names_as_string_list(self) -> str:
         """
         Get the column names as a comma separated list
+
         Returns
         -------
         str
-
+            Comma separated list of column names
         """
         return ", ".join(self.column_names)
 
@@ -425,9 +434,7 @@ class Query(metaclass=ABCMeta):
         subset_class = subset_numbers_factory(self.__class__)
         return subset_class(self, col, low, high)
 
-    def _make_sql(
-        self, name: str, schema: Union[str, None] = None, force: bool = False
-    ) -> List[str]:
+    def _make_sql(self, name: str, schema: Union[str, None] = None) -> List[str]:
         """
         Create the SQL necessary to store the result of the calculation back
         into the database.
@@ -439,8 +446,6 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
 
         Returns
         -------
@@ -454,12 +459,12 @@ class Query(metaclass=ABCMeta):
             full_name = name
         queries = []
         # Deal with the table already existing potentially
-        if self.connection.has_table(name, schema=schema) and (not force):
+        if self.connection.has_table(name, schema=schema):
             logger.info("Table already exists")
             return []
 
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
-            (SELECT {self.column_names_as_string_list} FROM ({self._make_query() if force else self.get_query()}) _)"""
+        (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
         queries.append(Q)
         for ix in self.index_cols:
             queries.append(
@@ -469,9 +474,7 @@ class Query(metaclass=ABCMeta):
             )
         return queries
 
-    def to_sql(
-        self, name: str, schema: Union[str, None] = None, force: bool = False
-    ) -> Future:
+    def to_sql(self, name: str, schema: Union[str, None] = None) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -482,8 +485,6 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
 
         Returns
         -------
@@ -502,43 +503,45 @@ class Query(metaclass=ABCMeta):
             ).format(name, len(name), MAX_POSTGRES_NAME_LENGTH)
             raise NameTooLongError(err_msg)
 
-        def do_query() -> Query:
-            logger.debug("Getting storage lock.")
-            with rlock(self.redis, self.md5):
-                logger.debug("Obtained storage lock.")
-                query_ddl_ops = self._make_sql(name, schema=schema, force=force)
-                logger.debug("Made SQL.")
-                con = self.connection.engine
-                if force:
-                    self.invalidate_db_cache(name, schema=schema)
-                plan_time = 0
-                with con.begin():
-                    ddl_op_results = []
-                    for ddl_op in query_ddl_ops:
-                        try:
-                            ddl_op_result = con.execute(ddl_op)
-                        except Exception as e:
-                            logger.error(
-                                f"Error executing SQL: '{ddl_op}'. Error was {e}"
-                            )
-                            raise e
-                        try:
-                            ddl_op_results.append(ddl_op_result.fetchall())
-                        except ResourceClosedError:
-                            pass  # Nothing to do here
-                        for ddl_op_result in ddl_op_results:
-                            try:
-                                plan = ddl_op_result[0][0][0]  # Should be a query plan
-                                plan_time += plan["Execution Time"]
-                            except (IndexError, KeyError):
-                                pass  # Not an explain result
-                    logger.debug("Executed queries.")
-                    if schema == "cache":
-                        self._db_store_cache_metadata(compute_time=plan_time)
-            logger.debug("Released storage lock.")
-            return self
+        def write_query(query_ddl_ops: List[str], connection: Engine) -> float:
+            plan_time = 0
+            ddl_op_results = []
+            for ddl_op in query_ddl_ops:
+                try:
+                    ddl_op_result = connection.execute(ddl_op)
+                except Exception as e:
+                    logger.error(f"Error executing SQL: '{ddl_op}'. Error was {e}")
+                    raise e
+                try:
+                    ddl_op_results.append(ddl_op_result.fetchall())
+                except ResourceClosedError:
+                    pass  # Nothing to do here
+                for ddl_op_result in ddl_op_results:
+                    try:
+                        plan = ddl_op_result[0][0][0]  # Should be a query plan
+                        plan_time += plan["Execution Time"]
+                    except (IndexError, KeyError):
+                        pass  # Not an explain result
+            logger.debug("Executed queries.")
+            return plan_time
 
-        store_future = self.tp.submit(do_query)
+        current_state, changed_to_queue = QueryStateMachine(
+            self.redis, self.md5
+        ).enqueue()
+        logger.debug(
+            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+        )
+        # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
+        store_future = self.tp.submit(
+            write_query_to_cache,
+            name=name,
+            schema=schema,
+            query=self,
+            connection=self.connection,
+            redis=self.redis,
+            ddl_ops_func=self._make_sql,
+            write_func=write_query,
+        )
         return store_future
 
     def explain(self, format="text", analyse=False):
@@ -643,15 +646,10 @@ class Query(metaclass=ABCMeta):
         except NotImplementedError:
             return False
 
-    def store(self, force=False):
+    def store(self):
         """
         Store the results of this computation with the correct table
         name using a background thread.
-
-        Parameters
-        ----------
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
 
         Returns
         -------
@@ -667,7 +665,7 @@ class Query(metaclass=ABCMeta):
 
         schema, name = table_name.split(".")
 
-        store_future = self.to_sql(name, schema=schema, force=force)
+        store_future = self.to_sql(name, schema=schema)
         return store_future
 
     def _db_store_cache_metadata(self, compute_time=None):
@@ -691,7 +689,7 @@ class Query(metaclass=ABCMeta):
         try:
             in_cache = bool(
                 self.connection.fetch(
-                    "SELECT * FROM cache.cached WHERE query_id='{}'".format(self.md5)
+                    f"SELECT * FROM cache.cached WHERE query_id='{self.md5}'"
                 )
             )
 
@@ -788,9 +786,14 @@ class Query(metaclass=ABCMeta):
 
     def invalidate_db_cache(self, name=None, schema=None, cascade=True, drop=True):
         """
-        Helper function for store, drops this table, and (by default) any
-        that depend on it, as well as removing them from
-        the cache metadata table.
+        Drops this table, and (by default) any that depend on it, as well as removing them from
+        the cache metadata table. If the table is currently being dropped from elsewhere, this
+        method will block and return when the table has been removed.
+
+        Raises
+        ------
+        QueryResetFailedException
+            If the query wasn't succesfully removed
 
         Parameters
         ----------
@@ -803,7 +806,9 @@ class Query(metaclass=ABCMeta):
         drop : bool
             Set to false to remove the cache record without dropping the table
         """
-        with rlock(self.redis, self.md5):
+        q_state_machine = QueryStateMachine(self.redis, self.md5)
+        current_state, this_thread_is_owner = q_state_machine.reset()
+        if this_thread_is_owner:
             con = self.connection.engine
             try:
                 table_reference_to_this_query = self.get_table()
@@ -863,6 +868,15 @@ class Query(metaclass=ABCMeta):
             logger.debug("Dropping {}".format(full_name))
             with con.begin():
                 con.execute("DROP TABLE IF EXISTS {}".format(full_name))
+            q_state_machine.finish_resetting()
+        elif q_state_machine.is_resetting:
+            logger.debug(
+                f"Query '{self.md5}' is being reset from elsewhere, waiting for reset to finish."
+            )
+            while q_state_machine.is_resetting:
+                _sleep(1)
+        if not q_state_machine.is_known:
+            raise QueryResetFailedException(self.md5)
 
     @property
     def index_cols(self):

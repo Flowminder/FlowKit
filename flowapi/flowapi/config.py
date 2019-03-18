@@ -31,11 +31,23 @@ def getsecret(key: str, default: str) -> str:
 
 
 def get_config():
+    jwt_secret_key = getsecret("JWT_SECRET_KEY", os.getenv("JWT_SECRET_KEY"))
+    log_directory = os.getenv("LOG_DIRECTORY", "/var/log/flowapi/")
+    log_level = logging.getLevelName(os.getenv("LOG_LEVEL", "error").upper())
+
+    flowmachine_server = os.getenv("FLOWMACHINE_SERVER", "localhost")
+    flowmachine_port = os.getenv("FLOWMACHINE_PORT", "5555")
+
+    flowdb_user = getsecret("API_FLOWDB_USER", os.getenv("FLOWDB_USER"))
+    flowdb_password = getsecret("FLOWAPI_DB_PASS", os.getenv("FLOWDB_PASS"))
+    flowdb_host = os.getenv("FLOWDB_HOST")
+    flowdb_port = os.getenv("FLOWDB_PORT", 5432)
+
     return dict(
-        JWT_SECRET_KEY=getsecret("JWT_SECRET_KEY", os.getenv("JWT_SECRET_KEY")),
-        LOG_DIRECTORY=os.getenv("LOG_DIRECTORY", "/var/log/flowapi/"),
-        LOG_LEVEL=logging.getLevelName(os.getenv("LOG_LEVEL", "error").upper()),
-        FLOWMACHINE_SERVER=os.getenv("FLOWMACHINE_SERVER", "localhost"),
-        FLOWMACHINE_PORT=os.getenv("FLOWMACHINE_PORT", "5555"),
-        FLOWDB_DSN=f'postgres://{getsecret("API_DB_USER", os.getenv("DB_USER"))}:{getsecret("API_DB_PASS", os.getenv("DB_PASS"))}@{os.getenv("DB_HOST")}:{os.getenv("FLOWDB_PORT", 5432)}/flowdb',
+        JWT_SECRET_KEY=jwt_secret_key,
+        LOG_DIRECTORY=log_directory,
+        LOG_LEVEL=log_level,
+        FLOWMACHINE_SERVER=flowmachine_server,
+        FLOWMACHINE_PORT=flowmachine_port,
+        FLOWDB_DSN=f"postgres://{flowdb_user}:{flowdb_password}@{flowdb_host}:{flowdb_port}/flowdb",
     )

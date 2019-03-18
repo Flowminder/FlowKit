@@ -126,3 +126,12 @@ def test_limited_head():
     """Test that we can call head on a query with a limit clause."""
     dl = daily_location("2016-01-01")
     dl.random_sample(2).head()
+
+
+def test_make_sql_no_overwrite():
+    """
+    Test the Query._make_sql won't overwrite an existing table
+    """
+
+    dl = daily_location("2016-01-01")
+    assert [] == dl._make_sql("admin3", schema="geography")

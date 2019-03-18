@@ -40,10 +40,10 @@ defaults:
         MPLBACKEND: "agg"
         REDIS_HOST: "localhost"
         QUART_APP: "flowapi.main:create_app()"
-        DB_USER: analyst
+        FLOWDB_USER: analyst
         LOG_DIRECTORY: "."
         SERVER: localhost
-        DB_HOST: localhost
+        FLOWDB_HOST: localhost
         JWT_SECRET_KEY: secret
     - image: flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID
       environment:

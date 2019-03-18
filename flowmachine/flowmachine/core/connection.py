@@ -53,6 +53,7 @@ class Connection:
 
     def __init__(
         self,
+        *,
         port=None,
         user=None,
         password=None,
@@ -60,7 +61,6 @@ class Connection:
         database=None,
         pool_size=5,
         overflow=10,
-        *,
         conn_str=None,
     ):
         if conn_str is None:

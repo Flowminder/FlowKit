@@ -7,10 +7,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- FlowAPI now reports queued/running status for queries instead of just accepted
+- The following environment variables have been renamed:
+    - `DB_USER` -> `FLOWDB_USER`
+    - `DB_USER` -> `FLOWDB_HOST`
+    - `DB_PASS` -> `FLOWDB_PASS`
+    - `DB_PW` -> `FLOWDB_PASS`
+    - `API_DB_USER` -> `FLOWAPI_DB_USER`
+    - `API_DB_PASS` -> `FLOWAPI_DB_PASS`
+    - `FM_DB_USER` -> `FLOWMACHINE_DB_USER`
+    - `FM_DB_PASS` -> `FLOWMACHINE_DB_PASS`
 
 ### Fixed
+- Server no longer loses track of queries under heavy load
 
 ### Removed
+
+- The environment variable `DB_NAME` has been removed.
 
 ## [0.4.2]
 ### Changed
@@ -36,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - `CustomQuery` now requires column names to be specified
 - Query classes are now required to declare the column names they return via the `column_names` property
+- FlowAPI now reports whether a query is queued or running when polling
 - FlowDB test data and synthetic data images are now available from their own Docker repos (Flowminder/flowdb-testdata, Flowminder/flowdb-synthetic-data)
 - Changed query class name from `NocturnalCalls` to `NocturnalEvents`.
 
@@ -43,6 +57,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI is now an installable python module
 
 ### Removed
+- Query objects can no longer be recalculated to cache and must be explicitly removed first
 - Arbitrary `Flow` maths
 - `EdgeList` query type
 - Removes query class `ProportionOutgoing` as it becomes redundant with the the introduction of `ProportionEventType`.

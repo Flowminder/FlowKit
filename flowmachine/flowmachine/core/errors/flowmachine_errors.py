@@ -8,6 +8,67 @@ Custom errors raised by flowmachine.
 """
 
 
+class StoreFailedException(Exception):
+    """
+    Exception indicating that a query failed to store.
+
+    Parameters
+    ----------
+    query_id : str
+        Identifier of the query
+    """
+
+    def __init__(self, query_id):
+        Exception.__init__(self, f"Query '{query_id}' store failed.")
+
+
+class QueryResetFailedException(Exception):
+    """
+    Exception indicating that a query failed to reset while being reset
+    from another thread or FlowMachine instance.
+
+    Parameters
+    ----------
+    query_id : str
+        Identifier of the query
+    """
+
+    def __init__(self, query_id):
+        Exception.__init__(self, f"Query '{query_id}' reset failed.")
+
+
+class QueryErroredException(Exception):
+    """
+    Exception indicating that a query failed with an error while being run
+    from another thread or FlowMachine instance.
+
+    Parameters
+    ----------
+    query_id : str
+        Identifier of the query
+    """
+
+    def __init__(self, query_id):
+        Exception.__init__(
+            self, f"Query '{query_id}' errored while being run elsewhere."
+        )
+
+
+class QueryCancelledException(Exception):
+    """
+    Exception indicating that a query was cancelled while being run
+    from another thread or FlowMachine instance.
+
+    Parameters
+    ----------
+    query_id : str
+        Identifier of the query
+    """
+
+    def __init__(self, query_id):
+        Exception.__init__(self, f"Query '{query_id}' was cancelled.")
+
+
 class NameTooLongError(Exception):
     """
     Custom error to pass when a table name is too
@@ -64,3 +125,10 @@ class MissingDateError(Exception):
         if stop is not None:
             msg += " - {}".format(stop)
         Exception.__init__(self, msg)
+
+
+class MissingColumnsError(Exception):
+    def __init__(self, tables_lacking_columns, columns):
+        Exception.__init__(
+            self, f"Tables {tables_lacking_columns} are missing columns {columns}."
+        )

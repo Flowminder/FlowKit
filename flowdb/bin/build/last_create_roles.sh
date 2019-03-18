@@ -38,28 +38,28 @@ then
     exit 1
 fi
 
-if [ -e /run/secrets/FM_DB_USER ];
+if [ -e /run/secrets/FLOWMACHINE_DB_USER ];
 then
     echo "Using secrets for analyst user."
-    FM_USER=$(< /run/secrets/FM_DB_USER)
+    FM_USER=$(< /run/secrets/FLOWMACHINE_DB_USER)
 fi
 
-if [ -e /run/secrets/FM_DB_PASS ];
+if [ -e /run/secrets/FLOWMACHINE_DB_PASS ];
 then
     echo "Using secrets for analyst password."
-    FM_PASSWORD=$(< /run/secrets/FM_DB_PASS)
+    FM_PASSWORD=$(< /run/secrets/FLOWMACHINE_DB_PASS)
 fi
 
-if [ -e /run/secrets/API_DB_USER ];
+if [ -e /run/secrets/FLOWAPI_DB_USER ];
 then
     echo "Using secrets for reporter user."
-    API_USER=$(< /run/secrets/API_DB_USER)
+    API_USER=$(< /run/secrets/FLOWAPI_DB_USER)
 fi
 
-if [ -e /run/secrets/API_DB_PASS ];
+if [ -e /run/secrets/FLOWAPI_DB_PASS ];
 then
     echo "Using secrets for reporter password."
-    API_PASSWORD=$(< /run/secrets/API_DB_PASS)
+    API_PASSWORD=$(< /run/secrets/FLOWAPI_DB_PASS)
 fi
 
 psql --dbname="$POSTGRES_DB" -c "REVOKE CONNECT ON DATABASE $POSTGRES_DB FROM PUBLIC;"

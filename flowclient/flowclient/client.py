@@ -122,8 +122,12 @@ class Connection:
                 error = response.json()["msg"]
             except (ValueError, KeyError):
                 error = "Unknown error"
+            try:
+                status = response.json()["status"]
+            except (ValueError, KeyError):
+                status = "Unknown status"
             raise FlowclientConnectionError(
-                f"Something went wrong: {error}. API returned with status code: {response.status_code}"
+                f"Something went wrong: {error}. API returned with status code: {response.status_code} and status '{status}'"
             )
 
     def post_json(self, route: str, data: dict) -> requests.Response:
@@ -254,11 +258,14 @@ def get_status(connection: Connection, query_id: str) -> str:
         "Finished" or "Running"
 
     """
-    ready, status_code = query_is_ready(connection, query_id)
+    ready, reply = query_is_ready(connection, query_id)
     if ready:
         return "Finished"
     else:
-        return "Running"
+        try:
+            return reply.json()["status"]
+        except (KeyError, TypeError):
+            raise FlowclientConnectionError(f"No status reported.")
 
 
 def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFrame:
