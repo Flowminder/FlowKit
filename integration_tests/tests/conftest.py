@@ -37,7 +37,7 @@ def logging_config(tmpdir_factory):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def flowmachine_server(logging_config):
+def autostart_flowmachine_server(logging_config):
     """
     Starts a flowmachine server in a separate process for the tests to talk to.
     """
@@ -60,7 +60,7 @@ def flowmachine_server(logging_config):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def flowapi_server(logging_config):
+def autostart_flowapi_server(logging_config):
     """
     Starts a FlowAPI server in a separate process for the tests to talk to.
     """
