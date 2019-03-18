@@ -10,6 +10,14 @@ import numpy as np
 
 from flowmachine.features import subscriber_locations
 from flowmachine.core import JoinToLocation
+from flowmachine.core.spatial_unit import (
+    AdminSpatialUnit,
+    VersionedSiteSpatialUnit,
+    VersionedCellSpatialUnit,
+    LatLonSpatialUnit,
+    GridSpatialUnit,
+    PolygonSpatialUnit,
+)
 
 
 @pytest.mark.parametrize(
