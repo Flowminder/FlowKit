@@ -17,20 +17,17 @@ async def run_query():
         {"request_id": request.request_id, "action": "run_query", "params": json_data}
     )
 
-    #  Get the reply.
-    message = await request.socket.recv_json()
+    reply = await request.socket.recv_json()
     current_app.flowapi_logger.debug(
-        f"Received reply {message}", request_id=request.request_id
+        f"Received reply {reply}", request_id=request.request_id
     )
 
-    if message["status"] == "error":
-        return jsonify({"status": "Error", "msg": message["msg"]}), 403
-    elif message["status"] == "accepted":
-        assert "query_id" in message["data"]
+    if reply["status"] == "error":
+        return jsonify({"status": "Error", "msg": reply["msg"]}), 403
+    elif reply["status"] == "accepted":
+        assert "query_id" in reply["data"]
         d = {
-            "Location": url_for(
-                f"query.poll_query", query_id=message["data"]["query_id"]
-            )
+            "Location": url_for(f"query.poll_query", query_id=reply["data"]["query_id"])
         }
         return jsonify({}), 202, d
     else:
