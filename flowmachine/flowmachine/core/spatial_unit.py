@@ -10,7 +10,8 @@ from typing import List
 from abc import ABCMeta, abstractmethod
 
 from flowmachine.utils import get_name_and_alias
-from . import Query, GeoTable, Grid
+from . import Query, GeoTable
+from .grid import Grid
 
 
 class SpatialUnit(Query, metaclass=ABCMeta):
@@ -80,7 +81,7 @@ class SpatialUnit(Query, metaclass=ABCMeta):
     @property
     def column_names(self) -> List[str]:
         return [get_name_and_alias(c)[1] for c in self._cols]
-    
+
     @abstractmethod
     def geo_augment(self, query):
         """
@@ -166,18 +167,18 @@ class VersionedCellSpatialUnit(SpatialUnit):
         )
 
     def geo_augment(self, query):
-    sql = f"""
-    SELECT 
-        row_number() OVER () AS gid, 
-        geom_point AS geom, 
-        U.*
-    FROM ({query.get_query()}) AS U
-    LEFT JOIN infrastructure.cells AS S
-        ON U.location_id = S.id AND
-            U.version = S.version
-    """
-    cols = list(set(query.column_names + ["gid", "geom"]))
-    return sql, cols
+        sql = f"""
+        SELECT 
+            row_number() OVER () AS gid, 
+            geom_point AS geom, 
+            U.*
+        FROM ({query.get_query()}) AS U
+        LEFT JOIN infrastructure.cells AS S
+            ON U.location_id = S.id AND
+                U.version = S.version
+        """
+        cols = list(set(query.column_names + ["gid", "geom"]))
+        return sql, cols
 
 
 class VersionedSiteSpatialUnit(SpatialUnit):
@@ -295,7 +296,9 @@ class PolygonSpatialUnit(SpatialUnit):
         all_column_names = locinfo_column_names + [
             f"{joined_alias}.{c}" for c in self.polygon_column_names
         ]
-        location_column_names = [get_name_and_alias(c)[1] for c in self.polygon_column_names]
+        location_column_names = [
+            get_name_and_alias(c)[1] for c in self.polygon_column_names
+        ]
 
         super().__init__(
             selected_column_names=all_column_names,
@@ -303,7 +306,7 @@ class PolygonSpatialUnit(SpatialUnit):
             location_info_table=f"{location_info_table} AS {locinfo_alias}",
             join_clause=join_clause,
         )
-    
+
     def geo_augment(self, query):
         r_col_name, l_col_name = get_name_and_alias(self.polygon_column_names[0])
         sql = f"""

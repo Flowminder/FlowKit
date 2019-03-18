@@ -5,9 +5,8 @@
 from typing import Dict, Any, List, Union
 
 from flowmachine.core.errors import BadLevelError
-from ...core import GeoTable, Query
+from ...core import GeoTable, Query, Grid
 from . import LabelEventScore, HartiganCluster, EventScore
-from ..spatial import Grid
 from flowmachine.utils import get_columns_for_level
 
 

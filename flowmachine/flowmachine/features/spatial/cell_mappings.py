@@ -9,8 +9,7 @@ Examples of this include CellToAdmin or CellToGrid.
 """
 from typing import List
 
-from ...core import Query
-from .grid import Grid
+from ...core import Query, Grid
 
 
 class CellToPolygon(Query):

@@ -10,7 +10,7 @@ from typing import List
 
 from flowmachine.core.mixins import GeoDataMixin
 
-from ...core.query import Query
+from .query import Query
 
 
 class Grid(GeoDataMixin, Query):
