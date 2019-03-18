@@ -49,7 +49,7 @@ async def poll_query(query_id):
         return (
             jsonify({}),
             303,
-            {"Location": url_for(f"query.get_query", query_id=message["id"])},
+            {"Location": url_for(f"query.get_query_result", query_id=message["id"])},
         )
     elif message["status"] in ("executing", "queued"):
         return jsonify({"status": message["status"]}), 202
@@ -61,9 +61,13 @@ async def poll_query(query_id):
 
 @blueprint.route("/get/<query_id>")
 @check_claims("get_result")
-async def get_query(query_id):
+async def get_query_result(query_id):
     request.socket.send_json(
-        {"request_id": request.request_id, "action": "get_sql", "query_id": query_id}
+        {
+            "request_id": request.request_id,
+            "action": "get_sql_for_query_result",
+            "query_id": query_id,
+        }
     )
     message = await request.socket.recv_json()
     current_app.flowapi_logger.debug(
