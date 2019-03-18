@@ -9,6 +9,10 @@ omit =
     *__init__*
 
 exclude_lines =
+    # Need to explicitly re-enable the standard pragma
+    pragma: no cover
+
     if __name__ == '__main__':
+    def __repr__
 
 show_missing = True
