@@ -62,7 +62,7 @@ from .meaningful_locations import (
     MeaningfulLocationsOD,
 )
 
-from .contact_modal_location_distance import ContactModalLocationDistance
+from .contact_reference_locations_stats import ContactReferenceLocationStats
 from .interevent_period import IntereventPeriod
 from .topup_amount import TopUpAmount
 from .topup_balance import TopUpBalance
@@ -116,17 +116,11 @@ __all__ = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "ContactModalLocationDistance",
-=======
-=======
+    "ContactReferenceLocationStats",
     "IntereventPeriod",
     "TopUpAmount",
     "TopUpBalance",
->>>>>>> origin/master
     "MDSVolume",
->>>>>>> origin/master
     "ContactReciprocal",
     "ProportionEventReciprocal",
     "ProportionContactReciprocal",

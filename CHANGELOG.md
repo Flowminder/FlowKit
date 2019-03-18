@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Added new `ContactModalLocationDistance` query class to FlowMachine.
+- Added new `ContactReferenceLocationStats` query class to FlowMachine.
 
 ### Changed
 - FlowAPI now reports queued/running status for queries instead of just accepted
