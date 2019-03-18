@@ -271,7 +271,7 @@ class PopulationWeightedOpportunities(Model):
         self.method = method
         self.level = level
         self.distance_matrix = DistanceMatrix(
-            date=self.stop, level=level, return_geometry=True, **kwargs
+            level=level, return_geometry=True, **kwargs
         )
 
         if self.method == "home-location":

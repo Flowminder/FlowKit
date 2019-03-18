@@ -25,23 +25,9 @@ class DistanceMatrix(GraphMixin, Query):
 
     Parameters
     ----------
-    locations_table : str
-        Locations table where to find the locations to compute
+    level : str, default "versioned-cell"
+        Point locations (either versioned-site or versioned-cell) to compute
         distances for.
-
-    id_column : str
-        The column with the unique ID for each location.
-        The default parameter is 'id'.
-
-    geom_column : str
-        Geometry column for calculating distances.
-        The default is 'geom_point'.
-
-    date : str
-        Date string in ISO format (e.g. '2016-01-22')
-        for retrieving a VersionedInfrastructure()
-        object. If nothing is passed, that object
-        will be instantiated with the current date.
 
     return_geometry : bool
         If True, geometries are returned in query
@@ -61,12 +47,11 @@ class DistanceMatrix(GraphMixin, Query):
 
     """
 
-    def __init__(self, level="versioned-cell", date=None, return_geometry=False):
+    def __init__(self, level="versioned-cell", return_geometry=False):
 
         if level not in {"versioned-site", "versioned-cell"}:
             raise ValueError("Only point locations are supported at this time.")
         self.level = level
-        self.date = date
         self.return_geometry = return_geometry
 
         super().__init__()
