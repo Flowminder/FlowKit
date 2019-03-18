@@ -115,7 +115,7 @@ def action_handler__poll_query(query_id):
 
 def action_handler__get_query_kind(query_id):
     """
-    Handler for the 'poll_query' action.
+    Handler for the 'get_query_kind' action.
 
     Returns query kind of the query with the given `query_id`.
     """
@@ -129,6 +129,25 @@ def action_handler__get_query_kind(query_id):
         )
 
     reply_data = {"query_id": query_id, "query_kind": query_kind}
+    return ZMQReply(status="done", data=reply_data)
+
+
+def action_handler__get_query_params(query_id):
+    """
+    Handler for the 'get_query_params' action.
+
+    Returns query parameters of the query with the given `query_id`.
+    """
+    q_info_lookup = QueryInfoLookup(Query.redis)
+    try:
+        query_params = q_info_lookup.get_query_params(query_id)
+    except UnkownQueryIdError:
+        reply_data = {"query_id": query_id, "query_state": "awol"}
+        return ZMQReply(
+            status="error", msg=f"Unknown query id: '{query_id}'", data=reply_data
+        )
+
+    reply_data = {"query_id": query_id, "query_params": query_params}
     return ZMQReply(status="done", data=reply_data)
 
 
@@ -234,5 +253,6 @@ ACTION_HANDLERS = {
     "run_query": action_handler__run_query,
     "poll_query": action_handler__poll_query,
     "get_query_kind": action_handler__get_query_kind,
+    "get_query_params": action_handler__get_query_params,
     "get_sql_for_query_result": action_handler__get_sql,
 }
