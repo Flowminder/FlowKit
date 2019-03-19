@@ -6,6 +6,8 @@ from .modal_location import ModalLocationSchema, ModalLocationExposed
 from .meaningful_locations import (
     MeaningfulLocationsAggregateSchema,
     MeaningfulLocationsAggregateExposed,
+    MeaningfulLocationsBetweenLabelODMatrixSchema,
+    MeaningfulLocationsBetweenLabelODMatrixExposed,
 )
 
 # from .subscriber_locations import SubscriberLocationsSchema, SubscriberLocationsExposed
@@ -19,6 +21,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "modal_location": ModalLocationSchema,
         # "subscriber_locations": SubscriberLocationsSchema
         "meaningful_locations_aggregate": MeaningfulLocationsAggregateSchema,
+        "meaningful_locations_od_matrix": MeaningfulLocationsBetweenLabelODMatrixSchema,
     }
 
     def get_obj_type(self, obj):
