@@ -74,18 +74,18 @@ class MeaningfulLocationsAggregateSchema(Schema):
     aggregation_unit = fields.String(
         validate=OneOf(["admin0", "admin1", "admin2", "admin3"])
     )
-    tower_cluster_radius = fields.Float(default=1.0)
-    tower_cluster_call_threshold: fields.Integer(default=0)
+    tower_cluster_radius = fields.Float(required=False, default=1.0)
+    tower_cluster_call_threshold: fields.Integer(required=False, default=0)
     subscriber_subset: fields.String(
         required=False, allow_none=True, validate=OneOf([None])
     )
 
     @post_load
     def make_query_object(self, params):
-        return _make_meaningful_locations(**params)
+        return MeaningfulLocationsAggregateExposed(**params)
 
 
-def _make_meaningful_locations(
+def _make_meaningful_locations_aggregate(
     start_date: str,
     stop_date: str,
     aggregation_unit: str,
@@ -122,7 +122,7 @@ def _make_meaningful_locations(
         clusters=q_hartigan_cluster, labels=labels, scores=q_event_score, label=label
     )
 
-    return MeaningfulLocationsAggregate(
+    return MeaningfulLocationsAggregateExposed(
         meaningful_locations=q_meaningful_locations, level=aggregation_unit
     )
 
@@ -131,9 +131,52 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
 
     __schema__ = MeaningfulLocationsAggregateSchema
 
-    def __init__(self, *, meaningful_locations, aggregation_unit):
-        self.meaningful_locations = meaningful_locations
-        self.aggregation_unit = aggregation_unit
+    def __init__(
+        self,
+        *,
+        start_date: str,
+        stop_date: str,
+        aggregation_unit: str,
+        label: str,
+        labels: Dict[str, Dict[str, dict]],
+        tower_day_of_week_scores: Dict[str, float],
+        tower_hour_of_day_scores: List[float],
+        tower_cluster_radius: float = 1.0,
+        tower_cluster_call_threshold: int = 0,
+        subscriber_subset: Union[dict, None] = None,
+    ):
+
+        q_subscriber_locations = subscriber_locations(
+            start=start_date,
+            stop=stop_date,
+            level="versioned-site",  # note this 'level' is not the same as the exposed parameter 'aggregation_unit'
+            subscriber_subset=subscriber_subset,
+        )
+        q_call_days = CallDays(subscriber_locations=q_subscriber_locations)
+        q_hartigan_cluster = HartiganCluster(
+            calldays=q_call_days,
+            radius=tower_cluster_radius,
+            call_threshold=tower_cluster_call_threshold,
+            buffer=0,  # we're not exposing 'buffer', apparently, so we're hard-coding it
+        )
+        q_event_score = EventScore(
+            start=start_date,
+            stop=stop_date,
+            score_hour=tower_hour_of_day_scores,
+            score_dow=tower_day_of_week_scores,
+            level="versioned-site",  # note this 'level' is not the same as the exposed parameter 'aggregation_unit'
+            subscriber_subset=subscriber_subset,
+        )
+        q_meaningful_locations = MeaningfulLocations(
+            clusters=q_hartigan_cluster,
+            labels=labels,
+            scores=q_event_score,
+            label=label,
+        )
+        self.q_meaningful_locations_aggreate = MeaningfulLocationsAggregate(
+            meaningful_locations=q_meaningful_locations, level=aggregation_unit
+        )
+
         super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
@@ -145,9 +188,4 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         -------
         ModalLocation
         """
-        from flowmachine.features import MeaningfulLocationsAggregate
-
-        meaningful_locations = self.meaningful_locations._flowmachine_query_obj
-        return MeaningfulLocationsAggregate(
-            meaningful_locations=meaningful_locations, level=self.aggregation_unit
-        )
+        return self.q_meaningful_locations_aggreate
