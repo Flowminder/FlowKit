@@ -99,18 +99,48 @@ def action_handler__run_query(**action_params):
     return ZMQReply(status="accepted", data={"query_id": query_id})
 
 
+def get_query_kind(query_id):
+    """
+    Return the query kind corresponding to the given query id
+    and `None` if the query_id does not exist.
+
+    Parameters
+    ----------
+    query_id : str
+        Identifier of the query.
+
+    Returns
+    -------
+    str or None
+        The query kind associated with this query_id (or None
+        if no query with this query_id exists).
+    """
+    q_info_lookup = QueryInfoLookup(Query.redis)
+    try:
+        return q_info_lookup.get_query_kind(query_id)
+    except UnkownQueryIdError:
+        return None
+
+
 def action_handler__poll_query(query_id):
     """
     Handler for the 'poll_query' action.
 
     Returns the status of the query with the given `query_id`.
     """
-    q_state_machine = QueryStateMachine(Query.redis, query_id)
-    reply_data = {
-        "query_id": query_id,
-        "query_state": q_state_machine.current_query_state,
-    }
-    return ZMQReply(status="done", data=reply_data)
+    query_kind = get_query_kind(query_id)
+    # TODO: we should probably be able to use the QueryStateMachine to determine
+    # whether the query already exists.
+    if query_kind is None:
+        return ZMQReply(status="error", msg=f"Unknown query id: '{query_id}'")
+    else:
+        q_state_machine = QueryStateMachine(Query.redis, query_id)
+        reply_data = {
+            "query_id": query_id,
+            "query_kind": query_kind,
+            "query_state": q_state_machine.current_query_state,
+        }
+        return ZMQReply(status="done", data=reply_data)
 
 
 def action_handler__get_query_kind(query_id):
@@ -119,17 +149,12 @@ def action_handler__get_query_kind(query_id):
 
     Returns query kind of the query with the given `query_id`.
     """
-    q_info_lookup = QueryInfoLookup(Query.redis)
-    try:
-        query_kind = q_info_lookup.get_query_kind(query_id)
-    except UnkownQueryIdError:
-        reply_data = {"query_id": query_id, "query_state": "awol"}
-        return ZMQReply(
-            status="error", msg=f"Unknown query id: '{query_id}'", data=reply_data
-        )
-
-    reply_data = {"query_id": query_id, "query_kind": query_kind}
-    return ZMQReply(status="done", data=reply_data)
+    query_kind = get_query_kind(query_id)
+    if query_kind is None:
+        return ZMQReply(status="error", msg=f"Unknown query id: '{query_id}'")
+    else:
+        reply_data = {"query_id": query_id, "query_kind": query_kind}
+        return ZMQReply(status="done", data=reply_data)
 
 
 def action_handler__get_query_params(query_id):
