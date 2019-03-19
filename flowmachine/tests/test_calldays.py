@@ -11,15 +11,18 @@ days where an subscriber has made at least one call
 import pytest
 
 
+from flowmachine.core.spatial_unit import VersionedSiteSpatialUnit
 from flowmachine.features import CallDays, subscriber_locations
 import numpy as np
 
 
 @pytest.mark.usefixtures("skip_datecheck")
-def test_calldays_column_names(exemplar_level_param):
+def test_calldays_column_names(exemplar_spatial_unit_param):
     """Test that CallDays column_names property is correct"""
     cd = CallDays(
-        subscriber_locations("2016-01-01", "2016-01-03", **exemplar_level_param)
+        subscriber_locations(
+            "2016-01-01", "2016-01-03", spatial_unit=exemplar_spatial_unit_param
+        )
     )
     assert cd.head(0).columns.tolist() == cd.column_names
 
@@ -35,7 +38,9 @@ def test_call_days_returns_expected_counts_per_subscriber(get_dataframe):
         ("038OVABN11Ak4W5P", "2016-01-01", "2016-01-08", 32),
     )
     for (subscriber, start, end, calls) in test_values:
-        cd = CallDays(subscriber_locations(start, end, level="versioned-site"))
+        cd = CallDays(
+            subscriber_locations(start, end, spatial_unit=VersionedSiteSpatialUnit())
+        )
         df = get_dataframe(cd).query('subscriber == "{}"'.format(subscriber))
         assert df.calldays.sum() == calls
 
@@ -51,7 +56,9 @@ def test_call_days_returns_expected_counts_per_subscriber_tower(get_dataframe):
         ("038OVABN11Ak4W5P", "nWM8R3", "2016-01-01", "2016-01-08", 5),
     )
     for (subscriber, location, start, end, calls) in test_values:
-        cd = CallDays(subscriber_locations(start, end, level="versioned-site"))
+        cd = CallDays(
+            subscriber_locations(start, end, spatial_unit=VersionedSiteSpatialUnit())
+        )
         df = get_dataframe(cd).query(
             'subscriber == "{}" & site_id == "{}"'.format(subscriber, location)
         )
@@ -63,6 +70,6 @@ def test_locations_are_only_repeated_once_per_subscriber(get_dataframe):
     Test that each location occurs only once per subscriber.
     """
 
-    cd = CallDays(subscriber_locations("2016-01-01", "2016-01-03", level="cell"))
+    cd = CallDays(subscriber_locations("2016-01-01", "2016-01-03", spatial_unit=None))
     df = get_dataframe(cd)
     assert not np.any(df.groupby(["subscriber", "location_id"]).count() > 1)

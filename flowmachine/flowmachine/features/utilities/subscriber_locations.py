@@ -43,8 +43,7 @@ class _SubscriberCells(Query):
         self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.ignore_nulls = ignore_nulls
-        self.level = "cell"
-        self.column_name = None
+        self.spatial_unit = None
 
         self.tables = table
         cols = [self.subscriber_identifier, "datetime", "location_id"]
@@ -120,15 +119,12 @@ def subscriber_locations(
     start,
     stop,
     *,
-    level="cell",
+    spatial_unit=None,
     hours="all",
     table="all",
     subscriber_identifier="msisdn",
     ignore_nulls=True,
-    column_name=None,
     subscriber_subset=None,
-    polygon_table=None,
-    size=None,
     radius=None,
 ):
     """
@@ -142,29 +138,11 @@ def subscriber_locations(
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    level : str, default 'cell'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None,
+                   default None
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of spatial_unit.py for more information. Use None for no
+        location join (i.e. just the cell identifier in the CDR itself).
     hours : tuple of ints, default 'all'
         subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -182,9 +160,6 @@ def subscriber_locations(
         these lines with null cells should still be present, although they contain
         no information on the subscribers location, they still tell us that the subscriber made
         a call at that time.
-    column_name : str or list of strings
-    kwargs :
-        Eventually passed to flowmachine.JoinToLocation.
 
     Notes
     -----
@@ -198,7 +173,7 @@ def subscriber_locations(
     --------
     >>> subscriber_locs = subscriber_locations('2016-01-01 13:30:30',
                                '2016-01-02 16:25:00'
-                               level = 'cell')
+                               spatial_unit = None)
     >>> subscriber_locs.head()
      subscriber                 time    cell
     subscriberA  2016-01-01 12:42:11  233241
@@ -219,13 +194,8 @@ def subscriber_locations(
         ignore_nulls=ignore_nulls,
     )
 
-    if level == "cell":
+    if spatial_unit is None:
         return subscriber_cells
     else:
-        return JoinToLocation(
-            subscriber_cells,
-            level=level,
-            column_name=column_name,
-            polygon_table=polygon_table,
-            size=size,
-        )
+        return JoinToLocation(subscriber_cells, spatial_unit=spatial_unit)
+

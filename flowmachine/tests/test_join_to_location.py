@@ -38,7 +38,7 @@ from flowmachine.core.spatial_unit import (
 def test_join_to_location_column_names(spatial_unit, kwargs):
     """ Test that JoinToLocation's column_names property is accurate."""
     su = spatial_unit(**kwargs)
-    table = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
+    table = subscriber_locations("2016-01-05", "2016-01-07", spatial_unit=None)
     joined = JoinToLocation(table, spatial_unit=su)
     assert joined.head(0).columns.tolist() == joined.column_names
 
@@ -61,7 +61,7 @@ def test_join_with_versioned_cells(get_dataframe, get_length):
     """
     Test that flowmachine.JoinToLocation can fetch the cell version.
     """
-    ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
+    ul = subscriber_locations("2016-01-05", "2016-01-07", spatial_unit=None)
     df = get_dataframe(JoinToLocation(ul, spatial_unit=VersionedCellSpatialUnit()))
     # As our database is complete we should not drop any rows
     assert len(df) == get_length(ul)
@@ -84,7 +84,7 @@ def test_join_with_lat_lon(get_dataframe):
     """
     Test that flowmachine.JoinToLocation can get the lat-lon values of the cell
     """
-    ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
+    ul = subscriber_locations("2016-01-05", "2016-01-07", spatial_unit=None)
     df = get_dataframe(JoinToLocation(ul, spatial_unit=LatLonSpatialUnit()))
 
     expected_cols = sorted(["subscriber", "time", "location_id", "lat", "lon"])
@@ -108,7 +108,7 @@ def test_join_with_polygon(get_dataframe, get_length):
     Test that flowmachine.JoinToLocation can get the (arbitrary) polygon
     of each cell.
     """
-    ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
+    ul = subscriber_locations("2016-01-05", "2016-01-07", spatial_unit=None)
     j = JoinToLocation(
         ul,
         spatial_unit=PolygonSpatialUnit(
@@ -128,7 +128,7 @@ def test_join_to_admin(get_dataframe, get_length):
     """
     Test that flowmachine.JoinToLocation can join to a admin region.
     """
-    ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
+    ul = subscriber_locations("2016-01-05", "2016-01-07", spatial_unit=None)
     df = get_dataframe(JoinToLocation(ul, spatial_unit=AdminSpatialUnit(level=3)))
     assert len(df) == get_length(ul)
     expected_cols = sorted(["subscriber", "time", "location_id", "pcod"])
@@ -139,6 +139,6 @@ def test_join_to_grid(get_dataframe, get_length):
     """
     Test that we can join to a grid square
     """
-    ul = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
+    ul = subscriber_locations("2016-01-05", "2016-01-07", spatial_unit=None)
     df = get_dataframe(JoinToLocation(ul, spatial_unit=GridSpatialUnit(size=50)))
     assert len(df) == get_length(ul)

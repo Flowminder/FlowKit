@@ -4,6 +4,7 @@
 import pytest
 
 from flowmachine.core.errors import BadLevelError
+from flowmachine.core.spatial_unit import VersionedSiteSpatialUnit
 from flowmachine.features import (
     HartiganCluster,
     CallDays,
@@ -34,7 +35,9 @@ def test_column_names_meaningful_locations(get_column_names_from_run):
         clusters=HartiganCluster(
             calldays=CallDays(
                 subscriber_locations=subscriber_locations(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    spatial_unit=VersionedSiteSpatialUnit(),
                 )
             ),
             radius=1,
@@ -62,7 +65,9 @@ def test_column_names_meaningful_locations_aggregate(
             clusters=HartiganCluster(
                 calldays=CallDays(
                     subscriber_locations=subscriber_locations(
-                        start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                        start="2016-01-01",
+                        stop="2016-01-02",
+                        spatial_unit=VersionedSiteSpatialUnit(),
                     )
                 ),
                 radius=1,
@@ -90,7 +95,7 @@ def test_meaningful_locations_aggregate_disallowed_level_raises():
                         subscriber_locations=subscriber_locations(
                             start="2016-01-01",
                             stop="2016-01-02",
-                            level="versioned-site",
+                            spatial_unit=VersionedSiteSpatialUnit(),
                         )
                     ),
                     radius=1,
@@ -117,7 +122,9 @@ def test_column_names_meaningful_locations_od(
         clusters=HartiganCluster(
             calldays=CallDays(
                 subscriber_locations=subscriber_locations(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    spatial_unit=VersionedSiteSpatialUnit(),
                 )
             ),
             radius=1,
@@ -133,7 +140,9 @@ def test_column_names_meaningful_locations_od(
         clusters=HartiganCluster(
             calldays=CallDays(
                 subscriber_locations=subscriber_locations(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    spatial_unit=VersionedSiteSpatialUnit(),
                 )
             ),
             radius=1,
@@ -167,7 +176,9 @@ def test_meaningful_locations_results(
         clusters=HartiganCluster(
             calldays=CallDays(
                 subscriber_locations=subscriber_locations(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    spatial_unit=VersionedSiteSpatialUnit(),
                 )
             ),
             radius=1,
@@ -199,7 +210,9 @@ def test_meaningful_locations_aggregation_results(exemplar_level_param, get_data
         clusters=HartiganCluster(
             calldays=CallDays(
                 subscriber_locations=subscriber_locations(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    spatial_unit=VersionedSiteSpatialUnit(),
                 )
             ),
             radius=1,
@@ -231,7 +244,9 @@ def test_meaningful_locations_od_raises_for_bad_level(
         clusters=HartiganCluster(
             calldays=CallDays(
                 subscriber_locations=subscriber_locations(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    spatial_unit=VersionedSiteSpatialUnit(),
                 )
             ),
             radius=1,
@@ -259,7 +274,9 @@ def test_meaningful_locations_od_results(get_dataframe):
         clusters=HartiganCluster(
             calldays=CallDays(
                 subscriber_locations=subscriber_locations(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    spatial_unit=VersionedSiteSpatialUnit(),
                 )
             ),
             radius=1,
@@ -275,7 +292,9 @@ def test_meaningful_locations_od_results(get_dataframe):
         clusters=HartiganCluster(
             calldays=CallDays(
                 subscriber_locations=subscriber_locations(
-                    start="2016-01-02", stop="2016-01-03", level="versioned-site"
+                    start="2016-01-02",
+                    stop="2016-01-03",
+                    spatial_unit=VersionedSiteSpatialUnit(),
                 )
             ),
             radius=1,

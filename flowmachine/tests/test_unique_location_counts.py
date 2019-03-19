@@ -31,7 +31,9 @@ def test_correct_counts(get_dataframe):
     ulc = UniqueLocationCounts("2016-01-01", "2016-01-02", level="cell", hours=(5, 17))
     df = get_dataframe(ulc)
     dful = get_dataframe(
-        subscriber_locations("2016-01-01", "2016-01-02", level="cell", hours=(5, 17))
+        subscriber_locations(
+            "2016-01-01", "2016-01-02", spatial_unit=None, hours=(5, 17)
+        )
     )
     assert [
         df["unique_location_counts"][0],
