@@ -7,6 +7,7 @@ from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
 from .base_exposed_query import BaseExposedQuery
+from .custom_fields import AggregationUnit, SubscriberSubset
 from .daily_location import DailyLocationSchema, DailyLocationExposed
 
 
@@ -25,10 +26,8 @@ class ModalLocationSchema(Schema):
     locations = fields.Nested(
         InputToModalLocationSchema, many=True, validate=Length(min=1)
     )
-    aggregation_unit = fields.String(
-        validate=OneOf(["admin0", "admin1", "admin2", "admin3"])
-    )
-    subscriber_subset = fields.String(allow_none=True, validate=OneOf([None]))
+    aggregation_unit = AggregationUnit(required=True)
+    subscriber_subset = SubscriberSubset(required=False)
 
     @post_load
     def make_query_object(self, data):

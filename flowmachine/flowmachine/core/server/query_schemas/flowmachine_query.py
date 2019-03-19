@@ -7,6 +7,7 @@ from marshmallow_oneofschema import OneOfSchema
 from .dummy_query import DummyQuerySchema, DummyQueryExposed
 from .daily_location import DailyLocationSchema, DailyLocationExposed
 from .modal_location import ModalLocationSchema, ModalLocationExposed
+from .flows import FlowsSchema, FlowsExposed
 from .meaningful_locations import (
     MeaningfulLocationsAggregateSchema,
     MeaningfulLocationsAggregateExposed,
@@ -25,6 +26,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "dummy_query": DummyQuerySchema,
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
+        "flows": FlowsSchema,
         # "subscriber_locations": SubscriberLocationsSchema
         "meaningful_locations_aggregate": MeaningfulLocationsAggregateSchema,
         "meaningful_locations_between_label_od_matrix": MeaningfulLocationsBetweenLabelODMatrixSchema,
@@ -38,6 +40,8 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "daily_location"
         elif isinstance(obj, ModalLocationExposed):
             return "modal_location"
+        elif isinstance(obj, FlowsExposed):
+            return "flows"
         # elif isinstance(obj, SubscriberLocationsExposed):
         #     return "subscriber_locations"
         elif isinstance(obj, MeaningfulLocationsAggregateExposed):

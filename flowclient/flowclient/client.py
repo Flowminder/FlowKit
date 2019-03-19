@@ -444,15 +444,13 @@ def location_event_counts(
     """
     return {
         "query_kind": "location_event_counts",
-        "params": {
-            "start_date": start_date,
-            "end_date": end_date,
-            "interval": count_interval,
-            "aggregation_unit": aggregation_unit,
-            "direction": direction,
-            "event_types": event_types,
-            "subscriber_subset": subscriber_subset,
-        },
+        "start_date": start_date,
+        "end_date": end_date,
+        "interval": count_interval,
+        "aggregation_unit": aggregation_unit,
+        "direction": direction,
+        "event_types": event_types,
+        "subscriber_subset": subscriber_subset,
     }
 
 
@@ -790,15 +788,15 @@ def meaningful_locations_between_dates_od_matrix(
 
 
 def modal_location(
-    *daily_locations: Dict[str, Union[str, Dict[str, str]]], aggregation_unit: str
+    *locations: Dict[str, Union[str, Dict[str, str]]], aggregation_unit: str
 ) -> dict:
     """
-    Return query spec for a modal location query for a list of daily locations.
+    Return query spec for a modal location query for a list of locations.
 
     Parameters
     ----------
-    daily_locations : list of dicts
-        List of daily location query specifications
+    locations : list of dicts
+        List of location query specifications
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
 
@@ -810,7 +808,8 @@ def modal_location(
     """
     return {
         "query_kind": "modal_location",
-        "params": {"locations": daily_locations, "aggregation_unit": aggregation_unit},
+        "aggregation_unit": aggregation_unit,
+        "locations": locations,
     }
 
 
@@ -885,9 +884,7 @@ def flows(
     """
     return {
         "query_kind": "flows",
-        "params": {
-            "from_location": from_location,
-            "to_location": to_location,
-            "aggregation_unit": aggregation_unit,
-        },
+        "from_location": from_location,
+        "to_location": to_location,
+        "aggregation_unit": aggregation_unit,
     }
