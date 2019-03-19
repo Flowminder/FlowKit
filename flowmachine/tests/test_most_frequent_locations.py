@@ -4,16 +4,24 @@
 
 import pytest
 
-from flowmachine.core.spatial_unit import AdminSpatialUnit
+from flowmachine.core.spatial_unit import (
+    AdminSpatialUnit,
+    VersionedSiteSpatialUnit,
+    LatLonSpatialUnit,
+)
 from flowmachine.features import MostFrequentLocation
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 
-def test_most_frequent_locations_column_names(get_dataframe, exemplar_level_param):
+def test_most_frequent_locations_column_names(
+    get_dataframe, exemplar_spatial_unit_param
+):
     """
     MostFrequentLocations().get_dataframe() returns a dataframe.
     """
-    mfl = MostFrequentLocation("2016-01-01", "2016-01-02", **exemplar_level_param)
+    mfl = MostFrequentLocation(
+        "2016-01-01", "2016-01-02", spatial_unit=exemplar_spatial_unit_param
+    )
     df = get_dataframe(mfl)
     assert df.columns.tolist() == mfl.column_names
 
@@ -23,7 +31,9 @@ def test_vsites(get_dataframe):
     MostFrequentLocation() returns the correct locations.
     """
 
-    mfl = MostFrequentLocation("2016-01-01", "2016-01-02", level="versioned-site")
+    mfl = MostFrequentLocation(
+        "2016-01-01", "2016-01-02", spatial_unit=VersionedSiteSpatialUnit()
+    )
     df = get_dataframe(mfl)
     df.set_index("subscriber", inplace=True)
 
@@ -33,10 +43,12 @@ def test_vsites(get_dataframe):
 
 def test_lat_lons(get_dataframe):
     """
-    MostFrequentLocations() has the correct values at the lat-lon level.
+    MostFrequentLocations() has the correct values at the lat-lon spatial unit.
     """
 
-    mfl = MostFrequentLocation("2016-01-01", "2016-01-02", level="lat-lon")
+    mfl = MostFrequentLocation(
+        "2016-01-01", "2016-01-02", spatial_unit=LatLonSpatialUnit()
+    )
     df = get_dataframe(mfl)
     df.set_index("subscriber", inplace=True)
 
