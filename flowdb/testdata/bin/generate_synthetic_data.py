@@ -535,9 +535,9 @@ if __name__ == "__main__":
     with ThreadPoolExecutor(cpu_count()) as tp:
         list(tp.map(do_exec, event_creation_sql))
         # list(tp.map(do_exec, sql))
-        # list(tp.map(do_exec, post_sql))
+        list(tp.map(do_exec, post_sql))
     for s in attach_sql:  # + cleanup_sql:
         do_exec(s)
-    # with ThreadPoolExecutor(cpu_count()) as tp:
-    #    list(tp.map(do_exec, post_attach_sql))
+    with ThreadPoolExecutor(cpu_count()) as tp:
+        list(tp.map(do_exec, post_attach_sql))
     print(f"Total runtime: {datetime.datetime.now() - start_time}")
