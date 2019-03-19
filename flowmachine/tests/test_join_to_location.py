@@ -21,23 +21,25 @@ from flowmachine.core.spatial_unit import (
 
 
 @pytest.mark.parametrize(
-    "spatial_unit",
+    "spatial_unit, kwargs",
     [
-        AdminSpatialUnit(level=2),
-        AdminSpatialUnit(level=2, column_name="admin2name"),
-        VersionedSiteSpatialUnit(),
-        VersionedCellSpatialUnit(),
-        LatLonSpatialUnit(),
-        GridSpatialUnit(size=5),
-        PolygonSpatialUnit(
-            polygon_column_names="admin3pcod", polygon_table="geography.admin3"
+        (LatLonSpatialUnit, {}),
+        (VersionedCellSpatialUnit, {}),
+        (VersionedSiteSpatialUnit, {}),
+        (
+            PolygonSpatialUnit,
+            {"polygon_column_names": "admin3pcod", "polygon_table": "geography.admin3"},
         ),
+        (AdminSpatialUnit, {"level": 2}),
+        (AdminSpatialUnit, {"level": 2, "column_name": "admin2name"}),
+        (GridSpatialUnit, {"size": 5}),
     ],
 )
-def test_join_to_location_column_names(spatial_unit):
+def test_join_to_location_column_names(spatial_unit, kwargs):
     """ Test that JoinToLocation's column_names property is accurate."""
+    su = spatial_unit(**kwargs)
     table = subscriber_locations("2016-01-05", "2016-01-07", level="cell")
-    joined = JoinToLocation(table, spatial_unit=spatial_unit)
+    joined = JoinToLocation(table, spatial_unit=su)
     assert joined.head(0).columns.tolist() == joined.column_names
 
 
