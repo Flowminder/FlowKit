@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import Schema, fields, post_load
-from marshmallow.validate import OneOf, Range, Length
+from marshmallow.validate import OneOf
 from typing import Union, Dict, List
 
 from flowmachine.features import (
@@ -16,7 +16,7 @@ from flowmachine.features import (
     subscriber_locations,
 )
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import TowerHourOfDayScores, TowerDayOfWeekScores
+from .custom_fields import SubscriberSubset, TowerHourOfDayScores, TowerDayOfWeekScores
 
 __all__ = [
     "MeaningfulLocationsAggregateSchema",
@@ -39,10 +39,8 @@ class MeaningfulLocationsAggregateSchema(Schema):
         required=True, validate=OneOf(["admin0", "admin1", "admin2", "admin3"])
     )
     tower_cluster_radius = fields.Float(required=False, default=1.0)
-    tower_cluster_call_threshold: fields.Integer(required=False, default=0)
-    subscriber_subset: fields.String(
-        required=False, allow_none=True, validate=OneOf([None])
-    )
+    tower_cluster_call_threshold = fields.Integer(required=False, default=0)
+    subscriber_subset = SubscriberSubset(required=False)
 
     @post_load
     def make_query_object(self, params):
@@ -159,10 +157,8 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(Schema):
     tower_hour_of_day_scores = TowerHourOfDayScores(required=True)
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
-    tower_cluster_call_threshold: fields.Integer(required=False, default=0)
-    subscriber_subset: fields.String(
-        required=False, allow_none=True, validate=OneOf([None])
-    )
+    tower_cluster_call_threshold = fields.Integer(required=False, default=0)
+    subscriber_subset = SubscriberSubset(required=False)
 
     @post_load
     def make_query_object(self, params):
