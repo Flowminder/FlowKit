@@ -30,7 +30,7 @@ class JoinToLocation(Query):
         This represents a table that can be joined to the cell information
         table. This must have a date column (called time) and a location column
         call 'location_id'.
-    spatial_unit : flowmachine.SpatialUnit
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit
         A query which maps cell identifiers in the CDR to a different spatial
         unit (e.g. versioned site or admin region)
     time_col : str, default 'time':

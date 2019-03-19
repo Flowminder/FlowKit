@@ -3,8 +3,26 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Classes that map cells (or towers or sites) to a spatial unit
-(e.g. versioned-cell, admin*, grid, ...).
+Classes that map cells (or towers or sites) to a spatial unit.
+
+The available spatial units are:
+    VersionedCellSpatialUnit:
+        The identifier as found in the CDR combined with the version from the
+        cells table.
+    VersionedSiteSpatialUnit:
+        The ID found in the sites table, coupled with the version number.
+    PolygonSpatialUnit:
+        A custom set of polygons that live in the database. Takes the
+        parameters polygon_column_names, which is the columns you want to
+        return after the join, and polygon_table, the table where the polygons
+        reside (with the schema), and additionally geom_col which is the column
+        with the geometry information (will default to 'geom').
+    AdminSpatialUnit:
+        An admin region of interest, such as admin3. Must live in the database
+        in the standard location.
+    GridSpatialUnit:
+        A square in a regular grid, in addition pass size to determine the size
+        of the polygon.
 """
 from typing import List
 from abc import ABCMeta, abstractmethod

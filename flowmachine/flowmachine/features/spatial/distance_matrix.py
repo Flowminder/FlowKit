@@ -30,7 +30,7 @@ class DistanceMatrix(GraphMixin, Query):
 
     Parameters
     ----------
-    spatial_unit : SpatialUnit or None, default None
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None, default None
         Locations to compute distances for.
         If None, defaults to VersionedCellSpatialUnit().
 
