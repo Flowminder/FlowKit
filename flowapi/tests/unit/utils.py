@@ -34,8 +34,8 @@ def make_token(username, secret_key, lifetime, claims):
     )
 
 
-# query_kinds = ["daily_location", "modal_location", "flow"]
-query_kinds = ["modal_location"]
+query_kinds = ["daily_location", "modal_location", "flow"]
+# query_kinds = ["daily_location"]
 permissions_types = ["run", "poll", "get_result"]
 aggregation_types = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 all_access_claims = {
