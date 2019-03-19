@@ -25,7 +25,12 @@ async def run_query():
     if reply["status"] == "error":
         # TODO: currently the reply msg is empty; we should either pass on the message payload (which contains
         #       further information about the error) or add a non-empty human-readable error message.
-        return jsonify({"status": "Error", "msg": reply["msg"]}), 403
+        #       If we pass on the payload we should also deconstruct it to make it more human-readable
+        #       because it will contain marshmallow validation errors (and/or any other possible errors?)
+        return (
+            jsonify({"status": "Error", "msg": reply["msg"], "payload": reply["data"]}),
+            403,
+        )
     elif reply["status"] == "accepted":
         assert "query_id" in reply["data"]
         d = {
