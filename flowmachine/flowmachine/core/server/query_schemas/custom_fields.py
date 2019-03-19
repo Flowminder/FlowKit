@@ -9,6 +9,17 @@ from marshmallow import fields
 from marshmallow.validate import Range, Length, OneOf
 
 
+class SubscriberSubset(fields.String):
+    """
+    Represents a subscriber subset. This can either be a string representing
+    a query_id or `None`, meaning "all subscribers".
+    """
+
+    def __init__(self, required=False, allow_none=True, validate=None):
+        validate = validate or OneOf([None])
+        super().__init__(required=required, allow_none=allow_none, validate=validate)
+
+
 class TowerHourOfDayScores(fields.List):
     """
     A list of length 24 containing numerical scores in the range [-1.0, +1.0],
