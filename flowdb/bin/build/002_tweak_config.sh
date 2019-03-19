@@ -24,5 +24,11 @@
 #
 set -e
 
+echo "wal_level='minimal'
+max_wal_senders = 0" >> /var/lib/postgresql/data/postgresql.conf
+pg_ctl -D "$PGDATA" \
+			-o "-c listen_addresses=''" \
+			-w restart
+
 python3 /docker-entrypoint-initdb.d/configurate.py
 echo "include 'postgresql.configurator.conf'" >> /var/lib/postgresql/data/postgresql.conf
