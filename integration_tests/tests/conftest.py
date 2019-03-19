@@ -38,7 +38,7 @@ def logging_config(tmpdir_factory):
     mpatch.undo()
 
 
-@pytest.fixture(scope="session", autouse=False)
+@pytest.fixture(scope="session", autouse=True)
 def autostart_flowmachine_server(logging_config):
     """
     Starts a flowmachine server in a separate process for the tests to talk to.
@@ -61,7 +61,7 @@ def autostart_flowmachine_server(logging_config):
         )  # Wait a moment to make sure coverage of subprocess finishes being written
 
 
-@pytest.fixture(scope="session", autouse=False)
+@pytest.fixture(scope="session", autouse=True)
 def autostart_flowapi_server(logging_config):
     """
     Starts a FlowAPI server in a separate process for the tests to talk to.
