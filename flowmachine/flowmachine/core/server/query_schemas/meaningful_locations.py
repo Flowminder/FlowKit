@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import Schema, fields, post_load
-from marshmallow.validate import OneOf
 from typing import Union, Dict, List
 
 from flowmachine.features import (
@@ -16,7 +15,12 @@ from flowmachine.features import (
     subscriber_locations,
 )
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import SubscriberSubset, TowerHourOfDayScores, TowerDayOfWeekScores
+from .custom_fields import (
+    AggregationUnit,
+    SubscriberSubset,
+    TowerHourOfDayScores,
+    TowerDayOfWeekScores,
+)
 
 __all__ = [
     "MeaningfulLocationsAggregateSchema",
@@ -35,9 +39,7 @@ class MeaningfulLocationsAggregateSchema(Schema):
     )  # TODO: use custom field here for stricter validation!
     tower_hour_of_day_scores = TowerHourOfDayScores(required=True)
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
-    aggregation_unit = fields.String(
-        required=True, validate=OneOf(["admin0", "admin1", "admin2", "admin3"])
-    )
+    aggregation_unit = AggregationUnit(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
     subscriber_subset = SubscriberSubset(required=False)
