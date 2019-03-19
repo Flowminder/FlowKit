@@ -246,11 +246,6 @@ def daily_location(
     * Use 24 hr format!
 
     """
-    if isinstance(date, datetime.date):
-        # Temporary band-aid; marshmallow deserialises date strings
-        # to date objects, so we convert it back here because the
-        # lower-level classes still assume we are passing date strings.
-        date = date.strftime("%Y-%m-%d")
 
     if stop is None:
         # 'cast' the date object as a date
