@@ -16,7 +16,6 @@ from typing import List
 
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
-from flowmachine.utils import get_columns_for_level
 from ..utilities.multilocation import MultiLocation
 
 
@@ -26,8 +25,13 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
     
     Examples
     --------
-    >>> dt = DayTrajectories('2016-01-01', '2016-01-04',
-                             level = 'admin3', method = 'last', hours = (5,17))
+    >>> dt = DayTrajectories(
+            '2016-01-01',
+            '2016-01-04',
+            spatial_unit = AdminSpatialUnit(level=3),
+            method = 'last',
+            hours = (5,17),
+        )
     >>> dt.head(4)
             subscriber                name       date
         0   038OVABN11Ak4W5P    Dolpa      2016-01-01
@@ -38,11 +42,7 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return (
-            ["subscriber"]
-            + get_columns_for_level(self.level, self.column_name)
-            + ["date"]
-        )
+        return ["subscriber"] + self.spatial_unit.location_columns + ["date"]
 
     def _make_query(self):
         """

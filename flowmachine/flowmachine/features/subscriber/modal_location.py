@@ -16,7 +16,6 @@ from functools import reduce
 
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
-from flowmachine.utils import get_columns_for_level
 from ..utilities.multilocation import MultiLocation
 
 
@@ -30,7 +29,7 @@ class ModalLocation(MultiLocation, BaseLocation, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"] + get_columns_for_level(self.level, self.column_name)
+        return ["subscriber"] + self.spatial_unit.location_columns
 
     def _make_query(self):
         """
