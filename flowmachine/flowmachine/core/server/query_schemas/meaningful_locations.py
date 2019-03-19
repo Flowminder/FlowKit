@@ -71,6 +71,8 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         tower_cluster_call_threshold: int = 0,
         subscriber_subset: Union[dict, None] = None,
     ):
+        # Note: all input parameters need to be defined as attributes on `self`
+        # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
         self.stop_date = stop_date
         self.aggregation_unit = aggregation_unit
