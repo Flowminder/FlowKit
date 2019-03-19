@@ -11,9 +11,10 @@ class BaseExposedQuery(metaclass=ABCMeta):
     """
     Base class for exposed flowmachine queries.
 
-    Note: these classes are not meant to be instantiated directly!
-    Instead, they are instantiated automatically through the class
-    FlowmachineQuerySchema above. Example:
+    Note: this class and derived classes are not meant to be instantiated directly!
+    Instead, they are instantiated automatically by the class FlowmachineQuerySchema.
+
+    Example:
 
         FlowmachineQuerySchema().load({"query_kind": "dummy_query", "dummy_param": "foobar"})
     """
