@@ -129,14 +129,33 @@ async def test_granular_json_access(
     responses = {}
     for q_kind in query_kinds:
         dummy_zmq_server.side_effect = (
-            {"id": 10, "query_kind": q_kind},
-            {"id": 10, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-            {"sql": "SELECT 1;", "status": "completed"},
+            {
+                "status": "done",
+                "msg": "",
+                "data": {"query_id": "DUMMY_QUERY_ID", "query_kind": q_kind},
+            },
+            {
+                "status": "done",
+                "msg": "",
+                "data": {
+                    "query_id": "DUMMY_QUERY_ID",
+                    "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
+                },
+            },
+            {
+                "status": "done",
+                "msg": "",
+                "data": {
+                    "query_id": "DUMMY_QUERY_ID",
+                    "sql": "SELECT * FROM cache.xDUMMY_QUERY_ID",
+                },
+            },
         )
         response = await client.get(
-            f"/api/0/get/0",
+            f"/api/0/get/DUMMY_QUERY_ID",
+            # f"/api/0/get/77ea8996b031a8712c71dbaf87828ca0",
             headers={"Authorization": f"Bearer {token}"},
-            json={"query_kind": q_kind},
+            json={},
         )
         responses[q_kind] = response.status_code
     assert expected_responses == responses
@@ -205,9 +224,7 @@ async def test_access_logs_gets(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("query_kind", query_kinds)
-async def test_access_logs_post(
-    query_kind, app, access_token_builder, dummy_zmq_server
-):
+async def test_access_logs_post(query_kind, app, access_token_builder):
     """
     Test that access logs are written for attempted unauthorized access to 'run' route.
 

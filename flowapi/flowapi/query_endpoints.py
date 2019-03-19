@@ -69,7 +69,6 @@ async def poll_query(query_id):
         elif query_state in ("errored", "cancelled"):
             return jsonify({"status": query_state, "msg": reply["msg"]}), 500
         else:  # TODO: would be good to have an explicit query state for this, too!
-            # breakpoint()
             return jsonify({"status": query_state, "msg": reply["msg"]}), 404
 
 
