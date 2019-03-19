@@ -34,7 +34,8 @@ def make_token(username, secret_key, lifetime, claims):
     )
 
 
-query_kinds = ["daily_location", "modal_location", "flow"]
+# query_kinds = ["daily_location", "modal_location", "flow"]
+query_kinds = ["modal_location"]
 permissions_types = ["run", "poll", "get_result"]
 aggregation_types = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 all_access_claims = {
@@ -43,4 +44,48 @@ all_access_claims = {
         "spatial_aggregation": aggregation_types,
     }
     for query_kind in query_kinds
+}
+
+
+exemplar_query_params = {
+    "daily_location": {
+        "query_kind": "daily_location",
+        "date": "2016-01-01",
+        "aggregation_unit": "admin3",
+        "method": "last",
+    },
+    "modal_location": {
+        "query_kind": "modal_location",
+        "aggregation_unit": "admin3",
+        "locations": [
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+            },
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-02",
+                "aggregation_unit": "admin3",
+                "method": "last",
+            },
+        ],
+    },
+    "flow": {
+        "query_kind": "flows",
+        "aggregation_unit": "admin3",
+        "from_location": {
+            "query_kind": "daily_location",
+            "date": "2016-01-01",
+            "aggregation_unit": "admin3",
+            "method": "last",
+        },
+        "to_location": {
+            "query_kind": "daily_location",
+            "date": "2016-01-02",
+            "aggregation_unit": "admin3",
+            "method": "last",
+        },
+    },
 }

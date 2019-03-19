@@ -1,12 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import json
 import os
 
 import pytest
 from asynctest import return_once
-from .utils import query_kinds
+from .utils import query_kinds, exemplar_query_params
 
 
 @pytest.mark.asyncio
@@ -45,13 +46,16 @@ async def test_granular_run_access(
     token = access_token_builder({query_kind: {"permissions": {"run": True}}})
     expected_responses = dict.fromkeys(query_kinds, 401)
     expected_responses[query_kind] = 202
-    dummy_zmq_server.return_value = {"id": 10}
+    dummy_zmq_server.return_value = {
+        "status": "accepted",
+        "msg": "",
+        "data": {"query_id": "<some_query_id>"},
+    }
     responses = {}
     for q_kind in query_kinds:
+        q_params = exemplar_query_params[q_kind]
         response = await client.post(
-            f"/api/0/run",
-            headers={"Authorization": f"Bearer {token}"},
-            json={"query_kind": q_kind, "params": {}},
+            f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=q_params
         )
         responses[q_kind] = response.status_code
     assert expected_responses == responses
@@ -74,10 +78,27 @@ async def test_granular_poll_access(
     responses = {}
     for q_kind in query_kinds:
         dummy_zmq_server.side_effect = return_once(
-            {"id": 10, "query_kind": q_kind}, then={"id": 10, "status": "completed"}
+            {
+                "status": "done",
+                "msg": "",
+                "data": {
+                    "query_id": "DUMMY_QUERY_ID",
+                    "query_kind": q_kind,
+                    "query_state": "executing",
+                },
+            },
+            then={
+                "status": "done",
+                "msg": "",
+                "data": {
+                    "query_id": "DUMMY_QUERY_ID",
+                    "query_kind": q_kind,
+                    "query_state": "completed",
+                },
+            },
         )
         response = await client.get(
-            f"/api/0/poll/0",
+            f"/api/0/poll/DUMMY_QUERY_ID",
             headers={"Authorization": f"Bearer {token}"},
             json={"query_kind": q_kind},
         )
