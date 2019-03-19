@@ -553,42 +553,40 @@ def _meaningful_locations(
     """
     return {
         "query_kind": "meaningful_locations",
-        "params": {
-            "label": label,
-            "clusters": {
-                "query_kind": "hartigan_cluster",
-                "params": {
-                    "radius": tower_cluster_radius,
-                    "call_threshold": tower_cluster_call_threshold,
-                    "call_days": {
-                        "query_kind": "call_days",
-                        "params": {
-                            "subscriber_locations": {
-                                "query_kind": "subscriber_locations",
-                                "params": {
-                                    "start": start_date,
-                                    "stop": stop_date,
-                                    "level": "versioned-site",
-                                    "subscriber_subset": subscriber_subset,
-                                },
-                            }
-                        },
+        "label": label,
+        "clusters": {
+            "query_kind": "hartigan_cluster",
+            "params": {
+                "radius": tower_cluster_radius,
+                "call_threshold": tower_cluster_call_threshold,
+                "call_days": {
+                    "query_kind": "call_days",
+                    "params": {
+                        "subscriber_locations": {
+                            "query_kind": "subscriber_locations",
+                            "params": {
+                                "start": start_date,
+                                "stop": stop_date,
+                                "level": "versioned-site",
+                                "subscriber_subset": subscriber_subset,
+                            },
+                        }
                     },
                 },
             },
-            "scores": {
-                "query_kind": "event_score",
-                "params": {
-                    "score_hour": tower_hour_of_day_scores,
-                    "score_dow": tower_day_of_week_scores,
-                    "start": start_date,
-                    "stop": stop_date,
-                    "level": "versioned-site",
-                    "subscriber_subset": subscriber_subset,
-                },
-            },
-            "labels": labels,
         },
+        "scores": {
+            "query_kind": "event_score",
+            "params": {
+                "score_hour": tower_hour_of_day_scores,
+                "score_dow": tower_day_of_week_scores,
+                "start": start_date,
+                "stop": stop_date,
+                "level": "versioned-site",
+                "subscriber_subset": subscriber_subset,
+            },
+        },
+        "labels": labels,
     }
 
 
@@ -674,20 +672,18 @@ def meaningful_locations_aggregate(
     """
     return {
         "query_kind": "meaningful_locations_aggregate",
-        "params": {
-            "aggregation_unit": aggregation_unit,
-            "meaningful_locations": _meaningful_locations(
-                start_date=start_date,
-                stop_date=stop_date,
-                label=label,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-        },
+        "aggregation_unit": aggregation_unit,
+        "meaningful_locations": _meaningful_locations(
+            start_date=start_date,
+            stop_date=stop_date,
+            label=label,
+            labels=labels,
+            tower_day_of_week_scores=tower_day_of_week_scores,
+            tower_hour_of_day_scores=tower_hour_of_day_scores,
+            tower_cluster_radius=tower_cluster_radius,
+            tower_cluster_call_threshold=tower_cluster_call_threshold,
+            subscriber_subset=subscriber_subset,
+        ),
     }
 
 
@@ -774,31 +770,29 @@ def meaningful_locations_between_label_od_matrix(
     """
     return {
         "query_kind": "meaningful_locations_od_matrix",
-        "params": {
-            "aggregation_unit": aggregation_unit,
-            "meaningful_locations_a": _meaningful_locations(
-                start_date=start_date,
-                stop_date=stop_date,
-                label=label_a,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-            "meaningful_locations_b": _meaningful_locations(
-                start_date=start_date,
-                stop_date=stop_date,
-                label=label_b,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-        },
+        "aggregation_unit": aggregation_unit,
+        "meaningful_locations_a": _meaningful_locations(
+            start_date=start_date,
+            stop_date=stop_date,
+            label=label_a,
+            labels=labels,
+            tower_day_of_week_scores=tower_day_of_week_scores,
+            tower_hour_of_day_scores=tower_hour_of_day_scores,
+            tower_cluster_radius=tower_cluster_radius,
+            tower_cluster_call_threshold=tower_cluster_call_threshold,
+            subscriber_subset=subscriber_subset,
+        ),
+        "meaningful_locations_b": _meaningful_locations(
+            start_date=start_date,
+            stop_date=stop_date,
+            label=label_b,
+            labels=labels,
+            tower_day_of_week_scores=tower_day_of_week_scores,
+            tower_hour_of_day_scores=tower_hour_of_day_scores,
+            tower_cluster_radius=tower_cluster_radius,
+            tower_cluster_call_threshold=tower_cluster_call_threshold,
+            subscriber_subset=subscriber_subset,
+        ),
     }
 
 
