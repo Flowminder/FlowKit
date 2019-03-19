@@ -17,6 +17,14 @@ import logging
 import flowmachine
 from flowmachine.core import Query
 from flowmachine.core.cache import reset_cache
+from flowmachine.core.spatial_unit import (
+    LatLonSpatialUnit,
+    VersionedCellSpatialUnit,
+    VersionedSiteSpatialUnit,
+    PolygonSpatialUnit,
+    AdminSpatialUnit,
+    GridSpatialUnit,
+)
 from flowmachine.features import EventTableSubset
 
 logger = logging.getLogger()
@@ -54,6 +62,39 @@ def exemplar_level_param(request):
 
     """
     yield request.param
+
+
+@pytest.fixture(
+    params=[
+        (AdminSpatialUnit, {"level": 2}),
+        (AdminSpatialUnit, {"level": 2, "column_name": "admin2name"}),
+        (VersionedSiteSpatialUnit, {}),
+        (VersionedCellSpatialUnit, {}),
+        (LatLonSpatialUnit, {}),
+        (GridSpatialUnit, {"size": 5}),
+        (
+            PolygonSpatialUnit,
+            {"polygon_column_names": "admin3pcod", "polygon_table": "geography.admin3"},
+        ),
+        (lambda: None, {}),
+    ],
+    ids=lambda x: str(x[0]),
+)
+def exemplar_spatial_unit_param(request):
+    """
+    A fixture which yields a succession of plausible default parameter
+    combinations for levels.
+
+    Parameters
+    ----------
+    request
+
+    Yields
+    ------
+    dict
+
+    """
+    yield request.param[0](**request.param[1])
 
 
 def get_string_with_test_parameter_values(item):
