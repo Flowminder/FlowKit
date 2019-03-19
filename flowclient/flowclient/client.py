@@ -673,17 +673,15 @@ def meaningful_locations_aggregate(
     return {
         "query_kind": "meaningful_locations_aggregate",
         "aggregation_unit": aggregation_unit,
-        "meaningful_locations": _meaningful_locations(
-            start_date=start_date,
-            stop_date=stop_date,
-            label=label,
-            labels=labels,
-            tower_day_of_week_scores=tower_day_of_week_scores,
-            tower_hour_of_day_scores=tower_hour_of_day_scores,
-            tower_cluster_radius=tower_cluster_radius,
-            tower_cluster_call_threshold=tower_cluster_call_threshold,
-            subscriber_subset=subscriber_subset,
-        ),
+        "start_date": start_date,
+        "stop_date": stop_date,
+        "label": label,
+        "labels": labels,
+        "tower_day_of_week_scores": tower_day_of_week_scores,
+        "tower_hour_of_day_scores": tower_hour_of_day_scores,
+        "tower_cluster_radius": tower_cluster_radius,
+        # "tower_cluster_call_threshold": tower_cluster_call_threshold,
+        # "subscriber_subset": subscriber_subset,
     }
 
 
