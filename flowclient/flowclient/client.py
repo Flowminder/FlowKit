@@ -767,7 +767,7 @@ def meaningful_locations_between_label_od_matrix(
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
     return {
-        "query_kind": "meaningful_locations_od_matrix",
+        "query_kind": "meaningful_locations_between_label_od_matrix",
         "aggregation_unit": aggregation_unit,
         "start_date": start_date,
         "stop_date": stop_date,
@@ -870,32 +870,19 @@ def meaningful_locations_between_dates_od_matrix(
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
     return {
-        "query_kind": "meaningful_locations_od_matrix",
-        "params": {
-            "aggregation_unit": aggregation_unit,
-            "meaningful_locations_a": _meaningful_locations(
-                start_date=start_date_a,
-                stop_date=stop_date_a,
-                label=label,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-            "meaningful_locations_b": _meaningful_locations(
-                start_date=start_date_b,
-                stop_date=stop_date_b,
-                label=label,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-        },
+        "query_kind": "meaningful_locations_between_dates_od_matrix",
+        "aggregation_unit": aggregation_unit,
+        "start_date_a": start_date_a,
+        "stop_date_a": stop_date_a,
+        "start_date_b": start_date_b,
+        "stop_date_b": stop_date_b,
+        "label": label,
+        "labels": labels,
+        "tower_day_of_week_scores": tower_day_of_week_scores,
+        "tower_hour_of_day_scores": tower_hour_of_day_scores,
+        "tower_cluster_radius": tower_cluster_radius,
+        "tower_cluster_call_threshold": tower_cluster_call_threshold,
+        "subscriber_subset": subscriber_subset,
     }
 
 

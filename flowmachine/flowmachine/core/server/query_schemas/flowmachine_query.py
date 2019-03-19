@@ -12,6 +12,8 @@ from .meaningful_locations import (
     MeaningfulLocationsAggregateExposed,
     MeaningfulLocationsBetweenLabelODMatrixSchema,
     MeaningfulLocationsBetweenLabelODMatrixExposed,
+    MeaningfulLocationsBetweenDatesODMatrixSchema,
+    MeaningfulLocationsBetweenDatesODMatrixExposed,
 )
 
 # from .subscriber_locations import SubscriberLocationsSchema, SubscriberLocationsExposed
@@ -25,7 +27,8 @@ class FlowmachineQuerySchema(OneOfSchema):
         "modal_location": ModalLocationSchema,
         # "subscriber_locations": SubscriberLocationsSchema
         "meaningful_locations_aggregate": MeaningfulLocationsAggregateSchema,
-        "meaningful_locations_od_matrix": MeaningfulLocationsBetweenLabelODMatrixSchema,
+        "meaningful_locations_between_label_od_matrix": MeaningfulLocationsBetweenLabelODMatrixSchema,
+        "meaningful_locations_between_dates_od_matrix": MeaningfulLocationsBetweenDatesODMatrixSchema,
     }
 
     def get_obj_type(self, obj):
@@ -40,7 +43,9 @@ class FlowmachineQuerySchema(OneOfSchema):
         elif isinstance(obj, MeaningfulLocationsAggregateExposed):
             return "meaningful_locations_aggregate"
         elif isinstance(obj, MeaningfulLocationsBetweenLabelODMatrixExposed):
-            return "meaningful_locations_od_matrix"
+            return "meaningful_locations_between_label_od_matrix"
+        elif isinstance(obj, MeaningfulLocationsBetweenDatesODMatrixExposed):
+            return "meaningful_locations_between_dates_od_matrix"
         else:
             raise ValueError(
                 f"Object type '{obj.__class__.__name__}' not registered in FlowmachineQuerySchema."
