@@ -57,7 +57,7 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
         missing_cols = [c for c in self._loc_cols if not (c in self.column_names)]
         if missing_cols:
             raise ValueError(
-                f"Location columns {missing_cols} are not in returned columns"
+                f"Location columns {missing_cols} are not in returned columns."
             )
 
         if location_info_table:
@@ -80,7 +80,7 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
 
     @property
     def column_names(self) -> List[str]:
-        return [get_name_and_alias(c)[1] for c in self._cols]
+        return [get_name_and_alias(c)[1].split(".").pop() for c in self._cols]
 
     @abstractmethod
     def geo_augment(self, query):
@@ -257,14 +257,14 @@ class VersionedSiteSpatialUnit(BaseSpatialUnit):
         sites_alias = "s"
         if location_table == "infrastructure.sites":
             cells_alias = sites_alias
+            join_clause = ""
+        elif location_table == "infrastructure.cells":
+            cells_alias = "c"
             join_clause = f"""
             RIGHT JOIN
             infrastructure.cells AS {cells_alias}
             ON {sites_alias}.id = {cells_alias}.site_id
             """
-        elif location_table == "infrastructure.cells":
-            cells_alias = "c"
-            join_clause = ""
         else:
             raise ValueError(
                 f"Expected location table to be 'infrastructure.cells' "
