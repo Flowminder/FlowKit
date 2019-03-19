@@ -26,6 +26,89 @@ from .utils import permissions_types, aggregation_types
                 "subscriber_subset": None,
             },
         ),
+        # (
+        #     # TODO: currently flowclient.modal_location() doesn't accept a 'locations'
+        #     # argument but rather expects a list of location objects. We can't test this
+        #     # using the parametrized paradigm in this test...
+        #     "modal_location",
+        #     {
+        #         "aggregation_unit": "admin3",
+        #         "locations": [
+        #             {
+        #                 "query_kind": "daily_location",
+        #                 "date": "2016-01-01",
+        #                 "aggregation_unit": "admin3",
+        #                 "method": "last",
+        #             },
+        #             {
+        #                 "query_kind": "daily_location",
+        #                 "date": "2016-01-02",
+        #                 "aggregation_unit": "admin3",
+        #                 "method": "last",
+        #             },
+        #         ],
+        #     },
+        # ),
+        (
+            "modal_location_from_dates",
+            {
+                "start_date": "2016-01-01",
+                "stop_date": "2016-01-03",
+                "aggregation_unit": "admin3",
+                "method": "most-common",
+            },
+        ),
+        (
+            "flows",
+            {
+                "from_location": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "to_location": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-04",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "aggregation_unit": "admin3",
+            },
+        ),
+        # (
+        #     # TODO: currently flowclient.modal_location() doesn't accept a 'locations'
+        #     # argument but rather expects a list of location objects. We can't test this
+        #     # using the parametrized paradigm in this test...
+        #     "flows",
+        #     {
+        #         "from_location": {
+        #             "query_kind": "modal_location",
+        #             "aggregation_unit": "admin3",
+        #             "locations": [
+        #                 {
+        #                     "query_kind": "daily_location",
+        #                     "date": "2016-01-01",
+        #                     "aggregation_unit": "admin3",
+        #                     "method": "last",
+        #                 },
+        #                 {
+        #                     "query_kind": "daily_location",
+        #                     "date": "2016-01-02",
+        #                     "aggregation_unit": "admin3",
+        #                     "method": "last",
+        #                 }
+        #             ],
+        #         },
+        #         "to_location": {
+        #             "query_kind": "daily_location",
+        #             "date": "2016-01-04",
+        #             "aggregation_unit": "admin3",
+        #             "method": "last",
+        #         },
+        #         "aggregation_unit": "admin3",
+        #     },
+        # ),
         (
             "meaningful_locations_aggregate",
             {
@@ -206,7 +289,9 @@ from .utils import permissions_types, aggregation_types
     ],
 )
 def test_run_query(query_kind, params, access_token_builder, flowapi_url):
-    """Test that queries can be run, and return a QueryResult object."""
+    """
+    Test that queries can be run, and return a QueryResult object.
+    """
     query_spec = getattr(flowclient, query_kind)(**params)
     con = flowclient.Connection(
         flowapi_url,
@@ -225,7 +310,9 @@ def test_run_query(query_kind, params, access_token_builder, flowapi_url):
 
 
 def test_get_geography(access_token_builder, flowapi_url):
-    """Test that queries can be run, and return a GeoJSON dict."""
+    """
+    Test that queries can be run, and return a GeoJSON dict.
+    """
     con = flowclient.Connection(
         flowapi_url,
         access_token_builder(
