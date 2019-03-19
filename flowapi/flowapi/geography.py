@@ -12,28 +12,26 @@ blueprint = Blueprint("geography", __name__)
 @blueprint.route("/geography/<aggregation_unit>")
 @check_geography_claims()
 async def get_geography(aggregation_unit):
-    request.socket.send_json(
-        {
-            "request_id": request.request_id,
-            "action": "get_geography",
-            "params": {"aggregation_unit": aggregation_unit},
-        }
-    )
+    msg = {
+        "request_id": request.request_id,
+        "action": "get_geography",
+        "params": {"aggregation_unit": aggregation_unit},
+    }
+    request.socket.send_json(msg)
     #  Get the reply.
-    message = await request.socket.recv_json()
+    reply = await request.socket.recv_json()
     current_app.flowapi_logger.debug(
-        f"Got message: {message}", request_id=request.request_id
+        f"Got message: {reply}", request_id=request.request_id
     )
-    try:
-        status = message["status"]
-    except KeyError:
-        return (
-            jsonify({"status": "Error", "msg": "Server responded without status"}),
-            500,
-        )
-    if status == "completed":
+
+    breakpoint()
+    if reply["status"] == "error":
+        return jsonify({"status": "Error", "msg": "Internal server error"}), 500
+
+    query_state = reply["data"]["query_state"]
+    if query_state == "completed":
         results_streamer = stream_with_context(stream_result_as_json)(
-            message["sql"],
+            reply["data"]["sql"],
             result_name="features",
             additional_elements={"type": "FeatureCollection"},
         )
@@ -52,12 +50,14 @@ async def get_geography(aggregation_unit):
                 "Content-type": mimetype,
             },
         )
-    elif status == "error":
-        return jsonify({"status": "Error", "msg": message["error"]}), 403
-    elif status == "awol":
-        return (jsonify({"status": "Error", "msg": message["error"]}), 404)
+    elif query_state == "error":
+        return jsonify({"status": "Error", "msg": reply["msg"]}), 403
+    elif query_state == "awol":
+        return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
     else:
         return (
-            jsonify({"status": "Error", "msg": f"Unexpected status: {status}"}),
+            jsonify(
+                {"status": "Error", "msg": f"Unexpected query state: {query_state}"}
+            ),
             500,
         )
