@@ -39,6 +39,8 @@ class FlowmachineQuerySchema(OneOfSchema):
         #     return "subscriber_locations"
         elif isinstance(obj, MeaningfulLocationsAggregateExposed):
             return "meaningful_locations_aggregate"
+        elif isinstance(obj, MeaningfulLocationsBetweenLabelODMatrixExposed):
+            return "meaningful_locations_od_matrix"
         else:
             raise ValueError(
                 f"Object type '{obj.__class__.__name__}' not registered in FlowmachineQuerySchema."

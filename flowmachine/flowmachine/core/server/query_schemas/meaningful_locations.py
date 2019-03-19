@@ -33,13 +33,13 @@ __all__ = [
 class MeaningfulLocationsAggregateSchema(Schema):
     start_date = fields.Date(required=True)
     stop_date = fields.Date(required=True)
+    aggregation_unit = AggregationUnit(required=True)
     label = fields.String(required=True)
     labels = fields.Dict(
         required=True, keys=fields.String(), values=fields.Dict()
     )  # TODO: use custom field here for stricter validation!
     tower_hour_of_day_scores = TowerHourOfDayScores(required=True)
     tower_day_of_week_scores = TowerDayOfWeekScores(required=True)
-    aggregation_unit = AggregationUnit(required=True)
     tower_cluster_radius = fields.Float(required=False, default=1.0)
     tower_cluster_call_threshold = fields.Integer(required=False, default=0)
     subscriber_subset = SubscriberSubset(required=False)
@@ -151,6 +151,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
 class MeaningfulLocationsBetweenLabelODMatrixSchema(Schema):
     start_date = fields.Date(required=True)
     stop_date = fields.Date(required=True)
+    aggregation_unit = AggregationUnit(required=True)
     label_a = fields.String(required=True)
     label_b = fields.String(required=True)
     labels = fields.Dict(
