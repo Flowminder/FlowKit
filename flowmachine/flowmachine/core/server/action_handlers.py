@@ -18,7 +18,7 @@ from apispec import APISpec
 from apispec_oneofschema import MarshmallowPlugin
 from marshmallow import ValidationError
 
-from flowmachine.core import Query
+from flowmachine.core import Query, GeoTable
 from flowmachine.core.cache import get_query_object_by_id
 from flowmachine.core.query_info_lookup import QueryInfoLookup, UnkownQueryIdError
 from flowmachine.core.query_state import QueryStateMachine, QueryState
@@ -204,6 +204,39 @@ def action_handler__get_sql(query_id):
         return ZMQReply(status="error", msg=msg)
 
 
+def action_handler__get_geography(aggregation_unit):
+    """
+    Handler for the 'get_query_geography' action.
+
+    Returns query parameters of the query with the given `query_id`.
+    """
+
+    # TODO: do we still need to validate the aggregation unit or does this happen
+    # before (e.g. through marshmallow?)
+    allowed_aggregation_units = ["admin0", "admin1", "admin2", "admin3", "admin4"]
+    if aggregation_unit not in allowed_aggregation_units:
+        error_msg = (
+            f"Invalid aggregation unit. Must be one of: {allowed_aggregation_units}'"
+        )
+        return ZMQReply(status="error", msg="")
+
+    try:
+        q = GeoTable(
+            name=aggregation_unit,
+            schema="geography",
+            columns=[f"{aggregation_unit}name", f"{aggregation_unit}pcod", "geom"],
+        )
+    except Exception as e:
+        return ZMQReply(status="error", msg=f"{e}")
+
+    # Explicitly project to WGS84 (SRID=4326) to conform with GeoJSON standard
+    sql = q.geojson_query(crs=4326)
+    # TODO: put query_run_log back in!
+    # query_run_log.info("get_geography", **run_log_dict)
+    reply_data = {"query_state": QueryState.COMPLETED, "sql": sql}
+    return ZMQReply(status="done", data=reply_data)
+
+
 def get_action_handler(action):
     try:
         return ACTION_HANDLERS[action]
@@ -255,4 +288,5 @@ ACTION_HANDLERS = {
     "get_query_kind": action_handler__get_query_kind,
     "get_query_params": action_handler__get_query_params,
     "get_sql_for_query_result": action_handler__get_sql,
+    "get_geography": action_handler__get_geography,
 }
