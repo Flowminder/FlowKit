@@ -50,7 +50,8 @@ class _populationBuffer(Query):
     Parameters
     ----------
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit
-        Spatial unit to which subscriber locations are mapped
+        Spatial unit to which subscriber locations are mapped. See the
+        docstring of spatial_unit.py for more information.
     population_object : flowmachine.features.utilities.spatial_aggregates.SpatialAggregate
         An aggregated subscriber locating object
     distance_matrix : flowmachine.features.spatial.distance_matrix.DistanceMatrix
@@ -189,10 +190,10 @@ class PopulationWeightedOpportunities(Model):
         default method used. Refer to the Population()
         documentation for other available methods.
 
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None
-        Spatial unit. If None, defaults to VersionedSiteSpatialUnit().
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
+                   default VersionedSiteSpatialUnit()
         Note: DistanceMatrix only supports spatial units
-        VersionedCellSpatialUnit and VersionedSiteSpatialUnit at this time.
+        VersionedCellSpatialUnit() and VersionedSiteSpatialUnit() at this time.
 
     **kwargs : arguments
         Used to pass custom arguments to the ModalLocation() objects.
@@ -236,7 +237,7 @@ class PopulationWeightedOpportunities(Model):
     """
 
     def __init__(
-        self, start, stop, method="home-location", spatial_unit=None, **kwargs
+        self, start, stop, method="home-location", spatial_unit="default", **kwargs
     ):
 
         warnings.warn(
@@ -249,7 +250,7 @@ class PopulationWeightedOpportunities(Model):
         self.start = start
         self.stop = stop
         self.method = method
-        if spatial_unit is None:
+        if spatial_unit == "default":
             self.spatial_unit = VersionedSiteSpatialUnit()
         else:
             self.spatial_unit = spatial_unit

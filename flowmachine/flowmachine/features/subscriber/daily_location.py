@@ -13,6 +13,7 @@ representing where an subscriber is on a given day.
 """
 import datetime
 
+from ...core.spatial_unit import AdminSpatialUnit
 from .last_location import LastLocation
 from .most_frequent_location import MostFrequentLocation
 
@@ -20,17 +21,14 @@ from .most_frequent_location import MostFrequentLocation
 def locate_subscribers(
     start,
     stop,
-    level="admin3",
+    spatial_unit="default",
     hours="all",
     method="last",
     table="all",
     subscriber_identifier="msisdn",
-    column_name=None,
     *,
     ignore_nulls=True,
     subscriber_subset=None,
-    polygon_table=None,
-    size=None,
     radius=None,
 ):
     """
@@ -45,29 +43,11 @@ def locate_subscribers(
     start, stop : str
         iso format date range for the the time frame,
         e.g. 2016-01-01 or 2016-01-01 14:03:01
-    level : str, default 'admin3'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None,
+                   default AdminSpatialUnit(level=3)
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of spatial_unit.py for more information. Use None for no
+        location join (i.e. just the cell identifier in the CDR itself).
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -89,14 +69,8 @@ def locate_subscribers(
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    column_name : str, optional
-        Option, none-standard, name of the column that identifies the
-        spatial level, i.e. could pass admin3pcod to use the admin 3 pcode
-        as opposed to the name of the region.
     kwargs :
         Eventually passed to flowmachine.spatial_metrics.spatial_helpers.
-        JoinToLocation. Here you can specify a non standard set of polygons.
-        See the doc string of JoinToLocation for more details.
 
     Notes
     -----
@@ -122,39 +96,35 @@ def locate_subscribers(
                         .
                         .
     """
+    if spatial_unit == "default":
+        spatial_unit = AdminSpatialUnit(level=3)
 
     if method == "last":
         return LastLocation(
             start,
             stop,
-            level,
+            spatial_unit,
             hours,
             table=table,
             subscriber_identifier=subscriber_identifier,
-            column_name=column_name,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,
-            polygon_table=polygon_table,
-            size=size,
             radius=radius,
         )
     elif method == "most-common":
         return MostFrequentLocation(
             start,
             stop,
-            level,
+            spatial_unit,
             hours,
             table=table,
-            column_name=column_name,
             subscriber_identifier=subscriber_identifier,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,
-            polygon_table=polygon_table,
-            size=size,
             radius=radius,
         )
     # elif self.method == 'first':
-    #     _obj = FirstLocation(start, stop, level, hours)
+    #     _obj = FirstLocation(start, stop, spatial_unit, hours)
     else:
         raise ValueError(
             f"Unrecognised method '{method}', must be either 'most-common' or 'last'"
@@ -165,16 +135,13 @@ def daily_location(
     date,
     stop=None,
     *,
-    level="admin3",
+    spatial_unit="default",
     hours="all",
     method="last",
     table="all",
     subscriber_identifier="msisdn",
-    column_name=None,
     ignore_nulls=True,
     subscriber_subset=None,
-    polygon_table=None,
-    size=None,
     radius=None,
 ):
     """
@@ -188,29 +155,11 @@ def daily_location(
     stop : str
         optionally specify a stop datetime in iso format date for the day in question,
         e.g. 2016-01-02 06:00:00
-    level : str, default 'admin3'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None,
+                   default AdminSpatialUnit(level=3)
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of spatial_unit.py for more information. Use None for no
+        location join (i.e. just the cell identifier in the CDR itself).
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -232,10 +181,6 @@ def daily_location(
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    column_name : str, optional
-        Option, none-standard, name of the column that identifies the
-        spatial level, i.e. could pass admin3pcod to use the admin 3 pcode
-        as opposed to the name of the region.
 
     Notes
     -----
@@ -246,6 +191,8 @@ def daily_location(
     * Use 24 hr format!
 
     """
+    if spatial_unit == "default":
+        spatial_unit = AdminSpatialUnit(level=3)
     if stop is None:
         # 'cast' the date object as a date
         d1 = datetime.date(*map(int, date.split("-")))
@@ -255,15 +202,12 @@ def daily_location(
     return locate_subscribers(
         start=date,
         stop=stop,
-        level=level,
+        spatial_unit=spatial_unit,
         hours=hours,
         method=method,
         table=table,
         subscriber_identifier=subscriber_identifier,
-        column_name=column_name,
         ignore_nulls=ignore_nulls,
         subscriber_subset=subscriber_subset,
-        polygon_table=polygon_table,
-        size=size,
         radius=radius,
     )

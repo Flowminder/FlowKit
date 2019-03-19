@@ -17,6 +17,11 @@ from .metaclasses import SubscriberFeature
 from . import ModalLocation
 from ..utilities.subscriber_locations import subscriber_locations
 from flowmachine.utils import parse_datestring, get_dist_string, list_of_dates
+from flowmachine.core.spatial_unit import (
+    LatLonSpatialUnit,
+    VersionedCellSpatialUnit,
+    VersionedSiteSpatialUnit,
+)
 
 from dateutil.relativedelta import relativedelta
 
@@ -79,26 +84,34 @@ class Displacement(SubscriberFeature):
 
         self.start = start
 
-        allowed_levels = ["lat-lon", "versioned-cell", "versioned-site"]
+        allowed_spatial_units = [
+            LatLonSpatialUnit,
+            VersionedCellSpatialUnit,
+            VersionedSiteSpatialUnit,
+        ]
         if modal_locations:
             if (
                 isinstance(modal_locations, ModalLocation)
-                and modal_locations.level in allowed_levels
+                and type(modal_locations.spatial_unit) in allowed_spatial_units
             ):
                 hl = modal_locations
             else:
                 raise ValueError(
-                    f"Argument 'modal_locations' should be an instance of ModalLocation class with level in {allowed_levels}"
+                    "Argument 'modal_locations' should be an instance of "
+                    "ModalLocation class with type(spatial_unit) in "
+                    f"{su.__name__ for su in allowed_spatial_units}"
                 )
         else:
             hl = ModalLocation(
                 *[
-                    daily_location(date, level="lat-lon", **kwargs)
+                    daily_location(date, spatial_unit=LatLonSpatialUnit(), **kwargs)
                     for date in list_of_dates(self.start, self.stop_hl)
                 ]
             )
 
-        sl = subscriber_locations(self.start, self.stop_sl, level="lat-lon", **kwargs)
+        sl = subscriber_locations(
+            self.start, self.stop_sl, spatial_unit=LatLonSpatialUnit(), **kwargs
+        )
 
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
