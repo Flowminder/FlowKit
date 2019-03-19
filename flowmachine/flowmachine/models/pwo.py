@@ -31,10 +31,11 @@ from typing import List
 import pandas as pd
 
 from flowmachine.features import daily_location
-from flowmachine.utils import get_columns_for_level, list_of_dates
+from flowmachine.utils import list_of_dates
 from ..features import ModalLocation
 from ..core.query import Query
 from ..core.model import Model, model_result
+from ..core.spatial_unit import VersionedSiteSpatialUnit
 from ..features.spatial.distance_matrix import DistanceMatrix
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
@@ -48,38 +49,16 @@ class _populationBuffer(Query):
 
     Parameters
     ----------
-    level : str
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit
+        Spatial unit to which subscriber locations are mapped
     population_object : flowmachine.features.utilities.spatial_aggregates.SpatialAggregate
         An aggregated subscriber locating object
     distance_matrix : flowmachine.features.spatial.distance_matrix.DistanceMatrix
         A distance matrix
     """
 
-    def __init__(self, level, population_object, distance_matrix):
-
-        self.level = level
+    def __init__(self, spatial_unit, population_object, distance_matrix):
+        self.spatial_unit = spatial_unit
         self.population_object = population_object
         self.distance_matrix = distance_matrix
 
@@ -92,7 +71,7 @@ class _populationBuffer(Query):
         (i..e an origin) and all its possible
         counterparts (i.e. destinations).
         """
-        cols = get_columns_for_level(self.level)
+        cols = self.spatial_unit.location_columns
 
         from_cols = ", ".join("{c}_from".format(c=c) for c in cols)
         to_cols = ", ".join("{c}_to".format(c=c) for c in cols)
@@ -117,7 +96,7 @@ class _populationBuffer(Query):
 
     @property
     def column_names(self) -> List[str]:
-        cols = get_columns_for_level(self.level)
+        cols = self.spatial_unit.location_columns
 
         return (
             ["id"]
@@ -132,7 +111,7 @@ class _populationBuffer(Query):
         that calculates the population that is
         covered by a buffer.
         """
-        cols = get_columns_for_level(self.level)
+        cols = self.spatial_unit.location_columns
 
         from_cols = ", ".join("B.{c}_from".format(c=c) for c in cols)
         outer_from_cols = ", ".join("C.{c}_from".format(c=c) for c in cols)
@@ -210,12 +189,13 @@ class PopulationWeightedOpportunities(Model):
         default method used. Refer to the Population()
         documentation for other available methods.
 
-    level : str
-        {levels}
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None
+        Spatial unit. If None, defaults to VersionedSiteSpatialUnit().
+        Note: DistanceMatrix only supports spatial units
+        VersionedCellSpatialUnit and VersionedSiteSpatialUnit at this time.
 
     **kwargs : arguments
-        Used to pass custom arguments to the DistanceMatrix()
-        and ModalLocation() objects.
+        Used to pass custom arguments to the ModalLocation() objects.
 
     Examples
     --------
@@ -256,7 +236,7 @@ class PopulationWeightedOpportunities(Model):
     """
 
     def __init__(
-        self, start, stop, method="home-location", level="versioned-site", **kwargs
+        self, start, stop, method="home-location", spatial_unit=None, **kwargs
     ):
 
         warnings.warn(
@@ -269,21 +249,24 @@ class PopulationWeightedOpportunities(Model):
         self.start = start
         self.stop = stop
         self.method = method
-        self.level = level
+        if spatial_unit is None:
+            self.spatial_unit = VersionedSiteSpatialUnit()
+        else:
+            self.spatial_unit = spatial_unit
         self.distance_matrix = DistanceMatrix(
-            level=level, return_geometry=True, **kwargs
+            spatial_unit=self.spatial_unit, return_geometry=True
         )
 
         if self.method == "home-location":
             self.population_object = ModalLocation(
                 *[
-                    daily_location(d, level=self.level, **kwargs)
+                    daily_location(d, spatial_unit=self.spatial_unit, **kwargs)
                     for d in list_of_dates(self.start, self.stop)
                 ]
             ).aggregate()
 
         self.population_buffer_object = _populationBuffer(
-            level=self.level,
+            spatial_unit=self.spatial_unit,
             population_object=self.population_object,
             distance_matrix=self.distance_matrix,
         )
@@ -380,16 +363,21 @@ class PopulationWeightedOpportunities(Model):
 
             population_df = self.population_object.get_dataframe()
             population_buffer = self.population_buffer_object.get_dataframe()
-            ix = get_columns_for_level(self.level)
-            ix = ["{}_{}".format(c, d) for d in ("from", "to") for c in ix]
+            ix = [
+                "{}_{}".format(c, d)
+                for d in ("from", "to")
+                for c in self.spatial_unit.location_columns
+            ]
             population_buffer.set_index(ix, inplace=True)
 
             M = population_df["total"].sum()
-            N = len(population_df[get_columns_for_level(self.level)].drop_duplicates())
+            N = len(population_df[self.spatial_unit.location_columns].drop_duplicates())
             beta = 1 / M
 
-            locations = population_df[get_columns_for_level(self.level)].values.tolist()
-            population_df.set_index(get_columns_for_level(self.level), inplace=True)
+            locations = population_df[
+                self.spatial_unit.location_columns
+            ].values.tolist()
+            population_df.set_index(self.spatial_unit.location_columns, inplace=True)
 
         if not departure_rate_vector:
             logger.warning(
@@ -439,8 +427,11 @@ class PopulationWeightedOpportunities(Model):
                     probability = 0
 
                 results.append(i + j + [T_ij, probability])
-        ix = get_columns_for_level(self.level)
-        ix = ["{}_{}".format(c, d) for d in ("from", "to") for c in ix]
+        ix = [
+            "{}_{}".format(c, d)
+            for d in ("from", "to")
+            for c in self.spatial_unit.location_columns
+        ]
         ix += ["prediction", "probability"]
         res = pd.DataFrame(results, columns=ix)
         return res
