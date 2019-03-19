@@ -80,7 +80,7 @@ def action_handler__run_query(**action_params):
         # which will raise an error when converting to JSON (where the keys
         # must be strings). Therefore we transform the keys to strings here.
         error_messages = convert_dict_keys_to_strings(exc.messages)
-        return ZMQReply(status="error", msg="", data=error_messages)
+        return ZMQReply(status="error", msg="Foobar!", data=error_messages)
 
     # FIXME: Sanity check: when query_obj above was created it should have automatically
     # registered the query info lookup. However, this is contingent on the fact
