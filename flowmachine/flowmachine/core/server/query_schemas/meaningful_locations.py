@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Range, Length
 from typing import Union, Dict, List
