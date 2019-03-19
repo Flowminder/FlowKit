@@ -24,7 +24,6 @@ async def get_geography(aggregation_unit):
         f"Got message: {reply}", request_id=request.request_id
     )
 
-    breakpoint()
     if reply["status"] == "error":
         return jsonify({"status": "Error", "msg": "Internal server error"}), 500
 
