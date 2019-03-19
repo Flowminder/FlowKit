@@ -4,6 +4,7 @@
 
 import pytest
 
+from flowmachine.core.spatial_unit import AdminSpatialUnit
 from flowmachine.features import MostFrequentLocation
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
@@ -47,9 +48,11 @@ def test_most_fequent_admin(get_dataframe):
     """
     Test that the most frequent admin3 is correctly calculated.
     """
-
     mfl = locate_subscribers(
-        "2016-01-01", "2016-01-02", level="admin3", method="most-common"
+        "2016-01-01",
+        "2016-01-02",
+        spatial_unit=AdminSpatialUnit(level=3),
+        method="most-common",
     )
     df = get_dataframe(mfl)
     # A few hand picked values

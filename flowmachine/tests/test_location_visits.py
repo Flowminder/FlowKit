@@ -4,12 +4,15 @@
 
 from flowmachine.features import LocationVisits, daily_location, DayTrajectories
 from flowmachine.utils import list_of_dates
+from flowmachine.core.spatial_unit import AdminSpatialUnit
 
 
-def test_column_names_location_visits(exemplar_level_param):
+def test_column_names_location_visits(exemplar_spatial_unit_param):
     """ Test that column_names property matches head(0) for LocationVisits"""
     lv = LocationVisits(
-        DayTrajectories(daily_location("2016-01-01", **exemplar_level_param))
+        DayTrajectories(
+            daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param)
+        )
     )
     assert lv.head(0).columns.tolist() == lv.column_names
 
@@ -26,7 +29,7 @@ def test_dl_count_sum_equal_or_less_than_period(get_dataframe):
     lv = LocationVisits(
         DayTrajectories(
             *[
-                daily_location(d, level="admin3", method="last")
+                daily_location(d, spatial_unit=AdminSpatialUnit(level=3), method="last")
                 for d in list_of_dates(start_date, stop_date)
             ]
         )
@@ -40,7 +43,7 @@ def test_dl_count_sum_equal_or_less_than_period(get_dataframe):
     lv = LocationVisits(
         DayTrajectories(
             *[
-                daily_location(d, level="admin3", method="last")
+                daily_location(d, spatial_unit=AdminSpatialUnit(level=3), method="last")
                 for d in list_of_dates(start_date, stop_date)
             ]
         )

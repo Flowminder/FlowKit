@@ -19,7 +19,7 @@ def test_daily_location_1_sql(diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        level="cell",
+        spatial_unit=None,
         hours=(23, 5),
         method="last",
         subscriber_subset=subset_query,
@@ -40,7 +40,7 @@ def test_daily_location_1_df(get_dataframe, diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        level="cell",
+        spatial_unit=None,
         hours=(23, 5),
         method="last",
         subscriber_subset=subset_query,

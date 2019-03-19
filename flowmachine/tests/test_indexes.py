@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from flowmachine.core.spatial_unit import LatLonSpatialUnit
 from flowmachine.features.subscriber import *
 
 
@@ -13,10 +14,9 @@ def test_default_indexes():
         ["pcod"],
         '"subscriber"',
     ]
-    assert daily_location("2016-01-01", "2016-01-02", level="lat-lon").index_cols == [
-        ["lat", "lon"],
-        '"subscriber"',
-    ]
+    assert daily_location(
+        "2016-01-01", "2016-01-02", spatial_unit=LatLonSpatialUnit()
+    ).index_cols == [["lat", "lon"], '"subscriber"']
     assert SubscriberDegree("2016-01-01", "2016-01-02").index_cols == ['"subscriber"']
 
 

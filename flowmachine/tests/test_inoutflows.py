@@ -8,6 +8,7 @@ Tests for the inout flows methods
 
 
 from flowmachine.features import Flows, daily_location
+from flowmachine.core.spatial_unit import VersionedSiteSpatialUnit
 
 
 def test_inoutflow_with_double_column_location():
@@ -16,8 +17,8 @@ def test_inoutflow_with_double_column_location():
     more than one column.
     """
 
-    dl1 = daily_location("2016-01-01", level="versioned-site")
-    dl2 = daily_location("2016-01-02", level="versioned-site")
+    dl1 = daily_location("2016-01-01", spatial_unit=VersionedSiteSpatialUnit)
+    dl2 = daily_location("2016-01-02", spatial_unit=VersionedSiteSpatialUnit)
 
     flow = Flows(dl1, dl2)
     expected_columns = ["site_id_to", "version_to", "lon_to", "lat_to", "total"]
