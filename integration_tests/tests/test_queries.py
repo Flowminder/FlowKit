@@ -13,19 +13,19 @@ from .utils import permissions_types, aggregation_types
 @pytest.mark.parametrize(
     "query_kind, params",
     [
-        # (
-        #     "daily_location",
-        #     {"date": "2016-01-01", "aggregation_unit": "admin3", "method": "last"},
-        # ),
-        # (
-        #     "daily_location",
-        #     {
-        #         "date": "2016-01-01",
-        #         "aggregation_unit": "admin3",
-        #         "method": "most-common",
-        #         "subscriber_subset": None,
-        #     },
-        # ),
+        (
+            "daily_location",
+            {"date": "2016-01-01", "aggregation_unit": "admin3", "method": "last"},
+        ),
+        (
+            "daily_location",
+            {
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "most-common",
+                "subscriber_subset": None,
+            },
+        ),
         (
             "meaningful_locations_aggregate",
             {
@@ -84,125 +84,125 @@ from .utils import permissions_types, aggregation_types
                 },
             },
         ),
-        # (
-        #     "meaningful_locations_between_label_od_matrix",
-        #     {
-        #         "start_date": "2016-01-01",
-        #         "stop_date": "2016-01-02",
-        #         "aggregation_unit": "admin1",
-        #         "label_a": "unknown",
-        #         "label_b": "evening",
-        #         "tower_hour_of_day_scores": [
-        #             -1,
-        #             -1,
-        #             -1,
-        #             -1,
-        #             -1,
-        #             -1,
-        #             -1,
-        #             0,
-        #             0,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             0,
-        #             0,
-        #             0,
-        #             0,
-        #             -1,
-        #             -1,
-        #             -1,
-        #         ],
-        #         "tower_day_of_week_scores": {
-        #             "monday": 1,
-        #             "tuesday": 1,
-        #             "wednesday": 1,
-        #             "thursday": 0,
-        #             "friday": -1,
-        #             "saturday": -1,
-        #             "sunday": -1,
-        #         },
-        #         "labels": {
-        #             "evening": {
-        #                 "type": "Polygon",
-        #                 "coordinates": [
-        #                     [[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]
-        #                 ],
-        #             },
-        #             "day": {
-        #                 "type": "Polygon",
-        #                 "coordinates": [
-        #                     [[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]
-        #                 ],
-        #             },
-        #         },
-        #     },
-        # ),
-        # (
-        #     "meaningful_locations_between_dates_od_matrix",
-        #     {
-        #         "start_date_a": "2016-01-01",
-        #         "stop_date_a": "2016-01-02",
-        #         "start_date_b": "2016-01-01",
-        #         "stop_date_b": "2016-01-05",
-        #         "aggregation_unit": "admin1",
-        #         "tower_hour_of_day_scores": [
-        #             -1,
-        #             -1,
-        #             -1,
-        #             -1,
-        #             -1,
-        #             -1,
-        #             -1,
-        #             0,
-        #             0,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             1,
-        #             0,
-        #             0,
-        #             0,
-        #             0,
-        #             -1,
-        #             -1,
-        #             -1,
-        #         ],
-        #         "tower_day_of_week_scores": {
-        #             "monday": 1,
-        #             "tuesday": 1,
-        #             "wednesday": 1,
-        #             "thursday": 0,
-        #             "friday": -1,
-        #             "saturday": -1,
-        #             "sunday": -1,
-        #         },
-        #         "label": "unknown",
-        #         "labels": {
-        #             "evening": {
-        #                 "type": "Polygon",
-        #                 "coordinates": [
-        #                     [[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]
-        #                 ],
-        #             },
-        #             "day": {
-        #                 "type": "Polygon",
-        #                 "coordinates": [
-        #                     [[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]
-        #                 ],
-        #             },
-        #         },
-        #     },
-        # ),
+        (
+            "meaningful_locations_between_label_od_matrix",
+            {
+                "start_date": "2016-01-01",
+                "stop_date": "2016-01-02",
+                "aggregation_unit": "admin1",
+                "label_a": "unknown",
+                "label_b": "evening",
+                "tower_hour_of_day_scores": [
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    -1,
+                    -1,
+                    -1,
+                ],
+                "tower_day_of_week_scores": {
+                    "monday": 1,
+                    "tuesday": 1,
+                    "wednesday": 1,
+                    "thursday": 0,
+                    "friday": -1,
+                    "saturday": -1,
+                    "sunday": -1,
+                },
+                "labels": {
+                    "evening": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]
+                        ],
+                    },
+                    "day": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]
+                        ],
+                    },
+                },
+            },
+        ),
+        (
+            "meaningful_locations_between_dates_od_matrix",
+            {
+                "start_date_a": "2016-01-01",
+                "stop_date_a": "2016-01-02",
+                "start_date_b": "2016-01-01",
+                "stop_date_b": "2016-01-05",
+                "aggregation_unit": "admin1",
+                "tower_hour_of_day_scores": [
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+                    0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    -1,
+                    -1,
+                    -1,
+                ],
+                "tower_day_of_week_scores": {
+                    "monday": 1,
+                    "tuesday": 1,
+                    "wednesday": 1,
+                    "thursday": 0,
+                    "friday": -1,
+                    "saturday": -1,
+                    "sunday": -1,
+                },
+                "label": "unknown",
+                "labels": {
+                    "evening": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]
+                        ],
+                    },
+                    "day": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]
+                        ],
+                    },
+                },
+            },
+        ),
     ],
 )
 def test_run_query(query_kind, params, access_token_builder, flowapi_url):
