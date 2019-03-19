@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 
+import flowmachine.core.server.query_schemas
 from flowmachine.core import Query
 from flowmachine.core.query_info_lookup import QueryInfoLookup
 
@@ -111,9 +112,16 @@ class BaseExposedQuery(metaclass=ABCMeta):
         dict
             JSON representation of the query parameters, including those of subqueries.
         """
-        # marshmallow_schema = self.__schema__()
-        # return marshmallow_schema.dump(self)
-        # return FlowmachineQuerySchema().load({"query_kind": "dummy_query", "dummy_param": "foobar"})
+        # We need to dynamically import FlowmachineQuerySchema here in order to avoid
+        # a circular import in this file because currently there are dependencies of
+        # the following form (using the example of DailyLocation):
+        #
+        #     DailyLocationSchema -> DailyLocationExposed -> BaseExposedQuery -> FlowmachineQuerySchema -> DailyLocationSchema
+        #
+        # We break the dependency BaseExposedQuery -> FlowmachineQuerySchema here by using
+        # this dynamic import. There is possibly a better way to do this...
+        from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
+
         return FlowmachineQuerySchema().dump(self)
 
     def _create_query_info_lookup(self):
