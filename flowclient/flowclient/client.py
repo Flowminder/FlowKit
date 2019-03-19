@@ -175,7 +175,7 @@ class Connection:
             except (ValueError, KeyError):
                 error = "Unknown error"
             raise FlowclientConnectionError(
-                f"Something went wrong: {error}. API returned with status code: {response.status_code}"
+                f"Something went wrong: {error} (payload: {response.json()['payload']}. API returned with status code: {response.status_code}"
             )
 
     def __repr__(self) -> str:
