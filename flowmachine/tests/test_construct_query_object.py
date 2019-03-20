@@ -13,6 +13,7 @@ from flowmachine.core import GeoTable
 from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocationEvents
 
 
+@pytest.mark.skip(reason="TODO: convert these into tests for the marshmallow schemas!")
 @pytest.mark.parametrize(
     "expected_md5, query_spec",
     [
