@@ -6,9 +6,9 @@ name = "pypi"
 [packages]
 sqlalchemy = "*"
 "psycopg2-binary" = "*"
+structlog = "*"
 
 [dev-packages]
-
 
 [requires]
 python_version = "3.7"
