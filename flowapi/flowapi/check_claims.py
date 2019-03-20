@@ -55,11 +55,17 @@ def check_claims(claim_type):
 
                 msg = {
                     "request_id": request.request_id,
-                    "action": "get_query_kind",
-                    "params": {"query_id": kwargs["query_id"]},
+                    "action": "poll_query",
+                    "params": {"query_id": query_id},
                 }
                 request.socket.send_json(msg)
                 reply = await request.socket.recv_json()
+                query_state = reply["payload"]["query_state"]
+                if query_state == "awol":
+                    return (
+                        jsonify({}),
+                        401,
+                    )  # TODO: should we use 404 here and return a meaningful error msg?
                 query_kind = reply["payload"]["query_kind"]
             else:
                 return jsonify({"msg": f"Unsupported claim type: {claim_type}"})
