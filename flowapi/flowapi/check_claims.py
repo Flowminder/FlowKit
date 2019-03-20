@@ -60,7 +60,7 @@ def check_claims(claim_type):
                 }
                 request.socket.send_json(msg)
                 reply = await request.socket.recv_json()
-                query_kind = reply["data"]["query_kind"]
+                query_kind = reply["payload"]["query_kind"]
             else:
                 return jsonify({"msg": f"Unsupported claim type: {claim_type}"})
 
@@ -111,7 +111,7 @@ def check_claims(claim_type):
                     return jsonify({}), 404
 
                 try:
-                    aggregation_unit = message["data"]["query_params"][
+                    aggregation_unit = message["payload"]["query_params"][
                         "aggregation_unit"
                     ]
                 except KeyError:

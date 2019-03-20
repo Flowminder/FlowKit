@@ -28,13 +28,17 @@ async def run_query():
         #       If we pass on the payload we should also deconstruct it to make it more human-readable
         #       because it will contain marshmallow validation errors (and/or any other possible errors?)
         return (
-            jsonify({"status": "Error", "msg": reply["msg"], "payload": reply["data"]}),
+            jsonify(
+                {"status": "Error", "msg": reply["msg"], "payload": reply["payload"]}
+            ),
             403,
         )
     elif reply["status"] == "accepted":
-        assert "query_id" in reply["data"]
+        assert "query_id" in reply["payload"]
         d = {
-            "Location": url_for(f"query.poll_query", query_id=reply["data"]["query_id"])
+            "Location": url_for(
+                f"query.poll_query", query_id=reply["payload"]["query_id"]
+            )
         }
         return jsonify({}), 202, d
     else:
@@ -57,7 +61,7 @@ async def poll_query(query_id):
         return jsonify({"status": "error", "msg": reply[""]})
     else:
         assert reply["status"] == "done"
-        query_state = reply["data"]["query_state"]
+        query_state = reply["payload"]["query_state"]
         if query_state == "completed":
             return (
                 jsonify({}),
@@ -88,7 +92,7 @@ async def get_query_result(query_id):
 
     if reply["status"] == "error":
         # TODO: check that this path is fully tested!
-        query_state = reply["data"]["query_state"]
+        query_state = reply["payload"]["query_state"]
         if query_state in ("executing", "queued"):
             return jsonify({}), 202
         elif query_state == "errored":
@@ -106,7 +110,7 @@ async def get_query_result(query_id):
                 500,
             )
     else:
-        sql = reply["data"]["sql"]
+        sql = reply["payload"]["sql"]
         results_streamer = stream_with_context(stream_result_as_json)(
             sql, additional_elements={"query_id": query_id}
         )
