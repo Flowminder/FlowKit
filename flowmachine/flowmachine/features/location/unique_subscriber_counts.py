@@ -60,10 +60,6 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         these lines with null cells should still be present, although they contain
         no information on the subscribers location, they still tell us that the subscriber made
         a call at that time.
-    time_col : str, default 'time'
-        The name of the column that identifies the time in the source table
-        e.g. 'time', 'date', 'start_time' etc.
-        Eventually passed to flowmachine.JoinToLocation.
 
     Examples
     --------
@@ -75,9 +71,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
     2     Bajhang               285
     """
 
-    def __init__(
-        self, start, stop, spatial_unit=None, hours="all", table="all", time_col="time"
-    ):
+    def __init__(self, start, stop, spatial_unit=None, hours="all", table="all"):
         """
 
         """
@@ -93,7 +87,6 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
             spatial_unit=self.spatial_unit,
             hours=self.hours,
             table=self.table,
-            time_col=time_col,
         )
 
         super().__init__()
