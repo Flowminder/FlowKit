@@ -41,7 +41,15 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
         "status": "done",
         "msg": "",
         "payload": {
-            "available_queries": ["daily_location", "modal_location", "dummy_query"]
+            "available_queries": [
+                "dummy_query",
+                "daily_location",
+                "modal_location",
+                "flows",
+                "meaningful_locations_aggregate",
+                "meaningful_locations_between_label_od_matrix",
+                "meaningful_locations_between_dates_od_matrix",
+            ]
         },
     }
     assert expected_reply == reply

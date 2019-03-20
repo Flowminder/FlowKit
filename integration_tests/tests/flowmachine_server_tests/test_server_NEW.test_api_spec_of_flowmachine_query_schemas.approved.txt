@@ -52,6 +52,67 @@
       "mapping": {
         "daily_location": "#/components/schemas/DailyLocation",
         "dummy_query": "#/components/schemas/DummyQuery",
+        "flows": "#/components/schemas/Flows",
+        "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
+        "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
+        "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
+        "modal_location": "#/components/schemas/ModalLocation"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DummyQuery"
+      },
+      {
+        "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/ModalLocation"
+      },
+      {
+        "$ref": "#/components/schemas/Flows"
+      },
+      {
+        "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
+      },
+      {
+        "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
+      },
+      {
+        "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
+      }
+    ]
+  },
+  "Flows": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "from_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      },
+      "to_location": {
+        "$ref": "#/components/schemas/InputToFlows"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "from_location",
+      "to_location"
+    ],
+    "type": "object"
+  },
+  "InputToFlows": {
+    "discriminator": {
+      "mapping": {
+        "daily_location": "#/components/schemas/DailyLocation",
         "modal_location": "#/components/schemas/ModalLocation"
       },
       "propertyName": "query_kind"
@@ -62,9 +123,6 @@
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
-      },
-      {
-        "$ref": "#/components/schemas/DummyQuery"
       }
     ]
   },
@@ -80,6 +138,243 @@
         "$ref": "#/components/schemas/DailyLocation"
       }
     ]
+  },
+  "MeaningfulLocationsAggregate": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "label": {
+        "type": "string"
+      },
+      "labels": {
+        "additionalProperties": {
+          "type": "object"
+        },
+        "type": "object"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "stop_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      },
+      "tower_cluster_call_threshold": {
+        "format": "int32",
+        "type": "integer"
+      },
+      "tower_cluster_radius": {
+        "format": "float",
+        "type": "number"
+      },
+      "tower_day_of_week_scores": {
+        "additionalProperties": {
+          "format": "float",
+          "maximum": 1.0,
+          "minimum": -1.0,
+          "type": "number"
+        },
+        "type": "string"
+      },
+      "tower_hour_of_day_scores": {
+        "items": {
+          "format": "float",
+          "maximum": 1.0,
+          "minimum": -1.0,
+          "type": "number"
+        },
+        "maxItems": 24,
+        "minItems": 24,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "label",
+      "labels",
+      "start_date",
+      "stop_date",
+      "tower_day_of_week_scores",
+      "tower_hour_of_day_scores"
+    ],
+    "type": "object"
+  },
+  "MeaningfulLocationsBetweenDatesODMatrix": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "label": {
+        "type": "string"
+      },
+      "labels": {
+        "additionalProperties": {
+          "type": "object"
+        },
+        "type": "object"
+      },
+      "start_date_a": {
+        "format": "date",
+        "type": "string"
+      },
+      "start_date_b": {
+        "format": "date",
+        "type": "string"
+      },
+      "stop_date_a": {
+        "format": "date",
+        "type": "string"
+      },
+      "stop_date_b": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      },
+      "tower_cluster_call_threshold": {
+        "format": "int32",
+        "type": "integer"
+      },
+      "tower_cluster_radius": {
+        "format": "float",
+        "type": "number"
+      },
+      "tower_day_of_week_scores": {
+        "additionalProperties": {
+          "format": "float",
+          "maximum": 1.0,
+          "minimum": -1.0,
+          "type": "number"
+        },
+        "type": "string"
+      },
+      "tower_hour_of_day_scores": {
+        "items": {
+          "format": "float",
+          "maximum": 1.0,
+          "minimum": -1.0,
+          "type": "number"
+        },
+        "maxItems": 24,
+        "minItems": 24,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "label",
+      "start_date_a",
+      "start_date_b",
+      "stop_date_a",
+      "stop_date_b",
+      "tower_day_of_week_scores",
+      "tower_hour_of_day_scores"
+    ],
+    "type": "object"
+  },
+  "MeaningfulLocationsBetweenLabelODMatrix": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "label_a": {
+        "type": "string"
+      },
+      "label_b": {
+        "type": "string"
+      },
+      "labels": {
+        "additionalProperties": {
+          "type": "object"
+        },
+        "type": "object"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "stop_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      },
+      "tower_cluster_call_threshold": {
+        "format": "int32",
+        "type": "integer"
+      },
+      "tower_cluster_radius": {
+        "format": "float",
+        "type": "number"
+      },
+      "tower_day_of_week_scores": {
+        "additionalProperties": {
+          "format": "float",
+          "maximum": 1.0,
+          "minimum": -1.0,
+          "type": "number"
+        },
+        "type": "string"
+      },
+      "tower_hour_of_day_scores": {
+        "items": {
+          "format": "float",
+          "maximum": 1.0,
+          "minimum": -1.0,
+          "type": "number"
+        },
+        "maxItems": 24,
+        "minItems": 24,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "label_a",
+      "label_b",
+      "start_date",
+      "stop_date",
+      "tower_day_of_week_scores",
+      "tower_hour_of_day_scores"
+    ],
+    "type": "object"
   },
   "ModalLocation": {
     "properties": {
@@ -107,6 +402,9 @@
         "type": "string"
       }
     },
+    "required": [
+      "aggregation_unit"
+    ],
     "type": "object"
   }
 }
