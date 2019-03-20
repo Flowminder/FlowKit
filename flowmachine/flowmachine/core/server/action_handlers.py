@@ -245,7 +245,7 @@ def action_handler__get_geography(aggregation_unit):
         error_msg = (
             f"Invalid aggregation unit. Must be one of: {allowed_aggregation_units}'"
         )
-        return ZMQReply(status="error", msg="")
+        return ZMQReply(status="error", msg=error_msg)
 
     try:
         q = GeoTable(
