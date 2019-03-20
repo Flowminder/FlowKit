@@ -48,6 +48,7 @@ class JoinToLocation(Query):
 
     def __init__(self, left, *, spatial_unit, time_col="time"):
         if isinstance(spatial_unit, CellSpatialUnit):
+            # Nothing to join in this case
             raise ValueError(
                 "CellSpatialUnit is not a valid spatial unit type for JoinToLocation"
             )

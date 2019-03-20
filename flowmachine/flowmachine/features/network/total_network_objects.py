@@ -14,8 +14,13 @@ from typing import List
 
 from ...core.mixins import GeoDataMixin
 from ...core import JoinToLocation
-from flowmachine.utils import get_columns_for_level
 from ...core.query import Query
+from ...core.spatial_unit import (
+    CellSpatialUnit,
+    VersionedSiteSpatialUnit,
+    VersionedCellSpatialUnit,
+    AdminSpatialUnit,
+)
 from ..utilities import EventsTablesUnion
 
 valid_stats = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
@@ -39,11 +44,12 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         Either 'calls', 'sms', or other table under `events.*`. If
         no specific table is provided this will collect
         statistics from all tables.
-    network_object : {'cell', 'versioned-cell', 'versioned-site'}
-        Objects to track, defaults to 'cells', the unversioned lowest
+    network_object : {Cell,VersionedCell,VersionedSite}SpatialUnit, default CellSpatialUnit()
+        Objects to track, defaults to CellSpatialUnit(), the unversioned lowest
         level of infrastructure available.
-    level : {'adminN', 'grid', 'polygon'}
-        Level to facet on, defaults to 'admin0'
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
+                   default AdminSpatialUnit(level=0)
+        Spatial unit to facet on.
 
     Other Parameters
     ----------------
@@ -67,17 +73,12 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         *,
         table="all",
         period="day",
-        network_object="cell",
-        level="admin0",
-        column_name=None,
-        size=None,
-        polygon_table=None,
-        geom_col="geom",
+        network_object=CellSpatialUnit(),
+        spatial_unit=None,
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        self.table = table.lower()
         self.start = (
             self.connection.min_date(table=table).strftime("%Y-%m-%d")
             if start is None
@@ -88,55 +89,51 @@ class TotalNetworkObjects(GeoDataMixin, Query):
             if stop is None
             else stop
         )
+
+        self.table = table.lower()
         if self.table != "all" and not self.table.startswith("events"):
             self.table = "events.{}".format(self.table)
-        self.network_object = network_object.lower()
-        if self.network_object == "cell":
-            events = EventsTablesUnion(
-                self.start,
-                self.stop,
-                tables=self.table,
-                columns=["location_id", "datetime"],
-                hours=hours,
-                subscriber_subset=subscriber_subset,
-                subscriber_identifier=subscriber_identifier,
+
+        allowed_network_object_types = [
+            CellSpatialUnit,
+            VersionedCellSpatialUnit,
+            VersionedSiteSpatialUnit,
+        ]
+
+        self.network_object = network_object
+        if type(self.network_object) not in allowed_network_object_types:
+            raise ValueError(
+                "{} is not a valid network object type.".format(type(network_object))
             )
-        elif self.network_object in {"versioned-cell", "versioned-site"}:
-            events = EventsTablesUnion(
-                self.start,
-                self.stop,
-                tables=self.table,
-                columns=["location_id", "datetime"],
-                hours=hours,
-                subscriber_subset=subscriber_subset,
-                subscriber_identifier=subscriber_identifier,
-            )
-            events = JoinToLocation(
-                events,
-                level=self.network_object,
-                time_col="datetime",
-                column_name=column_name,
-                size=size,
-                polygon_table=polygon_table,
-                geom_col=geom_col,
-            )
+
+        if spatial_unit is None:
+            self.spatial_unit = AdminSpatialUnit(level=0)
         else:
-            raise ValueError("{} is not a valid network object.".format(network_object))
-        self.level = level.lower()
-        if self.level in {
-            "cell",
-            "versioned-cell",
-            "versioned-site",
-        }:  # No sense in aggregating network object to
-            raise ValueError("{} is not a valid level".format(level))  # network object
+            self.spatial_unit = spatial_unit
+        if type(self.spatial_unit) in allowed_network_object_types:
+            # No sense in aggregating network object to network object
+            raise ValueError(
+                "{} is not a valid spatial unit type for TotalNetworkObjects".format(
+                    type(self.spatial_unit)
+                )
+            )
+
+        events = EventsTablesUnion(
+            self.start,
+            self.stop,
+            tables=self.table,
+            columns=["location_id", "datetime"],
+            hours=hours,
+            subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
+        )
+        if not isinstance(self.network_object, CellSpatialUnit):
+            events = JoinToLocation(
+                events, spatial_unit=self.network_object, time_col="datetime"
+            )
+
         self.joined = JoinToLocation(
-            events,
-            level=level,
-            time_col="datetime",
-            column_name=column_name,
-            size=size,
-            polygon_table=polygon_table,
-            geom_col=geom_col,
+            events, spatial_unit=self.spatial_unit, time_col="datetime"
         )
         self.period = period.lower()
         if self.period not in valid_periods:
@@ -145,10 +142,6 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         # FIXME: we are only storing these here so that they can be accessed by
         #        AggregateNetworkObjects.from_total_network_objects() below. This
         #        should be refactored soon.
-        self.column_name = column_name
-        self.size = size
-        self.polygon_table = polygon_table
-        self.geom_col = geom_col
         self.hours = hours
         self.subscriber_subset = subscriber_subset
         self.subscriber_identifier = subscriber_identifier
@@ -157,16 +150,11 @@ class TotalNetworkObjects(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return get_columns_for_level(self.level, self.joined.column_name) + [
-            "total",
-            "datetime",
-        ]
+        return self.spatial_unit.location_columns + ["total", "datetime"]
 
     def _make_query(self):
-        cols = ",".join(get_columns_for_level(self.network_object))
-        group_cols = ",".join(
-            get_columns_for_level(self.level, self.joined.column_name)
-        )
+        cols = ",".join(self.network_object.location_columns)
+        group_cols = ",".join(self.spatial_unit.column_names)
         sql = """
         SELECT {group_cols}, COUNT(*) as total,
              datetime FROM
@@ -225,11 +213,12 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
         statistics from all tables.
     statistic : {'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}
         Statistic to calculate, defaults to 'avg'.
-    object : {'cell', 'versioned-cell', 'versioned-site'}
-        Objects to track, defaults to 'cells', the unversioned lowest
+    network_object : {Cell,VersionedCell,VersionedSite}SpatialUnit, default CellSpatialUnit()
+        Objects to track, defaults to CellSpatialUnit(), the unversioned lowest
         level of infrastructure available.
-    level : {'adminN', 'grid', 'polygon'}
-        Level to facet at, defaults to 'admin0'
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
+                   default AdminSpatialUnit(level=0)
+        Spatial unit to facet on.
 
     Other Parameters
     ----------------
@@ -257,12 +246,8 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
         table="all",
         period="day",
         by=None,
-        network_object="cell",
-        level="admin0",
-        column_name=None,
-        size=None,
-        polygon_table=None,
-        geom_col="geom",
+        network_object=CellSpatialUnit(),
+        spatial_unit=None,
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
@@ -273,11 +258,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             table=table,
             period=period,
             network_object=network_object,
-            level=level,
-            column_name=column_name,
-            size=size,
-            polygon_table=polygon_table,
-            geom_col=geom_col,
+            spatial_unit=spatial_unit,
             hours=hours,
             subscriber_subset=subscriber_subset,
             subscriber_identifier=subscriber_identifier,
@@ -339,11 +320,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             network_object=total_objs.network_object,
             statistic=statistic,
             by=by,
-            level=total_objs.level,
-            column_name=total_objs.column_name,
-            size=total_objs.size,
-            polygon_table=total_objs.polygon_table,
-            geom_col=total_objs.geom_col,
+            spatial_unit=total_objs.spatial_unit,
             hours=total_objs.hours,
             subscriber_subset=total_objs.subscriber_subset,
             subscriber_identifier=total_objs.subscriber_identifier,
@@ -351,16 +328,13 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return get_columns_for_level(
-            self.total_objs.level, self.total_objs.joined.column_name
-        ) + [self.statistic, "datetime"]
+        return self.total_objs.spatial_unit.location_columns + [
+            self.statistic,
+            "datetime",
+        ]
 
     def _make_query(self):
-        group_cols = ",".join(
-            get_columns_for_level(
-                self.total_objs.level, self.total_objs.joined.column_name
-            )
-        )
+        group_cols = ",".join(self.total_objs.spatial_unit.location_columns)
         sql = """
         SELECT {group_cols}, {stat}(z.total) as {stat},
         date_trunc('{by}', z.datetime) as datetime FROM 

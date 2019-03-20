@@ -10,6 +10,7 @@ Level classes.
 
 import pytest
 
+from flowmachine.core.spatial_unit import CellSpatialUnit, VersionedSiteSpatialUnit
 import flowmachine.features.network as network
 
 
@@ -33,7 +34,11 @@ def test_count_returns_correct_values(get_dataframe):
 
 @pytest.mark.parametrize(
     "bad_arg, bad_val",
-    [("period", "BAD_PERIOD"), ("level", "cell"), ("network_object", "BAD_OBJECT")],
+    [
+        ("period", "BAD_PERIOD"),
+        ("spatial_unit", CellSpatialUnit()),
+        ("network_object", "BAD_OBJECT"),
+    ],
 )
 def test_bad_params(bad_arg, bad_val):
     """Test value errors are raised for bad params"""
@@ -57,7 +62,7 @@ def test_median_returns_correct_values(get_dataframe):
 
     """
     instance = network.TotalNetworkObjects(
-        table="calls", period="hour", network_object="versioned-site"
+        table="calls", period="hour", network_object=VersionedSiteSpatialUnit()
     ).aggregate(by="day", statistic="median")
 
     #
@@ -77,7 +82,7 @@ def test_mean_returns_correct_values(get_dataframe):
         start="2016-01-01",
         stop="2016-12-30",
         period="hour",
-        network_object="versioned-site",
+        network_object=VersionedSiteSpatialUnit(),
     ).aggregate(by="day")
 
     #
