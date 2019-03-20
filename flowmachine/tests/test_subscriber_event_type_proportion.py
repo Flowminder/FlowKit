@@ -8,16 +8,19 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "numerator, msisdn, want",
+    "numerator, numerator_direction, msisdn, want",
     [
-        ("events.calls", "AgB6KR3Levd9Z1vJ", 0.351_852),
-        ("events.sms", "7ra3xZakjEqB1Al5", 0.362_069),
-        ("events.mds", "QrAlXqDbXDkNJe3E", 0.236_363_63),
-        ("events.topups", "bKZLwjrMQG7z468y", 0.183_098_5),
-        (["events.calls", "events.sms"], "AgB6KR3Levd9Z1vJ", 0.648_148_1),
+        ("events.calls", "both", "AgB6KR3Levd9Z1vJ", 0.351_852),
+        ("events.calls", "in", "AgB6KR3Levd9Z1vJ", 0.203_703_703_7),
+        ("events.sms", "both", "7ra3xZakjEqB1Al5", 0.362_069),
+        ("events.mds", "both", "QrAlXqDbXDkNJe3E", 0.236_363_63),
+        ("events.topups", "both", "bKZLwjrMQG7z468y", 0.183_098_5),
+        (["events.calls", "events.sms"], "both", "AgB6KR3Levd9Z1vJ", 0.648_148_1),
     ],
 )
-def test_proportion_event_type(get_dataframe, numerator, msisdn, want):
+def test_proportion_event_type(
+    get_dataframe, numerator, numerator_direction, msisdn, want
+):
     """
     Test some hand picked periods and tables
     """
@@ -25,6 +28,7 @@ def test_proportion_event_type(get_dataframe, numerator, msisdn, want):
         "2016-01-01",
         "2016-01-08",
         numerator,
+        numerator_direction=numerator_direction,
         tables=[
             "events.calls",
             "events.sms",
@@ -36,6 +40,13 @@ def test_proportion_event_type(get_dataframe, numerator, msisdn, want):
     df = get_dataframe(query).set_index("subscriber")
     assert df.value[msisdn] == pytest.approx(want)
 
-    query = ProportionEventType("2016-01-02", "2016-01-04", numerator, tables=numerator)
+    query = ProportionEventType(
+        "2016-01-02",
+        "2016-01-04",
+        numerator,
+        numerator_direction=numerator_direction,
+        tables=numerator,
+        direction=numerator_direction,
+    )
     df = get_dataframe(query).set_index("subscriber")
     assert df.value.unique() == [1]
