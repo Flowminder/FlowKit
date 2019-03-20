@@ -31,7 +31,11 @@ async def test_poll_existing_query(zmq_port, zmq_host):
     expected_reply = {
         "status": "done",
         "msg": "",
-        "payload": {"query_id": expected_query_id, "query_state": "completed"},
+        "payload": {
+            "query_id": expected_query_id,
+            "query_kind": "dummy_query",
+            "query_state": "completed",
+        },
     }
     assert expected_reply == reply
 
