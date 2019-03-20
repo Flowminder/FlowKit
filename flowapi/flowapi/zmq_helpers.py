@@ -4,7 +4,7 @@
 
 #
 # Note: the class ZMQReply (and its helper classes) in this file mirror the analogous classes
-# in flowmachine.core.server.zmq_helpers and flowapi/zmq_helpers.py. The purpose of this
+# in flowmachine.core.server.zmq_helpers and flowclient/zmq_helpers.py. The purpose of this
 # is to ensure that messages sent back and forth have a consistent structure. If changes are
 # made to either file they should also be reflected in the others.
 #

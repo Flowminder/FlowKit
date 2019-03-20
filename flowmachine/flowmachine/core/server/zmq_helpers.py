@@ -3,9 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #
-# Note: the class ZMQReply and its helper classes in this file are mirrored in
-# flowclient/zmq_helpers.py. If changes are made in either file they should also
-# be reflected in the other.
+# Note: the class ZMQReply (and its helper classes) in this file mirror the analogous
+# classes in flowapi/zmq_helpers.py and flowclient/zmq_helpers.py. The purpose of this
+# is to ensure that messages sent back and forth have a consistent structure. If changes
+# are made to either file they should also be reflected in the others.
 #
 
 import rapidjson
