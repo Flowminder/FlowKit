@@ -31,17 +31,17 @@ class ZMQReplyMessage(str):
     """
 
 
-class ZMQReplyData(dict):
+class ZMQReplyPayload(dict):
     """
-    Class representing data included in a zmq reply.
+    Class representing payload included in a zmq reply.
     The input is automatically converted to a dict.
     """
 
-    def __init__(self, data):
-        if data is None:
-            data = {}
+    def __init__(self, payload):
+        if payload is None:
+            payload = {}
 
-        super().__init__(data)
+        super().__init__(payload)
 
 
 class ZMQReply:
@@ -54,22 +54,22 @@ class ZMQReply:
       - Ensure the JSON structure of the reply (as returned by the as_json() method) is consistent.
     """
 
-    def __init__(self, status, msg="", data=None):
+    def __init__(self, status, msg="", payload=None):
         """
         Parameters
         ----------
         status : str or
         """
-        if msg == "" and data is None:
+        if msg == "" and payload is None:
             raise ValueError(
-                "At least one of the arguments 'msg', 'data' must be provided."
+                "At least one of the arguments 'msg', 'payload' must be provided."
             )
         self.status = ZMQReplyStatus(status)
         self.msg = ZMQReplyMessage(msg)
-        self.data = ZMQReplyData(data)
+        self.payload = ZMQReplyPayload(payload)
 
     def as_json(self):
         """
         Return a JSON object
         """
-        return {"status": self.status.value, "msg": self.msg, "data": self.data}
+        return {"status": self.status.value, "msg": self.msg, "payload": self.payload}

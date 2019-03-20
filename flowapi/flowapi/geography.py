@@ -27,10 +27,10 @@ async def get_geography(aggregation_unit):
     if reply["status"] == "error":
         return jsonify({"status": "Error", "msg": "Internal server error"}), 500
 
-    query_state = reply["data"]["query_state"]
+    query_state = reply["payload"]["query_state"]
     if query_state == "completed":
         results_streamer = stream_with_context(stream_result_as_json)(
-            reply["data"]["sql"],
+            reply["payload"]["sql"],
             result_name="features",
             additional_elements={"type": "FeatureCollection"},
         )

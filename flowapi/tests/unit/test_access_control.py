@@ -49,7 +49,7 @@ async def test_granular_run_access(
     dummy_zmq_server.return_value = {
         "status": "accepted",
         "msg": "",
-        "data": {"query_id": "DUMMY_QUERY_ID"},
+        "payload": {"query_id": "DUMMY_QUERY_ID"},
     }
     responses = {}
     for q_kind in query_kinds:
@@ -81,7 +81,7 @@ async def test_granular_poll_access(
             {
                 "status": "done",
                 "msg": "",
-                "data": {
+                "payload": {
                     "query_id": "DUMMY_QUERY_ID",
                     "query_kind": q_kind,
                     "query_state": "executing",
@@ -90,7 +90,7 @@ async def test_granular_poll_access(
             then={
                 "status": "done",
                 "msg": "",
-                "data": {
+                "payload": {
                     "query_id": "DUMMY_QUERY_ID",
                     "query_kind": q_kind,
                     "query_state": "completed",
@@ -132,12 +132,12 @@ async def test_granular_json_access(
             {
                 "status": "done",
                 "msg": "",
-                "data": {"query_id": "DUMMY_QUERY_ID", "query_kind": q_kind},
+                "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": q_kind},
             },
             {
                 "status": "done",
                 "msg": "",
-                "data": {
+                "payload": {
                     "query_id": "DUMMY_QUERY_ID",
                     "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
                 },
@@ -145,7 +145,7 @@ async def test_granular_json_access(
             {
                 "status": "done",
                 "msg": "",
-                "data": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
+                "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
             },
         )
         response = await client.get(
@@ -178,12 +178,12 @@ async def test_no_result_access_without_both_claims(
         {
             "status": "done",
             "msg": "",
-            "data": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query"},
+            "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query"},
         },
         {
             "status": "done",
             "msg": "",
-            "data": {
+            "payload": {
                 "query_id": "DUMMY_QUERY_ID",
                 "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
             },
@@ -191,7 +191,7 @@ async def test_no_result_access_without_both_claims(
         {
             "status": "done",
             "msg": "",
-            "data": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
+            "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
         },
     )
     response = await client.get(
@@ -219,7 +219,7 @@ async def test_access_logs_gets(
     dummy_zmq_server.return_value = {
         "status": "done",
         "msg": "",
-        "data": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query_kind"},
+        "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query_kind"},
     }
     response = await client.get(
         route,
