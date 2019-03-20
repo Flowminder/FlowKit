@@ -47,7 +47,7 @@ async def test_get_sql(zmq_port, zmq_host):
     }
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert "done" == reply["status"]
-    assert f"SELECT * FROM cache.x{expected_query_id}" == reply["data"]["sql"]
+    assert f"SELECT * FROM cache.x{expected_query_id}" == reply["payload"]["sql"]
 
 
 @pytest.mark.asyncio
@@ -68,6 +68,6 @@ async def test_get_sql_for_nonexistent_query_id(zmq_port, zmq_host):
     expected_reply = {
         "status": "error",
         "msg": "Unknown query id: 'FOOBAR'",
-        "data": {"query_id": "FOOBAR", "query_state": "awol"},
+        "payload": {"query_id": "FOOBAR", "query_state": "awol"},
     }
     assert expected_reply == reply

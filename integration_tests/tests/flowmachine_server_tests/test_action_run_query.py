@@ -41,7 +41,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     )
     # assert reply["status"] in ("executing", "queued", "completed")
     assert reply["status"] in ("accepted")
-    assert expected_query_id == reply["data"]["query_id"]
+    assert expected_query_id == reply["payload"]["query_id"]
     # assert redis.exists(expected_query_id)
 
     #
@@ -136,7 +136,7 @@ async def test_run_query_with_wrong_parameters(
     # expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
     # expected_reason = "Message contains unexpected key(s): ['query_kind'], 'data': {}"
     assert "error" == reply["status"]
-    assert expected_error_messages == reply["data"]
+    assert expected_error_messages == reply["payload"]
 
 
 @pytest.mark.skip(reason="Cannot currently test this because the sender hangs")

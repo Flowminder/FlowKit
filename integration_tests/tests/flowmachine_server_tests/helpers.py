@@ -24,7 +24,7 @@ def poll_until_done(port, query_id, max_tries=100):
             raise RuntimeError("Timeout reached but query is not done. Aborting.")
         print(f"[DDD] Polling query {query_id}...")
         reply = send_zmq_message_and_receive_reply(msg, port=port, host=host)
-        if "completed" == reply["data"]["query_state"]:
+        if "completed" == reply["payload"]["query_state"]:
             break
         time.sleep(0.1)
 
