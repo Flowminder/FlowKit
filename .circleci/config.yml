@@ -264,7 +264,7 @@ jobs:
       - checkout
       - restore_cache:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
-      - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
+      - run: cd flowmachine && pipenv install --dev --deploy --skip-lock && pipenv run pip install -e .
       - save_cache:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:
