@@ -4,11 +4,11 @@
 
 import pytest
 
-from flowmachine.core.server.query_proxy import (
-    construct_query_object,
-    QueryProxyError,
-    InvalidGeographyError,
-)
+# from flowmachine.core.server.query_proxy import (
+#     construct_query_object,
+#     QueryProxyError,
+#     InvalidGeographyError,
+# )
 from flowmachine.core import GeoTable
 from flowmachine.features import LastLocation, ModalLocation, Flows, TotalLocationEvents
 
