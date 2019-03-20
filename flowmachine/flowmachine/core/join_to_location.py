@@ -33,7 +33,7 @@ class JoinToLocation(Query):
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit
         A query which maps cell identifiers in the CDR to a different spatial
         unit (e.g. versioned site or admin region)
-    time_col : str, default 'time':
+    time_col : str, default 'time'
         The name of the column that identifies the time in the source table
         e.g. 'time', 'date', 'start_time' etc.
 

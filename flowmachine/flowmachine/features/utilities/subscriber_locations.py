@@ -125,7 +125,7 @@ def subscriber_locations(
     subscriber_identifier="msisdn",
     ignore_nulls=True,
     subscriber_subset=None,
-    radius=None,
+    time_col="time",
 ):
     """
     Class representing all the locations for which a subscriber has been found.
@@ -160,6 +160,10 @@ def subscriber_locations(
         these lines with null cells should still be present, although they contain
         no information on the subscribers location, they still tell us that the subscriber made
         a call at that time.
+    time_col : str, default 'time'
+        The name of the column that identifies the time in the source table
+        e.g. 'time', 'date', 'start_time' etc.
+        Passed to flowmachine.JoinToLocation.
 
     Notes
     -----
@@ -197,5 +201,7 @@ def subscriber_locations(
     if spatial_unit is None:
         return subscriber_cells
     else:
-        return JoinToLocation(subscriber_cells, spatial_unit=spatial_unit)
+        return JoinToLocation(
+            subscriber_cells, spatial_unit=spatial_unit, time_col=time_col
+        )
 

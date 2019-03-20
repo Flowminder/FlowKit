@@ -18,7 +18,6 @@ visited in a given period of time.
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
 
-from flowmachine.utils import get_columns_for_level
 from ..utilities.subscriber_locations import subscriber_locations
 
 
@@ -26,7 +25,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
 
     """
     Class that defines counts of unique subscribers for each location.
-    Each location for the given level is accompanied by the count of unique subscribers.
+    Each location for the given spatial unit is accompanied by the count of unique subscribers.
 
     Parameters
     ----------
@@ -35,29 +34,11 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    level : str, default 'cell'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None,
+                   default None
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of spatial_unit.py for more information. Use None for no
+        location join (i.e. just the cell identifier in the CDR itself).
     hours : tuple of ints, default 'all'
         subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -79,16 +60,14 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         these lines with null cells should still be present, although they contain
         no information on the subscribers location, they still tell us that the subscriber made
         a call at that time.
-    column_name : str, optional
-        Option, none-standard, name of the column that identifies the
-        spatial level, i.e. could pass admin3pcod to use the admin 3 pcode
-        as opposed to the name of the region.
-    kwargs :
+    time_col : str, default 'time'
+        The name of the column that identifies the time in the source table
+        e.g. 'time', 'date', 'start_time' etc.
         Eventually passed to flowmachine.JoinToLocation.
 
     Examples
     --------
-    >>> usc = UniqueSubscriberCounts('2016-01-01', '2016-01-04', level = 'admin3', hours = (5,17))
+    >>> usc = UniqueSubscriberCounts('2016-01-01', '2016-01-04', spatial_unit=AdminSpatialUnit(level=3), hours=(5,17))
     >>> usc.head(4)
           name                  unique_subscriber_counts
     0     Arghakhanchi          313
@@ -97,14 +76,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
     """
 
     def __init__(
-        self,
-        start,
-        stop,
-        level="cell",
-        hours="all",
-        table="all",
-        column_name=None,
-        **kwargs
+        self, start, stop, spatial_unit=None, hours="all", table="all", time_col="time"
     ):
         """
 
@@ -112,28 +84,23 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
 
         self.start = start
         self.stop = stop
-        self.level = level
+        self.spatial_unit = spatial_unit
         self.hours = hours
         self.table = table
-        self.column_name = column_name
-        self._kwargs = kwargs
         self.ul = subscriber_locations(
             start=self.start,
             stop=self.stop,
-            level=self.level,
+            spatial_unit=self.spatial_unit,
             hours=self.hours,
             table=self.table,
-            column_name=self.column_name,
-            **kwargs
+            time_col=time_col,
         )
 
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return get_columns_for_level(self.level, self.column_name) + [
-            "unique_subscriber_counts"
-        ]
+        return self.spatial_unit.location_columns + ["unique_subscriber_counts"]
 
     def _make_query(self):
         """
@@ -141,7 +108,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         metaclass Query().
         """
 
-        relevant_columns = ",".join(get_columns_for_level(self.level, self.column_name))
+        relevant_columns = ",".join(self.spatial_unit.location_columns)
         sql = """
         SELECT {rc}, COUNT(unique_subscribers) AS unique_subscriber_counts FROM 
         (SELECT 
