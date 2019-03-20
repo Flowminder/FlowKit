@@ -1,10 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import pytest
 from requests import ConnectionError
+
 import flowclient
 from flowclient.client import FlowclientConnectionError
+from flowclient.zmq_helpers import ZMQReply
 
 
 @pytest.mark.parametrize("status_code", [202])
@@ -36,7 +39,9 @@ def test_404_raises_error(session_mock, token):
 def test_401_error(session_mock, token):
     """If a msg field is available for a 401, it should be used as the error message."""
     session_mock.post.return_value.status_code = 401
-    session_mock.post.return_value.json.return_value = {"msg": "ERROR_MESSAGE"}
+    session_mock.post.return_value.json.return_value = ZMQReply(
+        status="error", msg="ERROR_MESSAGE"
+    ).as_json()
     connection = flowclient.connect("DUMMY_API", token)
     with pytest.raises(FlowclientConnectionError, match="ERROR_MESSAGE"):
         connection.post_json("DUMMY_ROUTE", {})
@@ -45,7 +50,9 @@ def test_401_error(session_mock, token):
 def test_401_unknown_error(session_mock, token):
     """If a msg field is not available for a 401, a generic message is used."""
     session_mock.get.return_value.status_code = 401
-    session_mock.get.return_value.json.return_value = {}
+    session_mock.get.return_value.json.return_value = ZMQReply(
+        status="error", msg="Unknown access denied error", data={}
+    ).as_json()
     connection = flowclient.connect("DUMMY_API", token)
     with pytest.raises(FlowclientConnectionError, match="Unknown access denied error"):
         connection.get_url("DUMMY_ROUTE")
@@ -54,7 +61,9 @@ def test_401_unknown_error(session_mock, token):
 def test_generic_status_code_error(session_mock, token):
     """An error should be raised for status codes that aren't expected."""
     session_mock.post.return_value.status_code = 418
-    session_mock.post.return_value.json.return_value = {"msg": "I AM A TEAPOT"}
+    session_mock.post.return_value.json.return_value = ZMQReply(
+        status="error", msg="I AM A TEAPOT"
+    ).as_json()
     connection = flowclient.connect("DUMMY_API", token)
     with pytest.raises(
         FlowclientConnectionError,
@@ -63,11 +72,12 @@ def test_generic_status_code_error(session_mock, token):
         connection.post_json("DUMMY_ROUTE", {})
 
 
-@pytest.mark.parametrize("json_failure", [ValueError, KeyError])
-def test_generic_status_code_unknown_error(json_failure, session_mock, token):
+def test_generic_status_code_unknown_error(session_mock, token):
     """An error should be raised for status codes that aren't expected, with a default error message if not given."""
     session_mock.post.return_value.status_code = 418
-    session_mock.post.return_value.json.side_effect = json_failure
+    session_mock.post.return_value.json.side_effect = (
+        ValueError
+    )  # indicated that the resonse body doesn't contain valid JSON
     connection = flowclient.connect("DUMMY_API", token)
     with pytest.raises(
         FlowclientConnectionError,
