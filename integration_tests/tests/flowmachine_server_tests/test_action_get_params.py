@@ -37,7 +37,7 @@ async def test_get_query_params(params, zmq_port, zmq_host):
     msg = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
-    query_id = reply["data"]["query_id"]
+    query_id = reply["payload"]["query_id"]
     # assert reply["status"] in ("executing", "queued", "completed")
     assert reply["status"] == "accepted"
 
@@ -59,7 +59,7 @@ async def test_get_query_params(params, zmq_port, zmq_host):
     expected_reply = {
         "status": "done",
         "msg": "",
-        "data": {"query_id": query_id, "query_params": params},
+        "payload": {"query_id": query_id, "query_params": params},
     }
     assert expected_reply == reply
 

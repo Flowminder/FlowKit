@@ -18,7 +18,7 @@ async def test_poll_existing_query(zmq_port, zmq_host):
     expected_reply = {
         "status": "accepted",
         "msg": "",
-        "data": {"query_id": expected_query_id},
+        "payload": {"query_id": expected_query_id},
     }
     assert expected_reply == reply
 
@@ -31,7 +31,7 @@ async def test_poll_existing_query(zmq_port, zmq_host):
     expected_reply = {
         "status": "done",
         "msg": "",
-        "data": {"query_id": expected_query_id, "query_state": "completed"},
+        "payload": {"query_id": expected_query_id, "query_state": "completed"},
     }
     assert expected_reply == reply
 
@@ -53,7 +53,7 @@ async def test_poll_query_with_nonexistent_query_id_fails(zmq_port, zmq_host):
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert {
         "status": "error",
-        "data": {"query_id": "FOOBAR", "query_state": "awol"},
+        "payload": {"query_id": "FOOBAR", "query_state": "awol"},
         "id": "FOOBAR",
         "msg": "Unknown query id: FOOBAR",
     } == reply

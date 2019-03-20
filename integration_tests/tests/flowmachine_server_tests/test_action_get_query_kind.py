@@ -39,7 +39,7 @@ async def test_get_query_kind(params, zmq_port, zmq_host):
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     # assert reply["status"] in ("executing", "queued", "completed")
     assert reply["status"] in ("accepted")
-    query_id = reply["data"]["query_id"]
+    query_id = reply["payload"]["query_id"]
 
     #
     # Wait until the query has finished.
@@ -57,8 +57,8 @@ async def test_get_query_kind(params, zmq_port, zmq_host):
 
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert "done" == reply["status"]
-    assert query_id == reply["data"]["query_id"]
-    assert "daily_location" == reply["data"]["query_kind"]
+    assert query_id == reply["payload"]["query_id"]
+    assert "daily_location" == reply["payload"]["query_kind"]
 
 
 @pytest.mark.asyncio
@@ -78,6 +78,6 @@ async def test_get_query_kind_for_nonexistent_query_id(zmq_port, zmq_host):
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert {
         "status": "error",
-        "data": {"query_id": "FOOBAR", "query_state": "awol"},
+        "payload": {"query_id": "FOOBAR", "query_state": "awol"},
         "msg": "Unknown query id: 'FOOBAR'",
     } == reply

@@ -13,7 +13,7 @@ def test_ping_flowmachine_server(send_zmq_message_and_receive_reply):
     """
     msg = {"action": "ping", "request_id": "DUMMY_ID"}
     reply = send_zmq_message_and_receive_reply(msg)
-    expected_reply = {"status": "done", "msg": "pong", "data": {}}
+    expected_reply = {"status": "done", "msg": "pong", "payload": {}}
     assert expected_reply == reply
 
 
@@ -23,7 +23,11 @@ def test_unknown_action_returns_error(send_zmq_message_and_receive_reply):
     """
     msg = {"action": "foobar", "request_id": "DUMMY_ID"}
     reply = send_zmq_message_and_receive_reply(msg)
-    expected_reply = {"status": "error", "msg": "Unknown action: 'foobar'", "data": {}}
+    expected_reply = {
+        "status": "error",
+        "msg": "Unknown action: 'foobar'",
+        "payload": {},
+    }
     assert expected_reply == reply
 
 
@@ -36,7 +40,7 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
     expected_reply = {
         "status": "done",
         "msg": "",
-        "data": {
+        "payload": {
             "available_queries": ["daily_location", "modal_location", "dummy_query"]
         },
     }
@@ -54,7 +58,7 @@ def test_api_spec_of_flowmachine_query_schemas(
     print(reply)
     assert "done" == reply["status"]
     spec_as_json_string = json.dumps(
-        reply["data"]["query_schemas"], indent=2, sort_keys=True
+        reply["payload"]["query_schemas"], indent=2, sort_keys=True
     )
     verify(spec_as_json_string, diff_reporter)
 
@@ -77,8 +81,8 @@ def test_run_daily_location_query(send_zmq_message_and_receive_reply):
     reply = send_zmq_message_and_receive_reply(msg)
 
     assert "accepted" == reply["status"]
-    assert "7401bba3acebc2c41bd9f79014bef4e9" == reply["data"]["query_id"]
-    assert ["query_id"] == list(reply["data"].keys())
+    assert "7401bba3acebc2c41bd9f79014bef4e9" == reply["payload"]["query_id"]
+    assert ["query_id"] == list(reply["payload"].keys())
 
 
 def test_run_modal_location_query(send_zmq_message_and_receive_reply):
@@ -113,5 +117,5 @@ def test_run_modal_location_query(send_zmq_message_and_receive_reply):
     reply = send_zmq_message_and_receive_reply(msg)
 
     assert "accepted" == reply["status"]
-    assert "cf22a8a2468ab22743f9e8c3da0044db" == reply["data"]["query_id"]
-    assert ["query_id"] == list(reply["data"].keys())
+    assert "cf22a8a2468ab22743f9e8c3da0044db" == reply["payload"]["query_id"]
+    assert ["query_id"] == list(reply["payload"].keys())
