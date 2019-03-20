@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 """
 Small script for generating arbitrary volumes of CDR call data inside the flowdb
@@ -76,7 +76,6 @@ parser.add_argument(
     help="Root directory under which output .sql is stored (in appropriate subfolders).",
 )
 
-
 if __name__ == "__main__":
     print("Generating synthetic data..")
     args = parser.parse_args()
@@ -140,7 +139,8 @@ if __name__ == "__main__":
             ) rands
             inner JOIN tmp_sites
             ON rands.id=tmp_sites.rid
-            limit {num_cells - num_sites}) _) _;
+            limit {num_cells - num_sites}) _) _
+            ;
             CREATE INDEX ON tmp_cells (rid);
             """
         )
@@ -176,34 +176,19 @@ if __name__ == "__main__":
         )
         print(f"Done. Runtime: {datetime.datetime.now() - start}")
 
-    with engine.begin() as trans:
-        trans.execute(
-            "CREATE TABLE available_cells AS (SELECT '2016-01-01'::date as day, array_agg(id) as cells FROM tmp_cells);"
-        )
-
     start = datetime.datetime.now()
     print("Generating disaster.")
-    for date in (
-        datetime.date(2016, 1, 2) + datetime.timedelta(days=i) for i in range(num_days)
-    ):
-        with engine.begin() as trans:
-            if (
-                pcode_to_knock_out
-                and disaster_start_date
-                and disaster_start_date <= date <= disaster_end_date
-            ):
-                trans.execute(
-                    f"""
-                INSERT INTO available_cells SELECT '{date.strftime("%Y-%m-%d")}'::date, array_agg(tmp_cells.id) as cells FROM tmp_cells INNER JOIN (SELECT * FROM geography.admin2 WHERE admin2pcod != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom);
-                """
-                )
-            else:
-                trans.execute(
-                    f"""
-                            INSERT INTO available_cells SELECT '{date.strftime(
-                    "%Y-%m-%d")}'::date, array_agg(tmp_cells.id) as cells FROM tmp_cells;
-                            """
-                )
+    with engine.begin() as trans:
+        trans.execute(
+            f"""CREATE TABLE available_cells AS 
+                SELECT '2016-01-01'::date + rid*interval '1 day' as day,
+                CASE WHEN ('2016-01-01'::date + rid*interval '1 day' BETWEEN '{disaster_start_date}'::date AND '{disaster_end_date}'::date) THEN
+                    (array(select tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.admin2 WHERE admin2pcod != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)))
+                ELSE
+                    (array(select tmp_cells.id FROM tmp_cells))
+                END as cells
+                FROM generate_series(0, {num_days}) as t(rid);"""
+        )
     with engine.begin() as trans:
         trans.execute("CREATE INDEX ON available_cells (day);")
         trans.execute("ANALYZE available_cells;")
@@ -214,23 +199,26 @@ if __name__ == "__main__":
     with engine.begin() as trans:
         trans.execute(
             f"""CREATE TABLE homes AS (
-        SELECT h.*, cells FROM
-        (SELECT '2016-01-01'::date as home_date, id, admin3pcod as home_id FROM (
-        SELECT *, floor(random() * (select count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer as admin_id FROM subs
-        ) subscribers
-        LEFT JOIN
-        (SELECT row_number() over() as admin_id, admin3pcod FROM 
-        geography.admin3
-        RIGHT JOIN
-        tmp_cells ON ST_Within(geom_point, geom)
-        ) geo
-        ON geo.admin_id=subscribers.admin_id) h
-        LEFT JOIN 
-        (select admin3pcod, array_agg(id) as cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
-        ON admin3pcod=home_id
+               SELECT h.*, cells FROM
+               (SELECT '2016-01-01'::date as home_date, id, admin3pcod as home_id FROM (
+               SELECT *, floor(random() * (select count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer as admin_id FROM subs
+               ) subscribers
+               LEFT JOIN
+               (SELECT row_number() over() as admin_id, admin3pcod FROM 
+               geography.admin3
+               RIGHT JOIN
+               tmp_cells ON ST_Within(geom_point, geom)
+               ) geo
+               ON geo.admin_id=subscribers.admin_id) h
+               LEFT JOIN 
+               (select admin3pcod, array_agg(id) as cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
+               ON admin3pcod=home_id
+               )
+               """
         )
-        """
-        )
+        trans.execute("CREATE INDEX ON homes (id);")
+        trans.execute("CREATE INDEX ON homes (home_date);")
+        trans.execute("CREATE INDEX ON homes (home_date, id);")
     for date in (
         datetime.date(2016, 1, 2) + datetime.timedelta(days=i) for i in range(num_days)
     ):
@@ -266,7 +254,8 @@ if __name__ == "__main__":
                 trans.execute(
                     f"""INSERT INTO homes
                         SELECT h.*, cells FROM
-                        (SELECT '{date.strftime("%Y-%m-%d")}'::date as home_date, id, CASE WHEN (random() > 0.99) THEN admin3pcod ELSE home_id END as home_id FROM (
+                        (SELECT '{date.strftime(
+                        "%Y-%m-%d")}'::date as home_date, id, CASE WHEN (random() > 0.99) THEN admin3pcod ELSE home_id END as home_id FROM (
                         SELECT *, floor(random() * (select count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer as admin_id FROM homes
                         WHERE home_date='{(date - datetime.timedelta(days=1)).strftime("%Y-%m-%d")}'::date
                         ) subscribers
@@ -283,34 +272,11 @@ if __name__ == "__main__":
                         """
                 )
     with engine.begin() as trans:
-        trans.execute("CREATE INDEX ON homes (id);")
-        trans.execute("CREATE INDEX ON homes (home_date);")
-        trans.execute("CREATE INDEX ON homes (home_date, id);")
         trans.execute("ANALYZE homes;")
     print(f"Done. Runtime: {datetime.datetime.now() - start}")
 
-    # with engine.begin() as trans:
-    #     for sub in ("calls", "sms", "mds"):
-    #         if getattr(args, f"n_{sub}") > 0:
-    #             for date in (
-    #                 datetime.date(2016, 1, 1) + datetime.timedelta(days=i)
-    #                 for i in range(num_days)
-    #             ):
-    #                 table = date.strftime("%Y%m%d")
-    #                 end_date = (date + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-    #                 print(f"Creating bare table for events.{sub}_{table}.")
-    #                 engine.execute(
-    #                     f"""
-    #                 CREATE TABLE IF NOT EXISTS events.{sub}_{table} (
-    #                                     CHECK ( datetime >= '{table}'::TIMESTAMPTZ
-    #                                     AND datetime < '{end_date}'::TIMESTAMPTZ)
-    #                                 ) INHERITS (events.{sub});
-    #
-    #                 ALTER TABLE events.{sub}_{table} NO INHERIT events.{sub};"""
-    #                 )
-
     start = datetime.datetime.now()
-    print(f"Generating {num_subscribers*5} interaction pairs.")
+    print(f"Generating {num_subscribers * 5} interaction pairs.")
     with engine.begin() as trans:
         trans.execute(
             f"""CREATE TABLE interactions AS SELECT 
@@ -321,7 +287,7 @@ if __name__ == "__main__":
                 (SELECT 
                 floor(random() * {num_subscribers} + 1)::integer as caller_id, 
                 floor(random() * {num_subscribers} + 1)::integer as callee_id FROM 
-                generate_series(1, {num_subscribers*5})) as pairs
+                generate_series(1, {num_subscribers * 5})) as pairs
                 LEFT JOIN subs as caller ON pairs.caller_id = caller.id
                 LEFT JOIN subs as callee ON pairs.callee_id = callee.id
             """
@@ -357,7 +323,7 @@ if __name__ == "__main__":
                  callee_homes.cells[floor(random()*array_length(callee_homes.cells, 1) + 1)]
             END as callee_cell
             FROM 
-            (SELECT floor(random()*{num_subscribers*5} + 1)::integer as rid FROM
+            (SELECT floor(random()*{num_subscribers * 5} + 1)::integer as rid FROM
             generate_series(1, {num_calls})) _
             LEFT JOIN
             interactions
@@ -407,7 +373,7 @@ if __name__ == "__main__":
                  callee_homes.cells[floor(random()*array_length(callee_homes.cells, 1) + 1)]
             END as callee_cell
             FROM 
-            (SELECT floor(random()*{num_subscribers*5} + 1)::integer as rid FROM
+            (SELECT floor(random()*{num_subscribers * 5} + 1)::integer as rid FROM
             generate_series(1, {num_sms})) _
             LEFT JOIN
             interactions
@@ -418,7 +384,7 @@ if __name__ == "__main__":
             ON caller_homes.home_date='{table}'::date and caller_homes.id=interactions.caller_id
             LEFT JOIN homes as callee_homes
             ON callee_homes.home_date='{table}'::date and callee_homes.id=interactions.callee_id;
-            
+
             CREATE TABLE events.sms_{table} AS 
             SELECT id, true as outgoing, start_time as datetime, NULL::TEXT as network,
             caller_msisdn as msisdn, callee_msisdn as msisdn_counterpart, caller_cell as location_id,
