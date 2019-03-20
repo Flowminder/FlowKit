@@ -20,26 +20,14 @@ from flowmachine.core.spatial_unit import (
 )
 
 
-@pytest.mark.parametrize(
-    "spatial_unit, kwargs",
-    [
-        (LatLonSpatialUnit, {}),
-        (VersionedCellSpatialUnit, {}),
-        (VersionedSiteSpatialUnit, {}),
-        (
-            PolygonSpatialUnit,
-            {"polygon_column_names": "admin3pcod", "polygon_table": "geography.admin3"},
-        ),
-        (AdminSpatialUnit, {"level": 2}),
-        (AdminSpatialUnit, {"level": 2, "column_name": "admin2name"}),
-        (GridSpatialUnit, {"size": 5}),
-    ],
-)
-def test_join_to_location_column_names(spatial_unit, kwargs):
+def test_join_to_location_column_names(exemplar_spatial_unit_param):
     """ Test that JoinToLocation's column_names property is accurate."""
-    su = spatial_unit(**kwargs)
+    if exemplar_spatial_unit_param is None:
+        pytest.skip(
+            "JoinToLocation does not accept spatial_unit=None (i.e. no location join)"
+        )
     table = subscriber_locations("2016-01-05", "2016-01-07", spatial_unit=None)
-    joined = JoinToLocation(table, spatial_unit=su)
+    joined = JoinToLocation(table, spatial_unit=exemplar_spatial_unit_param)
     assert joined.head(0).columns.tolist() == joined.column_names
 
 

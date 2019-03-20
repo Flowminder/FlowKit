@@ -15,34 +15,13 @@ from flowmachine.core.spatial_unit import (
 import pytest
 
 
-@pytest.mark.parametrize(
-    "spatial_unit, kwargs",
-    [
-        (LatLonSpatialUnit, {}),
-        (VersionedCellSpatialUnit, {}),
-        (VersionedSiteSpatialUnit, {}),
-        (
-            PolygonSpatialUnit,
-            {"polygon_column_names": "admin3name", "polygon_table": "geography.admin3"},
-        ),
-        (
-            PolygonSpatialUnit,
-            {
-                "polygon_column_names": "id",
-                "polygon_table": "infrastructure.sites",
-                "geom_col": "geom_point",
-            },
-        ),
-        (AdminSpatialUnit, {"level": 3}),
-        (AdminSpatialUnit, {"level": 3, "column_name": "admin3name"}),
-        (GridSpatialUnit, {"size": 5}),
-    ],
-)
-def test_spatial_unit_column_names(spatial_unit, kwargs):
+def test_spatial_unit_column_names(exemplar_spatial_unit_param):
     """
     Test that the SpatialUnit classes have accurate column_names properties.
     """
-    su = spatial_unit(**kwargs)
+    if exemplar_spatial_unit_param is None:
+        pytest.skip("None is not a SpatialUnit object")
+    su = exemplar_spatial_unit_param
     assert su.head(0).columns.tolist() == su.column_names
 
 
@@ -121,26 +100,13 @@ def test_missing_location_columns_raises_error():
         )
 
 
-@pytest.mark.parametrize(
-    "spatial_unit, kwargs",
-    [
-        (LatLonSpatialUnit, {}),
-        (VersionedCellSpatialUnit, {}),
-        (VersionedSiteSpatialUnit, {}),
-        (
-            PolygonSpatialUnit,
-            {"polygon_column_names": "admin3pcod", "polygon_table": "geography.admin3"},
-        ),
-        (AdminSpatialUnit, {"level": 2}),
-        (AdminSpatialUnit, {"level": 2, "column_name": "admin2name"}),
-        (GridSpatialUnit, {"size": 5}),
-    ],
-)
-def test_geo_augment_columns(spatial_unit, kwargs):
+def test_geo_augment_columns(exemplar_spatial_unit_param):
     """
     Test that the columns returned by the geo_augment method are correct.
     """
-    su = spatial_unit(**kwargs)
+    if exemplar_spatial_unit_param is None:
+        pytest.skip("None is not a SpatialUnit object")
+    su = exemplar_spatial_unit_param
     sql, cols = su.geo_augment(su)
     cq = CustomQuery(sql, cols)
     assert cq.head(0).columns.tolist() == cols

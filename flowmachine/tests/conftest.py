@@ -76,22 +76,36 @@ def exemplar_level_param(request):
             PolygonSpatialUnit,
             {"polygon_column_names": "admin3pcod", "polygon_table": "geography.admin3"},
         ),
+        (
+            PolygonSpatialUnit,
+            {
+                "polygon_column_names": "id",
+                "polygon_table": "infrastructure.sites",
+                "geom_col": "geom_point",
+            },
+        ),
         (lambda: None, {}),
     ],
-    ids=lambda x: str(x[0]),
+    ids=[
+        "admin2",
+        "admin2_column-name",
+        "versioned-site",
+        "versioned-cell",
+        "lat-lon",
+        "grid",
+        "polygon",
+        "polygon_geom-col",
+        "None",
+    ],
 )
 def exemplar_spatial_unit_param(request):
     """
-    A fixture which yields a succession of plausible default parameter
-    combinations for levels.
-
-    Parameters
-    ----------
-    request
+    A fixture which yields a succession of plausible values for the
+    spatial_unit parameter.
 
     Yields
     ------
-    dict
+    flowmachine.core.spatial_unit.*SpatialUnit or None
 
     """
     yield request.param[0](**request.param[1])
