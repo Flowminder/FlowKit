@@ -197,7 +197,12 @@ def action_handler__get_sql(query_id):
 
     query_state = QueryStateMachine(Query.redis, query_id).current_query_state
 
-    if query_state == QueryState.EXECUTING:
+    if query_state == QueryState.COMPLETED:
+        q = get_query_object_by_id(Query.connection, query_id)
+        sql = q.get_query()
+        payload = {"query_id": query_id, "query_state": query_state, "sql": sql}
+        return ZMQReply(status="done", payload=payload)
+    elif query_state == QueryState.EXECUTING:
         msg = f"Query with id '{query_id}' is still running."
         payload = {"query_id": query_id, "query_state": query_state}
         return ZMQReply(status="error", msg=msg, payload=payload)
@@ -221,11 +226,6 @@ def action_handler__get_sql(query_id):
         msg = f"Query with id '{query_id}' has not been run yet, or was reset."
         payload = {"query_id": query_id, "query_state": query_state}
         return ZMQReply(status="error", msg=msg, payload=payload)
-    elif query_state == QueryState.COMPLETED:
-        q = get_query_object_by_id(Query.connection, query_id)
-        sql = q.get_query()
-        payload = {"query_id": query_id, "sql": sql}
-        return ZMQReply(status="done", payload=payload)
     else:
         msg = f"Unknown state for query with id '{query_id}'. Got {query_state}."
         return ZMQReply(status="error", msg=msg)
