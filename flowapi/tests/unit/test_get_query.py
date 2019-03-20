@@ -9,7 +9,7 @@ from asynctest import return_once
 
 
 @pytest.mark.asyncio
-async def test_get_query(app, dummy_zmq_server, access_token_builder):
+async def test_get_query(app, access_token_builder, dummy_zmq_server):
     """
     Test that JSON is returned when getting a query.
     """
@@ -31,18 +31,34 @@ async def test_get_query(app, dummy_zmq_server, access_token_builder):
         }
     )
 
-    dummy_zmq_server.side_effect = (
-        {"id": 0, "query_kind": "modal_location"},
-        {"id": 0, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-        {"sql": "SELECT 1;", "status": "completed"},
-    )
+    reply_1 = {
+        "status": "done",
+        "payload": {
+            "query_id": "5ffe4a96dbe33a117ae9550178b81836",
+            "query_kind": "modal_location",
+            "query_state": "completed",
+        },
+    }
+    reply_2 = {
+        "status": "done",
+        "payload": {"query_params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
+    }
+    reply_3 = {
+        "status": "done",
+        "payload": {"query_state": "completed", "sql": "SELECT 1;"},
+    }
+    dummy_zmq_server.side_effect = (reply_1, reply_2, reply_3)
     response = await client.get(
-        f"/api/0/get/0", headers={"Authorization": f"Bearer {token}"}
+        f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
-    js = loads(await response.get_data())
-    assert "0" == js["query_id"]
-    assert [{"some": "valid"}, {"json": "bits"}] == js["query_result"]
-    assert "attachment;filename=0.json" == response.headers["content-disposition"]
+    reply = await response.get_data()
+    json_data = loads(reply)
+    assert "DUMMY_QUERY_ID" == json_data["query_id"]
+    assert [{"some": "valid"}, {"json": "bits"}] == json_data["query_result"]
+    assert (
+        "attachment;filename=DUMMY_QUERY_ID.json"
+        == response.headers["content-disposition"]
+    )
 
 
 @pytest.mark.parametrize(
