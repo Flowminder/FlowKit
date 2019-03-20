@@ -2,6 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#
+# Note: the class ZMQReply and its helper classes in this file are mirrored in
+# flowclient/zmq_helpers.py. If changes are made in either file they should also
+# be reflected in the other.
+#
+
 import rapidjson
 from enum import Enum
 
