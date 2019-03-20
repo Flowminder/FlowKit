@@ -11,7 +11,7 @@ another spatial level, such as a grid or an admin region.
 from typing import List
 
 from .query import Query
-from .spatial_unit import BaseSpatialUnit
+from .spatial_unit import CellSpatialUnit
 
 
 class JoinToLocation(Query):
@@ -47,8 +47,10 @@ class JoinToLocation(Query):
     """
 
     def __init__(self, left, *, spatial_unit, time_col="time"):
-        if not isinstance(spatial_unit, BaseSpatialUnit):
-            raise TypeError("spatial_unit must be a SpatialUnit object")
+        if isinstance(spatial_unit, CellSpatialUnit):
+            raise ValueError(
+                "CellSpatialUnit is not a valid spatial unit type for JoinToLocation"
+            )
         self.spatial_unit = spatial_unit
         self.left = left
         self.time_col = time_col

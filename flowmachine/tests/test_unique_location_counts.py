@@ -5,6 +5,7 @@
 import pytest
 
 from flowmachine.core.errors import BadLevelError
+from flowmachine.core.spatial_unit import CellSpatialUnit
 from flowmachine.features import UniqueLocationCounts, subscriber_locations
 
 
@@ -32,7 +33,7 @@ def test_correct_counts(get_dataframe):
     df = get_dataframe(ulc)
     dful = get_dataframe(
         subscriber_locations(
-            "2016-01-01", "2016-01-02", spatial_unit=None, hours=(5, 17)
+            "2016-01-01", "2016-01-02", spatial_unit=CellSpatialUnit(), hours=(5, 17)
         )
     )
     assert [

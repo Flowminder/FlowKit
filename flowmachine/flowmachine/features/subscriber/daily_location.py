@@ -21,7 +21,7 @@ from .most_frequent_location import MostFrequentLocation
 def locate_subscribers(
     start,
     stop,
-    spatial_unit="default",
+    spatial_unit=None,
     hours="all",
     method="last",
     table="all",
@@ -43,11 +43,10 @@ def locate_subscribers(
     start, stop : str
         iso format date range for the the time frame,
         e.g. 2016-01-01 or 2016-01-01 14:03:01
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None,
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
                    default AdminSpatialUnit(level=3)
         Spatial unit to which subscriber locations will be mapped. See the
-        docstring of spatial_unit.py for more information. Use None for no
-        location join (i.e. just the cell identifier in the CDR itself).
+        docstring of spatial_unit.py for more information.
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -96,7 +95,7 @@ def locate_subscribers(
                         .
                         .
     """
-    if spatial_unit == "default":
+    if spatial_unit is None:
         spatial_unit = AdminSpatialUnit(level=3)
 
     if method == "last":
@@ -135,7 +134,7 @@ def daily_location(
     date,
     stop=None,
     *,
-    spatial_unit="default",
+    spatial_unit=None,
     hours="all",
     method="last",
     table="all",
@@ -155,11 +154,10 @@ def daily_location(
     stop : str
         optionally specify a stop datetime in iso format date for the day in question,
         e.g. 2016-01-02 06:00:00
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None,
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
                    default AdminSpatialUnit(level=3)
         Spatial unit to which subscriber locations will be mapped. See the
-        docstring of spatial_unit.py for more information. Use None for no
-        location join (i.e. just the cell identifier in the CDR itself).
+        docstring of spatial_unit.py for more information.
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -191,7 +189,7 @@ def daily_location(
     * Use 24 hr format!
 
     """
-    if spatial_unit == "default":
+    if spatial_unit is None:
         spatial_unit = AdminSpatialUnit(level=3)
     if stop is None:
         # 'cast' the date object as a date

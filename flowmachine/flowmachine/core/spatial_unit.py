@@ -6,6 +6,8 @@
 Classes that map cells (or towers or sites) to a spatial unit.
 
 The available spatial units are:
+    CellSpatialUnit:
+        The identifier as found in the CDR.
     VersionedCellSpatialUnit:
         The identifier as found in the CDR combined with the version from the
         cells table.
@@ -32,10 +34,28 @@ from . import Query, GeoTable
 from .grid import Grid
 
 
+class CellSpatialUnit:
+    """
+    This class represents the case where no join of cell ID to other data is
+    required. As such, this class does not inherit from Query, is not a valid
+    parameter to JoinToLocation, and only exists to provide the
+    location_columns property and for consistency with the other spatial units.
+    """
+
+    _loc_cols = ("location_id",)
+
+    @property
+    def location_columns(self) -> List[str]:
+        """
+        List of the location-related column names.
+        """
+        return list(self._loc_cols)
+
+
 class BaseSpatialUnit(Query, metaclass=ABCMeta):
     """
-    Base class for all spatial units. Selects columns from the location table,
-    and optionally joins to data in another table.
+    Base class for all spatial units except CellSpatialUnit. Selects columns
+    from the location table, and optionally joins to data in another table.
 
     Parameters
     ----------
@@ -87,7 +107,9 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
 
         super().__init__()
 
-    # TODO: Need a method to check whether the required data can be found in the DB
+    # TODO: Currently most spatial units require a FlowDB connection at init time.
+    # It would be useful to remove this requirement wherever possible, and instead
+    # implement a method to check whether the required data can be found in the DB.
 
     @property
     def location_columns(self) -> List[str]:

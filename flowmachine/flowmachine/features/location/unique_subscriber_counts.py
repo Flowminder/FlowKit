@@ -17,6 +17,7 @@ visited in a given period of time.
 """
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
+from ...core.spatial_unit import CellSpatialUnit
 
 from ..utilities.subscriber_locations import subscriber_locations
 
@@ -34,11 +35,9 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None,
-                   default None
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default CellSpatialUnit()
         Spatial unit to which subscriber locations will be mapped. See the
-        docstring of spatial_unit.py for more information. Use None for no
-        location join (i.e. just the cell identifier in the CDR itself).
+        docstring of spatial_unit.py for more information.
     hours : tuple of ints, default 'all'
         subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -71,7 +70,9 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
     2     Bajhang               285
     """
 
-    def __init__(self, start, stop, spatial_unit=None, hours="all", table="all"):
+    def __init__(
+        self, start, stop, spatial_unit=CellSpatialUnit(), hours="all", table="all"
+    ):
         """
 
         """

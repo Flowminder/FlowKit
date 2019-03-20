@@ -5,7 +5,7 @@
 import pytest
 
 from flowmachine.core.errors import MissingDateError
-from flowmachine.core.spatial_unit import AdminSpatialUnit
+from flowmachine.core.spatial_unit import AdminSpatialUnit, CellSpatialUnit
 from flowmachine.features import daily_location, MostFrequentLocation
 
 
@@ -57,9 +57,9 @@ def test_hours(get_length):
     # Lower level test test that subsetdates handles this correctly
     # we're just testing that it is passed on in this case.
 
-    dl1 = daily_location("2016-01-01", spatial_unit=None)
-    dl2 = daily_location("2016-01-01", spatial_unit=None, hours=(19, 23))
-    dl3 = daily_location("2016-01-01", spatial_unit=None, hours=(19, 20))
+    dl1 = daily_location("2016-01-01", spatial_unit=CellSpatialUnit())
+    dl2 = daily_location("2016-01-01", spatial_unit=CellSpatialUnit(), hours=(19, 23))
+    dl3 = daily_location("2016-01-01", spatial_unit=CellSpatialUnit(), hours=(19, 20))
 
     assert get_length(dl1) > get_length(dl2) > get_length(dl3)
 

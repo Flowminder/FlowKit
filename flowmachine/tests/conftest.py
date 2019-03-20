@@ -70,6 +70,7 @@ def exemplar_level_param(request):
         (AdminSpatialUnit, {"level": 2, "column_name": "admin2name"}),
         (VersionedSiteSpatialUnit, {}),
         (VersionedCellSpatialUnit, {}),
+        (CellSpatialUnit, {}),
         (LatLonSpatialUnit, {}),
         (GridSpatialUnit, {"size": 5}),
         (
@@ -84,19 +85,8 @@ def exemplar_level_param(request):
                 "geom_col": "geom_point",
             },
         ),
-        (lambda: None, {}),
     ],
-    ids=[
-        "admin2",
-        "admin2_column-name",
-        "versioned-site",
-        "versioned-cell",
-        "lat-lon",
-        "grid",
-        "polygon",
-        "polygon_geom-col",
-        "None",
-    ],
+    ids=lambda x: x[0].__name__,
 )
 def exemplar_spatial_unit_param(request):
     """

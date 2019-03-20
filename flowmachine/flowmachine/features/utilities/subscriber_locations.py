@@ -18,6 +18,7 @@ from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 
 from ...core.query import Query
 from ...core.join_to_location import JoinToLocation
+from ...core.spatial_unit import CellSpatialUnit
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
@@ -43,7 +44,7 @@ class _SubscriberCells(Query):
         self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.ignore_nulls = ignore_nulls
-        self.spatial_unit = None
+        self.spatial_unit = CellSpatialUnit()
 
         self.tables = table
         cols = [self.subscriber_identifier, "datetime", "location_id"]
@@ -119,7 +120,7 @@ def subscriber_locations(
     start,
     stop,
     *,
-    spatial_unit=None,
+    spatial_unit=CellSpatialUnit(),
     hours="all",
     table="all",
     subscriber_identifier="msisdn",
@@ -137,11 +138,9 @@ def subscriber_locations(
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None,
-                   default None
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default CellSpatialUnit()
         Spatial unit to which subscriber locations will be mapped. See the
-        docstring of spatial_unit.py for more information. Use None for no
-        location join (i.e. just the cell identifier in the CDR itself).
+        docstring of spatial_unit.py for more information.
     hours : tuple of ints, default 'all'
         subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -193,7 +192,7 @@ def subscriber_locations(
         ignore_nulls=ignore_nulls,
     )
 
-    if spatial_unit is None:
+    if isinstance(spatial_unit, CellSpatialUnit):
         return subscriber_cells
     else:
         return JoinToLocation(

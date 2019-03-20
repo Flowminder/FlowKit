@@ -237,7 +237,7 @@ class PopulationWeightedOpportunities(Model):
     """
 
     def __init__(
-        self, start, stop, method="home-location", spatial_unit="default", **kwargs
+        self, start, stop, method="home-location", spatial_unit=None, **kwargs
     ):
 
         warnings.warn(
@@ -250,7 +250,7 @@ class PopulationWeightedOpportunities(Model):
         self.start = start
         self.stop = stop
         self.method = method
-        if spatial_unit == "default":
+        if spatial_unit is None:
             self.spatial_unit = VersionedSiteSpatialUnit()
         else:
             self.spatial_unit = spatial_unit

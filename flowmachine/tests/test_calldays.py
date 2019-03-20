@@ -11,7 +11,7 @@ days where an subscriber has made at least one call
 import pytest
 
 
-from flowmachine.core.spatial_unit import VersionedSiteSpatialUnit
+from flowmachine.core.spatial_unit import VersionedSiteSpatialUnit, CellSpatialUnit
 from flowmachine.features import CallDays, subscriber_locations
 import numpy as np
 
@@ -70,6 +70,8 @@ def test_locations_are_only_repeated_once_per_subscriber(get_dataframe):
     Test that each location occurs only once per subscriber.
     """
 
-    cd = CallDays(subscriber_locations("2016-01-01", "2016-01-03", spatial_unit=None))
+    cd = CallDays(
+        subscriber_locations("2016-01-01", "2016-01-03", spatial_unit=CellSpatialUnit())
+    )
     df = get_dataframe(cd)
     assert not np.any(df.groupby(["subscriber", "location_id"]).count() > 1)

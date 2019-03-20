@@ -7,7 +7,7 @@ from flowmachine.utils import pretty_sql
 from approvaltests.approvals import verify
 from flowmachine.core import CustomQuery
 from flowmachine.features import daily_location
-from flowmachine.core.spatial_unit import AdminSpatialUnit
+from flowmachine.core.spatial_unit import AdminSpatialUnit, CellSpatialUnit
 
 
 def test_daily_location_1_sql(diff_reporter):
@@ -82,7 +82,7 @@ def test_daily_location_3_sql(diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        spatial_unit=None,
+        spatial_unit=CellSpatialUnit(),
         hours=(23, 5),
         method="last",
         # subscriber_identifier="imei",
@@ -103,7 +103,7 @@ def test_daily_location_3_df(get_dataframe, diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        spatial_unit=None,
+        spatial_unit=CellSpatialUnit(),
         hours=(23, 5),
         method="last",
         # subscriber_identifier="imei",
@@ -160,7 +160,7 @@ def test_daily_location_5_sql(diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        spatial_unit=None,
+        spatial_unit=CellSpatialUnit(),
         hours=(23, 5),
         method="last",
         # subscriber_identifier="imei",

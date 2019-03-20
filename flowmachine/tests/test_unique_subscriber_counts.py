@@ -7,9 +7,10 @@ Unit tests for the UniqueSubscriberCounts query
 """
 
 import pytest
+
+from flowmachine.core.spatial_unit import CellSpatialUnit
 from flowmachine.features import UniqueSubscriberCounts
 from flowmachine.features.utilities import subscriber_locations
-from flowmachine.core.errors import BadLevelError
 
 
 @pytest.mark.usefixtures("skip_datecheck")
@@ -28,12 +29,12 @@ def test_correct_counts(get_dataframe):
     UniqueLocationCounts returns correct counts.
     """
     usc = UniqueSubscriberCounts(
-        "2016-01-01", "2016-01-02", spatial_unit=None, hours=(5, 17)
+        "2016-01-01", "2016-01-02", spatial_unit=CellSpatialUnit(), hours=(5, 17)
     )
     df = get_dataframe(usc)
     dful = get_dataframe(
         subscriber_locations(
-            "2016-01-01", "2016-01-02", spatial_unit=None, hours=(5, 17)
+            "2016-01-01", "2016-01-02", spatial_unit=CellSpatialUnit(), hours=(5, 17)
         )
     )
     assert [

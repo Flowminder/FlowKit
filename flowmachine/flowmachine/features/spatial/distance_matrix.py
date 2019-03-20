@@ -9,10 +9,9 @@ matrix from a given point collection.
 """
 from typing import List
 
-from flowmachine.utils import get_columns_for_level
 from ...core.query import Query
 from ...core.mixins import GraphMixin
-from ...core.spatial_unit import VersionedCellSpatialUnit
+from ...core.spatial_unit import VersionedSiteSpatialUnit, VersionedCellSpatialUnit
 
 
 class DistanceMatrix(GraphMixin, Query):
@@ -22,17 +21,16 @@ class DistanceMatrix(GraphMixin, Query):
     computation of distance travelled, area of influence, 
     and other features.
 
-    This calls the SpatialUnit.distance_matrix_query method.
-    Note: this method is only implemented for the VersionedCellSpatialUnit and
-    VersionedSiteSpatialUnit at this time.
+    This is a wrapper around the SpatialUnit.distance_matrix_query method.
 
     Distance is returned in km.
 
     Parameters
     ----------
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit or None, default None
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default VersionedCellSpatialUnit()
         Locations to compute distances for.
-        If None, defaults to VersionedCellSpatialUnit().
+        Note: only VersionedCellSpatialUnit and VersionedSiteSpatialUnit are
+        supported at this time.
 
     return_geometry : bool
         If True, geometries are returned in query
@@ -47,6 +45,11 @@ class DistanceMatrix(GraphMixin, Query):
             self.spatial_unit = VersionedCellSpatialUnit()
         else:
             self.spatial_unit = spatial_unit
+        if type(self.spatial_unit) not in {
+            VersionedSiteSpatialUnit,
+            VersionedCellSpatialUnit,
+        }:
+            raise ValueError("Only point locations are supported at this time.")
         self.return_geometry = return_geometry
 
         super().__init__()
