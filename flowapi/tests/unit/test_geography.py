@@ -5,8 +5,6 @@
 import pytest
 from json import loads
 
-from asynctest import return_once
-
 
 @pytest.mark.asyncio
 async def test_get_geography(app, dummy_zmq_server, access_token_builder):
