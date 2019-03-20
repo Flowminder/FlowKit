@@ -18,6 +18,7 @@ import flowmachine
 from flowmachine.core import Query
 from flowmachine.core.cache import reset_cache
 from flowmachine.core.spatial_unit import (
+    CellSpatialUnit,
     LatLonSpatialUnit,
     VersionedCellSpatialUnit,
     VersionedSiteSpatialUnit,

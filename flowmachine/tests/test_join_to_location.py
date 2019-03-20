@@ -23,7 +23,7 @@ from flowmachine.core.spatial_unit import (
 
 def test_join_to_location_column_names(exemplar_spatial_unit_param):
     """ Test that JoinToLocation's column_names property is accurate."""
-    if isinstance(spatial_unit, CellSpatialUnit):
+    if isinstance(exemplar_spatial_unit_param, CellSpatialUnit):
         pytest.skip("JoinToLocation does not accept CellSpatialUnit objects")
     table = subscriber_locations(
         "2016-01-05", "2016-01-07", spatial_unit=CellSpatialUnit()

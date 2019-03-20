@@ -5,6 +5,7 @@
 from flowmachine.core import CustomQuery
 from flowmachine.core.spatial_unit import (
     BaseSpatialUnit,
+    CellSpatialUnit,
     LatLonSpatialUnit,
     VersionedCellSpatialUnit,
     VersionedSiteSpatialUnit,
@@ -19,7 +20,7 @@ def test_spatial_unit_column_names(exemplar_spatial_unit_param):
     """
     Test that the SpatialUnit classes have accurate column_names properties.
     """
-    if isinstance(spatial_unit, CellSpatialUnit):
+    if isinstance(exemplar_spatial_unit_param, CellSpatialUnit):
         pytest.skip(
             "CellSpatialUnit does not have a column_names property (not a Query)"
         )
@@ -106,7 +107,7 @@ def test_geo_augment_columns(exemplar_spatial_unit_param):
     """
     Test that the columns returned by the geo_augment method are correct.
     """
-    if isinstance(spatial_unit, CellSpatialUnit):
+    if isinstance(exemplar_spatial_unit_param, CellSpatialUnit):
         pytest.skip("CellSpatialUnit does not have a geo_augment method")
     su = exemplar_spatial_unit_param
     sql, cols = su.geo_augment(su)
