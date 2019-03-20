@@ -99,10 +99,10 @@ def action_handler__run_query(**action_params):
     return ZMQReply(status="accepted", payload={"query_id": query_id})
 
 
-def get_query_kind(query_id):
+def _get_query_kind_for_query_id(query_id):
     """
-    Return the query kind corresponding to the given query id
-    and `None` if the query_id does not exist.
+    Helper function to look up the query kind corresponding to the
+    given query id. Returns `None` if the query_id does not exist.
 
     Parameters
     ----------
@@ -128,7 +128,7 @@ def action_handler__poll_query(query_id):
 
     Returns the status of the query with the given `query_id`.
     """
-    query_kind = get_query_kind(query_id)
+    query_kind = _get_query_kind_for_query_id(query_id)
     # TODO: we should probably be able to use the QueryStateMachine to determine
     # whether the query already exists.
     if query_kind is None:
@@ -149,9 +149,11 @@ def action_handler__get_query_kind(query_id):
 
     Returns query kind of the query with the given `query_id`.
     """
-    query_kind = get_query_kind(query_id)
+    query_kind = _get_query_kind_for_query_id(query_id)
     if query_kind is None:
-        return ZMQReply(status="error", msg=f"Unknown query id: '{query_id}'")
+        error_msg = f"Unknown query id: '{query_id}'"
+        reply_data = {"query_id": query_id, "query_state": "awol"}
+        return ZMQReply(status="error", msg=error_msg, payload=reply_data)
     else:
         reply_data = {"query_id": query_id, "query_kind": query_kind}
         return ZMQReply(status="done", payload=reply_data)
