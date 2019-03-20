@@ -29,39 +29,39 @@ def test_zmq_reply_message_valid_input():
     assert "{'a': 1, 'b': 2}" == msg
 
 
-def test_zmq_reply_data_valid_input():
+def test_zmq_reply_payload_valid_input():
     """
-    Input to ZMQReplyData is converted to a dict.
+    Input to ZMQReplyPayload is converted to a dict.
     """
-    zmq_reply_data = ZMQReplyData({"a": 1})
-    assert {"a": 1} == zmq_reply_data
+    zmq_reply_payload = ZMQReplyPayload({"a": 1})
+    assert {"a": 1} == zmq_reply_payload
 
     # List of tuples is converted to a dict
-    zmq_reply_data = ZMQReplyData([("b", 2), ("c", 3)])
-    assert {"b": 2, "c": 3} == zmq_reply_data
+    zmq_reply_payload = ZMQReplyPayload([("b", 2), ("c", 3)])
+    assert {"b": 2, "c": 3} == zmq_reply_payload
 
     # None is converted to an empty dict
-    zmq_reply_data = ZMQReplyData(None)
-    assert {} == zmq_reply_data
+    zmq_reply_payload = ZMQReplyPayload(None)
+    assert {} == zmq_reply_payload
 
 
-def test_zmq_reply_data_raises_error_for_invalid_input():
+def test_zmq_reply_payload_raises_error_for_invalid_input():
     """
-    Initialising ZMQReplyData with invalid input raises an error.
+    Initialising ZMQReplypayload with invalid input raises an error.
     """
     with pytest.raises(ValueError):
         some_string = "this is not a valid dict"
-        ZMQReplyData(some_string)
+        ZMQReplyPayload(some_string)
 
     with pytest.raises(ValueError):
         some_list_of_dicts = [{"a": 1}, {"b": 2}]
-        ZMQReplyData(some_list_of_dicts)
+        ZMQReplyPayload(some_list_of_dicts)
 
 
 def test_zmq_reply_as_json():
     """
     ZMQReply has the expected structure when converted to JSON.
     """
-    reply = ZMQReply("accepted", msg="foobar", data={"a": 1, "b": 2})
-    expected_json = {"status": "accepted", "msg": "foobar", "data": {"a": 1, "b": 2}}
+    reply = ZMQReply("accepted", msg="foobar", payload={"a": 1, "b": 2})
+    expected_json = {"status": "accepted", "msg": "foobar", "payload": {"a": 1, "b": 2}}
     assert expected_json == reply.as_json()

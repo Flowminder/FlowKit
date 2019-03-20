@@ -46,7 +46,7 @@ def action_handler__get_available_queries():
     Returns a list of available flowmachine queries.
     """
     available_queries = list(FlowmachineQuerySchema.type_schemas.keys())
-    return ZMQReply(status="done", data={"available_queries": available_queries})
+    return ZMQReply(status="done", payload={"available_queries": available_queries})
 
 
 def action_handler__get_query_schemas():
@@ -64,7 +64,7 @@ def action_handler__get_query_schemas():
     )
     spec.components.schema("FlowmachineQuerySchema", schema=FlowmachineQuerySchema)
     schemas_spec = spec.to_dict()["components"]["schemas"]
-    return ZMQReply(status="done", data={"query_schemas": schemas_spec})
+    return ZMQReply(status="done", payload={"query_schemas": schemas_spec})
 
 
 def action_handler__run_query(**action_params):
@@ -80,7 +80,7 @@ def action_handler__run_query(**action_params):
         # which will raise an error when converting to JSON (where the keys
         # must be strings). Therefore we transform the keys to strings here.
         error_messages = convert_dict_keys_to_strings(exc.messages)
-        return ZMQReply(status="error", msg="Foobar!", data=error_messages)
+        return ZMQReply(status="error", msg="Foobar!", payload=error_messages)
 
     # FIXME: Sanity check: when query_obj above was created it should have automatically
     # registered the query info lookup. However, this is contingent on the fact
@@ -96,7 +96,7 @@ def action_handler__run_query(**action_params):
     # Set the query running (it's safe to call this even if the query was set running before)
     query_id = query_obj.store_async()
 
-    return ZMQReply(status="accepted", data={"query_id": query_id})
+    return ZMQReply(status="accepted", payload={"query_id": query_id})
 
 
 def get_query_kind(query_id):
@@ -140,7 +140,7 @@ def action_handler__poll_query(query_id):
             "query_kind": query_kind,
             "query_state": q_state_machine.current_query_state,
         }
-        return ZMQReply(status="done", data=reply_data)
+        return ZMQReply(status="done", payload=reply_data)
 
 
 def action_handler__get_query_kind(query_id):
@@ -154,7 +154,7 @@ def action_handler__get_query_kind(query_id):
         return ZMQReply(status="error", msg=f"Unknown query id: '{query_id}'")
     else:
         reply_data = {"query_id": query_id, "query_kind": query_kind}
-        return ZMQReply(status="done", data=reply_data)
+        return ZMQReply(status="done", payload=reply_data)
 
 
 def action_handler__get_query_params(query_id):
@@ -169,11 +169,11 @@ def action_handler__get_query_params(query_id):
     except UnkownQueryIdError:
         reply_data = {"query_id": query_id, "query_state": "awol"}
         return ZMQReply(
-            status="error", msg=f"Unknown query id: '{query_id}'", data=reply_data
+            status="error", msg=f"Unknown query id: '{query_id}'", payload=reply_data
         )
 
     reply_data = {"query_id": query_id, "query_params": query_params}
-    return ZMQReply(status="done", data=reply_data)
+    return ZMQReply(status="done", payload=reply_data)
 
 
 def action_handler__get_sql(query_id):
@@ -191,39 +191,39 @@ def action_handler__get_sql(query_id):
     if not q_info_lookup.query_is_known(query_id):
         msg = f"Unknown query id: '{query_id}'"
         reply_data = {"query_id": query_id, "query_state": "awol"}
-        return ZMQReply(status="error", msg=msg, data=reply_data)
+        return ZMQReply(status="error", msg=msg, payload=reply_data)
 
     query_state = QueryStateMachine(Query.redis, query_id).current_query_state
 
     if query_state == QueryState.EXECUTING:
         msg = f"Query with id '{query_id}' is still running."
         reply_data = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, data=reply_data)
+        return ZMQReply(status="error", msg=msg, payload=reply_data)
     elif query_state == QueryState.QUEUED:
         msg = f"Query with id '{query_id}' is still queued."
         reply_data = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, data=reply_data)
+        return ZMQReply(status="error", msg=msg, payload=reply_data)
     elif query_state == QueryState.ERRORED:
         msg = f"Query with id '{query_id}' is failed."
         reply_data = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, data=reply_data)
+        return ZMQReply(status="error", msg=msg, payload=reply_data)
     elif query_state == QueryState.CANCELLED:
         msg = f"Query with id '{query_id}' was cancelled."
         reply_data = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, data=reply_data)
+        return ZMQReply(status="error", msg=msg, payload=reply_data)
     elif query_state == QueryState.RESETTING:
         msg = f"Query with id '{query_id}' is being removed from cache."
         reply_data = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, data=reply_data)
+        return ZMQReply(status="error", msg=msg, payload=reply_data)
     elif query_state == QueryState.KNOWN:
         msg = f"Query with id '{query_id}' has not been run yet, or was reset."
         reply_data = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, data=reply_data)
+        return ZMQReply(status="error", msg=msg, payload=reply_data)
     elif query_state == QueryState.COMPLETED:
         q = get_query_object_by_id(Query.connection, query_id)
         sql = q.get_query()
         reply_data = {"query_id": query_id, "sql": sql}
-        return ZMQReply(status="done", data=reply_data)
+        return ZMQReply(status="done", payload=reply_data)
     else:
         msg = f"Unknown state for query with id '{query_id}'. Got {query_state}."
         return ZMQReply(status="error", msg=msg)
@@ -259,7 +259,7 @@ def action_handler__get_geography(aggregation_unit):
     # TODO: put query_run_log back in!
     # query_run_log.info("get_geography", **run_log_dict)
     reply_data = {"query_state": QueryState.COMPLETED, "sql": sql}
-    return ZMQReply(status="done", data=reply_data)
+    return ZMQReply(status="done", payload=reply_data)
 
 
 def get_action_handler(action):

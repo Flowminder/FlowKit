@@ -67,9 +67,9 @@ def action_handler__run_query(params):
     """
     try:
         query_obj = FlowmachineQuerySchema().load(params)
-        reply = ZMQReply(status="accepted", data={"query_id": query_obj.query_id})
+        reply = ZMQReply(status="accepted", payload={"query_id": query_obj.query_id})
     except ValidationError as exc:
-        reply = ZMQReply(status="error", msg="", data=exc.messages)
+        reply = ZMQReply(status="error", msg="", payload=exc.messages)
 
     return reply
 
