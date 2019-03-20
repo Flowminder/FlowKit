@@ -166,16 +166,20 @@ class Connection:
         elif response.status_code == 401:
             try:
                 error = response.json()["msg"]
-            except (ValueError, KeyError):
+            except ValueError:
                 error = "Unknown access denied error"
             raise FlowclientConnectionError(error)
         else:
             try:
                 error = response.json()["msg"]
-            except (ValueError, KeyError):
+                payload_info = f"Payload: {response.json()['data']}"
+            except ValueError:
+                # Happens if the response body does not contain valid JSON
+                # (see http://docs.python-requests.org/en/master/api/#requests.Response.json)
                 error = "Unknown error"
+                payload_info = ""
             raise FlowclientConnectionError(
-                f"Something went wrong: {error}. API returned with status code: {response.status_code}. Payload: {response.json()['data']}"
+                f"Something went wrong: {error}. API returned with status code: {response.status_code}. {payload_info}"
             )
 
     def __repr__(self) -> str:
