@@ -69,7 +69,7 @@ parser.add_argument(
     "--disaster-zone",
     default=False,
     type=str,
-    help="Admin 2 pcod to use as disaster zone.",
+    help="Admin 2 pcode to use as disaster zone.",
 )
 parser.add_argument(
     "--disaster-start-date",
@@ -130,7 +130,8 @@ if __name__ == "__main__":
             "INSERT INTO infrastructure.sites (id, version, date_of_first_service, geom_point) SELECT id, version, date_of_first_service, geom_point FROM tmp_sites;"
         )
         logger.info(
-            f"Generated {num_sites} sites.", runtime=str(datetime.datetime.now() - start)
+            f"Generated {num_sites} sites.",
+            runtime=str(datetime.datetime.now() - start),
         )
         logger.info(f"Generating {num_cells} cells.")
         start = datetime.datetime.now()
@@ -156,7 +157,8 @@ if __name__ == "__main__":
             "INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) SELECT id, version, site_id, date_of_first_service, geom_point FROM tmp_cells;"
         )
         logger.info(
-            f"Generated {num_cells} cells.", runtime=str(datetime.datetime.now() - start)
+            f"Generated {num_cells} cells.",
+            runtime=str(datetime.datetime.now() - start),
         )
         logger.info(f"Generating {num_tacs} tacs.")
         start = datetime.datetime.now()
@@ -288,7 +290,9 @@ if __name__ == "__main__":
                 )
     with engine.begin() as trans:
         trans.execute("ANALYZE homes;")
-    logger.info(f"Assigned subscriber homes.", runtime=str(datetime.datetime.now() - start))
+    logger.info(
+        f"Assigned subscriber homes.", runtime=str(datetime.datetime.now() - start)
+    )
 
     start = datetime.datetime.now()
     logger.info(f"Generating {num_subscribers * 5} interaction pairs.")
@@ -530,7 +534,9 @@ if __name__ == "__main__":
             except ResourceClosedError:
                 pass  # Nothing to do here
 
-        logger.info(f"Finished", job=msg, runtime=str(datetime.datetime.now() - start)ed)
+        logger.info(
+            f"Finished", job=msg, runtime=str(datetime.datetime.now() - started)
+        )
 
     with ThreadPoolExecutor(cpu_count()) as tp:
         list(tp.map(do_exec, event_creation_sql))
@@ -539,4 +545,6 @@ if __name__ == "__main__":
         do_exec(s)
     with ThreadPoolExecutor(cpu_count()) as tp:
         list(tp.map(do_exec, post_attach_sql))
-    logger.info(f"Finished generating.", runtime=str(datetime.datetime.now() - start)_time)
+    logger.info(
+        f"Finished generating.", runtime=str(datetime.datetime.now() - start_time)
+    )
