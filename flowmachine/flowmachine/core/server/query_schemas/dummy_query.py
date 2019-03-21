@@ -30,7 +30,6 @@ class DummyQueryExposed(BaseExposedQuery):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.dummy_param = dummy_param
-        super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):
