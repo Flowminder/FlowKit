@@ -75,8 +75,6 @@ defaults:
   - &wait_for_flowdb
     name: Wait for flowdb to start
     command: |
-      dockerize -wait tcp://localhost:8000 -timeout 10m
-      sleep 10
       dockerize -wait tcp://localhost:5432 -timeout 10m
   - &run_always_org_context
     context: org-global
