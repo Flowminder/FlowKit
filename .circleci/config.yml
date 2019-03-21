@@ -87,6 +87,13 @@ executors:
         API_PASSWORD: foo
         SYNTHETIC_DATA_DB_PORT: 5432
         POSTGRES_USER: flowdb
+        REDIS_HOST: "localhost"
+        QUART_APP: "flowapi.main:create_app()"
+        FLOWDB_USER: analyst
+        LOG_DIRECTORY: "."
+        SERVER: localhost
+        FLOWDB_HOST: localhost
+        JWT_SECRET_KEY: secret
     docker:
       - image: circleci/python:3.7
       - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_WORKFLOW_ID
@@ -414,7 +421,11 @@ jobs:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash)
 
-  build_flowmachine:
+  build_docker_image:
+    parameters:
+      component:
+        type: enum
+        enum: ["flowmachine", "flowauth", "flowapi"]
     docker:
       - image: circleci/python:3.7
     working_directory: /home/circleci/project/
@@ -431,56 +442,16 @@ jobs:
           name: Build flowmachine image
           command: |
             echo "Tagging as $CIRCLE_WORKFLOW_ID"
-            docker build -t flowminder/flowmachine:$CIRCLE_WORKFLOW_ID ./flowmachine
+            docker build -t flowminder/<<parameters.component>>:$CIRCLE_WORKFLOW_ID ./<<parameters.component>>
       - run:
           name: Push images to Docker cloud
           command: |
-            docker push flowminder/flowmachine:$CIRCLE_WORKFLOW_ID
-
-  build_flowauth:
-    docker:
-      - image: circleci/python:3.7
-    working_directory: /home/circleci/project/
-    steps:
-      - checkout:
-          path: /home/circleci/project/
-      - setup_remote_docker
-      - run:
-          name: Log in to docker cloud
-          command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
-      - run:
-          name: Build flowauth image
-          command: docker build -t flowminder/flowauth:$CIRCLE_WORKFLOW_ID ./flowauth
-      - run:
-          name: Push images to Docker cloud
-          command: |
-            docker push flowminder/flowauth:$CIRCLE_WORKFLOW_ID
-
-  build_flowapi:
-    docker:
-      - image: circleci/python:3.7
-    working_directory: /home/circleci/project/
-    steps:
-      - checkout:
-          path: /home/circleci/project/
-      - setup_remote_docker
-      - run:
-          name: Log in to docker cloud
-          command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
-      - run:
-          name: Build flowapi image
-          command: docker build -t flowminder/flowapi:$CIRCLE_WORKFLOW_ID ./flowapi
-      - run:
-          name: Push images to Docker cloud
-          command: |
-            docker push flowminder/flowapi:$CIRCLE_WORKFLOW_ID
+            docker push flowminder/<<parameters.component>>:$CIRCLE_WORKFLOW_ID
 
   integration_tests:
     executor:
       name: python_with_flowdb
       flowdb_image: "testdata"
-    environment:
-      LOG_DIRECTORY: "."
     working_directory: /home/circleci/project/integration_tests
     steps:
       - checkout:
@@ -500,6 +471,10 @@ jobs:
       - run: bash <(curl -s https://codecov.io/bash)
 
   build_docs:
+    parameters:
+      deploy:
+        type: boolean
+        default: false
     executor:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
@@ -508,15 +483,6 @@ jobs:
       num_subscribers: 1000
       num_cells: 1000
       num_calls: 10000
-    environment:
-      MPLBACKEND: "agg"
-      REDIS_HOST: "localhost"
-      QUART_APP: "flowapi.main:create_app()"
-      FLOWDB_USER: analyst
-      LOG_DIRECTORY: "."
-      SERVER: localhost
-      FLOWDB_HOST: localhost
-      JWT_SECRET_KEY: secret
     working_directory: /home/circleci/project/docs
     steps:
       - checkout:
@@ -532,20 +498,33 @@ jobs:
             sudo dpkg -i pandoc-1.19.2.1-1-amd64.deb
       - run: pipenv install
       - run: *wait_for_flowdb
-      - run:
-          name: Mkdocs build
-          # We set PIPENV_DONT_LOAD_ENV here to use env vars provided by circle, rather than in the
-          # .env for local build usage
-          command: |
-            PIPENV_DONT_LOAD_ENV=1 pipenv run build
-            zip -r flowkit-docs.zip flowkit-docs/*
+      - when:
+          condition: << parameters.deploy >>
+          steps:
+            - run:
+                name: Mkdocs Deploy
+                # We set PIPENV_DONT_LOAD_ENV here to use env vars provided by circle, rather than in the
+                # .env for local build usage
+                command: |
+                  PIPENV_DONT_LOAD_ENV=1 pipenv run deploy
+      - unless:
+          condition: << parameters.deploy >>
+          steps:
+            - run:
+                name: Mkdocs Build
+                # We set PIPENV_DONT_LOAD_ENV here to use env vars provided by circle, rather than in the
+                # .env for local build usage
+                command: |
+                  PIPENV_DONT_LOAD_ENV=1 pipenv run build
+                  zip -r flowkit-docs.zip flowkit-docs/*
+            - store_artifacts:
+                path: /home/circleci/project/docs/flowkit-docs.zip
+                destination: docs
       - save_cache:
           key: flowkit-docs-deps1-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
-      - store_artifacts:
-          path: /home/circleci/project/docs/flowkit-docs.zip
-          destination: docs
+
 
   build_client_wheel:
     docker: *base_docker
@@ -564,49 +543,8 @@ jobs:
           path: /home/circleci/project/flowclient
           destination: wheel
 
-  deploy_docs:
-    executor:
-      name: python_with_flowdb
-      flowdb_image: "synthetic-data"
-      generator: sql
-      num_days: 7
-      num_subscribers: 1000
-      num_cells: 1000
-      num_calls: 10000
-    environment:
-      MPLBACKEND: "agg"
-      REDIS_HOST: "localhost"
-      QUART_APP: "flowapi.main:create_app()"
-      FLOWDB_USER: analyst
-      LOG_DIRECTORY: "."
-      SERVER: localhost
-      FLOWDB_HOST: localhost
-      JWT_SECRET_KEY: secret
-    working_directory: /home/circleci/project/docs
-    steps:
-      - checkout:
-          path: /home/circleci/project/
-      - attach_workspace:
-          at: /home/circleci/
-      - restore_cache:
-          key: flowkit-docs-deps1-{{ checksum "Pipfile.lock" }}
-      - run:
-          name: Install pandoc
-          command: |
-            wget https://github.com/jgm/pandoc/releases/download/1.19.2.1/pandoc-1.19.2.1-1-amd64.deb
-            sudo dpkg -i pandoc-1.19.2.1-1-amd64.deb
-      - run: pipenv install
-      - run: *wait_for_flowdb
-      - run:
-          name: Mkdocs build
-          # We set PIPENV_DONT_LOAD_ENV here to use env vars provided by circle, rather than in the
-          # .env for local build usage
-          command: |
-            PIPENV_DONT_LOAD_ENV=1 pipenv run deploy
-
   push_wheel:
     docker: *base_docker
-
     steps:
       - attach_workspace:
           at: /home/circleci/
@@ -680,22 +618,29 @@ workflows:
           requires:
             - build_flowdb
           <<: *run_always_org_context
-      - build_flowmachine:
+      - build_docker_image:
+          name: build_flowmachine
+          component: flowmachine
           requires:
             - run_flowmachine_tests
             - integration_tests
           <<: *run_always_org_context
       - build_docs:
+          name: build_docs
           requires:
             - install_flowmachine_deps
             - build_flowdb
           <<: *run_always_org_context
-      - build_flowauth:
+      - build_docker_image:
+          name: build_flowauth
+          component: flowauth
           requires:
             - run_flowauth_backend_tests
             - run_flowauth_frontend_tests
           <<: *run_always_org_context
-      - build_flowapi:
+      - build_docker_image:
+          name: build_flowapi
+          component: flowapi
           requires:
             - run_flowkit_api_tests
             - integration_tests
@@ -733,7 +678,9 @@ workflows:
           requires:
             - build_client_wheel
           <<: *tag_only_org_context
-      - deploy_docs:
+      - build_docs:
+          name: Deploy docs
+          deploy: true
           requires:
             - build_docs
             - retag_tagged_build
