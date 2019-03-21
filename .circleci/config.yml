@@ -16,80 +16,6 @@ defaults:
     POSTGRES_USER: flowdb
     FM_PASSWORD: foo
     API_PASSWORD: foo
-  - &flowdb_docker
-    - image: circleci/python:3.7
-      environment:
-        FLOWDB_PORT: 5432
-        MPLBACKEND: "agg"
-        REDIS_HOST: "localhost"
-    - image: flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID
-      environment:
-        FM_PASSWORD: foo
-        API_PASSWORD: foo
-        POSTGRES_PASSWORD: flowflow
-      auth:
-        username: $DOCKER_CLOUD_USER
-        password: $DOCKER_CLOUD_PASSWORD
-    - image: bitnami/redis:latest
-      environment:
-        - REDIS_PASSWORD: "fm_redis"
-  - &docs_build
-    - image: circleci/python:3.7
-      environment:
-        FLOWDB_PORT: 5432
-        MPLBACKEND: "agg"
-        REDIS_HOST: "localhost"
-        QUART_APP: "flowapi.main:create_app()"
-        FLOWDB_USER: analyst
-        LOG_DIRECTORY: "."
-        SERVER: localhost
-        FLOWDB_HOST: localhost
-        JWT_SECRET_KEY: secret
-    - image: flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID
-      environment:
-        FM_PASSWORD: foo
-        API_PASSWORD: foo
-        POSTGRES_PASSWORD: flowflow
-    - image: bitnami/redis:latest
-      environment:
-        - REDIS_PASSWORD: "fm_redis"
-  - &flowdbsynth_docker
-    - image: circleci/python:3.7
-      environment:
-        POSTGRES_PASSWORD: flowflow
-        FLOWDB_PORT: 5432
-        FM_PASSWORD: foo
-        API_PASSWORD: foo
-    - image: flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID
-      environment:
-        N_DAYS: 3
-        N_SUBSCRIBERS: 400
-        N_CELLS: 100
-        N_SITES: 100
-        N_SMS: 0
-        N_MDS: 0
-        N_CALLS: 2000
-        SYNTHETIC_DATA_GENERATOR: <<parameters.generator>>
-        FM_PASSWORD: foo
-        API_PASSWORD: foo
-        POSTGRES_PASSWORD: flowflow
-  - &flowdbsynth_python_docker
-    - image: circleci/python:3.7
-      environment:
-        POSTGRES_PASSWORD: flowflow
-        FLOWDB_PORT: 5432
-        FM_PASSWORD: foo
-        API_PASSWORD: foo
-    - image: flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID
-      environment:
-        N_DAYS: 3
-        N_SUBSCRIBERS: 400
-        N_CELLS: 100
-        SYNTHETIC_DATA_GENERATOR: python
-        N_CALLS: 2000
-        FM_PASSWORD: foo
-        API_PASSWORD: foo
-        POSTGRES_PASSWORD: flowflow
   - &wait_for_flowdb
     name: Wait for flowdb to start
     command: |
@@ -116,8 +42,12 @@ defaults:
 
 
 executors:
-  synth_db: # Synthetic data generation execution environment
+  python_with_flowdb: # Synthetic data generation execution environment
     parameters:
+      flowdb_image:
+        type: enum
+        enum: ["synthetic-data", "testdata"]
+        default: "testdata"
       generator:
         type: enum
         enum: ["python", "sql"]
@@ -157,10 +87,9 @@ executors:
         API_PASSWORD: foo
         SYNTHETIC_DATA_DB_PORT: 5432
         POSTGRES_USER: flowdb
-
     docker:
       - image: circleci/python:3.7
-      - image: flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID
+      - image: flowminder/flowdb-<parameters.flowdb_image>>:$CIRCLE_WORKFLOW_ID
         environment:
           N_DAYS: <<parameters.num_days>>
           DISASTER_START_DATE: <<parameters.disaster_start_date>>
@@ -175,6 +104,9 @@ executors:
           FM_PASSWORD: foo
           API_PASSWORD: foo
           POSTGRES_PASSWORD: flowflow
+      - image: bitnami/redis:latest
+        environment:
+          REDIS_PASSWORD: "fm_redis"
 
 jobs:
   set_docker_tag_for_ci_images:
@@ -343,7 +275,9 @@ jobs:
           command: PIPENV_PIPFILE=flowmachine/Pipfile pipenv run black --check .
 
   run_flowmachine_tests:
-    docker: *flowdb_docker
+    executor:
+      name: python_with_flowdb
+      flowdb_image: "testdata"
     working_directory: /home/circleci/project/flowmachine
     steps:
       - checkout:
@@ -376,7 +310,8 @@ jobs:
         enum: ["python", "sql"]
         default: "python"
     executor:
-      name: synth_db
+      name: python_with_flowdb
+      flowdb_image: "synthetic-data"
       generator: <<parameters.generator>>
     working_directory: /home/circleci/project/flowdb
     steps:
@@ -541,7 +476,9 @@ jobs:
             docker push flowminder/flowapi:$CIRCLE_WORKFLOW_ID
 
   integration_tests:
-    docker: *docs_build
+    executor:
+      name: python_with_flowdb
+      flowdb_image: "testdata"
     working_directory: /home/circleci/project/integration_tests
     steps:
       - checkout:
@@ -561,7 +498,23 @@ jobs:
       - run: bash <(curl -s https://codecov.io/bash)
 
   build_docs:
-    docker: *docs_build
+    executor:
+      name: python_with_flowdb
+      flowdb_image: "synthetic-data"
+      generator: sql
+      num_days: 7
+      num_subscribers: 1000
+      num_cells: 1000
+      num_calls: 10000
+    environment:
+      MPLBACKEND: "agg"
+      REDIS_HOST: "localhost"
+      QUART_APP: "flowapi.main:create_app()"
+      FLOWDB_USER: analyst
+      LOG_DIRECTORY: "."
+      SERVER: localhost
+      FLOWDB_HOST: localhost
+      JWT_SECRET_KEY: secret
     working_directory: /home/circleci/project/docs
     steps:
       - checkout:
@@ -610,7 +563,23 @@ jobs:
           destination: wheel
 
   deploy_docs:
-    docker: *docs_build
+    executor:
+      name: python_with_flowdb
+      flowdb_image: "synthetic-data"
+      generator: sql
+      num_days: 7
+      num_subscribers: 1000
+      num_cells: 1000
+      num_calls: 10000
+    environment:
+      MPLBACKEND: "agg"
+      REDIS_HOST: "localhost"
+      QUART_APP: "flowapi.main:create_app()"
+      FLOWDB_USER: analyst
+      LOG_DIRECTORY: "."
+      SERVER: localhost
+      FLOWDB_HOST: localhost
+      JWT_SECRET_KEY: secret
     working_directory: /home/circleci/project/docs
     steps:
       - checkout:
