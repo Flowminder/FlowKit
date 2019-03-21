@@ -367,15 +367,17 @@ if __name__ == "__main__":
             f"Finished", job=msg, runtime=str(datetime.datetime.now() - started)
         )
 
-    do_exec("Ensuring events.calls is empty.", "DELETE FROM events.calls;")
+    do_exec(("Ensuring events.calls is empty.", "DELETE FROM events.calls;"))
     with ThreadPoolExecutor(cpu_count()) as tp:
         list(tp.map(do_exec, tables))
     do_exec("Analyzing events.calls.", "ANALYZE events.calls;")
     do_exec(
-        "Marking tables as available.",
-        """
+        (
+            "Marking tables as available.",
+            """
         INSERT INTO available_tables (table_name, has_locations, has_subscribers, has_counterparts) VALUES ('calls', true, true, true)
         ON conflict (table_name)
         DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;""",
+        )
     )
     logger.info("Done.", runtime=str(datetime.datetime.now() - start_time))
