@@ -89,7 +89,7 @@ executors:
         POSTGRES_USER: flowdb
     docker:
       - image: circleci/python:3.7
-      - image: flowminder/flowdb-<parameters.flowdb_image>>:$CIRCLE_WORKFLOW_ID
+      - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_WORKFLOW_ID
         environment:
           N_DAYS: <<parameters.num_days>>
           DISASTER_START_DATE: <<parameters.disaster_start_date>>
