@@ -72,6 +72,8 @@ def action_handler__run_query(**action_params):
     Handler for the 'run_query' action.
 
     Constructs a flowmachine query object, sets it running and returns the query_id.
+    For this action handler the `action_params` are exactly the query kind plus the
+    parameters needed to construct the query.
     """
     try:
         query_obj = FlowmachineQuerySchema().load(action_params)
@@ -79,22 +81,19 @@ def action_handler__run_query(**action_params):
         # The dictionary of marshmallow errors can contain integers as keys,
         # which will raise an error when converting to JSON (where the keys
         # must be strings). Therefore we transform the keys to strings here.
-        error_messages = convert_dict_keys_to_strings(exc.messages)
-        return ZMQReply(status="error", msg="Foobar!", payload=error_messages)
-
-    # FIXME: Sanity check: when query_obj above was created it should have automatically
-    # registered the query info lookup. However, this is contingent on the fact
-    # that any subclass of BaseExposedQuery calls super().__init__() at the end
-    # of its own __init__() method (see comment in BaseExposedQuery.__init__()).
-    # We should add a metaclass which does this automatically, but until then it
-    # is safer to verify here that the query info lookup really exists.
-    q_info_lookup = QueryInfoLookup(Query.redis)
-    if not q_info_lookup.query_is_known(query_obj.query_id):
-        error_msg = f"Internal flowmachine server error: query info is missing for query_id '{query_obj.query_id}'"
-        return ZMQReply(status="error", msg=error_msg)
+        error_msg = "Parameter validation failed."
+        validation_error_messages = convert_dict_keys_to_strings(exc.messages)
+        return ZMQReply(
+            status="error", msg=error_msg, payload=validation_error_messages
+        )
 
     # Set the query running (it's safe to call this even if the query was set running before)
     query_id = query_obj.store_async()
+
+    # Register the query as "known" (so that we can later look up the query kind
+    # and its parameters from the query_id).
+    q_info_lookup = QueryInfoLookup(Query.redis)
+    q_info_lookup.register_query(query_id, action_params)
 
     return ZMQReply(status="accepted", payload={"query_id": query_id})
 

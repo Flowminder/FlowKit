@@ -134,8 +134,6 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
             meaningful_locations=q_meaningful_locations, level=aggregation_unit
         )
 
-        super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
-
     @property
     def _flowmachine_query_obj(self):
         """
@@ -219,8 +217,6 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
             meaningful_locations_b=locs_b,
             level=aggregation_unit,
         )
-
-        super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):
@@ -311,8 +307,6 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
             meaningful_locations_b=locs_b,
             level=aggregation_unit,
         )
-
-        super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):

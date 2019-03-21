@@ -55,7 +55,6 @@ class FlowsExposed(BaseExposedQuery):
         self.from_location = from_location
         self.to_location = to_location
         self.aggregation_unit = aggregation_unit
-        super().__init__()  # NOTE: this *must* be called at the end of the __init__() method of any subclass of BaseExposedQuery
 
     @property
     def _flowmachine_query_obj(self):

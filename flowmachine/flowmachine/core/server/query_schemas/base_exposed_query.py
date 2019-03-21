@@ -23,14 +23,6 @@ class BaseExposedQuery(metaclass=ABCMeta):
         FlowmachineQuerySchema().load({"query_kind": "dummy_query", "dummy_param": "foobar"})
     """
 
-    def __init__(self):
-        # TODO: we rely on the fact that subclasses call super().__init__() at
-        # the end of their own __init__() methods. This is potentially error-prone
-        # if users forget to do this when adding their own query classes. We should
-        # add a simple metaclass for BaseExposedQuery which ensures that this is done
-        # automatically.
-        self._create_query_info_lookup()
-
     @property
     @abstractmethod
     def __schema__(self):
