@@ -52,7 +52,7 @@ if [ -f /opt/synthetic_data/generate_synthetic_data.py ] && [  "$SYNTHETIC_DATA_
       --n-days ${N_DAYS} \
       --output-root-dir ${OUTPUT_ROOT_DIR}
 elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "sql" ]; then
-  python3 /opt/synthetic_data/generate_synthetic_data.py \
+  python3 /opt/synthetic_data/generate_synthetic_data_sql.py \
       --n-subscribers ${N_SUBSCRIBERS} \
       --n-cells ${N_CELLS} \
       --n-calls ${N_CALLS} \

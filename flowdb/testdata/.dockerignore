@@ -20,3 +20,4 @@
 !./synthetic_data/Pipfile.lock
 !./bin/generate_synthetic_data.py
 !./bin/z_ingest_synthetic_data.sh
+!./synthetic_data/data/
