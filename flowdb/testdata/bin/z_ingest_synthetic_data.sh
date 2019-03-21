@@ -61,6 +61,9 @@ elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC
       --n-mds ${N_MDS} \
       --n-sms ${N_SMS} \
       --n-sites ${N_SITES} \
+      --out-of-area-probability ${P_OUT_OF_AREA:-0.05}\
+      --relocation-probability ${P_RELOCATE:-0.05}\
+      --interactions-multiplier ${INTERACTIONS_MULTIPLIER:-5}\
       --disaster-zone "524 4 12" \
       --disaster-start-date ${DISASTER_START:-"2015-01-01"} \
       --disaster-end-date ${DISASTER_END:-"2015-01-01"}

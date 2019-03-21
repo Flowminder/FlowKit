@@ -61,6 +61,24 @@ parser.add_argument(
     "--n-mds", type=int, default=200_000, help="Number of mds to generate per day."
 )
 parser.add_argument(
+    "--out-of-area-probability",
+    type=float,
+    default=0.05,
+    help="Chance of an interaction happening outside of a subscriber's home region.",
+)
+parser.add_argument(
+    "--relocation-probability",
+    type=float,
+    default=0.01,
+    help="Chance of a subscriber moving from their home region each day.",
+)
+parser.add_argument(
+    "--interactions-multiplier",
+    type=int,
+    default=5,
+    help="Generate n*num_subscribers interaction pairs.",
+)
+parser.add_argument(
     "--n-days", type=int, default=7, help="Number of days of data to generate."
 )
 parser.add_argument(
@@ -115,6 +133,9 @@ if __name__ == "__main__":
         num_mds = args.n_mds
         num_days = args.n_days
         num_tacs = args.n_tacs
+        relocation_probability = args.relocation_probability
+        out_of_area_probability = args.out_of_area_probability
+        interactions_multiplier = args.interactions_multiplier
         pcode_to_knock_out = args.disaster_zone
         try:
             disaster_start_date = args.disaster_start_date
@@ -253,7 +274,7 @@ if __name__ == "__main__":
                             f"""INSERT INTO homes
                                                 SELECT h.*, cells FROM
                                                 (SELECT '{date.strftime(
-                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > 0.99 OR home_id = ANY((array(SELECT admin3.admin3pcod FROM geography.admin3 WHERE admin2pcod = '{pcode_to_knock_out}')))) THEN admin3pcod ELSE home_id END AS home_id FROM (
+                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > {1 - relocation_probability} OR home_id = ANY((array(SELECT admin3.admin3pcod FROM geography.admin3 WHERE admin2pcod = '{pcode_to_knock_out}')))) THEN admin3pcod ELSE home_id END AS home_id FROM (
                                                 SELECT *, floor(random() * (SELECT count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom) WHERE admin2pcod!='{pcode_to_knock_out}') + 1)::integer AS admin_id FROM homes
                                                 WHERE home_date='{(date - datetime.timedelta(days=1)).strftime(
                                 "%Y-%m-%d")}'::date
@@ -276,7 +297,7 @@ if __name__ == "__main__":
                             f"""INSERT INTO homes
                                 SELECT h.*, cells FROM
                                 (SELECT '{date.strftime(
-                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > 0.99) THEN admin3pcod ELSE home_id END AS home_id FROM (
+                                "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > {1 - relocation_probability}) THEN admin3pcod ELSE home_id END AS home_id FROM (
                                 SELECT *, floor(random() * (SELECT count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer AS admin_id FROM homes
                                 WHERE home_date='{(date - datetime.timedelta(days=1)).strftime("%Y-%m-%d")}'::date
                                 ) subscribers
@@ -295,7 +316,9 @@ if __name__ == "__main__":
             with engine.begin() as trans:
                 trans.execute("ANALYZE homes;")
 
-        with log_duration(f"Generating {num_subscribers * 5} interaction pairs."):
+        with log_duration(
+            f"Generating {num_subscribers * interactions_multiplier} interaction pairs."
+        ):
             with engine.begin() as trans:
                 trans.execute(
                     f"""CREATE TABLE interactions AS SELECT 
@@ -306,7 +329,7 @@ if __name__ == "__main__":
                         (SELECT 
                         floor(random() * {num_subscribers} + 1)::integer AS caller_id, 
                         floor(random() * {num_subscribers} + 1)::integer AS callee_id FROM 
-                        generate_series(1, {num_subscribers * 5})) AS pairs
+                        generate_series(1, {num_subscribers * interactions_multiplier})) AS pairs
                         LEFT JOIN subs AS caller ON pairs.caller_id = caller.id
                         LEFT JOIN subs AS callee ON pairs.callee_id = callee.id
                     """
@@ -332,18 +355,18 @@ if __name__ == "__main__":
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 round(random()*2600)::numeric AS duration,
                 uuid_generate_v4()::text AS id, interactions.*,
-                CASE WHEN (random() > 0.95) THEN
+                CASE WHEN (random() > {1 - out_of_area_probability}) THEN
                     available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
                 ELSE
                      caller_homes.cells[floor(random()*array_length(caller_homes.cells, 1) + 1)]
                 END AS caller_cell,
-                CASE WHEN (random() > 0.95) THEN
+                CASE WHEN (random() > {1 - out_of_area_probability}) THEN
                     available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
                 ELSE
                      callee_homes.cells[floor(random()*array_length(callee_homes.cells, 1) + 1)]
                 END AS callee_cell
                 FROM 
-                (SELECT floor(random()*{num_subscribers * 5} + 1)::integer AS rid FROM
+                (SELECT floor(random()*{num_subscribers * interactions_multiplier} + 1)::integer AS rid FROM
                 generate_series(1, {num_calls})) _
                 LEFT JOIN
                 interactions
@@ -382,18 +405,18 @@ if __name__ == "__main__":
                 CREATE TABLE sms_evts_{table} AS
                 SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
                 uuid_generate_v4()::text AS id, interactions.*,
-                CASE WHEN (random() > 0.95) THEN
+                CASE WHEN (random() > {1 - out_of_area_probability}) THEN
                     available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
                 ELSE
                      caller_homes.cells[floor(random()*array_length(caller_homes.cells, 1) + 1)]
                 END AS caller_cell,
-                CASE WHEN (random() > 0.95) THEN
+                CASE WHEN (random() > {1 - out_of_area_probability}) THEN
                     available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
                 ELSE
                      callee_homes.cells[floor(random()*array_length(callee_homes.cells, 1) + 1)]
                 END AS callee_cell
                 FROM 
-                (SELECT floor(random()*{num_subscribers * 5} + 1)::integer AS rid FROM
+                (SELECT floor(random()*{num_subscribers * interactions_multiplier} + 1)::integer AS rid FROM
                 generate_series(1, {num_sms})) _
                 LEFT JOIN
                 interactions
@@ -439,7 +462,7 @@ if __name__ == "__main__":
                 subs.msisdn, subs.imsi, subs.imei, subs.tac,
                 round(random() * 100000)::numeric AS volume_upload, 
                 round(random() * 100000)::numeric AS volume_download,
-                CASE WHEN (random() > 0.95) THEN
+                CASE WHEN (random() > {1 - out_of_area_probability}) THEN
                     available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
                 ELSE
                      caller_homes.cells[floor(random()*array_length(caller_homes.cells, 1) + 1)]
