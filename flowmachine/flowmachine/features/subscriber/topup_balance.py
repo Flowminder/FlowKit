@@ -180,7 +180,7 @@ class TopUpBalance(SubscriberFeature):
         weight_extraction_query = f"""
         WITH W AS (
             SELECT
-                msisdn AS subscriber,
+                subscriber,
                 (
                     pre_event_balance +
                     (LAG(post_event_balance, 1, pre_event_balance) OVER msisdn_by_datetime)
@@ -196,8 +196,8 @@ class TopUpBalance(SubscriberFeature):
                     ) OVER msisdn_by_datetime
                 ) AS weight,
                 CUME_DIST() OVER msisdn_by_datetime
-            FROM (select * from events.topups) AS U
-            WINDOW msisdn_by_datetime AS (PARTITION BY msisdn ORDER BY datetime)
+            FROM ({self.unioned_query.get_query()}) AS U
+            WINDOW msisdn_by_datetime AS (PARTITION BY subscriber ORDER BY datetime)
         )
         SELECT subscriber, balance, weight
         FROM W
