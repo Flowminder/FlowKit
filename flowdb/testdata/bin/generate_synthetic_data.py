@@ -261,11 +261,12 @@ if __name__ == "__main__":
     output_root_dir = args.output_root_dir
     os.makedirs(os.path.join(output_root_dir, "data", "infrastructure"), exist_ok=True)
 
-    logger.info("Generating {} subscribers.".format(num_subscribers))
+    logger.info("Started", job=f"Generating {num_subscribers} subscribers.")
     sg = SubscriberGenerator()
     subscribers = list(sg.generate(num_subscribers, seed=subscriber_seed))
+    logger.info("Finished", job=f"Generating {num_subscribers} subscribers.")
 
-    logger.info("Generating {} cells.".format(num_cells))
+    logger.info("Started", job=f"Generating {num_cells} cells.")
     cg = CellGenerator()
     cells = cg.generate(num_cells, seed=cell_seed)
     cells.to_csv(
@@ -280,6 +281,7 @@ if __name__ == "__main__":
             "date_of_last_service",
         ],
     )
+    logger.info("Finished", job=f"Generating {num_cells} cells.")
     cells_ingest_sql = f"""
     DELETE FROM infrastructure.cells;
 
@@ -329,7 +331,7 @@ if __name__ == "__main__":
         SELECT site_id, version, date_of_first_service, date_of_last_service, geom_point FROM infrastructure.cells;
     """
 
-    logger.info("Generating {} days of calls.".format(args.n_days))
+    logger.info("Started", job=f"Generating {args.n_days} days of calls.")
     dates = pd.date_range(start="2016-01-01", periods=args.n_days)
 
     def write_f(seed_inc, date):
@@ -339,6 +341,7 @@ if __name__ == "__main__":
 
     with ProcessPoolExecutor() as pool:
         tables = list(pool.map(write_f, *zip(*enumerate(dates))))
+    logger.info("Finished", job=f"Generating {args.n_days} days of calls.")
     tables.append((f"Inserting {num_cells} cells.", cells_ingest_sql))
 
     # Run ingest on multiple threads
@@ -352,7 +355,7 @@ if __name__ == "__main__":
 
     def do_exec(args):
         msg, sql = args
-        logger.info(msg)
+        logger.info("Started", job=msg)
         started = datetime.datetime.now()
         with engine.begin() as trans:
             res = trans.execute(sql)

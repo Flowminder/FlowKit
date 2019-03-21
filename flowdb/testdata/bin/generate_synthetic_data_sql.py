@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     # Generate some randomly distributed sites and cells
     with engine.begin() as trans:
-        logger.info(f"Generating {num_sites} sites.")
+        logger.info("Started", job=f"Generating {num_sites} sites.")
         start = datetime.datetime.now()
         trans.execute(
             f"""CREATE TABLE tmp_sites AS 
@@ -133,7 +133,7 @@ if __name__ == "__main__":
             f"Generated {num_sites} sites.",
             runtime=str(datetime.datetime.now() - start),
         )
-        logger.info(f"Generating {num_cells} cells.")
+        logger.info("Started", job=f"Generating {num_cells} cells.")
         start = datetime.datetime.now()
         trans.execute(
             f"""CREATE TABLE tmp_cells as
@@ -157,10 +157,11 @@ if __name__ == "__main__":
             "INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) SELECT id, version, site_id, date_of_first_service, geom_point FROM tmp_cells;"
         )
         logger.info(
-            f"Generated {num_cells} cells.",
+            "Finished",
+            job=f"Generating {num_cells} cells.",
             runtime=str(datetime.datetime.now() - start),
         )
-        logger.info(f"Generating {num_tacs} tacs.")
+        logger.info("Started", job=f"Generating {num_tacs} tacs.")
         start = datetime.datetime.now()
         trans.execute(
             f"""CREATE TABLE tacs as
@@ -174,9 +175,11 @@ if __name__ == "__main__":
             "INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) SELECT tac AS id, brand, model, hnd_type FROM tacs;"
         )
         logger.info(
-            f"Generated {num_tacs} tacs.", runtime=str(datetime.datetime.now() - start)
+            "Finished",
+            job=f"Generating {num_tacs} tacs.",
+            runtime=str(datetime.datetime.now() - start),
         )
-        logger.info(f"Generating {num_subscribers} subscribers.")
+        logger.info("Started", job=f"Generating {num_subscribers} subscribers.")
         start = datetime.datetime.now()
         trans.execute(
             f"""
@@ -189,12 +192,13 @@ if __name__ == "__main__":
         """
         )
         logger.info(
-            f"Generated {num_subscribers} subscribers.",
+            "Finished",
+            job=f"Generating {num_subscribers} subscribers.",
             runtime=str(datetime.datetime.now() - start),
         )
 
     start = datetime.datetime.now()
-    logger.info("Generating disaster.")
+    logger.info("Started", job="Generating disaster.")
     with engine.begin() as trans:
         trans.execute(
             f"""CREATE TABLE available_cells AS 
@@ -209,9 +213,13 @@ if __name__ == "__main__":
     with engine.begin() as trans:
         trans.execute("CREATE INDEX ON available_cells (day);")
         trans.execute("ANALYZE available_cells;")
-    logger.info(f"Generated disaster.", runtime=str(datetime.datetime.now() - start))
+    logger.info(
+        "Finished",
+        job=f"Generating disaster.",
+        runtime=str(datetime.datetime.now() - start),
+    )
 
-    logger.info("Assigning subscriber home regions.")
+    logger.info("Started", job="Assigning subscriber home regions.")
     start = datetime.datetime.now()
     with engine.begin() as trans:
         trans.execute(
@@ -291,11 +299,13 @@ if __name__ == "__main__":
     with engine.begin() as trans:
         trans.execute("ANALYZE homes;")
     logger.info(
-        f"Assigned subscriber homes.", runtime=str(datetime.datetime.now() - start)
+        "Finished",
+        f"Assigning subscriber homes.",
+        runtime=str(datetime.datetime.now() - start),
     )
 
     start = datetime.datetime.now()
-    logger.info(f"Generating {num_subscribers * 5} interaction pairs.")
+    logger.info("Started", job=f"Generating {num_subscribers * 5} interaction pairs.")
     with engine.begin() as trans:
         trans.execute(
             f"""CREATE TABLE interactions AS SELECT 
@@ -314,7 +324,8 @@ if __name__ == "__main__":
         trans.execute("CREATE INDEX ON interactions (rid);")
         trans.execute("ANALYZE interactions;")
     logger.info(
-        f"Generated {num_subscribers * 5} interaction pairs.",
+        "Finished",
+        job=f"Generating {num_subscribers * 5} interaction pairs.",
         runtime=str(datetime.datetime.now() - start),
     )
     event_creation_sql = []
@@ -525,7 +536,7 @@ if __name__ == "__main__":
 
     def do_exec(args):
         msg, sql = args
-        logger.info(msg)
+        logger.info("Started", job=msg)
         started = datetime.datetime.now()
         with engine.begin() as trans:
             res = trans.execute(sql)
