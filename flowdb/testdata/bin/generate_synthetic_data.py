@@ -2,26 +2,30 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# !/usr/bin/env python
+#!/usr/bin/env python
 
 """
 Small script for generating arbitrary volumes of CDR call data inside the flowdb
-container.
+container. Produces csvs containing cell infrastructure data, and CDR call data,
+together with SQL to ingest these CSVs, based on the SQL template found in
+../synthetic_data/sql
 
-Produces sites, cells, tacs, call, sms and mds data.
+Cell data is generated from a GeoJSON file with (simplified) admin3 boundaries for
+Nepal found in ../synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson
 
-Optionally simulates a 'disaster' where all subscribers must leave a designated admin2 region
-for a period of time.
+Makes use of the tohu module for generation of random data.
 """
 
 import os
-import argparse
-import datetime
-from concurrent.futures.thread import ThreadPoolExecutor
 from multiprocessing import cpu_count
 
-import sqlalchemy as sqlalchemy
+import pandas as pd
+import sqlalchemy
 from sqlalchemy.exc import ResourceClosedError
+from tohu import *
+import argparse
+import datetime
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
 import structlog
 import json
@@ -42,70 +46,304 @@ parser.add_argument(
     "--n-subscribers", type=int, default=4000, help="Number of subscribers to generate."
 )
 parser.add_argument(
-    "--n-tacs", type=int, default=4000, help="Number of phone models to generate."
-)
-parser.add_argument(
-    "--n-sites", type=int, default=1000, help="Number of sites to generate."
-)
-parser.add_argument(
     "--n-cells", type=int, default=1000, help="Number of cells to generate."
 )
 parser.add_argument(
     "--n-calls", type=int, default=200_000, help="Number of calls to generate per day."
 )
 parser.add_argument(
-    "--n-sms", type=int, default=200_000, help="Number of sms to generate per day."
+    "--subscribers-seed",
+    type=int,
+    default=12345,
+    help="Random seed for subscriber generation.",
 )
 parser.add_argument(
-    "--n-mds", type=int, default=200_000, help="Number of mds to generate per day."
+    "--calls-seed", type=int, default=22222, help="Random seed for calls generation."
+)
+parser.add_argument(
+    "--cells-seed", type=int, default=99999, help="Random seed for cell generation."
 )
 parser.add_argument(
     "--n-days", type=int, default=7, help="Number of days of data to generate."
 )
 parser.add_argument(
-    "--cluster", action="store_true", help="Cluster tables on msisdn index."
-)
-parser.add_argument(
-    "--disaster-zone",
-    default=False,
+    "--output-root-dir",
     type=str,
-    help="Admin 2 pcode to use as disaster zone.",
+    default="",
+    help="Root directory under which output .csv and .sql files are stored (in appropriate subfolders).",
 )
-parser.add_argument(
-    "--disaster-start-date",
-    type=datetime.date.fromisoformat,
-    help="Date to begin the disaster.",
-)
-parser.add_argument(
-    "--disaster-end-date",
-    type=datetime.date.fromisoformat,
-    help="Date to end the disaster.",
-)
+
+
+class CellGenerator(CustomGenerator):
+    cell_id = DigitString(length=8)
+    site_id = Sequential(prefix="", digits=1)
+    version = SelectOne([0, 1, 2])
+    date_of_first_service = Constant("2016-01-01")
+    date_of_last_service = Constant("")
+    longitude, latitude = GeoJSONGeolocation(
+        "/opt/synthetic_data/NPL_admbnda_adm3_Districts_simplified.geojson"
+    ).split()
+
+
+class SubscriberGenerator(CustomGenerator):
+    msisdn = HashDigest(length=40)
+    imei = HashDigest(length=40)
+    imsi = HashDigest(length=40)
+    tac = DigitString(length=5)
+    int_prefix = DigitString(length=5)
+
+
+class CallEventGenerator(CustomGenerator):
+    def __init__(self, *, subscribers, cells, date):
+        self.a_party = SelectOne(subscribers)
+        self.b_party = SelectOne(subscribers)
+        self.cell_from = SelectOne(cells)
+        self.cell_to = SelectOne(cells)
+
+        self.start_time = Timestamp(date=date)
+        self.duration = Integer(0, 2600)
+        self.call_id = HashDigest(length=8)
+
+        super().__init__(subscribers, cells, date)
+
+
+def convert_to_two_line_format(df):
+    """
+    Given a dataframe with calls in one-line format (i.e., with a-party
+    and b-party noth in the same row), return a dataframe with the same
+    calls in two-line format (with a-party and b-party information split
+    across two separate lines for each call).
+
+    Note that this is not the most efficient implementation but it is
+    sufficient for our purposes.
+    """
+    df_outgoing = df[
+        [
+            "start_time",
+            "msisdn_to",
+            "id",
+            "msisdn_from",
+            "cell_id_from",
+            "duration",
+            "tac_from",
+        ]
+    ].copy()
+    df_outgoing = df_outgoing.rename(
+        columns={
+            "msisdn_to": "msisdn_counterpart",
+            "msisdn_from": "msisdn",
+            "cell_id_from": "location_id",
+            "tac_from": "tac",
+        }
+    )
+    df_outgoing.loc[:, "outgoing"] = True
+
+    df_incoming = df[
+        [
+            "start_time",
+            "msisdn_from",
+            "id",
+            "msisdn_to",
+            "cell_id_to",
+            "duration",
+            "tac_to",
+        ]
+    ].copy()
+    df_incoming = df_incoming.rename(
+        columns={
+            "msisdn_from": "msisdn_counterpart",
+            "msisdn_to": "msisdn",
+            "cell_id_to": "location_id",
+            "tac_to": "tac",
+        }
+    )
+    df_incoming.loc[:, "outgoing"] = False
+
+    columns = [
+        "start_time",
+        "msisdn_counterpart",
+        "id",
+        "msisdn",
+        "location_id",
+        "outgoing",
+        "duration",
+        "tac",
+    ]
+    df_full = pd.concat([df_outgoing, df_incoming])
+    df_full = df_full[columns]  # bring columns into expected order
+    return df_full
+
+
+def write_day_csv(subscribers, cells, date, num_calls, call_seed, output_root_dir):
+    """
+    Generate a day of data and write it to a csv, return the sql to ingest it.
+
+    Parameters
+    ----------
+    subscribers: list
+        List of objects with msisdn, imei, imsi, tac and int_prefix attributes
+    cells: list
+        List of objects with cell_id, site_id, version, date_of_first_service, date_of_last_service,
+        lon, and lat attributes.
+    date: datetime.date
+        Date calls should occur on
+    num_calls: int
+        Number of calls to generate
+    call_seed: int
+        Random seed to use for generating calls
+    outut_root_dir: str
+        Root directory under which output CSV files are stored (in appropriate subfolders).
+
+    Returns
+    -------
+    str
+        SQL command string which will ingest the written CSV file.
+    """
+    ceg = CallEventGenerator(
+        subscribers=subscribers, cells=cells, date=date.strftime("%Y-%m-%d")
+    )
+    fields = {
+        "id": "call_id",
+        "start_time": "start_time",
+        "duration": "duration",
+        "msisdn_from": "a_party.msisdn",
+        "msisdn_to": "b_party.msisdn",
+        "tac_from": "a_party.tac",
+        "tac_to": "b_party.tac",
+        "cell_id_from": "cell_from.cell_id",
+        "cell_id_to": "cell_to.cell_id",
+    }
+    os.makedirs(f"{output_root_dir}/data/records/calls", exist_ok=True)
+    fpath = f"{output_root_dir}/data/records/calls/calls_{date.strftime('%Y%m%d')}.csv"
+    calls_df = ceg.generate(num_calls, seed=call_seed).to_df(fields=fields)
+    calls_df_twoline = convert_to_two_line_format(calls_df)
+    calls_df_twoline.to_csv(fpath, index=False)
+
+    ingest_sql = """
+        BEGIN;
+            CREATE TABLE IF NOT EXISTS events.calls_{table} (
+                    CHECK ( datetime >= '{table}'::TIMESTAMPTZ
+                    AND datetime < '{end_date}'::TIMESTAMPTZ)
+                ) INHERITS (events.calls);
+                ALTER TABLE events.calls_{table} NO INHERIT events.calls;
+
+                COPY events.calls_{table}( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration,tac )
+                    FROM '{output_root_dir}/data/records/calls/calls_{table}.csv'
+                        WITH DELIMITER ','
+                        CSV HEADER;
+                CREATE INDEX ON events.calls_{table} (msisdn);
+
+            CREATE INDEX ON events.calls_{table} (msisdn_counterpart);
+            CREATE INDEX ON events.calls_{table} (tac);
+            CREATE INDEX ON events.calls_{table} (location_id);
+            CREATE INDEX ON events.calls_{table} (datetime);
+            CLUSTER events.calls_{table} USING calls_{table}_msisdn_idx;
+            ANALYZE events.calls_{table};
+            ALTER TABLE events.calls_{table} INHERIT events.calls;
+        COMMIT;""".format(
+        output_root_dir=output_root_dir,
+        table=date.strftime("%Y%m%d"),
+        end_date=(date + datetime.timedelta(days=1)).strftime("%Y%m%d"),
+    )
+    return f"Inserting {num_calls} calls for {date}.", ingest_sql
+
 
 if __name__ == "__main__":
     args = parser.parse_args()
     logger.info("Generating synthetic data..", **vars(args))
+    start_time = datetime.datetime.now()
     num_subscribers = args.n_subscribers
-    num_sites = args.n_sites
     num_cells = args.n_cells
     num_calls = args.n_calls
-    num_sms = args.n_sms
-    num_mds = args.n_mds
-    num_days = args.n_days
-    num_tacs = args.n_tacs
-    pcode_to_knock_out = args.disaster_zone
-    try:
-        disaster_start_date = args.disaster_start_date
-    except AttributeError:
-        disaster_start_date = False
-        pass  # No disaster
-    try:
-        disaster_end_date = args.disaster_end_date
-    except AttributeError:
-        disaster_end_date = datetime.date(2016, 1, 1) + datetime.timedelta(
-            days=num_days
+
+    subscriber_seed = args.subscribers_seed
+    cell_seed = args.cells_seed
+    call_seed = args.calls_seed
+
+    output_root_dir = args.output_root_dir
+    os.makedirs(os.path.join(output_root_dir, "data", "infrastructure"), exist_ok=True)
+
+    logger.info("Generating {} subscribers.".format(num_subscribers))
+    sg = SubscriberGenerator()
+    subscribers = list(sg.generate(num_subscribers, seed=subscriber_seed))
+
+    logger.info("Generating {} cells.".format(num_cells))
+    cg = CellGenerator()
+    cells = cg.generate(num_cells, seed=cell_seed)
+    cells.to_csv(
+        os.path.join(output_root_dir, "data", "infrastructure", "cells.csv"),
+        fields=[
+            "cell_id",
+            "site_id",
+            "version",
+            "longitude",
+            "latitude",
+            "date_of_first_service",
+            "date_of_last_service",
+        ],
+    )
+    cells_ingest_sql = f"""
+    DELETE FROM infrastructure.cells;
+
+    CREATE TEMP TABLE temp_cells (
+        id TEXT,
+        site_id TEXT,
+        version NUMERIC,
+        longitude NUMERIC,
+        latitude NUMERIC,
+        date_of_first_service TEXT,
+        date_of_last_service TEXT
+    );
+    
+    COPY temp_cells (
+            id,
+            site_id,
+            version,
+            longitude,
+            latitude,
+            date_of_first_service,
+            date_of_last_service
+        )
+    FROM
+        '{os.path.join(output_root_dir, "data", "infrastructure", "cells.csv")}'
+    WITH
+        ( DELIMITER ',',
+        HEADER true,
+        FORMAT csv );
+    
+    INSERT INTO infrastructure.cells (
+        id,
+        site_id,
+        version,
+        date_of_first_service,
+        date_of_last_service,
+        geom_point
+        )
+            SELECT
+                id,
+                site_id,
+                version,
+                date_of_first_service::date,
+                date_of_last_service::date,
+                ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) AS geom_point
+            FROM temp_cells;
+    INSERT INTO infrastructure.sites(id, version, date_of_first_service, date_of_last_service, geom_point) 
+        SELECT site_id, version, date_of_first_service, date_of_last_service, geom_point FROM infrastructure.cells;
+    """
+
+    logger.info("Generating {} days of calls.".format(args.n_days))
+    dates = pd.date_range(start="2016-01-01", periods=args.n_days)
+
+    def write_f(seed_inc, date):
+        return write_day_csv(
+            subscribers, cells, date, num_calls, call_seed + seed_inc, output_root_dir
         )
 
+    with ProcessPoolExecutor() as pool:
+        tables = list(pool.map(write_f, *zip(*enumerate(dates))))
+    tables.append((f"Inserting {num_cells} cells.", cells_ingest_sql))
+
+    # Run ingest on multiple threads
     engine = sqlalchemy.create_engine(
         f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
         echo=False,
@@ -113,415 +351,6 @@ if __name__ == "__main__":
         pool_size=cpu_count(),
         pool_timeout=None,
     )
-
-    start_time = datetime.datetime.now()
-
-    # Generate some randomly distributed sites and cells
-    with engine.begin() as trans:
-        logger.info(f"Generating {num_sites} sites.")
-        start = datetime.datetime.now()
-        trans.execute(
-            f"""CREATE TABLE tmp_sites AS 
-        SELECT row_number() over() AS rid, md5(uuid_generate_v4()::text) AS id, 
-        0 AS version, (date '2015-01-01' + random() * interval '1 year')::date AS date_of_first_service,
-        (p).geom AS geom_point from (SELECT st_dumppoints(ST_GeneratePoints(geom, {num_sites})) AS p from geography.admin0) _;"""
-        )
-        trans.execute(
-            "INSERT INTO infrastructure.sites (id, version, date_of_first_service, geom_point) SELECT id, version, date_of_first_service, geom_point FROM tmp_sites;"
-        )
-        logger.info(
-            f"Generated {num_sites} sites.",
-            runtime=str(datetime.datetime.now() - start),
-        )
-        logger.info(f"Generating {num_cells} cells.")
-        start = datetime.datetime.now()
-        trans.execute(
-            f"""CREATE TABLE tmp_cells as
-            SELECT row_number() over() AS rid, *, -1 AS rid_knockout FROM
-            (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from tmp_sites
-            union all
-            SELECT * from 
-            (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from
-            (
-              SELECT floor(random() * {num_sites} + 1)::integer AS id
-              from generate_series(1, {int(num_cells * 1.1)}) -- Preserve duplicates
-            ) rands
-            inner JOIN tmp_sites
-            ON rands.id=tmp_sites.rid
-            limit {num_cells - num_sites}) _) _
-            ;
-            CREATE INDEX ON tmp_cells (rid);
-            """
-        )
-        trans.execute(
-            "INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) SELECT id, version, site_id, date_of_first_service, geom_point FROM tmp_cells;"
-        )
-        logger.info(
-            f"Generated {num_cells} cells.",
-            runtime=str(datetime.datetime.now() - start),
-        )
-        logger.info(f"Generating {num_tacs} tacs.")
-        start = datetime.datetime.now()
-        trans.execute(
-            f"""CREATE TABLE tacs as
-        (SELECT (row_number() over())::numeric(8, 0) AS tac, 
-        (ARRAY['Nokia', 'Huawei', 'Apple', 'Samsung', 'Sony', 'LG', 'Google', 'Xiaomi', 'ZTE'])[floor((random()*9 + 1))::int] AS brand, 
-        uuid_generate_v4()::text AS model, 
-        (ARRAY['Smart', 'Feature', 'Basic'])[floor((random()*3 + 1))::int] AS  hnd_type 
-        FROM generate_series(1, {num_tacs}));"""
-        )
-        trans.execute(
-            "INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) SELECT tac AS id, brand, model, hnd_type FROM tacs;"
-        )
-        logger.info(
-            f"Generated {num_tacs} tacs.", runtime=str(datetime.datetime.now() - start)
-        )
-        logger.info(f"Generating {num_subscribers} subscribers.")
-        start = datetime.datetime.now()
-        trans.execute(
-            f"""
-        CREATE TABLE subs as
-        (SELECT row_number() over() AS id, md5(uuid_generate_v4()::text) AS msisdn, md5(uuid_generate_v4()::text) AS imei, 
-        md5(uuid_generate_v4()::text) AS imsi, floor(random() * {num_tacs} + 1)::numeric(8, 0) AS tac 
-        FROM generate_series(1, {num_subscribers}));
-        CREATE INDEX on subs (id);
-        ANALYZE subs;
-        """
-        )
-        logger.info(
-            f"Generated {num_subscribers} subscribers.",
-            runtime=str(datetime.datetime.now() - start),
-        )
-
-    start = datetime.datetime.now()
-    logger.info("Generating disaster.")
-    with engine.begin() as trans:
-        trans.execute(
-            f"""CREATE TABLE available_cells AS 
-                SELECT '2016-01-01'::date + rid*interval '1 day' AS day,
-                CASE WHEN ('2016-01-01'::date + rid*interval '1 day' BETWEEN '{disaster_start_date}'::date AND '{disaster_end_date}'::date) THEN
-                    (array(SELECT tmp_cells.id FROM tmp_cells INNER JOIN (SELECT * FROM geography.admin2 WHERE admin2pcod != '{pcode_to_knock_out}') _ ON ST_Within(geom_point, geom)))
-                ELSE
-                    (array(SELECT tmp_cells.id FROM tmp_cells))
-                END AS cells
-                FROM generate_series(0, {num_days}) AS t(rid);"""
-        )
-    with engine.begin() as trans:
-        trans.execute("CREATE INDEX ON available_cells (day);")
-        trans.execute("ANALYZE available_cells;")
-    logger.info(f"Generated disaster.", runtime=str(datetime.datetime.now() - start))
-
-    logger.info("Assigning subscriber home regions.")
-    start = datetime.datetime.now()
-    with engine.begin() as trans:
-        trans.execute(
-            f"""CREATE TABLE homes AS (
-               SELECT h.*, cells FROM
-               (SELECT '2016-01-01'::date AS home_date, id, admin3pcod AS home_id FROM (
-               SELECT *, floor(random() * (SELECT count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer AS admin_id FROM subs
-               ) subscribers
-               LEFT JOIN
-               (SELECT row_number() over() AS admin_id, admin3pcod FROM 
-               geography.admin3
-               RIGHT JOIN
-               tmp_cells ON ST_Within(geom_point, geom)
-               ) geo
-               ON geo.admin_id=subscribers.admin_id) h
-               LEFT JOIN 
-               (SELECT admin3pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
-               ON admin3pcod=home_id
-               )
-               """
-        )
-        trans.execute("CREATE INDEX ON homes (id);")
-        trans.execute("CREATE INDEX ON homes (home_date);")
-        trans.execute("CREATE INDEX ON homes (home_date, id);")
-    for date in (
-        datetime.date(2016, 1, 2) + datetime.timedelta(days=i) for i in range(num_days)
-    ):
-        with engine.begin() as trans:
-            if (
-                pcode_to_knock_out
-                and disaster_start_date
-                and disaster_start_date <= date <= disaster_end_date
-            ):
-                trans.execute(
-                    f"""INSERT INTO homes
-                                        SELECT h.*, cells FROM
-                                        (SELECT '{date.strftime(
-                        "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > 0.99 OR home_id = ANY((array(SELECT admin3.admin3pcod FROM geography.admin3 WHERE admin2pcod = '{pcode_to_knock_out}')))) THEN admin3pcod ELSE home_id END AS home_id FROM (
-                                        SELECT *, floor(random() * (SELECT count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom) WHERE admin2pcod!='{pcode_to_knock_out}') + 1)::integer AS admin_id FROM homes
-                                        WHERE home_date='{(date - datetime.timedelta(days=1)).strftime(
-                        "%Y-%m-%d")}'::date
-                                        ) subscribers
-                                        LEFT JOIN
-                                        (SELECT row_number() over() AS admin_id, admin3pcod FROM 
-                                        geography.admin3
-                                        RIGHT JOIN
-                                        tmp_cells ON ST_Within(geom_point, geom)
-                                        WHERE admin2pcod!='{pcode_to_knock_out}'
-                                        ) geo
-                                        ON geo.admin_id=subscribers.admin_id) h
-                                        LEFT JOIN 
-                                                (SELECT admin3pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
-                                                ON admin3pcod=home_id
-                                        """
-                )
-            else:
-                trans.execute(
-                    f"""INSERT INTO homes
-                        SELECT h.*, cells FROM
-                        (SELECT '{date.strftime(
-                        "%Y-%m-%d")}'::date AS home_date, id, CASE WHEN (random() > 0.99) THEN admin3pcod ELSE home_id END AS home_id FROM (
-                        SELECT *, floor(random() * (SELECT count(distinct admin3pcod) from geography.admin3 RIGHT JOIN tmp_cells on ST_Within(geom_point, geom)) + 1)::integer AS admin_id FROM homes
-                        WHERE home_date='{(date - datetime.timedelta(days=1)).strftime("%Y-%m-%d")}'::date
-                        ) subscribers
-                        LEFT JOIN
-                        (SELECT row_number() over() AS admin_id, admin3pcod FROM 
-                        geography.admin3
-                        RIGHT JOIN
-                        tmp_cells ON ST_Within(geom_point, geom)
-                        ) geo
-                        ON geo.admin_id=subscribers.admin_id) h
-                        LEFT JOIN 
-                                (SELECT admin3pcod, array_agg(id) AS cells FROM tmp_cells LEFT JOIN geography.admin3 ON ST_Within(geom_point, geom) GROUP BY admin3pcod) c
-                                ON admin3pcod=home_id
-                        """
-                )
-    with engine.begin() as trans:
-        trans.execute("ANALYZE homes;")
-    logger.info(
-        f"Assigned subscriber homes.", runtime=str(datetime.datetime.now() - start)
-    )
-
-    start = datetime.datetime.now()
-    logger.info(f"Generating {num_subscribers * 5} interaction pairs.")
-    with engine.begin() as trans:
-        trans.execute(
-            f"""CREATE TABLE interactions AS SELECT 
-                row_number() over() AS rid, callee_id, caller_id, caller.msisdn AS caller_msisdn, 
-                    caller.tac AS caller_tac, caller.imsi AS caller_imsi, caller.imei AS caller_imei, 
-                    callee.msisdn AS callee_msisdn, callee.tac AS callee_tac, 
-                    callee.imsi AS callee_imsi, callee.imei AS callee_imei FROM
-                (SELECT 
-                floor(random() * {num_subscribers} + 1)::integer AS caller_id, 
-                floor(random() * {num_subscribers} + 1)::integer AS callee_id FROM 
-                generate_series(1, {num_subscribers * 5})) AS pairs
-                LEFT JOIN subs AS caller ON pairs.caller_id = caller.id
-                LEFT JOIN subs AS callee ON pairs.callee_id = callee.id
-            """
-        )
-        trans.execute("CREATE INDEX ON interactions (rid);")
-        trans.execute("ANALYZE interactions;")
-    logger.info(
-        f"Generated {num_subscribers * 5} interaction pairs.",
-        runtime=str(datetime.datetime.now() - start),
-    )
-    event_creation_sql = []
-    sql = []
-    for date in (
-        datetime.date(2016, 1, 1) + datetime.timedelta(days=i) for i in range(num_days)
-    ):
-        table = date.strftime("%Y%m%d")
-        end_date = (date + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-
-        if num_calls > 0:
-            event_creation_sql.append(
-                (
-                    f"Generating {num_calls} call events for {date}",
-                    f"""
-            CREATE TABLE call_evts_{table} AS
-            SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
-            round(random()*2600)::numeric AS duration,
-            uuid_generate_v4()::text AS id, interactions.*,
-            CASE WHEN (random() > 0.95) THEN
-                available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
-            ELSE
-                 caller_homes.cells[floor(random()*array_length(caller_homes.cells, 1) + 1)]
-            END AS caller_cell,
-            CASE WHEN (random() > 0.95) THEN
-                available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
-            ELSE
-                 callee_homes.cells[floor(random()*array_length(callee_homes.cells, 1) + 1)]
-            END AS callee_cell
-            FROM 
-            (SELECT floor(random()*{num_subscribers * 5} + 1)::integer AS rid FROM
-            generate_series(1, {num_calls})) _
-            LEFT JOIN
-            interactions
-            USING (rid)
-            LEFT JOIN available_cells
-            ON day='{table}'::date
-            LEFT JOIN homes AS caller_homes
-            ON caller_homes.home_date='{table}'::date and caller_homes.id=interactions.caller_id
-            LEFT JOIN homes AS callee_homes
-            ON callee_homes.home_date='{table}'::date and callee_homes.id=interactions.callee_id;
-
-            CREATE TABLE events.calls_{table} AS 
-            SELECT id, true AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
-            caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
-            caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, NULL::NUMERIC AS operator_code,
-            NULL::NUMERIC AS country_code
-            FROM call_evts_{table}
-            UNION ALL 
-            SELECT id, false AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
-            callee_msisdn AS msisdn, caller_msisdn AS msisdn_counterpart, callee_cell AS location_id,
-            callee_imsi AS imsi, callee_imei AS imei, callee_tac AS tac, NULL::NUMERIC AS operator_code,
-            NULL::NUMERIC AS country_code
-            FROM call_evts_{table};
-            ALTER TABLE events.calls_{table} ADD CONSTRAINT calls_{table}_dt CHECK ( datetime >= '{table}'::TIMESTAMPTZ AND datetime < '{end_date}'::TIMESTAMPTZ);
-            ALTER TABLE events.calls_{table} ALTER msisdn SET NOT NULL;
-            ALTER TABLE events.calls_{table} ALTER datetime SET NOT NULL;
-            """,
-                )
-            )
-
-        if num_sms > 0:
-            event_creation_sql.append(
-                (
-                    f"Generating {num_sms} sms events for {date}",
-                    f"""
-            CREATE TABLE sms_evts_{table} AS
-            SELECT ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS start_time,
-            uuid_generate_v4()::text AS id, interactions.*,
-            CASE WHEN (random() > 0.95) THEN
-                available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
-            ELSE
-                 caller_homes.cells[floor(random()*array_length(caller_homes.cells, 1) + 1)]
-            END AS caller_cell,
-            CASE WHEN (random() > 0.95) THEN
-                available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
-            ELSE
-                 callee_homes.cells[floor(random()*array_length(callee_homes.cells, 1) + 1)]
-            END AS callee_cell
-            FROM 
-            (SELECT floor(random()*{num_subscribers * 5} + 1)::integer AS rid FROM
-            generate_series(1, {num_sms})) _
-            LEFT JOIN
-            interactions
-            USING (rid)
-            LEFT JOIN available_cells
-            ON day='{table}'::date
-            LEFT JOIN homes AS caller_homes
-            ON caller_homes.home_date='{table}'::date and caller_homes.id=interactions.caller_id
-            LEFT JOIN homes AS callee_homes
-            ON callee_homes.home_date='{table}'::date and callee_homes.id=interactions.callee_id;
-
-            CREATE TABLE events.sms_{table} AS 
-            SELECT id, true AS outgoing, start_time AS datetime, NULL::TEXT AS network,
-            caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
-            caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, NULL::NUMERIC AS operator_code,
-            NULL::NUMERIC AS country_code
-            FROM sms_evts_{table}
-            UNION ALL 
-            SELECT id, false AS outgoing, start_time AS datetime, NULL::TEXT AS network,
-            callee_msisdn AS msisdn, caller_msisdn AS msisdn_counterpart, callee_cell AS location_id,
-            callee_imsi AS imsi, callee_imei AS imei, callee_tac AS tac, NULL::NUMERIC AS operator_code,
-            NULL::NUMERIC AS country_code
-            FROM sms_evts_{table};
-            ALTER TABLE events.sms_{table} ADD CONSTRAINT sms_{table}_dt CHECK ( datetime >= '{table}'::TIMESTAMPTZ AND datetime < '{end_date}'::TIMESTAMPTZ);
-            ALTER TABLE events.sms_{table} ALTER msisdn SET NOT NULL;
-            ALTER TABLE events.sms_{table} ALTER datetime SET NOT NULL;
-            """,
-                )
-            )
-
-        if num_mds > 0:
-            event_creation_sql.append(
-                (
-                    f"Generating {num_mds} mds events for {date}",
-                    f"""
-            CREATE TABLE events.mds_{table} AS
-            SELECT uuid_generate_v4()::text AS id, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS datetime, 
-            round(random() * 260)::numeric AS duration, volume_upload + volume_download AS volume_total, volume_upload,
-            volume_download, msisdn, cell AS location_id, imsi, imei, tac, 
-            NULL::NUMERIC AS operator_code, NULL::NUMERIC AS country_code
-            FROM
-            (SELECT
-            subs.msisdn, subs.imsi, subs.imei, subs.tac,
-            round(random() * 100000)::numeric AS volume_upload, 
-            round(random() * 100000)::numeric AS volume_download,
-            CASE WHEN (random() > 0.95) THEN
-                available_cells.cells[floor(random()*array_length(available_cells.cells, 1) + 1)]
-            ELSE
-                 caller_homes.cells[floor(random()*array_length(caller_homes.cells, 1) + 1)]
-            END AS cell
-            FROM (SELECT floor(random()*{num_subscribers} + 1)::integer AS id FROM
-            generate_series(1, {num_mds})) _
-            LEFT JOIN
-            subs
-            USING (id)
-            LEFT JOIN available_cells
-            ON day='{table}'::date
-            LEFT JOIN homes AS caller_homes
-            ON caller_homes.home_date='{table}'::date and caller_homes.id=subs.id) _;
-            ALTER TABLE events.mds_{table} ADD CONSTRAINT mds_{table}_dt CHECK ( datetime >= '{table}'::TIMESTAMPTZ AND datetime < '{end_date}'::TIMESTAMPTZ);
-            ALTER TABLE events.mds_{table} ALTER msisdn SET NOT NULL;
-            ALTER TABLE events.mds_{table} ALTER datetime SET NOT NULL;
-            """,
-                )
-            )
-
-    post_sql = []
-    attach_sql = []
-    post_attach_sql = []
-    cleanup_sql = []
-    for sub in ("calls", "sms", "mds"):
-        if getattr(args, f"n_{sub}") > 0:
-            for date in (
-                datetime.date(2016, 1, 1) + datetime.timedelta(days=i)
-                for i in range(num_days)
-            ):
-                table = date.strftime("%Y%m%d")
-                cleanup_sql.append(
-                    (
-                        f"Dropping {sub}_evts_{table}",
-                        f"DROP TABLE IF EXISTS {sub}_evts_{table};",
-                    )
-                )
-                attach_sql.append(
-                    (
-                        f"Attaching events.{sub}_{table}",
-                        f"ALTER TABLE events.{sub}_{table} INHERIT events.{sub};",
-                    )
-                )
-                if args.cluster:
-                    post_sql.append(
-                        (
-                            f"Clustering events.{sub}_{table}.",
-                            f"CLUSTER events.{sub}_{table} USING {sub}_{table}_msisdn_idx;",
-                        )
-                    )
-                post_sql.append(
-                    (
-                        f"Analyzing events.{sub}_{table}",
-                        f"ANALYZE events.{sub}_{table};",
-                    )
-                )
-            # Mark tables as available for flowmachine
-            post_sql.append(
-                (
-                    f"Updating availability for {sub}",
-                    f"""
-            INSERT INTO available_tables (table_name, has_locations, has_subscribers, has_counterparts) VALUES ('{sub}', true, true, true)
-            ON conflict (table_name)
-            DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;
-            """,
-                )
-            )
-        post_attach_sql.append((f"Analyzing {sub}", f"ANALYZE events.{sub};"))
-
-    # Remove the intermediary data tables
-    for tbl in (
-        "tmp_cells",
-        "tmp_sites",
-        "subs",
-        "tacs",
-        "available_cells",
-        "homes",
-        "interactions",
-    ):
-        cleanup_sql.append((f"Dropping {tbl}", f"DROP TABLE {tbl};"))
 
     def do_exec(args):
         msg, sql = args
@@ -538,13 +367,15 @@ if __name__ == "__main__":
             f"Finished", job=msg, runtime=str(datetime.datetime.now() - started)
         )
 
+    do_exec("Ensuring events.calls is empty.", "DELETE FROM events.calls;")
     with ThreadPoolExecutor(cpu_count()) as tp:
-        list(tp.map(do_exec, event_creation_sql))
-        list(tp.map(do_exec, post_sql))
-    for s in attach_sql + cleanup_sql:
-        do_exec(s)
-    with ThreadPoolExecutor(cpu_count()) as tp:
-        list(tp.map(do_exec, post_attach_sql))
-    logger.info(
-        f"Finished generating.", runtime=str(datetime.datetime.now() - start_time)
+        list(tp.map(do_exec, tables))
+    do_exec("Analyzing events.calls.", "ANALYZE events.calls;")
+    do_exec(
+        "Marking tables as available.",
+        """
+        INSERT INTO available_tables (table_name, has_locations, has_subscribers, has_counterparts) VALUES ('calls', true, true, true)
+        ON conflict (table_name)
+        DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;""",
     )
+    logger.info("Done.", runtime=str(datetime.datetime.now() - start_time))

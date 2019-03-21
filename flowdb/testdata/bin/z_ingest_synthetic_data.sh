@@ -12,7 +12,7 @@ export PGUSER="$POSTGRES_USER"
 
 
 #
-#  Ingest synthetic data.
+#  Ingest supporting synthetic data.
 #
 
 DIR="/docker-entrypoint-initdb.d/sql/syntheticdata"
@@ -37,10 +37,21 @@ if [ $count != 0 ]; then
 fi
 
 #
-#  Generate synthetic data
+#  Generate synthetic data.
+# Two generators are available, and toggled between using the SYNTHETIC_DATA_GENERATOR env var
 #
 
-if [ -f /opt/synthetic_data/generate_synthetic_data.py ]; then
+if [ -f /opt/synthetic_data/generate_synthetic_data.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "python" ]; then
+  python3 /opt/synthetic_data/generate_synthetic_data.py \
+      --n-subscribers ${N_SUBSCRIBERS} \
+      --n-cells ${N_CELLS} \
+      --n-calls ${N_CALLS} \
+      --subscribers-seed ${SUBSCRIBERS_SEED} \
+      --cells-seed ${CELLS_SEED} \
+      --calls-seed ${CALLS_SEED} \
+      --n-days ${N_DAYS} \
+      --output-root-dir ${OUTPUT_ROOT_DIR}
+elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "sql" ]; then
   python3 /opt/synthetic_data/generate_synthetic_data.py \
       --n-subscribers ${N_SUBSCRIBERS} \
       --n-cells ${N_CELLS} \

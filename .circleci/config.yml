@@ -69,6 +69,24 @@ defaults:
         N_SMS: 0
         N_MDS: 0
         N_CALLS: 2000
+        SYNTHETIC_DATA_GENERATOR: <<parameters.generator>>
+        FM_PASSWORD: foo
+        API_PASSWORD: foo
+        POSTGRES_PASSWORD: flowflow
+  - &flowdbsynth_python_docker
+    - image: circleci/python:3.7
+      environment:
+        POSTGRES_PASSWORD: flowflow
+        FLOWDB_PORT: 5432
+        FM_PASSWORD: foo
+        API_PASSWORD: foo
+    - image: flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID
+      environment:
+        N_DAYS: 3
+        N_SUBSCRIBERS: 400
+        N_CELLS: 100
+        SYNTHETIC_DATA_GENERATOR: python
+        N_CALLS: 2000
         FM_PASSWORD: foo
         API_PASSWORD: foo
         POSTGRES_PASSWORD: flowflow
@@ -95,6 +113,68 @@ defaults:
         ignore: /.*/
       tags:
         only: /.*/
+
+
+executors:
+  synth_db: # Synthetic data generation execution environment
+    parameters:
+      generator:
+        type: enum
+        enum: ["python", "sql"]
+        default: "python"
+      num_days:
+        type: integer
+        default: 3
+      num_subscribers:
+        type: integer
+        default: 400
+      num_cells:
+        type: integer
+        default: 100
+      num_sites:
+        type: integer
+        default: 100
+      num_sms:
+        type: integer
+        default: 100
+      num_calls:
+        type: integer
+        default: 2000
+      num_mds:
+        type: integer
+        default: 0
+      disaster_start_date:
+        type: string
+        default: "2015-01-01"
+      disaster_end_date:
+        type: string
+        default: "2015-01-01"
+    environment:
+        POSTGRES_PASSWORD: flowflow
+        MPLBACKEND: "agg"
+        FLOWDB_PORT: 5432
+        FM_PASSWORD: foo
+        API_PASSWORD: foo
+        SYNTHETIC_DATA_DB_PORT: 5432
+        POSTGRES_USER: flowdb
+
+    docker:
+      - image: circleci/python:3.7
+      - image: flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID
+        environment:
+          N_DAYS: <<parameters.num_days>>
+          DISASTER_START_DATE: <<parameters.disaster_start_date>>
+          DISASTER_END_DATE: <<parameters.disaster_end_date>>
+          N_SUBSCRIBERS: <<parameters.num_subscribers>>
+          N_CELLS: <<parameters.num_cells>>
+          N_SITES: <<parameters.num_sites>>
+          N_SMS: <<parameters.num_sms>>
+          N_MDS: <<parameters.num_mds>>
+          N_CALLS: <<parameters.num_calls>>
+          SYNTHETIC_DATA_GENERATOR: <<parameters.generator>>
+          FM_PASSWORD: foo
+          API_PASSWORD: foo
+          POSTGRES_PASSWORD: flowflow
 
 jobs:
   set_docker_tag_for_ci_images:
@@ -290,8 +370,14 @@ jobs:
           when: always
 
   run_flowdbsynth_tests:
-    docker: *flowdbsynth_docker
-    environment: *flowdb_env
+    parameters:
+      generator:
+        type: enum
+        enum: ["python", "sql"]
+        default: "python"
+    executor:
+      name: synth_db
+      generator: <<parameters.generator>>
     working_directory: /home/circleci/project/flowdb
     steps:
       - checkout:
@@ -612,6 +698,14 @@ workflows:
             - install_flowmachine_deps
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
+          name: Synth data python generator
+          generator: python
+          requires:
+            - build_flowdb
+          <<: *run_always_org_context
+      - run_flowdbsynth_tests:
+          name: Synth data sql generator
+          generator: sql
           requires:
             - build_flowdb
           <<: *run_always_org_context
