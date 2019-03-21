@@ -66,7 +66,7 @@ executors:
         default: 100
       num_sms:
         type: integer
-        default: 100
+        default: 0
       num_calls:
         type: integer
         default: 2000
@@ -479,6 +479,8 @@ jobs:
     executor:
       name: python_with_flowdb
       flowdb_image: "testdata"
+    environment:
+      LOG_DIRECTORY: "."
     working_directory: /home/circleci/project/integration_tests
     steps:
       - checkout:
