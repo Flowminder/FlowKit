@@ -58,10 +58,7 @@ setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     entry_points={
-        "console_scripts": [
-            "flowmachine_OBSOLETE = flowmachine.core.server.server_OBSOLETE:main",
-            "flowmachine = flowmachine.core.server.server:main",
-        ]
+        "console_scripts": ["flowmachine = flowmachine.core.server.server:main"]
     },
     description="Digestion program for Call Detail Record (CDR) data.",
     long_description=readme,
