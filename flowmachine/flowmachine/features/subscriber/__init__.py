@@ -69,6 +69,7 @@ from .mds_volume import MDSVolume
 from .event_type_proportion import ProportionEventType
 from .per_contact_event_stats import PerContactEventStats
 from .per_location_event_stats import PerLocationEventStats
+from .handset_stats import HandsetStats
 
 __all__ = [
     "RadiusOfGyration",
@@ -122,4 +123,5 @@ __all__ = [
     "ContactReciprocal",
     "ProportionEventReciprocal",
     "ProportionContactReciprocal",
+    "HandsetStats",
 ]

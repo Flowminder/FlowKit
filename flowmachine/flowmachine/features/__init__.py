@@ -71,6 +71,7 @@ subs = [
     "ContactReciprocal",
     "ProportionContactReciprocal",
     "ProportionEventReciprocal",
+    "HandsetStats",
 ]
 
 rast = ["RasterStatistics"]
