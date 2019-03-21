@@ -25,13 +25,6 @@ class BaseExposedQuery(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def __schema__(self):
-        raise NotImplementedError(
-            f"Class {self.__class__.__name__} does not have the __schema__ property set."
-        )
-
-    @property
-    @abstractmethod
     def _flowmachine_query_obj(self):
         """
         Return the underlying flowmachine query object which this class exposes.

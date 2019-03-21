@@ -31,9 +31,6 @@ class InputToFlowsSchema(OneOfSchema):
             raise Exception("Unknown object type: {obj.__class__.__name__}")
 
 
-from marshmallow.validate import OneOf
-
-
 class FlowsSchema(Schema):
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
@@ -46,9 +43,6 @@ class FlowsSchema(Schema):
 
 
 class FlowsExposed(BaseExposedQuery):
-
-    __schema__ = FlowsSchema
-
     def __init__(self, *, from_location, to_location, aggregation_unit):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.

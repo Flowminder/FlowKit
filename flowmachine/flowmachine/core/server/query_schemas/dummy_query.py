@@ -23,9 +23,6 @@ class DummyQuerySchema(Schema):
 
 
 class DummyQueryExposed(BaseExposedQuery):
-
-    __schema__ = DummyQuerySchema
-
     def __init__(self, dummy_param):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
