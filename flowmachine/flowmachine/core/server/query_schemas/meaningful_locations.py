@@ -89,9 +89,6 @@ def _make_meaningful_locations_object(
 
 
 class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
-
-    __schema__ = MeaningfulLocationsAggregateSchema
-
     def __init__(
         self,
         *,
@@ -167,9 +164,6 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(Schema):
 
 
 class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
-
-    __schema__ = MeaningfulLocationsBetweenLabelODMatrixSchema
-
     def __init__(
         self,
         *,
@@ -252,9 +246,6 @@ class MeaningfulLocationsBetweenDatesODMatrixSchema(Schema):
 
 
 class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
-
-    __schema__ = MeaningfulLocationsBetweenDatesODMatrixSchema
-
     def __init__(
         self,
         *,

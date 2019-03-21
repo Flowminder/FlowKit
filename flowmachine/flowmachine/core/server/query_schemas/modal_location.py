@@ -35,9 +35,6 @@ class ModalLocationSchema(Schema):
 
 
 class ModalLocationExposed(BaseExposedQuery):
-
-    __schema__ = ModalLocationSchema
-
     def __init__(self, locations, *, aggregation_unit, subscriber_subset=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.

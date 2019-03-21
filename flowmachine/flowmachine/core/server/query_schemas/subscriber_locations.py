@@ -24,8 +24,6 @@ class SubscriberLocationsSchema(Schema):
 
 
 class SubscriberLocationsExposed:
-    __schema__ = SubscriberLocationsSchema
-
     def __init__(
         self, *, start_date, end_date, aggregation_unit, subscriber_subset=None
     ):
