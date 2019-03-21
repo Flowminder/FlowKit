@@ -220,7 +220,6 @@ def write_day_csv(subscribers, cells, date, num_calls, call_seed, output_root_di
     calls_df_twoline.to_csv(fpath, index=False)
 
     ingest_sql = """
-        BEGIN;
             CREATE TABLE IF NOT EXISTS events.calls_{table} (
                     CHECK ( datetime >= '{table}'::TIMESTAMPTZ
                     AND datetime < '{end_date}'::TIMESTAMPTZ)
@@ -239,8 +238,7 @@ def write_day_csv(subscribers, cells, date, num_calls, call_seed, output_root_di
             CREATE INDEX ON events.calls_{table} (datetime);
             CLUSTER events.calls_{table} USING calls_{table}_msisdn_idx;
             ANALYZE events.calls_{table};
-            ALTER TABLE events.calls_{table} INHERIT events.calls;
-        COMMIT;""".format(
+            ALTER TABLE events.calls_{table} INHERIT events.calls;""".format(
         output_root_dir=output_root_dir,
         table=date.strftime("%Y%m%d"),
         end_date=(date + datetime.timedelta(days=1)).strftime("%Y%m%d"),
@@ -370,7 +368,7 @@ if __name__ == "__main__":
     do_exec(("Ensuring events.calls is empty.", "DELETE FROM events.calls;"))
     with ThreadPoolExecutor(cpu_count()) as tp:
         list(tp.map(do_exec, tables))
-    do_exec("Analyzing events.calls.", "ANALYZE events.calls;")
+    do_exec(("Analyzing events.calls.", "ANALYZE events.calls;"))
     do_exec(
         (
             "Marking tables as available.",
