@@ -209,11 +209,11 @@ from .utils import permissions_types, aggregation_types
         ),
     ],
 )
-def test_run_query(query_kind, params, access_token_builder, api_host):
+def test_run_query(query_kind, params, access_token_builder, flowapi_url):
     """Test that queries can be run, and return a QueryResult object."""
     query_spec = getattr(flowclient, query_kind)(**params)
     con = flowclient.Connection(
-        api_host,
+        flowapi_url,
         access_token_builder(
             {
                 query_spec["query_kind"]: {
@@ -228,10 +228,10 @@ def test_run_query(query_kind, params, access_token_builder, api_host):
     assert 0 < len(result_dataframe)
 
 
-def test_get_geography(access_token_builder, api_host):
+def test_get_geography(access_token_builder, flowapi_url):
     """Test that queries can be run, and return a GeoJSON dict."""
     con = flowclient.Connection(
-        api_host,
+        flowapi_url,
         access_token_builder(
             {
                 "geography": {
