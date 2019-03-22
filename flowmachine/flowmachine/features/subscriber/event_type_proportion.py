@@ -24,7 +24,7 @@ class ProportionEventType(SubscriberFeature):
     numerator: str or list of strings
         The event tables for which we are seeking as the proportion of the
         total events observed in all tables specified in `tables`.
-    numerator_direction : {'in', 'out', 'both'}, default 'out'
+    numerator_direction : {'in', 'out', 'both'}, default 'both'
         Whether to consider events made, received, or both in the numerator. Defaults to 'both'.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
