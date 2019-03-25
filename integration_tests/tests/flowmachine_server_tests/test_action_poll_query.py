@@ -29,7 +29,7 @@ async def test_poll_existing_query(zmq_port, zmq_host):
     }
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     expected_reply = {
-        "status": "done",
+        "status": "success",
         "msg": "",
         "payload": {
             "query_id": expected_query_id,

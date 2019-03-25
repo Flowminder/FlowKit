@@ -33,7 +33,7 @@ async def test_get_geography(app, access_token_builder, dummy_zmq_server):
     )
 
     zmq_reply = ZMQReply(
-        status="done", payload={"query_state": "completed", "sql": "SELECT 1;"}
+        status="success", payload={"query_state": "completed", "sql": "SELECT 1;"}
     )
     dummy_zmq_server.side_effect = (zmq_reply.as_json(),)
     response = await client.get(

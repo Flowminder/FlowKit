@@ -39,11 +39,11 @@ async def test_poll_query(
     #
     dummy_zmq_server.side_effect = return_once(
         ZMQReply(
-            status="done",
+            status="success",
             payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
         ).as_json(),
         then=ZMQReply(
-            status="done",
+            status="success",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": query_state},
         ).as_json(),
     )
@@ -51,5 +51,5 @@ async def test_poll_query(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == http_code
-    if query_state == "done":
+    if query_state == "success":
         assert "/api/0/get/DUMMY_QUERY_ID" == response.headers["Location"]

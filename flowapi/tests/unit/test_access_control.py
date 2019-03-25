@@ -79,7 +79,7 @@ async def test_granular_poll_access(
     for q_kind in query_kinds:
         dummy_zmq_server.side_effect = return_once(
             {
-                "status": "done",
+                "status": "success",
                 "msg": "",
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
@@ -88,7 +88,7 @@ async def test_granular_poll_access(
                 },
             },
             then={
-                "status": "done",
+                "status": "success",
                 "msg": "",
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
@@ -130,12 +130,12 @@ async def test_granular_json_access(
     for q_kind in query_kinds:
         dummy_zmq_server.side_effect = (
             {
-                "status": "done",
+                "status": "success",
                 "msg": "",
                 "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": q_kind},
             },
             {
-                "status": "done",
+                "status": "success",
                 "msg": "",
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
@@ -143,7 +143,7 @@ async def test_granular_json_access(
                 },
             },
             {
-                "status": "done",
+                "status": "success",
                 "msg": "",
                 "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
             },
@@ -176,12 +176,12 @@ async def test_no_result_access_without_both_claims(
     token = access_token_builder({"DUMMY_QUERY_KIND": claims})
     dummy_zmq_server.side_effect = (
         {
-            "status": "done",
+            "status": "success",
             "msg": "",
             "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query"},
         },
         {
-            "status": "done",
+            "status": "success",
             "msg": "",
             "payload": {
                 "query_id": "DUMMY_QUERY_ID",
@@ -189,7 +189,7 @@ async def test_no_result_access_without_both_claims(
             },
         },
         {
-            "status": "done",
+            "status": "success",
             "msg": "",
             "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
         },
@@ -217,7 +217,7 @@ async def test_access_logs_gets(
     client, db, log_dir, app = app
     token = access_token_builder({query_kind: {"permissions": {}}})
     dummy_zmq_server.return_value = {
-        "status": "done",
+        "status": "success",
         "msg": "",
         "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query_kind"},
     }
