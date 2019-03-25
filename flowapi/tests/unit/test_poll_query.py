@@ -5,9 +5,11 @@
 import pytest
 from asynctest import return_once
 
+from flowapi.zmq_helpers import ZMQReply
+
 
 @pytest.mark.parametrize(
-    "status, http_code",
+    "query_state, http_code",
     [
         ("completed", 303),
         ("executing", 202),
@@ -19,7 +21,7 @@ from asynctest import return_once
 )
 @pytest.mark.asyncio
 async def test_poll_query(
-    status, http_code, app, dummy_zmq_server, access_token_builder
+    query_state, http_code, app, access_token_builder, dummy_zmq_server
 ):
     """
     Test that correct status code and any redirect is returned when polling a running query
@@ -27,12 +29,27 @@ async def test_poll_query(
     client, db, log_dir, app = app
 
     token = access_token_builder({"modal_location": {"permissions": {"poll": True}}})
+
+    # The replies below are in response to the following messages:
+    #  - get_query_kind
+    #  - poll_query
+    #
+    # {'status': 'done', 'msg': '', 'payload': {'query_id': '5ffe4a96dbe33a117ae9550178b81836', 'query_kind': 'modal_location'}}
+    # {'status': 'done', 'msg': '', 'payload': {'query_id': '5ffe4a96dbe33a117ae9550178b81836', 'query_kind': 'modal_location', 'query_state': 'completed'}}
+    #
     dummy_zmq_server.side_effect = return_once(
-        {"id": 0, "query_kind": "modal_location"}, then={"status": status, "id": 0}
+        ZMQReply(
+            status="done",
+            payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
+        ).as_json(),
+        then=ZMQReply(
+            status="done",
+            payload={"query_id": "DUMMY_QUERY_ID", "query_state": query_state},
+        ).as_json(),
     )
     response = await client.get(
-        f"/api/0/poll/0", headers={"Authorization": f"Bearer {token}"}
+        f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == http_code
-    if status == "done":
-        assert "/api/0/get/0" == response.headers["Location"]
+    if query_state == "done":
+        assert "/api/0/get/DUMMY_QUERY_ID" == response.headers["Location"]
