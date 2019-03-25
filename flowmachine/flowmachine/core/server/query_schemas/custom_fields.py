@@ -25,6 +25,27 @@ class AggregationUnit(fields.String):
         super().__init__(required=required, validate=validate, **kwargs)
 
 
+class EventTypes(fields.List):
+    """
+    A string representing an event type, for example "calls", "sms", "mds", "topups".
+    """
+
+    def __init__(self, required=False, validate=None, **kwargs):
+        if validate is not None:
+            raise ValueError(
+                "The EventTypes field provides its own validation "
+                "and thus does not accept a the 'validate' argument."
+            )
+
+        super().__init__(
+            fields.String(validate=OneOf(["calls", "sms", "mds", "topups"])),
+            required=required,
+            validate=Length(min=1),
+            allow_none=True,
+            **kwargs,
+        )
+
+
 class SubscriberSubset(fields.String):
     """
     Represents a subscriber subset. This can either be a string representing

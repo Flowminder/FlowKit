@@ -28,7 +28,7 @@ class _TotalCellEvents(Query):
         start: str,
         stop: str,
         *,
-        table: Union[str, List[str]] = "all",
+        table: Union[None, List[str]] = None,
         interval: str = "hour",
         direction: str = "both",
         hours="all",
@@ -181,7 +181,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         start: str,
         stop: str,
         *,
-        table: Union[str, List[str]] = "all",
+        table: Union[None, List[str]] = None,
         level: str = "cell",
         interval: str = "hour",
         direction: str = "both",
@@ -193,7 +193,6 @@ class TotalLocationEvents(GeoDataMixin, Query):
         polygon_table=None,
         geom_col="geom",
     ):
-
         self.start = start
         self.stop = stop
         self.table = table
