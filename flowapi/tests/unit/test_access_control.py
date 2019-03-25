@@ -47,7 +47,7 @@ async def test_granular_run_access(
     expected_responses = dict.fromkeys(query_kinds, 401)
     expected_responses[query_kind] = 202
     dummy_zmq_server.return_value = {
-        "status": "accepted",
+        "status": "success",
         "msg": "",
         "payload": {"query_id": "DUMMY_QUERY_ID"},
     }
