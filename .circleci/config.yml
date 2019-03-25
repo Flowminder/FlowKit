@@ -479,10 +479,15 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
       synthetic_data_generator: sql
-      num_days: 7
-      num_subscribers: 1000
+      num_sites: 200
       num_cells: 1000
-      num_calls: 10000
+      num_subscribers: 50000
+      num_days: 60
+      num_calls: 20000
+      num_sms: 20000
+      num_mds: 20000
+      disaster_start_date: 2016-02-11
+      disaster_end_date: 2016-03-01
     working_directory: /home/circleci/project/docs
     steps:
       - checkout:
