@@ -42,7 +42,7 @@ class EventsTablesUnion(Query):
         stop,
         *,
         columns,
-        tables="all",
+        tables=None,
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
@@ -76,8 +76,14 @@ class EventsTablesUnion(Query):
     def _parse_tables(self, tables):
 
         if isinstance(tables, str) and tables.lower() == "all":
+            warnings.warn(
+                "EventsTablesUnion will soon stop accepting the argument tables='all'. Use tables=None instead."
+            )
+            tables = None
+
+        if tables is None:
             return [f"events.{t}" for t in self.connection.subscriber_tables]
-        elif type(tables) is str:
+        elif isinstance(tables, str):
             return [tables]
         else:
             return tables

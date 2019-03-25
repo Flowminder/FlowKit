@@ -21,19 +21,19 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
                 "subscriber_subset": None,
             },
         ),
-        # (
-        #     "cc13f4c70a59b25a61192583132c1efe",
-        #     {
-        #         "query_kind": "location_event_counts",
-        #         "start_date": "2016-01-01",
-        #         "end_date": "2016-01-02",
-        #         "interval": "day",
-        #         "aggregation_unit": "admin3",
-        #         "direction": "all",
-        #         "event_types": "all",
-        #         "subscriber_subset": None,
-        #     },
-        # ),
+        (
+            "7104c08509df32eeced33e81f384bfc1",
+            {
+                "query_kind": "location_event_counts",
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-02",
+                "interval": "day",
+                "aggregation_unit": "admin3",
+                "direction": "both",
+                "event_types": None,
+                "subscriber_subset": None,
+            },
+        ),
         (
             "fb7c3603f5e9a56812f59b118bde3425",
             {
