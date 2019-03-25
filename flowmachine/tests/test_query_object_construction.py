@@ -56,10 +56,10 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
                 ),
             },
         ),
-        # (
-        #     "5b2b2484e941da429b52dda7e81fb917",
-        #     {"query_kind": "geography", "aggregation_unit": "admin3"},
-        # ),
+        (
+            "5b2b2484e941da429b52dda7e81fb917",
+            {"query_kind": "geography", "aggregation_unit": "admin3"},
+        ),
         (
             "acde020e8c87383764d44c16bd6d834a",
             {
