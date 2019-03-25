@@ -51,7 +51,7 @@ def test_401_unknown_error(session_mock, token):
     """If a msg field is not available for a 401, a generic message is used."""
     session_mock.get.return_value.status_code = 401
     session_mock.get.return_value.json.return_value = ZMQReply(
-        status="error", msg="Unknown access denied error", data={}
+        status="error", msg="Unknown access denied error", payload={}
     ).as_json()
     connection = flowclient.connect("DUMMY_API", token)
     with pytest.raises(FlowclientConnectionError, match="Unknown access denied error"):

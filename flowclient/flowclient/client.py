@@ -172,7 +172,7 @@ class Connection:
         else:
             try:
                 error = response.json()["msg"]
-                payload_info = f"Payload: {response.json()['data']}"
+                payload_info = f"Payload: {response.json()['payload']}"
             except ValueError:
                 # Happens if the response body does not contain valid JSON
                 # (see http://docs.python-requests.org/en/master/api/#requests.Response.json)
