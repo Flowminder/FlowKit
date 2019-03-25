@@ -54,6 +54,7 @@
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
+        "location_event_counts": "#/components/schemas/LocationEventCounts",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
@@ -85,6 +86,9 @@
       },
       {
         "$ref": "#/components/schemas/Geography"
+      },
+      {
+        "$ref": "#/components/schemas/LocationEventCounts"
       }
     ]
   },
@@ -159,6 +163,72 @@
         "$ref": "#/components/schemas/DailyLocation"
       }
     ]
+  },
+  "LocationEventCounts": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "direction": {
+        "enum": [
+          "in",
+          "out",
+          "both"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "event_types": {
+        "items": {
+          "enum": [
+            "calls",
+            "sms",
+            "mds",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "string"
+      },
+      "interval": {
+        "enum": [
+          "hour",
+          "min",
+          "day"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "direction",
+      "end_date",
+      "interval",
+      "start_date"
+    ],
+    "type": "object"
   },
   "MeaningfulLocationsAggregate": {
     "properties": {

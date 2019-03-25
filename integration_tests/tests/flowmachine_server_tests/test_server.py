@@ -50,6 +50,7 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
                 "meaningful_locations_between_label_od_matrix",
                 "meaningful_locations_between_dates_od_matrix",
                 "geography",
+                "location_event_counts",
             ]
         },
     }
