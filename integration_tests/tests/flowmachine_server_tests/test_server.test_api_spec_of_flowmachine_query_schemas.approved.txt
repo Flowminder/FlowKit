@@ -53,6 +53,7 @@
         "daily_location": "#/components/schemas/DailyLocation",
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
+        "geography": "#/components/schemas/Geography",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
@@ -81,6 +82,9 @@
       },
       {
         "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
+      },
+      {
+        "$ref": "#/components/schemas/Geography"
       }
     ]
   },
@@ -106,6 +110,23 @@
       "aggregation_unit",
       "from_location",
       "to_location"
+    ],
+    "type": "object"
+  },
+  "Geography": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit"
     ],
     "type": "object"
   },
