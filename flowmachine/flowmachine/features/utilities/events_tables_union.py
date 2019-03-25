@@ -2,12 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import structlog
 import warnings
 from typing import List
 
 from ...core import Query
 from ...core.errors import MissingDateError
 from .event_table_subset import EventTableSubset
+
+logger = structlog.get_logger(__name__)
 
 
 class EventsTablesUnion(Query):
@@ -50,15 +53,20 @@ class EventsTablesUnion(Query):
         """
 
         """
+        if isinstance(tables, str) and tables.lower() == "all":
+            logger.warn(
+                "EventsTablesUnion will soon stop accepting the argument tables='all'. Use tables=None instead."
+            )
+            tables = None
 
         self.start = start
         self.stop = stop
-        if "*" in columns and len(tables) != 1:
+        self.columns = columns
+        self.tables = self._parse_tables(tables)
+        if "*" in columns and len(self.tables) != 1:
             raise ValueError(
                 "Must give named tables when combining multiple event type tables."
             )
-        self.columns = columns
-        self.tables = self._parse_tables(tables)
         self.date_subsets = self._make_table_list(
             hours=hours,
             subscriber_subset=subscriber_subset,
@@ -74,13 +82,6 @@ class EventsTablesUnion(Query):
         ].column_names  # Use in preference to self.columns which might be ["*"]
 
     def _parse_tables(self, tables):
-
-        if isinstance(tables, str) and tables.lower() == "all":
-            warnings.warn(
-                "EventsTablesUnion will soon stop accepting the argument tables='all'. Use tables=None instead."
-            )
-            tables = None
-
         if tables is None:
             return [f"events.{t}" for t in self.connection.subscriber_tables]
         elif isinstance(tables, str):
