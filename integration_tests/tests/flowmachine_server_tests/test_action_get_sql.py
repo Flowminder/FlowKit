@@ -46,7 +46,7 @@ async def test_get_sql(zmq_port, zmq_host):
         "request_id": "DUMMY_ID",
     }
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
-    assert "done" == reply["status"]
+    assert "success" == reply["status"]
     assert f"SELECT * FROM cache.x{expected_query_id}" == reply["payload"]["sql"]
 
 

@@ -68,7 +68,7 @@ async def poll_query(query_id):
     if reply["status"] == "error":
         return jsonify({"status": "error", "msg": reply[""]})
     else:
-        assert reply["status"] == "done"
+        assert reply["status"] == "success"
         query_state = reply["payload"]["query_state"]
         if query_state == "completed":
             return (

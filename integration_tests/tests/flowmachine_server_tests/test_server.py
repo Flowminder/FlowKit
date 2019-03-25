@@ -13,7 +13,7 @@ def test_ping_flowmachine_server(send_zmq_message_and_receive_reply):
     """
     msg = {"action": "ping", "request_id": "DUMMY_ID"}
     reply = send_zmq_message_and_receive_reply(msg)
-    expected_reply = {"status": "done", "msg": "pong", "payload": {}}
+    expected_reply = {"status": "success", "msg": "pong", "payload": {}}
     assert expected_reply == reply
 
 
@@ -38,7 +38,7 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
     msg = {"action": "get_available_queries", "request_id": "DUMMY_ID"}
     reply = send_zmq_message_and_receive_reply(msg)
     expected_reply = {
-        "status": "done",
+        "status": "success",
         "msg": "",
         "payload": {
             "available_queries": [
@@ -64,7 +64,7 @@ def test_api_spec_of_flowmachine_query_schemas(
     msg = {"action": "get_query_schemas", "request_id": "DUMMY_ID"}
     reply = send_zmq_message_and_receive_reply(msg)
     print(reply)
-    assert "done" == reply["status"]
+    assert "success" == reply["status"]
     spec_as_json_string = json.dumps(
         reply["payload"]["query_schemas"], indent=2, sort_keys=True
     )

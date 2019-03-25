@@ -36,7 +36,7 @@ def action_handler__ping():
 
     Returns the message 'pong'.
     """
-    return ZMQReply(status="done", msg="pong")
+    return ZMQReply(status="success", msg="pong")
 
 
 def action_handler__get_available_queries():
@@ -46,7 +46,7 @@ def action_handler__get_available_queries():
     Returns a list of available flowmachine queries.
     """
     available_queries = list(FlowmachineQuerySchema.type_schemas.keys())
-    return ZMQReply(status="done", payload={"available_queries": available_queries})
+    return ZMQReply(status="success", payload={"available_queries": available_queries})
 
 
 def action_handler__get_query_schemas():
@@ -64,7 +64,7 @@ def action_handler__get_query_schemas():
     )
     spec.components.schema("FlowmachineQuerySchema", schema=FlowmachineQuerySchema)
     schemas_spec = spec.to_dict()["components"]["schemas"]
-    return ZMQReply(status="done", payload={"query_schemas": schemas_spec})
+    return ZMQReply(status="success", payload={"query_schemas": schemas_spec})
 
 
 def action_handler__run_query(**action_params):
@@ -139,7 +139,7 @@ def action_handler__poll_query(query_id):
             "query_kind": query_kind,
             "query_state": q_state_machine.current_query_state,
         }
-        return ZMQReply(status="done", payload=payload)
+        return ZMQReply(status="success", payload=payload)
 
 
 def action_handler__get_query_kind(query_id):
@@ -155,7 +155,7 @@ def action_handler__get_query_kind(query_id):
         return ZMQReply(status="error", msg=error_msg, payload=payload)
     else:
         payload = {"query_id": query_id, "query_kind": query_kind}
-        return ZMQReply(status="done", payload=payload)
+        return ZMQReply(status="success", payload=payload)
 
 
 def action_handler__get_query_params(query_id):
@@ -174,7 +174,7 @@ def action_handler__get_query_params(query_id):
         )
 
     payload = {"query_id": query_id, "query_params": query_params}
-    return ZMQReply(status="done", payload=payload)
+    return ZMQReply(status="success", payload=payload)
 
 
 def action_handler__get_sql(query_id):
@@ -200,7 +200,7 @@ def action_handler__get_sql(query_id):
         q = get_query_object_by_id(Query.connection, query_id)
         sql = q.get_query()
         payload = {"query_id": query_id, "query_state": query_state, "sql": sql}
-        return ZMQReply(status="done", payload=payload)
+        return ZMQReply(status="success", payload=payload)
     elif query_state == QueryState.EXECUTING:
         msg = f"Query with id '{query_id}' is still running."
         payload = {"query_id": query_id, "query_state": query_state}
@@ -260,7 +260,7 @@ def action_handler__get_geography(aggregation_unit):
     # TODO: put query_run_log back in!
     # query_run_log.info("get_geography", **run_log_dict)
     payload = {"query_state": QueryState.COMPLETED, "sql": sql}
-    return ZMQReply(status="done", payload=payload)
+    return ZMQReply(status="success", payload=payload)
 
 
 def get_action_handler(action):
