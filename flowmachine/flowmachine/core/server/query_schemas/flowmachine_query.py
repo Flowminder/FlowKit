@@ -16,6 +16,7 @@ from .meaningful_locations import (
     MeaningfulLocationsBetweenDatesODMatrixSchema,
     MeaningfulLocationsBetweenDatesODMatrixExposed,
 )
+from .geography import GeographySchema, GeographyExposed
 
 # from .subscriber_locations import SubscriberLocationsSchema, SubscriberLocationsExposed
 
@@ -31,6 +32,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "meaningful_locations_aggregate": MeaningfulLocationsAggregateSchema,
         "meaningful_locations_between_label_od_matrix": MeaningfulLocationsBetweenLabelODMatrixSchema,
         "meaningful_locations_between_dates_od_matrix": MeaningfulLocationsBetweenDatesODMatrixSchema,
+        "geography": GeographySchema,
     }
 
     def get_obj_type(self, obj):
@@ -50,6 +52,8 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "meaningful_locations_between_label_od_matrix"
         elif isinstance(obj, MeaningfulLocationsBetweenDatesODMatrixExposed):
             return "meaningful_locations_between_dates_od_matrix"
+        elif isinstance(obj, GeographyExposed):
+            return "geography"
         else:
             raise ValueError(
                 f"Object type '{obj.__class__.__name__}' not registered in FlowmachineQuerySchema."
