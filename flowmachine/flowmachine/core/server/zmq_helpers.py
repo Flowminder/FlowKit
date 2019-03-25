@@ -22,8 +22,7 @@ class ZMQReplyStatus(str, Enum):
     Valid status values for a zmq reply.
     """
 
-    ACCEPTED = "accepted"
-    DONE = "done"
+    SUCCESS = "success"
     ERROR = "error"
 
 
