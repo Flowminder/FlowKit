@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - `API_DB_PASS` -> `FLOWAPI_DB_PASS`
     - `FM_DB_USER` -> `FLOWMACHINE_DB_USER`
     - `FM_DB_PASS` -> `FLOWMACHINE_DB_PASS`
+- Added `numerator_direction` to `ProportionEventType` to allow for proportion of directed events.
 
 ### Fixed
 - Server no longer loses track of queries under heavy load
