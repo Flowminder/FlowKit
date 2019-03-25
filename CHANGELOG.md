@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- When running integration tests locally, normally pytest will automatically spin up servers for flowmachine and flowapi as part of the test setup.
+  This can now be disabled by setting the environment variable `FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=TRUE`.
+- The integration tests now use the environment variables `FLOWAPI_HOST`, `FLOWAPI_PORT` to determine how to connect to the flowapi server.
+- A new data generator has been added to the synthetic data container which supports more data types, simple disaster simulation, and more plausible behaviours as well as increased performance
 
 ### Changed
 - FlowAPI now reports queued/running status for queries instead of just accepted
@@ -17,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - `API_DB_PASS` -> `FLOWAPI_DB_PASS`
     - `FM_DB_USER` -> `FLOWMACHINE_DB_USER`
     - `FM_DB_PASS` -> `FLOWMACHINE_DB_PASS`
+- Added `numerator_direction` to `ProportionEventType` to allow for proportion of directed events.
 
 ### Fixed
 - Server no longer loses track of queries under heavy load

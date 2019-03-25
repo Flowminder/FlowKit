@@ -10,8 +10,6 @@ from time import sleep
 import pytest
 import os
 
-import requests
-
 import flowmachine
 
 
@@ -39,52 +37,85 @@ def logging_config(tmpdir_factory):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def flowmachine_server(logging_config):
+def autostart_flowmachine_server(logging_config):
     """
     Starts a flowmachine server in a separate process for the tests to talk to.
     """
-    fm_thread = Process(target=flowmachine.core.server.server.main)
-    fm_thread.start()
-    yield
-    fm_thread.terminate()
-    sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
+    disable_autostart_servers = (
+        os.getenv(
+            "FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS", "FALSE"
+        ).upper()
+        == "TRUE"
+    )
+    if disable_autostart_servers:
+        yield  # need to yield something from either branch of the if statement
+    else:
+        fm_thread = Process(target=flowmachine.core.server.server.main)
+        fm_thread.start()
+        yield
+        fm_thread.terminate()
+        sleep(
+            2
+        )  # Wait a moment to make sure coverage of subprocess finishes being written
 
 
 @pytest.fixture(scope="session", autouse=True)
-def flowapi_server(logging_config):
+def autostart_flowapi_server(logging_config):
     """
     Starts a FlowAPI server in a separate process for the tests to talk to.
     """
-    import hypercorn.__main__
-
-    api_thread = Process(
-        target=hypercorn.__main__.main,
-        args=(["--bind", "0.0.0.0:9090", "flowapi.main:create_app()"],),
+    disable_autostart_servers = (
+        os.getenv(
+            "FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS", "FALSE"
+        ).upper()
+        == "TRUE"
     )
-    api_thread.start()
-    sleep(2)
-    yield
-    api_thread.terminate()
-    sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
+    if disable_autostart_servers:
+        yield  # need to yield something from either branch of the if statement
+    else:
+        import hypercorn.__main__
+
+        api_thread = Process(
+            target=hypercorn.__main__.main,
+            args=(["--bind", "0.0.0.0:9090", "flowapi.main:create_app()"],),
+        )
+        api_thread.start()
+        sleep(2)
+        yield
+        api_thread.terminate()
+        sleep(
+            2
+        )  # Wait a moment to make sure coverage of subprocess finishes being written
+
+
+@pytest.fixture(scope="session")
+def flowapi_host():
+    """
+    Return the host on which flowapi is running. This is either the value of
+    the environment variable FLOWAPI_HOST or else 'localhost'.
+    """
+    return os.getenv("FLOWAPI_HOST", "localhost")
+
+
+@pytest.fixture(scope="session")
+def flowapi_port():
+    """
+    Return the port on which flowapi is running. This is either the value of
+    the environment variable FLOWAPI_PORT or else 9090.
+    """
+    return os.getenv("FLOWAPI_PORT", "9090")
 
 
 @pytest.fixture
-def api_host():
+def flowapi_url(flowapi_host, flowapi_port):
     """
-    Fixture for getting the url of the available API server.
-    Primarily to allow the tests to run locally, or in a docker container.
-
-    Returns
-    -------
-    str
-        URL of running API container
+    Fixture for getting the url where FlowAPI is running. This is
+    constructed as "http://<flowapi_host>:<flowapi_port>", where the
+    host and port are provided by the `floawpi_host` and `flowapi_port`
+    fixtures (which read the values from the environment variables
+    `FLOWAPI_HOST` and `FLOWAPI_PORT`, respectively).
     """
-    in_docker_host = "http://flowapi:9090"
-    try:
-        requests.get(in_docker_host, verify=False)
-        return in_docker_host
-    except requests.ConnectionError:
-        return "http://localhost:9090"
+    return f"http://{flowapi_host}:{flowapi_port}"
 
 
 @pytest.fixture
