@@ -38,7 +38,7 @@ async def test_get_query_kind(params, zmq_port, zmq_host):
 
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     # assert reply["status"] in ("executing", "queued", "completed")
-    assert reply["status"] in ("accepted")
+    assert reply["status"] in ("success")
     query_id = reply["payload"]["query_id"]
 
     #

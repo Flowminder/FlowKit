@@ -40,7 +40,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
         msg_run_query, port=zmq_port, host=zmq_host
     )
     # assert reply["status"] in ("executing", "queued", "completed")
-    assert reply["status"] in ("accepted")
+    assert reply["status"] in ("success")
     assert expected_query_id == reply["payload"]["query_id"]
     # assert redis.exists(expected_query_id)
 
