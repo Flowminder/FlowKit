@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+from marshmallow import ValidationError
 
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
 
@@ -257,3 +258,14 @@ def test_construct_query(expected_md5, query_spec):
     """
     obj = FlowmachineQuerySchema().load(query_spec)
     assert expected_md5 == obj.query_id
+
+
+# TODO: we should re-think how we want to test invalid values, now that these are validated using marshmallow
+def test_wrong_geography_aggregation_unit_raises_error():
+    """
+    Test that an invalid aggregation unit in a geography query raises an InvalidGeographyError
+    """
+    with pytest.raises(ValidationError, match="aggregation_unit.*Not a valid choice"):
+        _ = FlowmachineQuerySchema().load(
+            {"query_kind": "geography", "aggregation_unit": "DUMMY_AGGREGATION_UNIT"}
+        )
