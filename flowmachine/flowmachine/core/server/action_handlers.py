@@ -95,7 +95,7 @@ def action_handler__run_query(**action_params):
     q_info_lookup = QueryInfoLookup(Query.redis)
     q_info_lookup.register_query(query_id, action_params)
 
-    return ZMQReply(status="accepted", payload={"query_id": query_id})
+    return ZMQReply(status="success", payload={"query_id": query_id})
 
 
 def _get_query_kind_for_query_id(query_id):

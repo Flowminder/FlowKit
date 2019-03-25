@@ -33,7 +33,7 @@ async def run_query():
             ),
             403,
         )
-    elif reply["status"] == "accepted":
+    elif reply["status"] == "success":
         assert "query_id" in reply["payload"]
         d = {
             "Location": url_for(
@@ -42,7 +42,15 @@ async def run_query():
         }
         return jsonify({}), 202, d
     else:
-        return jsonify({}), 403
+        return (
+            jsonify(
+                {
+                    "status": "Error",
+                    "msg": f"Unexpected reply status: {reply['status']}",
+                }
+            ),
+            500,
+        )
 
 
 @blueprint.route("/poll/<query_id>")
