@@ -12,14 +12,12 @@ import re
 import datetime
 import warnings
 
-from functools import reduce
 from typing import Tuple, Union, Dict, List
 
 import sqlalchemy
 
 from urllib.parse import quote_plus as urlquote
 
-from sqlalchemy import event, exc
 
 import flowmachine
 from cachetools import cached, TTLCache
