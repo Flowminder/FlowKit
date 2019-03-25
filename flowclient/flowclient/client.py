@@ -415,8 +415,8 @@ def location_event_counts(
     end_date: str,
     aggregation_unit: str,
     count_interval: str,
-    direction: str = "all",
-    event_types: Union[str, List[str]] = "all",
+    direction: str = "both",
+    event_types: Union[None, List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -432,9 +432,9 @@ def location_event_counts(
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     count_interval : {"day", "hour", "minute"}
-    direction : {"in", "out", "all"}, default "all"
+    direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts
-    event_types : {"all", "calls", "sms", "mds"}, default "all"
+    event_types : None or list of {"calls", "sms", "mds"}, default None
         Optionally, include only a subset of events.
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
