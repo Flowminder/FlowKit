@@ -5,7 +5,7 @@
 import pytest
 from json import loads
 
-from asynctest import return_once
+from flowapi.zmq_helpers import ZMQReply
 
 
 @pytest.mark.asyncio
@@ -61,21 +61,34 @@ async def test_get_query(app, access_token_builder, dummy_zmq_server):
     )
 
 
+# FIXME: this test is very difficult to adjust and debug when things change
+# on the flowmachine side (e.g. in the structure of the zmq reply message).
+# It should probably be turned into an integration test, or we should rethink
+# how/what we are testing here.
 @pytest.mark.parametrize(
-    "status, http_code",
+    "reply_msg_status, query_state, http_code",
     [
-        ("completed", 200),
-        ("executing", 202),
-        ("queued", 202),
-        ("awol", 404),
-        ("errored", 403),
-        ("known", 404),
-        ("NOT_A_STATUS", 500),
+        (
+            "done",
+            "completed",
+            200,
+        ),  # disabling this because it is tested in `test_get_query` above and the return message from flowmachine now has a different structure to the other cases
+        ("error", "executing", 202),
+        ("error", "queued", 202),
+        ("error", "awol", 404),
+        ("error", "errored", 403),
+        ("error", "known", 404),
+        ("error", "NOT_A_STATUS", 500),
     ],
 )
 @pytest.mark.asyncio
-async def test_get_json_status(
-    status, http_code, app, dummy_zmq_server, access_token_builder
+async def test_get_json_status_code(
+    reply_msg_status,
+    query_state,
+    http_code,
+    app,
+    access_token_builder,
+    dummy_zmq_server,
 ):
     """
     Test that correct status code and any redirect is returned when getting json.
@@ -90,13 +103,35 @@ async def test_get_json_status(
             }
         }
     )
+
+    # The replies below are in response to the following messages:
+    #  - get_query_kind
+    #  - get_query_params
+    #  - get_sql_for_query_result
     dummy_zmq_server.side_effect = (
-        {"id": 0, "query_kind": "modal_location"},
-        {"id": 0, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-        {"status": status, "id": 0, "error": "Some error", "sql": "SELECT 1;"},
+        ZMQReply(
+            status="done",
+            payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
+        ).as_json(),
+        ZMQReply(
+            status="done",
+            payload={
+                "query_id": "DUMMY_QUERY_ID",
+                "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
+            },
+        ).as_json(),
+        ZMQReply(
+            status=reply_msg_status,
+            msg="Some error",  # note: in a real zmq message this would only be present in the "error" case, but we provide it for all test cases (it is simply ignored in the success case)
+            payload={
+                "query_id": "DUMMY_QUERY_ID",
+                "query_state": query_state,
+                "sql": "SELECT 1;",  # note: in a real zmq message this would only be present in the "success" case, but we provide it for all test cases (it is simply ignored in the error case)
+            },
+        ).as_json(),
     )
     response = await client.get(
-        f"/api/0/get/0", headers={"Authorization": f"Bearer {token}"}
+        f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert http_code == response.status_code
 

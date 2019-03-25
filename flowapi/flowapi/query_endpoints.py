@@ -97,11 +97,11 @@ async def get_query_result(query_id):
             return jsonify({}), 202
         elif query_state == "errored":
             return (
-                jsonify({"status": "Error", "msg": reply["error"]}),
+                jsonify({"status": "Error", "msg": reply["msg"]}),
                 403,
             )  # TODO: should this really be 403?
         elif query_state in ("awol", "known"):
-            return (jsonify({"status": "Error", "msg": reply["error"]}), 404)
+            return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
         else:
             return (
                 jsonify(
