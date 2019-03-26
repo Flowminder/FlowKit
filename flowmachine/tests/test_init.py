@@ -45,23 +45,10 @@ def test_log_level_set(monkeypatch):
     assert logging.CRITICAL == logging.getLogger("flowmachine").level
 
 
-def test_log_file_created(tmpdir, monkeypatch):
-    """Test that a file handler is created when a path to LOG_FILE is set."""
-    monkeypatch.setenv("LOG_DIRECTORY", str(tmpdir))
-    monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
-    connect()
-    structlog.get_logger("flowmachine").error("TEST_MESSAGE")
-    with open(tmpdir.join("flowmachine-debug.log")) as f:
-        log_lines = f.readline()
-    assert "TEST_MESSAGE" in log_lines
-    assert 2 == len(logging.getLogger("flowmachine").handlers)
-
-
 def test_param_priority(mocked_connections, monkeypatch):
     """Explicit parameters to connect should be respected"""
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
-    monkeypatch.setenv("WRITE_LOG_FILE", "DUMMY_ENV_WRITE_LOG_FILE")
     monkeypatch.setenv("FLOWDB_PORT", "7777")
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
@@ -76,7 +63,6 @@ def test_param_priority(mocked_connections, monkeypatch):
     )
     connect(
         log_level="dummy_log_level",
-        write_log_file=False,
         db_port=1234,
         db_user="dummy_db_user",
         db_pass="dummy_db_pass",
@@ -87,7 +73,7 @@ def test_param_priority(mocked_connections, monkeypatch):
         redis_port=1213,
         redis_password="dummy_redis_password",
     )
-    core_init_logging_mock.assert_called_with("dummy_log_level", False)
+    core_init_logging_mock.assert_called_with("dummy_log_level")
     core_init_Connection_mock.assert_called_with(
         port=1234,
         user="dummy_db_user",
@@ -109,7 +95,6 @@ def test_env_priority(mocked_connections, monkeypatch):
     """Env vars should be used over defaults in connect"""
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
-    monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
     monkeypatch.setenv("FLOWDB_PORT", "6969")
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")

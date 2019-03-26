@@ -31,7 +31,6 @@ def logging_config(tmpdir_factory):
     from _pytest.monkeypatch import MonkeyPatch
 
     mpatch = MonkeyPatch()
-    mpatch.setenv("LOG_DIRECTORY", str(tmpdir))
     mpatch.setenv("LOG_LEVEL", "debug")
     print(f"Logs will be written to {tmpdir}")
     yield
