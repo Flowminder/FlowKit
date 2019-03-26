@@ -65,50 +65,55 @@ def test_contact_reference_location_stats_custom_geometry(get_dataframe):
     assert df.value["gwAynWXp4eWvxGP7"] == pytest.approx(298.7215)
 
 
-@pytest.mark.parametrize("kwarg", ["statistic", "contact_locations"])
-def test_contact_reference_location_stats_errors(kwarg):
-    """ Test ValueError is raised for non-compliant kwarg in ContactModalLocationDistance. """
-
+def test_contact_reference_location_stats_false_statistic_raises():
+    """ Test ValueError is raised for non-compliant statistics parameter. """
     cb = ContactBalance("2016-01-01", "2016-01-03")
+    ml = ModalLocation(
+        *[
+            daily_location(
+                d,
+                level="versioned-cell",
+                subscriber_subset=cb.counterparts_subset(include_subscribers=True),
+            )
+            for d in list_of_dates("2016-01-01", "2016-01-03")
+        ]
+    )
+    with pytest.raises(ValueError):
+        query = ContactReferenceLocationStats(cb, ml, statistic="error")
 
-    if kwarg == "contact_locations":
-        ml = ModalLocation(
-            *[
-                daily_location(
-                    d,
-                    level="admin3",
-                    subscriber_subset=cb.counterparts_subset(include_subscribers=True),
-                )
-                for d in list_of_dates("2016-01-01", "2016-01-03")
-            ]
-        )
-        with pytest.raises(ValueError):
-            query = ContactReferenceLocationStats(cb, ml)
-        # by encapsulating ModalLocations in a CustomQuery we remove the level attribute from it which should raise an error
-        ml = ModalLocation(
-            *[
-                daily_location(
-                    d,
-                    level="versioned-cell",
-                    subscriber_subset=cb.counterparts_subset(include_subscribers=True),
-                )
-                for d in list_of_dates("2016-01-01", "2016-01-03")
-            ]
-        )
-        ml = CustomQuery(ml.get_query(), ml.column_names)
-        with pytest.raises(ValueError):
-            query = ContactReferenceLocationStats(cb, ml)
-    else:
-        ml = ModalLocation(
-            *[
-                daily_location(
-                    d,
-                    level="versioned-cell",
-                    subscriber_subset=cb.counterparts_subset(include_subscribers=True),
-                )
-                for d in list_of_dates("2016-01-01", "2016-01-03")
-            ]
-        )
-        kwargs = {kwarg: "error"}
-        with pytest.raises(ValueError):
-            query = ContactReferenceLocationStats(cb, ml, **kwargs)
+
+def test_contact_reference_location_false_level_raises():
+    """ Test ValueError is raised for contact_location with non-compliant level. """
+    cb = ContactBalance("2016-01-01", "2016-01-03")
+    ml = ModalLocation(
+        *[
+            daily_location(
+                d,
+                level="admin3",
+                subscriber_subset=cb.counterparts_subset(include_subscribers=True),
+            )
+            for d in list_of_dates("2016-01-01", "2016-01-03")
+        ]
+    )
+    with pytest.raises(ValueError):
+        query = ContactReferenceLocationStats(cb, ml)
+
+
+def test_contact_reference_location_false_level_raises():
+    """ Test ValueError is raised for contact_location without level attribute. """
+    cb = ContactBalance("2016-01-01", "2016-01-03")
+    # by encapsulating ModalLocations in a CustomQuery we remove the level
+    # attribute from it which should raise an error
+    ml = ModalLocation(
+        *[
+            daily_location(
+                d,
+                level="versioned-cell",
+                subscriber_subset=cb.counterparts_subset(include_subscribers=True),
+            )
+            for d in list_of_dates("2016-01-01", "2016-01-03")
+        ]
+    )
+    ml = CustomQuery(ml.get_query(), ml.column_names)
+    with pytest.raises(ValueError):
+        query = ContactReferenceLocationStats(cb, ml)
