@@ -395,6 +395,33 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#synthetic-data" title="Synthetic Data" class="md-nav__link">
+    Synthetic Data
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sql-generator-features" title="SQL Generator features" class="md-nav__link">
+    SQL Generator features
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters" title="Parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#caveats" title="Caveats" class="md-nav__link">
     Caveats
   </a>
@@ -886,6 +913,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/query_state/" title="query_state" class="md-nav__link">
+      query_state
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/random/" title="random" class="md-nav__link">
       random
     </a>
@@ -899,13 +938,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-9-1-2-15" type="checkbox" id="nav-9-1-2-15">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-9-1-2-16" type="checkbox" id="nav-9-1-2-16">
     
-    <label class="md-nav__link" for="nav-9-1-2-15">
+    <label class="md-nav__link" for="nav-9-1-2-16">
       Server
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
-      <label class="md-nav__title" for="nav-9-1-2-15">
+      <label class="md-nav__title" for="nav-9-1-2-16">
         Server
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -2184,6 +2223,33 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#synthetic-data" title="Synthetic Data" class="md-nav__link">
+    Synthetic Data
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sql-generator-features" title="SQL Generator features" class="md-nav__link">
+    SQL Generator features
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters" title="Parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#caveats" title="Caveats" class="md-nav__link">
     Caveats
   </a>
@@ -2382,6 +2448,52 @@ aggregated to a spatial unit.</p>
 <li>Scheduled tasks run in database (<a href="https://github.com/citusdata/pg_cron">pg_cron</a>)</li>
 </ul>
 </li>
+</ul>
+<h3 id="synthetic-data">Synthetic Data<a class="headerlink" href="#synthetic-data" title="Permanent link">&para;</a></h3>
+<p>In addition to the bare FlowDB container and the test data container used for tests a 'synthetic' data container is available. This container generates arbitrary quantities of data at runtime.</p>
+<p>Two data generators are available - a Python based generator, which supports reproducible random data, and an SQL based generator which supports greater data volumes, more data types, plausible subscriber behaviour, and simple disaster scenarios.</p>
+<p>Both are packaged in the <code>flowminder/flowdb-synthetic-data</code> docker image, and configured via environment variables.</p>
+<p>For example, to generate a repeatable random data set with seven days of data, where 20,000 subscribers make 10,000 calls each day and use 5,000 cells:</p>
+<div class="codehilite"><pre><span></span>docker run --name flowdb_synth_data -e <span class="nv">FM_PASSWORD</span><span class="o">=</span>foo -e <span class="nv">API_PASSWORD</span><span class="o">=</span>foo <span class="se">\</span>
+ --publish <span class="m">9000</span>:5432 <span class="se">\</span>
+ -e <span class="nv">N_CALLS</span><span class="o">=</span><span class="m">10000</span> -e <span class="nv">N_SUBSCRIBERS</span><span class="o">=</span><span class="m">20000</span> -e <span class="nv">N_CELLS</span><span class="o">=</span><span class="m">5000</span> -e <span class="nv">N_DAYS</span><span class="o">=</span><span class="m">7</span> -e <span class="nv">SYNTHETIC_DATA_GENERATOR</span><span class="o">=</span>python <span class="se">\</span>
+ -e <span class="nv">SUBSCRIBERS_SEED</span><span class="o">=</span><span class="m">11111</span> -e <span class="nv">CALLS_SEED</span><span class="o">=</span><span class="m">22222</span> -e <span class="nv">CELLS_SEED</span><span class="o">=</span><span class="m">33333</span> <span class="se">\</span>
+ --detach flowminder/flowdb-testdata:latest
+</pre></div>
+
+<p>Or to generate an equivalent data set which includes TACs, mobile data sessions and sms:</p>
+<div class="codehilite"><pre><span></span>docker run --name flowdb_synth_data -e <span class="nv">FM_PASSWORD</span><span class="o">=</span>foo -e <span class="nv">API_PASSWORD</span><span class="o">=</span>foo <span class="se">\</span>
+ --publish <span class="m">9000</span>:5432 <span class="se">\</span>
+ -e <span class="nv">N_CALLS</span><span class="o">=</span><span class="m">10000</span> -e <span class="nv">N_SUBSCRIBERS</span><span class="o">=</span><span class="m">20000</span> -e <span class="nv">N_CELLS</span><span class="o">=</span><span class="m">5000</span> -e <span class="nv">N_SITES</span><span class="o">=</span><span class="m">5000</span> -e <span class="nv">N_DAYS</span><span class="o">=</span><span class="m">7</span> -e <span class="nv">SYNTHETIC_DATA_GENERATOR</span><span class="o">=</span>sql <span class="se">\</span>
+ -e <span class="nv">N_SMS</span><span class="o">=</span><span class="m">10000</span> -e <span class="nv">N_MDS</span><span class="o">=</span><span class="m">10000</span> <span class="se">\</span>
+ --detach flowminder/flowdb-testdata:latest
+</pre></div>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For generating large datasets, it is recommended that you use the SQL based generator. </p>
+</div>
+<h5 id="sql-generator-features">SQL Generator features<a class="headerlink" href="#sql-generator-features" title="Permanent link">&para;</a></h5>
+<p>The SQL generator supports semi-plausible behaviour - each subscriber has a 'home' region, and will typically (by default, 95% of the time) call/sms/use data from cells in that region. Subscribers will occasionally (by default, 1% chance per day) relocate to a new home region.
+Subscribers also have a consistent phone model across time, and a consistent set of other subscribers who they interact with (by default, <code>5*N_SUBSCRIBERS</code> calling pairs are used).</p>
+<p>Mass relocation scenarios are also supported - a designated admin 2 region can be chosen to be 'off limits' to all subscribers for a period. Any subscribers ordinarily resident will relocate to another randomly chosen region, and no subscriber will call from a cell within the region or relocate there while the region is off limits.</p>
+<h5 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>N_DAYS</code>: number of days of data to generate, defaults to 7</li>
+<li><code>N_SUBSCRIBERS</code>: number of simulated subscribers, defaults to 4,000 </li>
+<li><code>N_TACS</code>: number of mobile phone models, defaults to 1,000 (SQL generator only)</li>
+<li><code>N_SITES</code>: number of mobile sites, defaults to 1,000 (SQL generator only)</li>
+<li><code>N_CELLS</code>: number of cells, defaults to 1,000</li>
+<li><code>N_CALLS</code>: number of calls to generate per day, defaults to 200,000</li>
+<li><code>N_SMS</code>: number of sms to generate per day, defaults to 200,000 (SQL generator only)</li>
+<li><code>N_MDS</code>: number of mobile data sessions to generate per day, defaults to 200,000 (SQL generator only)</li>
+<li><code>SUBSCRIBERS_SEED</code>: random seed used when generating subscribers, defaults to 11111 (Python generator only)</li>
+<li><code>CALLS_SEED</code>: random seed used when generating calls, defaults to 22222 (Python generator only)</li>
+<li><code>CELLS_SEED</code>: random seed used when generating cells, defaults to 33333 (Python generator only)</li>
+<li><code>SYNTHETIC_DATA_GENERATOR</code>: which data generator to use, may be<code>'sql'</code> or <code>'python'</code>. Defaults to <code>'sql'</code></li>
+<li><code>P_OUT_OF_AREA</code>: probability that an event is taking place out of a subscriber's home region. Defaults to 0.05</li>
+<li><code>P_RELOCATE</code>: probability that each subscriber relocates each day, defaults to 0.01</li>
+<li><code>INTERACTIONS_MULTIPLIER</code>: multiplier for interaction pairs, defaults to 5.</li>
 </ul>
 <h3 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h3>
 <h4 id="shared-memory">Shared Memory<a class="headerlink" href="#shared-memory" title="Permanent link">&para;</a></h4>
