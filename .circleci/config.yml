@@ -439,7 +439,7 @@ jobs:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
       - run:
-          name: Build flowmachine image
+          name: Build <<parameters.component>> image
           command: |
             echo "Tagging as $CIRCLE_WORKFLOW_ID"
             docker build -t flowminder/<<parameters.component>>:$CIRCLE_WORKFLOW_ID ./<<parameters.component>>
