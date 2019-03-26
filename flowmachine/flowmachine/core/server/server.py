@@ -7,6 +7,7 @@ import os
 import rapidjson
 import structlog
 import zmq
+from zmq.asyncio import Context
 
 import flowmachine
 from .action_handlers import perform_action
@@ -62,7 +63,7 @@ async def receive_next_zmq_message_and_send_back_reply(socket):
         The message received over the socket
     """
     logger.debug("Waiting for messages.")
-    multipart_msg = socket.recv_multipart()
+    multipart_msg = await socket.recv_multipart()
     logger.debug(f"Received multipart msg {multipart_msg}")
 
     #
@@ -122,7 +123,7 @@ async def recv(port):
     """
     logger.info(f"Flowmachine server is listening on port {port}")
 
-    ctx = zmq.Context.instance()
+    ctx = Context.instance()
     socket = ctx.socket(zmq.ROUTER)
     socket.bind(f"tcp://*:{port}")
 
