@@ -375,3 +375,52 @@ def convert_dict_keys_to_strings(input_dict):
         else:
             result[new_key] = value
     return result
+
+
+def to_nested_list(d):
+    """
+    Helper function to recursively convert an input dictionary to a nested list.
+
+    Parameters
+    ----------
+    d : dict
+        Input dictionary (can be nested).
+
+    Returns
+    -------
+    list of tuples
+    """
+    if isinstance(d, dict):
+        return [(key, to_nested_list(value)) for key, value in d.items()]
+    elif isinstance(d, (list, tuple)):
+        return [to_nested_list(x) for x in d]
+    else:
+        return d
+
+
+def sort_recursively(d):
+    """
+    Helper function to sort a dictionary recursively (including any dicts or sequences inside it).
+
+    Parameters
+    ----------
+    d : dict
+        Input dictionary (can be nested).
+
+    Returns
+    -------
+    dict
+        The sorted dictionary.
+    """
+    if isinstance(d, dict):
+        d_new = dict()
+        for key in sorted(d.keys()):
+            d_new[key] = sort_recursively(d[key])
+        return d_new
+    elif isinstance(d, list):
+        try:
+            return sorted(d, key=to_nested_list)
+        except:
+            breakpoint()
+    else:
+        return d
