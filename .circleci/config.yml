@@ -543,7 +543,7 @@ jobs:
           paths:
             - <<parameters.project_name>>/dist
       - store_artifacts:
-          path: /home/circleci/project/<<parameters.project_name>>
+          path: /home/circleci/project/<<parameters.project_name>>/dist
           destination: wheel
 
   push_wheel:
@@ -558,7 +558,7 @@ jobs:
           name: Upload <<parameters.project_name>> Wheel
           command: |
             pipenv install twine
-            pipenv run twine upload /home/circleci/dist/<<parameters.project_name>>/*
+            pipenv run twine upload /home/circleci/<<parameters.project_name>>/dist/*
 
   retag_images:
     parameters:
