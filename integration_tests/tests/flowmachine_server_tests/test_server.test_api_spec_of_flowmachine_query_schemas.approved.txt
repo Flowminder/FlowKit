@@ -64,31 +64,31 @@
     },
     "oneOf": [
       {
-        "$ref": "#/components/schemas/DummyQuery"
-      },
-      {
         "$ref": "#/components/schemas/DailyLocation"
       },
       {
-        "$ref": "#/components/schemas/ModalLocation"
+        "$ref": "#/components/schemas/DummyQuery"
       },
       {
         "$ref": "#/components/schemas/Flows"
-      },
-      {
-        "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
-      },
-      {
-        "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
-      },
-      {
-        "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
       },
       {
         "$ref": "#/components/schemas/Geography"
       },
       {
         "$ref": "#/components/schemas/LocationEventCounts"
+      },
+      {
+        "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
+      },
+      {
+        "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
+      },
+      {
+        "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
+      },
+      {
+        "$ref": "#/components/schemas/ModalLocation"
       }
     ]
   },
@@ -177,9 +177,9 @@
       },
       "direction": {
         "enum": [
+          "both",
           "in",
-          "out",
-          "both"
+          "out"
         ],
         "type": "string"
       },
@@ -191,8 +191,8 @@
         "items": {
           "enum": [
             "calls",
-            "sms",
             "mds",
+            "sms",
             "topups"
           ],
           "type": "string"
@@ -203,9 +203,9 @@
       },
       "interval": {
         "enum": [
+          "day",
           "hour",
-          "min",
-          "day"
+          "min"
         ],
         "type": "string"
       },
