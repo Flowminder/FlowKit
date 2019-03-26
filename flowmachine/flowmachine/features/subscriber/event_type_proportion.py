@@ -24,6 +24,8 @@ class ProportionEventType(SubscriberFeature):
     numerator: str or list of strings
         The event tables for which we are seeking as the proportion of the
         total events observed in all tables specified in `tables`.
+    numerator_direction : {'in', 'out', 'both'}, default 'both'
+        Whether to consider events made, received, or both in the numerator. Defaults to 'both'.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
@@ -33,8 +35,8 @@ class ProportionEventType(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    direction : {'in', 'out', 'both'}, default 'out'
-        Whether to consider calls made, received, or both. Defaults to 'out'.
+    direction : {'in', 'out', 'both'}, default 'both'
+        Whether to consider events made, received, or both. Defaults to 'both'.
     tables : str or list of strings, default 'all'
         Can be a string of a single table (with the schema)
         or a list of these. The keyword all is to select all
@@ -61,6 +63,7 @@ class ProportionEventType(SubscriberFeature):
         stop,
         numerator,
         *,
+        numerator_direction="both",
         subscriber_identifier="msisdn",
         direction="both",
         hours="all",
@@ -71,6 +74,7 @@ class ProportionEventType(SubscriberFeature):
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
         self.direction = direction
+        self.numerator_direction = numerator_direction
         self.hours = hours
         self.tables = tables
         self.numerator = numerator if isinstance(numerator, list) else [numerator]
@@ -79,7 +83,7 @@ class ProportionEventType(SubscriberFeature):
             self.start,
             self.stop,
             subscriber_identifier=self.subscriber_identifier,
-            direction=self.direction,
+            direction=self.numerator_direction,
             hours=self.hours,
             subscriber_subset=subscriber_subset,
             tables=self.numerator,

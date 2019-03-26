@@ -16,13 +16,11 @@ services:
             - FM_PASSWORD=${FM_PASSWORD}
             - API_PASSWORD=${API_PASSWORD}
             - LOCATION_TABLE=${LOCATION_TABLE}
-            - ENV N_DAYS=3
-            - ENV N_USERS=400
-            - ENV N_CELLS=100
-            - ENV N_CALLS=2000
-            - ENV USERS_SEED=12345
-            - ENV CALLS_SEED=22222
-            - ENV CELLS_SEED=99999
+            - N_DAYS=3
+            - N_USERS=400
+            - N_SITES=100
+            - N_CALLS=2000
+            -
         ports:
             - "${FLOWDB_PORT:-9000}:5432"
         tty: true

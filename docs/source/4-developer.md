@@ -160,6 +160,61 @@ FlowDB is database designed for storing, serving, and analysing mobile operator 
     -   Utilities for connecting with Oracle databases ([oracle_fdw](https://github.com/laurenz/oracle_fdw))
     -   Scheduled tasks run in database ([pg_cron](https://github.com/citusdata/pg_cron))
 
+### Synthetic Data
+
+In addition to the bare FlowDB container and the test data container used for tests a 'synthetic' data container is available. This container generates arbitrary quantities of data at runtime.
+
+Two data generators are available - a Python based generator, which supports reproducible random data, and an SQL based generator which supports greater data volumes, more data types, plausible subscriber behaviour, and simple disaster scenarios.
+
+Both are packaged in the `flowminder/flowdb-synthetic-data` docker image, and configured via environment variables.
+
+For example, to generate a repeatable random data set with seven days of data, where 20,000 subscribers make 10,000 calls each day and use 5,000 cells:
+
+```bash
+docker run --name flowdb_synth_data -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+ --publish 9000:5432 \
+ -e N_CALLS=10000 -e N_SUBSCRIBERS=20000 -e N_CELLS=5000 -e N_DAYS=7 -e SYNTHETIC_DATA_GENERATOR=python \
+ -e SUBSCRIBERS_SEED=11111 -e CALLS_SEED=22222 -e CELLS_SEED=33333 \
+ --detach flowminder/flowdb-testdata:latest
+```
+
+Or to generate an equivalent data set which includes TACs, mobile data sessions and sms:
+
+```bash
+docker run --name flowdb_synth_data -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+ --publish 9000:5432 \
+ -e N_CALLS=10000 -e N_SUBSCRIBERS=20000 -e N_CELLS=5000 -e N_SITES=5000 -e N_DAYS=7 -e SYNTHETIC_DATA_GENERATOR=sql \
+ -e N_SMS=10000 -e N_MDS=10000 \
+ --detach flowminder/flowdb-testdata:latest
+```
+
+!!! warning
+    For generating large datasets, it is recommended that you use the SQL based generator. 
+    
+##### SQL Generator features
+
+The SQL generator supports semi-plausible behaviour - each subscriber has a 'home' region, and will typically (by default, 95% of the time) call/sms/use data from cells in that region. Subscribers will occasionally (by default, 1% chance per day) relocate to a new home region.
+Subscribers also have a consistent phone model across time, and a consistent set of other subscribers who they interact with (by default, `5*N_SUBSCRIBERS` calling pairs are used).
+
+Mass relocation scenarios are also supported - a designated admin 2 region can be chosen to be 'off limits' to all subscribers for a period. Any subscribers ordinarily resident will relocate to another randomly chosen region, and no subscriber will call from a cell within the region or relocate there while the region is off limits.
+
+##### Parameters
+
+- `N_DAYS`: number of days of data to generate, defaults to 7
+- `N_SUBSCRIBERS`: number of simulated subscribers, defaults to 4,000 
+- `N_TACS`: number of mobile phone models, defaults to 1,000 (SQL generator only)
+- `N_SITES`: number of mobile sites, defaults to 1,000 (SQL generator only)
+- `N_CELLS`: number of cells, defaults to 1,000
+- `N_CALLS`: number of calls to generate per day, defaults to 200,000
+- `N_SMS`: number of sms to generate per day, defaults to 200,000 (SQL generator only)
+- `N_MDS`: number of mobile data sessions to generate per day, defaults to 200,000 (SQL generator only)
+- `SUBSCRIBERS_SEED`: random seed used when generating subscribers, defaults to 11111 (Python generator only)
+- `CALLS_SEED`: random seed used when generating calls, defaults to 22222 (Python generator only)
+- `CELLS_SEED`: random seed used when generating cells, defaults to 33333 (Python generator only)
+- `SYNTHETIC_DATA_GENERATOR`: which data generator to use, may be`'sql'` or `'python'`. Defaults to `'sql'`
+- `P_OUT_OF_AREA`: probability that an event is taking place out of a subscriber's home region. Defaults to 0.05
+- `P_RELOCATE`: probability that each subscriber relocates each day, defaults to 0.01
+- `INTERACTIONS_MULTIPLIER`: multiplier for interaction pairs, defaults to 5.
 
 ### Caveats
 

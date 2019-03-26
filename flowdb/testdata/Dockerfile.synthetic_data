@@ -23,7 +23,7 @@ RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.l
         && rm -rf /var/lib/apt/lists/*
 
 # Install python dependencies
-COPY --chown=postgres ./Pipfile* /tmp/
+COPY --chown=postgres ./synthetic_data/Pipfile* /tmp/
 RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
     && rm /tmp/Pipfile*
 
@@ -31,26 +31,28 @@ RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
 #   Add synthetic data to the ingestion directory.
 #
 RUN mkdir -p /docker-entrypoint-initdb.d/sql/syntheticdata/ && \
-    mkdir -p /opt/synthetic_data/ && \
-    mkdir -p /docker-entrypoint-initdb.d/data/records/calls && \
-    mkdir -p /docker-entrypoint-initdb.d/data/infrastructure
+    mkdir -p /opt/synthetic_data/
 
 COPY --chown=postgres ./bin/z_ingest_synthetic_data.sh /docker-entrypoint-initdb.d/
 
-COPY --chown=postgres bin/generate_synthetic_data.py /opt/synthetic_data/
-ADD --chown=postgres ./synthetic_data/sql/* /docker-entrypoint-initdb.d/sql/syntheticdata/
+COPY --chown=postgres bin/generate_synthetic_data*.py /opt/synthetic_data/
 ADD --chown=postgres ./test_data/sql/admin*.sql /docker-entrypoint-initdb.d/sql/syntheticdata/
 ADD --chown=postgres ./synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson /opt/synthetic_data/
 # Need to make postgres is owner of any subdirectrories
-RUN chown -R postgres /docker-entrypoint-initdb.d
+RUN mkdir docker-entrypoint-initdb.d/sql/syntheticdata/sql &&  chown -R postgres /docker-entrypoint-initdb.d
 # Need to relax the permissions in case the container is running as an arbitrary user with a bind mount
 RUN chmod -R 777 /docker-entrypoint-initdb.d
 
 ENV N_DAYS=7
 ENV N_SUBSCRIBERS=4000
+ENV N_TACS=1000
+ENV N_SITES=1000
 ENV N_CELLS=1000
 ENV N_CALLS=200000
+ENV N_SMS=200000
+ENV N_MDS=200000
 ENV SUBSCRIBERS_SEED=11111
 ENV CALLS_SEED=22222
 ENV CELLS_SEED=33333
+ENV SYNTHETIC_DATA_GENERATOR=sql
 ENV OUTPUT_ROOT_DIR=/docker-entrypoint-initdb.d
