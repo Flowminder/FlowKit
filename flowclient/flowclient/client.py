@@ -397,7 +397,7 @@ def run_query(connection: Connection, query: dict) -> str:
     if r.status_code == 202:
         query_id = r.headers["Location"].split("/").pop()
         logger.info(
-            f"Accepted {query} at {connection.url}/api/{connection.api_version}with id {query_id}"
+            f"Accepted {query} at {connection.url}/api/{connection.api_version} with id {query_id}"
         )
         return query_id
     else:
