@@ -130,32 +130,3 @@ async def test_get_json_status_code(
         f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert http_code == response.status_code
-
-
-@pytest.mark.asyncio
-async def test_get_error_for_missing_status(
-    app, dummy_zmq_server, access_token_builder
-):
-    """
-    Test that status code 500 is returned if a message without a status is
-    received in get_query.
-    """
-    client, db, log_dir, app = app
-
-    token = access_token_builder(
-        {
-            "modal_location": {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            }
-        }
-    )
-    dummy_zmq_server.side_effect = (
-        {"id": 0, "query_kind": "modal_location"},
-        {"id": 0, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-        {"id": 0},
-    )
-    response = await client.get(
-        f"/api/0/get/0", headers={"Authorization": f"Bearer {token}"}
-    )
-    assert 500 == response.status_code
