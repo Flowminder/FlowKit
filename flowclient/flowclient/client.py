@@ -176,7 +176,7 @@ class Connection:
             except ValueError:
                 # Happens if the response body does not contain valid JSON
                 # (see http://docs.python-requests.org/en/master/api/#requests.Response.json)
-                error = "Unknown error"
+                error = f"the response did not contain valid JSON"
                 payload_info = ""
             raise FlowclientConnectionError(
                 f"Something went wrong: {error}. API returned with status code: {response.status_code}. {payload_info}"
