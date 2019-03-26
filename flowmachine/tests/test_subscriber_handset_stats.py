@@ -10,25 +10,23 @@ import pytest
 
 from flowmachine.features import SubscriberHandsets
 
-# the test db contains no handset information so we can only test if the query
-# runs without raising errors, the calculation is very similar to
-# topup_balances which gives some assurance that they are correct
+
 @pytest.mark.parametrize(
     "characteristic,statistic,msisdn,want",
     [
-        ("width", "count", "lqOknAJRDNAewM10", 0),
-        ("width", "sum", "LBlWd64rqnMGv7kY", None),
-        ("width", "avg", "JZoaw2jzvK2QMKYX", None),
-        ("width", "max", "DELmRj9Vvl346G50", None),
-        ("width", "min", "9vXy462Ej8V1kpWl", None),
-        ("width", "median", "KXVqP6JyVDGzQa3b", None),
-        ("width", "stddev", "EkpjZe5z37W70QKA", None),
-        ("width", "variance", "JNK7mk5G1Dy6M2Ya", None),
-        ("height", "count", "JZoaw2jzvK2QMKYX", 0),
-        ("depth", "count", "JZoaw2jzvK2QMKYX", 0),
-        ("weight", "count", "JZoaw2jzvK2QMKYX", 0),
-        ("display_width", "count", "JZoaw2jzvK2QMKYX", 0),
-        ("display_height", "count", "JZoaw2jzvK2QMKYX", 0),
+        ("width", "count", "lqOknAJRDNAewM10", 27),
+        ("width", "sum", "LBlWd64rqnMGv7kY", 13941774.74),
+        ("width", "avg", "JZoaw2jzvK2QMKYX", 28.0178288001543),
+        ("width", "max", "DELmRj9Vvl346G50", 45.9),
+        ("width", "min", "9vXy462Ej8V1kpWl", 5.19),
+        ("width", "median", "KXVqP6JyVDGzQa3b", 17.1),
+        ("width", "stddev", "EkpjZe5z37W70QKA", 7.08664242656798),
+        ("width", "variance", "JNK7mk5G1Dy6M2Ya", 113.833539255934),
+        ("height", "count", "JZoaw2jzvK2QMKYX", 34),
+        ("depth", "count", "JZoaw2jzvK2QMKYX", 34),
+        ("weight", "count", "JZoaw2jzvK2QMKYX", 34),
+        ("display_width", "count", "JZoaw2jzvK2QMKYX", 34),
+        ("display_height", "count", "JZoaw2jzvK2QMKYX", 34),
     ],
 )
 def test_handset_stats(get_dataframe, characteristic, statistic, msisdn, want):
