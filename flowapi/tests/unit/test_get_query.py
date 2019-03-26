@@ -68,11 +68,7 @@ async def test_get_query(app, access_token_builder, dummy_zmq_server):
 @pytest.mark.parametrize(
     "reply_msg_status, query_state, http_code",
     [
-        (
-            "success",
-            "completed",
-            200,
-        ),  # disabling this because it is tested in `test_get_query` above and the return message from flowmachine now has a different structure to the other cases
+        ("success", "completed", 200),
         ("error", "executing", 202),
         ("error", "queued", 202),
         ("error", "awol", 404),
