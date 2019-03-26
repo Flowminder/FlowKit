@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import json
-import os
 
 import pytest
 from asynctest import return_once
@@ -12,7 +10,7 @@ from .utils import query_kinds, exemplar_query_params
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("route", ["/api/0/poll/foo", "/api/0/get/foo"])
-async def test_protected_get_routes(route, app):
+async def test_protected_get_routes(route, app, json_log):
     """
     Test that protected routes return a 401 without a valid token.
 
@@ -27,10 +25,12 @@ async def test_protected_get_routes(route, app):
 
     response = await client.get(route)
     assert 401 == response.status_code
-    with open(os.path.join(log_dir, "flowkit-access.log")) as log_file:
-        log_lines = log_file.readlines()
-    assert 1 == len(log_lines)
-    assert "UNAUTHORISED" in log_lines[0]
+
+    log_lines = json_log().out
+    assert 1 == len(log_lines)  # One access log, two query logs
+    assert log_lines[0]["name"] == "flowapi-access"
+
+    assert "UNAUTHORISED" == log_lines[0]["event"]
 
 
 @pytest.mark.asyncio
@@ -208,7 +208,7 @@ async def test_no_result_access_without_both_claims(
     "route", ["/api/0/poll/DUMMY_QUERY_ID", "/api/0/get/DUMMY_QUERY_ID"]
 )
 async def test_access_logs_gets(
-    query_kind, route, app, access_token_builder, dummy_zmq_server
+    query_kind, route, app, access_token_builder, dummy_zmq_server, json_log
 ):
     """
     Test that access logs are written for attempted unauthorized access to 'poll' and get' routes.
@@ -227,21 +227,24 @@ async def test_access_logs_gets(
         json={"query_kind": query_kind},
     )
     assert 401 == response.status_code
-    with open(os.path.join(log_dir, "query-runs.log")) as log_file:
-        log_lines = log_file.readlines()
-    assert 2 == len(log_lines)
-    assert "DUMMY_QUERY_KIND" == json.loads(log_lines[0])["query_kind"]
-    assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" in log_lines[1]
-    assert "test" in log_lines[0]
-    assert "test" in log_lines[1]
-    assert (
-        json.loads(log_lines[0])["request_id"] == json.loads(log_lines[1])["request_id"]
-    )
+    log_lines = json_log().out
+    assert 3 == len(log_lines)  # One access log, two query logs
+    assert log_lines[0]["name"] == "flowapi-access"
+    assert log_lines[1]["name"] == "flowapi-query"
+    assert log_lines[2]["name"] == "flowapi-query"
+    assert "MODAL_LOCATION" == log_lines[2]["query_kind"]
+    assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" == log_lines[2]["event"]
+    assert "test" == log_lines[0]["user"]
+    assert "test" == log_lines[1]["user"]
+    assert "test" == log_lines[2]["user"]
+    assert log_lines[0]["request_id"] == log_lines[1]["request_id"]
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("query_kind", query_kinds)
-async def test_access_logs_post(query_kind, app, access_token_builder):
+async def test_access_logs_post(
+    query_kind, app, access_token_builder, dummy_zmq_server, json_log
+):
     """
     Test that access logs are written for attempted unauthorized access to 'run' route.
 
@@ -254,10 +257,15 @@ async def test_access_logs_post(query_kind, app, access_token_builder):
         json={"query_kind": query_kind},
     )
     assert 401 == response.status_code
-    with open(os.path.join(log_dir, "query-runs.log")) as log_file:
-        log_lines = log_file.readlines()
-    assert 2 == len(log_lines)
-    assert query_kind.upper() in log_lines[0]
-    assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" in log_lines[1]
-    assert "test" in log_lines[0]
-    assert "test" in log_lines[1]
+
+    log_lines = json_log().out
+    assert 3 == len(log_lines)  # One access log, two query logs
+    assert log_lines[0]["name"] == "flowapi-access"
+    assert log_lines[1]["name"] == "flowapi-query"
+    assert log_lines[2]["name"] == "flowapi-query"
+    assert query_kind.upper() == log_lines[2]["query_kind"]
+    assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" == log_lines[2]["event"]
+    assert "test" == log_lines[0]["user"]
+    assert "test" == log_lines[1]["user"]
+    assert "test" == log_lines[2]["user"]
+    assert log_lines[0]["request_id"] == log_lines[1]["request_id"]
