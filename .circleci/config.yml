@@ -653,6 +653,7 @@ workflows:
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
+          project_name: flowclient
           requires:
             - run_flowclient_tests
             - integration_tests
@@ -683,6 +684,7 @@ workflows:
           <<: *tag_only_org_context
       - push_wheel:
           name: push_flowclient_wheel
+          project_name: flowclient
           requires:
             - build_flowclient_wheel
           <<: *tag_only_org_context
@@ -692,5 +694,5 @@ workflows:
           requires:
             - build_docs
             - retag_tagged_build
-            - push_wheel
+            - push_flowclient_wheel
           <<: *tag_only_org_context
