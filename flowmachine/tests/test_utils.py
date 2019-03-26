@@ -48,7 +48,9 @@ def test_time_period_add_other_units():
 
 
 def test_parse():
-    """Test that several variations on a datestring give the same date"""
+    """
+    Test that several variations on a datestring give the same date
+    """
     assert (
         parse_datestring("2016-01-01").date()
         == parse_datestring("2016-01-01 10:00").date()
@@ -60,7 +62,9 @@ def test_parse():
 
 
 def test_dependency_graph():
-    """Test that dependency graph util runs and has some correct entries."""
+    """
+    Test that dependency graph util runs and has some correct entries.
+    """
     g = daily_location("2016-01-01").dependency_graph(analyse=True)
     sd = EventTableSubset(
         "2016-01-01", "2016-01-02", columns=["msisdn", "datetime", "location_id"]
@@ -69,7 +73,9 @@ def test_dependency_graph():
 
 
 def test_proj4(flowmachine_connect):
-    """Test that correct proj4 strings are returned."""
+    """
+    Test that correct proj4 strings are returned.
+    """
     wsg84 = "+proj=longlat +datum=WGS84 +no_defs"
     haiti = "+proj=lcc +lat_1=35.46666666666667 +lat_2=34.03333333333333 +lat_0=33.5 +lon_0=-118 +x_0=2000000 +y_0=500000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
     assert proj4string(flowmachine_connect) == wsg84  # Default
@@ -101,14 +107,18 @@ def test_convert_list_to_str():
 
 
 def test_sql_prettified():
-    """Test that sql is prettified as expected."""
+    """
+    Test that sql is prettified as expected.
+    """
     sql = "select foo, beta, frog from (select * from octagon where mooses in ('bees')) z limit 9"
     prettied = "SELECT foo,\n       beta,\n       frog\nFROM (SELECT *\n      FROM octagon\n      WHERE mooses IN ('bees')) AS z\nLIMIT 9"
     assert pretty_sql(sql) == prettied
 
 
 def test_sql_validation():
-    """Test that sql gets validated."""
+    """
+    Test that sql gets validated.
+    """
     sql = "elect foo from mooses"
     with pytest.raises(pglast.parser.ParseError):
         pretty_sql(sql)
@@ -123,13 +133,17 @@ def test_sql_validation():
     ],
 )
 def test_columns_for_level_errors(level, column_name, error):
-    """Test that get_columns_for_level raises correct errors"""
+    """
+    Test that get_columns_for_level raises correct errors
+    """
     with pytest.raises(error):
         get_columns_for_level(level, column_name)
 
 
 def test_column_list():
-    """Test that supplying the column name as a list returns it as a new list."""
+    """
+    Test that supplying the column name as a list returns it as a new list.
+    """
     passed_cols = ["frogs", "dogs"]
     returned_cols = get_columns_for_level("admin0", passed_cols)
     assert passed_cols == returned_cols
@@ -137,13 +151,17 @@ def test_column_list():
 
 
 def test_datestring_parse_error():
-    """Test that correct error is raised when failing to parse a datestring."""
+    """
+    Test that correct error is raised when failing to parse a datestring.
+    """
     with pytest.raises(ValueError):
         parse_datestring("DEFINITELY NOT A DATE")
 
 
 def test_get_secrets(monkeypatch):
-    """Test getting a secret from the special /run/secrets directory."""
+    """
+    Test getting a secret from the special /run/secrets directory.
+    """
     the_secret = "Shhhh"
     the_secret_name = "SECRET"
     open_mock = unittest.mock.mock_open(read_data=the_secret)
@@ -154,7 +172,9 @@ def test_get_secrets(monkeypatch):
 
 
 def test_get_secrets_default(monkeypatch):
-    """Test getting a secret falls back to provided default with the file being there."""
+    """
+    Test getting a secret falls back to provided default with the file being there.
+    """
     the_secret = "Shhhh"
     the_secret_name = "SECRET"
     secret = getsecret(the_secret_name, the_secret)
