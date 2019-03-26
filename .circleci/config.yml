@@ -658,6 +658,13 @@ workflows:
             - run_flowclient_tests
             - integration_tests
           <<: *run_always_org_context
+      - build_python_wheel:
+          name: build_flowmachine_wheel
+          project_name: flowmachine
+          requires:
+            - run_flowmachine_tests
+            - integration_tests
+          <<: *run_always_org_context
       - integration_tests:
           requires:
             - install_flowmachine_deps
@@ -687,6 +694,12 @@ workflows:
           project_name: flowclient
           requires:
             - build_flowclient_wheel
+          <<: *tag_only_org_context
+      - push_wheel:
+          name: push_flowmachine_wheel
+          project_name: flowmachine
+          requires:
+            - build_flowmachine_wheel
           <<: *tag_only_org_context
       - build_docs:
           name: Deploy docs
