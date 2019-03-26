@@ -51,3 +51,10 @@ class QueryInfoLookup:
     def get_query_kind(self, query_id: str):
         query_params = self.get_query_params(query_id)
         return query_params["query_kind"]
+
+    def get_query_id(self, query_params: dict):
+        query_params_str = rapidjson.dumps(query_params)
+        query_id = self.redis_client.get(query_params_str)
+        if query_id is None:
+            raise QueryInfoLookupError("No id for these params.")
+        return query_id

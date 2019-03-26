@@ -20,7 +20,11 @@ from marshmallow import ValidationError
 
 from flowmachine.core import Query, GeoTable
 from flowmachine.core.cache import get_query_object_by_id
-from flowmachine.core.query_info_lookup import QueryInfoLookup, UnkownQueryIdError
+from flowmachine.core.query_info_lookup import (
+    QueryInfoLookup,
+    UnkownQueryIdError,
+    QueryInfoLookupError,
+)
 from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.utils import convert_dict_keys_to_strings, sort_recursively
 from .exceptions import FlowmachineServerError
@@ -88,13 +92,17 @@ def action_handler__run_query(**action_params):
             status="error", msg=error_msg, payload=validation_error_messages
         )
 
-    # Set the query running (it's safe to call this even if the query was set running before)
-    query_id = query_obj.store_async()
-
-    # Register the query as "known" (so that we can later look up the query kind
-    # and its parameters from the query_id).
     q_info_lookup = QueryInfoLookup(Query.redis)
-    q_info_lookup.register_query(query_id, action_params)
+    try:
+        query_id = q_info_lookup.get_query_id(action_params)
+    except QueryInfoLookupError:
+        # Set the query running (it's safe to call this even if the query was set running before)
+        query_id = query_obj.store_async()
+
+        # Register the query as "known" (so that we can later look up the query kind
+        # and its parameters from the query_id).
+
+        q_info_lookup.register_query(query_id, action_params)
 
     return ZMQReply(status="success", payload={"query_id": query_id})
 
