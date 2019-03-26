@@ -17,10 +17,26 @@ from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply, parse_zmq_message
 
 logger = structlog.get_logger(__name__)
-query_run_log = structlog.get_logger("flowmachine-server")
+
+# Logger for all queries run or accessed
+query_run_log = structlog.get_logger(
+    name="flowmachine-server",
+    processors=[
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(serializer=rapidjson.dumps),
+    ],
+    context_class=dict,
+    logger_factory=structlog.PrintLoggerFactory,
+    wrapper_class=structlog.BoundLogger,
+    cache_logger_on_first_use=True,
+)
 
 
-def get_reply_for_message(msg_str):
+async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
     """
     Parse the zmq message string, perform the desired action and return the result in JSON format.
 

@@ -8,9 +8,7 @@ import quart.flask_patch
 from quart import Quart, request, current_app
 import asyncpg
 import logging
-import os
 import zmq
-from logging.handlers import TimedRotatingFileHandler
 from zmq.asyncio import Context
 
 from flowapi.config import get_config
@@ -43,7 +41,8 @@ async def connect_logger():
     ch.setLevel(log_level)
     logger.addHandler(ch)
     # Debug logger. Quart doesn't allow us to override current_app.logger, but won't use it by default.
-    current_app.flowapi_logger = structlog.wrap_logger(logger)
+    current_app.flowapi_logger = structlog.wrap_logger(logger, name="flowapi-debug")
+    current_app.flowapi_logger.debug("Started")
 
     # Logger for authentication
 

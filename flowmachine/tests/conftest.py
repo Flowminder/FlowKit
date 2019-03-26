@@ -146,7 +146,6 @@ def mocked_connections(monkeypatch):
 @pytest.fixture
 def clean_env(monkeypatch):
     monkeypatch.delenv("LOG_LEVEL", raising=False)
-    monkeypatch.delenv("WRITE_LOG_FILE", raising=False)
     monkeypatch.delenv("FLOWDB_PORT", raising=False)
     monkeypatch.delenv("FLOWDB_USER", raising=False)
     monkeypatch.delenv("FLOWDB_PASS", raising=False)
