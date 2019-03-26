@@ -19,6 +19,7 @@ from flowmachine.utils import (
     getsecret,
     pretty_sql,
     _makesafe,
+    sort_recursively,
 )
 
 from flowmachine.utils import time_period_add
@@ -158,3 +159,21 @@ def test_get_secrets_default(monkeypatch):
     the_secret_name = "SECRET"
     secret = getsecret(the_secret_name, the_secret)
     assert the_secret == secret
+
+
+def test_sort_recursively():
+    """
+    Test that `sort_recursively` recursively sorts all components of the input dictionary.
+    """
+    d = {
+        "cc": {"foo": 23, "bar": 42},
+        "aa": [("quux2", 100), ("quux1", 200)],
+        "bb": "hello",
+    }
+    d_sorted_expected = {
+        "aa": [("quux1", 200), ("quux2", 100)],
+        "bb": "hello",
+        "cc": {"bar": 42, "foo": 23},
+    }
+
+    assert d_sorted_expected == sort_recursively(d)
