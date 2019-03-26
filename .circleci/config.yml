@@ -526,33 +526,39 @@ jobs:
             - /home/circleci/.local/share/virtualenvs/
 
 
-  build_client_wheel:
+  build_python_wheel:
+    parameters:
+      project_name:
+        type: string
     docker: *base_docker
-    working_directory: /home/circleci/project/flowclient
+    working_directory: /home/circleci/project/<<parameters.project_name>>
     steps:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: Build wheel
+          name: Building wheel for <<parameters.project_name>>
           command: python setup.py bdist_wheel
       - persist_to_workspace:
-          root: /home/circleci/project/flowclient
+          root: /home/circleci/project
           paths:
-            - dist
+            - <<parameters.project_name>>/dist
       - store_artifacts:
-          path: /home/circleci/project/flowclient
+          path: /home/circleci/project/<<parameters.project_name>>
           destination: wheel
 
   push_wheel:
+    parameters:
+      project_name:
+        type: string
     docker: *base_docker
     steps:
       - attach_workspace:
           at: /home/circleci/
       - run:
-          name: Upload FlowClient Wheel
+          name: Upload <<parameters.project_name>> Wheel
           command: |
             pipenv install twine
-            pipenv run twine upload /home/circleci/dist/*
+            pipenv run twine upload /home/circleci/dist/<<parameters.project_name>>/*
 
   retag_images:
     parameters:
@@ -645,7 +651,8 @@ workflows:
             - run_flowkit_api_tests
             - integration_tests
           <<: *run_always_org_context
-      - build_client_wheel:
+      - build_python_wheel:
+          name: build_flowclient_wheel
           requires:
             - run_flowclient_tests
             - integration_tests
@@ -675,8 +682,9 @@ workflows:
           tag: CIRCLE_TAG
           <<: *tag_only_org_context
       - push_wheel:
+          name: push_flowclient_wheel
           requires:
-            - build_client_wheel
+            - build_flowclient_wheel
           <<: *tag_only_org_context
       - build_docs:
           name: Deploy docs
