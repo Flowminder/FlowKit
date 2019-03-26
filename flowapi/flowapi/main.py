@@ -23,8 +23,6 @@ import structlog
 
 structlog.configure(
     processors=[
-        structlog.stdlib.filter_by_level,
-        structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.stdlib.PositionalArgumentsFormatter(),
         structlog.processors.TimeStamper(fmt="iso"),
@@ -33,15 +31,12 @@ structlog.configure(
         structlog.processors.JSONRenderer(),
     ],
     context_class=dict,
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
 )
 
 
 async def connect_logger():
     log_level = current_app.config["LOG_LEVEL"]
-    log_root = current_app.config["LOG_DIRECTORY"]
     logger = logging.getLogger("flowapi")
     logger.setLevel(log_level)
     ch = logging.StreamHandler()
@@ -52,33 +47,11 @@ async def connect_logger():
 
     # Logger for authentication
 
-    logger = logging.getLogger("flowkit-access")
-    logger.setLevel(logging.INFO)
-    ch = logging.StreamHandler()
-    ch.setLevel(log_level)
-    logger.addHandler(ch)
-
-    fh = TimedRotatingFileHandler(
-        os.path.join(log_root, "flowkit-access.log"), when="midnight"
-    )
-    fh.setLevel(logging.INFO)
-    logger.addHandler(fh)
-    current_app.access_logger = structlog.wrap_logger(logger)
+    current_app.access_logger = structlog.get_logger(name="flowapi-access")
 
     # Logger for all queries run or accessed
 
-    logger = logging.getLogger("flowkit-query")
-    logger.setLevel(logging.INFO)
-    ch = logging.StreamHandler()
-    ch.setLevel(log_level)
-    logger.addHandler(ch)
-
-    fh = TimedRotatingFileHandler(
-        os.path.join(log_root, "query-runs.log"), when="midnight"
-    )
-    fh.setLevel(logging.INFO)
-    logger.addHandler(fh)
-    current_app.query_run_logger = structlog.wrap_logger(logger)
+    current_app.query_run_logger = structlog.get_logger(name="flowapi-query")
 
 
 async def connect_zmq():
