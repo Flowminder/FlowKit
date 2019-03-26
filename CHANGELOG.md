@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+
+
+### Changed
+
+
+### Fixed
+
+
+### Removed
+
+
+## [0.4.3]
+### Added
 - When running integration tests locally, normally pytest will automatically spin up servers for flowmachine and flowapi as part of the test setup.
   This can now be disabled by setting the environment variable `FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=TRUE`.
 - The integration tests now use the environment variables `FLOWAPI_HOST`, `FLOWAPI_PORT` to determine how to connect to the flowapi server.
@@ -25,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Server no longer loses track of queries under heavy load
+- `TopUpBalances` no longer always uses entire topups table
 
 ### Removed
 
@@ -127,7 +141,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.2...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.3...master
+[0.4.3]: https://github.com/Flowminder/FlowKit/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/Flowminder/FlowKit/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/Flowminder/FlowKit/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/Flowminder/FlowKit/compare/0.3.0...0.4.0
