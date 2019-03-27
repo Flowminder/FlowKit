@@ -19,8 +19,6 @@ from .meaningful_locations import (
 from .geography import GeographySchema, GeographyExposed
 from .location_event_counts import LocationEventCountsSchema, LocationEventCountsExposed
 
-# from .subscriber_locations import SubscriberLocationsSchema, SubscriberLocationsExposed
-
 
 class FlowmachineQuerySchema(OneOfSchema):
     type_field = "query_kind"
@@ -29,7 +27,6 @@ class FlowmachineQuerySchema(OneOfSchema):
         "daily_location": DailyLocationSchema,
         "modal_location": ModalLocationSchema,
         "flows": FlowsSchema,
-        # "subscriber_locations": SubscriberLocationsSchema
         "meaningful_locations_aggregate": MeaningfulLocationsAggregateSchema,
         "meaningful_locations_between_label_od_matrix": MeaningfulLocationsBetweenLabelODMatrixSchema,
         "meaningful_locations_between_dates_od_matrix": MeaningfulLocationsBetweenDatesODMatrixSchema,
@@ -46,8 +43,6 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "modal_location"
         elif isinstance(obj, FlowsExposed):
             return "flows"
-        # elif isinstance(obj, SubscriberLocationsExposed):
-        #     return "subscriber_locations"
         elif isinstance(obj, MeaningfulLocationsAggregateExposed):
             return "meaningful_locations_aggregate"
         elif isinstance(obj, MeaningfulLocationsBetweenLabelODMatrixExposed):
