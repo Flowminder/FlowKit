@@ -12,6 +12,8 @@
 #
 !./bin/z_ingest_test_data.sh
 !./bin/zz_run_synthetic_dfs_data_generation_script.sh
+!./test_data/Pipfile
+!./test_data/Pipfile.lock
 !./test_data/sql/
 !./test_data/py/
 !./test_data/data/
