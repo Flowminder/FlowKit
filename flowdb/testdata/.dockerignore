@@ -11,9 +11,9 @@
 # building the flowdb_testdata image:
 #
 !./bin/z_ingest_test_data.sh
-!./bin/zz_generate_synthetic_dfs_data.py
 !./bin/zz_run_synthetic_dfs_data_generation_script.sh
 !./test_data/sql/
+!./test_data/py/
 !./test_data/data/
 
 # And un-exclude only those folders and files that are needed for
