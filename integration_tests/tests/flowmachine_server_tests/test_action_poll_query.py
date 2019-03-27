@@ -40,9 +40,6 @@ async def test_poll_existing_query(zmq_port, zmq_host):
     assert expected_reply == reply
 
 
-@pytest.mark.xfail(
-    reason="TODO: how to determine a missing query using QueryStateMachine?"
-)
 @pytest.mark.asyncio
 async def test_poll_query_with_nonexistent_query_id_fails(zmq_port, zmq_host):
     """
@@ -58,6 +55,5 @@ async def test_poll_query_with_nonexistent_query_id_fails(zmq_port, zmq_host):
     assert {
         "status": "error",
         "payload": {"query_id": "FOOBAR", "query_state": "awol"},
-        "id": "FOOBAR",
-        "msg": "Unknown query id: FOOBAR",
+        "msg": "Unknown query id: 'FOOBAR'",
     } == reply

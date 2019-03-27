@@ -142,7 +142,10 @@ def action_handler__poll_query(query_id):
     # TODO: we should probably be able to use the QueryStateMachine to determine
     # whether the query already exists.
     if query_kind is None:
-        return ZMQReply(status="error", msg=f"Unknown query id: '{query_id}'")
+        payload = {"query_id": query_id, "query_state": "awol"}
+        return ZMQReply(
+            status="error", msg=f"Unknown query id: '{query_id}'", payload=payload
+        )
     else:
         q_state_machine = QueryStateMachine(Query.redis, query_id)
         payload = {
