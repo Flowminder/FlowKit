@@ -7,6 +7,7 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features import daily_location
 from .base_exposed_query import BaseExposedQuery
+from .custom_fields import AggregationUnit, SubscriberSubset
 
 __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 
@@ -14,12 +15,8 @@ __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 class DailyLocationSchema(Schema):
     date = fields.Date(required=True)
     method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
-    aggregation_unit = fields.String(
-        required=True, validate=OneOf(["admin0", "admin1", "admin2", "admin3"])
-    )
-    subscriber_subset = fields.String(
-        required=False, allow_none=True, validate=OneOf([None])
-    )
+    aggregation_unit = AggregationUnit()
+    subscriber_subset = SubscriberSubset()
 
     @post_load
     def make_query_object(self, params):
