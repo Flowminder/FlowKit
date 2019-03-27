@@ -35,7 +35,7 @@ async def test_invalid_token(app, json_log):
         await invalid_token_callback("DUMMY_ERROR_STRING")
         log_lines = json_log().out
         assert len(log_lines) == 1
-        assert log_lines[0]["name"] == "flowapi-access"
+        assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "INVALID_TOKEN"
         assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
 
@@ -73,7 +73,7 @@ async def test_expired_token(app, json_log):
         await expired_token_callback(dummy_decoded_expired_token)
         log_lines = json_log().out
         assert len(log_lines) == 1
-        assert log_lines[0]["name"] == "flowapi-access"
+        assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "EXPIRED_TOKEN"
         assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
 
@@ -96,7 +96,7 @@ async def test_claims_verify_fail(app, json_log):
         await claims_verification_failed_callback()
         log_lines = json_log().out
         assert len(log_lines) == 1
-        assert log_lines[0]["name"] == "flowapi-access"
+        assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "CLAIMS_VERIFICATION_FAILED"
         assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
 
@@ -119,6 +119,6 @@ async def test_revoked_token(app, json_log):
         await revoked_token_callback()
         log_lines = json_log().out
         assert len(log_lines) == 1
-        assert log_lines[0]["name"] == "flowapi-access"
+        assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "REVOKED_TOKEN"
         assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"

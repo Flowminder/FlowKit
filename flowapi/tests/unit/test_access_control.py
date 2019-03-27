@@ -28,7 +28,7 @@ async def test_protected_get_routes(route, app, json_log):
 
     log_lines = json_log().out
     assert 1 == len(log_lines)  # One access log, two query logs
-    assert log_lines[0]["name"] == "flowapi-access"
+    assert log_lines[0]["logger"] == "flowapi.access"
 
     assert "UNAUTHORISED" == log_lines[0]["event"]
 
@@ -229,9 +229,9 @@ async def test_access_logs_gets(
     assert 401 == response.status_code
     log_lines = json_log().out
     assert 3 == len(log_lines)  # One access log, two query logs
-    assert log_lines[0]["name"] == "flowapi-access"
-    assert log_lines[1]["name"] == "flowapi-query"
-    assert log_lines[2]["name"] == "flowapi-query"
+    assert log_lines[0]["logger"] == "flowapi.access"
+    assert log_lines[1]["logger"] == "flowapi.query"
+    assert log_lines[2]["logger"] == "flowapi.query"
     assert "MODAL_LOCATION" == log_lines[2]["query_kind"]
     assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" == log_lines[2]["event"]
     assert "test" == log_lines[0]["user"]
@@ -260,9 +260,9 @@ async def test_access_logs_post(
 
     log_lines = json_log().out
     assert 3 == len(log_lines)  # One access log, two query logs
-    assert log_lines[0]["name"] == "flowapi-access"
-    assert log_lines[1]["name"] == "flowapi-query"
-    assert log_lines[2]["name"] == "flowapi-query"
+    assert log_lines[0]["logger"] == "flowapi.access"
+    assert log_lines[1]["logger"] == "flowapi.query"
+    assert log_lines[2]["logger"] == "flowapi.query"
     assert query_kind.upper() == log_lines[2]["query_kind"]
     assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" == log_lines[2]["event"]
     assert "test" == log_lines[0]["user"]
