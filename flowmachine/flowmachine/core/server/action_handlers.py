@@ -26,7 +26,7 @@ from flowmachine.core.query_info_lookup import (
     QueryInfoLookupError,
 )
 from flowmachine.core.query_state import QueryStateMachine, QueryState
-from flowmachine.utils import convert_dict_keys_to_strings, sort_recursively
+from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema
 from .zmq_helpers import ZMQReply
@@ -68,7 +68,6 @@ def action_handler__get_query_schemas():
     )
     spec.components.schema("FlowmachineQuerySchema", schema=FlowmachineQuerySchema)
     schemas_spec = spec.to_dict()["components"]["schemas"]
-    schemas_spec = sort_recursively(schemas_spec)  # needed for reproducible output
     return ZMQReply(status="success", payload={"query_schemas": schemas_spec})
 
 

@@ -4,6 +4,7 @@
 
 import json
 
+from flowmachine.utils import sort_recursively
 from approvaltests.approvals import verify
 
 
@@ -68,7 +69,7 @@ def test_api_spec_of_flowmachine_query_schemas(
     print(reply)
     assert "success" == reply["status"]
     spec_as_json_string = json.dumps(
-        reply["payload"]["query_schemas"], indent=2, sort_keys=True
+        sort_recursively(reply["payload"]["query_schemas"]), indent=2
     )
     verify(spec_as_json_string, diff_reporter)
 
