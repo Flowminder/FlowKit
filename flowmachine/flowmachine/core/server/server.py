@@ -5,8 +5,10 @@
 import asyncio
 import os
 import rapidjson
+import signal
 import structlog
 import zmq
+from functools import partial
 from zmq.asyncio import Context
 
 import flowmachine
@@ -116,6 +118,22 @@ async def calculate_and_send_reply_for_message(socket, return_address, msg_conte
     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
 
 
+def shutdown(socket):
+    """
+    Handler for SIGTERM to allow test coverage data to be written during integration tests.
+    """
+    logger.debug("Caught SIGTERM. Shutting down.")
+    socket.close()
+    logger.debug("Closed ZMQ socket,")
+    tasks = [
+        task
+        for task in asyncio.Task.all_tasks()
+        if task is not asyncio.tasks.Task.current_task()
+    ]
+    list(map(lambda task: task.cancel(), tasks))
+    logger.debug("Cancelled all remaining tasks.")
+
+
 async def recv(port):
     """
     Main receive-and-reply loop. Listens to zmq messages on the given port,
@@ -126,6 +144,10 @@ async def recv(port):
     ctx = Context.instance()
     socket = ctx.socket(zmq.ROUTER)
     socket.bind(f"tcp://*:{port}")
+
+    # Get the loop and attach a sigterm handler to allow coverage data to be written
+    main_loop = asyncio.get_event_loop()
+    main_loop.add_signal_handler(signal.SIGTERM, partial(shutdown, socket=socket))
 
     try:
         while True:
