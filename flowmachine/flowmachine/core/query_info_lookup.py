@@ -25,7 +25,7 @@ class QueryInfoLookup:
     def __init__(self, redis_client: StrictRedis):
         self.redis_client = redis_client
 
-    def register_query(self, query_id: str, query_params: dict):
+    def register_query(self, query_id: str, query_params: dict) -> None:
         logger.debug(
             f"Registering query lookup for query_id='{query_id}' with query_params {query_params}"
         )
@@ -38,21 +38,21 @@ class QueryInfoLookup:
         self.redis_client.set(query_id, query_params_str)
         self.redis_client.set(query_params_str, query_id)
 
-    def query_is_known(self, query_id: str):
+    def query_is_known(self, query_id: str) -> bool:
         is_known = self.redis_client.get(query_id) is not None
         return is_known
 
-    def get_query_params(self, query_id: str):
+    def get_query_params(self, query_id: str) -> dict:
         query_params_str = self.redis_client.get(query_id)
         if query_params_str is None:
             raise UnkownQueryIdError(f"Unknown query_id: '{query_id}'")
         return rapidjson.loads(query_params_str)
 
-    def get_query_kind(self, query_id: str):
+    def get_query_kind(self, query_id: str) -> str:
         query_params = self.get_query_params(query_id)
         return query_params["query_kind"]
 
-    def get_query_id(self, query_params: dict):
+    def get_query_id(self, query_params: dict) -> str:
         query_params_str = rapidjson.dumps(query_params)
         query_id = self.redis_client.get(query_params_str)
         if query_id is None:

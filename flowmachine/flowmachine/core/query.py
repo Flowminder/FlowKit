@@ -184,7 +184,7 @@ class Query(metaclass=ABCMeta):
         return self._cache
 
     @property
-    def query_state(self):
+    def query_state(self) -> "QueryState":
         """
         Return the current query state.
 
@@ -197,7 +197,7 @@ class Query(metaclass=ABCMeta):
         return state_machine.current_query_state
 
     @property
-    def query_state_str(self):
+    def query_state_str(self) -> str:
         """
         Return the current query state as a string
 
