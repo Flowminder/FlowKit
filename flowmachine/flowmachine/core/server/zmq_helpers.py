@@ -94,10 +94,10 @@ def parse_zmq_message(msg_str):
 
     Returns
     -------
-    tuple of str, dict
-        Returns a pair of values containing a string representing the action
-        to be performed and a dict with action parameters (which can be passed
-        to the action handler).
+    (str, str, dict)
+        Returns a tuple of values containing: the name of the action to be performed;
+        the request_id of the request that initiated the action; and a dict with action
+        parameters (which can be passed to the action handler).
     """
     # Load JSON from zmq message string.
     try:
@@ -123,7 +123,7 @@ def parse_zmq_message(msg_str):
     if not isinstance(action, str):
         raise FlowmachineServerError("Action must be a string.")
 
-    # Ensure request_id is present. TODO: This should be passed to the logger!
+    # Ensure request_id is present.
     try:
         request_id = msg["request_id"]
     except KeyError:
@@ -141,4 +141,4 @@ def parse_zmq_message(msg_str):
     if not isinstance(action_params, dict):
         raise FlowmachineServerError("Action params must be a dictionary.")
 
-    return action, action_params
+    return action, request_id, action_params
