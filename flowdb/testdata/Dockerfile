@@ -27,6 +27,12 @@ RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.l
         && rm -rf /var/cache/debconf/*-old \
         && rm -rf /var/lib/apt/lists/*
 
+#
+# Install python dependencies
+#
+COPY --chown=postgres ./test_data/Pipfile* /tmp/
+RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
+    && rm /tmp/Pipfile*
 
 #
 #   Add test data to the ingestion directory. 
