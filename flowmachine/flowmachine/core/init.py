@@ -25,7 +25,7 @@ from . import Connection, Query
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 def connect(
@@ -195,7 +195,7 @@ def _init_logging(log_level):
     except (AttributeError, TypeError):
         log_level = logging.ERROR
     true_log_level = logging.getLevelName(log_level)
-    logger = logging.getLogger("flowmachine")
+    logger = logging.getLogger("flowmachine").getChild("debug")
     logger.setLevel(true_log_level)
     ch = logging.StreamHandler()
     ch.setLevel(log_level)

@@ -18,7 +18,7 @@ from ...core.mixins import GeoDataMixin
 
 from .versioned_infrastructure import VersionedInfrastructure
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class LocationCluster(GeoDataMixin, Query):

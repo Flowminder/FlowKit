@@ -5,6 +5,10 @@
 import asyncio
 import os
 import rapidjson
+import logging
+
+import sys
+
 import signal
 import structlog
 import zmq
@@ -16,24 +20,14 @@ from .action_handlers import perform_action
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply, parse_zmq_message
 
-logger = structlog.get_logger(__name__)
 
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 # Logger for all queries run or accessed
-query_run_log = structlog.get_logger(
-    name="flowmachine-server",
-    processors=[
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(serializer=rapidjson.dumps),
-    ],
-    context_class=dict,
-    logger_factory=structlog.PrintLoggerFactory,
-    wrapper_class=structlog.BoundLogger,
-    cache_logger_on_first_use=True,
-)
+query_run_log = logging.getLogger("flowmachine").getChild("query_run_log")
+ch = logging.StreamHandler(sys.stdout)
+ch.setLevel(logging.INFO)
+query_run_log.addHandler(ch)
+query_run_log = structlog.wrap_logger(query_run_log)
 
 
 async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
