@@ -4,16 +4,14 @@
 
 import logging
 import pytest
-import structlog
 
 from flowmachine import connect
-from flowmachine.core import Query
 
 
 @pytest.fixture(autouse=True)
 def reset_connect(monkeypatch):
     monkeypatch.delattr("flowmachine.core.Query.connection")
-    logging.getLogger("flowmachine").handlers = []
+    logging.getLogger("flowmachine.debug").handlers = []
 
 
 def test_double_connect_warning(monkeypatch):
@@ -21,28 +19,28 @@ def test_double_connect_warning(monkeypatch):
     connect()
     with pytest.warns(UserWarning):
         connect()
-    assert 1 == len(logging.getLogger("flowmachine").handlers)
+    assert 1 == len(logging.getLogger("flowmachine.debug").handlers)
 
 
 def test_bad_log_level_goes_to_error(monkeypatch):
     """Test that a bad log level is coerced to ERROR."""
     monkeypatch.setenv("LOG_LEVEL", "BAD_LEVEL")
     connect()
-    assert logging.ERROR == logging.getLogger("flowmachine").level
+    assert logging.ERROR == logging.getLogger("flowmachine.debug").level
 
 
 def test_log_level_set_env(monkeypatch):
     """Test that a log level can be set via env."""
     monkeypatch.setenv("LOG_LEVEL", "INFO")
     connect()
-    assert logging.INFO == logging.getLogger("flowmachine").level
+    assert logging.INFO == logging.getLogger("flowmachine.debug").level
 
 
 def test_log_level_set(monkeypatch):
     """Test that a log level can be set via param."""
 
     connect(log_level="critical")
-    assert logging.CRITICAL == logging.getLogger("flowmachine").level
+    assert logging.CRITICAL == logging.getLogger("flowmachine.debug").level
 
 
 def test_param_priority(mocked_connections, monkeypatch):
@@ -108,7 +106,7 @@ def test_env_priority(mocked_connections, monkeypatch):
         mocked_connections
     )
     connect()
-    core_init_logging_mock.assert_called_with("DUMMY_ENV_LOG_LEVEL", True)
+    core_init_logging_mock.assert_called_with("DUMMY_ENV_LOG_LEVEL")
     core_init_Connection_mock.assert_called_with(
         port=6969,
         user="DUMMY_ENV_FLOWDB_USER",
