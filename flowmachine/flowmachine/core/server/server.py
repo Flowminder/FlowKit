@@ -14,10 +14,10 @@ from zmq.asyncio import Context
 import flowmachine
 from .action_handlers import perform_action
 from .exceptions import FlowmachineServerError
-from .logging import query_run_log
 from .zmq_helpers import ZMQReply, parse_zmq_message
 
 logger = structlog.get_logger(__name__)
+query_run_log = structlog.get_logger("flowmachine-server")
 
 
 def get_reply_for_message(msg_str):
