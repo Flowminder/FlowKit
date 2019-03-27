@@ -92,7 +92,7 @@ async def receive_next_zmq_message_and_send_back_reply(socket):
     logger.debug(
         f"Creating background task to calculate reply and return it to the sender."
     )
-    await asyncio.create_task(
+    asyncio.create_task(
         calculate_and_send_reply_for_message(socket, return_address, msg_contents)
     )
 
