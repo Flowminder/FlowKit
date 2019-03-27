@@ -14,6 +14,8 @@
 # action handler and also gracefully handles any potential errors.
 #
 
+import functools
+
 from apispec import APISpec
 from apispec_oneofschema import MarshmallowPlugin
 from marshmallow import ValidationError
@@ -53,6 +55,7 @@ def action_handler__get_available_queries():
     return ZMQReply(status="success", payload={"available_queries": available_queries})
 
 
+@functools.lru_cache(maxsize=1)
 def action_handler__get_query_schemas():
     """
     Handler for the 'get_query_schemas' action.
