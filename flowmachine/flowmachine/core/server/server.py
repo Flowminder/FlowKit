@@ -14,6 +14,7 @@ from zmq.asyncio import Context
 import flowmachine
 from .action_handlers import perform_action
 from .exceptions import FlowmachineServerError
+from .logging import query_run_log
 from .zmq_helpers import ZMQReply, parse_zmq_message
 
 logger = structlog.get_logger(__name__)
@@ -35,8 +36,26 @@ def get_reply_for_message(msg_str):
     """
 
     try:
-        action_name, action_params = parse_zmq_message(msg_str)
+        action_name, request_id, action_params = parse_zmq_message(msg_str)
+
+        query_run_log.info(
+            f"Attempting to perform action: '{action_name}'",
+            request_id=request_id,
+            action=action_name,
+            action_params=action_params,
+        )
+
         reply = perform_action(action_name, action_params)
+
+        query_run_log.info(
+            f"Action completed with status: '{reply.status}'",
+            request_id=request_id,
+            action=action_name,
+            action_params=action_params,
+            reply_status=reply.status,
+            reply_msg=reply.msg,
+            reply_payload=reply.payload,
+        )
     except FlowmachineServerError as exc:
         return ZMQReply(status="error", msg=exc.error_msg).as_json()
 
