@@ -131,7 +131,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
         mocked_connections
     )
     connect()
-    core_init_logging_mock.assert_called_with("error", False)
+    core_init_logging_mock.assert_called_with("error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
         user="analyst",
