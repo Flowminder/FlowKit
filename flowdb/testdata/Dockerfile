@@ -14,6 +14,21 @@ FROM flowminder/flowdb:${CODE_VERSION}
 
 
 #
+#   Install Python 3.7 (needed to run the data generation scripts)
+#
+
+RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.list \
+        && apt-get -y update \
+        && apt-get -y install python3.7 python3.7-distutils python3-psutil \
+        && pip3 install pipenv \
+        && apt-get clean --yes \
+        && apt-get autoclean --yes \
+        && apt-get autoremove --yes \
+        && rm -rf /var/cache/debconf/*-old \
+        && rm -rf /var/lib/apt/lists/*
+
+
+#
 #   Add test data to the ingestion directory. 
 #
 
