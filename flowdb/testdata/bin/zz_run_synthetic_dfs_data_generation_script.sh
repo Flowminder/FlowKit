@@ -17,5 +17,9 @@ export PGUSER="$POSTGRES_USER"
 #  does not pick up .py files on its own.
 #
 
+export DIR=/docker-entrypoint-initdb.d/py/testdata/
+
 echo "Running Python script to generate synthetic DFS data."
-python /docker-entrypoint-initdb.d/py/testdata/zz_generate_synthetic_dfs_data.py
+cd ${DIR}
+pipenv install
+python ${DIR}/zz_generate_synthetic_dfs_data.py
