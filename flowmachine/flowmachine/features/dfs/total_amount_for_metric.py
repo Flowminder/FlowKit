@@ -5,8 +5,14 @@ from flowmachine.core import Query
 from flowmachine.core.date_range import DateRange
 
 
-class DFSTotalTransactionAmount(Query):
-    def __init__(self, *, start_date, end_date, aggregation_unit):
+class DFSTotalAmountForMetric(Query):
+    """
+
+    """
+
+    def __init__(self, *, metric, start_date, end_date, aggregation_unit):
+        assert metric in ["amount", "discount", "fee", "commission"]
+        self.metric = metric
         self.date_range = DateRange(start_date, end_date)
         self.aggregation_unit = aggregation_unit
         super().__init__()
@@ -33,16 +39,16 @@ class DFSTotalTransactionAmount(Query):
                     id,
                     version,
                     site_id,
-                    admin1name as name,
-                    admin1pcod as pcod
+                    {self.aggregation_unit}name as name,
+                    {self.aggregation_unit}pcod as pcod
                 FROM infrastructure.cells c
-                JOIN geography.admin1 a
+                JOIN geography.{self.aggregation_unit} a
                 ON ST_Within(c.geom_point, a.geom)
             )
             SELECT
                 timestamp::date as date,
                 pcod,
-                sum(amount) as value
+                sum({self.metric}) as value
             FROM geolocated_transactions t
             JOIN cell_mapping c
             ON t.cell_id = c.id AND t.cell_version = c.version
