@@ -4,7 +4,17 @@
 
 import pytest
 
+from flowmachine.core.server.exceptions import FlowmachineServerError
 from flowmachine.core.server.zmq_helpers import *
+from flowmachine.core.server.zmq_helpers import parse_zmq_message
+
+
+def test_one_kwarg_required():
+    """
+    Initialising ZMQReply with both default kwargs is a valueerror.
+    """
+    with pytest.raises(ValueError):
+        ZMQReply("foo")
 
 
 def test_invalid_reply_status_raises_error():
@@ -65,3 +75,31 @@ def test_zmq_reply_as_json():
     reply = ZMQReply("success", msg="foobar", payload={"a": 1, "b": 2})
     expected_json = {"status": "success", "msg": "foobar", "payload": {"a": 1, "b": 2}}
     assert expected_json == reply.as_json()
+
+
+def test_zmq_msg_default_params():
+    """Test an ommitted params key gets a default of an empty dict"""
+    action, request_id, action_params = parse_zmq_message(
+        '{"action": "DUMMY_ACTION", "request_id": "DUMMY_REQUEST_ID"}'
+    )
+    assert action == "DUMMY_ACTION"
+    assert request_id == "DUMMY_REQUEST_ID"
+    assert action_params == {}
+
+
+@pytest.mark.parametrize(
+    "bad_message",
+    [
+        "NOT_JSON",
+        '{"action": "DUMMY_ACTION", "params": {}, "request_id": "DUMMY_REQUEST_ID", "EXTRA_KEY": "EXTRA_KEY_VALUE"}',
+        '{"params": {}, "request_id": "DUMMY_REQUEST_ID"}',
+        '{"action": "DUMMY_ACTION", "params": {}}',
+        '{"action": -1, "params": {}}',
+        '{"action": "DUMMY_ACTION", "params": "NOT_A_DICT", "request_id": "DUMMY_REQUEST_ID"}',
+        '{"action": "DUMMY_ACTION", "params": {}, "request_id": -1}',
+    ],
+)
+def test_zmq_msg_parse_error(bad_message):
+    """Test errors are raised as expected when failing to parse zmq messages"""
+    with pytest.raises(FlowmachineServerError):
+        parse_zmq_message(bad_message)
