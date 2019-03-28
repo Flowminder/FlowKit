@@ -130,3 +130,25 @@ def test_run_modal_location_query(send_zmq_message_and_receive_reply):
     assert "success" == reply["status"]
     assert "cf22a8a2468ab22743f9e8c3da0044db" == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
+
+
+def test_run_dfs_metric_total_amount_query(send_zmq_message_and_receive_reply):
+    """
+    Can run dfs metric query and receive successful response including the query_id.
+    """
+    msg = {
+        "action": "run_query",
+        "params": {
+            "query_kind": "dfs_metric_total_amount",
+            "metric": "commission",
+            "start_date": "2016-01-02",
+            "end_date": "2016-01-05",
+            "aggregation_unit": "admin2",
+        },
+        "request_id": "DUMMY_ID",
+    }
+    reply = send_zmq_message_and_receive_reply(msg)
+
+    assert "success" == reply["status"]
+    assert "7070dcedf6633d2b6f263b83ea27b9e4" == reply["payload"]["query_id"]
+    assert ["query_id"] == list(reply["payload"].keys())
