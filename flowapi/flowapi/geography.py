@@ -49,10 +49,12 @@ async def get_geography(aggregation_unit):
                 "Content-type": mimetype,
             },
         )
-    elif query_state == "error":
-        return jsonify({"status": "Error", "msg": reply["msg"]}), 403
-    elif query_state == "awol":
-        return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
+    # TODO: Reinstate correct status codes for geographies
+    #
+    # elif query_state == "error":
+    #     return jsonify({"status": "Error", "msg": reply["msg"]}), 403
+    # elif query_state == "awol":
+    #     return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
     else:
         return (
             jsonify(
