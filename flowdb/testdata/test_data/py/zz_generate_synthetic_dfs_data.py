@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
 import pandas as pd
 from functools import partial
 from geoalchemy2 import Geometry, func
@@ -25,8 +26,11 @@ start_date = "2016-01-01"
 end_date = "2016-01-07"
 dfs_schema = "dfs"
 
-# conn_str = "postgresql://flowdb:flowflow@localhost:5432/flowdb"
-conn_str = "postgresql://flowdb:flowflow@localhost:9000/flowdb"
+# Note: at this stage of the postgres startup process we connect
+# without specifying the host/port and password.
+db_user = os.environ["POSTGRES_USER"]
+db_name = os.environ["POSTGRES_DB"]
+conn_str = f"postgresql://{db_user}@/{db_name}"
 engine = create_engine(conn_str)
 
 dates = [d.strftime("%Y-%m-%d") for d in pd.date_range(start_date, end_date)]
@@ -110,7 +114,7 @@ select_stmt = select(
 )
 df_cells = pd.read_sql(select_stmt, engine)
 
-#  pick only the latest version for each cell
+# Pick only the latest version for each cell
 df_cells = df_cells.loc[df_cells.groupby("cell_id")["version"].idxmax("max")]
 df_cells = df_cells.reset_index(drop=True)
 
