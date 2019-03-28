@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The flowmachine server now supports additional actions: `get_available_queries`, `get_query_schemas`, `ping`.
 - Flowdb now contains a new `dfs` schema and associated tables to process mobile money transactions.
   In addition, `flowdb_testdata` contains sample data for DFS transactions.
+- The docs now include three worked examples of CDR analysis using FlowKit.
 
 ### Changed
 
