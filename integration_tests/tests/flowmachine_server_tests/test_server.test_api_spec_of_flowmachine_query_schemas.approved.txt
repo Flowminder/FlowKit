@@ -1,4 +1,41 @@
 {
+  "DFSTotalMetricAmount": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "metric": {
+        "enum": [
+          "amount",
+          "commission",
+          "discount",
+          "fee"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "metric",
+      "start_date"
+    ],
+    "type": "object"
+  },
   "DailyLocation": {
     "properties": {
       "aggregation_unit": {
@@ -51,6 +88,7 @@
     "discriminator": {
       "mapping": {
         "daily_location": "#/components/schemas/DailyLocation",
+        "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
@@ -63,6 +101,9 @@
       "propertyName": "query_kind"
     },
     "oneOf": [
+      {
+        "$ref": "#/components/schemas/DFSTotalMetricAmount"
+      },
       {
         "$ref": "#/components/schemas/DailyLocation"
       },
