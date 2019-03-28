@@ -191,3 +191,7 @@ def main():
     asyncio.run(
         recv(port), debug=debug_mode
     )  # note: asyncio.run() requires Python 3.7+
+
+
+if __name__ == "__main__":
+    main()

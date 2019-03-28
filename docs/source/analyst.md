@@ -22,7 +22,7 @@ Documentation for FlowClient can be found [here](../flowclient/flowclient/). Exa
 
 ## FlowAuth
 
-To connect FlowClient to FlowAPI, an access token must be generated using FlowAuth. Once an administrator has created a FlowAuth login for a user (see instructions [here](2-install.md#granting-user-permissions-in-flowauth)), that user can follow these steps to generate a token:
+To connect FlowClient to FlowAPI, an access token must be generated using FlowAuth. Once an administrator has created a FlowAuth login for a user (see instructions [here](install.md#granting-user-permissions-in-flowauth)), that user can follow these steps to generate a token:
 
 1. Log into FlowAuth using the username and password created by the administrator.
 

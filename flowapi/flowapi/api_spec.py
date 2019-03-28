@@ -2,14 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from quart import (
-    Blueprint,
-    current_app,
-    request,
-    stream_with_context,
-    jsonify,
-    render_template,
-)
+import yaml
+from quart import Blueprint, request, jsonify, render_template, current_app
 from zmq.asyncio import Socket
 
 from ._version import get_versions
@@ -235,6 +229,12 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
 @blueprint.route("/openapi.json")
 async def get_api_spec():
     return jsonify(await get_spec(request.socket, request.request_id))
+
+
+@blueprint.route("/openapi.yaml")
+async def get_yaml_api_spec():
+    yaml_spec = yaml.dump(await get_spec(request.socket, request.request_id))
+    return current_app.response_class(yaml_spec, content_type="application/x-yaml")
 
 
 @blueprint.route("/openapi-redoc.json")

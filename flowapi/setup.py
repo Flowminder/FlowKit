@@ -33,6 +33,7 @@ setup(
         "structlog",
         "flask-jwt-extended",
         "asyncpg",
+        "pyyaml >= 5.1",
     ],
     extras_require={"test": ["pytest", "coverage"]},
 )

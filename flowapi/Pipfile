@@ -11,6 +11,7 @@ asyncpg = "*"
 flask-jwt-extended = "*"
 structlog = "*"
 python-rapidjson = "*"
+pyyaml = ">=5.1"
 
 [dev-packages]
 pytest = "*"

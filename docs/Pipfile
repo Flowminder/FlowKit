@@ -18,11 +18,11 @@ geopandas = "*"
 numpydoc = "*"
 black = "==18.9b0"
 click = "*"
-flowmachine = {editable = true, path = "./../flowmachine"}
+flowmachine = {editable = true,path = "./../flowmachine"}
 descartes = "*"
 seaborn = "*"
-flowclient = {editable = true, path = "./../flowclient"}
-flowapi = {editable = true, path = "./../flowapi"}
+flowclient = {editable = true,path = "./../flowclient"}
+flowapi = {editable = true,path = "./../flowapi"}
 mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
@@ -41,3 +41,6 @@ python_version = "3.7"
 build = "bash build.sh"
 serve = "bash build.sh serve --dirtyreload"
 deploy = "bash build.sh gh-deploy"
+
+[pipenv]
+allow_prereleases = true
