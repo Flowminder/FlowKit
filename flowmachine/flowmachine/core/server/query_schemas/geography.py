@@ -2,7 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, post_load
+from marshmallow import Schema, post_load, fields
+from marshmallow.validate import OneOf
 
 from flowmachine.core.geotable import GeoTable
 from .base_exposed_query import BaseExposedQuery
@@ -12,6 +13,7 @@ __all__ = ["GeographySchema", "GeographyExposed"]
 
 
 class GeographySchema(Schema):
+    query_kind = fields.String(validate=OneOf(["geography"]))
     aggregation_unit = AggregationUnit()
 
     @post_load

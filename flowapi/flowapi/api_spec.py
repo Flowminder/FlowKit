@@ -56,6 +56,16 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
     socket.send_json(msg)
     #  Get the reply.
     reply = await socket.recv_json()
+    flowmachine_query_schemas = reply["payload"]["query_schemas"]
+    # Need to mark query_kind as a required field
+    # this is a workaround because the marshmallow-oneOf plugin strips
+    # the query_kind off, which means it can't be required from the marshmallow
+    # side without raising an error
+    for schema, schema_dict in flowmachine_query_schemas.items():
+        try:
+            schema_dict["required"].append("query_kind")
+        except KeyError:
+            pass  # Doesn't have any properties
     schema = {
         "openapi": "3.0.1",
         "info": {
@@ -76,7 +86,7 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
                     "requestBody": {
                         "content": {
                             "application/json": {
-                                "schema": reply["payload"]["query_schemas"][
+                                "schema": flowmachine_query_schemas[
                                     "FlowmachineQuerySchema"
                                 ]
                             }
@@ -217,7 +227,7 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
                 }
             },
         },
-        "components": {"schemas": reply["payload"]["query_schemas"]},
+        "components": {"schemas": flowmachine_query_schemas},
     }
     return schema
 
