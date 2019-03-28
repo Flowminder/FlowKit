@@ -182,7 +182,7 @@ jobs:
             echo Tagging as testdata-$SAFE_TAG and testdata-$CIRCLE_WORKFLOW_ID
             docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-testdata:$SAFE_TAG -t flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID \
             flowdb/testdata
-          background: true
+          background: false
       - run:
           name: Build image with Oracle
           command: |
@@ -198,7 +198,6 @@ jobs:
             echo Tagging as synthetic-data-$SAFE_TAG synthetic-data-$CIRCLE_WORKFLOW_ID
             docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-synthetic-data:$SAFE_TAG -t flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID \
               -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
-          background: true
       - run:
          name: Test that not providing a superuser password causes the container to exit
          command: |
@@ -242,7 +241,7 @@ jobs:
           name: FlowDB-oracle Docker logs
           command: docker logs flowdb_oracle
           when: on_fail
-      - deploy:
+      - run:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowdb:${SAFE_TAG}
