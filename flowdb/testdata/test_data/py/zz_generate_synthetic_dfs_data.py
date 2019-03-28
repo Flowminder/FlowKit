@@ -91,6 +91,7 @@ print("Done.")
 #
 
 print(f"Extracting cells from 'infrastructure.cells' table... ", flush=True, end="")
+
 Base = declarative_base()
 
 
