@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Flowdb now contains a new `dfs` schema and associated tables to process mobile money transactions.
   In addition, `flowdb_testdata` contains sample data for DFS transactions.
 - The docs now include three worked examples of CDR analysis using FlowKit.
+- Flowmachine now supports calculating the total amount of various DFS metrics (transaction amount,
+  commission, fee, discount) per aggregation unit during a given date range. These metrics are also
+  exposed in FlowAPI via the query kind `dfs_metric_total_amount`.
 
 ### Changed
 
