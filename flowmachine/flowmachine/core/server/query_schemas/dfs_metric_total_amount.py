@@ -4,14 +4,14 @@
 
 from marshmallow import Schema, fields, post_load
 
-from flowmachine.features.dfs import DFSTotalAmountForMetric
+from flowmachine.features.dfs import DFSTotalMetricAmount
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import AggregationUnit, DFSMetric
 
-__all__ = ["DFSMetricTotalAmountSchema", "DFSMetricTotalAmountExposed"]
+__all__ = ["DFSTotalMetricAmountSchema", "DFSTotalMetricAmountExposed"]
 
 
-class DFSMetricTotalAmountSchema(Schema):
+class DFSTotalMetricAmountSchema(Schema):
     metric = DFSMetric()
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
@@ -19,10 +19,10 @@ class DFSMetricTotalAmountSchema(Schema):
 
     @post_load
     def make_query_object(self, params):
-        return DFSMetricTotalAmountExposed(**params)
+        return DFSTotalMetricAmountExposed(**params)
 
 
-class DFSMetricTotalAmountExposed(BaseExposedQuery):
+class DFSTotalMetricAmountExposed(BaseExposedQuery):
     def __init__(self, *, metric, start_date, end_date, aggregation_unit):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -40,7 +40,7 @@ class DFSMetricTotalAmountExposed(BaseExposedQuery):
         -------
         Query
         """
-        return DFSTotalAmountForMetric(
+        return DFSTotalMetricAmount(
             metric=self.metric,
             start_date=self.start_date,
             end_date=self.end_date,

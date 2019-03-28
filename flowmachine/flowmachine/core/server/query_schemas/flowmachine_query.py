@@ -19,8 +19,8 @@ from .meaningful_locations import (
 from .geography import GeographySchema, GeographyExposed
 from .location_event_counts import LocationEventCountsSchema, LocationEventCountsExposed
 from .dfs_metric_total_amount import (
-    DFSMetricTotalAmountSchema,
-    DFSMetricTotalAmountExposed,
+    DFSTotalMetricAmountSchema,
+    DFSTotalMetricAmountExposed,
 )
 
 
@@ -36,7 +36,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "meaningful_locations_between_dates_od_matrix": MeaningfulLocationsBetweenDatesODMatrixSchema,
         "geography": GeographySchema,
         "location_event_counts": LocationEventCountsSchema,
-        "dfs_metric_total_amount": DFSMetricTotalAmountSchema,
+        "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
     }
 
     def get_obj_type(self, obj):
@@ -58,7 +58,7 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "geography"
         elif isinstance(obj, LocationEventCountsExposed):
             return "location_event_counts"
-        elif isinstance(obj, DFSMetricTotalAmountExposed):
+        elif isinstance(obj, DFSTotalMetricAmountExposed):
             return "dfs_metric_total_amount"
         else:
             raise ValueError(

@@ -2,6 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from .total_amount_for_metric import DFSTotalAmountForMetric
+from .total_amount_for_metric import DFSTotalMetricAmount
 
-__all__ = ["DFSTotalAmountForMetric"]
+__all__ = ["DFSTotalMetricAmount"]

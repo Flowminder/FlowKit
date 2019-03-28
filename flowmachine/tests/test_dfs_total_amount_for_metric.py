@@ -4,14 +4,14 @@
 
 import textwrap
 
-from flowmachine.features.dfs.total_amount_for_metric import DFSTotalAmountForMetric
+from flowmachine.features.dfs.total_amount_for_metric import DFSTotalMetricAmount
 
 
 def test_column_names():
     """
     Test that column_names property contains expected column names
     """
-    q = DFSTotalAmountForMetric(
+    q = DFSTotalMetricAmount(
         metric="amount",
         start_date="2016-01-01",
         end_date="2016-01-04",
@@ -20,7 +20,7 @@ def test_column_names():
     assert q.column_names == ["date", "pcod", "value"]
     assert q.head(0).columns.tolist() == q.column_names
 
-    q = DFSTotalAmountForMetric(
+    q = DFSTotalMetricAmount(
         metric="fee",
         start_date="2016-01-02",
         end_date="2016-01-05",
@@ -34,7 +34,7 @@ def test_dfs_total_transaction_amount(get_dataframe):
     """
     Total transaction amount returns expected result.
     """
-    q = DFSTotalAmountForMetric(
+    q = DFSTotalMetricAmount(
         metric="amount",
         start_date="2016-01-02",
         end_date="2016-01-04",
@@ -69,7 +69,7 @@ def test_dfs_total_transaction_commission(get_dataframe):
     """
     Total transaction amount returns expected result.
     """
-    q = DFSTotalAmountForMetric(
+    q = DFSTotalMetricAmount(
         metric="commission",
         start_date="2016-01-05",
         end_date="2016-01-06",
@@ -115,7 +115,7 @@ def test_dfs_total_transaction_fee(get_dataframe):
     """
     Total transaction amount returns expected result.
     """
-    q = DFSTotalAmountForMetric(
+    q = DFSTotalMetricAmount(
         metric="commission",
         start_date="2016-01-02",
         end_date="2016-01-02",

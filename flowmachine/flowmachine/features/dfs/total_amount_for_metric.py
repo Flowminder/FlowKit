@@ -5,7 +5,7 @@ from flowmachine.core import Query
 from flowmachine.core.date_range import DateRange
 
 
-class DFSTotalAmountForMetric(Query):
+class DFSTotalMetricAmount(Query):
     """
     Calculates the total amount of a given DFS metric per
     aggregation unit during a given date period.
