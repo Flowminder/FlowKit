@@ -31,7 +31,7 @@ async def run_query():
             jsonify(
                 {"status": "Error", "msg": reply["msg"], "payload": reply["payload"]}
             ),
-            403,
+            400,
         )
     elif reply["status"] == "success":
         assert "query_id" in reply["payload"]
