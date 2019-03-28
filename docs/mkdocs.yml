@@ -16,7 +16,7 @@ plugins:
   - mknotebooks:
       execute: true
       preamble: "notebook_preamble.py"
-      timeout: 300
+      timeout: 600
 
 theme:
   name: "material"
