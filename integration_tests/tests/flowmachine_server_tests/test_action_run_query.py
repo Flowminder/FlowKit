@@ -37,9 +37,19 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
 
         insp = inspect(fm_conn.engine)
         cache_tables = insp.get_table_names(schema="cache")
-        raise AssertionError(
-            f"[DDD] Cache schema is not empty when it should be. Currently existing cache tables: {cache_tables}"
+        contents_cache_cached = fm_conn.engine.execute(
+            "SELECT * FROM cache.cached"
+        ).fetchall()
+        contents_cache_dependencies = fm_conn.engine.execute(
+            "SELECT * FROM cache.dependencies"
+        ).fetchall()
+        msg = (
+            f"[DDD] Cache schema is expected to be empty but isn't.\n"
+            f"Currently existing cache tables: {cache_tables}.\n"
+            f"Contents of 'cache.cached': {contents_cache_cached}.\n"
+            f"Contents of 'cache.dependencies': {contents_cache_dependencies}.\n"
         )
+        raise AssertionError(msg)
 
     assert not redis.exists(expected_query_id)
 
