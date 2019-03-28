@@ -42,7 +42,9 @@ get_ipython().display_formatter.formatters["text/markdown"].for_type(dict, forma
 get_ipython().display_formatter.formatters["text/markdown"].for_type(
     str, lambda x: f">`{x}`"
 )
-
+get_ipython().display_formatter.formatters["text/markdown"].for_type(
+    list, lambda x: f">`{x}`"
+)
 
 # Create an API access token
 
