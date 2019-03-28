@@ -45,13 +45,7 @@ def check_claims(claim_type):
                     return jsonify({"msg": error_msg}), 400
             elif claim_type in ["poll", "get_result"]:
                 # Ask flowmachine server for the query kind of the given query_id
-                try:
-                    query_id = kwargs["query_id"]
-                except KeyError:
-                    return (
-                        jsonify({}),
-                        500,
-                    )  # internal server error; this should not happen
+                query_id = kwargs["query_id"]
 
                 msg = {
                     "request_id": request.request_id,
