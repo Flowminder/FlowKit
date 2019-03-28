@@ -14,8 +14,9 @@ plugins:
           section: flowclient
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
   - mknotebooks:
-      execute: true
+      execute: false
       preamble: "notebook_preamble.py"
+      timeout: 600
 
 theme:
   name: "material"

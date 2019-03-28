@@ -16,7 +16,7 @@ pip install flowclient
 
 ### Example FlowClient usage
 
-Documentation for FlowClient can be found [here](../flowclient/flowclient/). Example usage of FlowClient to run daily location, modal location and flow queries is provided [here](../flowclient/example_usage/).
+Documentation for FlowClient can be found [here](../flowclient/flowclient/). Example usage of FlowClient to run daily location, modal location and flow queries is provided [here](../flowclient/example_usage/), and worked examples are available [here](../worked_examples/).
 
 <a name="flowauth">
 
