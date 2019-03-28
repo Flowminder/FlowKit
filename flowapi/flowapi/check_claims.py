@@ -21,6 +21,8 @@ def check_claims(claim_type):
     -------
     decorator
     """
+    if claim_type not in {"run", "poll", "get_result"}:
+        raise ValueError(f'{claim_type} not one of "run", "poll" or "get_result"')
 
     def decorator(func):
         @wraps(func)
@@ -37,13 +39,14 @@ def check_claims(claim_type):
             )
 
             # TODO: make the claim type an enum!
+            # TODO: Review whether this shouldn't be split up into multiple funcs
             if claim_type == "run":
                 try:
                     query_kind = json_payload["query_kind"]
                 except KeyError:
                     error_msg = "Query kind must be specified when running a query."
                     return jsonify({"msg": error_msg}), 400
-            elif claim_type in ["poll", "get_result"]:
+            else:  # elif claim_type in ["poll", "get_result"]:
                 # Ask flowmachine server for the query kind of the given query_id
                 query_id = kwargs["query_id"]
 
@@ -61,8 +64,6 @@ def check_claims(claim_type):
                     # user to be able to infer which queries do or don't exist.
                     return jsonify({}), 401
                 query_kind = reply["payload"]["query_kind"]
-            else:
-                return jsonify({"msg": f"Unsupported claim type: {claim_type}"})
 
             # Get claims
             claims = get_jwt_claims().get(query_kind, {})
