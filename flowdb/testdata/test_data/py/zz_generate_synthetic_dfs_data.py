@@ -173,10 +173,10 @@ class TransactionsGenerator(CustomGenerator):
         self.cell_from = SelectOne(cells)
         self.cell_to = SelectOne(cells)
 
-        self.amount = Integer(0, 1_000_000)
+        self.amount = Integer(0, 10000)
         self.discount = Integer(0, 100)
-        self.fee = Integer(0, 76000)
-        self.commission = Integer(0, 150_000)
+        self.fee = Integer(0, 500)
+        self.commission = Integer(0, 2000)
 
         self.transtype_id = SelectOne(df_transaction_types["id"])
         self.timestamp = Timestamp(date=date)
