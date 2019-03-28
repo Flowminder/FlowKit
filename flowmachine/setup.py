@@ -71,8 +71,9 @@ setup(
     install_requires=[
         "SQLAlchemy",
         "cachetools",
-        "apispec-oneofschema",
-        "marshmallow-oneofschema",
+        "marshmallow<=3.0.0b19,>=3.0.0b12",
+        "apispec-oneofschema>=2.0.2",
+        "marshmallow-oneofschema>=v2.0.0b2",
         "numpy",
         "networkx",
         "pandas",
