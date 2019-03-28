@@ -100,10 +100,122 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
                                 "application/json": {"schema": {"type": "object"}}
                             },
                         },
-                        "404": {"description": "Unknown query type."},
+                        "500": {"description": "Server error."},
                     },
                 }
-            }
+            },
+            "/poll/{query_id}": {
+                "get": {
+                    "summary": "Get the status of a query",
+                    "operationId": "poll",
+                    "parameters": [
+                        {
+                            "name": "query_id",
+                            "in": "path",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "202": {
+                            "description": "Request accepted.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "status": {
+                                                "type": "string",
+                                                "enum": ["queued", "executing"],
+                                            },
+                                            "msg": {"type": "string"},
+                                        },
+                                    }
+                                }
+                            },
+                        },
+                        "303": {
+                            "description": "Data ready.",
+                            "headers": {
+                                "Location": {
+                                    "description": "URL to download data",
+                                    "schema": {"type": "string", "format": "url"},
+                                }
+                            },
+                        },
+                        "401": {"description": "Unauthorized."},
+                        "403": {
+                            "description": "Bad query.",
+                            "content": {
+                                "application/json": {"schema": {"type": "object"}}
+                            },
+                        },
+                        "500": {"description": "Server error."},
+                        "404": {"description": "Unknown ID"},
+                    },
+                }
+            },
+            "/get/{query_id}": {
+                "get": {
+                    "summary": "Get the output of query",
+                    "operationId": "get",
+                    "parameters": [
+                        {
+                            "name": "query_id",
+                            "in": "path",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Results returning.",
+                            "content": {
+                                "application/json": {"schema": {"type": "object"}}
+                            },
+                        },
+                        "202": {
+                            "description": "Request accepted.",
+                            "content": {
+                                "application/json": {"schema": {"type": "object"}}
+                            },
+                        },
+                        "401": {"description": "Unauthorized."},
+                        "403": {
+                            "description": "Bad query.",
+                            "content": {
+                                "application/json": {"schema": {"type": "object"}}
+                            },
+                        },
+                        "500": {"description": "Server error."},
+                        "404": {"description": "Unknown ID"},
+                    },
+                }
+            },
+            "/geography/{aggregation_unit}": {
+                "get": {
+                    "summary": "Get geojson for an aggregation unit",
+                    "operationId": "get",
+                    "parameters": [
+                        {
+                            "name": "aggregation_unit",
+                            "in": "path",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Downloading.",
+                            "content": {
+                                "application/geo+json": {"schema": {"type": "object"}}
+                            },
+                        },
+                        "401": {"description": "Unauthorized."},
+                        "500": {"description": "Server error."},
+                    },
+                }
+            },
         },
         "components": {"schemas": reply["payload"]["query_schemas"]},
     }
