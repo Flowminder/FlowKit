@@ -54,7 +54,7 @@ def cache_schema_is_empty(fm_conn, check_internal_tables_are_empty=True):
     internal tables 'cache.cached' and 'cache.dependencies' are empty.
     """
     insp = inspect(fm_conn.engine)
-    cache_tables = insp.get_table_names(schema="cache")
+    cache_tables = sorted(insp.get_table_names(schema="cache"))
 
     # Check that there are no cached tables except the flowdb-internal ones
     if cache_tables != ["cache_config", "cached", "dependencies"]:
