@@ -245,52 +245,6 @@ def proj4string(conn, crs=None):
     return proj4_string.strip()
 
 
-def verify_columns_exist_in_all_tables(conn, tables, columns):
-    """
-    Parse a list of tables ensuring that certain columns are present.
-
-    Parameters
-    ----------
-    conn : Connection
-        FlowMachine db connection to use to get the subscriber_tables.
-    tables : str or list of strings, default 'all'
-        Can be a sting of a single table (with the schema) or a list of these.
-        The keyword all is to select all subscriber tables
-    columns : str or list
-        A string or list of strings with the column names that must be present.
-
-    Returns
-    -------
-    None
-        The functions returns None when all columns exist in all tables.
-
-    Raises
-    ------
-    MissingColumnsError
-        If any column does not exist in any of the tables.
-    """
-
-    if isinstance(tables, str) and tables.lower() == "all":
-        tables = [f"events.{t}" for t in conn.subscriber_tables]
-    elif type(tables) is str:
-        tables = [tables]
-    else:
-        tables = tables
-
-    if isinstance(columns, str):
-        columns = [columns]
-
-    tables_lacking_columns = []
-    for t in tables:
-        for c in columns:
-            if c not in flowmachine.core.Table(t).column_names:
-                tables_lacking_columns.append(t)
-                break
-
-    if tables_lacking_columns:
-        raise MissingColumnsError(tables_lacking_columns, columns)
-
-
 def pretty_sql(
     sql,
     compact_lists_margin=0,
