@@ -12,6 +12,10 @@
 ARG CODE_VERSION=latest
 FROM flowminder/flowdb:${CODE_VERSION}
 
+#
+#   Install Python 3.7 (needed to run the data generation scripts)
+#
+
 RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.list \
         && apt-get -y update \
         && apt-get -y install python3.7 python3.7-distutils python3-psutil \
@@ -22,7 +26,9 @@ RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.l
         && rm -rf /var/cache/debconf/*-old \
         && rm -rf /var/lib/apt/lists/*
 
+#
 # Install python dependencies
+#
 COPY --chown=postgres ./synthetic_data/Pipfile* /tmp/
 RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
     && rm /tmp/Pipfile*

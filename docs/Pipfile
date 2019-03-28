@@ -29,8 +29,10 @@ flask-jwt-extended = "*"
 quart = "*"
 python-dotenv = "*"
 structlog = "*"
+folium = "*"
 
 [dev-packages]
+jupyterlab = "*"
 
 [requires]
 python_version = "3.7"

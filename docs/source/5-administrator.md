@@ -87,7 +87,7 @@ Where authentication succeeds, the log message will have a `level` field of `inf
 		"params": {
 			"date": "2016-01-01",
 			"level": "admin3",
-			"daily_location_method": "last",
+			"method": "last",
 			"aggregation_unit": "admin3",
 			"subscriber_subset": "all"
 		},
@@ -209,7 +209,7 @@ FlowMachine usage log:
 	"query_id": "ddc61a04f608dee16fff0655f91c2057",
 	"retrieved_params": {
 		"aggregation_unit": "admin3",
-		"daily_location_method": "last",
+		"method": "last",
 		"date": "2016-01-01",
 		"level": "admin3",
 		"subscriber_subset": "all"
@@ -252,5 +252,3 @@ Because FlowKit employs structured logging, and all log messages are JSON object
 One approach to this is to mount the volumes for `/var/log/flowmachine/` and `/var/log/flowapi/` and expose the log files to Logstash, or a log shipper.
 
 Alternatively, [Filebeat](https://www.elastic.co/docker-kubernetes-container-monitoring) allows you to integrate the logs from stderr directly into your monitoring system.
-
-   
