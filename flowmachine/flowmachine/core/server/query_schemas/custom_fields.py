@@ -98,3 +98,19 @@ class TowerDayOfWeekScores(fields.Dict):
             values=fields.Float(validate=Range(min=-1.0, max=1.0)),
             **kwargs,
         )
+
+
+class DFSMetric(fields.String):
+    """
+    A string representing a DFS metric (for example: "amount", "commission", "fee", "discount")
+    """
+
+    def __init__(self, required=True, validate=None, **kwargs):
+        if validate is not None:
+            raise ValueError(
+                "The DFSMetric field provides its own validation and"
+                "thus does not accept a the 'validate' argument."
+            )
+
+        validate = OneOf(["amount", "commission", "fee", "discount"])
+        super().__init__(required=required, validate=validate, **kwargs)
