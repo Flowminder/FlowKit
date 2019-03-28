@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+
+
+### Changed
+
+
+### Fixed
+
+
+### Removed
+
+
+## [0.5.0]
+### Added
 - The flowmachine python library is now pip installable (`pip install flowmachine`)
 - The flowmachine server now supports additional actions: `get_available_queries`, `get_query_schemas`, `ping`.
 - Flowdb now contains a new `dfs` schema and associated tables to process mobile money transactions.
@@ -25,11 +38,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   Replies now have the form: `{"status": "[success|error]", "msg": "...", "payload": {...}`.
 - The flowmachine server action `get_sql` was renamed to `get_sql_for_query_result`.
 - The parameter `daily_location_method` was renamed to `method`.
-
-### Fixed
-
-
-### Removed
 
 
 ## [0.4.3]
@@ -157,7 +165,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.3...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.0...master
+[0.5.0]: https://github.com/Flowminder/FlowKit/compare/0.4.3...0.5.0
 [0.4.3]: https://github.com/Flowminder/FlowKit/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/Flowminder/FlowKit/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/Flowminder/FlowKit/compare/0.4.0...0.4.1
