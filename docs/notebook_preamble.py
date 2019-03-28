@@ -63,6 +63,18 @@ claims = {
         "permissions": {"run": True, "poll": True, "get_result": True},
         "spatial_aggregation": ["admin3", "admin2", "admin1"],
     },
+    "meaningful_locations_aggregate": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
+    "meaningful_locations_od_matrix": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
+    "geography": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
 }
 
 TOKEN = make_token(
