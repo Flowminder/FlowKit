@@ -1,0 +1,3568 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.0">
+    
+    
+      
+        <title>custom_fields</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/application.982221ab.css">
+      
+        <link rel="stylesheet" href="../../../../../../assets/stylesheets/application-palette.224b79ff.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="">
+      
+    
+    
+      <script src="../../../../../../assets/javascripts/modernizr.01ccdecf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../../../../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../../../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/mermaid@7.1.2/dist/mermaid.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="#095798" data-md-color-accent="#2977b8">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="__github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#flowmachinecoreserverquery_schemascustom_fields" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../../../../.." title="FlowKit" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              FlowKit
+            </span>
+            <span class="md-header-nav__topic">
+              custom_fields
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../../../../.." title="FlowKit" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    FlowKit
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/Flowminder/FlowKit" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    Flowminder/FlowKit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../.." title="Introduction" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../2-install/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../3-analyst/" title="Analyst" class="md-nav__link">
+      Analyst
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../4-developer/" title="Developer" class="md-nav__link">
+      Developer
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../5-administrator/" title="Administrator" class="md-nav__link">
+      Administrator
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../6-license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../dev_environment_setup/" title="Setting up a development environment" class="md-nav__link">
+      Setting up a development environment
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8" type="checkbox" id="nav-8">
+    
+    <label class="md-nav__link" for="nav-8">
+      Flowclient
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-8">
+        Flowclient
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../flowclient/example_usage/" title="Example usage" class="md-nav__link">
+      Example usage
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8-2" type="checkbox" id="nav-8-2">
+    
+    <label class="md-nav__link" for="nav-8-2">
+      Flowclient
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-8-2">
+        Flowclient
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../flowclient/flowclient/" title="flowclient" class="md-nav__link">
+      flowclient
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../flowclient/flowclient/client/" title="client" class="md-nav__link">
+      client
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../flowclient/flowclient/zmq_helpers/" title="zmq_helpers" class="md-nav__link">
+      zmq_helpers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9">
+    
+    <label class="md-nav__link" for="nav-9">
+      Worked examples
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-9">
+        Worked examples
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../worked_examples/" title="Worked examples" class="md-nav__link">
+      Worked examples
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../worked_examples/Flows/" title="Post Crisis Analysis" class="md-nav__link">
+      Post Crisis Analysis
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../worked_examples/commuting-patterns/" title="Commuting Patterns" class="md-nav__link">
+      Commuting Patterns
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../../../worked_examples/mobile-data-usage/" title="Analysis using FlowMachine directly" class="md-nav__link">
+      Analysis using FlowMachine directly
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10" type="checkbox" id="nav-10" checked>
+    
+    <label class="md-nav__link" for="nav-10">
+      Flowmachine
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-10">
+        Flowmachine
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1" type="checkbox" id="nav-10-1" checked>
+    
+    <label class="md-nav__link" for="nav-10-1">
+      Flowmachine
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-10-1">
+        Flowmachine
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../" title="flowmachine" class="md-nav__link">
+      flowmachine
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2" type="checkbox" id="nav-10-1-2" checked>
+    
+    <label class="md-nav__link" for="nav-10-1-2">
+      Core
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-10-1-2">
+        Core
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../" title="core" class="md-nav__link">
+      core
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../cache/" title="cache" class="md-nav__link">
+      cache
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../connection/" title="connection" class="md-nav__link">
+      connection
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../custom_query/" title="custom_query" class="md-nav__link">
+      custom_query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../date_range/" title="date_range" class="md-nav__link">
+      date_range
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../dummy_query/" title="dummy_query" class="md-nav__link">
+      dummy_query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-7" type="checkbox" id="nav-10-1-2-7">
+    
+    <label class="md-nav__link" for="nav-10-1-2-7">
+      Errors
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-2-7">
+        Errors
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../errors/" title="errors" class="md-nav__link">
+      errors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../errors/flowmachine_errors/" title="flowmachine_errors" class="md-nav__link">
+      flowmachine_errors
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../geotable/" title="geotable" class="md-nav__link">
+      geotable
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../init/" title="init" class="md-nav__link">
+      init
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../join/" title="join" class="md-nav__link">
+      join
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../join_to_location/" title="join_to_location" class="md-nav__link">
+      join_to_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-12" type="checkbox" id="nav-10-1-2-12">
+    
+    <label class="md-nav__link" for="nav-10-1-2-12">
+      Mixins
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-2-12">
+        Mixins
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../mixins/" title="mixins" class="md-nav__link">
+      mixins
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../mixins/geodata_mixin/" title="geodata_mixin" class="md-nav__link">
+      geodata_mixin
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../mixins/graph_mixin/" title="graph_mixin" class="md-nav__link">
+      graph_mixin
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../model/" title="model" class="md-nav__link">
+      model
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../model_result/" title="model_result" class="md-nav__link">
+      model_result
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../query/" title="query" class="md-nav__link">
+      query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../query_info_lookup/" title="query_info_lookup" class="md-nav__link">
+      query_info_lookup
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../query_state/" title="query_state" class="md-nav__link">
+      query_state
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../random/" title="random" class="md-nav__link">
+      random
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-19" type="checkbox" id="nav-10-1-2-19" checked>
+    
+    <label class="md-nav__link" for="nav-10-1-2-19">
+      Server
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-2-19">
+        Server
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../" title="server" class="md-nav__link">
+      server
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../action_handlers/" title="action_handlers" class="md-nav__link">
+      action_handlers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../exceptions/" title="exceptions" class="md-nav__link">
+      exceptions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-19-4" type="checkbox" id="nav-10-1-2-19-4" checked>
+    
+    <label class="md-nav__link" for="nav-10-1-2-19-4">
+      Query schemas
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
+      <label class="md-nav__title" for="nav-10-1-2-19-4">
+        Query schemas
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="query_schemas" class="md-nav__link">
+      query_schemas
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../base_exposed_query/" title="base_exposed_query" class="md-nav__link">
+      base_exposed_query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        custom_fields
+      </label>
+    
+    <a href="./" title="custom_fields" class="md-nav__link md-nav__link--active">
+      custom_fields
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#class-aggregationunit" title="Class AggregationUnit" class="md-nav__link">
+    Class AggregationUnit
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-dfsmetric" title="Class DFSMetric" class="md-nav__link">
+    Class DFSMetric
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_1" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_1" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_1" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_1" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_1" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_1" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_1" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-eventtypes" title="Class EventTypes" class="md-nav__link">
+    Class EventTypes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_2" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_2" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_2" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_2" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_2" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_2" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_2" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_2" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-subscribersubset" title="Class SubscriberSubset" class="md-nav__link">
+    Class SubscriberSubset
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_3" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_3" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_3" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_3" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_3" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_3" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_3" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_3" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-towerdayofweekscores" title="Class TowerDayOfWeekScores" class="md-nav__link">
+    Class TowerDayOfWeekScores
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_4" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_4" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_4" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_4" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_4" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_4" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_4" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_4" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-towerhourofdayscores" title="Class TowerHourOfDayScores" class="md-nav__link">
+    Class TowerHourOfDayScores
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_5" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_5" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_5" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_5" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_5" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_5" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_5" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_5" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../daily_location/" title="daily_location" class="md-nav__link">
+      daily_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../dfs_metric_total_amount/" title="dfs_metric_total_amount" class="md-nav__link">
+      dfs_metric_total_amount
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../dummy_query/" title="dummy_query" class="md-nav__link">
+      dummy_query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine_query/" title="flowmachine_query" class="md-nav__link">
+      flowmachine_query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flows/" title="flows" class="md-nav__link">
+      flows
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../geography/" title="geography" class="md-nav__link">
+      geography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../location_event_counts/" title="location_event_counts" class="md-nav__link">
+      location_event_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../meaningful_locations/" title="meaningful_locations" class="md-nav__link">
+      meaningful_locations
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../modal_location/" title="modal_location" class="md-nav__link">
+      modal_location
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../server/" title="server" class="md-nav__link">
+      server
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../utils/" title="utils" class="md-nav__link">
+      utils
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../zmq_helpers/" title="zmq_helpers" class="md-nav__link">
+      zmq_helpers
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../sqlalchemy_utils/" title="sqlalchemy_utils" class="md-nav__link">
+      sqlalchemy_utils
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../subscriber_subsetter/" title="subscriber_subsetter" class="md-nav__link">
+      subscriber_subsetter
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../subset/" title="subset" class="md-nav__link">
+      subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../table/" title="table" class="md-nav__link">
+      table
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../union/" title="union" class="md-nav__link">
+      union
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-3" type="checkbox" id="nav-10-1-3">
+    
+    <label class="md-nav__link" for="nav-10-1-3">
+      Features
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-10-1-3">
+        Features
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/" title="features" class="md-nav__link">
+      features
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-3-2" type="checkbox" id="nav-10-1-3-2">
+    
+    <label class="md-nav__link" for="nav-10-1-3-2">
+      Dfs
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-3-2">
+        Dfs
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/dfs/" title="dfs" class="md-nav__link">
+      dfs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/dfs/total_amount_for_metric/" title="total_amount_for_metric" class="md-nav__link">
+      total_amount_for_metric
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-3-3" type="checkbox" id="nav-10-1-3-3">
+    
+    <label class="md-nav__link" for="nav-10-1-3-3">
+      Location
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-3-3">
+        Location
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/location/" title="location" class="md-nav__link">
+      location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/location/flows/" title="flows" class="md-nav__link">
+      flows
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/location/location_introversion/" title="location_introversion" class="md-nav__link">
+      location_introversion
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/location/total_events/" title="total_events" class="md-nav__link">
+      total_events
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/location/unique_subscriber_counts/" title="unique_subscriber_counts" class="md-nav__link">
+      unique_subscriber_counts
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-3-4" type="checkbox" id="nav-10-1-3-4">
+    
+    <label class="md-nav__link" for="nav-10-1-3-4">
+      Network
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-3-4">
+        Network
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/network/" title="network" class="md-nav__link">
+      network
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/network/total_network_objects/" title="total_network_objects" class="md-nav__link">
+      total_network_objects
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-3-5" type="checkbox" id="nav-10-1-3-5">
+    
+    <label class="md-nav__link" for="nav-10-1-3-5">
+      Raster
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-3-5">
+        Raster
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/raster/" title="raster" class="md-nav__link">
+      raster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/raster/raster_statistics/" title="raster_statistics" class="md-nav__link">
+      raster_statistics
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-3-6" type="checkbox" id="nav-10-1-3-6">
+    
+    <label class="md-nav__link" for="nav-10-1-3-6">
+      Spatial
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-3-6">
+        Spatial
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/spatial/" title="spatial" class="md-nav__link">
+      spatial
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/spatial/cell_mappings/" title="cell_mappings" class="md-nav__link">
+      cell_mappings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/spatial/circles/" title="circles" class="md-nav__link">
+      circles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/spatial/distance_matrix/" title="distance_matrix" class="md-nav__link">
+      distance_matrix
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/spatial/grid/" title="grid" class="md-nav__link">
+      grid
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/spatial/location_area/" title="location_area" class="md-nav__link">
+      location_area
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/spatial/location_cluster/" title="location_cluster" class="md-nav__link">
+      location_cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/spatial/versioned_infrastructure/" title="versioned_infrastructure" class="md-nav__link">
+      versioned_infrastructure
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-3-7" type="checkbox" id="nav-10-1-3-7">
+    
+    <label class="md-nav__link" for="nav-10-1-3-7">
+      Subscriber
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-3-7">
+        Subscriber
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/" title="subscriber" class="md-nav__link">
+      subscriber
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/call_days/" title="call_days" class="md-nav__link">
+      call_days
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/contact_balance/" title="contact_balance" class="md-nav__link">
+      contact_balance
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/contact_reciprocal/" title="contact_reciprocal" class="md-nav__link">
+      contact_reciprocal
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/daily_location/" title="daily_location" class="md-nav__link">
+      daily_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/day_trajectories/" title="day_trajectories" class="md-nav__link">
+      day_trajectories
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/displacement/" title="displacement" class="md-nav__link">
+      displacement
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/distance_counterparts/" title="distance_counterparts" class="md-nav__link">
+      distance_counterparts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/entropy/" title="entropy" class="md-nav__link">
+      entropy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/event_count/" title="event_count" class="md-nav__link">
+      event_count
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/event_type_proportion/" title="event_type_proportion" class="md-nav__link">
+      event_type_proportion
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/first_location/" title="first_location" class="md-nav__link">
+      first_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/interevent_period/" title="interevent_period" class="md-nav__link">
+      interevent_period
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/label_event_score/" title="label_event_score" class="md-nav__link">
+      label_event_score
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/last_location/" title="last_location" class="md-nav__link">
+      last_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/location_visits/" title="location_visits" class="md-nav__link">
+      location_visits
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/mds_volume/" title="mds_volume" class="md-nav__link">
+      mds_volume
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/meaningful_locations/" title="meaningful_locations" class="md-nav__link">
+      meaningful_locations
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/metaclasses/" title="metaclasses" class="md-nav__link">
+      metaclasses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/modal_location/" title="modal_location" class="md-nav__link">
+      modal_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/most_frequent_location/" title="most_frequent_location" class="md-nav__link">
+      most_frequent_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/new_subscribers/" title="new_subscribers" class="md-nav__link">
+      new_subscribers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/nocturnal_events/" title="nocturnal_events" class="md-nav__link">
+      nocturnal_events
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/pareto_interactions/" title="pareto_interactions" class="md-nav__link">
+      pareto_interactions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/per_contact_event_stats/" title="per_contact_event_stats" class="md-nav__link">
+      per_contact_event_stats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/per_location_event_stats/" title="per_location_event_stats" class="md-nav__link">
+      per_location_event_stats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/radius_of_gyration/" title="radius_of_gyration" class="md-nav__link">
+      radius_of_gyration
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/scores/" title="scores" class="md-nav__link">
+      scores
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/subscriber_call_durations/" title="subscriber_call_durations" class="md-nav__link">
+      subscriber_call_durations
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/subscriber_degree/" title="subscriber_degree" class="md-nav__link">
+      subscriber_degree
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/subscriber_location_cluster/" title="subscriber_location_cluster" class="md-nav__link">
+      subscriber_location_cluster
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/subscriber_tacs/" title="subscriber_tacs" class="md-nav__link">
+      subscriber_tacs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/topup_amount/" title="topup_amount" class="md-nav__link">
+      topup_amount
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/topup_balance/" title="topup_balance" class="md-nav__link">
+      topup_balance
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/total_active_periods/" title="total_active_periods" class="md-nav__link">
+      total_active_periods
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/subscriber/unique_location_counts/" title="unique_location_counts" class="md-nav__link">
+      unique_location_counts
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-3-8" type="checkbox" id="nav-10-1-3-8">
+    
+    <label class="md-nav__link" for="nav-10-1-3-8">
+      Utilities
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
+      <label class="md-nav__title" for="nav-10-1-3-8">
+        Utilities
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/utilities/" title="utilities" class="md-nav__link">
+      utilities
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/utilities/event_table_subset/" title="event_table_subset" class="md-nav__link">
+      event_table_subset
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/utilities/events_tables_union/" title="events_tables_union" class="md-nav__link">
+      events_tables_union
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/utilities/feature_collection/" title="feature_collection" class="md-nav__link">
+      feature_collection
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/utilities/group_values/" title="group_values" class="md-nav__link">
+      group_values
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/utilities/multilocation/" title="multilocation" class="md-nav__link">
+      multilocation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/utilities/sets/" title="sets" class="md-nav__link">
+      sets
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/utilities/spatial_aggregates/" title="spatial_aggregates" class="md-nav__link">
+      spatial_aggregates
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../features/utilities/subscriber_locations/" title="subscriber_locations" class="md-nav__link">
+      subscriber_locations
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-4" type="checkbox" id="nav-10-1-4">
+    
+    <label class="md-nav__link" for="nav-10-1-4">
+      Models
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="3">
+      <label class="md-nav__title" for="nav-10-1-4">
+        Models
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../models/" title="models" class="md-nav__link">
+      models
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../models/louvain/" title="louvain" class="md-nav__link">
+      louvain
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../models/pwo/" title="pwo" class="md-nav__link">
+      pwo
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../../utils/" title="utils" class="md-nav__link">
+      utils
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#class-aggregationunit" title="Class AggregationUnit" class="md-nav__link">
+    Class AggregationUnit
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-dfsmetric" title="Class DFSMetric" class="md-nav__link">
+    Class DFSMetric
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_1" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_1" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_1" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_1" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_1" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_1" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_1" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-eventtypes" title="Class EventTypes" class="md-nav__link">
+    Class EventTypes
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_2" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_2" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_2" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_2" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_2" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_2" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_2" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_2" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-subscribersubset" title="Class SubscriberSubset" class="md-nav__link">
+    Class SubscriberSubset
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_3" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_3" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_3" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_3" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_3" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_3" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_3" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_3" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-towerdayofweekscores" title="Class TowerDayOfWeekScores" class="md-nav__link">
+    Class TowerDayOfWeekScores
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_4" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_4" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_4" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_4" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_4" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_4" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_4" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_4" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class-towerhourofdayscores" title="Class TowerHourOfDayScores" class="md-nav__link">
+    Class TowerHourOfDayScores
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes_5" title="Attributes" class="md-nav__link">
+    Attributes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_5" title="Methods" class="md-nav__link">
+    Methods
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deserialize_5" title="deserialize" class="md-nav__link">
+    deserialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail_5" title="fail" class="md-nav__link">
+    fail
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_value_5" title="get_value" class="md-nav__link">
+    get_value
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialize_5" title="serialize" class="md-nav__link">
+    serialize
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context_5" title="context" class="md-nav__link">
+    context
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root_5" title="root" class="md-nav__link">
+    root
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="flowmachinecoreserverquery_schemascustom_fields">flowmachine.core.server.query_schemas.custom_fields<a class="headerlink" href="#flowmachinecoreserverquery_schemascustom_fields" title="Permanent link">&para;</a></h1>
+<h2 id="class-aggregationunit">Class <strong>AggregationUnit</strong><a class="headerlink" href="#class-aggregationunit" title="Permanent link">&para;</a></h2>
+<p><div class="codehilite"><pre><span></span><span class="n">AggregationUnit</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L12">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+<p>A string representing an aggregation unit (for example: "admin0", "admin1", "admin2", ...)</p>
+<h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><a href="#context"><code>context</code></a></p>
+</li>
+<li>
+<p><a href="#root"><code>root</code></a></p>
+</li>
+</ul>
+<h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
+<h4 id="deserialize">deserialize<a class="headerlink" href="#deserialize" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L264">marshmallow/fields.py</a></p>
+<p>Deserialize <code>value</code>.
+:param value: The value to be deserialized. :param str attr: The attribute/key in <code>data</code> to be deserialized. :param dict data: The raw input data passed to the <code>Schema.load</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: If an invalid value is passed or if a required value     is missing.</p>
+<h4 id="fail">fail<a class="headerlink" href="#fail" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L219">marshmallow/fields.py</a></p>
+<p>A helper method that simply raises a <code>ValidationError</code>.</p>
+<h4 id="get_value">get_value<a class="headerlink" href="#get_value" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=&lt;</span><span class="n">marshmallow</span><span class="o">.</span><span class="n">missing</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L183">marshmallow/fields.py</a></p>
+<p>Return the value for a given key from an object.
+:param object obj: The object to get the value from :param str attr: The attribute/key in <code>obj</code> to get the value from. :param callable accessor: A callable used to retrieve the value of <code>attr</code> from     the object <code>obj</code>. Defaults to <code>marshmallow.utils.get_value</code>.</p>
+<h4 id="serialize">serialize<a class="headerlink" href="#serialize" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L243">marshmallow/fields.py</a></p>
+<p>Pulls the value for the given key from the object, applies the field's formatting and returns the result.
+:param str attr: The attribute or key to get from the object. :param str obj: The object to pull the key from. :param callable accessor: Function used to pull values from <code>obj</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: In case of formatting problem</p>
+<h4 id="context">context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">context</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L339">marshmallow/fields.py</a></p>
+<p>The context dictionary for the parent :class:<code>Schema</code>.</p>
+<h4 id="root">root<a class="headerlink" href="#root" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">root</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L344">marshmallow/fields.py</a></p>
+<p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a <code>List</code>. Return <code>None</code> for unbound fields.</p>
+<h2 id="class-dfsmetric">Class <strong>DFSMetric</strong><a class="headerlink" href="#class-dfsmetric" title="Permanent link">&para;</a></h2>
+<p><div class="codehilite"><pre><span></span><span class="n">DFSMetric</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L103">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+<p>A string representing a DFS metric (for example: "amount", "commission", "fee", "discount")</p>
+<h3 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><a href="#context"><code>context</code></a></p>
+</li>
+<li>
+<p><a href="#root"><code>root</code></a></p>
+</li>
+</ul>
+<h3 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h3>
+<h4 id="deserialize_1">deserialize<a class="headerlink" href="#deserialize_1" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L264">marshmallow/fields.py</a></p>
+<p>Deserialize <code>value</code>.
+:param value: The value to be deserialized. :param str attr: The attribute/key in <code>data</code> to be deserialized. :param dict data: The raw input data passed to the <code>Schema.load</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: If an invalid value is passed or if a required value     is missing.</p>
+<h4 id="fail_1">fail<a class="headerlink" href="#fail_1" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L219">marshmallow/fields.py</a></p>
+<p>A helper method that simply raises a <code>ValidationError</code>.</p>
+<h4 id="get_value_1">get_value<a class="headerlink" href="#get_value_1" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=&lt;</span><span class="n">marshmallow</span><span class="o">.</span><span class="n">missing</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L183">marshmallow/fields.py</a></p>
+<p>Return the value for a given key from an object.
+:param object obj: The object to get the value from :param str attr: The attribute/key in <code>obj</code> to get the value from. :param callable accessor: A callable used to retrieve the value of <code>attr</code> from     the object <code>obj</code>. Defaults to <code>marshmallow.utils.get_value</code>.</p>
+<h4 id="serialize_1">serialize<a class="headerlink" href="#serialize_1" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L243">marshmallow/fields.py</a></p>
+<p>Pulls the value for the given key from the object, applies the field's formatting and returns the result.
+:param str attr: The attribute or key to get from the object. :param str obj: The object to pull the key from. :param callable accessor: Function used to pull values from <code>obj</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: In case of formatting problem</p>
+<h4 id="context_1">context<a class="headerlink" href="#context_1" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">context</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L339">marshmallow/fields.py</a></p>
+<p>The context dictionary for the parent :class:<code>Schema</code>.</p>
+<h4 id="root_1">root<a class="headerlink" href="#root_1" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">root</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L344">marshmallow/fields.py</a></p>
+<p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a <code>List</code>. Return <code>None</code> for unbound fields.</p>
+<h2 id="class-eventtypes">Class <strong>EventTypes</strong><a class="headerlink" href="#class-eventtypes" title="Permanent link">&para;</a></h2>
+<p><div class="codehilite"><pre><span></span><span class="n">EventTypes</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L28">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+<p>A string representing an event type, for example "calls", "sms", "mds", "topups".</p>
+<h3 id="attributes_2">Attributes<a class="headerlink" href="#attributes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><a href="#context"><code>context</code></a></p>
+</li>
+<li>
+<p><a href="#root"><code>root</code></a></p>
+</li>
+</ul>
+<h3 id="methods_2">Methods<a class="headerlink" href="#methods_2" title="Permanent link">&para;</a></h3>
+<h4 id="deserialize_2">deserialize<a class="headerlink" href="#deserialize_2" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L264">marshmallow/fields.py</a></p>
+<p>Deserialize <code>value</code>.
+:param value: The value to be deserialized. :param str attr: The attribute/key in <code>data</code> to be deserialized. :param dict data: The raw input data passed to the <code>Schema.load</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: If an invalid value is passed or if a required value     is missing.</p>
+<h4 id="fail_2">fail<a class="headerlink" href="#fail_2" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L219">marshmallow/fields.py</a></p>
+<p>A helper method that simply raises a <code>ValidationError</code>.</p>
+<h4 id="get_value_2">get_value<a class="headerlink" href="#get_value_2" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L571">marshmallow/fields.py</a></p>
+<p>Return the value for a given key from an object.</p>
+<h4 id="serialize_2">serialize<a class="headerlink" href="#serialize_2" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L243">marshmallow/fields.py</a></p>
+<p>Pulls the value for the given key from the object, applies the field's formatting and returns the result.
+:param str attr: The attribute or key to get from the object. :param str obj: The object to pull the key from. :param callable accessor: Function used to pull values from <code>obj</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: In case of formatting problem</p>
+<h4 id="context_2">context<a class="headerlink" href="#context_2" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">context</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L339">marshmallow/fields.py</a></p>
+<p>The context dictionary for the parent :class:<code>Schema</code>.</p>
+<h4 id="root_2">root<a class="headerlink" href="#root_2" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">root</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L344">marshmallow/fields.py</a></p>
+<p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a <code>List</code>. Return <code>None</code> for unbound fields.</p>
+<h2 id="class-subscribersubset">Class <strong>SubscriberSubset</strong><a class="headerlink" href="#class-subscribersubset" title="Permanent link">&para;</a></h2>
+<p><div class="codehilite"><pre><span></span><span class="n">SubscriberSubset</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L49">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+<p>Represents a subscriber subset. This can either be a string representing a query_id or <code>None</code>, meaning "all subscribers".</p>
+<h3 id="attributes_3">Attributes<a class="headerlink" href="#attributes_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><a href="#context"><code>context</code></a></p>
+</li>
+<li>
+<p><a href="#root"><code>root</code></a></p>
+</li>
+</ul>
+<h3 id="methods_3">Methods<a class="headerlink" href="#methods_3" title="Permanent link">&para;</a></h3>
+<h4 id="deserialize_3">deserialize<a class="headerlink" href="#deserialize_3" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L264">marshmallow/fields.py</a></p>
+<p>Deserialize <code>value</code>.
+:param value: The value to be deserialized. :param str attr: The attribute/key in <code>data</code> to be deserialized. :param dict data: The raw input data passed to the <code>Schema.load</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: If an invalid value is passed or if a required value     is missing.</p>
+<h4 id="fail_3">fail<a class="headerlink" href="#fail_3" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L219">marshmallow/fields.py</a></p>
+<p>A helper method that simply raises a <code>ValidationError</code>.</p>
+<h4 id="get_value_3">get_value<a class="headerlink" href="#get_value_3" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=&lt;</span><span class="n">marshmallow</span><span class="o">.</span><span class="n">missing</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L183">marshmallow/fields.py</a></p>
+<p>Return the value for a given key from an object.
+:param object obj: The object to get the value from :param str attr: The attribute/key in <code>obj</code> to get the value from. :param callable accessor: A callable used to retrieve the value of <code>attr</code> from     the object <code>obj</code>. Defaults to <code>marshmallow.utils.get_value</code>.</p>
+<h4 id="serialize_3">serialize<a class="headerlink" href="#serialize_3" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L243">marshmallow/fields.py</a></p>
+<p>Pulls the value for the given key from the object, applies the field's formatting and returns the result.
+:param str attr: The attribute or key to get from the object. :param str obj: The object to pull the key from. :param callable accessor: Function used to pull values from <code>obj</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: In case of formatting problem</p>
+<h4 id="context_3">context<a class="headerlink" href="#context_3" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">context</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L339">marshmallow/fields.py</a></p>
+<p>The context dictionary for the parent :class:<code>Schema</code>.</p>
+<h4 id="root_3">root<a class="headerlink" href="#root_3" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">root</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L344">marshmallow/fields.py</a></p>
+<p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a <code>List</code>. Return <code>None</code> for unbound fields.</p>
+<h2 id="class-towerdayofweekscores">Class <strong>TowerDayOfWeekScores</strong><a class="headerlink" href="#class-towerdayofweekscores" title="Permanent link">&para;</a></h2>
+<p><div class="codehilite"><pre><span></span><span class="n">TowerDayOfWeekScores</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L80">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+<p>A dictionary mapping days of the week ("monday", "tuesday" etc.) to numerical scores in the range [-1.0, +1.0].</p>
+<h3 id="attributes_4">Attributes<a class="headerlink" href="#attributes_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><a href="#context"><code>context</code></a></p>
+</li>
+<li>
+<p><a href="#root"><code>root</code></a></p>
+</li>
+</ul>
+<h3 id="methods_4">Methods<a class="headerlink" href="#methods_4" title="Permanent link">&para;</a></h3>
+<h4 id="deserialize_4">deserialize<a class="headerlink" href="#deserialize_4" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L264">marshmallow/fields.py</a></p>
+<p>Deserialize <code>value</code>.
+:param value: The value to be deserialized. :param str attr: The attribute/key in <code>data</code> to be deserialized. :param dict data: The raw input data passed to the <code>Schema.load</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: If an invalid value is passed or if a required value     is missing.</p>
+<h4 id="fail_4">fail<a class="headerlink" href="#fail_4" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L219">marshmallow/fields.py</a></p>
+<p>A helper method that simply raises a <code>ValidationError</code>.</p>
+<h4 id="get_value_4">get_value<a class="headerlink" href="#get_value_4" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=&lt;</span><span class="n">marshmallow</span><span class="o">.</span><span class="n">missing</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L183">marshmallow/fields.py</a></p>
+<p>Return the value for a given key from an object.
+:param object obj: The object to get the value from :param str attr: The attribute/key in <code>obj</code> to get the value from. :param callable accessor: A callable used to retrieve the value of <code>attr</code> from     the object <code>obj</code>. Defaults to <code>marshmallow.utils.get_value</code>.</p>
+<h4 id="serialize_4">serialize<a class="headerlink" href="#serialize_4" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L243">marshmallow/fields.py</a></p>
+<p>Pulls the value for the given key from the object, applies the field's formatting and returns the result.
+:param str attr: The attribute or key to get from the object. :param str obj: The object to pull the key from. :param callable accessor: Function used to pull values from <code>obj</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: In case of formatting problem</p>
+<h4 id="context_4">context<a class="headerlink" href="#context_4" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">context</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L339">marshmallow/fields.py</a></p>
+<p>The context dictionary for the parent :class:<code>Schema</code>.</p>
+<h4 id="root_4">root<a class="headerlink" href="#root_4" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">root</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L344">marshmallow/fields.py</a></p>
+<p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a <code>List</code>. Return <code>None</code> for unbound fields.</p>
+<h2 id="class-towerhourofdayscores">Class <strong>TowerHourOfDayScores</strong><a class="headerlink" href="#class-towerhourofdayscores" title="Permanent link">&para;</a></h2>
+<p><div class="codehilite"><pre><span></span><span class="n">TowerHourOfDayScores</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/custom_fields.py#L67">flowmachine/core/server/query_schemas/custom_fields.py</a></p>
+<p>A list of length 24 containing numerical scores in the range [-1.0, +1.0],</p>
+<h3 id="attributes_5">Attributes<a class="headerlink" href="#attributes_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><a href="#context"><code>context</code></a></p>
+</li>
+<li>
+<p><a href="#root"><code>root</code></a></p>
+</li>
+</ul>
+<h3 id="methods_5">Methods<a class="headerlink" href="#methods_5" title="Permanent link">&para;</a></h3>
+<h4 id="deserialize_5">deserialize<a class="headerlink" href="#deserialize_5" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L264">marshmallow/fields.py</a></p>
+<p>Deserialize <code>value</code>.
+:param value: The value to be deserialized. :param str attr: The attribute/key in <code>data</code> to be deserialized. :param dict data: The raw input data passed to the <code>Schema.load</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: If an invalid value is passed or if a required value     is missing.</p>
+<h4 id="fail_5">fail<a class="headerlink" href="#fail_5" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L219">marshmallow/fields.py</a></p>
+<p>A helper method that simply raises a <code>ValidationError</code>.</p>
+<h4 id="get_value_5">get_value<a class="headerlink" href="#get_value_5" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L571">marshmallow/fields.py</a></p>
+<p>Return the value for a given key from an object.</p>
+<h4 id="serialize_5">serialize<a class="headerlink" href="#serialize_5" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">accessor</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L243">marshmallow/fields.py</a></p>
+<p>Pulls the value for the given key from the object, applies the field's formatting and returns the result.
+:param str attr: The attribute or key to get from the object. :param str obj: The object to pull the key from. :param callable accessor: Function used to pull values from <code>obj</code>. :param dict kwargs': Field-specific keyword arguments. :raise ValidationError: In case of formatting problem</p>
+<h4 id="context_5">context<a class="headerlink" href="#context_5" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">context</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L339">marshmallow/fields.py</a></p>
+<p>The context dictionary for the parent :class:<code>Schema</code>.</p>
+<h4 id="root_5">root<a class="headerlink" href="#root_5" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">root</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/marshmallow/fields.py#L344">marshmallow/fields.py</a></p>
+<p>Reference to the <code>Schema</code> that this field belongs to even if it is buried in a <code>List</code>. Return <code>None</code> for unbound fields.</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../base_exposed_query/" title="base_exposed_query" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                base_exposed_query
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../daily_location/" title="daily_location" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                daily_location
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../../../../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/Flowminder" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://twitter.com/Flowminder" class="md-footer-social__link fa fa-twitter"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../../../../assets/javascripts/application.2ba8dec4.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../../../../../.."}})</script>
+      
+        <script src="https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>
