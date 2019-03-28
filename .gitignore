@@ -117,3 +117,4 @@ venv.bak/
 tags
 flowauth/test_results/pytest/results.xml
 /integration_tests/test_results/
+docs/source/_static/openapi-redoc.json
