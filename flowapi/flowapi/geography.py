@@ -27,38 +27,34 @@ async def get_geography(aggregation_unit):
     if reply["status"] == "error":
         return jsonify({"status": "Error", "msg": "Internal server error"}), 500
 
-    query_state = reply["payload"]["query_state"]
-    if query_state == "completed":
-        results_streamer = stream_with_context(stream_result_as_json)(
-            reply["payload"]["sql"],
-            result_name="features",
-            additional_elements={"type": "FeatureCollection"},
-        )
-        mimetype = "application/geo+json"
+    try:
+        query_state = reply["payload"]["query_state"]
+        if query_state == "completed":
+            results_streamer = stream_with_context(stream_result_as_json)(
+                reply["payload"]["sql"],
+                result_name="features",
+                additional_elements={"type": "FeatureCollection"},
+            )
+            mimetype = "application/geo+json"
 
-        current_app.flowapi_logger.debug(
-            f"Returning {aggregation_unit} geography data.",
-            request_id=request.request_id,
-        )
-        return (
-            results_streamer,
-            200,
-            {
-                "Transfer-Encoding": "chunked",
-                "Content-Disposition": f"attachment;filename={aggregation_unit}.geojson",
-                "Content-type": mimetype,
-            },
-        )
-    # TODO: Reinstate correct status codes for geographies
-    #
-    # elif query_state == "error":
-    #     return jsonify({"status": "Error", "msg": reply["msg"]}), 403
-    # elif query_state == "awol":
-    #     return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
-    else:
-        return (
-            jsonify(
-                {"status": "Error", "msg": f"Unexpected query state: {query_state}"}
-            ),
-            500,
-        )
+            current_app.flowapi_logger.debug(
+                f"Returning {aggregation_unit} geography data.",
+                request_id=request.request_id,
+            )
+            return (
+                results_streamer,
+                200,
+                {
+                    "Transfer-Encoding": "chunked",
+                    "Content-Disposition": f"attachment;filename={aggregation_unit}.geojson",
+                    "Content-type": mimetype,
+                },
+            )
+        # TODO: Reinstate correct status codes for geographies
+        #
+        # elif query_state == "error":
+        #     return jsonify({"status": "Error", "msg": reply["msg"]}), 403
+        # elif query_state == "awol":
+        #     return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
+    except KeyError:
+        return (jsonify({"status": "Error", "msg": f"No query state."}), 500)

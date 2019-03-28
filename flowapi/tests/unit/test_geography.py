@@ -100,7 +100,7 @@ async def test_geography_error_for_missing_status(
             }
         }
     )
-    dummy_zmq_server.side_effect = ({},)
+    dummy_zmq_server.side_effect = ({"status": "NOT_AN_ERROR"},)
     response = await client.get(
         f"/api/0/geography/DUMMY_AGGREGATION",
         headers={"Authorization": f"Bearer {token}"},
