@@ -21,6 +21,8 @@ def check_claims(claim_type):
     -------
     decorator
     """
+    if claim_type not in {"run", "poll", "get_result"}:
+        raise ValueError(f'{claim_type} not one of "run", "poll" or "get_result"')
 
     def decorator(func):
         @wraps(func)
@@ -36,34 +38,32 @@ def check_claims(claim_type):
                 json_payload=json_payload,
             )
 
-            # Get query kind
-            query_kind = (
-                "NA" if json_payload is None else json_payload.get("query_kind", "NA")
-            )
-            try:  # Get the query kind from the backend
-                request.socket.send_json(
-                    {
-                        "request_id": request.request_id,
-                        "action": "get_query_kind",
-                        "query_id": kwargs["query_id"],
-                    }
-                )
-                message = await request.socket.recv_json()
-                if "query_kind" in message:
-                    query_kind = message["query_kind"]
-                else:
-                    return jsonify({}), 404
-            except KeyError:
-                if query_kind == "NA":
-                    return (
-                        jsonify(
-                            {
-                                "status": "Error",
-                                "msg": "Expected 'query_kind' parameter.",
-                            }
-                        ),
-                        400,
-                    )
+            # TODO: make the claim type an enum!
+            # TODO: Review whether this shouldn't be split up into multiple funcs
+            if claim_type == "run":
+                try:
+                    query_kind = json_payload["query_kind"]
+                except KeyError:
+                    error_msg = "Query kind must be specified when running a query."
+                    return jsonify({"msg": error_msg}), 400
+            else:  # elif claim_type in ["poll", "get_result"]:
+                # Ask flowmachine server for the query kind of the given query_id
+                query_id = kwargs["query_id"]
+
+                msg = {
+                    "request_id": request.request_id,
+                    "action": "get_query_kind",
+                    "params": {"query_id": query_id},
+                }
+                request.socket.send_json(msg)
+                reply = await request.socket.recv_json()
+                if reply["status"] == "error":
+                    # TODO: ensure/verify that the error means the query doesn't exist
+                    #
+                    # We return 401 here instead of 404 because we don't want an unauthorised
+                    # user to be able to infer which queries do or don't exist.
+                    return jsonify({}), 401
+                query_kind = reply["payload"]["query_kind"]
 
             # Get claims
             claims = get_jwt_claims().get(query_kind, {})
@@ -102,21 +102,25 @@ def check_claims(claim_type):
                 request.socket.send_json(
                     {
                         "request_id": request.request_id,
-                        "action": "get_params",
-                        "query_id": kwargs["query_id"],
+                        "action": "get_query_params",
+                        "params": {"query_id": kwargs["query_id"]},
                     }
                 )
                 message = await request.socket.recv_json()
-                if "params" not in message:
+                if message["status"] == "error":
+                    # TODO: check that the error is due to an unknown query and not due to a different error.
                     return jsonify({}), 404
+
                 try:
-                    aggregation_unit = message["params"]["aggregation_unit"]
+                    aggregation_unit = message["payload"]["query_params"][
+                        "aggregation_unit"
+                    ]
                 except KeyError:
                     return (
                         jsonify(
                             {
                                 "status": "Error",
-                                "msg": "Missing parameter: 'aggregation_unit'",
+                                "msg": "Missing query parameter: 'aggregation_unit'",
                             }
                         ),
                         500,

@@ -1,12 +1,13 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import json
 import os
 
 import pytest
 from asynctest import return_once
-from .utils import query_kinds
+from .utils import query_kinds, exemplar_query_params
 
 
 @pytest.mark.asyncio
@@ -45,13 +46,16 @@ async def test_granular_run_access(
     token = access_token_builder({query_kind: {"permissions": {"run": True}}})
     expected_responses = dict.fromkeys(query_kinds, 401)
     expected_responses[query_kind] = 202
-    dummy_zmq_server.return_value = {"id": 10}
+    dummy_zmq_server.return_value = {
+        "status": "success",
+        "msg": "",
+        "payload": {"query_id": "DUMMY_QUERY_ID"},
+    }
     responses = {}
     for q_kind in query_kinds:
+        q_params = exemplar_query_params[q_kind]
         response = await client.post(
-            f"/api/0/run",
-            headers={"Authorization": f"Bearer {token}"},
-            json={"query_kind": q_kind, "params": {}},
+            f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=q_params
         )
         responses[q_kind] = response.status_code
     assert expected_responses == responses
@@ -74,10 +78,27 @@ async def test_granular_poll_access(
     responses = {}
     for q_kind in query_kinds:
         dummy_zmq_server.side_effect = return_once(
-            {"id": 10, "query_kind": q_kind}, then={"id": 10, "status": "completed"}
+            {
+                "status": "success",
+                "msg": "",
+                "payload": {
+                    "query_id": "DUMMY_QUERY_ID",
+                    "query_kind": q_kind,
+                    "query_state": "executing",
+                },
+            },
+            then={
+                "status": "success",
+                "msg": "",
+                "payload": {
+                    "query_id": "DUMMY_QUERY_ID",
+                    "query_kind": q_kind,
+                    "query_state": "completed",
+                },
+            },
         )
         response = await client.get(
-            f"/api/0/poll/0",
+            f"/api/0/poll/DUMMY_QUERY_ID",
             headers={"Authorization": f"Bearer {token}"},
             json={"query_kind": q_kind},
         )
@@ -108,14 +129,29 @@ async def test_granular_json_access(
     responses = {}
     for q_kind in query_kinds:
         dummy_zmq_server.side_effect = (
-            {"id": 10, "query_kind": q_kind},
-            {"id": 10, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-            {"sql": "SELECT 1;", "status": "completed"},
+            {
+                "status": "success",
+                "msg": "",
+                "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": q_kind},
+            },
+            {
+                "status": "success",
+                "msg": "",
+                "payload": {
+                    "query_id": "DUMMY_QUERY_ID",
+                    "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
+                },
+            },
+            {
+                "status": "success",
+                "msg": "",
+                "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
+            },
         )
         response = await client.get(
-            f"/api/0/get/0",
+            f"/api/0/get/DUMMY_QUERY_ID",
             headers={"Authorization": f"Bearer {token}"},
-            json={"query_kind": q_kind},
+            json={},
         )
         responses[q_kind] = response.status_code
     assert expected_responses == responses
@@ -139,12 +175,27 @@ async def test_no_result_access_without_both_claims(
     client, db, log_dir, app = app
     token = access_token_builder({"DUMMY_QUERY_KIND": claims})
     dummy_zmq_server.side_effect = (
-        {"id": 10, "query_kind": "DUMMY_QUERY_KIND"},
-        {"id": 10, "params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-        {"query": "SELECT 1;", "status": "completed"},
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query"},
+        },
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {
+                "query_id": "DUMMY_QUERY_ID",
+                "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
+            },
+        },
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
+        },
     )
     response = await client.get(
-        f"/api/0/get/0",
+        f"/api/0/get/DUMMY_QUERY_ID",
         headers={"Authorization": f"Bearer {token}"},
         json={"query_kind": "DUMMY_QUERY_KIND"},
     )
@@ -153,7 +204,9 @@ async def test_no_result_access_without_both_claims(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("query_kind", query_kinds)
-@pytest.mark.parametrize("route", ["/api/0/poll/0", "/api/0/get/0"])
+@pytest.mark.parametrize(
+    "route", ["/api/0/poll/DUMMY_QUERY_ID", "/api/0/get/DUMMY_QUERY_ID"]
+)
 async def test_access_logs_gets(
     query_kind, route, app, access_token_builder, dummy_zmq_server
 ):
@@ -163,7 +216,11 @@ async def test_access_logs_gets(
     """
     client, db, log_dir, app = app
     token = access_token_builder({query_kind: {"permissions": {}}})
-    dummy_zmq_server.return_value = {"id": 0, "query_kind": "modal_location"}
+    dummy_zmq_server.return_value = {
+        "status": "success",
+        "msg": "",
+        "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query_kind"},
+    }
     response = await client.get(
         route,
         headers={"Authorization": f"Bearer {token}"},
@@ -173,7 +230,7 @@ async def test_access_logs_gets(
     with open(os.path.join(log_dir, "query-runs.log")) as log_file:
         log_lines = log_file.readlines()
     assert 2 == len(log_lines)
-    assert "MODAL_LOCATION" == json.loads(log_lines[0])["query_kind"]
+    assert "DUMMY_QUERY_KIND" == json.loads(log_lines[0])["query_kind"]
     assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" in log_lines[1]
     assert "test" in log_lines[0]
     assert "test" in log_lines[1]
@@ -184,9 +241,7 @@ async def test_access_logs_gets(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("query_kind", query_kinds)
-async def test_access_logs_post(
-    query_kind, app, access_token_builder, dummy_zmq_server
-):
+async def test_access_logs_post(query_kind, app, access_token_builder):
     """
     Test that access logs are written for attempted unauthorized access to 'run' route.
 

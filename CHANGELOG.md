@@ -5,6 +5,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- The flowmachine python library is now pip installable (`pip install flowmachine`)
+- The flowmachine server now supports additional actions: `get_available_queries`, `get_query_schemas`, `ping`.
+- Flowdb now contains a new `dfs` schema and associated tables to process mobile money transactions.
+  In addition, `flowdb_testdata` contains sample data for DFS transactions.
+
+### Changed
+
+- The JSON structure when setting queries running via flowapi or the flowmachine server has changed:
+  query parameters are now "inlined" alongside the `query_kind` key, rather than nested using a separate `params` key.
+  Example:
+   - previously: `{"query_kind": "daily_location", "params": {"date": "2016-01-01", "aggregation_unit": "admin3", "method": "last"}}`,
+   - now: `{"query_kind": "daily_location", "date": "2016-01-01", "aggregation_unit": "admin3", "method": "last"}`
+- The JSON structure of zmq reply messages from the flowmachine server was changed.
+  Replies now have the form: `{"status": "[success|error]", "msg": "...", "payload": {...}`.
+- The flowmachine server action `get_sql` was renamed to `get_sql_for_query_result`.
+- The parameter `daily_location_method` was renamed to `method`.
+
+### Fixed
+
+
+### Removed
+
+
+## [0.4.3]
+### Added
 - When running integration tests locally, normally pytest will automatically spin up servers for flowmachine and flowapi as part of the test setup.
   This can now be disabled by setting the environment variable `FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=TRUE`.
 - The integration tests now use the environment variables `FLOWAPI_HOST`, `FLOWAPI_PORT` to determine how to connect to the flowapi server.
@@ -25,6 +50,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Server no longer loses track of queries under heavy load
+- `TopUpBalances` no longer always uses entire topups table
 
 ### Removed
 
@@ -127,7 +153,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.2...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.3...master
+[0.4.3]: https://github.com/Flowminder/FlowKit/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/Flowminder/FlowKit/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/Flowminder/FlowKit/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/Flowminder/FlowKit/compare/0.3.0...0.4.0

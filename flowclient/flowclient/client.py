@@ -166,16 +166,20 @@ class Connection:
         elif response.status_code == 401:
             try:
                 error = response.json()["msg"]
-            except (ValueError, KeyError):
+            except ValueError:
                 error = "Unknown access denied error"
             raise FlowclientConnectionError(error)
         else:
             try:
                 error = response.json()["msg"]
-            except (ValueError, KeyError):
-                error = "Unknown error"
+                payload_info = f" Payload: {response.json()['payload']}"
+            except ValueError:
+                # Happens if the response body does not contain valid JSON
+                # (see http://docs.python-requests.org/en/master/api/#requests.Response.json)
+                error = f"the response did not contain valid JSON"
+                payload_info = ""
             raise FlowclientConnectionError(
-                f"Something went wrong: {error}. API returned with status code: {response.status_code}"
+                f"Something went wrong: {error}. API returned with status code: {response.status_code}.{payload_info}"
             )
 
     def __repr__(self) -> str:
@@ -393,7 +397,7 @@ def run_query(connection: Connection, query: dict) -> str:
     if r.status_code == 202:
         query_id = r.headers["Location"].split("/").pop()
         logger.info(
-            f"Accepted {query} at {connection.url}/api/{connection.api_version}with id {query_id}"
+            f"Accepted {query} at {connection.url}/api/{connection.api_version} with id {query_id}"
         )
         return query_id
     else:
@@ -411,8 +415,8 @@ def location_event_counts(
     end_date: str,
     aggregation_unit: str,
     count_interval: str,
-    direction: str = "all",
-    event_types: Union[str, List[str]] = "all",
+    direction: str = "both",
+    event_types: Union[None, List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -428,9 +432,9 @@ def location_event_counts(
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     count_interval : {"day", "hour", "minute"}
-    direction : {"in", "out", "all"}, default "all"
+    direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts
-    event_types : {"all", "calls", "sms", "mds"}, default "all"
+    event_types : None or list of {"calls", "sms", "mds"}, default None
         Optionally, include only a subset of events.
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
@@ -442,26 +446,22 @@ def location_event_counts(
     dict
         Dict which functions as the query specification
     """
-    if subscriber_subset is None:
-        subscriber_subset = "all"
     return {
         "query_kind": "location_event_counts",
-        "params": {
-            "start_date": start_date,
-            "end_date": end_date,
-            "interval": count_interval,
-            "aggregation_unit": aggregation_unit,
-            "direction": direction,
-            "event_types": event_types,
-            "subscriber_subset": subscriber_subset,
-        },
+        "start_date": start_date,
+        "end_date": end_date,
+        "interval": count_interval,
+        "aggregation_unit": aggregation_unit,
+        "direction": direction,
+        "event_types": event_types,
+        "subscriber_subset": subscriber_subset,
     }
 
 
 def daily_location(
     date: str,
     aggregation_unit: str,
-    daily_location_method: str,
+    method: str,
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -473,7 +473,7 @@ def daily_location(
         ISO format date to get the daily location for, e.g. "2016-01-01"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
-    daily_location_method : str
+    method : str
         Method to use for daily location, one of 'last' or 'most-common'
     subscriber_subset : dict or None
         Subset of subscribers to retrieve daily locations for. Must be None
@@ -486,117 +486,12 @@ def daily_location(
         Dict which functions as the query specification
 
     """
-    if subscriber_subset is None:
-        subscriber_subset = "all"
     return {
         "query_kind": "daily_location",
-        "params": {
-            "date": date,
-            "aggregation_unit": aggregation_unit,
-            "daily_location_method": daily_location_method,
-            "subscriber_subset": subscriber_subset,
-        },
-    }
-
-
-def _meaningful_locations(
-    start_date: str,
-    stop_date: str,
-    label: str,
-    labels: Dict[str, Dict[str, dict]],
-    tower_day_of_week_scores: Dict[str, float],
-    tower_hour_of_day_scores: List[float],
-    tower_cluster_radius: float = 1.0,
-    tower_cluster_call_threshold: int = 0,
-    subscriber_subset: Union[dict, None] = None,
-):
-    """
-    Helper function which constructs a spec for a meaningful locations query
-    to be aggregated.
-    
-    Parameters
-    ----------
-    start_date : str
-        ISO format date that begins the period, e.g. "2016-01-01"
-    stop_date : str
-        ISO format date that ends the period, e.g. "2016-01-07"
-    label : str
-        One of the labels specified in `labels`, or 'unknown'. Locations with this
-        label are returned.
-    labels : dict of dicts
-        A dictionary whose keys are the label names and the values geojson-style shapes,
-        specified hour of day, and day of week score, with hour of day score on the x axis
-        and day of week score on the y axis, where all scores are real numbers in the range [-1.0, +1.0]
-    tower_day_of_week_scores : dict
-        A dictionary mapping days of the week ("monday", "tuesday" etc.) to numerical scores in the range [-1.0, +1.0].
-
-        Each of a subscriber's interactions with a tower is given a score for the day of the week it took place on. For
-        example, passing {"monday":1.0, "tuesday":0, "wednesday":0, "thursday":0, "friday":0, "saturday":0, "sunday":0}
-        would score any interaction taking place on a monday 1, and 0 on all other days. So a subscriber who made two calls
-        on a monday, and received one sms on tuesday, all from the same tower would have a final score of 0.666 for that
-        tower.
-    tower_hour_of_day_scores : list of float
-        A length 24 list containing numerical scores in the range [-1.0, +1.0], where the first entry is midnight.
-        Each of a subscriber's interactions with a tower is given a score for the hour of the day it took place in. For
-        example, if the first entry of this list was 1, and all others were zero, each interaction the subscriber had
-        that used a tower at midnight would receive a score of 1. If the subscriber used a particular tower twice, once
-        at midnight, and once at noon, the final hour score for that tower would be 0.5.
-    tower_cluster_radius : float
-        When constructing clusters, towers will be considered for inclusion in a cluster only if they are within this
-        number of km from the current cluster centroid. Hence, large values here will tend to produce clusters containing
-        more towers, and fewer clusters.
-    tower_cluster_call_threshold : int
-        Exclude towers from a subscriber's clusters if they have been used on less than this number of days.
-    subscriber_subset : dict or None
-        Subset of subscribers to retrieve modal locations for. Must be None
-        (= all subscribers) or a dictionary with the specification of a
-        subset query.
-
-    Returns
-    -------
-    dict
-         Dict which functions as the query specification
-    """
-    if subscriber_subset is None:
-        subscriber_subset = "all"
-    return {
-        "query_kind": "meaningful_locations",
-        "params": {
-            "label": label,
-            "clusters": {
-                "query_kind": "hartigan_cluster",
-                "params": {
-                    "radius": tower_cluster_radius,
-                    "call_threshold": tower_cluster_call_threshold,
-                    "call_days": {
-                        "query_kind": "call_days",
-                        "params": {
-                            "subscriber_locations": {
-                                "query_kind": "subscriber_locations",
-                                "params": {
-                                    "start": start_date,
-                                    "stop": stop_date,
-                                    "level": "versioned-site",
-                                    "subscriber_subset": subscriber_subset,
-                                },
-                            }
-                        },
-                    },
-                },
-            },
-            "scores": {
-                "query_kind": "event_score",
-                "params": {
-                    "score_hour": tower_hour_of_day_scores,
-                    "score_dow": tower_day_of_week_scores,
-                    "start": start_date,
-                    "stop": stop_date,
-                    "level": "versioned-site",
-                    "subscriber_subset": subscriber_subset,
-                },
-            },
-            "labels": labels,
-        },
+        "date": date,
+        "aggregation_unit": aggregation_unit,
+        "method": method,
+        "subscriber_subset": subscriber_subset,
     }
 
 
@@ -682,20 +577,16 @@ def meaningful_locations_aggregate(
     """
     return {
         "query_kind": "meaningful_locations_aggregate",
-        "params": {
-            "aggregation_unit": aggregation_unit,
-            "meaningful_locations": _meaningful_locations(
-                start_date=start_date,
-                stop_date=stop_date,
-                label=label,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-        },
+        "aggregation_unit": aggregation_unit,
+        "start_date": start_date,
+        "stop_date": stop_date,
+        "label": label,
+        "labels": labels,
+        "tower_day_of_week_scores": tower_day_of_week_scores,
+        "tower_hour_of_day_scores": tower_hour_of_day_scores,
+        "tower_cluster_radius": tower_cluster_radius,
+        "tower_cluster_call_threshold": tower_cluster_call_threshold,
+        "subscriber_subset": subscriber_subset,
     }
 
 
@@ -781,32 +672,18 @@ def meaningful_locations_between_label_od_matrix(
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
     return {
-        "query_kind": "meaningful_locations_od_matrix",
-        "params": {
-            "aggregation_unit": aggregation_unit,
-            "meaningful_locations_a": _meaningful_locations(
-                start_date=start_date,
-                stop_date=stop_date,
-                label=label_a,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-            "meaningful_locations_b": _meaningful_locations(
-                start_date=start_date,
-                stop_date=stop_date,
-                label=label_b,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-        },
+        "query_kind": "meaningful_locations_between_label_od_matrix",
+        "aggregation_unit": aggregation_unit,
+        "start_date": start_date,
+        "stop_date": stop_date,
+        "label_a": label_a,
+        "label_b": label_b,
+        "labels": labels,
+        "tower_day_of_week_scores": tower_day_of_week_scores,
+        "tower_hour_of_day_scores": tower_hour_of_day_scores,
+        "tower_cluster_radius": tower_cluster_radius,
+        "tower_cluster_call_threshold": tower_cluster_call_threshold,
+        "subscriber_subset": subscriber_subset,
     }
 
 
@@ -898,45 +775,32 @@ def meaningful_locations_between_dates_od_matrix(
     .. [2] Zagatti, Guilherme Augusto, et al. "A trip to work: Estimation of origin and destination of commuting patterns in the main metropolitan regions of Haiti using CDR." Development Engineering 3 (2018): 133-165.
     """
     return {
-        "query_kind": "meaningful_locations_od_matrix",
-        "params": {
-            "aggregation_unit": aggregation_unit,
-            "meaningful_locations_a": _meaningful_locations(
-                start_date=start_date_a,
-                stop_date=stop_date_a,
-                label=label,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-            "meaningful_locations_b": _meaningful_locations(
-                start_date=start_date_b,
-                stop_date=stop_date_b,
-                label=label,
-                labels=labels,
-                tower_day_of_week_scores=tower_day_of_week_scores,
-                tower_hour_of_day_scores=tower_hour_of_day_scores,
-                tower_cluster_radius=tower_cluster_radius,
-                tower_cluster_call_threshold=tower_cluster_call_threshold,
-                subscriber_subset=subscriber_subset,
-            ),
-        },
+        "query_kind": "meaningful_locations_between_dates_od_matrix",
+        "aggregation_unit": aggregation_unit,
+        "start_date_a": start_date_a,
+        "stop_date_a": stop_date_a,
+        "start_date_b": start_date_b,
+        "stop_date_b": stop_date_b,
+        "label": label,
+        "labels": labels,
+        "tower_day_of_week_scores": tower_day_of_week_scores,
+        "tower_hour_of_day_scores": tower_hour_of_day_scores,
+        "tower_cluster_radius": tower_cluster_radius,
+        "tower_cluster_call_threshold": tower_cluster_call_threshold,
+        "subscriber_subset": subscriber_subset,
     }
 
 
 def modal_location(
-    *daily_locations: Dict[str, Union[str, Dict[str, str]]], aggregation_unit: str
+    *locations: Dict[str, Union[str, Dict[str, str]]], aggregation_unit: str
 ) -> dict:
     """
-    Return query spec for a modal location query for a list of daily locations.
+    Return query spec for a modal location query for a list of locations.
 
     Parameters
     ----------
-    daily_locations : list of dicts
-        List of daily location query specifications
+    locations : list of dicts
+        List of location query specifications
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
 
@@ -948,7 +812,8 @@ def modal_location(
     """
     return {
         "query_kind": "modal_location",
-        "params": {"locations": daily_locations, "aggregation_unit": aggregation_unit},
+        "aggregation_unit": aggregation_unit,
+        "locations": locations,
     }
 
 
@@ -956,7 +821,7 @@ def modal_location_from_dates(
     start_date: str,
     stop_date: str,
     aggregation_unit: str,
-    daily_location_method: str,
+    method: str,
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -970,7 +835,7 @@ def modal_location_from_dates(
         ISO format date that begins the period, e.g. "2016-01-07"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
-    daily_location_method : str
+    method : str
         Method to use for daily locations, one of 'last' or 'most-common'
     subscriber_subset : dict or None
         Subset of subscribers to retrieve modal locations for. Must be None
@@ -990,7 +855,7 @@ def modal_location_from_dates(
         daily_location(
             date,
             aggregation_unit=aggregation_unit,
-            daily_location_method=daily_location_method,
+            method=method,
             subscriber_subset=subscriber_subset,
         )
         for date in dates
@@ -1023,9 +888,7 @@ def flows(
     """
     return {
         "query_kind": "flows",
-        "params": {
-            "from_location": from_location,
-            "to_location": to_location,
-            "aggregation_unit": aggregation_unit,
-        },
+        "from_location": from_location,
+        "to_location": to_location,
+        "aggregation_unit": aggregation_unit,
     }

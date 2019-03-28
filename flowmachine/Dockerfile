@@ -6,7 +6,11 @@ FROM python:3.7
 
 WORKDIR /app
 COPY Pipfile* /app/
-RUN pip install pipenv && pipenv install --deploy
+# FIXME: while there is a version conflict between some of the
+# marshmallow/apispec libraries we cannot install from Pipfile.lock.
+# This should be reverted once the conflict is resolved upstream.
+#RUN pip install pipenv && pipenv install --deploy
+RUN pip install pipenv && pipenv install --skip-lock
 COPY . /app/
 RUN pipenv install --skip-lock .
 CMD ["pipenv", "run", "flowmachine"]

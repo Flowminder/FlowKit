@@ -12,52 +12,50 @@ blueprint = Blueprint("geography", __name__)
 @blueprint.route("/geography/<aggregation_unit>")
 @check_geography_claims()
 async def get_geography(aggregation_unit):
-    request.socket.send_json(
-        {
-            "request_id": request.request_id,
-            "action": "get_geography",
-            "params": {"aggregation_unit": aggregation_unit},
-        }
-    )
+    msg = {
+        "request_id": request.request_id,
+        "action": "get_geography",
+        "params": {"aggregation_unit": aggregation_unit},
+    }
+    request.socket.send_json(msg)
     #  Get the reply.
-    message = await request.socket.recv_json()
+    reply = await request.socket.recv_json()
     current_app.flowapi_logger.debug(
-        f"Got message: {message}", request_id=request.request_id
+        f"Got message: {reply}", request_id=request.request_id
     )
-    try:
-        status = message["status"]
-    except KeyError:
-        return (
-            jsonify({"status": "Error", "msg": "Server responded without status"}),
-            500,
-        )
-    if status == "completed":
-        results_streamer = stream_with_context(stream_result_as_json)(
-            message["sql"],
-            result_name="features",
-            additional_elements={"type": "FeatureCollection"},
-        )
-        mimetype = "application/geo+json"
 
-        current_app.flowapi_logger.debug(
-            f"Returning {aggregation_unit} geography data.",
-            request_id=request.request_id,
-        )
-        return (
-            results_streamer,
-            200,
-            {
-                "Transfer-Encoding": "chunked",
-                "Content-Disposition": f"attachment;filename={aggregation_unit}.geojson",
-                "Content-type": mimetype,
-            },
-        )
-    elif status == "error":
-        return jsonify({"status": "Error", "msg": message["error"]}), 403
-    elif status == "awol":
-        return (jsonify({"status": "Error", "msg": message["error"]}), 404)
-    else:
-        return (
-            jsonify({"status": "Error", "msg": f"Unexpected status: {status}"}),
-            500,
-        )
+    if reply["status"] == "error":
+        return jsonify({"status": "Error", "msg": "Internal server error"}), 500
+
+    try:
+        query_state = reply["payload"]["query_state"]
+        if query_state == "completed":
+            results_streamer = stream_with_context(stream_result_as_json)(
+                reply["payload"]["sql"],
+                result_name="features",
+                additional_elements={"type": "FeatureCollection"},
+            )
+            mimetype = "application/geo+json"
+
+            current_app.flowapi_logger.debug(
+                f"Returning {aggregation_unit} geography data.",
+                request_id=request.request_id,
+            )
+            return (
+                results_streamer,
+                200,
+                {
+                    "Transfer-Encoding": "chunked",
+                    "Content-Disposition": f"attachment;filename={aggregation_unit}.geojson",
+                    "Content-type": mimetype,
+                },
+            )
+        # TODO: Reinstate correct status codes for geographies
+        #
+        # elif query_state == "error":
+        #     return jsonify({"status": "Error", "msg": reply["msg"]}), 403
+        # elif query_state == "awol":
+        #     return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
+    except KeyError:
+        # TODO: This should never happen!
+        return (jsonify({"status": "Error", "msg": f"No query state."}), 500)

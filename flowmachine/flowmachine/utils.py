@@ -245,52 +245,6 @@ def proj4string(conn, crs=None):
     return proj4_string.strip()
 
 
-def verify_columns_exist_in_all_tables(conn, tables, columns):
-    """
-    Parse a list of tables ensuring that certain columns are present.
-
-    Parameters
-    ----------
-    conn : Connection
-        FlowMachine db connection to use to get the subscriber_tables.
-    tables : str or list of strings, default 'all'
-        Can be a sting of a single table (with the schema) or a list of these.
-        The keyword all is to select all subscriber tables
-    columns : str or list
-        A string or list of strings with the column names that must be present.
-
-    Returns
-    -------
-    None
-        The functions returns None when all columns exist in all tables.
-
-    Raises
-    ------
-    MissingColumnsError
-        If any column does not exist in any of the tables.
-    """
-
-    if isinstance(tables, str) and tables.lower() == "all":
-        tables = [f"events.{t}" for t in conn.subscriber_tables]
-    elif type(tables) is str:
-        tables = [tables]
-    else:
-        tables = tables
-
-    if isinstance(columns, str):
-        columns = [columns]
-
-    tables_lacking_columns = []
-    for t in tables:
-        for c in columns:
-            if c not in flowmachine.core.Table(t).column_names:
-                tables_lacking_columns.append(t)
-                break
-
-    if tables_lacking_columns:
-        raise MissingColumnsError(tables_lacking_columns, columns)
-
-
 def pretty_sql(
     sql,
     compact_lists_margin=0,
@@ -350,3 +304,77 @@ def _sleep(seconds_to_sleep):
     # Private function to facilitate testing
     # monkeypatch this to avoid needing to monkeypatch time.sleep
     sleep(seconds_to_sleep)
+
+
+def convert_dict_keys_to_strings(input_dict):
+    """
+    Return a copy of the input dictionary where all keys are converted to strings.
+    This is necessary if the dictionary needs to be valid JSON.
+
+    Parameters
+    ----------
+    input_dict : dict
+        The input dictionary.
+
+    Returns
+    -------
+    dict
+        A copy of `input_dict` with all keys converted to strings.
+    """
+    result = {}
+    for key, value in input_dict.items():
+        new_key = str(key)
+        if isinstance(value, dict):
+            result[new_key] = convert_dict_keys_to_strings(value)
+        else:
+            result[new_key] = value
+    return result
+
+
+def to_nested_list(d):
+    """
+    Helper function to recursively convert an input dictionary to a nested list.
+
+    Parameters
+    ----------
+    d : dict
+        Input dictionary (can be nested).
+
+    Returns
+    -------
+    list of tuples
+    """
+    if isinstance(d, dict):
+        return [(key, to_nested_list(value)) for key, value in d.items()]
+    elif isinstance(d, (list, tuple)):
+        return [to_nested_list(x) for x in d]
+    else:
+        return d
+
+
+def sort_recursively(d):
+    """
+    Helper function to sort a dictionary recursively (including any dicts or sequences inside it).
+
+    Parameters
+    ----------
+    d : dict
+        Input dictionary (can be nested).
+
+    Returns
+    -------
+    dict
+        The sorted dictionary.
+    """
+    if isinstance(d, dict):
+        d_new = dict()
+        for key in sorted(d.keys()):
+            d_new[key] = sort_recursively(d[key])
+        return d_new
+    elif isinstance(d, list):
+        try:
+            return sorted(d, key=to_nested_list)
+        except:
+            breakpoint()
+    else:
+        return d
