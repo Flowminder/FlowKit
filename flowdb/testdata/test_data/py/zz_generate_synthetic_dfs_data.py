@@ -131,10 +131,10 @@ print(f"Done.\nFound {len(cells)} cells.")
 
 print(f"Writing table {dfs_schema}.transaction_types.... ", flush=True, end="")
 
-tx_columns = ["transtype_id", "trans_descr", "user_type_a_party", "user_type_b_party"]
+tx_columns = ["id", "descr", "user_type_a_party", "user_type_b_party"]
 df_transaction_types = pd.DataFrame(columns=tx_columns)
 df_transaction_types[
-    ["trans_descr", "user_type_a_party", "user_type_b_party"]
+    ["descr", "user_type_a_party", "user_type_b_party"]
 ] = pd.DataFrame(
     [
         ("Customer checks balance", "customer", "special_1"),
@@ -153,9 +153,9 @@ df_transaction_types[
         ("Superagent checks balance", "superagent", "special_6"),
     ]
 )
-df_transaction_types["transtype_id"] = range(1, len(df_transaction_types) + 1)
-df_transaction_types.to_sql(
-    "transaction_types", engine, schema="dfs", if_exists="replace", index=False
+df_transaction_types["id"] = range(1, len(df_transaction_types) + 1)
+export_dataframe_to_sql(
+    df_transaction_types, table="transaction_types", engine=engine, schema=dfs_schema
 )
 
 print("Done.")
@@ -177,7 +177,7 @@ class TransactionsGenerator(CustomGenerator):
         self.fee = Integer(0, 76000)
         self.commission = Integer(0, 150_000)
 
-        self.transtype_id = SelectOne(df_transaction_types["transtype_id"])
+        self.transtype_id = SelectOne(df_transaction_types["id"])
         self.timestamp = Timestamp(date=date)
 
 
@@ -265,7 +265,7 @@ print("Done.")
 print(f"Filling main {dfs_schema}.transactions table... ", flush=True, end="")
 
 df_transactions_main = df_transactions_raw[
-    ["id", "amount", "discount", "fee", "commission", "timestamp"]
+    ["id", "amount", "discount", "fee", "commission", "transtype_id", "timestamp"]
 ]
 export_dataframe_to_sql(
     df_transactions_main, table="transactions", engine=engine, schema=dfs_schema

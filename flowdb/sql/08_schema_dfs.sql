@@ -29,7 +29,7 @@ CREATE SCHEMA IF NOT EXISTS dfs;
 
     CREATE TABLE IF NOT EXISTS dfs.transaction_types(
 
-        transtype_id      SERIAL PRIMARY KEY,
+        id                SERIAL PRIMARY KEY,
         descr             TEXT,
         user_type_a_party TEXT,
         user_type_b_party TEXT
@@ -38,12 +38,13 @@ CREATE SCHEMA IF NOT EXISTS dfs;
 
     CREATE TABLE IF NOT EXISTS dfs.transactions(
 
-        id         BIGSERIAL PRIMARY KEY,
-        amount     NUMERIC(14,4),
-        discount   NUMERIC(14,4),
-        fee        NUMERIC(14,4),
-        commission NUMERIC(14,4),
-        timestamp  TIMESTAMPTZ
+        id           BIGSERIAL PRIMARY KEY,
+        amount       NUMERIC(14,4),
+        discount     NUMERIC(14,4),
+        fee          NUMERIC(14,4),
+        commission   NUMERIC(14,4),
+        transtype_id INTEGER REFERENCES dfs.transaction_types(id),
+        timestamp    TIMESTAMPTZ
 
         );
 
