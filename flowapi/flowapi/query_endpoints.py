@@ -66,7 +66,7 @@ async def poll_query(query_id):
     reply = await request.socket.recv_json()
 
     if reply["status"] == "error":
-        return jsonify({"status": "error", "msg": reply[""]})
+        return jsonify({"status": "error", "msg": reply[""]}), 500
     else:
         assert reply["status"] == "success"
         query_state = reply["payload"]["query_state"]
