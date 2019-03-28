@@ -16,6 +16,7 @@ from flowapi.zmq_helpers import ZMQReply
         ("awol", 404),
         ("queued", 202),
         ("errored", 500),
+        ("error", 500),
         ("cancelled", 500),
     ],
 )
