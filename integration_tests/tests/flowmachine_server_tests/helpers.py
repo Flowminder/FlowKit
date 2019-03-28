@@ -58,6 +58,7 @@ def cache_schema_is_empty(fm_conn, check_internal_tables_are_empty=True):
 
     # Check that there are no cached tables except the flowdb-internal ones
     if cache_tables != ["cache_config", "cached", "dependencies"]:
+        print(f"[DDD] Warning: found unexpected cache tables: {cache_tables}")
         return False
 
     if check_internal_tables_are_empty:
@@ -65,6 +66,18 @@ def cache_schema_is_empty(fm_conn, check_internal_tables_are_empty=True):
         res1 = fm_conn.engine.execute("SELECT COUNT(*) FROM cache.cached")
         res2 = fm_conn.engine.execute("SELECT COUNT(*) FROM cache.dependencies")
         if res1.fetchone()[0] != 0 or res2.fetchone()[0] != 0:
+
+            contents_cache_cached = fm_conn.engine.execute(
+                "SELECT * FROM cache.cached"
+            ).fetchall()
+            contents_cache_dependencies = fm_conn.engine.execute(
+                "SELECT * FROM cache.dependencies"
+            ).fetchall()
+            print(
+                f"[DDD] Warning: table `cache.cached` or `cache.dependencies` not empty."
+            )
+            print(f"[DDD] Contents of 'cache.cached': {contents_cache_cached}.")
+            print(f"Contents of 'cache.dependencies': {contents_cache_dependencies}.")
             return False
 
     return True

@@ -28,29 +28,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
     #
-    try:
-        assert cache_schema_is_empty(fm_conn)
-    except AssertionError:
-        # Print debugging information if the cache schema is unexpectedly not empty...
-        # See https://github.com/Flowminder/FlowKit/issues/451
-        from sqlalchemy import inspect
-
-        insp = inspect(fm_conn.engine)
-        cache_tables = insp.get_table_names(schema="cache")
-        contents_cache_cached = fm_conn.engine.execute(
-            "SELECT * FROM cache.cached"
-        ).fetchall()
-        contents_cache_dependencies = fm_conn.engine.execute(
-            "SELECT * FROM cache.dependencies"
-        ).fetchall()
-        msg = (
-            f"[DDD] Cache schema is expected to be empty but isn't.\n"
-            f"Currently existing cache tables: {cache_tables}.\n"
-            f"Contents of 'cache.cached': {contents_cache_cached}.\n"
-            f"Contents of 'cache.dependencies': {contents_cache_dependencies}.\n"
-        )
-        raise AssertionError(msg)
-
+    assert cache_schema_is_empty(fm_conn)
     assert not redis.exists(expected_query_id)
 
     #
