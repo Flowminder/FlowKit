@@ -57,4 +57,5 @@ async def get_geography(aggregation_unit):
         # elif query_state == "awol":
         #     return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
     except KeyError:
+        # TODO: This should never happen!
         return (jsonify({"status": "Error", "msg": f"No query state."}), 500)
