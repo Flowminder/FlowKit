@@ -82,13 +82,11 @@ async def test_get_geography_status(
     assert http_code == response.status_code
 
 
+@pytest.mark.parametrize("response", [{"status": "NOT_AN_ERROR"}, {"status": "error"}])
 @pytest.mark.asyncio
-async def test_geography_error_for_missing_status(
-    app, dummy_zmq_server, access_token_builder
-):
+async def test_geography_errors(response, app, dummy_zmq_server, access_token_builder):
     """
-    Test that status code 500 is returned if a message without a status is
-    received in get_geography.
+    Test that status code 500 is returned for error and missing payload.
     """
     client, db, log_dir, app = app
 
@@ -100,7 +98,7 @@ async def test_geography_error_for_missing_status(
             }
         }
     )
-    dummy_zmq_server.side_effect = ({"status": "NOT_AN_ERROR"},)
+    dummy_zmq_server.side_effect = (response,)
     response = await client.get(
         f"/api/0/geography/DUMMY_AGGREGATION",
         headers={"Authorization": f"Bearer {token}"},
