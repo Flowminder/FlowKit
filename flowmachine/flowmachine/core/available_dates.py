@@ -41,7 +41,8 @@ class AvailableDates(Query):
             SELECT
                 event_type,
                 ARRAY(
-                    SELECT SUBSTRING(table_name from '.{{8}}$') as date
+                    SELECT
+                        TO_CHAR(SUBSTRING(table_name from '.{{8}}$')::date, 'YYYY-MM-DD') as date
                     FROM information_schema.tables
                     WHERE table_name SIMILAR TO (event_type || '_[0-9]{{8}}')
                     AND table_schema='{schema}'
