@@ -286,6 +286,7 @@ from .utils import permissions_types, aggregation_types
                 },
             },
         ),
+        ("available_dates", {"event_types": ["calls", "topups"]}),
     ],
 )
 def test_run_query(query_kind, params, access_token_builder, flowapi_url):
