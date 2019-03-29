@@ -5,9 +5,7 @@
 import asyncio
 import os
 import rapidjson
-import logging
 
-import sys
 
 import signal
 import structlog
@@ -22,15 +20,10 @@ from .zmq_helpers import ZMQReply, parse_zmq_message
 
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
-# Logger for all queries run or accessed
-query_run_log = logging.getLogger("flowmachine").getChild("query_run_log")
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.INFO)
-query_run_log.addHandler(ch)
-query_run_log = structlog.wrap_logger(query_run_log)
+query_run_log = structlog.get_logger("flowmachine.query_run_log")
 
 
-async def get_reply_for_message(zmq_msg: ZMQMultipartMessage) -> dict:
+async def get_reply_for_message(msg_str: str) -> dict:
     """
     Parse the zmq message string, perform the desired action and return the result in JSON format.
 
