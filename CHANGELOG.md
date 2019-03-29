@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-
+- A new query `AvailableDates` was added to flowmachine, along with an `available_dates` query kind in flowapi
+  and flowclient, which allows to determine the dates that are available in the database for each event type.
 
 ### Changed
 
