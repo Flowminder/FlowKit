@@ -42,7 +42,9 @@ get_ipython().display_formatter.formatters["text/markdown"].for_type(dict, forma
 get_ipython().display_formatter.formatters["text/markdown"].for_type(
     str, lambda x: f">`{x}`"
 )
-
+get_ipython().display_formatter.formatters["text/markdown"].for_type(
+    list, lambda x: f">`{x}`"
+)
 
 # Create an API access token
 
@@ -60,6 +62,18 @@ claims = {
         "spatial_aggregation": ["admin3", "admin2", "admin1"],
     },
     "location_event_counts": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
+    "meaningful_locations_aggregate": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
+    "meaningful_locations_between_label_od_matrix": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
+    "geography": {
         "permissions": {"run": True, "poll": True, "get_result": True},
         "spatial_aggregation": ["admin3", "admin2", "admin1"],
     },

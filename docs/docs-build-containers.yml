@@ -7,13 +7,22 @@ version: "3"
 services:
   flowdb:
     container_name: flowkit_docs_flowdb
-    image: "flowminder/flowdb-testdata:${CIRCLE_BRANCH:-latest}"
+    image: "flowminder/flowdb-synthetic-data:{$CIRCLE_BRANCH:-latest}"
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-flowdb}
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FM_PASSWORD=${FM_PASSWORD:-foo}
       - API_PASSWORD=${API_PASSWORD:-foo}
+      - N_SITES=200
+      - N_CELLS=1000
+      - N_SUBSCRIBERS=50000
+      - N_DAYS=60
+      - N_CALLS=20000
+      - N_SMS=20000
+      - N_MDS=20000
+      - DISASTER_START=2016-02-11
+      - DISASTER_END=2016-03-01
     tty: true
     shm_size: 1G
     ports:

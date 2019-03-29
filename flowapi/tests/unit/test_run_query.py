@@ -4,6 +4,8 @@
 
 import pytest
 
+from flowapi.zmq_helpers import ZMQReply
+
 
 @pytest.mark.asyncio
 async def test_post_query(app, dummy_zmq_server, access_token_builder):
@@ -13,30 +15,47 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
     client, db, log_dir, app = app
 
     token = access_token_builder({"daily_location": {"permissions": {"run": True}}})
-    dummy_zmq_server.return_value = {"id": 0}
+    dummy_zmq_server.return_value = ZMQReply(
+        status="success", payload={"query_id": "DUMMY_QUERY_ID"}
+    ).as_json()
     response = await client.post(
         f"/api/0/run",
         headers={"Authorization": f"Bearer {token}"},
         json={"query_kind": "daily_location", "params": {"date": "2016-01-01"}},
     )
     assert response.status_code == 202
-    assert "/api/0/poll/0" == response.headers["Location"]
+    assert "/api/0/poll/DUMMY_QUERY_ID" == response.headers["Location"]
 
 
+@pytest.mark.parametrize(
+    "query, expected_msg",
+    [
+        (
+            {"query_kind": "daily_location", "params": {"date": "2016-01-01"}},
+            "Broken query",
+        ),
+        (
+            {"params": {"date": "2016-01-01"}},
+            "Query kind must be specified when running a query.",
+        ),
+    ],
+)
 @pytest.mark.asyncio
-async def test_post_query_error(app, dummy_zmq_server, access_token_builder):
+async def test_post_query_error(
+    query, expected_msg, app, dummy_zmq_server, access_token_builder
+):
     """
     Test that correct status of 403 is returned for a broken query.
     """
     client, db, log_dir, app = app
 
     token = access_token_builder({"daily_location": {"permissions": {"run": True}}})
-    dummy_zmq_server.return_value = {"error": "Broken"}
+    dummy_zmq_server.return_value = ZMQReply(
+        status="error", msg="Broken query"
+    ).as_json()
     response = await client.post(
-        f"/api/0/run",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"query_kind": "daily_location", "params": {"date": "2016-01-01"}},
+        f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=query
     )
     json = await response.get_json()
-    assert response.status_code == 403
-    assert "Broken" == json["msg"]
+    assert response.status_code == 400
+    assert expected_msg == json["msg"]

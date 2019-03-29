@@ -12,8 +12,8 @@ from unittest.mock import Mock
 import pandas as pd
 import pytest
 import re
-import warnings
 import logging
+
 import flowmachine
 from flowmachine.core import Query
 from flowmachine.core.cache import reset_cache

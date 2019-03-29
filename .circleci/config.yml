@@ -182,7 +182,7 @@ jobs:
             echo Tagging as testdata-$SAFE_TAG and testdata-$CIRCLE_WORKFLOW_ID
             docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-testdata:$SAFE_TAG -t flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID \
             flowdb/testdata
-          background: true
+          background: false
       - run:
           name: Build image with Oracle
           command: |
@@ -264,7 +264,7 @@ jobs:
       - checkout
       - restore_cache:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
-      - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
+      - run: cd flowmachine && pipenv install --dev --deploy --skip-lock && pipenv run pip install -e .
       - save_cache:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:
@@ -439,7 +439,7 @@ jobs:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
       - run:
-          name: Build flowmachine image
+          name: Build <<parameters.component>> image
           command: |
             echo "Tagging as $CIRCLE_WORKFLOW_ID"
             docker build -t flowminder/<<parameters.component>>:$CIRCLE_WORKFLOW_ID ./<<parameters.component>>
@@ -479,10 +479,15 @@ jobs:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
       synthetic_data_generator: sql
-      num_days: 7
-      num_subscribers: 1000
+      num_sites: 200
       num_cells: 1000
-      num_calls: 10000
+      num_subscribers: 50000
+      num_days: 60
+      num_calls: 20000
+      num_sms: 20000
+      num_mds: 20000
+      disaster_start_date: 2016-02-11
+      disaster_end_date: 2016-03-01
     working_directory: /home/circleci/project/docs
     steps:
       - checkout:

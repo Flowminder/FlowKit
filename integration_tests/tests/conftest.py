@@ -2,17 +2,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
+from approvaltests.reporters.generic_diff_reporter_factory import (
+    GenericDiffReporterFactory,
+)
 from datetime import timedelta
 from multiprocessing import Process
 from time import sleep
 
 import pytest
 import os
+import requests
+import zmq
 
 import flowmachine
-
-
 from flowmachine.core import Connection, Query
 from flowmachine.core.cache import reset_cache
 import flowmachine.core.server.server
@@ -144,18 +146,18 @@ def access_token_builder():
 def zmq_host():
     """
     Return the host on which zmq is running. This is either the value of
-    the environment variable FLOWMACHINE_ZMQ_HOST or else 'localhost'.
+    the environment variable FLOWMACHINE_HOST or else 'localhost'.
     """
-    return os.getenv("FLOWMACHINE_ZMQ_HOST", "localhost")
+    return os.getenv("FLOWMACHINE_HOST", "localhost")
 
 
 @pytest.fixture(scope="session")
 def zmq_port():
     """
     Return the port on which zmq is running. This is either the value of
-    the environment variable FLOWMACHINE_ZMQ_PORT or else 5555.
+    the environment variable FLOWMACHINE_PORT or else 5555.
     """
-    return os.getenv("FLOWMACHINE_ZMQ_PORT", "5555")
+    return os.getenv("FLOWMACHINE_PORT", "5555")
 
 
 @pytest.fixture(scope="session")
@@ -165,9 +167,40 @@ def zmq_url(zmq_host, zmq_port):
     This is constructed as "tcp://<zmq_host>:<zmq_port>", where the
     host and port are provided by the `zmq_host` and `zmq_port`
     fixtures (which read the values from the environment variables
-    `FLOWMACHINE_ZMQ_HOST` and `FLOWMACHINE_ZMQ_PORT`, respectively).
+    `FLOWMACHINE_HOST` and `FLOWMACHINE_PORT`, respectively).
     """
     return f"tcp://{zmq_host}:{zmq_port}"
+
+
+@pytest.fixture
+def send_zmq_message_and_receive_reply(zmq_host, zmq_port):
+    def send_zmq_message_and_receive_reply_impl(msg):
+        """
+        Helper function to send JSON messages to the flowmachine server (via zmq) and receive a reply.
+
+        This is mainly useful for interactive testing and debugging.
+
+        Parameters
+        ----------
+        msg : dict
+            Dictionary representing a valid zmq message.
+
+        Example
+        -------
+        >>> msg = {"action": "ping"}
+        >>> send_zmq_message_and_receive_reply(msg)
+        {"status": "success", "msg": "pong"}
+        """
+
+        context = zmq.Context.instance()
+        socket = context.socket(zmq.REQ)
+        socket.connect(f"tcp://{zmq_host}:{zmq_port}")
+        print(f"Sending message: {msg}")
+        socket.send_json(msg)
+        reply = socket.recv_json()
+        return reply
+
+    return send_zmq_message_and_receive_reply_impl
 
 
 @pytest.fixture(scope="session")
@@ -232,3 +265,9 @@ def reset_cache_schema(fm_conn):
     print("[DDD] Recreating cache schema... ", end="", flush=True)
     reset_cache(fm_conn)
     print("Done.")
+
+
+@pytest.fixture(scope="session")
+def diff_reporter():
+    diff_reporter_factory = GenericDiffReporterFactory()
+    return diff_reporter_factory.get("opendiff")

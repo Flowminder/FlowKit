@@ -1,44 +1,25 @@
-import asyncio
 import logging
 import pytest
 
-from .helpers import (
-    cache_schema_is_empty,
-    get_cache_tables,
-    poll_until_done,
-    send_message_and_get_reply,
-)
+from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
-def test_bail_out_if_pytest_asyncio_is_not_installed(event_loop):
-    """
-    This is a "smoke test" to check that the integration tests are being run under asyncio.
-    We do this by checking for the existence of the 'event_loop' fixture, which only exists
-    if pytest-asyncio is installed.
-    """
-    if not isinstance(event_loop, asyncio.AbstractEventLoop):
-        raise RuntimeError(
-            "Expecting 'event_loop' fixture from pytest-asyncio. Please ensure that pytest-asyncio is installed."
-        )
-    else:
-        logger.debug("Confirming that pytest-asyncio is installed")
-
-
 @pytest.mark.asyncio
-async def test_run_query(zmq_url, fm_conn, redis):
+async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     """
     Run daily_location query and check the resulting table contains the expected rows.
     """
     msg_run_query = {
         "action": "run_query",
-        "query_kind": "daily_location",
         "params": {
+            "query_kind": "daily_location",
             "date": "2016-01-01",
-            "daily_location_method": "last",
+            "method": "last",
             "aggregation_unit": "admin3",
-            "subscriber_subset": "all",
+            "subscriber_subset": None,
         },
         "request_id": "DUMMY_ID",
     }
@@ -54,15 +35,18 @@ async def test_run_query(zmq_url, fm_conn, redis):
     # Send message to run the daily_location query, check it was accepted
     # and a redis lookup was created for the query id.
     #
-    reply = send_message_and_get_reply(zmq_url, msg_run_query)
-    assert reply["status"] in ("executing", "queued", "completed")
-    assert expected_query_id == reply["id"]
-    assert redis.exists(expected_query_id)
+    reply = send_zmq_message_and_receive_reply(
+        msg_run_query, port=zmq_port, host=zmq_host
+    )
+    # assert reply["status"] in ("executing", "queued", "completed")
+    assert reply["status"] in ("success")
+    assert expected_query_id == reply["payload"]["query_id"]
+    # assert redis.exists(expected_query_id)
 
     #
     # Wait until the query has finished.
     #
-    poll_until_done(zmq_url, expected_query_id)
+    poll_until_done(zmq_port, expected_query_id)
 
     #
     # Check that a cache table for the query result was created
@@ -92,82 +76,84 @@ async def test_run_query(zmq_url, fm_conn, redis):
 
 
 @pytest.mark.parametrize(
-    "params, expected_error_msg",
+    "params, expected_error_messages",
     [
         (
             {
+                "query_kind": "daily_location",
                 "date": "2000-88-99",
-                "daily_location_method": "last",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": "all",
-            },
-            "month must be in 1..12",
-        ),
-        (
-            {
-                "date": "2016-01-01",
-                "daily_location_method": "FOOBAR",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": "all",
-            },
-            "Unrecognised method 'FOOBAR', must be one of: ['last', 'most-common']",
-        ),
-        (
-            {
-                "date": "2016-01-01",
-                "daily_location_method": "last",
-                "aggregation_unit": "admin9999",
-                "subscriber_subset": "all",
-            },
-            "Unrecognised level 'admin9999', must be one of: ['admin0', 'admin1', 'admin2', 'admin3', 'admin4']",
-        ),
-        (
-            {
-                "date": "2016-01-01",
-                "daily_location_method": "last",
+                "method": "last",
                 "aggregation_unit": "admin3",
                 "subscriber_subset": None,
             },
-            "Cannot construct daily_location subset from given input: None",
+            {"0": {"date": ["Not a valid date."]}},
+        ),
+        (
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "FOOBAR",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
+            {"0": {"method": ["Not a valid choice."]}},
+        ),
+        (
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin9999",
+                "subscriber_subset": None,
+            },
+            {"0": {"aggregation_unit": ["Not a valid choice."]}},
+        ),
+        (
+            {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": "virtually_all_subscribers",
+            },
+            {"0": {"subscriber_subset": ["Not a valid choice."]}},
         ),
     ],
 )
 @pytest.mark.asyncio
 async def test_run_query_with_wrong_parameters(
-    params, expected_error_msg, zmq_url, fm_conn
+    params, expected_error_messages, zmq_port, zmq_host
 ):
     """
-    Run daily_location query and check the resulting table contains the expected rows.
+    Run daily_location query and check that the resulting table contains the expected rows.
     """
-    msg_run_query = {
-        "action": "run_query",
-        "query_kind": "daily_location",
-        "params": params,
-        "request_id": "DUMMY_ID",
-    }
+    msg_run_query = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
-    reply = send_message_and_get_reply(zmq_url, msg_run_query)
-    expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
+    reply = send_zmq_message_and_receive_reply(
+        msg_run_query, port=zmq_port, host=zmq_host
+    )
+    # expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
+    # expected_reason = "Message contains unexpected key(s): ['query_kind'], 'data': {}"
     assert "error" == reply["status"]
-    assert expected_reason == reply["error"]
+    assert expected_error_messages == reply["payload"]
 
 
 @pytest.mark.skip(reason="Cannot currently test this because the sender hangs")
 @pytest.mark.asyncio
-async def test_wrongly_formatted_zmq_message(zmq_url):
+async def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
     """
     """
-    # msg = {"query_kind": "daily_location", "params": {"date": "2016-01-01", "daily_location_method": "last", "aggregation_unit": "admin3", "subscriber_subset": "all"}}
     msg = {
         "foo": "bar",
-        "query_kind": "daily_location",
         "params": {
+            "query_kind": "daily_location",
             "date": "2016-01-01",
-            "daily_location_method": "last",
+            "method": "last",
             "aggregation_unit": "admin3",
-            "subscriber_subset": "all",
+            "subscriber_subset": None,
         },
+        "request_id": "DUMMY_ID",
     }
 
-    reply = send_message_and_get_reply(zmq_url, msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert False

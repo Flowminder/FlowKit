@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+import datetime
 import pandas as pd
 import warnings
 from sqlalchemy import select, between, extract, or_
@@ -79,6 +80,14 @@ class EventTableSubset(Query):
         columns=["*"],
         subscriber_identifier="msisdn",
     ):
+
+        # Temporary band-aid; marshmallow deserialises date strings
+        # to date objects, so we convert it back here because the
+        # lower-level classes still assume we are passing date strings.
+        if isinstance(start, datetime.date):
+            start = start.strftime("%Y-%m-%d")
+        if isinstance(stop, datetime.date):
+            stop = stop.strftime("%Y-%m-%d")
 
         self.start = start
         self.stop = stop

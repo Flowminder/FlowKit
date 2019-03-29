@@ -183,6 +183,32 @@ class Query(metaclass=ABCMeta):
         """
         return self._cache
 
+    @property
+    def query_state(self) -> "QueryState":
+        """
+        Return the current query state.
+
+        Returns
+        -------
+        flowmachine.core.query_state.QueryState
+            The current query state
+        """
+        state_machine = QueryStateMachine(self.redis, self.md5)
+        return state_machine.current_query_state
+
+    @property
+    def query_state_str(self) -> str:
+        """
+        Return the current query state as a string
+
+        Returns
+        -------
+        str
+            The current query state. The possible values are the ones
+            defined in `flowmachine.core.query_state.QueryState`.
+        """
+        return self.query_state.value
+
     def get_query(self):
         """
         Returns a  string representing an SQL query. The string will point
@@ -246,7 +272,7 @@ class Query(metaclass=ABCMeta):
                 with self.connection.engine.begin():
                     return pd.read_sql_query(qur, con=self.connection.engine)
 
-        df_future = self.tp.submit(do_get)
+        df_future = self.thread_pool_executor.submit(do_get)
         return df_future
 
     def get_dataframe(self):
@@ -532,7 +558,7 @@ class Query(metaclass=ABCMeta):
             f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
         # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
-        store_future = self.tp.submit(
+        store_future = self.thread_pool_executor.submit(
             write_query_to_cache,
             name=name,
             schema=schema,

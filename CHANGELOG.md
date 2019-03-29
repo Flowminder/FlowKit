@@ -8,7 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The flowmachine python library is now pip installable (`pip install flowmachine`)
 - Added `HandsetStats` to FlowMachine.
 
-
 ### Changed
 
 
@@ -16,6 +15,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
 ### Removed
+
+
+## [0.5.0]
+### Added
+- The flowmachine python library is now pip installable (`pip install flowmachine`)
+- The flowmachine server now supports additional actions: `get_available_queries`, `get_query_schemas`, `ping`.
+- Flowdb now contains a new `dfs` schema and associated tables to process mobile money transactions.
+  In addition, `flowdb_testdata` contains sample data for DFS transactions.
+- The docs now include three worked examples of CDR analysis using FlowKit.
+- Flowmachine now supports calculating the total amount of various DFS metrics (transaction amount,
+  commission, fee, discount) per aggregation unit during a given date range. These metrics are also
+  exposed in FlowAPI via the query kind `dfs_metric_total_amount`.
+
+### Changed
+
+- The JSON structure when setting queries running via flowapi or the flowmachine server has changed:
+  query parameters are now "inlined" alongside the `query_kind` key, rather than nested using a separate `params` key.
+  Example:
+   - previously: `{"query_kind": "daily_location", "params": {"date": "2016-01-01", "aggregation_unit": "admin3", "method": "last"}}`,
+   - now: `{"query_kind": "daily_location", "date": "2016-01-01", "aggregation_unit": "admin3", "method": "last"}`
+- The JSON structure of zmq reply messages from the flowmachine server was changed.
+  Replies now have the form: `{"status": "[success|error]", "msg": "...", "payload": {...}`.
+- The flowmachine server action `get_sql` was renamed to `get_sql_for_query_result`.
+- The parameter `daily_location_method` was renamed to `method`.
 
 
 ## [0.4.3]
@@ -143,7 +166,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.4.3...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.0...master
+[0.5.0]: https://github.com/Flowminder/FlowKit/compare/0.4.3...0.5.0
 [0.4.3]: https://github.com/Flowminder/FlowKit/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/Flowminder/FlowKit/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/Flowminder/FlowKit/compare/0.4.0...0.4.1
