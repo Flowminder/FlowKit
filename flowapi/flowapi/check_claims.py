@@ -111,37 +111,42 @@ def check_claims(claim_type):
                     # TODO: check that the error is due to an unknown query and not due to a different error.
                     return jsonify({}), 404
 
-                try:
-                    aggregation_unit = message["payload"]["query_params"][
-                        "aggregation_unit"
-                    ]
-                except KeyError:
-                    return (
-                        jsonify(
-                            {
-                                "status": "Error",
-                                "msg": "Missing query parameter: 'aggregation_unit'",
-                            }
-                        ),
-                        500,
-                    )
-                # Check aggregation claims
-                if aggregation_unit not in aggregation_claims:
-                    current_app.query_run_logger.error(
-                        "SPATIAL_AGGREGATION_LEVEL_NOT_ALLOWED_BY_TOKEN", **log_dict
-                    )
-                    return (
-                        jsonify(
-                            {
-                                "status": "Error",
-                                "msg": f"'get_result' access denied for '{aggregation_unit}' "
-                                f"aggregated result of '{query_kind}' query",
-                            }
-                        ),
-                        401,
-                    )
-                else:
+                if query_kind == "available_dates":
+                    # This query kind doesn't require any spatial aggregations,
+                    # so no need to verify permissions
                     pass
+                else:
+                    try:
+                        aggregation_unit = message["payload"]["query_params"][
+                            "aggregation_unit"
+                        ]
+                    except KeyError:
+                        return (
+                            jsonify(
+                                {
+                                    "status": "Error",
+                                    "msg": "Missing query parameter: 'aggregation_unit'",
+                                }
+                            ),
+                            500,
+                        )
+                    # Check aggregation claims
+                    if aggregation_unit not in aggregation_claims:
+                        current_app.query_run_logger.error(
+                            "SPATIAL_AGGREGATION_LEVEL_NOT_ALLOWED_BY_TOKEN", **log_dict
+                        )
+                        return (
+                            jsonify(
+                                {
+                                    "status": "Error",
+                                    "msg": f"'get_result' access denied for '{aggregation_unit}' "
+                                    f"aggregated result of '{query_kind}' query",
+                                }
+                            ),
+                            401,
+                        )
+                    else:
+                        pass
             else:
                 pass
             current_app.query_run_logger.info("Authorised", **log_dict)
