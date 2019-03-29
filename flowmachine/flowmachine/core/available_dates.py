@@ -19,7 +19,10 @@ class AvailableDates(Query):
     Returns the available dates for each of the given event types.
     """
 
-    def __init__(self, event_types):
+    def __init__(self, event_types=None):
+
+        if event_types is None:
+            event_types = SUPPORTED_EVENT_TYPES
 
         if not set(event_types).issubset(SUPPORTED_EVENT_TYPES):
             unsupported_event_types = set(event_types).difference(SUPPORTED_EVENT_TYPES)
