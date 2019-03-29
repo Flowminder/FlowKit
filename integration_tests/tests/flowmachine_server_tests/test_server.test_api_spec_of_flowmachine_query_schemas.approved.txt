@@ -1,4 +1,23 @@
 {
+  "AvailableDates": {
+    "properties": {
+      "event_types": {
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
   "DFSTotalMetricAmount": {
     "properties": {
       "aggregation_unit": {
@@ -87,6 +106,7 @@
   "FlowmachineQuerySchema": {
     "discriminator": {
       "mapping": {
+        "available_dates": "#/components/schemas/AvailableDates",
         "daily_location": "#/components/schemas/DailyLocation",
         "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
@@ -101,6 +121,9 @@
       "propertyName": "query_kind"
     },
     "oneOf": [
+      {
+        "$ref": "#/components/schemas/AvailableDates"
+      },
       {
         "$ref": "#/components/schemas/DFSTotalMetricAmount"
       },

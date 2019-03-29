@@ -53,6 +53,7 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
                 "geography",
                 "location_event_counts",
                 "dfs_metric_total_amount",
+                "available_dates",
             ]
         },
     }

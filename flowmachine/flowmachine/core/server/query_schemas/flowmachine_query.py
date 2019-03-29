@@ -22,6 +22,7 @@ from .dfs_metric_total_amount import (
     DFSTotalMetricAmountSchema,
     DFSTotalMetricAmountExposed,
 )
+from .available_dates import AvailableDatesSchema, AvailableDatesExposed
 
 
 class FlowmachineQuerySchema(OneOfSchema):
@@ -37,6 +38,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "geography": GeographySchema,
         "location_event_counts": LocationEventCountsSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
+        "available_dates": AvailableDatesSchema,
     }
 
     def get_obj_type(self, obj):
@@ -60,6 +62,8 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "location_event_counts"
         elif isinstance(obj, DFSTotalMetricAmountExposed):
             return "dfs_metric_total_amount"
+        elif isinstance(obj, AvailableDatesExposed):
+            return "available_dates"
         else:
             raise ValueError(
                 f"Object type '{obj.__class__.__name__}' not registered in FlowmachineQuerySchema."
