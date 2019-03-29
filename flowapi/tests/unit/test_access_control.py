@@ -232,7 +232,7 @@ async def test_access_logs_gets(
     assert log_lines[0]["logger"] == "flowapi.access"
     assert log_lines[1]["logger"] == "flowapi.query"
     assert log_lines[2]["logger"] == "flowapi.query"
-    assert "MODAL_LOCATION" == log_lines[2]["query_kind"]
+    assert "DUMMY_QUERY_KIND" == log_lines[2]["query_kind"]
     assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" == log_lines[2]["event"]
     assert "test" == log_lines[0]["user"]
     assert "test" == log_lines[1]["user"]
