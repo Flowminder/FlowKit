@@ -27,6 +27,7 @@ from .client import (
     get_status,
     query_is_ready,
     run_query,
+    available_dates,
 )
 
 __all__ = [
@@ -46,4 +47,5 @@ __all__ = [
     "get_status",
     "query_is_ready",
     "run_query",
+    "available_dates",
 ]

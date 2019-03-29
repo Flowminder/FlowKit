@@ -873,9 +873,9 @@ def flows(
 
     Parameters
     ----------
-    from_location: dict
+    from_location : dict
         Query which maps individuals to single location for the "origin" period of interest.
-    to_location: dict
+    to_location : dict
         Query which maps individuals to single location for the "destination" period of interest.
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
@@ -892,3 +892,27 @@ def flows(
         "to_location": to_location,
         "aggregation_unit": aggregation_unit,
     }
+
+
+def available_dates(event_types: Union[None, List[str]] = None) -> dict:
+    """
+    Return query spec for available dates for given event types.
+
+    Parameters
+    ----------
+    event_types : list of str, optional
+        List of event types for which to return the available dates.
+        If None, returns available dates for all supported event types.
+
+    Returns
+    -------
+    dict
+        Dict
+
+    Example
+    -------
+    >>> available_dates(["calls", "sms"])
+    [{"event_type": "calls", "dates": ["2016-01-01", "2016-01-02", "2016-01-03"]},
+     {"event_type": "sms", "dates": ["2016-01-01", "2016-01-02"]}]
+    """
+    return {"query_kind": "available_dates", "event_types": event_types}
