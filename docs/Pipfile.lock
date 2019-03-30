@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9bcb154c5589ce0aa259ebbc5c4b0fa50a0b10cc06296ba5f113f9b6417cd4d8"
+            "sha256": "e0873ada9381c9fa8123662ae6ee65375a16e6d43196a79a50f921fe1e998597"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -478,7 +478,7 @@
         },
         "marshmallow": {
             "git": "https://github.com/marshmallow-code/marshmallow.git",
-            "ref": "f6bbd37e07ed515d752f5b95410d3fa6893e3435"
+            "ref": "01837167ef1758df1f2decb819e7294200ec9f67"
         },
         "marshmallow-oneofschema": {
             "git": "https://github.com/marshmallow-code/marshmallow-oneofschema.git",
