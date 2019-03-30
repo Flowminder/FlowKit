@@ -2,18 +2,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
+import sys
+from logging import getLogger
 
 import pytest
 from flowmachine.core.init import _init_logging
-
+from flowmachine.core.server.server import get_reply_for_message
 from flowmachine.core import Query
 
 
 @pytest.mark.asyncio
 async def test_query_run_logged(json_log):
     # Local import so pytest can capture stdout
-    from flowmachine.core.server.server import get_reply_for_message
-
+    logger = getLogger("flowmachine.query_run_log")
+    logger.handlers[0].stream = sys.stdout  # Reset log stream for capsys
     msg_contents = {
         "action": "run_query",
         "request_id": "DUMMY_API_REQUEST_ID",
