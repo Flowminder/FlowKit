@@ -265,7 +265,10 @@ def test_wrong_geography_aggregation_unit_raises_error():
     """
     Test that an invalid aggregation unit in a geography query raises an InvalidGeographyError
     """
-    with pytest.raises(ValidationError, match="aggregation_unit.*Not a valid choice"):
+    with pytest.raises(
+        ValidationError,
+        match="aggregation_unit.*Must be one of: admin0, admin1, admin2, admin3.",
+    ):
         _ = FlowmachineQuerySchema().load(
             {"query_kind": "geography", "aggregation_unit": "DUMMY_AGGREGATION_UNIT"}
         )
