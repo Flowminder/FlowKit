@@ -33,7 +33,6 @@ async def test_get_available_dates(zmq_port, zmq_host):
                 "2016-01-05",
                 "2016-01-06",
                 "2016-01-07",
-                "2016-09-09",
             ],
             "mds": [
                 "2016-01-01",
@@ -43,7 +42,6 @@ async def test_get_available_dates(zmq_port, zmq_host):
                 "2016-01-05",
                 "2016-01-06",
                 "2016-01-07",
-                "2016-09-09",
             ],
             "topups": [
                 "2016-01-01",
@@ -53,7 +51,6 @@ async def test_get_available_dates(zmq_port, zmq_host):
                 "2016-01-05",
                 "2016-01-06",
                 "2016-01-07",
-                "2016-09-09",
             ],
             "sms": [
                 "2016-01-01",

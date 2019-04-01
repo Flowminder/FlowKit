@@ -365,7 +365,6 @@ def test_get_geography(access_token_builder, flowapi_url):
                     "2016-01-05",
                     "2016-01-06",
                     "2016-01-07",
-                    "2016-09-09",
                 ],
                 "forwards": [],
                 "mds": [
@@ -376,7 +375,6 @@ def test_get_geography(access_token_builder, flowapi_url):
                     "2016-01-05",
                     "2016-01-06",
                     "2016-01-07",
-                    "2016-09-09",
                 ],
                 "sms": [
                     "2016-01-01",
@@ -395,7 +393,6 @@ def test_get_geography(access_token_builder, flowapi_url):
                     "2016-01-05",
                     "2016-01-06",
                     "2016-01-07",
-                    "2016-09-09",
                 ],
             },
         ),
