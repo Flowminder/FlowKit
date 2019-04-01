@@ -216,7 +216,7 @@ jobs:
             mkdir $FLOWDB_DATA_DIR
       - run:
           name: Wait for container builds to complete
-          command:
+          command: |
             while [ ! -f ".synthetic-data-build-done" ] || [ ! -f ".oracle-build-done" ] || [ ! -f ".testdata-build-done" ] do;
               echo "Waiting for docker image builds to complete"
             done
