@@ -57,13 +57,7 @@ class HandsetStats(SubscriberFeature):
     >>> s.get_dataframe()
     """
 
-    def __init__(
-        self,
-        characteristic,
-        statistic="avg",
-        *,
-        subscriber_handsets,
-    ):
+    def __init__(self, characteristic, statistic="avg", *, subscriber_handsets):
         self.characteristic = characteristic.lower()
         self.statistic = statistic.lower()
 
