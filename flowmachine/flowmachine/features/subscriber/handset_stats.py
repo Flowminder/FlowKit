@@ -42,21 +42,13 @@ class HandsetStats(SubscriberFeature):
 
     Parameters
     ----------
-    start, stop : str
-         iso-format start and stop datetimes
     characteristic: {"width", "height", "depth", "weight", "display_width", "display_height"}
         Numeric handset characteristics present in the TAC table.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
-    hours : 2-tuple of floats, default 'all'
-        Restrict the analysis to only a certain set
-        of hours within each day.
-    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
-        Either msisdn, or imei, the column that identifies the subscriber.
-    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
-        If provided, string or list of string which are msisdn or imeis to limit
-        results to; or, a query or table which has a column with a name matching
-        subscriber_identifier (typically, msisdn), to limit results to.
+    subscriber_handsets: flowmachine.features.subscriber_tacs.SubscriberHandsets
+        An instance of SubscriberHandsets listing the handsets associated with
+        the subscribers during the period of observation.
 
     Examples
     --------
@@ -67,18 +59,11 @@ class HandsetStats(SubscriberFeature):
 
     def __init__(
         self,
-        start,
-        stop,
         characteristic,
         statistic="avg",
         *,
-        subscriber_identifier="msisdn",
-        hours="all",
-        subscriber_subset=None,
-        tables="all",
+        subscriber_handsets,
     ):
-        self.start = start
-        self.stop = stop
         self.characteristic = characteristic.lower()
         self.statistic = statistic.lower()
 
@@ -92,15 +77,7 @@ class HandsetStats(SubscriberFeature):
                 f"{self.characteristic} is not a valid characteristic. Use one of {valid_characteristics}"
             )
 
-        self.handsets_query = SubscriberHandsets(
-            start=self.start,
-            stop=self.stop,
-            hours=hours,
-            table=tables,
-            subscriber_subset=subscriber_subset,
-            subscriber_identifier=subscriber_identifier,
-        )
-
+        self.handsets_query = subscriber_handsets
         super().__init__()
 
     @property
@@ -154,7 +131,7 @@ class HandsetStats(SubscriberFeature):
                     LAG(
                         time,
                         1,
-                        TIMESTAMPTZ '{self.start}'
+                        TIMESTAMPTZ '{self.handsets_query.start}'
                     ) OVER msisdn_by_datetime
                 ) AS weight,
                 CUME_DIST() OVER msisdn_by_datetime
@@ -164,7 +141,7 @@ class HandsetStats(SubscriberFeature):
         SELECT subscriber, value, weight
         FROM W
         UNION ALL
-        SELECT subscriber, value, EXTRACT(EPOCH FROM (TIMESTAMPTZ '{self.stop}' - time)) AS weight
+        SELECT subscriber, value, EXTRACT(EPOCH FROM (TIMESTAMPTZ '{self.handsets_query.stop}' - time)) AS weight
         FROM W
         WHERE cume_dist = 1
         """

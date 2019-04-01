@@ -34,7 +34,7 @@ def test_handset_stats(get_dataframe, characteristic, statistic, msisdn, want):
     Test a few handpicked HandsetStats instances.
     """
     query = HandsetStats(
-        "2016-01-01", "2016-01-07", characteristic=characteristic, statistic=statistic
+        characteristic=characteristic, statistic=statistic, subscriber_handsets=SubscriberHandsets("2016-01-01", "2016-01-07"),
     )
     df = get_dataframe(query).set_index("subscriber")
     assert df.value[msisdn] == want
@@ -50,4 +50,4 @@ def test_handset_stats_errors(kwarg):
         kwargs = {"characteristic": "width", kwarg: "error"}
 
     with pytest.raises(ValueError):
-        query = HandsetStats("2016-01-03", "2016-01-05", **kwargs)
+        query = HandsetStats(subscriber_handsets=SubscriberHandsets("2016-01-03", "2016-01-05"), **kwargs)
