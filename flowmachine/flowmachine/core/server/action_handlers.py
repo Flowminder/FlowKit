@@ -277,6 +277,19 @@ def action_handler__get_geography(aggregation_unit):
     return ZMQReply(status="success", payload=payload)
 
 
+def action_handler__get_available_dates(event_types=None):
+    conn = Query.connection
+    if event_types is None:
+        event_types = tuple([x[0] for x in conn.available_tables])
+
+    available_dates = conn.available_dates(table=event_types)
+    res = {
+        event_type: [date.strftime("%Y-%m-%d") for date in dates]
+        for (event_type, dates) in available_dates.items()
+    }
+    return ZMQReply(status="success", payload=res)
+
+
 def get_action_handler(action):
     try:
         return ACTION_HANDLERS[action]
@@ -329,4 +342,5 @@ ACTION_HANDLERS = {
     "get_query_params": action_handler__get_query_params,
     "get_sql_for_query_result": action_handler__get_sql,
     "get_geography": action_handler__get_geography,
+    "get_available_dates": action_handler__get_available_dates,
 }
