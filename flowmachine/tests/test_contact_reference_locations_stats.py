@@ -99,7 +99,7 @@ def test_contact_reference_location_false_level_raises():
         query = ContactReferenceLocationStats(cb, ml)
 
 
-def test_contact_reference_location_false_level_raises():
+def test_contact_reference_location_no_level_raises():
     """ Test ValueError is raised for contact_location without level attribute. """
     cb = ContactBalance("2016-01-01", "2016-01-03")
     # by encapsulating ModalLocations in a CustomQuery we remove the level
@@ -117,3 +117,10 @@ def test_contact_reference_location_false_level_raises():
     ml = CustomQuery(ml.get_query(), ml.column_names)
     with pytest.raises(ValueError):
         query = ContactReferenceLocationStats(cb, ml)
+
+def test_contact_reference_location_no_subscriber_raises():
+    """ Test ValueError is raised for contact_location without subscriber. """
+    cb = ContactBalance("2016-01-01", "2016-01-03")
+    cl = CustomQuery("SELECT 1 AS foo", ["foo"])
+    with pytest.raises(ValueError):
+        query = ContactReferenceLocationStats(cb, cl)
