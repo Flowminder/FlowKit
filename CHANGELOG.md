@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-
+- A new zmq message `get_available_dates` was added to the flowmachine server, along with the `/available_dates`
+  endpoint in flowapi and the function `get_available_dates()` in flowclient. These allow to determine the dates
+  that are available in the database for the supported event types.
 
 ### Changed
 
