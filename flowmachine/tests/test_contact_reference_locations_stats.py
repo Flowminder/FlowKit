@@ -118,6 +118,7 @@ def test_contact_reference_location_no_level_raises():
     with pytest.raises(ValueError):
         query = ContactReferenceLocationStats(cb, ml)
 
+
 def test_contact_reference_location_no_subscriber_raises():
     """ Test ValueError is raised for contact_location without subscriber. """
     cb = ContactBalance("2016-01-01", "2016-01-03")
