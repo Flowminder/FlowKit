@@ -159,7 +159,8 @@ def universal_access_token(access_token_builder):
             "geography": {
                 "permissions": permissions_types,
                 "spatial_aggregation": aggregation_types,
-            }
+            },
+            "available_dates": {"permissions": {"get_result": True}},
         }
     )
     return access_token_builder(all_claims)

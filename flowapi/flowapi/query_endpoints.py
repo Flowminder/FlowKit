@@ -144,15 +144,18 @@ async def get_query_result(query_id):
 @jwt_required
 async def get_available_dates():
     claims = get_jwt_claims()
-
-    def query_kind_has_any_permissions(query_kind):
-        perms = claims[query_kind]["permissions"]
-        return any([perms["run"], perms["poll"], perms["get_result"]])
-
-    if not any(
-        [query_kind_has_any_permissions(query_kind) for query_kind in claims.keys()]
-    ):
-        return jsonify({"status": "error", "msg": "Not allowed to "}), 401
+    allowed_to_access_available_dates = (
+        claims.get("available_dates", {})
+        .get("permissions", {})
+        .get("get_result", False)
+    )
+    if not allowed_to_access_available_dates:
+        return (
+            jsonify(
+                {"status": "error", "msg": "Not allowed to access available dates."}
+            ),
+            401,
+        )
 
     json_data = await request.json
     if json_data is None:
