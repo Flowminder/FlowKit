@@ -80,7 +80,7 @@ class Connection:
             self.session.verify = ssl_certificate
         self.session.headers["Authorization"] = f"Bearer {self.token}"
 
-    def get_url(self, route: str) -> requests.Response:
+    def get_url(self, route: str, data: Union[None, dict] = None) -> requests.Response:
         """
         Attempt to get something from the API, and return the raw
         response object if an error response wasn't received.
@@ -91,6 +91,9 @@ class Connection:
         route : str
             Path relative to API host to get
 
+        data : dict, optional
+            JSON data to send in the request body (optional)
+
         Returns
         -------
         requests.Response
@@ -99,7 +102,9 @@ class Connection:
         logger.debug(f"Getting {self.url}/api/{self.api_version}/{route}")
         try:
             response = self.session.get(
-                f"{self.url}/api/{self.api_version}/{route}", allow_redirects=False
+                f"{self.url}/api/{self.api_version}/{route}",
+                allow_redirects=False,
+                data=data,
             )
         except ConnectionError as e:
             error_msg = f"Unable to connect to FlowKit API at {self.url}: {e}"
