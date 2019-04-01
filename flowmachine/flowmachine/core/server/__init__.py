@@ -7,7 +7,6 @@ import sys
 
 import structlog
 
-__all__ = ["query_run_log"]
 
 # Logger for all queries run or accessed
 query_run_log = logging.getLogger("flowmachine").getChild("query_run_log")

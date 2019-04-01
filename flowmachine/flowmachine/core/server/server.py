@@ -23,7 +23,7 @@ logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 query_run_log = structlog.get_logger("flowmachine.query_run_log")
 
 
-async def get_reply_for_message(msg_str: str) -> dict:
+def get_reply_for_message(msg_str: str) -> dict:
     """
     Parse the zmq message string, perform the desired action and return the result in JSON format.
 
@@ -194,3 +194,7 @@ def main():
     asyncio.run(
         recv(port), debug=debug_mode
     )  # note: asyncio.run() requires Python 3.7+
+
+
+if __name__ == "__main__":
+    main()
