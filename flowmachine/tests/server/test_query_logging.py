@@ -11,8 +11,7 @@ from flowmachine.core.server.server import get_reply_for_message
 from flowmachine.core import Query
 
 
-@pytest.mark.asyncio
-async def test_query_run_logged(json_log):
+def test_query_run_logged(json_log):
     # Local import so pytest can capture stdout
     logger = getLogger("flowmachine.query_run_log")
     logger.handlers[0].stream = sys.stdout  # Reset log stream for capsys
@@ -25,7 +24,7 @@ async def test_query_run_logged(json_log):
     Query.redis.get.return_value = (
         b"known"
     )  # Mock enough redis to get to the log messages
-    reply = await get_reply_for_message(json.dumps(msg_contents))
+    reply = get_reply_for_message(json.dumps(msg_contents))
 
     log_lines = json_log()
     print(reply)
