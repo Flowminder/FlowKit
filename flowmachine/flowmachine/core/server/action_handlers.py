@@ -284,12 +284,11 @@ def action_handler__get_available_dates(event_types=None):
             [table_name for table_name, _, _, _ in conn.available_tables]
         )
 
-    available_dates = conn.available_dates(table=event_types)
-    res = {
+    available_dates = {
         event_type: [date.strftime("%Y-%m-%d") for date in dates]
-        for (event_type, dates) in available_dates.items()
+        for (event_type, dates) in conn.available_dates(table=event_types).items()
     }
-    return ZMQReply(status="success", payload=res)
+    return ZMQReply(status="success", payload=available_dates)
 
 
 def get_action_handler(action):
