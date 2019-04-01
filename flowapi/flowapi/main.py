@@ -108,7 +108,7 @@ def close_zmq(exc):
 
 async def create_db():
     dsn = current_app.config["FLOWDB_DSN"]
-    current_app.pool = await asyncpg.create_pool(dsn, max_size=20)
+    current_app.db_conn_pool = await asyncpg.create_pool(dsn, max_size=20)
 
 
 def create_app():
