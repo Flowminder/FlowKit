@@ -296,7 +296,7 @@ def action_handler__get_available_dates(event_types=None):
     conn = Query.connection
     if event_types is None:
         event_types = tuple(
-            [table_name for table_name, _, _, _ in conn.available_tables]
+            sorted([table_name for table_name, _, _, _ in conn.available_tables])
         )
     elif isinstance(event_types, (list, tuple)):
         event_types = tuple(event_types)
