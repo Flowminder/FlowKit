@@ -307,7 +307,9 @@ def action_handler__get_available_dates(event_types=None):
 
     available_dates = {
         event_type: [date.strftime("%Y-%m-%d") for date in dates]
-        for (event_type, dates) in conn.available_dates(table=event_types).items()
+        for (event_type, dates) in conn.available_dates(
+            table=event_types, strictness=2
+        ).items()
     }
     return ZMQReply(status="success", payload=available_dates)
 
