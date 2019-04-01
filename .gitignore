@@ -117,3 +117,6 @@ venv.bak/
 tags
 flowauth/test_results/pytest/results.xml
 /integration_tests/test_results/
+
+# Approvaltests: output of test runs
+*.received.txt
