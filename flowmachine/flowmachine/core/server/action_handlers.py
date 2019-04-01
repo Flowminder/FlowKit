@@ -280,7 +280,9 @@ def action_handler__get_geography(aggregation_unit):
 def action_handler__get_available_dates(event_types=None):
     conn = Query.connection
     if event_types is None:
-        event_types = tuple([x[0] for x in conn.available_tables])
+        event_types = tuple(
+            [table_name for table_name, _, _, _ in conn.available_tables]
+        )
 
     available_dates = conn.available_dates(table=event_types)
     res = {
