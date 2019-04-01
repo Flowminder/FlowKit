@@ -1,0 +1,28 @@
+---
+test_name: Test available dates
+
+includes:
+  - !include common.yaml
+
+marks:
+  - usefixtures:
+      - universal_access_token
+
+stages:
+  - name: Ensure available dates returned are as expected
+
+    request:
+      url: "{protocol}://{host}:{port}/api/{api_version}/available_dates"
+      method: GET
+      headers:
+        Authorization: "Bearer {universal_access_token:s}"
+
+    response:
+      status_code: 200
+      body:
+        available_dates:
+          calls:    ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07", "2016-09-09"]
+          topups:   ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07", "2016-09-09"]
+          mds:      ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07", "2016-09-09"]
+          sms:      ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07"]
+          forwards: []

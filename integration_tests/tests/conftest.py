@@ -142,6 +142,29 @@ def access_token_builder():
     return token_maker
 
 
+from .utils import query_kinds, permissions_types, aggregation_types
+
+
+@pytest.fixture
+def universal_access_token(access_token_builder):
+    all_claims = {
+        query_kind: {
+            "permissions": permissions_types,
+            "spatial_aggregation": aggregation_types,
+        }
+        for query_kind in query_kinds
+    }
+    all_claims.update(
+        {
+            "geography": {
+                "permissions": permissions_types,
+                "spatial_aggregation": aggregation_types,
+            }
+        }
+    )
+    return access_token_builder(all_claims)
+
+
 @pytest.fixture(scope="session")
 def zmq_host():
     """
