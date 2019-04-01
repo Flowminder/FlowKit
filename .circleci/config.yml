@@ -182,7 +182,8 @@ jobs:
             echo Tagging as testdata-$SAFE_TAG and testdata-$CIRCLE_WORKFLOW_ID
             docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-testdata:$SAFE_TAG -t flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID \
             flowdb/testdata
-          background: false
+            touch .testdata-build-done
+          background: true
       - run:
           name: Build image with Oracle
           command: |
@@ -190,6 +191,7 @@ jobs:
             echo Tagging as oracle-$SAFE_TAG
             docker build --build-arg CODE_VERSION=$SAFE_TAG --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
              -t flowminder/flowdb:oracle-$SAFE_TAG flowdb/oracle_fdw
+            touch .oracle-build-done
           background: true
       - run:
           name: Build synthetic data image
@@ -198,6 +200,8 @@ jobs:
             echo Tagging as synthetic-data-$SAFE_TAG synthetic-data-$CIRCLE_WORKFLOW_ID
             docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-synthetic-data:$SAFE_TAG -t flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID \
               -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
+            touch .synthetic-data-build-done
+          background: true
       - run:
          name: Test that not providing a superuser password causes the container to exit
          command: |
@@ -210,6 +214,12 @@ jobs:
           name: Create data dir
           command: |
             mkdir $FLOWDB_DATA_DIR
+      - run:
+          name: Wait for container builds to complete
+          command:
+            while [ ! -f ".synthetic-data-build-done" ] || [ ! -f ".oracle-build-done" ] || [ ! -f ".testdata-build-done" ] do;
+              echo "Waiting for docker image builds to complete"
+            done
       - run:
           name: Launch flowdb
           command: |
