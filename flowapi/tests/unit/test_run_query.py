@@ -4,7 +4,7 @@
 
 import pytest
 
-from flowapi.zmq_helpers import ZMQReply
+from tests.unit.zmq_helpers import ZMQReply
 
 
 @pytest.mark.asyncio
