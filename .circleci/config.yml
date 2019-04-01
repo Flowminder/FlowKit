@@ -217,7 +217,7 @@ jobs:
       - run:
           name: Wait for container builds to complete
           command: |
-            while [ ! -f ".synthetic-data-build-done" ] || [ ! -f ".oracle-build-done" ] || [ ! -f ".testdata-build-done" ] do;
+            while [ ! -f ".synthetic-data-build-done" ] || [ ! -f ".oracle-build-done" ] || [ ! -f ".testdata-build-done" ]; do
               echo "Waiting for docker image builds to complete"
             done
       - run:
