@@ -10,9 +10,6 @@ import flowmachine
 from flowmachine.core import CustomQuery
 from flowmachine.core.subscriber_subsetter import *
 
-# TODO: This call to flowmachine.connect() is needed to create
-flowmachine.connect(db_pass="foo", redis_password="fm_redis")
-
 
 @pytest.mark.parametrize(
     "input_subset, expected_subsetter_type",
