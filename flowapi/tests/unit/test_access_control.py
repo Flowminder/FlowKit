@@ -177,6 +177,14 @@ async def test_granular_json_access(
     [
         {"permissions": {"get_result": True}, "spatial_aggregation": []},
         {"permissions": {}, "spatial_aggregation": ["DUMMY_AGGREGATION"]},
+        {
+            "permissions": {"get_result": True},
+            "spatial_aggregation": ["A_DIFFERENT_AGGREGATION"],
+        },
+        {
+            "permissions": {"get_result": False},
+            "spatial_aggregation": ["DUMMY_AGGREGATION"],
+        },
     ],
 )
 async def test_no_result_access_without_both_claims(
