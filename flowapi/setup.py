@@ -29,7 +29,7 @@ setup(
         "quart",
         "pyzmq",
         "hypercorn",
-        "ujson",
+        "python-rapidjson",
         "structlog",
         "flask-jwt-extended",
         "asyncpg",
