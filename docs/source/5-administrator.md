@@ -108,7 +108,7 @@ If authentication fails, then the reason is also included in the log message, al
 
 After a request is successfully authenticated (has a valid token), the _nature_ of the request will be logged at several points. When the request is received, if at any point the request is rejected because the provided token did not grant access, and when the request is fulfilled.
 
-As with the authentication log, the usage log is written to stdout a logger named `flowapi.query`.
+As with the authentication log, the usage log is written to stdout using a logger named `flowapi.query`.
 
 #### FlowMachine Usage Logs
 
