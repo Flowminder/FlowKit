@@ -257,10 +257,7 @@ def user_loader_callback(identity):
         src_ip=request.headers.get("Remote-Addr"),
     )
 
-    try:
-        claims = get_jwt_claims()
-    except KeyError:
-        return None
+    claims = get_jwt_claims()
 
     log_dict = dict(
         request_id=request.request_id,
