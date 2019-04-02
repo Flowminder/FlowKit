@@ -402,7 +402,7 @@ def test_get_available_dates(
     event_types, expected_result, access_token_builder, flowapi_url
 ):
     """
-    Test that queries can be run, and return a GeoJSON dict.
+    Test that queries can be run, and return the expected JSON result.
     """
     con = flowclient.Connection(
         flowapi_url,
