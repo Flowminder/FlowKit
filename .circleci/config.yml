@@ -85,6 +85,8 @@ executors:
         FLOWDB_PORT: 5432
         FM_PASSWORD: foo
         API_PASSWORD: foo
+        DB_PASSWORD: foo
+        REDIS_PASSWORD: fm_redis
         SYNTHETIC_DATA_DB_PORT: 5432
         POSTGRES_USER: flowdb
         REDIS_HOST: "localhost"
