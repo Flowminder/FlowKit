@@ -65,3 +65,21 @@ async def test_get_available_dates(zmq_port, zmq_host):
         },
     }
     assert expected_reply == reply
+
+
+@pytest.mark.parametrize(
+    "event_types", ["not_a_list_of_event_types", ("foobar", "invalid_event_type")]
+)
+async def test_invalid_event_types(event_types, zmq_port, zmq_host):
+    """
+    Action 'get_available_dates' returns an error if invalid event types are passed.
+    """
+    msg = {
+        "action": "get_available_dates",
+        "request_id": "DUMMY_ID",
+        "event_types": event_types,
+    }
+
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
+    assert reply["status"] == "error"
+    assert reply["msg"] == "Invalid value for argument `event_types`."
