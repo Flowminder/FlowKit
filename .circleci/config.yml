@@ -85,6 +85,8 @@ executors:
         FLOWDB_PORT: 5432
         FM_PASSWORD: foo
         API_PASSWORD: foo
+        FLOWDB_PASS: foo
+        REDIS_PASSWORD: fm_redis
         SYNTHETIC_DATA_DB_PORT: 5432
         POSTGRES_USER: flowdb
         REDIS_HOST: "localhost"
@@ -264,7 +266,7 @@ jobs:
       - checkout
       - restore_cache:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
-      - run: cd flowmachine && pipenv install --dev --deploy --skip-lock && pipenv run pip install -e .
+      - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
       - save_cache:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:

@@ -1,10 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import json
+from json import JSONDecodeError
 
 import asyncpg
 import pytest
 import zmq
+from _pytest.capture import CaptureResult
+
 from flowapi.main import create_app
 from asynctest import MagicMock, Mock, CoroutineMock
 from datetime import timedelta
@@ -20,6 +24,31 @@ def async_return(result):
     f = Future()
     f.set_result(result)
     return f
+
+
+@pytest.fixture
+def json_log(capsys):
+    def parse_json():
+        log_output = capsys.readouterr()
+        stdout = []
+        stderr = []
+        for l in log_output.out.split("\n"):
+            if l == "":
+                continue
+            try:
+                stdout.append(json.loads(l))
+            except JSONDecodeError:
+                stdout.append(l)
+        for l in log_output.err.split("\n"):
+            if l == "":
+                continue
+            try:
+                stderr.append(json.loads(l))
+            except JSONDecodeError:
+                stderr.append(l)
+        return CaptureResult(stdout, stderr)
+
+    return parse_json
 
 
 @pytest.fixture
@@ -66,7 +95,6 @@ def dummy_db_pool(monkeypatch):
     )
 
     async def f(*args, **kwargs):
-        print("Creating dummy db pool.")
         return dummy
 
     monkeypatch.setattr(asyncpg, "create_pool", f)
@@ -104,7 +132,7 @@ def access_token_builder():
 
 @pytest.fixture
 def app(monkeypatch, tmpdir, dummy_db_pool):
-    monkeypatch.setenv("LOG_DIRECTORY", str(tmpdir))
+    monkeypatch.setenv("LOG_LEVEL", "DEBUG")
     monkeypatch.setenv("SERVER", "localhost")
     monkeypatch.setenv("FLOWDB_USER", "flowdb")
     monkeypatch.setenv("FLOWDB_HOST", "localhost")

@@ -11,7 +11,6 @@ from time import sleep
 
 import pytest
 import os
-import requests
 import zmq
 
 import flowmachine
@@ -22,18 +21,15 @@ import quart.flask_patch
 
 
 @pytest.fixture(scope="session")
-def logging_config(tmpdir_factory):
+def logging_config():
     """
     Fixture which configures logging for flowmachine and flowapi.
-    Creates a temporary directory for log files to be written to, and sets the log level to debug.
+    Sets the log level to debug.
     """
-    tmpdir = tmpdir_factory.mktemp("logs")
     from _pytest.monkeypatch import MonkeyPatch
 
     mpatch = MonkeyPatch()
-    mpatch.setenv("LOG_DIRECTORY", str(tmpdir))
     mpatch.setenv("LOG_LEVEL", "debug")
-    print(f"Logs will be written to {tmpdir}")
     yield
     mpatch.undo()
 

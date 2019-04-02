@@ -34,12 +34,12 @@ def test_get_query_bad_id():
 @pytest.mark.parametrize(
     "query_state", [state for state in QueryState if state is not QueryState.COMPLETED]
 )
-def test_get_sql_error_states(query_state, dummy_redis):
+def test_get_sql_error_states(query_state, dummy_redis, monkeypatch):
     """
     Test that get_sql handler replies with an error state when the query
     is not finished.
     """
-    Query.redis = dummy_redis
+    monkeypatch.setattr(Query, "redis", dummy_redis)
     dummy_redis.set("DUMMY_QUERY_ID", "KNOWN")
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
     dummy_redis.set(state_machine.state_machine._name, query_state)

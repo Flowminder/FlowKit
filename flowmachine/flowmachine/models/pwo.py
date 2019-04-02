@@ -39,7 +39,7 @@ from ..features.spatial.distance_matrix import DistanceMatrix
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class _populationBuffer(Query):

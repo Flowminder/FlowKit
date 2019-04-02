@@ -24,7 +24,7 @@ from flowmachine.core.errors import BadLevelError
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 def getsecret(key: str, default: str) -> str:

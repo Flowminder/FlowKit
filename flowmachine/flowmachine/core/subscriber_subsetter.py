@@ -130,6 +130,7 @@ class SubscriberSubsetterForFlowmachineQuery(SubscriberSubsetterBase):
 
         self._verify_that_subscriber_column_is_present(flowmachine_query)
         self.flowmachine_query = flowmachine_query
+        super().__init__()
 
     def _verify_that_subscriber_column_is_present(self, flowmachine_query):
         """
@@ -210,6 +211,7 @@ class SubscriberSubsetterForExplicitSubset(SubscriberSubsetterBase):
             )
 
         self.subscribers = subscribers
+        super().__init__()
 
     def _make_query(self):
         # Return a dummy string representing this subset. This is only needed

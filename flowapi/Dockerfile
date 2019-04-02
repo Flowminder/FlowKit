@@ -9,7 +9,5 @@ COPY Pipfile* /
 RUN pip install pipenv && pipenv install --deploy
 COPY . /flowapi/
 RUN pipenv install --skip-lock .
-RUN mkdir /var/log/flowapi
-VOLUME /var/log/flowapi
 ENV QUART_ENV=production
 CMD ["pipenv", "run", "./start.sh"]
