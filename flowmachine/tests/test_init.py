@@ -39,7 +39,7 @@ def test_log_level_set_env(monkeypatch):
 def test_log_level_set(monkeypatch):
     """Test that a log level can be set via param."""
 
-    connectlog_level="critical")
+    connect(log_level="critical")
     assert logging.CRITICAL == logging.getLogger("flowmachine.debug").level
 
 
