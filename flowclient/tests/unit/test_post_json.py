@@ -7,7 +7,8 @@ from requests import ConnectionError
 
 import flowclient
 from flowclient.client import FlowclientConnectionError
-from flowclient.zmq_helpers import ZMQReply
+
+from .zmq_helpers import ZMQReply
 
 
 @pytest.mark.parametrize("status_code", [202])
