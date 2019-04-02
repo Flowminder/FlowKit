@@ -53,8 +53,17 @@ class HandsetStats(SubscriberFeature):
     Examples
     --------
 
-    >>> s = HandsetStats("2016-01-01", "2016-01-08", "width")
+    >>> s = HandsetStats("width",
+        subscriber_handsets=SubscriberHandsets("2016-01-01", "2016-01-08"))
     >>> s.get_dataframe()
+
+              subscriber      value
+        2ZdMowMXoyMByY07  30.387672
+        MobnrVMDK24wPRzB  28.764593
+        0Ze1l70j0LNgyY4w  26.664206
+        Nnlqka1oevEMvVrm  30.570331
+        gPZ7jbqlnAXR3JG5  30.049870
+                     ...        ...
     """
 
     def __init__(self, characteristic, statistic="avg", *, subscriber_handsets):
