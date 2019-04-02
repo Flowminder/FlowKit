@@ -11,7 +11,7 @@ from flask_jwt_extended import get_jwt_claims, get_jwt_identity
 from quart import current_app, request
 
 
-class UserObject(JSONEncoder):
+class UserObject:
     """
     Class to represent a user's permissions as loaded from a JWT.
     Provided methods which check a user has access to perform specific actions
@@ -249,6 +249,20 @@ class UserObject(JSONEncoder):
 
 
 def user_loader_callback(identity):
+    """
+    Call back for loading user from JWT.
+
+    Parameters
+    ----------
+    identity : str
+        Username
+
+    Returns
+    -------
+    UserObject
+        User with claims pulled from the decoded jwt token
+
+    """
     current_app.access_logger.info(
         "Attempting to load user",
         request_id=request.request_id,
