@@ -1,0 +1,45 @@
+---
+test_name: Test available dates
+
+includes:
+  - !include common.yaml
+
+marks:
+  - usefixtures:
+      - universal_access_token
+
+stages:
+  - name: Without explicit event types available dates are returned for all available event types.
+
+    request:
+      url: "{protocol}://{host}:{port}/api/{api_version}/available_dates"
+      method: GET
+      headers:
+        Authorization: "Bearer {universal_access_token:s}"
+
+    response:
+      status_code: 200
+      body:
+        available_dates:
+          calls:    ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07"]
+          topups:   ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07"]
+          mds:      ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07"]
+          sms:      ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07"]
+          forwards: []
+
+  - name: Available dates can be limited to specific event types.
+
+    request:
+      url: "{protocol}://{host}:{port}/api/{api_version}/available_dates"
+      method: GET
+      json:
+        event_types: ["sms", "topups"]
+      headers:
+        Authorization: "Bearer {universal_access_token:s}"
+
+    response:
+      status_code: 200
+      body:
+        available_dates:
+          sms:      ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07"]
+          topups:   ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07"]

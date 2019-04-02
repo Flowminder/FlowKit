@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 - Added new `ContactReferenceLocationStats` query class to FlowMachine.
-
+- A new zmq message `get_available_dates` was added to the flowmachine server, along with the `/available_dates`
+  endpoint in flowapi and the function `get_available_dates()` in flowclient. These allow to determine the dates
+  that are available in the database for the supported event types.
 
 ### Changed
 - FlowMachine's debugging logs are now from a single logger (`flowmachine.debug`) and include the submodule in the submodule field instead of using it as the logger name

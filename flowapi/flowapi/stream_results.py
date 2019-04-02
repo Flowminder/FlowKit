@@ -28,7 +28,7 @@ async def stream_result_as_json(
 
     """
     logger = current_app.flowapi_logger
-    pool = current_app.pool
+    db_conn_pool = current_app.db_conn_pool
     prefix = "{"
     if additional_elements:
         for key, value in additional_elements.items():
@@ -37,7 +37,7 @@ async def stream_result_as_json(
     yield prefix.encode()
     prepend = ""
     logger.debug("Starting generator.", request_id=request.request_id)
-    async with pool.acquire() as connection:
+    async with db_conn_pool.acquire() as connection:
         # Configure asyncpg to encode/decode JSON values
         await connection.set_type_codec(
             "json", encoder=json.dumps, decoder=json.loads, schema="pg_catalog"
