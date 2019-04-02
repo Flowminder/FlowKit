@@ -18,7 +18,7 @@ from ...core import CustomQuery
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class MultiLocation:

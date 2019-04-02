@@ -22,7 +22,7 @@ from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class EventTableSubset(Query):

@@ -28,7 +28,10 @@ del get_versions
 
 import structlog
 import rapidjson
+import logging
 
+root_logger = logging.getLogger("flowmachine")
+root_logger.setLevel(logging.DEBUG)
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,

@@ -4,16 +4,14 @@
 
 import logging
 import pytest
-import structlog
 
 from flowmachine import connect
-from flowmachine.core import Query
 
 
 @pytest.fixture(autouse=True)
 def reset_connect(monkeypatch):
     monkeypatch.delattr("flowmachine.core.Query.connection")
-    logging.getLogger("flowmachine").handlers = []
+    logging.getLogger("flowmachine.debug").handlers = []
 
 
 def test_double_connect_warning(monkeypatch):
@@ -21,47 +19,34 @@ def test_double_connect_warning(monkeypatch):
     connect()
     with pytest.warns(UserWarning):
         connect()
-    assert 1 == len(logging.getLogger("flowmachine").handlers)
+    assert 1 == len(logging.getLogger("flowmachine.debug").handlers)
 
 
 def test_bad_log_level_goes_to_error(monkeypatch):
     """Test that a bad log level is coerced to ERROR."""
     monkeypatch.setenv("LOG_LEVEL", "BAD_LEVEL")
     connect()
-    assert logging.ERROR == logging.getLogger("flowmachine").level
+    assert logging.ERROR == logging.getLogger("flowmachine.debug").level
 
 
 def test_log_level_set_env(monkeypatch):
     """Test that a log level can be set via env."""
     monkeypatch.setenv("LOG_LEVEL", "INFO")
     connect()
-    assert logging.INFO == logging.getLogger("flowmachine").level
+    assert logging.INFO == logging.getLogger("flowmachine.debug").level
 
 
 def test_log_level_set(monkeypatch):
     """Test that a log level can be set via param."""
 
     connect(log_level="critical")
-    assert logging.CRITICAL == logging.getLogger("flowmachine").level
-
-
-def test_log_file_created(tmpdir, monkeypatch):
-    """Test that a file handler is created when a path to LOG_FILE is set."""
-    monkeypatch.setenv("LOG_DIRECTORY", str(tmpdir))
-    monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
-    connect()
-    structlog.get_logger("flowmachine").error("TEST_MESSAGE")
-    with open(tmpdir.join("flowmachine-debug.log")) as f:
-        log_lines = f.readline()
-    assert "TEST_MESSAGE" in log_lines
-    assert 2 == len(logging.getLogger("flowmachine").handlers)
+    assert logging.CRITICAL == logging.getLogger("flowmachine.debug").level
 
 
 def test_param_priority(mocked_connections, monkeypatch):
     """Explicit parameters to connect should be respected"""
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
-    monkeypatch.setenv("WRITE_LOG_FILE", "DUMMY_ENV_WRITE_LOG_FILE")
     monkeypatch.setenv("FLOWDB_PORT", "7777")
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
@@ -76,7 +61,6 @@ def test_param_priority(mocked_connections, monkeypatch):
     )
     connect(
         log_level="dummy_log_level",
-        write_log_file=False,
         db_port=1234,
         db_user="dummy_db_user",
         db_pass="dummy_db_pass",
@@ -87,7 +71,7 @@ def test_param_priority(mocked_connections, monkeypatch):
         redis_port=1213,
         redis_password="dummy_redis_password",
     )
-    core_init_logging_mock.assert_called_with("dummy_log_level", False)
+    core_init_logging_mock.assert_called_with("dummy_log_level")
     core_init_Connection_mock.assert_called_with(
         port=1234,
         user="dummy_db_user",
@@ -109,7 +93,6 @@ def test_env_priority(mocked_connections, monkeypatch):
     """Env vars should be used over defaults in connect"""
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
-    monkeypatch.setenv("WRITE_LOG_FILE", "TRUE")
     monkeypatch.setenv("FLOWDB_PORT", "6969")
     monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
     monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
@@ -123,7 +106,7 @@ def test_env_priority(mocked_connections, monkeypatch):
         mocked_connections
     )
     connect()
-    core_init_logging_mock.assert_called_with("DUMMY_ENV_LOG_LEVEL", True)
+    core_init_logging_mock.assert_called_with("DUMMY_ENV_LOG_LEVEL")
     core_init_Connection_mock.assert_called_with(
         port=6969,
         user="DUMMY_ENV_FLOWDB_USER",
@@ -148,7 +131,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
         mocked_connections
     )
     connect()
-    core_init_logging_mock.assert_called_with("error", False)
+    core_init_logging_mock.assert_called_with("error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
         user="analyst",

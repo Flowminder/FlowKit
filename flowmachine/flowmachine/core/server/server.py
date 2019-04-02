@@ -5,6 +5,8 @@
 import asyncio
 import os
 import rapidjson
+
+
 import signal
 import structlog
 import zmq
@@ -16,11 +18,12 @@ from .action_handlers import perform_action
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply, parse_zmq_message
 
-logger = structlog.get_logger(__name__)
-query_run_log = structlog.get_logger("flowmachine-server")
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
+query_run_log = structlog.get_logger("flowmachine.query_run_log")
 
 
-def get_reply_for_message(msg_str):
+def get_reply_for_message(msg_str: str) -> dict:
     """
     Parse the zmq message string, perform the desired action and return the result in JSON format.
 
@@ -191,3 +194,7 @@ def main():
     asyncio.run(
         recv(port), debug=debug_mode
     )  # note: asyncio.run() requires Python 3.7+
+
+
+if __name__ == "__main__":
+    main()
