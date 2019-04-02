@@ -118,3 +118,6 @@ tags
 flowauth/test_results/pytest/results.xml
 /integration_tests/test_results/
 docs/source/_static/openapi-redoc.json
+
+# Approvaltests: output of test runs
+*.received.txt

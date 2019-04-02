@@ -16,9 +16,11 @@ mkdocs-material = "*"
 ipykernel = "*"
 geopandas = "*"
 numpydoc = "*"
-black = "==18.9b0"
+black = "==19.3b0"
 click = "*"
-flowmachine = {editable = true,path = "./../flowmachine"}
+flowmachine = {editable = true, path = "./../flowmachine"}
+marshmallow = {editable = true, ref = "3.0.0rc5", git = "https://github.com/marshmallow-code/marshmallow.git"} # Temporarily required while there's a marshmallow versions conflict
+marshmallow-oneofschema = {editable = true, ref = "8195dc3e595fa33a5f007f10ba7cfc08f2177515", git = "https://github.com/marshmallow-code/marshmallow-oneofschema.git"} # Temporarily required while there's a marshmallow versions conflict
 descartes = "*"
 seaborn = "*"
 flowclient = {editable = true,path = "./../flowclient"}

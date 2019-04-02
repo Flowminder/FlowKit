@@ -46,10 +46,10 @@ FROM (SELECT times_visited.subscriber,
                                          FROM infrastructure.cells AS locinfo
                                               INNER JOIN geography.admin2 AS polygon ON st_within(locinfo.geom_point::geometry,
                                                                                                   st_setsrid(polygon.geom, 4326)::geometry)) AS map) AS sites ON (l.location_id = sites.location_id)
-                                                                                                                                                             AND l.time::date BETWEEN COALESCE(sites.date_of_first_service,
-                                                                                                                                                                                               '-infinity'::timestamptz)
-                                                                                                                                                                                  AND COALESCE(sites.date_of_last_service,
-                                                                                                                                                                                               'infinity'::timestamptz)
+                                                                                                                                                             AND (l.time)::date BETWEEN COALESCE(sites.date_of_first_service,
+                                                                                                                                                                                                 ('-infinity')::timestamptz)
+                                                                                                                                                                                    AND COALESCE(sites.date_of_last_service,
+                                                                                                                                                                                                 ('infinity')::timestamptz)
                   ORDER BY time) AS subscriber_locs
             GROUP BY subscriber_locs.subscriber, admin2pcod) AS times_visited) AS ranked
 WHERE rank = 1
