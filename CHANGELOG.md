@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowMachine's query run logger now uses the logger name `flowmachine.query_run_log`
 - FlowAPI's access, run and debug loggers are now named `flowapi.access`, `flowapi.query` and `flowapi.debug`
 - FlowAPI's access and run loggers, and FlowMachine's query run logger now log to stdout instead of stderr
+- Passwords for Redis and FlowDB must now be explicitly provided to flowmachine via argument to `connect`, env var, or secret
 
 
 ### Fixed

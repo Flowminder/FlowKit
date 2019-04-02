@@ -130,7 +130,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
     )
-    connect()
+    connect(db_pass="foo", redis_password="fm_redis")
     core_init_logging_mock.assert_called_with("error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
@@ -147,3 +147,13 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_start_threadpool_mock.assert_called_with(
         thread_pool_size=5
     )  # for the time being, we should have num_threads = num_db_connections
+
+
+@pytest.mark.usefixtures("clean_env")
+@pytest.mark.parametrize(
+    "args", [{}, {"db_pass": "foo"}, {"redis_password": "fm_redis"}]
+)
+def test_connect_passwords_required(args):
+    """Test connect raises a valueerror if no password is set for db or redis"""
+    with pytest.raises(ValueError):
+        connect(**args)
