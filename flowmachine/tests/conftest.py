@@ -106,7 +106,7 @@ def skip_datecheck(request, monkeypatch):
 
 @pytest.fixture(autouse=True)
 def flowmachine_connect():
-    con = flowmachine.connect(db_pass="foo", redis_password="fm_redis")
+    con = flowmachine.connect()
     yield con
     reset_cache(con)
     con.engine.dispose()  # Close the connection
