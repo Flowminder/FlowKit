@@ -26,6 +26,11 @@ nav:
   - administrator.md
   - license.md
   - dev_environment_setup.md
+  - Worked examples:
+      - worked_examples/index.md
+      - worked_examples/Flows.ipynb
+      - worked_examples/mobile-data-usage.ipynb
+      - commuting-patterns.ipynb
   - FlowAPI specification: api-spec.html
   - api-docs-flowmachine
   - FlowClient:

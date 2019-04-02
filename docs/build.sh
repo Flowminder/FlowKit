@@ -18,7 +18,7 @@ KillJobs() {
 TrapQuit() {
     if [ "$CI" != "true" ]; then
 	    echo "Bringing down containers."
-	    #docker-compose -f docs-build-containers.yml down
+	    docker-compose -f docs-build-containers.yml down
 	fi
 
 	echo "Shutting down FlowMachine and FlowAPI"
