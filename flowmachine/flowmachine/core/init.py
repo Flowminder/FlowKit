@@ -105,7 +105,7 @@ def connect(
         else db_user
     )
     db_pass = (
-        getsecret("FLOWDB_PASS", os.getenv("FLOWDB_PASS", "foo"))
+        getsecret("FLOWDB_PASS", os.getenv("FLOWDB_PASS"))
         if db_pass is None
         else db_pass
     )
@@ -142,10 +142,20 @@ def connect(
         else redis_port
     )
     redis_pw = (
-        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD", "fm_redis"))
+        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD"))
         if redis_password is None
         else redis_password
     )
+
+    if db_pass is None:
+        raise ValueError(
+            "You must provide a secret named FLOWDB_PASS, set an environment variable named FLOWDB_PASS, or provide a db_pass argument."
+        )
+
+    if redis_pw is None:
+        raise ValueError(
+            "You must provide a secret named REDIS_PASSWORD_FILE, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
+        )
 
     try:
         Query.connection

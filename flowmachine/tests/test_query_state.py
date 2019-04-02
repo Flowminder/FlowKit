@@ -67,7 +67,6 @@ def test_blocks(blocking_state, monkeypatch, dummy_redis):
 def test_no_limit_on_blocks(monkeypatch):
     """Test that even with a large number of queries, starting a store op will block calls to get_query."""
 
-    flowmachine.connect()
     monkeypatch.setattr(
         flowmachine.core.query_state, "_sleep", Mock(side_effect=BlockingIOError)
     )
@@ -81,7 +80,6 @@ def test_no_limit_on_blocks(monkeypatch):
 def test_non_blocking(monkeypatch):
     """Test that states which do not alter the executing state of the query don't block."""
 
-    flowmachine.connect()
     dummies = [DummyQuery(dummy_id=x) for x in range(50)]
     [dummy.store() for dummy in dummies]
     monkeypatch.setattr(

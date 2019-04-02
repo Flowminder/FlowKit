@@ -40,7 +40,8 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-error}
       - DEBUG=${FM_DEBUG:-False}
       - REDIS_HOST=${REDIS_HOST:-redis}
-      - REDIS_PASSWORD={REDIS_PASSWORD:-fm_redis}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set redis password}
+      - FLOWDB_PASS=${FLOWDB_PASS:?Must set FLOWDB_PASS}
     tty: true
     stdin_open: true
     networks:
@@ -73,7 +74,7 @@ services:
     container_name: redis_flowkit
     image: bitnami/redis:latest
     environment:
-      - REDIS_PASSWORD={REDIS_PASSWORD:-fm_redis}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set redis password}
     restart: always
     networks:
       redis:
