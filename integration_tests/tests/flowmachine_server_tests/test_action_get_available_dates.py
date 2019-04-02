@@ -69,7 +69,7 @@ async def test_get_available_dates(zmq_port, zmq_host):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "event_types", ["not_a_list_of_event_types", ("foobar", "invalid_event_type")]
+    "event_types", ["not_a_list_of_event_types",]
 )
 async def test_invalid_event_types(event_types, zmq_port, zmq_host):
     """
