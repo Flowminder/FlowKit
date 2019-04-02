@@ -30,7 +30,7 @@ nav:
       - worked_examples/index.md
       - worked_examples/Flows.ipynb
       - worked_examples/mobile-data-usage.ipynb
-      - commuting-patterns.ipynb
+      - worked_examples/commuting-patterns.ipynb
   - FlowAPI specification: api-spec.html
   - api-docs-flowmachine
   - FlowClient:
