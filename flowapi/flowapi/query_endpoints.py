@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+from flask_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
 from .stream_results import stream_result_as_json
 from .check_claims import check_claims
@@ -10,9 +10,20 @@ blueprint = Blueprint("query", __name__)
 
 
 @blueprint.route("/run", methods=["POST"])
-@check_claims("run")
+@jwt_required
 async def run_query():
     json_data = await request.json
+    try:
+        query_kind = json_data["query_kind"]
+    except KeyError:
+        error_msg = "Query kind must be specified when running a query."
+        return jsonify({"msg": error_msg}), 400
+    try:
+        aggregation_unit = json_data["aggregation_unit"]
+    except KeyError:
+        error_msg = "Aggregation unit must be specified when running a query."
+        return jsonify({"msg": error_msg}), 400
+    current_user.can_run(query_kind=query_kind, aggregation_unit=aggregation_unit)
     request.socket.send_json(
         {"request_id": request.request_id, "action": "run_query", "params": json_data}
     )

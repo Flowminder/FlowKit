@@ -1,9 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import sys
-import uuid
 
+import uuid
+import sys
+import ujson
 
 import quart.flask_patch
 from quart import Quart, request, current_app
@@ -20,8 +21,13 @@ from flask_jwt_extended import JWTManager
 
 import structlog
 
+from flowapi.user_model import user_loader_callback
+
+
 root_logger = logging.getLogger("flowapi")
 root_logger.setLevel(logging.DEBUG)
+
+
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,
@@ -31,7 +37,7 @@ structlog.configure(
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(),
+        structlog.processors.JSONRenderer(serializer=ujson.dumps),
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),
     wrapper_class=structlog.stdlib.BoundLogger,
@@ -120,5 +126,6 @@ def create_app():
     app.register_blueprint(geography_blueprint, url_prefix="/api/0")
 
     register_logging_callbacks(jwt)
+    jwt.user_loader_callback_loader(user_loader_callback)
 
     return app

@@ -250,11 +250,13 @@ async def test_access_logs_post(
 
     """
     client, db, log_dir, app = app
-    token = access_token_builder({query_kind: {"permissions": {}}})
+    token = access_token_builder(
+        {query_kind: {"permissions": {}, "spatial_aggregation": []}}
+    )
     response = await client.post(
         f"/api/0/run",
         headers={"Authorization": f"Bearer {token}"},
-        json={"query_kind": query_kind},
+        json={"query_kind": query_kind, "aggregation_unit": "admin3"},
     )
     assert 401 == response.status_code
 
