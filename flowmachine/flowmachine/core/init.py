@@ -105,7 +105,7 @@ def connect(
         else db_user
     )
     db_pass = (
-        getsecret("FLOWDB_PASS", os.getenv("FLOWDB_PASS", "foo"))
+        getsecret("FLOWDB_PASS", os.getenv("FLOWDB_PASS"))
         if db_pass is None
         else db_pass
     )
@@ -142,7 +142,7 @@ def connect(
         else redis_port
     )
     redis_pw = (
-        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD", "fm_redis"))
+        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD"))
         if redis_password is None
         else redis_password
     )
