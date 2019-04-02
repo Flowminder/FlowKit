@@ -130,7 +130,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
     )
-    connect()
+    connect(db_pass="foo", redis_password="fm_redis")
     core_init_logging_mock.assert_called_with("error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
