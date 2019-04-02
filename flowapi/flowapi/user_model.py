@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 from json import JSONEncoder
 
 from flask_jwt_extended.exceptions import UserClaimsVerificationError
@@ -10,6 +14,8 @@ from quart import current_app, request
 class UserObject(JSONEncoder):
     """
     Class to represent a user's permissions as loaded from a JWT.
+    Provided methods which check a user has access to perform specific actions
+    against API endpoints.
 
     Parameters
     ----------
@@ -47,6 +53,10 @@ class UserObject(JSONEncoder):
         bool
             True if the user can do 'action' with this query
 
+        Raises
+        ------
+        UserClaimsVerificationError
+            If the user cannot do action with this kind of query at this level of aggregation
         """
         try:
             action_rights = self.claims[query_kind]["permissions"][action]
@@ -68,6 +78,7 @@ class UserObject(JSONEncoder):
     def can_run(self, *, query_kind: str, aggregation_unit: str) -> bool:
         """
         Returns true if the user can run this kind of query at this unit of aggregation.
+
         Parameters
         ----------
         query_kind : str
@@ -80,15 +91,54 @@ class UserObject(JSONEncoder):
         bool
             True if the user can run this query
 
+        Raises
+        ------
+        UserClaimsVerificationError
+            If the user cannot run this kind of query at this level of aggregation
+
         """
 
         return self.has_access(
             action="run", query_kind=query_kind, aggregation_unit=aggregation_unit
         )
 
+    async def can_poll_by_query_id(self, *, query_id) -> bool:
+        """
+        Returns true if the user can poll this query.
+
+        Parameters
+        ----------
+        query_id : str
+            Identifier of the query.
+
+        Returns
+        -------
+        bool
+            True if the user can get the status of this query
+
+        Raises
+        ------
+        UserClaimsVerificationError
+            If the user cannot get the status of this kind of query at this level of aggregation
+        """
+        request.socket.send_json(
+            {
+                "request_id": request.request_id,
+                "action": "get_query_params",
+                "params": {"query_id": query_id},
+            }
+        )
+        reply = await request.socket.recv_json()
+        if reply["status"] == "success":
+            return self.can_poll(
+                query_kind=reply["payload"]["query_params"]["query_kind"],
+                aggregation_unit=reply["payload"]["query_params"]["aggregation_unit"],
+            )
+
     def can_poll(self, *, query_kind: str, aggregation_unit: str) -> bool:
         """
         Returns true if the user can poll this kind of query at this unit of aggregation.
+
         Parameters
         ----------
         query_kind : str
@@ -101,11 +151,48 @@ class UserObject(JSONEncoder):
         bool
             True if the user can poll this query
 
+        Raises
+        ------
+        UserClaimsVerificationError
+            If the user cannot get the status of this kind of query at this level of aggregation
         """
 
         return self.has_access(
             action="poll", query_kind=query_kind, aggregation_unit=aggregation_unit
         )
+
+    async def can_get_results_by_query_id(self, *, query_id) -> bool:
+        """
+        Returns true if the user can get the results of this query.
+
+        Parameters
+        ----------
+        query_id : str
+            Identifier of the query.
+
+        Returns
+        -------
+        bool
+            True if the user can get the results of this query
+
+        Raises
+        ------
+        UserClaimsVerificationError
+            If the user cannot get the results of this kind of query at this level of aggregation
+        """
+        request.socket.send_json(
+            {
+                "request_id": request.request_id,
+                "action": "get_query_params",
+                "params": {"query_id": query_id},
+            }
+        )
+        reply = await request.socket.recv_json()
+        if reply["status"] == "success":
+            return self.can_get_results(
+                query_kind=reply["payload"]["query_params"]["query_kind"],
+                aggregation_unit=reply["payload"]["query_params"]["aggregation_unit"],
+            )
 
     def can_get_results(self, *, query_kind: str, aggregation_unit: str) -> bool:
         """
@@ -122,6 +209,10 @@ class UserObject(JSONEncoder):
         bool
             True if the user can get the results of this query
 
+        Raises
+        ------
+        UserClaimsVerificationError
+            If the user cannot get the results of this kind of query at this level of aggregation
         """
 
         return self.has_access(
@@ -144,6 +235,10 @@ class UserObject(JSONEncoder):
         bool
             True if the user can get this geography
 
+        Raises
+        ------
+        UserClaimsVerificationError
+            If the user get geography at this level
         """
 
         return self.has_access(
@@ -174,6 +269,6 @@ def user_loader_callback(identity):
         src_ip=request.headers.get("Remote-Addr"),
         claims=claims,
     )
-    current_app.query_run_logger.info("Loaded user", **log_dict)
+    current_app.access_logger.info("Loaded user", **log_dict)
 
     return UserObject(username=identity, claims=claims)

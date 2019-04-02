@@ -149,6 +149,3 @@ ADD --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
 RUN chown -R postgres /docker-entrypoint-initdb.d
 
 EXPOSE 5432
-
-RUN mkdir /ok && touch /ok/ok
-EXPOSE 8000

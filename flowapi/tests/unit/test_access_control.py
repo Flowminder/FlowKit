@@ -43,7 +43,16 @@ async def test_granular_run_access(
 
     """
     client, db, log_dir, app = app
-    token = access_token_builder({query_kind: {"permissions": {"run": True}}})
+    token = access_token_builder(
+        {
+            query_kind: {
+                "permissions": {"run": True},
+                "spatial_aggregation": [
+                    exemplar_query_params[query_kind]["aggregation_unit"]
+                ],
+            }
+        }
+    )
     expected_responses = dict.fromkeys(query_kinds, 401)
     expected_responses[query_kind] = 202
     dummy_zmq_server.return_value = {
@@ -71,23 +80,31 @@ async def test_granular_poll_access(
 
     """
     client, db, log_dir, app = app
-    token = access_token_builder({query_kind: {"permissions": {"poll": True}}})
+    token = access_token_builder(
+        {
+            query_kind: {
+                "permissions": {"poll": True},
+                "spatial_aggregation": [
+                    exemplar_query_params[query_kind]["aggregation_unit"]
+                ],
+            }
+        }
+    )
     expected_responses = dict.fromkeys(query_kinds, 401)
     expected_responses[query_kind] = 303
 
     responses = {}
     for q_kind in query_kinds:
-        dummy_zmq_server.side_effect = return_once(
+        dummy_zmq_server.side_effect = (
             {
                 "status": "success",
                 "msg": "",
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
-                    "query_kind": q_kind,
-                    "query_state": "executing",
+                    "query_params": exemplar_query_params[q_kind],
                 },
             },
-            then={
+            {
                 "status": "success",
                 "msg": "",
                 "payload": {
@@ -120,7 +137,9 @@ async def test_granular_json_access(
         {
             query_kind: {
                 "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+                "spatial_aggregation": [
+                    exemplar_query_params[query_kind]["aggregation_unit"]
+                ],
             }
         }
     )
@@ -132,14 +151,9 @@ async def test_granular_json_access(
             {
                 "status": "success",
                 "msg": "",
-                "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": q_kind},
-            },
-            {
-                "status": "success",
-                "msg": "",
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
-                    "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
+                    "query_params": exemplar_query_params[q_kind],
                 },
             },
             {
@@ -178,7 +192,13 @@ async def test_no_result_access_without_both_claims(
         {
             "status": "success",
             "msg": "",
-            "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query"},
+            "payload": {
+                "query_id": "DUMMY_QUERY_ID",
+                "query_params": {
+                    "aggregation_unit": "DUMMY_AGGREGATION",
+                    "query_kind": "dummy_query",
+                },
+            },
         },
         {
             "status": "success",
@@ -195,9 +215,7 @@ async def test_no_result_access_without_both_claims(
         },
     )
     response = await client.get(
-        f"/api/0/get/DUMMY_QUERY_ID",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"query_kind": "DUMMY_QUERY_KIND"},
+        f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert 401 == response.status_code
 
@@ -216,24 +234,31 @@ async def test_access_logs_gets(
     """
     client, db, log_dir, app = app
     token = access_token_builder({query_kind: {"permissions": {}}})
-    dummy_zmq_server.return_value = {
-        "status": "success",
-        "msg": "",
-        "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query_kind"},
-    }
-    response = await client.get(
-        route,
-        headers={"Authorization": f"Bearer {token}"},
-        json={"query_kind": query_kind},
+    dummy_zmq_server.side_effect = (
+        {
+            "status": "success",
+            "payload": {
+                "query_id": "5ffe4a96dbe33a117ae9550178b81836",
+                "query_params": {
+                    "aggregation_unit": "DUMMY_AGGREGATION",
+                    "query_kind": "dummy_query_kind",
+                },
+            },
+        },
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query_kind"},
+        },
     )
+    response = await client.get(route, headers={"Authorization": f"Bearer {token}"})
     assert 401 == response.status_code
     log_lines = json_log().out
     assert 3 == len(log_lines)  # One access log, two query logs
     assert log_lines[0]["logger"] == "flowapi.access"
-    assert log_lines[1]["logger"] == "flowapi.query"
-    assert log_lines[2]["logger"] == "flowapi.query"
-    assert "DUMMY_QUERY_KIND" == log_lines[2]["query_kind"]
-    assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" == log_lines[2]["event"]
+    assert log_lines[1]["logger"] == "flowapi.access"
+    assert log_lines[2]["logger"] == "flowapi.access"
+    assert "CLAIMS_VERIFICATION_FAILED" == log_lines[2]["event"]
     assert "test" == log_lines[0]["user"]
     assert "test" == log_lines[1]["user"]
     assert "test" == log_lines[2]["user"]
@@ -263,10 +288,10 @@ async def test_access_logs_post(
     log_lines = json_log().out
     assert 3 == len(log_lines)  # One access log, two query logs
     assert log_lines[0]["logger"] == "flowapi.access"
-    assert log_lines[1]["logger"] == "flowapi.query"
-    assert log_lines[2]["logger"] == "flowapi.query"
-    assert query_kind.upper() == log_lines[2]["query_kind"]
-    assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" == log_lines[2]["event"]
+    assert log_lines[1]["logger"] == "flowapi.access"
+    assert log_lines[2]["logger"] == "flowapi.access"
+    assert log_lines[2]["json_payload"]["query_kind"] == query_kind
+    assert "CLAIMS_VERIFICATION_FAILED" == log_lines[2]["event"]
     assert "test" == log_lines[0]["user"]
     assert "test" == log_lines[1]["user"]
     assert "test" == log_lines[2]["user"]

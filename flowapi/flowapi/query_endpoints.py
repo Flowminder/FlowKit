@@ -4,7 +4,6 @@
 from flask_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
 from .stream_results import stream_result_as_json
-from .check_claims import check_claims
 
 blueprint = Blueprint("query", __name__)
 
@@ -65,8 +64,9 @@ async def run_query():
 
 
 @blueprint.route("/poll/<query_id>")
-@check_claims("poll")
+@jwt_required
 async def poll_query(query_id):
+    await current_user.can_poll_by_query_id(query_id=query_id)
     request.socket.send_json(
         {
             "request_id": request.request_id,
@@ -96,8 +96,9 @@ async def poll_query(query_id):
 
 
 @blueprint.route("/get/<query_id>")
-@check_claims("get_result")
+@jwt_required
 async def get_query_result(query_id):
+    await current_user.can_get_results_by_query_id(query_id=query_id)
     msg = {
         "request_id": request.request_id,
         "action": "get_sql_for_query_result",

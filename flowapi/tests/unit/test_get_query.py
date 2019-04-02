@@ -35,19 +35,18 @@ async def test_get_query(app, access_token_builder, dummy_zmq_server):
         "status": "success",
         "payload": {
             "query_id": "5ffe4a96dbe33a117ae9550178b81836",
-            "query_kind": "modal_location",
-            "query_state": "completed",
+            "query_params": {
+                "aggregation_unit": "DUMMY_AGGREGATION",
+                "query_kind": "modal_location",
+            },
         },
     }
+
     reply_2 = {
-        "status": "success",
-        "payload": {"query_params": {"aggregation_unit": "DUMMY_AGGREGATION"}},
-    }
-    reply_3 = {
         "status": "success",
         "payload": {"query_state": "completed", "sql": "SELECT 1;"},
     }
-    dummy_zmq_server.side_effect = (reply_1, reply_2, reply_3)
+    dummy_zmq_server.side_effect = (reply_1, reply_2)
     response = await client.get(
         f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
@@ -107,13 +106,12 @@ async def test_get_json_status_code(
     dummy_zmq_server.side_effect = (
         ZMQReply(
             status="success",
-            payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
-        ).as_json(),
-        ZMQReply(
-            status="success",
             payload={
                 "query_id": "DUMMY_QUERY_ID",
-                "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
+                "query_params": {
+                    "aggregation_unit": "DUMMY_AGGREGATION",
+                    "query_kind": "modal_location",
+                },
             },
         ).as_json(),
         ZMQReply(

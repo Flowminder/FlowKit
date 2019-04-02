@@ -28,7 +28,14 @@ async def test_poll_query(
     """
     client, db, log_dir, app = app
 
-    token = access_token_builder({"modal_location": {"permissions": {"poll": True}}})
+    token = access_token_builder(
+        {
+            "modal_location": {
+                "permissions": {"poll": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            }
+        }
+    )
 
     # The replies below are in response to the following messages:
     #  - get_query_kind
@@ -40,7 +47,13 @@ async def test_poll_query(
     dummy_zmq_server.side_effect = return_once(
         ZMQReply(
             status="success",
-            payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
+            payload={
+                "query_id": "DUMMY_QUERY_ID",
+                "query_params": {
+                    "query_kind": "modal_location",
+                    "aggregation_unit": "DUMMY_AGGREGATION",
+                },
+            },
         ).as_json(),
         then=ZMQReply(
             status="success",
