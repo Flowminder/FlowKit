@@ -27,7 +27,7 @@ async def test_protected_get_routes(route, app, json_log):
     assert 401 == response.status_code
 
     log_lines = json_log().out
-    assert 1 == len(log_lines)  # One access log, two query logs
+    assert 1 == len(log_lines)  # One entry written to stdout
     assert log_lines[0]["logger"] == "flowapi.access"
 
     assert "UNAUTHORISED" == log_lines[0]["event"]
