@@ -204,7 +204,7 @@ async def test_no_result_access_without_both_claims(
                 "query_id": "DUMMY_QUERY_ID",
                 "query_params": {
                     "aggregation_unit": "DUMMY_AGGREGATION",
-                    "query_kind": "dummy_query",
+                    "query_kind": "DUMMY_QUERY_KIND",
                 },
             },
         },
@@ -213,7 +213,10 @@ async def test_no_result_access_without_both_claims(
             "msg": "",
             "payload": {
                 "query_id": "DUMMY_QUERY_ID",
-                "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
+                "query_params": {
+                    "aggregation_unit": "DUMMY_AGGREGATION",
+                    "query_kind": "DUMMY_QUERY_KIND",
+                },
             },
         },
         {
