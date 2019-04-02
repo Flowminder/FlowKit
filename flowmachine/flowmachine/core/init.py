@@ -147,6 +147,16 @@ def connect(
         else redis_password
     )
 
+    if db_pass is None:
+        raise ValueError(
+            "You must provide a secret named FLOWDB_PASS, set an environment variable named FLOWDB_PASS, or provide a db_pass argument."
+        )
+
+    if redis_pw is None:
+        raise ValueError(
+            "You must provide a secret named REDIS_PASSWORD_FILE, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
+        )
+
     try:
         Query.connection
         warnings.warn("FlowMachine already started. Ignoring.")

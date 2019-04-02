@@ -16,30 +16,30 @@ def reset_connect(monkeypatch):
 
 def test_double_connect_warning(monkeypatch):
     """Test that a warning is raised when connecting twice."""
-    connect()
+    connect(db_pass="foo", redis_password="fm_redis")
     with pytest.warns(UserWarning):
-        connect()
+        connect(db_pass="foo", redis_password="fm_redis")
     assert 1 == len(logging.getLogger("flowmachine.debug").handlers)
 
 
 def test_bad_log_level_goes_to_error(monkeypatch):
     """Test that a bad log level is coerced to ERROR."""
     monkeypatch.setenv("LOG_LEVEL", "BAD_LEVEL")
-    connect()
+    connect(db_pass="foo", redis_password="fm_redis")
     assert logging.ERROR == logging.getLogger("flowmachine.debug").level
 
 
 def test_log_level_set_env(monkeypatch):
     """Test that a log level can be set via env."""
     monkeypatch.setenv("LOG_LEVEL", "INFO")
-    connect()
+    connect(db_pass="foo", redis_password="fm_redis")
     assert logging.INFO == logging.getLogger("flowmachine.debug").level
 
 
 def test_log_level_set(monkeypatch):
     """Test that a log level can be set via param."""
 
-    connect(log_level="critical")
+    connect(db_pass="foo", redis_password="fm_redis", log_level="critical")
     assert logging.CRITICAL == logging.getLogger("flowmachine.debug").level
 
 
@@ -130,7 +130,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
     )
-    connect()
+    connect(db_pass="foo", redis_password="fm_redis")
     core_init_logging_mock.assert_called_with("error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
@@ -147,3 +147,13 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_start_threadpool_mock.assert_called_with(
         thread_pool_size=5
     )  # for the time being, we should have num_threads = num_db_connections
+
+
+@pytest.mark.usefixtures("clean_env")
+@pytest.mark.parametrize(
+    "args", [{}, {"db_pass": "foo"}, {"redis_password": "fm_redis"}]
+)
+def test_connect_passwords_required(args):
+    """Test connect raises a valueerror if no password is set for db or redis"""
+    with pytest.raises(ValueError):
+        connect(**args)
