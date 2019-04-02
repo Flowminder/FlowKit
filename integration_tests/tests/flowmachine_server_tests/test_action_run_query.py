@@ -96,7 +96,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                 "aggregation_unit": "admin3",
                 "subscriber_subset": None,
             },
-            {"0": {"method": ["Not a valid choice."]}},
+            {"0": {"method": ["Must be one of: last, most-common."]}},
         ),
         (
             {
@@ -106,7 +106,13 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                 "aggregation_unit": "admin9999",
                 "subscriber_subset": None,
             },
-            {"0": {"aggregation_unit": ["Not a valid choice."]}},
+            {
+                "0": {
+                    "aggregation_unit": [
+                        "Must be one of: admin0, admin1, admin2, admin3."
+                    ]
+                }
+            },
         ),
         (
             {
@@ -116,7 +122,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                 "aggregation_unit": "admin3",
                 "subscriber_subset": "virtually_all_subscribers",
             },
-            {"0": {"subscriber_subset": ["Not a valid choice."]}},
+            {"0": {"subscriber_subset": ["Must be one of: None."]}},
         ),
     ],
 )
