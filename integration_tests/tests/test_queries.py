@@ -334,3 +334,81 @@ def test_get_geography(access_token_builder, flowapi_url):
     assert "MultiPolygon" == feature0["geometry"]["type"]
     assert list == type(feature0["geometry"]["coordinates"])
     assert 0 < len(feature0["geometry"]["coordinates"])
+
+
+@pytest.mark.parametrize(
+    "event_types, expected_result",
+    [
+        (
+            ["sms", "forwards"],
+            {
+                "sms": [
+                    "2016-01-01",
+                    "2016-01-02",
+                    "2016-01-03",
+                    "2016-01-04",
+                    "2016-01-05",
+                    "2016-01-06",
+                    "2016-01-07",
+                ],
+                "forwards": [],
+            },
+        ),
+        (
+            None,
+            {
+                "calls": [
+                    "2016-01-01",
+                    "2016-01-02",
+                    "2016-01-03",
+                    "2016-01-04",
+                    "2016-01-05",
+                    "2016-01-06",
+                    "2016-01-07",
+                ],
+                "forwards": [],
+                "mds": [
+                    "2016-01-01",
+                    "2016-01-02",
+                    "2016-01-03",
+                    "2016-01-04",
+                    "2016-01-05",
+                    "2016-01-06",
+                    "2016-01-07",
+                ],
+                "sms": [
+                    "2016-01-01",
+                    "2016-01-02",
+                    "2016-01-03",
+                    "2016-01-04",
+                    "2016-01-05",
+                    "2016-01-06",
+                    "2016-01-07",
+                ],
+                "topups": [
+                    "2016-01-01",
+                    "2016-01-02",
+                    "2016-01-03",
+                    "2016-01-04",
+                    "2016-01-05",
+                    "2016-01-06",
+                    "2016-01-07",
+                ],
+            },
+        ),
+    ],
+)
+def test_get_available_dates(
+    event_types, expected_result, access_token_builder, flowapi_url
+):
+    """
+    Test that queries can be run, and return the expected JSON result.
+    """
+    con = flowclient.Connection(
+        flowapi_url,
+        access_token_builder(
+            {"available_dates": {"permissions": {"get_result": True}}}
+        ),
+    )
+    result = flowclient.get_available_dates(con, event_types=event_types)
+    assert expected_result == result
