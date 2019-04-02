@@ -8,6 +8,35 @@ from asynctest import return_once
 from tests.unit.zmq_helpers import ZMQReply
 
 
+@pytest.mark.asyncio
+async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
+    """
+    Test that correct status code and any redirect is returned when polling a running query
+    """
+    client, db, log_dir, app = app
+
+    token = access_token_builder(
+        {
+            "modal_location": {
+                "permissions": {"poll": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            }
+        }
+    )
+
+    dummy_zmq_server.side_effect = return_once(
+        ZMQReply(
+            status="error",
+            msg=f"Unknown query id: 'DUMMY_QUERY_ID'",
+            payload={"query_id": "DUMMY_QUERY_ID", "query_state": "awol"},
+        ).as_json()
+    )
+    response = await client.get(
+        f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 404
+
+
 @pytest.mark.parametrize(
     "query_state, http_code",
     [

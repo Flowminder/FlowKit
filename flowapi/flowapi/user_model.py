@@ -5,10 +5,11 @@
 from json import JSONEncoder
 
 from flask_jwt_extended.exceptions import UserClaimsVerificationError
+from quart.exceptions import HTTPException
 from typing import Dict, Union, List
 
 from flask_jwt_extended import get_jwt_claims, get_jwt_identity
-from quart import current_app, request
+from quart import current_app, request, abort
 
 
 class UserObject:
@@ -60,14 +61,14 @@ class UserObject:
         """
         try:
             action_rights = self.claims[query_kind]["permissions"][action]
-            unit_rights = (
+            aggregation_right = (
                 aggregation_unit in self.claims[query_kind]["spatial_aggregation"]
             )
             if not action_rights:
                 raise UserClaimsVerificationError(
                     f"Token does not allow {action} for query kind '{query_kind}'"
                 )
-            if not unit_rights:
+            if not aggregation_right:
                 raise UserClaimsVerificationError(
                     f"Token does not allow query kind '{query_kind}' at spatial aggregation '{aggregation_unit}'"
                 )
@@ -102,6 +103,43 @@ class UserObject:
             action="run", query_kind=query_kind, aggregation_unit=aggregation_unit
         )
 
+    @staticmethod
+    async def _get_params(*, query_id) -> dict:
+        """
+        Get the parameters of a query from flowmachine.
+
+        Parameters
+        ----------
+        query_id : str
+            ID of the query to get params for
+
+        Returns
+        -------
+        dict
+            Dictionary containing the query's original parameters
+
+        Raises
+        ------
+        HTTPException
+            404 if the query id is not known.
+
+        """
+        request.socket.send_json(
+            {
+                "request_id": request.request_id,
+                "action": "get_query_params",
+                "params": {"query_id": query_id},
+            }
+        )
+        reply = await request.socket.recv_json()
+        if reply["status"] == "error":
+            raise HTTPException(
+                description=f"Unknown query ID '{query_id}'",
+                name="Query ID not found",
+                status_code=404,
+            )
+        return reply["payload"]["query_params"]
+
     async def can_poll_by_query_id(self, *, query_id) -> bool:
         """
         Returns true if the user can poll this query.
@@ -121,19 +159,11 @@ class UserObject:
         UserClaimsVerificationError
             If the user cannot get the status of this kind of query at this level of aggregation
         """
-        request.socket.send_json(
-            {
-                "request_id": request.request_id,
-                "action": "get_query_params",
-                "params": {"query_id": query_id},
-            }
+
+        params = await self._get_params(query_id=query_id)
+        return self.can_poll(
+            query_kind=params["query_kind"], aggregation_unit=params["aggregation_unit"]
         )
-        reply = await request.socket.recv_json()
-        if reply["status"] == "success":
-            return self.can_poll(
-                query_kind=reply["payload"]["query_params"]["query_kind"],
-                aggregation_unit=reply["payload"]["query_params"]["aggregation_unit"],
-            )
 
     def can_poll(self, *, query_kind: str, aggregation_unit: str) -> bool:
         """
@@ -180,19 +210,10 @@ class UserObject:
         UserClaimsVerificationError
             If the user cannot get the results of this kind of query at this level of aggregation
         """
-        request.socket.send_json(
-            {
-                "request_id": request.request_id,
-                "action": "get_query_params",
-                "params": {"query_id": query_id},
-            }
+        params = await self._get_params(query_id=query_id)
+        return self.can_get_results(
+            query_kind=params["query_kind"], aggregation_unit=params["aggregation_unit"]
         )
-        reply = await request.socket.recv_json()
-        if reply["status"] == "success":
-            return self.can_get_results(
-                query_kind=reply["payload"]["query_params"]["query_kind"],
-                aggregation_unit=reply["payload"]["query_params"]["aggregation_unit"],
-            )
 
     def can_get_results(self, *, query_kind: str, aggregation_unit: str) -> bool:
         """
