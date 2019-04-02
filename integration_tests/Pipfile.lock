@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9d46f959f97a5825e9d7cbbbe95f49478c8e3042202aad3df32cce0689093fe5"
+            "sha256": "8776b556af6e8f7ad7864279d0434d263f00fc5aa2e28b3f6e92287a356f407f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -313,18 +313,14 @@
             "version": "==1.1.1"
         },
         "marshmallow": {
-            "hashes": [
-                "sha256:0e497a6447ffaad55578138ca512752de7a48d12f444996ededc3d6bf8a09ca2",
-                "sha256:e21a4dea20deb167c723e0ffb13f4cf33bcbbeb8a334e92406a3308cedea2826"
-            ],
-            "version": "==2.19.2"
+            "editable": true,
+            "git": "https://github.com/marshmallow-code/marshmallow.git",
+            "ref": "01837167ef1758df1f2decb819e7294200ec9f67"
         },
         "marshmallow-oneofschema": {
-            "hashes": [
-                "sha256:5b645dcb582657362362c6ad9fce5afa5ac31837cac2fe63b8eabf47995dd944",
-                "sha256:a8b7db820304bd8d9d954f5fe6522bfa89c003dac12fa0e76edddc244901f2f8"
-            ],
-            "version": "==1.0.5"
+            "editable": true,
+            "git": "https://github.com/marshmallow-code/marshmallow-oneofschema.git",
+            "ref": "8195dc3e595fa33a5f007f10ba7cfc08f2177515"
         },
         "more-itertools": {
             "hashes": [
