@@ -16,7 +16,7 @@ from flowmachine.utils import proj4string
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 try:

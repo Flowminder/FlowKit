@@ -16,7 +16,7 @@ from ..utilities.spatial_aggregates import JoinedSpatialAggregate
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class SubscriberFeature(Query):

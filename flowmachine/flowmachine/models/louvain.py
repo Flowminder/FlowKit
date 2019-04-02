@@ -40,7 +40,7 @@ from ..core.model import Model, model_result
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class Louvain(Model):
