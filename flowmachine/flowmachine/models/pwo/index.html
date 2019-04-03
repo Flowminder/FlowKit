@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/application.982221ab.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/application.3020aac5.css">
       
         <link rel="stylesheet" href="../../../../assets/stylesheets/application-palette.224b79ff.css">
       
@@ -364,18 +364,6 @@
   <li class="md-nav__item">
     <a href="../../../../flowclient/flowclient/client/" title="client" class="md-nav__link">
       client
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../../../flowclient/flowclient/zmq_helpers/" title="zmq_helpers" class="md-nav__link">
-      zmq_helpers
     </a>
   </li>
 
@@ -1616,6 +1604,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../features/subscriber/contact_reference_locations_stats/" title="contact_reference_locations_stats" class="md-nav__link">
+      contact_reference_locations_stats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../features/subscriber/daily_location/" title="daily_location" class="md-nav__link">
       daily_location
     </a>
@@ -1702,6 +1702,18 @@
   <li class="md-nav__item">
     <a href="../../features/subscriber/first_location/" title="first_location" class="md-nav__link">
       first_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../features/subscriber/handset_stats/" title="handset_stats" class="md-nav__link">
+      handset_stats
     </a>
   </li>
 
@@ -2235,46 +2247,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#methods" title="Methods" class="md-nav__link">
-    Methods
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#run" title="run" class="md-nav__link">
-    run
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_1" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#returns" title="Returns" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -2360,46 +2332,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#methods" title="Methods" class="md-nav__link">
-    Methods
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#run" title="run" class="md-nav__link">
-    run
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_1" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#returns" title="Returns" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -2473,36 +2405,6 @@ One can also run the model with uniform departure rates for all locations as fol
 <span class="mi">3</span>  <span class="mi">0</span><span class="n">xqNDj</span>        <span class="n">zdNQx2</span>    <span class="mf">0.267854</span>     <span class="mf">0.007440</span>
 </pre></div>
 Where prediction is the absolute number of people that move from one location to another. (This should be interpreted as a integer, but floats are provided for evaluating results in a continuous scale.) And probability is the predicted value over the total population leaving the origin (T_i). That is, how likely it is that a person leaving the origin will be found in a given destination. </p>
-<h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
-<h4 id="run">run<a class="headerlink" href="#run" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">run</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">uniform_departure_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">departure_rate_vector</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">ignore_missing</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/models/pwo.py#L339">flowmachine/models/pwo.py</a></p>
-<p>Runs model.</p>
-<h5 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h5>
-<ul>
-<li>
-<p><code>uniform_departure_rate</code>: <code>float</code></p>
-<p>Proportion of population from location i that will be departing in observed time period. This proportion applies to all locations uniformly.</p>
-</li>
-<li>
-<p><code>departure_rate_vector</code>: <code>dict</code></p>
-<p>A dictionary that contains the proportion of the population from locations i that have departed those locations. The keys of the dictionaries must be the location identifier and the values the departure rate. If passed, this will be used over the <code>uniform_departure_rate</code> parameter.</p>
-</li>
-<li>
-<p><code>ignore_missing</code>: <code>bool</code></p>
-<p>If True, existing locations that are not found in the departure_rate_vector dictionary will be computed using zero departures.</p>
-</li>
-</ul>
-<h5 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h5>
-<ul>
-<li><code>A pandas dataframe with a mobility matrix.</code></li>
-</ul>
 <div class="footnote">
 <hr />
 <ol>
@@ -2589,7 +2491,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       
     </div>
     
-      <script src="../../../../assets/javascripts/application.2ba8dec4.js"></script>
+      <script src="../../../../assets/javascripts/application.dc02f8ce.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../.."}})</script>
       

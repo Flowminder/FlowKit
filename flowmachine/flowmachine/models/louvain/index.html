@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/application.982221ab.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/application.3020aac5.css">
       
         <link rel="stylesheet" href="../../../../assets/stylesheets/application-palette.224b79ff.css">
       
@@ -364,18 +364,6 @@
   <li class="md-nav__item">
     <a href="../../../../flowclient/flowclient/client/" title="client" class="md-nav__link">
       client
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../../../flowclient/flowclient/zmq_helpers/" title="zmq_helpers" class="md-nav__link">
-      zmq_helpers
     </a>
   </li>
 
@@ -1616,6 +1604,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../features/subscriber/contact_reference_locations_stats/" title="contact_reference_locations_stats" class="md-nav__link">
+      contact_reference_locations_stats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../features/subscriber/daily_location/" title="daily_location" class="md-nav__link">
       daily_location
     </a>
@@ -1702,6 +1702,18 @@
   <li class="md-nav__item">
     <a href="../../features/subscriber/first_location/" title="first_location" class="md-nav__link">
       first_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../features/subscriber/handset_stats/" title="handset_stats" class="md-nav__link">
+      handset_stats
     </a>
   </li>
 
@@ -2223,46 +2235,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#methods" title="Methods" class="md-nav__link">
-    Methods
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#run" title="run" class="md-nav__link">
-    run
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_1" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#returns" title="Returns" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -2360,46 +2332,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#methods" title="Methods" class="md-nav__link">
-    Methods
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#run" title="run" class="md-nav__link">
-    run
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_1" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#returns" title="Returns" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -2455,53 +2387,6 @@ Now let's run the algorithm:<br />
 <span class="mi">5</span>    <span class="n">NBpb54xVMEw1Yqza</span>          <span class="mi">2</span>
 <span class="mi">6</span>    <span class="mi">7</span><span class="n">lNP0mDOAK3xKWv4</span>          <span class="mi">3</span>
 </pre></div></p>
-<h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
-<h4 id="run">run<a class="headerlink" href="#run" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">run</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">min_contacts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">max_contacts</span><span class="o">=</span><span class="n">inf</span><span class="p">,</span>
-    <span class="n">min_members</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">max_members</span><span class="o">=</span><span class="n">inf</span><span class="p">,</span>
-    <span class="n">weight_property</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
-    <span class="n">resolution</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span>
-</pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/models/louvain.py#L126">flowmachine/models/louvain.py</a></p>
-<p>Runs model.</p>
-<h5 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h5>
-<ul>
-<li>
-<p><code>min_contacts</code>: <code>int</code></p>
-<p>Minimum contacts in graph. This parameter is useful for determining how many members to include in graph. Default is 1.</p>
-</li>
-<li>
-<p><code>max_contacts</code>: <code>int</code></p>
-<p>Maximum contacts in graph. This determines how large a single subscriber's network can be. Default is math.inf.</p>
-</li>
-<li>
-<p><code>min_members</code>: <code>int</code></p>
-<p>Minimum community membership. The final graph will only contain those subscribers from which community sizes have at least this many members. Default is 5.</p>
-</li>
-<li>
-<p><code>max_members</code>: <code>int</code></p>
-<p>Maximum community membership. The final graph will only contain those subscribers from which community sizes have at most this many members. Default is math.inf.</p>
-</li>
-<li>
-<p><code>**kwargs</code></p>
-<p>Eventually passed to community.best_partition().</p>
-</li>
-</ul>
-<h5 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h5>
-<ul>
-<li>
-<p><code>A pandas dataframe object. For format see Louvain()</code></p>
-</li>
-<li>
-<p><code>docstring.</code></p>
-</li>
-</ul>
                 
                   
                 
@@ -2580,7 +2465,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       
     </div>
     
-      <script src="../../../../assets/javascripts/application.2ba8dec4.js"></script>
+      <script src="../../../../assets/javascripts/application.dc02f8ce.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../.."}})</script>
       

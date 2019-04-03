@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.982221ab.css">
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/application.3020aac5.css">
       
         <link rel="stylesheet" href="../../../../../assets/stylesheets/application-palette.224b79ff.css">
       
@@ -364,18 +364,6 @@
   <li class="md-nav__item">
     <a href="../../../../../flowclient/flowclient/client/" title="client" class="md-nav__link">
       client
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../../../../flowclient/flowclient/zmq_helpers/" title="zmq_helpers" class="md-nav__link">
-      zmq_helpers
     </a>
   </li>
 
@@ -1746,6 +1734,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../features/subscriber/contact_reference_locations_stats/" title="contact_reference_locations_stats" class="md-nav__link">
+      contact_reference_locations_stats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../features/subscriber/daily_location/" title="daily_location" class="md-nav__link">
       daily_location
     </a>
@@ -1832,6 +1832,18 @@
   <li class="md-nav__item">
     <a href="../../../features/subscriber/first_location/" title="first_location" class="md-nav__link">
       first_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../features/subscriber/handset_stats/" title="handset_stats" class="md-nav__link">
+      handset_stats
     </a>
   </li>
 
@@ -2484,7 +2496,7 @@
 <h2 id="calculate_and_send_reply_for_message">calculate_and_send_reply_for_message<a class="headerlink" href="#calculate_and_send_reply_for_message" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">calculate_and_send_reply_for_message</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">return_address</span><span class="p">,</span> <span class="n">msg_contents</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L121">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L124">flowmachine/core/server/server.py</a></p>
 <p>Calculate the reply to a zmq message and return the result to the sender. This function is a small wrapper around <code>get_reply_for_message</code> which can be executed as an asyncio background task.</p>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2502,9 +2514,9 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </li>
 </ul>
 <h2 id="get_reply_for_message">get_reply_for_message<a class="headerlink" href="#get_reply_for_message" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">get_reply_for_message</span><span class="p">(</span><span class="n">msg_str</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">get_reply_for_message</span><span class="p">(</span><span class="n">msg_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L23">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L26">flowmachine/core/server/server.py</a></p>
 <p>Parse the zmq message string, perform the desired action and return the result in JSON format.</p>
 <h3 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2523,11 +2535,11 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="main">main<a class="headerlink" href="#main" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">main</span><span class="p">()</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L180">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L183">flowmachine/core/server/server.py</a></p>
 <h2 id="receive_next_zmq_message_and_send_back_reply">receive_next_zmq_message_and_send_back_reply<a class="headerlink" href="#receive_next_zmq_message_and_send_back_reply" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">receive_next_zmq_message_and_send_back_reply</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L66">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L69">flowmachine/core/server/server.py</a></p>
 <p>Listen on the given zmq socket for the next multipart message, .
 Note that the only responsibility of this function is to ensure that the incoming zmq message has the expected structure (three parts of the form <code>return_address, empty_delimiter, msg</code>) and to send back the reply. The responsibility for actually processing the message and calculating the reply lies with other functions.</p>
 <h3 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h3>
@@ -2547,12 +2559,12 @@ Note that the only responsibility of this function is to ensure that the incomin
 <h2 id="recv">recv<a class="headerlink" href="#recv" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">recv</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L156">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L159">flowmachine/core/server/server.py</a></p>
 <p>Main receive-and-reply loop. Listens to zmq messages on the given port, processes them and sends back a reply with the result or an error message.</p>
 <h2 id="shutdown">shutdown<a class="headerlink" href="#shutdown" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L140">flowmachine/core/server/server.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/server.py#L143">flowmachine/core/server/server.py</a></p>
 <p>Handler for SIGTERM to allow test coverage data to be written during integration tests.</p>
                 
                   
@@ -2632,7 +2644,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
       
     </div>
     
-      <script src="../../../../../assets/javascripts/application.2ba8dec4.js"></script>
+      <script src="../../../../../assets/javascripts/application.dc02f8ce.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../../../.."}})</script>
       

@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
       
@@ -40,7 +40,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.982221ab.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.3020aac5.css">
       
         <link rel="stylesheet" href="../assets/stylesheets/application-palette.224b79ff.css">
       
@@ -510,18 +510,6 @@
   <li class="md-nav__item">
     <a href="../flowclient/flowclient/client/" title="client" class="md-nav__link">
       client
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../flowclient/flowclient/zmq_helpers/" title="zmq_helpers" class="md-nav__link">
-      zmq_helpers
     </a>
   </li>
 
@@ -1758,6 +1746,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/features/subscriber/contact_reference_locations_stats/" title="contact_reference_locations_stats" class="md-nav__link">
+      contact_reference_locations_stats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/features/subscriber/daily_location/" title="daily_location" class="md-nav__link">
       daily_location
     </a>
@@ -1844,6 +1844,18 @@
   <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/features/subscriber/first_location/" title="first_location" class="md-nav__link">
       first_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/features/subscriber/handset_stats/" title="handset_stats" class="md-nav__link">
+      handset_stats
     </a>
   </li>
 
@@ -2545,11 +2557,11 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
 <p>These values can be overridden when creating a new FlowDB container by setting the <code>CACHE_SIZE</code> and <code>CACHE_HALF_LIFE</code> environment variables for the container, set by updating the <code>cache.cache_config</code> table after connecting directly to FlowDB, or modified using the cache submodule.</p>
 <h2 id="logging-and-audit-trails">Logging and Audit Trails<a class="headerlink" href="#logging-and-audit-trails" title="Permanent link">&para;</a></h2>
 <p>FlowKit supports structured logging in JSON form throughout FlowMachine and FlowAPI. By default both FlowMachine and FlowAPI will only log errors, and audit logs.</p>
-<p>Audit trail logs are <em>always</em> written to both stderr and a log file. Error logs are, by default, only written to stderr. </p>
+<p>Audit trail logs are <em>always</em> written to stdout. Error and debugging logs are, by default, only written to stderr. </p>
 <h3 id="audit-trail-logs">Audit Trail Logs<a class="headerlink" href="#audit-trail-logs" title="Permanent link">&para;</a></h3>
 <p>Three kinds of access log are written on each request handled by FlowAPI: authentication, data access at API side, and data access on the FlowMachine side.</p>
 <h4 id="authentication-logs">Authentication Logs<a class="headerlink" href="#authentication-logs" title="Permanent link">&para;</a></h4>
-<p>FlowAPI logs all access attempts whether successful or not to stderr, and to a rotating log file. By default, this will be written at <code>/var/log/flowapi/flowkit-access.log</code>. The directory the log files are written to can be changed by setting the <code>LOG_DIRECTORY</code> environment variable.</p>
+<p>FlowAPI logs all access attempts whether successful or not to stdout using a logger named <code>flowapi.access</code>.</p>
 <p>Where authentication succeeds, the log message will have a <code>level</code> field of <code>info</code>, and an <code>event</code> type of <code>AUTHENTICATED</code>:</p>
 <div class="codehilite"><pre><span></span><span class="p">{</span>
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;fe1d5dd2-ddfb-4b34-9d1e-4ebfc205d64c&quot;</span><span class="p">,</span>
@@ -2567,7 +2579,7 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
         <span class="nt">&quot;query_kind&quot;</span><span class="p">:</span> <span class="s2">&quot;daily_location&quot;</span>
     <span class="p">},</span>
     <span class="nt">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;AUTHENTICATED&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowkit-access&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowapi.access&quot;</span><span class="p">,</span>
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T13:57:35.262214Z&quot;</span>
 <span class="p">}</span>
@@ -2577,10 +2589,10 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
 <p>If authentication fails, then the reason is also included in the log message, along with any error message and as much information about the request and requester as can be discerned.</p>
 <h4 id="api-usage-logs">API Usage Logs<a class="headerlink" href="#api-usage-logs" title="Permanent link">&para;</a></h4>
 <p>After a request is successfully authenticated (has a valid token), the <em>nature</em> of the request will be logged at several points. When the request is received, if at any point the request is rejected because the provided token did not grant access, and when the request is fulfilled.</p>
-<p>As with the authentication log, the usage log is written to both stderr and a rotating log file. Logs will be written to <code>query-runs.log</code> in the same directory as the authentication log.</p>
+<p>As with the authentication log, the usage log is written to stdout using a logger named <code>flowapi.query</code>.</p>
 <h4 id="flowmachine-usage-logs">FlowMachine Usage Logs<a class="headerlink" href="#flowmachine-usage-logs" title="Permanent link">&para;</a></h4>
 <p>If a request has triggered an action in the FlowMachine backend, logs will also be written there. These logs will include the <code>request_id</code> for the API request which originally triggered them.</p>
-<p>As with the FlowAPI loggers, these messages are written both to stderr and a rotating log file (<code>/var/log/flowmachine/query-runs.log</code>, although the directory can be set using the <code>LOG_DIRECTORY</code> environment variable.)</p>
+<p>As with the FlowAPI loggers, these messages are written to stdout, using the <code>flowmachine.query_run_log</code> logger.</p>
 <h4 id="complete-logging-cycle">Complete Logging Cycle<a class="headerlink" href="#complete-logging-cycle" title="Permanent link">&para;</a></h4>
 <p>A complete logging cycle for a successful request to retrieve a previously run query's results might look like this:</p>
 <p>FlowAPI access log:</p>
@@ -2591,7 +2603,7 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
     <span class="nt">&quot;src_ip&quot;</span><span class="p">:</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
     <span class="nt">&quot;json_payload&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
     <span class="nt">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;AUTHENTICATED&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowkit-access&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowapi.access&quot;</span><span class="p">,</span>
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T14:11:03.331967Z&quot;</span>
 <span class="p">}</span>
@@ -2618,7 +2630,7 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
         <span class="p">]</span>
     <span class="p">},</span>
     <span class="nt">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;Received&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowkit-query&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowapi.query&quot;</span><span class="p">,</span>
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T14:11:03.337052Z&quot;</span>
 <span class="p">}</span>
@@ -2643,7 +2655,7 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
         <span class="p">]</span>
     <span class="p">},</span>
     <span class="nt">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;Authorised&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowkit-query&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowapi.query&quot;</span><span class="p">,</span>
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T14:11:03.341010Z&quot;</span>
 <span class="p">}</span>
@@ -2657,7 +2669,7 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;d2892489-8fb8-40ec-94e6-2467266a0226&quot;</span><span class="p">,</span>
     <span class="nt">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;query_id&quot;</span><span class="p">:</span> <span class="s2">&quot;ddc61a04f608dee16fff0655f91c2057&quot;</span> <span class="p">},</span>
     <span class="nt">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;get_query_kind&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowmachine-server&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowmachine.query_run_log&quot;</span><span class="p">,</span>
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T14:11:03.335437Z&quot;</span>
 <span class="p">}</span>
@@ -2675,7 +2687,7 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;d2892489-8fb8-40ec-94e6-2467266a0226&quot;</span><span class="p">,</span>
     <span class="nt">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;query_id&quot;</span><span class="p">:</span> <span class="s2">&quot;ddc61a04f608dee16fff0655f91c2057&quot;</span> <span class="p">},</span>
     <span class="nt">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;get_params&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowmachine-server&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowmachine.query_run_log&quot;</span><span class="p">,</span>
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T14:11:03.339602Z&quot;</span>
 <span class="p">}</span>
@@ -2686,7 +2698,7 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
     <span class="nt">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;d2892489-8fb8-40ec-94e6-2467266a0226&quot;</span><span class="p">,</span>
     <span class="nt">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&quot;query_id&quot;</span><span class="p">:</span> <span class="s2">&quot;ddc61a04f608dee16fff0655f91c2057&quot;</span> <span class="p">},</span>
     <span class="nt">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;get_sql&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowmachine-server&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;logger&quot;</span><span class="p">:</span> <span class="s2">&quot;flowmachine.query_run_log&quot;</span><span class="p">,</span>
     <span class="nt">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="nt">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;2019-01-10T14:11:03.358644Z&quot;</span>
 <span class="p">}</span>
@@ -2695,12 +2707,10 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
 <p>Note that the <code>request_id</code> field is identical across the five log entries, which lets you match the request across the multiple services.</p>
 <h3 id="error-and-debugging-logs">Error and Debugging Logs<a class="headerlink" href="#error-and-debugging-logs" title="Permanent link">&para;</a></h3>
 <p>By default, FlowMachine and FlowAPI write error logs to stderr. For more verbose logging, set the <code>LOG_LEVEL</code> environment variable to <code>debug</code> when starting the docker container.</p>
-<p>FlowMachine also supports writing debug and error logs to a file. To enable this, set the <code>WRITE_LOG_FILE</code> environment variable to <code>TRUE</code> when starting the FlowMachine container. Logs will be written to <code>$LOG_DIRECTORY/flowmachine-debug.log</code> inside the FlowMachine docker container (by default <code>LOG_DIRECTORY=/var/log/flowmachine</code>). If the directory specified does not exist, FlowMachine will attempt to create it.</p>
-<p>Log messages from FlowMachine will show the <code>logger</code> field of the log entry as the Python module that emitted the log entry (e.g. <code>{'logger':'flowmachine.core.query'..}</code>. FlowAPI debugging messages set <code>logger</code> to <code>flowapi</code>.</p>
+<p>Log messages from FlowMachine will show the <code>logger</code> field of the log entry as <code>flowmachine.debug</code>, and the Python module that emitted the log entry in the <code>submodule</code> field (e.g. <code>{'logger':'flowmachine.debug', 'submodule':'flowmachine.core.query'}</code>. FlowAPI debugging messages set <code>logger</code> to <code>flowapi.debug</code>.</p>
 <h3 id="managing-and-monitoring-logs">Managing and Monitoring Logs<a class="headerlink" href="#managing-and-monitoring-logs" title="Permanent link">&para;</a></h3>
-<p>Because FlowKit employs structured logging, and all log messages are JSON objects, the access and usage logs are easy to use with tools like <a href="https://www.elastic.co/products/logstash">Logstash</a>. Getting FlowKit logs into Logstash is as easy as configuring it to consume the log files generated.</p>
-<p>One approach to this is to mount the volumes for <code>/var/log/flowmachine/</code> and <code>/var/log/flowapi/</code> and expose the log files to Logstash, or a log shipper.</p>
-<p>Alternatively, <a href="https://www.elastic.co/docker-kubernetes-container-monitoring">Filebeat</a> allows you to integrate the logs from stderr directly into your monitoring system.</p>
+<p>Because FlowKit employs structured logging, and all log messages are JSON objects, the access and usage logs are easy to use with tools like <a href="https://www.elastic.co/products/logstash">Logstash</a>.</p>
+<p><a href="https://www.elastic.co/docker-kubernetes-container-monitoring">Filebeat</a> allows you to integrate the logs from stdout and stderr directly into your monitoring system.</p>
 <div class="footnote">
 <hr />
 <ol>
@@ -2787,7 +2797,7 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
       
     </div>
     
-      <script src="../assets/javascripts/application.2ba8dec4.js"></script>
+      <script src="../assets/javascripts/application.dc02f8ce.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
