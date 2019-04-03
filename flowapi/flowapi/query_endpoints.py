@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+from flask_jwt_extended import get_jwt_claims, jwt_required
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
 from .stream_results import stream_result_as_json
 from .check_claims import check_claims
@@ -136,3 +138,41 @@ async def get_query_result(query_id):
                 "Content-type": mimetype,
             },
         )
+
+
+@blueprint.route("/available_dates")
+@jwt_required
+async def get_available_dates():
+    claims = get_jwt_claims()
+    allowed_to_access_available_dates = (
+        claims.get("available_dates", {})
+        .get("permissions", {})
+        .get("get_result", False)
+    )
+    if not allowed_to_access_available_dates:
+        return (
+            jsonify(
+                {"status": "error", "msg": "Not allowed to access available dates."}
+            ),
+            401,
+        )
+
+    json_data = await request.json
+    if json_data is None:
+        event_types = None
+    else:
+        event_types = json_data.get("event_types", None)
+    request.socket.send_json(
+        {
+            "request_id": request.request_id,
+            "action": "get_available_dates",
+            "params": {"event_types": event_types},
+        }
+    )
+    reply = await request.socket.recv_json()
+
+    if reply["status"] == "success":
+        return jsonify({"available_dates": reply["payload"]}), 200
+    else:
+        assert reply["status"] == "error"
+        return jsonify({"status": "error", "msg": reply["msg"]}), 500
