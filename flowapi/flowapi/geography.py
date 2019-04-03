@@ -1,17 +1,17 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+from flask_jwt_extended import jwt_required, current_user
 from quart import Blueprint, current_app, request, stream_with_context, jsonify
 from .stream_results import stream_result_as_json
-from .check_claims import check_geography_claims
 
 blueprint = Blueprint("geography", __name__)
 
 
 @blueprint.route("/geography/<aggregation_unit>")
-@check_geography_claims()
+@jwt_required
 async def get_geography(aggregation_unit):
+    current_user.can_get_geography(aggregation_unit=aggregation_unit)
     msg = {
         "request_id": request.request_id,
         "action": "get_geography",
