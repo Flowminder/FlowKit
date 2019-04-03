@@ -154,19 +154,7 @@ async def get_query_result(query_id):
 @blueprint.route("/available_dates")
 @jwt_required
 async def get_available_dates():
-    claims = get_jwt_claims()
-    allowed_to_access_available_dates = (
-        claims.get("available_dates", {})
-        .get("permissions", {})
-        .get("get_result", False)
-    )
-    if not allowed_to_access_available_dates:
-        return (
-            jsonify(
-                {"status": "error", "msg": "Not allowed to access available dates."}
-            ),
-            401,
-        )
+    current_user.can_get_available_dates()
 
     json_data = await request.json
     if json_data is None:

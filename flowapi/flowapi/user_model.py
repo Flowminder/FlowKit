@@ -268,6 +268,18 @@ class UserObject:
             aggregation_unit=aggregation_unit,
         )
 
+    def can_get_available_dates(self) -> bool:
+        allowed_to_access_available_dates = (
+            self.claims.get("available_dates", {})
+            .get("permissions", {})
+            .get("get_result", False)
+        )
+        if not allowed_to_access_available_dates:
+            raise UserClaimsVerificationError(
+                f"Token does not allow access to available dates."
+            )
+        return True
+
 
 def user_loader_callback(identity):
     """
