@@ -63,17 +63,16 @@ class EventTableSubset(Query):
 
     Examples
     --------
-    >>> sd = EventTableSubset('2016-01-01 13:30:30',
-                         '2016-01-02 16:25:00')
+    >>> sd = EventTableSubset(start='2016-01-01 13:30:30', stop='2016-01-02 16:25:00')
     >>> sd.head()
 
     """
 
     def __init__(
         self,
+        *,
         start=None,
         stop=None,
-        *,
         hours="all",
         table="events.calls",
         subscriber_subset=None,
