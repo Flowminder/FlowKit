@@ -18,7 +18,10 @@ from .meaningful_locations import (
 )
 from .geography import GeographySchema, GeographyExposed
 from .location_event_counts import LocationEventCountsSchema, LocationEventCountsExposed
-from .unique_subscriber_counts import UniqueSubscriberCountsSchema, UniqueSubscriberCountsExposed
+from .unique_subscriber_counts import (
+    UniqueSubscriberCountsSchema,
+    UniqueSubscriberCountsExposed,
+)
 from .dfs_metric_total_amount import (
     DFSTotalMetricAmountSchema,
     DFSTotalMetricAmountExposed,

@@ -938,9 +938,7 @@ def flows(
 
 
 def unique_subscriber_counts(
-    start_date: str,
-    stop_date: str,
-    aggregation_unit: str,
+    start_date: str, stop_date: str, aggregation_unit: str
 ) -> dict:
     """
     Return query spec for unique subscriber counts

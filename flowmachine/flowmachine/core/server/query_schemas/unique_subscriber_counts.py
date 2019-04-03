@@ -24,20 +24,13 @@ class UniqueSubscriberCountsSchema(Schema):
 
 
 class UniqueSubscriberCountsExposed(BaseExposedQuery):
-
-    def __init__(
-        self,
-        *,
-        start_date,
-        end_date,
-        aggregation_unit
-    ):
+    def __init__(self, *, start_date, end_date, aggregation_unit):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
- 
+
     @property
     def _flowmachine_query_obj(self):
         """
@@ -48,7 +41,5 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
         Query
         """
         return UniqueSubscriberCounts(
-            start=self.start_date,
-            stop=self.end_date,
-            level=self.aggregation_unit,
-         )
+            start=self.start_date, stop=self.end_date, level=self.aggregation_unit
+        )
