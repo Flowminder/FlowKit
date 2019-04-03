@@ -25,10 +25,10 @@
         },
         "apispec": {
             "hashes": [
-                "sha256:9300142aa93e0c020e6b223a196cd2103ac4a61bcceea7dba894c0959b72e327",
-                "sha256:bcfe21887ba7c6e94c4be00f10564478a0d9109bb8e574aae97442909fd69b31"
+                "sha256:6746a57f1395fc201d06b051e43e8a7fdd23138607ebbeabdfcc6477bc3cc956",
+                "sha256:f0a5ddaee255eebeda8e84659028c3523b7801c7023f9364972035d36b23d734"
             ],
-            "version": "==1.1.0"
+            "version": "==1.1.1"
         },
         "apispec-oneofschema": {
             "hashes": [
@@ -704,10 +704,10 @@
         },
         "sqlalchemy": {
             "hashes": [
-                "sha256:781fb7b9d194ed3fc596b8f0dd4623ff160e3e825dd8c15472376a438c19598b"
+                "sha256:d5432832f91d200c3d8b473a266d59442d825f9ea744c467e68c5d9a9479fbce"
             ],
             "index": "pypi",
-            "version": "==1.3.1"
+            "version": "==1.3.2"
         },
         "stevedore": {
             "hashes": [
@@ -759,10 +759,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:96da23fa8ccecbc3ae832a83df5c722c11547d021637faacb0bec4dd2f4666c8",
-                "sha256:ca5c2dcd367d6c0df87185b9082929d255358f5391923269335782b213d52655"
+                "sha256:0a73e8bb2ff2feecfc5d56e6f458f5b99290ef34f565ffb2665801ff7de6af7a",
+                "sha256:7fad9770a8778f9576693f0cc29c7dcc36964df916b83734f4431c0e612a7fbc"
             ],
-            "version": "==0.15.1"
+            "version": "==0.15.2"
         },
         "wsproto": {
             "hashes": [
