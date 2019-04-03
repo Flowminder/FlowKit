@@ -23,6 +23,7 @@ flowclient = {editable = true,path = "./../flowclient"}
 flowapi = {editable = true,path = "./../flowapi"}
 approvaltests = "*"
 pytest-cov = "*"
+tavern = {extras = ["pytest"], version = "*"}
 
 [requires]
 python_version = "3.7"

@@ -33,6 +33,7 @@ setup(
         "structlog",
         "flask-jwt-extended",
         "asyncpg",
+        "python-rapidjson",
     ],
     extras_require={"test": ["pytest", "coverage"]},
 )

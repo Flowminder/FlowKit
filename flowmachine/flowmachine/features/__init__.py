@@ -64,6 +64,7 @@ subs = [
     "LocationEntropy",
     "ContactEntropy",
     "DistanceCounterparts",
+    "ContactReferenceLocationStats",
     "IntereventPeriod",
     "TopUpAmount",
     "TopUpBalance",
@@ -71,6 +72,7 @@ subs = [
     "ContactReciprocal",
     "ProportionContactReciprocal",
     "ProportionEventReciprocal",
+    "HandsetStats",
 ]
 
 rast = ["RasterStatistics"]

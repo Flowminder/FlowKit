@@ -80,7 +80,7 @@ class Connection:
             self.session.verify = ssl_certificate
         self.session.headers["Authorization"] = f"Bearer {self.token}"
 
-    def get_url(self, route: str) -> requests.Response:
+    def get_url(self, route: str, data: Union[None, dict] = None) -> requests.Response:
         """
         Attempt to get something from the API, and return the raw
         response object if an error response wasn't received.
@@ -91,6 +91,9 @@ class Connection:
         route : str
             Path relative to API host to get
 
+        data : dict, optional
+            JSON data to send in the request body (optional)
+
         Returns
         -------
         requests.Response
@@ -99,7 +102,9 @@ class Connection:
         logger.debug(f"Getting {self.url}/api/{self.api_version}/{route}")
         try:
             response = self.session.get(
-                f"{self.url}/api/{self.api_version}/{route}", allow_redirects=False
+                f"{self.url}/api/{self.api_version}/{route}",
+                allow_redirects=False,
+                json=data,
             )
         except ConnectionError as e:
             error_msg = f"Unable to connect to FlowKit API at {self.url}: {e}"
@@ -371,6 +376,44 @@ def get_geography(connection: Connection, aggregation_unit: str) -> dict:
     logger.info(
         f"Got {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
     )
+    return result
+
+
+def get_available_dates(
+    connection: Connection, event_types: Union[None, List[str]] = None
+) -> dict:
+    """
+    Get available dates for different event types from the database.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    event_types : list of str, optional
+        The event types for which to return available dates (for example: ["calls", "sms"]).
+        If None, return available dates for all available event types.
+
+    Returns
+    -------
+    dict
+        Available dates in the format {event_type: [list of dates]}
+
+    """
+    logger.info(
+        f"Getting {connection.url}/api/{connection.api_version}/available_dates"
+    )
+    response = connection.get_url(f"available_dates", data={"event_types": event_types})
+    if response.status_code != 200:
+        try:
+            msg = response.json()["msg"]
+            more_info = f" Reason: {msg}"
+        except KeyError:
+            more_info = ""
+        raise FlowclientConnectionError(
+            f"Could not get available dates. API returned with status code: {response.status_code}.{more_info}"
+        )
+    result = response.json()["available_dates"]
+    logger.info(f"Got {connection.url}/api/{connection.api_version}/available_dates")
     return result
 
 
