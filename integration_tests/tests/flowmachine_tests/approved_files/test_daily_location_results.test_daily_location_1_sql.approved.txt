@@ -16,7 +16,7 @@ FROM (SELECT subscriber_locs.subscriber,
                                events.calls.msisdn AS subscriber
                         FROM events.calls
                         WHERE (events.calls.datetime >= '2016-01-05 00:00:00')
-                          AND (events.calls.datetime <= '2016-01-06 00:00:00')
+                          AND (events.calls.datetime < '2016-01-06 00:00:00')
                           AND ((   (EXTRACT(HOUR FROM events.calls.datetime) >= 23)
                                 OR (EXTRACT(HOUR FROM events.calls.datetime) < 5)))) AS tbl
                        INNER JOIN (SELECT DISTINCT msisdn AS subscriber
@@ -33,7 +33,7 @@ FROM (SELECT subscriber_locs.subscriber,
                                events.sms.msisdn AS subscriber
                         FROM events.sms
                         WHERE (events.sms.datetime >= '2016-01-05 00:00:00')
-                          AND (events.sms.datetime <= '2016-01-06 00:00:00')
+                          AND (events.sms.datetime < '2016-01-06 00:00:00')
                           AND ((   (EXTRACT(HOUR FROM events.sms.datetime) >= 23)
                                 OR (EXTRACT(HOUR FROM events.sms.datetime) < 5)))) AS tbl
                        INNER JOIN (SELECT DISTINCT msisdn AS subscriber

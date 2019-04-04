@@ -206,7 +206,7 @@ class EventTableSubset(Query):
             )
         if self.stop is not None:
             ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
-            select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime <= ts_stop)
+            select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime < ts_stop)
 
         if self.hours != "all":
             hour_start, hour_end = self.hours
@@ -243,7 +243,7 @@ class EventTableSubset(Query):
             where_clause += f"WHERE (datetime >= '{self.start}'::timestamptz)"
         if self.stop is not None:
             where_clause += "WHERE " if where_clause == "" else " AND "
-            where_clause += f"(datetime <= '{self.stop}'::timestamptz)"
+            where_clause += f"(datetime < '{self.stop}'::timestamptz)"
 
         sql = f"""
         SELECT {", ".join(self.columns)}
