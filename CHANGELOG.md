@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- Fixed #514, which would cause the client to hang after submitting a query that couldn't be created
 
 ### Removed
 
