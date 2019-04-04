@@ -34,7 +34,7 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
     @property
     def _flowmachine_query_obj(self):
         """
-        Return the underlying flowmachine daily_location object.
+        Return the underlying flowmachine UniqueSubscriberCounts object.
 
         Returns
         -------
