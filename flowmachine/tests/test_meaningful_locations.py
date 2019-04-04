@@ -296,4 +296,4 @@ def test_meaningful_locations_od_results(get_dataframe):
     assert mfl_od_df[
         (mfl_od_df.pcod_from == "524 1") & (mfl_od_df.pcod_to == "524 4")
     ].total[0] == pytest.approx(16.490_807)
-    assert mfl_od_df.total.sum() == pytest.approx(350.861_567)
+    assert mfl_od_df.total.sum() == pytest.approx(350.806_012)
