@@ -9,8 +9,24 @@ from flowmachine.core.server.action_handlers import (
     action_handler__get_geography,
     action_handler__get_query_params,
     action_handler__get_sql,
+    action_handler__run_query,
 )
 from flowmachine.core.server.zmq_helpers import ZMQReplyStatus
+
+
+def test_run_query_error_handled(monkeypatch, dummy_redis):
+    """
+    Run query handler should return an error status if query construction failed.
+    """
+    monkeypatch.setattr(Query, "redis", dummy_redis)
+    msg = action_handler__run_query(
+        query_kind="daily_location",
+        date="2016-02-02",
+        method="last",
+        aggregation_unit="admin3",
+    )
+    assert msg.status == ZMQReplyStatus.ERROR
+    assert msg.msg == "Unable to create query object."
 
 
 @pytest.mark.parametrize("bad_unit", ["NOT_A_VALID_UNIT", "admin4"])
