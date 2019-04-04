@@ -333,11 +333,11 @@
         },
         "asynctest": {
             "hashes": [
-                "sha256:56bd75b03df55956d57437db26700503d1013616314db5d1ea1a73be1186fd71",
-                "sha256:77520850ae21620ec31738f4a7b467acaa44de6d3752d8ac7a9f4dcf55d77853"
+                "sha256:bbeb45bb41344d2cbb814b4c89c04f2c568742352736cabf7af6fcbed06f66cc",
+                "sha256:cce5f4c64a24bd05a31721e45fd9fe39ff0a9987d7a1351d00b1037a8744238a"
             ],
             "index": "pypi",
-            "version": "==0.12.2"
+            "version": "==0.12.3"
         },
         "atomicwrites": {
             "hashes": [
