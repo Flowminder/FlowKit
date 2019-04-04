@@ -27,7 +27,7 @@ from .utils import permissions_types, aggregation_types
             },
         ),
         (
-            "unique_subscribers_count",
+            "unique_subscriber_counts",
             {
                 "start_date": "2016-01-01",
                 "end_date": "2016-01-02",
@@ -35,7 +35,7 @@ from .utils import permissions_types, aggregation_types
             },
         ),
         (
-            "unique_subscribers_count",
+            "unique_subscriber_counts",
             {
                 "start_date": "2016-01-01",
                 "end_date": "2016-01-02",
