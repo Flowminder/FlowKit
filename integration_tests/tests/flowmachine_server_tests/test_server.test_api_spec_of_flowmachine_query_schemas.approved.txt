@@ -93,11 +93,11 @@
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
-        "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
-        "modal_location": "#/components/schemas/ModalLocation"
+        "modal_location": "#/components/schemas/ModalLocation",
+        "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts"
       },
       "propertyName": "query_kind"
     },
@@ -121,9 +121,6 @@
         "$ref": "#/components/schemas/LocationEventCounts"
       },
       {
-        "$ref": "#/components/schemas/UniqueSubscriberCounts"
-      },
-      {
         "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
       },
       {
@@ -134,6 +131,9 @@
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
+      },
+      {
+        "$ref": "#/components/schemas/UniqueSubscriberCounts"
       }
     ]
   },
@@ -272,33 +272,6 @@
       "end_date",
       "interval",
       "start_date"
-    ],
-    "type": "object"
-  },
-  "UniqueSubscriberCounts": {
-    "properties": {
-      "start_date": {
-        "format": "date",
-        "type": "string"
-      },
-      "end_date": {
-        "format": "date",
-        "type": "string"
-      },
-      "aggregation_unit": {
-        "enum": [
-          "admin0",
-          "admin1",
-          "admin2",
-          "admin3"
-        ],
-        "type": "string"
-      },
-    },
-    "required": [
-      "start_date"
-      "end_date",
-      "aggregation_unit"
     ],
     "type": "object"
   },
@@ -566,6 +539,33 @@
       }
     },
     "required": [
+      "aggregation_unit"
+    ],
+    "type": "object"
+  },
+  "UniqueSubscriberCounts": {
+    "properties": {
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+    },
+    "required": [
+      "start_date"
+      "end_date",
       "aggregation_unit"
     ],
     "type": "object"
