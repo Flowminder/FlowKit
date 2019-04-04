@@ -545,14 +545,6 @@
   },
   "UniqueSubscriberCounts": {
     "properties": {
-      "start_date": {
-        "format": "date",
-        "type": "string"
-      },
-      "end_date": {
-        "format": "date",
-        "type": "string"
-      },
       "aggregation_unit": {
         "enum": [
           "admin0",
@@ -562,11 +554,19 @@
         ],
         "type": "string"
       },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      }
     },
     "required": [
-      "start_date"
+      "aggregation_unit",
       "end_date",
-      "aggregation_unit"
+      "start_date"
     ],
     "type": "object"
   }
