@@ -102,7 +102,11 @@ def action_handler__run_query(**action_params):
         try:
             query_id = query_obj.store_async()
         except Exception as e:
-            return ZMQReply(status="error", msg=str(e), payload={})
+            return ZMQReply(
+                status="error",
+                msg="Unable to create query object.",
+                payload={"exception": str(e)},
+            )
 
         # Register the query as "known" (so that we can later look up the query kind
         # and its parameters from the query_id).
