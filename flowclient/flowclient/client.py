@@ -956,11 +956,6 @@ def unique_subscriber_counts(
     -------
     dict
         Dict which functions as the query specification
-
-    Example
-    -------
-    >>> unique_subscriber_counts( { "start_date" : "2019-03-20", "end_date" : "2019-03-31", "aggregation_unit" : "admin3" } )
-    [ ]  # TODO - Fill this in
     """
     return {
         "query_kind": "unique_subscriber_counts",
