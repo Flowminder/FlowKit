@@ -323,8 +323,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pre-commit-hook-for-python-formatting-with-black" title="Pre-commit hook for Python formatting with black" class="md-nav__link">
-    Pre-commit hook for Python formatting with black
+  <a href="#pre-commit-hook-for-python-code-formatting-with-black" title="Pre-commit hook (for Python code formatting with black)" class="md-nav__link">
+    Pre-commit hook (for Python code formatting with black)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diff-tool-for-verifying-changes-in-approvaltests-based-tests" title="Diff tool (for verifying changes in ApprovalTests-based tests)" class="md-nav__link">
+    Diff tool (for verifying changes in ApprovalTests-based tests)
   </a>
   
 </li>
@@ -2347,8 +2354,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pre-commit-hook-for-python-formatting-with-black" title="Pre-commit hook for Python formatting with black" class="md-nav__link">
-    Pre-commit hook for Python formatting with black
+  <a href="#pre-commit-hook-for-python-code-formatting-with-black" title="Pre-commit hook (for Python code formatting with black)" class="md-nav__link">
+    Pre-commit hook (for Python code formatting with black)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diff-tool-for-verifying-changes-in-approvaltests-based-tests" title="Diff tool (for verifying changes in ApprovalTests-based tests)" class="md-nav__link">
+    Diff tool (for verifying changes in ApprovalTests-based tests)
   </a>
   
 </li>
@@ -2418,7 +2432,7 @@
                 
                 <h1 id="setting-up-a-development-environment">Setting up a development environment<a class="headerlink" href="#setting-up-a-development-environment" title="Permanent link">&para;</a></h1>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<h3 id="pre-commit-hook-for-python-formatting-with-black">Pre-commit hook for Python formatting with black<a class="headerlink" href="#pre-commit-hook-for-python-formatting-with-black" title="Permanent link">&para;</a></h3>
+<h3 id="pre-commit-hook-for-python-code-formatting-with-black">Pre-commit hook (for Python code formatting with black)<a class="headerlink" href="#pre-commit-hook-for-python-code-formatting-with-black" title="Permanent link">&para;</a></h3>
 <p>FlowKit's Python code is formatted with <a href="https://black.readthedocs.io/en/stable/">black</a> (which is included in the
 FlowKit pipenv environments). There is also a <a href="https://pre-commit.com/">pre-commit</a> hook which runs black on all Python
 files before each commit.</p>
@@ -2458,6 +2472,17 @@ black...................................................Passed
  <span class="m">1</span> file changed, <span class="m">2</span> insertions<span class="o">(</span>+<span class="o">)</span>, <span class="m">1</span> deletion<span class="o">(</span>-<span class="o">)</span>
 </pre></div>
 
+<h3 id="diff-tool-for-verifying-changes-in-approvaltests-based-tests">Diff tool (for verifying changes in <code>ApprovalTests</code>-based tests)<a class="headerlink" href="#diff-tool-for-verifying-changes-in-approvaltests-based-tests" title="Permanent link">&para;</a></h3>
+<p>Some of the tests use <a href="https://github.com/approvals/ApprovalTests.Python">ApprovalTests</a> to verify large output against
+a known "approved" version (stored in files called <code>*approved.txt</code>). For example, the API specification is
+verified in this way. If you make code changes that alter the results of these tests, the content of the
+relevant <code>*.approved.txt</code> file needs to be updated. ApprovalTests will do this automatically for you, but you need to have a
+diff tool installed. (See here for some recommendations for diff tools on <a href="https://www.git-tower.com/blog/diff-tools-mac">Mac</a>
+and <a href="https://www.git-tower.com/blog/diff-tools-windows">Windows</a>.)</p>
+<p>There is a toplevel config file called <code>approvaltests_diff_reporters.json</code> which lists the diff tools that ApprovalTests
+will try to find. Currently only <code>opendiff</code> is listed there (but we may add additional ones in the future). If you are using a different tool you should
+manually add it to this file. See the ApprovalTests <a href="https://github.com/approvals/ApprovalTests.Python">README</a> for
+examples (illustrative particularly for file paths on Windows).</p>
 <h2 id="option-1-starting-up-all-flowkit-components-inside-a-dockerised-development-environment">Option 1: Starting up all FlowKit components inside a dockerised development environment<a class="headerlink" href="#option-1-starting-up-all-flowkit-components-inside-a-dockerised-development-environment" title="Permanent link">&para;</a></h2>
 <p>For convenience, FlowKit comes with a dockerised development environment. You can start up a development version of all
 components by running:
