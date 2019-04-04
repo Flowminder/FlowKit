@@ -11,6 +11,7 @@ from time import sleep
 
 import pytest
 import os
+import pandas as pd
 import zmq
 
 import flowmachine
@@ -18,6 +19,9 @@ from flowmachine.core import Connection, Query
 from flowmachine.core.cache import reset_cache
 import flowmachine.core.server.server
 import quart.flask_patch
+
+here = os.path.dirname(os.path.abspath(__file__))
+flowkit_toplevel_dir = os.path.join(here, "..", "..")
 
 
 @pytest.fixture(scope="session")
@@ -287,7 +291,15 @@ def reset_cache_schema(fm_conn):
     print("Done.")
 
 
+@pytest.fixture
+def get_dataframe(fm_conn):
+    yield lambda query: pd.read_sql_query(query.get_query(), con=fm_conn.engine)
+
+
 @pytest.fixture(scope="session")
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
-    return diff_reporter_factory.get("opendiff")
+    diff_reporter_factory.load(
+        os.path.join(flowkit_toplevel_dir, "approvaltests_diff_reporters.json")
+    )
+    return diff_reporter_factory.get_first_working()

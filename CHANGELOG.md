@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+
+## [0.5.1]
+### Added
+- Added `HandsetStats` to FlowMachine.
 - Added new `ContactReferenceLocationStats` query class to FlowMachine.
 - A new zmq message `get_available_dates` was added to the flowmachine server, along with the `/available_dates`
   endpoint in flowapi and the function `get_available_dates()` in flowclient. These allow to determine the dates
@@ -16,10 +27,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI's access, run and debug loggers are now named `flowapi.access`, `flowapi.query` and `flowapi.debug`
 - FlowAPI's access and run loggers, and FlowMachine's query run logger now log to stdout instead of stderr
 - Passwords for Redis and FlowDB must now be explicitly provided to flowmachine via argument to `connect`, env var, or secret
-
-
-### Fixed
-
 
 ### Removed
 - FlowMachine and FlowAPI no longer support logging to a file
@@ -174,7 +181,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.1...master
+[0.5.1]: https://github.com/Flowminder/FlowKit/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/Flowminder/FlowKit/compare/0.4.3...0.5.0
 [0.4.3]: https://github.com/Flowminder/FlowKit/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/Flowminder/FlowKit/compare/0.4.1...0.4.2

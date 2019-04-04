@@ -10,7 +10,7 @@ from flask_jwt_extended.default_callbacks import (
     default_revoked_token_callback,
     default_unauthorized_callback,
 )
-from quart import current_app, request, Response
+from quart import current_app, request, Response, jsonify
 from typing import Any, Dict
 
 
@@ -74,7 +74,7 @@ async def expired_token_callback(expired_token: Dict[str, Any]) -> Response:
 async def claims_verification_failed_callback() -> Response:
     """
     Log that an access attempt was made with claims that failed verification and return
-    the result from the default callback.
+    a json error message and 401 error code.
 
     Returns
     -------
@@ -88,7 +88,7 @@ async def claims_verification_failed_callback() -> Response:
         src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
-    return default_verify_claims_failed_callback()
+    return jsonify({"msg": "User claims verification failed"}), 401
 
 
 async def invalid_token_callback(error_string) -> Response:

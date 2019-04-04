@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-### Pre-commit hook for Python formatting with black
+### Pre-commit hook (for Python code formatting with black)
 
 FlowKit's Python code is formatted with [black](https://black.readthedocs.io/en/stable/) (which is included in the
 FlowKit pipenv environments). There is also a [pre-commit](https://pre-commit.com/) hook which runs black on all Python
@@ -51,7 +51,19 @@ black...................................................Passed
  1 file changed, 2 insertions(+), 1 deletion(-)
 ```
 
+### Diff tool (for verifying changes in `ApprovalTests`-based tests)
 
+Some of the tests use [ApprovalTests](https://github.com/approvals/ApprovalTests.Python) to verify large output against
+a known "approved" version (stored in files called `*approved.txt`). For example, the API specification is
+verified in this way. If you make code changes that alter the results of these tests, the content of the
+relevant `*.approved.txt` file needs to be updated. ApprovalTests will do this automatically for you, but you need to have a
+diff tool installed. (See here for some recommendations for diff tools on [Mac](`https://www.git-tower.com/blog/diff-tools-mac`)
+and [Windows](https://www.git-tower.com/blog/diff-tools-windows).)
+
+There is a toplevel config file called `approvaltests_diff_reporters.json` which lists the diff tools that ApprovalTests
+will try to find. Currently only `opendiff` is listed there (but we may add additional ones in the future). If you are using a different tool you should
+manually add it to this file. See the ApprovalTests [README](https://github.com/approvals/ApprovalTests.Python) for
+examples (illustrative particularly for file paths on Windows).
 
 
 ## Option 1: Starting up all FlowKit components inside a dockerised development environment
