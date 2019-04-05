@@ -89,7 +89,6 @@ Schema used for record keeping of aggregate calculations.
 
 CREATE SCHEMA IF NOT EXISTS aggregates;
 
-CREATE TYPE cdrtype AS ENUM ('voice', 'sms', 'mds', 'topups');
 CREATE TYPE aggstatus AS ENUM ('in_process', 'done', 'failed');
 CREATE TABLE aggregates.aggregates (
 	id SERIAL NOT NULL,
