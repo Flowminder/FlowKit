@@ -520,6 +520,7 @@ def make_demodata():  # pragma: no cover
         "meaningful_locations_aggregate",
         "meaningful_locations_od_matrix",
         "geography",
+        "total_network_objects",
     ):
         c = Capability(name=c)
         db.session.add(c)
