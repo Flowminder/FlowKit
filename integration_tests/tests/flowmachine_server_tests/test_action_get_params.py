@@ -28,12 +28,6 @@ from .helpers import poll_until_done
             "aggregation_unit": "admin1",
             "subscriber_subset": None,
         },
-        {
-            "query_kind": "unique_subscriber_counts",
-            "start_date": "2016-01-02",
-            "end_date": "2016-01-03",
-            "aggregation_unit": "admin1",
-        },
     ],
 )
 @pytest.mark.asyncio
