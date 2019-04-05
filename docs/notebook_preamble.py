@@ -77,6 +77,10 @@ claims = {
         "permissions": {"run": True, "poll": True, "get_result": True},
         "spatial_aggregation": ["admin3", "admin2", "admin1"],
     },
+    "location_introversion": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
 }
 
 TOKEN = make_token(

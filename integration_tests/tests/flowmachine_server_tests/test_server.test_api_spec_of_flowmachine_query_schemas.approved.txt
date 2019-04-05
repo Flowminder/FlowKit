@@ -93,6 +93,7 @@
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
+        "location_introversion": "#/components/schemas/LocationIntroversion",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
@@ -118,6 +119,9 @@
       },
       {
         "$ref": "#/components/schemas/LocationEventCounts"
+      },
+      {
+        "$ref": "#/components/schemas/LocationIntroversion"
       },
       {
         "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
@@ -271,6 +275,41 @@
     ],
     "type": "object"
   },
+  "LocationIntroversion": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "direction": {
+        "enum": [
+          "both",
+          "in",
+          "out"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
+    ],
+    "type": "object"
+  }
   "MeaningfulLocationsAggregate": {
     "properties": {
       "aggregation_unit": {

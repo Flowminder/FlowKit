@@ -26,6 +26,23 @@ from .utils import permissions_types, aggregation_types
                 "subscriber_subset": None,
             },
         ),
+        (
+            "location_introversion",
+            {
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-02",
+                "aggregation_unit": "admin3",
+            },
+        ),
+        (
+            "location_introversion",
+            {
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-02",
+                "aggregation_unit": "admin3",
+                "direction": "in",
+            },
+        ),
         # (
         #     # TODO: currently flowclient.modal_location() doesn't accept a 'locations'
         #     # argument but rather expects a list of location objects. We can't test this
