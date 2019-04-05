@@ -935,3 +935,31 @@ def flows(
         "to_location": to_location,
         "aggregation_unit": aggregation_unit,
     }
+
+
+def unique_subscriber_counts(
+    start_date: str, end_date: str, aggregation_unit: str
+) -> dict:
+    """
+    Return query spec for unique subscriber counts
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "unique_subscriber_counts",
+        "start_date": start_date,
+        "end_date": end_date,
+        "aggregation_unit": aggregation_unit,
+    }

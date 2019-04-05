@@ -96,7 +96,8 @@
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
-        "modal_location": "#/components/schemas/ModalLocation"
+        "modal_location": "#/components/schemas/ModalLocation",
+        "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts"
       },
       "propertyName": "query_kind"
     },
@@ -130,6 +131,9 @@
       },
       {
         "$ref": "#/components/schemas/ModalLocation"
+      },
+      {
+        "$ref": "#/components/schemas/UniqueSubscriberCounts"
       }
     ]
   },
@@ -536,6 +540,33 @@
     },
     "required": [
       "aggregation_unit"
+    ],
+    "type": "object"
+  },
+  "UniqueSubscriberCounts": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
     ],
     "type": "object"
   }

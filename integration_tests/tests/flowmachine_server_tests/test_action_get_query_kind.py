@@ -32,7 +32,7 @@ async def test_get_query_kind(params, zmq_port, zmq_host):
     Running 'get_query_kind' against an existing query_id returns the expected query kind.
     """
     #
-    # Run daily_location query.
+    # Run query.
     #
     msg = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 

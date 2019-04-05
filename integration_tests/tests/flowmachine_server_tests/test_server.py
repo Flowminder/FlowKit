@@ -52,6 +52,7 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
                 "meaningful_locations_between_dates_od_matrix",
                 "geography",
                 "location_event_counts",
+                "unique_subscriber_counts",
                 "dfs_metric_total_amount",
             ]
         },
