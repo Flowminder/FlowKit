@@ -95,7 +95,7 @@ CREATE TABLE aggregates.aggregates (
 	aggregate_type VARCHAR,
 	aggregate_date DATE,
 	status aggstatus,
-	cache_ref VARCHAR
+	cache_ref VARCHAR,
 	time_stamp TIMESTAMP WITH TIME ZONE,
 	PRIMARY KEY (id)
 );
