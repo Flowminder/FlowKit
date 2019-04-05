@@ -38,7 +38,7 @@ async def test_get_query_kind(params, zmq_port, zmq_host):
     Running 'get_query_kind' against an existing query_id returns the expected query kind.
     """
     #
-    # Run daily_location query.
+    # Run query.
     #
     msg = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
@@ -64,7 +64,7 @@ async def test_get_query_kind(params, zmq_port, zmq_host):
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert "success" == reply["status"]
     assert query_id == reply["payload"]["query_id"]
-    assert "daily_location" == reply["payload"]["query_kind"]
+    assert params["query_kind"] == reply["payload"]["query_kind"]
 
 
 @pytest.mark.asyncio

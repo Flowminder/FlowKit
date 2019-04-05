@@ -42,7 +42,7 @@ async def test_get_query_params(params, zmq_port, zmq_host):
     Running 'get_query_params' against an existing query_id returns the expected parameters with which the query was run.
     """
     #
-    # Run daily_location query.
+    # Run query.
     #
     msg = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
