@@ -938,7 +938,7 @@ def flows(
 
 
 def total_network_objects(
-    start_date: str, stop_date: str, aggregation_unit: str
+    start_date: str, end_date: str, aggregation_unit: str
 ) -> dict:
     """
     Return query spec for total network objects
