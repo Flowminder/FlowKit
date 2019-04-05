@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 
+- New schmema `aggregates` and table `aggregates` have been created for maintaining a record of the process and completion of scheduled aggregates.
+
 ### Changed
 
 ### Fixed
