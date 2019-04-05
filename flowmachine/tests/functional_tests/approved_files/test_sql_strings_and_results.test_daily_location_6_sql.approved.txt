@@ -20,7 +20,7 @@ FROM (SELECT subscriber_locs.subscriber,
                                      events.calls.msisdn AS subscriber
                               FROM events.calls
                               WHERE (events.calls.datetime >= '2016-01-03 00:00:00')
-                                AND (events.calls.datetime <= '2016-01-04 00:00:00')) AS tbl
+                                AND (events.calls.datetime < '2016-01-04 00:00:00')) AS tbl
                              INNER JOIN (SELECT outgoing,
                                                 datetime,
                                                 duration,

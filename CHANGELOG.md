@@ -10,9 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- Fixed #514, which would cause the client to hang after submitting a query that couldn't be created
 
 ### Removed
+
+
+## [0.5.2]
+### Fixed
+- Fixed #514, which would cause the client to hang after submitting a query that couldn't be created
+- Fixed #575, so that events at midnight are now considered to be happening on the following day
 
 
 ## [0.5.1]
@@ -183,7 +188,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.1...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.2...master
+[0.5.2]: https://github.com/Flowminder/FlowKit/compare/0.5.1...0.5.2
 [0.5.1]: https://github.com/Flowminder/FlowKit/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/Flowminder/FlowKit/compare/0.4.3...0.5.0
 [0.4.3]: https://github.com/Flowminder/FlowKit/compare/0.4.2...0.4.3

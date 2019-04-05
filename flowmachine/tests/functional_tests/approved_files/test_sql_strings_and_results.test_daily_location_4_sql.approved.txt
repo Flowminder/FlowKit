@@ -20,7 +20,7 @@ FROM (SELECT subscriber_locs.subscriber,
                                      events.calls.msisdn AS subscriber
                               FROM events.calls
                               WHERE (events.calls.datetime >= '2016-01-05 00:00:00')
-                                AND (events.calls.datetime <= '2016-01-06 00:00:00')
+                                AND (events.calls.datetime < '2016-01-06 00:00:00')
                                 AND ((   (EXTRACT(HOUR FROM events.calls.datetime) >= 22)
                                       OR (EXTRACT(HOUR FROM events.calls.datetime) < 6)))) AS tbl
                              INNER JOIN (SELECT *
