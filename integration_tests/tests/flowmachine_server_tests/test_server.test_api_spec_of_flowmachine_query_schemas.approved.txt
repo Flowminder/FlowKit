@@ -309,7 +309,7 @@
       "start_date"
     ],
     "type": "object"
-  }
+  },
   "MeaningfulLocationsAggregate": {
     "properties": {
       "aggregation_unit": {

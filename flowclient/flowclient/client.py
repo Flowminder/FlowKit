@@ -938,7 +938,7 @@ def flows(
 
 
 def location_introversion(
-    start_date: str, stop_date: str, aggregation_unit: str, direction: str = "both"
+    start_date: str, end_date: str, aggregation_unit: str, direction: str = "both"
 ) -> dict:
     """
     Return query spec for location introversion
