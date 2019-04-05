@@ -80,3 +80,22 @@ CREATE TABLE etl.etl (
 	time_stamp TIMESTAMP WITH TIME ZONE,
 	PRIMARY KEY (id)
 );
+
+/*
+
+Schema used for record keeping of aggregate calculations.
+
+*/
+
+CREATE SCHEMA IF NOT EXISTS aggregates;
+
+CREATE TYPE aggstatus AS ENUM ('in_process', 'done', 'failed');
+CREATE TABLE aggregates.aggregates (
+	id SERIAL NOT NULL,
+	aggregate_type VARCHAR,
+	aggregate_date DATE,
+	status aggstatus,
+	cache_ref VARCHAR,
+	time_stamp TIMESTAMP WITH TIME ZONE,
+	PRIMARY KEY (id)
+);
