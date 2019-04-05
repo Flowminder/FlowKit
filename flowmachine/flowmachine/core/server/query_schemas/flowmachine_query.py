@@ -18,6 +18,10 @@ from .meaningful_locations import (
 )
 from .geography import GeographySchema, GeographyExposed
 from .location_event_counts import LocationEventCountsSchema, LocationEventCountsExposed
+from .unique_subscriber_counts import (
+    UniqueSubscriberCountsSchema,
+    UniqueSubscriberCountsExposed,
+)
 from .total_network_objects import TotalNetworkObjectsSchema, TotalNetworkObjectsExposed
 from .dfs_metric_total_amount import (
     DFSTotalMetricAmountSchema,
@@ -37,6 +41,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "meaningful_locations_between_dates_od_matrix": MeaningfulLocationsBetweenDatesODMatrixSchema,
         "geography": GeographySchema,
         "location_event_counts": LocationEventCountsSchema,
+        "unique_subscriber_counts": UniqueSubscriberCountsSchema,
         "total_network_objects": TotalNetworkObjectsSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
     }
@@ -60,6 +65,8 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "geography"
         elif isinstance(obj, LocationEventCountsExposed):
             return "location_event_counts"
+        elif isinstance(obj, UniqueSubscriberCountsExposed):
+            return "unique_subscriber_counts"
         elif isinstance(obj, TotalNetworkObjectsExposed):
             return "total_network_objects"
         elif isinstance(obj, DFSTotalMetricAmountExposed):
