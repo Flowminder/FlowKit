@@ -18,7 +18,7 @@ class LocationIntroversionSchema(Schema):
     end_date = fields.Date(required=True)
     aggregation_unit = AggregationUnit()
     direction = fields.String(
-        required=True, validate=OneOf(["in", "out", "both"], default="both")
+        required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this
 
     @post_load
