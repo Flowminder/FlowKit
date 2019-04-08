@@ -22,6 +22,10 @@ from .unique_subscriber_counts import (
     UniqueSubscriberCountsSchema,
     UniqueSubscriberCountsExposed,
 )
+from .location_introversion import (
+    LocationIntroversionSchema,
+    LocationIntroversionExposed,
+)
 from .total_network_objects import TotalNetworkObjectsSchema, TotalNetworkObjectsExposed
 from .dfs_metric_total_amount import (
     DFSTotalMetricAmountSchema,
@@ -42,6 +46,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "geography": GeographySchema,
         "location_event_counts": LocationEventCountsSchema,
         "unique_subscriber_counts": UniqueSubscriberCountsSchema,
+        "location_introversion": LocationIntroversionSchema,
         "total_network_objects": TotalNetworkObjectsSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
     }
@@ -67,6 +72,8 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "location_event_counts"
         elif isinstance(obj, UniqueSubscriberCountsExposed):
             return "unique_subscriber_counts"
+        elif isinstance(obj, LocationIntroversionExposed):
+            return "location_introversion"
         elif isinstance(obj, TotalNetworkObjectsExposed):
             return "total_network_objects"
         elif isinstance(obj, DFSTotalMetricAmountExposed):

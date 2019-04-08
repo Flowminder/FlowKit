@@ -29,6 +29,7 @@ from .client import (
     run_query,
     get_available_dates,
     unique_subscriber_counts,
+    location_introversion,
     total_network_objects,
 )
 
@@ -51,5 +52,6 @@ __all__ = [
     "run_query",
     "get_available_dates",
     "unique_subscriber_counts",
+    "location_introversion",
     "total_network_objects",
 ]
