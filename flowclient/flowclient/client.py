@@ -963,3 +963,34 @@ def unique_subscriber_counts(
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
     }
+
+
+def location_introversion(
+    start_date: str, end_date: str, aggregation_unit: str, direction: str = "both"
+) -> dict:
+    """
+    Return query spec for location introversion
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    direction : {"in", "out", "both"}, default "both"
+        Optionally, include only ingoing or outbound calls/texts
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "location_introversion",
+        "start_date": start_date,
+        "end_date": end_date,
+        "aggregation_unit": aggregation_unit,
+        "direction": direction,
+    }

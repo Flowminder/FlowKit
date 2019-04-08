@@ -521,6 +521,7 @@ def make_demodata():  # pragma: no cover
         "meaningful_locations_od_matrix",
         "geography",
         "unique_subscriber_counts",
+        "location_introversion",
     ):
         c = Capability(name=c)
         db.session.add(c)
