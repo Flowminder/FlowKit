@@ -95,11 +95,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:97bad5887ff543e2dff0a584d1a084e702789a26df5c8fb027ac1efab32274c5",
-                "sha256:b90799a1bc84f00ee999071e259f194087881b85c7240994ba9d86c4ceff3305"
+                "sha256:9ab2d6b686e5a9a455433144a269d3004ad0aa079d15ed291554858a9b8dbd38",
+                "sha256:9afb874f8332645a00b77311d1975ac6690fe37e3c268d9d65f5250a3134ee29"
             ],
             "index": "pypi",
-            "version": "==0.5.3"
+            "version": "==0.6.0"
         },
         "hyperframe": {
             "hashes": [
@@ -117,10 +117,10 @@
         },
         "jinja2": {
             "hashes": [
-                "sha256:74c935a1b8bb9a3947c50a54766a969d4846290e1e788ea44c1392163723c3bd",
-                "sha256:f84be1bb0040caca4cea721fcbbbbd61f9be9464ca236387158b0feea01914a4"
+                "sha256:065c4f02ebe7f7cf559e49ee5a95fb800a9e4528727aec6f24402a5374c65013",
+                "sha256:14dd6caf1527abb21f08f86c784eac40853ba93edb79552aa1e4b8aef1b61c7b"
             ],
-            "version": "==2.10"
+            "version": "==2.10.1"
         },
         "markupsafe": {
             "hashes": [
@@ -307,10 +307,10 @@
         },
         "wsproto": {
             "hashes": [
-                "sha256:c013342d7a9180486713c6c986872e4fe24e18a21ccbece314939d8b58312e0e",
-                "sha256:fd6020d825022247053400306448e161d8740bdd52e328e5553cd9eee089f705"
+                "sha256:55c3da870460e8838b2fbe4d10f3accc0cea3a13d5e8dbbdc6da5d537d6d44dc",
+                "sha256:c7f35e0af250b9f25583b090039eb2159a079fbe71b7daf86cc3ddcd2f3a70b3"
             ],
-            "version": "==0.13.0"
+            "version": "==0.14.0"
         }
     },
     "develop": {
