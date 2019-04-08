@@ -22,6 +22,10 @@ from .unique_subscriber_counts import (
     UniqueSubscriberCountsSchema,
     UniqueSubscriberCountsExposed,
 )
+from .location_introversion import (
+    LocationIntroversionSchema,
+    LocationIntroversionExposed,
+)
 from .dfs_metric_total_amount import (
     DFSTotalMetricAmountSchema,
     DFSTotalMetricAmountExposed,
@@ -41,6 +45,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "geography": GeographySchema,
         "location_event_counts": LocationEventCountsSchema,
         "unique_subscriber_counts": UniqueSubscriberCountsSchema,
+        "location_introversion": LocationIntroversionSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
     }
 
@@ -65,6 +70,8 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "location_event_counts"
         elif isinstance(obj, UniqueSubscriberCountsExposed):
             return "unique_subscriber_counts"
+        elif isinstance(obj, LocationIntroversionExposed):
+            return "location_introversion"
         elif isinstance(obj, DFSTotalMetricAmountExposed):
             return "dfs_metric_total_amount"
         else:
