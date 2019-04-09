@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- [#581] Implemented new flowclient API entrypoint, total_network_objects(), to access (with simplified parameters) equivalent flowmachine query
+
 - [#577] Implemented new flowclient API entrypoint, location_introversion(), to access (with simplified parameters) equivalent flowmachine query
 
 - [#562] Implemented new flowclient API entrypoint, unique_subscriber_counts(), to access (with simplified parameters) equivalent flowmachine query
