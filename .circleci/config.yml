@@ -85,13 +85,13 @@ executors:
         FLOWDB_PORT: 5432
         FLOWMACHINE_FLOWDB_PASS: foo
         FLOWAPI_FLOWDB_PASS: foo
-        FLOWDB_PASS: foo
+        FLOWAPI_FLOWDB_USER: reporter
         REDIS_PASSWORD: fm_redis
         SYNTHETIC_DATA_DB_PORT: 5432
         POSTGRES_USER: flowdb
         REDIS_HOST: "localhost"
         QUART_APP: "flowapi.main:create_app()"
-        FLOWDB_USER: analyst
+        FLOWMACHINE_FLOWDB_USER: analyst
         LOG_DIRECTORY: "."
         FLOWMACHINE_SERVER: localhost
         FLOWDB_HOST: localhost
