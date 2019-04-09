@@ -94,8 +94,8 @@ def test_env_priority(mocked_connections, monkeypatch):
     # Use monkeypatch to set environment variable only for this test
     monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
     monkeypatch.setenv("FLOWDB_PORT", "6969")
-    monkeypatch.setenv("FLOWMACHINE_DB_USER", "DUMMY_ENV_FLOWDB_USER")
-    monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
+    monkeypatch.setenv("FLOWMACHINE_FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
+    monkeypatch.setenv("FLOWMACHINE_FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
     monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", "7777")
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", "2020")
