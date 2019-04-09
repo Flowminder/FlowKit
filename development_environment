@@ -1,0 +1,115 @@
+## FlowAuth settings
+# Database that stores users and servers, defaults to temporary sqlite
+#SQLALCHEMY_DATABASE_URI 
+# Flask secret key for CSRF protection
+SECRET_KEY=secret 
+# At rest encryption of server secret keys
+FERNET_KEY="XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg=" 
+# Creates demo data when running
+DEMO_MODE=true
+# Required by flask
+FLASK_APP=flowauth 
+# Enable/disable flask debug/autoreload
+FLASK_DEBUG=1
+FLOWAUTH_PORT=9091
+
+## FlowAPI settings
+# JWT secret key
+JWT_SECRET_KEY=secret 
+# Shouldn't be relevant as serving now done by hypercorn?
+QUART_APP="flowapi.main:create_app()" 
+# Shouldn't be relevant as serving now done by hypercorn?
+QUART_DEBUG=1 
+# Error & debug loc level
+LOG_LEVEL=debug 
+# Flowmachine ZMQ host
+FLOWMACHINE_SERVER=localhost
+FLOWAPI_PORT=9090
+
+
+# Hostname to connect to flowdb
+FLOWDB_HOST=localhost 
+# Port to connect to flowdb
+FLOWDB_PORT=9000 
+
+## FlowMachine settings
+# To avoid mpl errors
+MPLBACKEND="agg" 
+# Password for redis
+REDIS_PASSWORD=fm_redis 
+# Error and debugging lo level
+LOG_LEVEL=debug 
+# Flowmachine db user
+FLOWMACHINE_FLOWDB_USER=analyst 
+# Flowmachine db password
+FLOWMACHINE_FLOWDB_PASS=foo 
+
+# Number of connections to keep open to flowdb
+#DB_CONNECTION_POOL_SIZE 
+# Number of connections to open in addition if needed
+#DB_CONNECTION_POOL_OVERFLOW 
+
+# Hostname of redis
+REDIS_HOST=localhost 
+# Port to connect to redis
+REDIS_PORT=6379 
+
+## FlowMachine server settings
+#asyncio debug mode
+DEBUG=false
+
+#Port to listen on for zmq
+FLOWMACHINE_PORT=5555
+
+## FlowDB Settings
+# Fixed, main db
+POSTGRES_DB=flowdb 
+# Superuser
+POSTGRES_USER=flowdb 
+# Superuser password
+POSTGRES_PASSWORD=flowflow 
+# Flowmachine user username
+FLOWMACHINE_FLOWDB_USER=flowmachine 
+# Flowapi user username
+FLOWAPI_FLOWDB_USER=flowapi 
+# Off by default, enables pldebugger
+#DEBUG 
+# Password for flowmachine user
+FLOWMACHINE_FLOWDB_PASS=foo 
+# Password for flowapi user
+FLOWAPI_FLOWDB_PASS=foo 
+# Size in bytes to limit cache to
+CACHE_SIZE=""
+# Decay rate for cache records
+CACHE_HALF_LIFE=10000
+# Max number of CPUs to use
+#MAX_CPUS 
+# Max number of worker processes to use
+#MAX_WORKERS 
+# Max number of worker processes to use per query
+#MAX_WORKERS_PER_GATHER 
+# Enable/disable postgres JIT
+#JIT 
+# Default stats target for tables
+#STATS_TARGET 
+
+# Synthetic data settings
+# Which data generator to use
+SYNTHETIC_DATA_GENERATOR=sql 
+N_SITES=200
+N_CELLS=1000
+N_SUBSCRIBERS=50000
+N_DAYS=60
+N_CALLS=20000
+N_SMS=20000
+N_MDS=20000
+N_TACS=10000
+P_OUT_OF_AREA=0.1
+P_RELOCATE=0.1
+INTERACTIONS_MULTIPLIER=5
+DISASTER_START=2016-02-11
+DISASTER_END=2016-03-01
+
+# Integration tests
+
+FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=FALSE

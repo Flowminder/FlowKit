@@ -62,7 +62,7 @@ def autostart_flowmachine_server(logging_config):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def autostart_flowapi_server(logging_config):
+def autostart_flowapi_server(logging_config, flowapi_port):
     """
     Starts a FlowAPI server in a separate process for the tests to talk to.
     """
@@ -79,7 +79,7 @@ def autostart_flowapi_server(logging_config):
 
         api_thread = Process(
             target=hypercorn.__main__.main,
-            args=(["--bind", "0.0.0.0:9090", "flowapi.main:create_app()"],),
+            args=(["--bind", f"0.0.0.0:{flowapi_port}", "flowapi.main:create_app()"],),
         )
         api_thread.start()
         sleep(2)

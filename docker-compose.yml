@@ -2,86 +2,178 @@
 # DOCKER COMPOSE FOR FLOWKIT
 #
 
-version: '3'
+version: '3.7'
 
 networks:
   db:
   redis:
   zero:
-  api:
+
 
 services:
-  flowdb-testdata:
-    container_name: flowdb_testdata
-    image: flowminder/flowdb-testdata:latest
+
+  flowdb:
+    container_name: flowdb
+    image: flowminder/flowdb:latest
+    build:
+      context: ./flowdb/
+      dockerfile: Dockerfile
+    ports:
+      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
-      - POSTGRES_DB=${POSTGRES_DB:-flowdb}
-      - POSTGRES_USER=${POSTGRES_USER:-flowdb}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
-      - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:-foo}
-      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:-foo}
+      - POSTGRES_DB=${POSTGRES_DB:?Must set POSTGRES_DB env var}
+      - POSTGRES_USER=${POSTGRES_USER:?Must set POSTGRES_USER env var}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
+      - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
+      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
+      - CACHE_SIZE=${CACHE_SIZE:?Must set CACHE_SIZE env var}  # if empty, defaults to using 10% of the available disk space
+      - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
+    shm_size: 1G
     tty: true
     stdin_open: true
     restart: always
-    shm_size: 1G
-    volumes:
-      - data_volume_flowdb:/var/lib/postgresql/data
     networks:
       db:
         aliases:
           - flowdb
+
+  flowdb_testdata:
+    container_name: flowdb_testdata
+    image: flowminder/flowdb-testdata:latest
+    build:
+      context: ./flowdb/testdata/
+      dockerfile: Dockerfile
+    ports:
+      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:?Must set POSTGRES_DB env var}
+      - POSTGRES_USER=${POSTGRES_USER:?Must set POSTGRES_USER env var}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
+      - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
+      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
+      - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
+      - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
+    shm_size: 1G
+    tty: true
+    stdin_open: true
+    restart: always
+    networks:
+      db:
+        aliases:
+          - flowdb
+
+  flowdb_synthetic_data:
+    container_name: flowdb_synthetic_data
+    image: flowminder/flowdb-synthetic-data:latest
+    build:
+      context: ./flowdb/testdata/
+      dockerfile: Dockerfile.synthetic_data
+    ports:
+      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:?Must set POSTGRES_DB env var}
+      - POSTGRES_USER=${POSTGRES_USER:?Must set POSTGRES_USER env var}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
+      - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
+      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
+      - CACHE_SIZE=${CACHE_SIZE:?Must set CACHE_SIZE env var}  # if empty, defaults to using 10% of the available disk space
+      - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
+      - SYNTHETIC_DATA_GENERATOR=${SYNTHETIC_DATA_GENERATOR:?Must set SYNTHETIC_DATA_GENERATOR env var}
+      - N_SITES=${N_SITES:?Must set N_SITES env var}
+      - N_CELLS=${N_CELLS:?Must set N_CELLS env var}
+      - N_SUBSCRIBERS=${N_SUBSCRIBERS:?Must set N_SUBSCRIBERS env var}
+      - N_DAYS=${N_DAYS:?Must set N_DAYS env var}
+      - N_CALLS=${N_CALLS:?Must set N_CALLS env var}
+      - N_SMS=${N_SMS:?Must set N_SMS env var}
+      - N_MDS=${N_MDS:?Must set N_MDS env var}
+      - N_TACS=${N_TACS:?Must set N_TACS env var}
+      - P_OUT_OF_AREA=${P_OUT_OF_AREA:?Must set P_OUT_OF_AREA env var}
+      - P_RELOCATE=${P_RELOCATE:?Must set P_RELOCATE env var}
+      - INTERACTIONS_MULTIPLIER=${INTERACTIONS_MULTIPLIER:?Must set INTERACTIONS_MULTIPLIER env var}
+      - DISASTER_START=${DISASTER_START:?Must set DISASTER_START env var}
+      - DISASTER_END=${DISASTER_END:?Must set DISASTER_END env var}
+    shm_size: 1G
+    tty: true
+    stdin_open: true
+    restart: always
+    networks:
+      db:
+        aliases:
+          - flowdb
+
   flowmachine:
     container_name: flowmachine
     image: flowminder/flowmachine:latest
-    restart: always
-    environment:
-      - FLOWDB_PORT=${FLOWDB_PORT:-5432}
-      - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
-      - LOG_LEVEL=${LOG_LEVEL:-error}
-      - DEBUG=${FM_DEBUG:-False}
-      - REDIS_HOST=${REDIS_HOST:-redis}
-      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set redis password}
-      - FLOWDB_PASS=${FLOWDB_PASS:?Must set FLOWDB_PASS}
+    build:
+      context: ./flowmachine
+      dockerfile: Dockerfile
+    ports:
+      - ${FLOWMACHINE_PORT:?Must set FLOWMACHINE_PORT env var}:5555
+    volumes:
+      - ./flowmachine/:/flowapi
+    depends_on:
+      - query_locker
     tty: true
     stdin_open: true
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:?Must set LOG_LEVEL env var}
+      - DEBUG=${DEBUG:?Must set DEBUG env var}
+      - FLOWDB_PORT=5432
+      - FLOWDB_HOST=flowdb
+      - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
+      - REDIS_HOST=${REDIS_HOST:?Must set REDIS_HOST env var}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+    restart: always
     networks:
+      - zero
       - db
       - redis
-      - zero
+
   flowapi:
     container_name: flowapi
     image: flowminder/flowapi:latest
-    restart: always
+    build:
+      context: ./flowapi
+      dockerfile: Dockerfile
     ports:
-      - 9090:9090
+      - ${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}:9090
     environment:
-      - SERVER=flowmachine
-      - LOG_LEVEL=${LOG_LEVEL:-error}
-      - FLOWDB_USER=reporter
-      - FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:-foo}
-      - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
-      - FLOWDB_PORT=${FLOWDB_PORT:-5432}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}
+      - FLOWMACHINE_SERVER=flowmachine
+      - FLOWAPI_FLOWDB_USER=${FLOWAPI_FLOWDB_USER:?Must set FLOWAPI_FLOWDB_USER env var}
+      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
+      - FLOWDB_HOST=flowdb
+      - FLOWDB_PORT=5432
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:?Must set JWT_SECRET_KEY env var}
+      - LOG_LEVEL=${LOG_LEVEL:?Must set LOG_LEVEL env var}
     volumes:
-      - data_volume_flowapi_logs:/var/logs/flowkit/
+      - ./flowapi/flowapi:/flowapi/flowapi
     tty: true
     stdin_open: true
+    restart: always
     networks:
-      - zero
       - db
-      - api
-  redis:
-    container_name: redis_flowkit
-    image: bitnami/redis:latest
+      - zero
+
+  flowauth:
+    container_name: flowauth
+    image: flowminder/flowauth:latest
+    build:
+      context: ./flowauth
+      dockerfile: Dockerfile
+    ports:
+      - ${FLOWAUTH_PORT:?Must set FLOWAUTH_PORT env var}:80
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set redis password}
+      DEMO_MODE: ${DEMO_MODE:?Must set DEMO_MODE env var}
+
+  query_locker:
+    container_name: redis_flowkit
+    image: bitnami/redis
+    ports:
+      - ${REDIS_PORT:?Must set REDIS_PORT env var}:6379
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
     restart: always
     networks:
       redis:
         aliases:
           - redis
-
-volumes:
-  data_volume_flowdb:
-  data_volume_flowapi_logs:
-
