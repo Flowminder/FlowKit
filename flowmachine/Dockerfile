@@ -13,5 +13,5 @@ CMD ["pipenv", "run", "flowmachine"]
 ENV LOG_LEVEL=error
 ENV FLOWDB_PORT=5432
 ENV FLOWDB_HOST=flowdb
-ENV FLOWDB_USER=analyst
+ENV FLOWMACHINE_DB_USER=analyst
 ENV DEBUG=False

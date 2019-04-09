@@ -171,7 +171,7 @@ Both are packaged in the `flowminder/flowdb-synthetic-data` docker image, and co
 For example, to generate a repeatable random data set with seven days of data, where 20,000 subscribers make 10,000 calls each day and use 5,000 cells:
 
 ```bash
-docker run --name flowdb_synth_data -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+docker run --name flowdb_synth_data -e FLOWMACHINE_FLOWDB_PASS=foo -e API_PASSWORD=foo \
  --publish 9000:5432 \
  -e N_CALLS=10000 -e N_SUBSCRIBERS=20000 -e N_CELLS=5000 -e N_DAYS=7 -e SYNTHETIC_DATA_GENERATOR=python \
  -e SUBSCRIBERS_SEED=11111 -e CALLS_SEED=22222 -e CELLS_SEED=33333 \
@@ -181,7 +181,7 @@ docker run --name flowdb_synth_data -e FM_PASSWORD=foo -e API_PASSWORD=foo \
 Or to generate an equivalent data set which includes TACs, mobile data sessions and sms:
 
 ```bash
-docker run --name flowdb_synth_data -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+docker run --name flowdb_synth_data -e FLOWMACHINE_FLOWDB_PASS=foo -e API_PASSWORD=foo \
  --publish 9000:5432 \
  -e N_CALLS=10000 -e N_SUBSCRIBERS=20000 -e N_CELLS=5000 -e N_SITES=5000 -e N_DAYS=7 -e SYNTHETIC_DATA_GENERATOR=sql \
  -e N_SMS=10000 -e N_MDS=10000 \
@@ -248,7 +248,7 @@ This creates two bind mounts, the first is FlowDB's internal storage, and the se
 And similarly when using `docker run`:
 
 ```bash
-docker run --name flowdb_testdata -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASS=foo -e API_PASSWORD=foo \
  --publish 9000:5432 \
  --user HOST_USER_ID:HOST_GROUP_ID \
  -v /path/to/store/data/on/host:/var/lib/postgresql/data \

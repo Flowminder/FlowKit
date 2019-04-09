@@ -100,7 +100,7 @@ def connect(
         else db_port
     )
     db_user = (
-        getsecret("FLOWDB_USER", os.getenv("FLOWDB_USER", "analyst"))
+        getsecret("FLOWMACHINE_DB_USER", os.getenv("FLOWMACHINE_DB_USER", "analyst"))
         if db_user is None
         else db_user
     )

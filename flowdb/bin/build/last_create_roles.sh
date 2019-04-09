@@ -18,7 +18,7 @@ set -e
 #               This user is mainly designed for ingesting 
 #               data into the events table.
 #
-#   * $FM_USER:  the for $FM_USERs that need access to raw data.
+#   * $FLOWMACHINE_FLOWDB_USER:  the for $FLOWMACHINE_FLOWDB_USERs that need access to raw data.
 #               They can read all data available in the database and 
 #               can write to most tables. Can't write to the tables under 
 #               the events schema.
@@ -41,13 +41,13 @@ fi
 if [ -e /run/secrets/FLOWMACHINE_DB_USER ];
 then
     echo "Using secrets for analyst user."
-    FM_USER=$(< /run/secrets/FLOWMACHINE_DB_USER)
+    FLOWMACHINE_FLOWDB_USER=$(< /run/secrets/FLOWMACHINE_DB_USER)
 fi
 
-if [ -e /run/secrets/FLOWMACHINE_DB_PASS ];
+if [ -e /run/secrets/FLOWMACHINE_FLOWDB_PASS ];
 then
     echo "Using secrets for analyst password."
-    FM_PASSWORD=$(< /run/secrets/FLOWMACHINE_DB_PASS)
+    FLOWMACHINE_FLOWDB_PASS=$(< /run/secrets/FLOWMACHINE_FLOWDB_PASS)
 fi
 
 if [ -e /run/secrets/FLOWAPI_DB_USER ];
@@ -64,11 +64,11 @@ fi
 
 psql --dbname="$POSTGRES_DB" -c "REVOKE CONNECT ON DATABASE $POSTGRES_DB FROM PUBLIC;"
 
-if [[ $FM_PASSWORD ]]
+if [[ $FLOWMACHINE_FLOWDB_PASS ]]
     then
-        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FM_USER WITH LOGIN PASSWORD '$FM_PASSWORD';"
+        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FLOWMACHINE_FLOWDB_USER WITH LOGIN PASSWORD '$FLOWMACHINE_FLOWDB_PASS';"
     else
-        echo "No password supplied for '$FM_USER' user: $FM_PASSWORD"
+        echo "No password supplied for '$FLOWMACHINE_FLOWDB_USER' user: $FLOWMACHINE_FLOWDB_PASS"
         exit 1
 fi
 
@@ -84,9 +84,9 @@ fi
 #  Roles can connect and create tables and
 #  schemas.
 #
-psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FM_USER;"
+psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FLOWMACHINE_FLOWDB_USER;"
 psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FLOWAPI_DB_USER;"
-psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FM_USER;"
+psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWMACHINE_FLOWDB_USER;"
 psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWAPI_DB_USER;"
 
 #
@@ -95,32 +95,32 @@ psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWA
 declare -a schema_list_permissive=("cache" "results" "features" "geography" "population" "elevation")
 for schema in "${schema_list_permissive[@]}"
 do
-    echo "Granting permissions to $FM_USER on $schema."
+    echo "Granting permissions to $FLOWMACHINE_FLOWDB_USER on $schema."
     psql --dbname="$POSTGRES_DB" -c "
         BEGIN;
             ALTER DEFAULT PRIVILEGES
                 IN SCHEMA $schema
-                GRANT ALL ON TABLES TO $FM_USER;
+                GRANT ALL ON TABLES TO $FLOWMACHINE_FLOWDB_USER;
 
-            ALTER DEFAULT PRIVILEGES FOR ROLE $FM_USER
+            ALTER DEFAULT PRIVILEGES FOR ROLE $FLOWMACHINE_FLOWDB_USER
                 IN SCHEMA $schema
-                GRANT ALL ON TABLES TO $FM_USER;
+                GRANT ALL ON TABLES TO $FLOWMACHINE_FLOWDB_USER;
 
             GRANT ALL PRIVILEGES 
                 ON ALL TABLES 
-                IN SCHEMA $schema TO $FM_USER;
+                IN SCHEMA $schema TO $FLOWMACHINE_FLOWDB_USER;
 
             GRANT USAGE
                 ON SCHEMA $schema
-                TO $FM_USER;
+                TO $FLOWMACHINE_FLOWDB_USER;
 
             GRANT ALL  
                 ON ALL TABLES 
-                IN SCHEMA $schema TO $FM_USER;
+                IN SCHEMA $schema TO $FLOWMACHINE_FLOWDB_USER;
             
             GRANT CREATE
                 ON SCHEMA $schema
-                TO $FM_USER;
+                TO $FLOWMACHINE_FLOWDB_USER;
         COMMIT;
         "
 done
@@ -128,32 +128,32 @@ done
 declare -a schema_list_restricted=("events" "dfs" "infrastructure" "routing")
 for schema in "${schema_list_restricted[@]}"
 do
-    echo "Restricting permissions to $FM_USER on $schema."
+    echo "Restricting permissions to $FLOWMACHINE_FLOWDB_USER on $schema."
     psql --dbname="$POSTGRES_DB" -c "
         BEGIN;
             GRANT USAGE
                 ON SCHEMA $schema
-                TO $FM_USER;
+                TO $FLOWMACHINE_FLOWDB_USER;
 
             GRANT SELECT
                 ON ALL TABLES 
-                IN SCHEMA $schema TO $FM_USER;
+                IN SCHEMA $schema TO $FLOWMACHINE_FLOWDB_USER;
 
             ALTER DEFAULT PRIVILEGES 
                 IN SCHEMA $schema
-                GRANT SELECT ON SEQUENCES TO $FM_USER;
+                GRANT SELECT ON SEQUENCES TO $FLOWMACHINE_FLOWDB_USER;
 
             ALTER DEFAULT PRIVILEGES 
                 IN SCHEMA $schema
-                GRANT SELECT ON TABLES TO $FM_USER;
+                GRANT SELECT ON TABLES TO $FLOWMACHINE_FLOWDB_USER;
         END;
         "
 done
 
-echo "Give $FM_USER role read and update access to cache_touches sequence"
+echo "Give $FLOWMACHINE_FLOWDB_USER role read and update access to cache_touches sequence"
 psql --dbname="$POSTGRES_DB" -c "
     BEGIN;
-        GRANT USAGE, SELECT, UPDATE ON SEQUENCE cache.cache_touches TO $FM_USER;
+        GRANT USAGE, SELECT, UPDATE ON SEQUENCE cache.cache_touches TO $FLOWMACHINE_FLOWDB_USER;
     COMMIT;
     "
 
@@ -166,7 +166,7 @@ psql --dbname="$POSTGRES_DB" -c "
         ALTER DEFAULT PRIVILEGES
             IN SCHEMA cache
             GRANT SELECT ON TABLES TO $FLOWAPI_DB_USER;
-        ALTER DEFAULT PRIVILEGES FOR ROLE $FM_USER
+        ALTER DEFAULT PRIVILEGES FOR ROLE $FLOWMACHINE_FLOWDB_USER
             IN SCHEMA cache
             GRANT SELECT ON TABLES TO $FLOWAPI_DB_USER;
     END;

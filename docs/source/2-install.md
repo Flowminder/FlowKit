@@ -170,7 +170,7 @@ The stack expects you to provide seven secrets:
  
     The username that FlowMachine will use to connect to FlowDB
 
- - FLOWMACHINE_DB_PASS
+ - FLOWMACHINE_FLOWDB_PASS
  
     The password that FlowMachine will use to connect to FlowDB
 
@@ -185,10 +185,10 @@ The stack expects you to provide seven secrets:
 
 To make use of secrets you will need to use docker swarm. For testing purposes, you can set up a single node swarm by running `docker swarm init`.
 
-Once you have created a swarm, you can add secrets to it using the [docker secret](https://docs.docker.com/engine/reference/commandline/secret_create/) command. For example, to add a randomly generated password for the `FLOWMACHINE_DB_PASS` secret:
+Once you have created a swarm, you can add secrets to it using the [docker secret](https://docs.docker.com/engine/reference/commandline/secret_create/) command. For example, to add a randomly generated password for the `FLOWMACHINE_FLOWDB_PASS` secret:
 
 ```bash
-openssl rand -base64 16 | docker secret create FLOWMACHINE_DB_PASS -
+openssl rand -base64 16 | docker secret create FLOWMACHINE_FLOWDB_PASS -
 ```
 
 And to add the (unsigned) localhost SSL certificate supplied in the `integration_tests` directory:
@@ -219,7 +219,7 @@ conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certifi
 cd secrets_quickstart
 docker login
 docker swarm init
-openssl rand -base64 16 | docker secret create FLOWMACHINE_DB_PASS -
+openssl rand -base64 16 | docker secret create FLOWMACHINE_FLOWDB_PASS -
 echo "fm" | docker secret create FLOWMACHINE_DB_USER -
 echo "api" | docker secret create FLOWAPI_DB_USER -
 openssl rand -base64 16 | docker secret create FLOWAPI_DB_PASS -
