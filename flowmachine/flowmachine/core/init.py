@@ -100,12 +100,14 @@ def connect(
         else db_port
     )
     db_user = (
-        getsecret("FLOWMACHINE_DB_USER", os.getenv("FLOWMACHINE_DB_USER", "analyst"))
+        getsecret(
+            "FLOWMACHINE_FLOWDB_USER", os.getenv("FLOWMACHINE_FLOWDB_USER", "analyst")
+        )
         if db_user is None
         else db_user
     )
     db_pass = (
-        getsecret("FLOWDB_PASS", os.getenv("FLOWDB_PASS"))
+        getsecret("FLOWMACHINE_FLOWDB_PASS", os.getenv("FLOWMACHINE_FLOWDB_PASS"))
         if db_pass is None
         else db_pass
     )
@@ -149,7 +151,7 @@ def connect(
 
     if db_pass is None:
         raise ValueError(
-            "You must provide a secret named FLOWDB_PASS, set an environment variable named FLOWDB_PASS, or provide a db_pass argument."
+            "You must provide a secret named FLOWMACHINE_FLOWDB_PASS, set an environment variable named FLOWMACHINE_FLOWDB_PASS, or provide a db_pass argument."
         )
 
     if redis_pw is None:
