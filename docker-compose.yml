@@ -10,6 +10,7 @@ networks:
   zero:
 
 
+
 services:
 
   flowdb:
@@ -20,14 +21,16 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB:?Must set POSTGRES_DB env var}
-      - POSTGRES_USER=${POSTGRES_USER:?Must set POSTGRES_USER env var}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
-      - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
-      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
-      - CACHE_SIZE=${CACHE_SIZE:?Must set CACHE_SIZE env var}  # if empty, defaults to using 10% of the available disk space
-      - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
+
+    environment: &base-flowdb-environment
+      POSTGRES_DB: ${POSTGRES_DB:?Must set POSTGRES_DB env var}
+      POSTGRES_USER: ${POSTGRES_USER:?Must set POSTGRES_USER env var}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
+      FLOWMACHINE_FLOWDB_PASS: ${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
+      FLOWAPI_FLOWDB_PASS: ${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
+      CACHE_SIZE: ${CACHE_SIZE:?Must set CACHE_SIZE env var}  # if empty, defaults to using 10% of the available disk space
+      CACHE_HALF_LIFE: ${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
+      FLOWDB_DEBUG: ${FLOWDB_DEBUG:?Must set FLOWDB_DEBUG env var}
     shm_size: 1G
     tty: true
     stdin_open: true
@@ -46,13 +49,7 @@ services:
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
-      - POSTGRES_DB=${POSTGRES_DB:?Must set POSTGRES_DB env var}
-      - POSTGRES_USER=${POSTGRES_USER:?Must set POSTGRES_USER env var}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
-      - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
-      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
-      - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
-      - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
+      *base-flowdb-environment
     shm_size: 1G
     tty: true
     stdin_open: true
@@ -71,27 +68,21 @@ services:
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
-      - POSTGRES_DB=${POSTGRES_DB:?Must set POSTGRES_DB env var}
-      - POSTGRES_USER=${POSTGRES_USER:?Must set POSTGRES_USER env var}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
-      - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
-      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
-      - CACHE_SIZE=${CACHE_SIZE:?Must set CACHE_SIZE env var}  # if empty, defaults to using 10% of the available disk space
-      - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
-      - SYNTHETIC_DATA_GENERATOR=${SYNTHETIC_DATA_GENERATOR:?Must set SYNTHETIC_DATA_GENERATOR env var}
-      - N_SITES=${N_SITES:?Must set N_SITES env var}
-      - N_CELLS=${N_CELLS:?Must set N_CELLS env var}
-      - N_SUBSCRIBERS=${N_SUBSCRIBERS:?Must set N_SUBSCRIBERS env var}
-      - N_DAYS=${N_DAYS:?Must set N_DAYS env var}
-      - N_CALLS=${N_CALLS:?Must set N_CALLS env var}
-      - N_SMS=${N_SMS:?Must set N_SMS env var}
-      - N_MDS=${N_MDS:?Must set N_MDS env var}
-      - N_TACS=${N_TACS:?Must set N_TACS env var}
-      - P_OUT_OF_AREA=${P_OUT_OF_AREA:?Must set P_OUT_OF_AREA env var}
-      - P_RELOCATE=${P_RELOCATE:?Must set P_RELOCATE env var}
-      - INTERACTIONS_MULTIPLIER=${INTERACTIONS_MULTIPLIER:?Must set INTERACTIONS_MULTIPLIER env var}
-      - DISASTER_START=${DISASTER_START:?Must set DISASTER_START env var}
-      - DISASTER_END=${DISASTER_END:?Must set DISASTER_END env var}
+      << : *base-flowdb-environment
+      SYNTHETIC_DATA_GENERATOR: ${SYNTHETIC_DATA_GENERATOR:?Must set SYNTHETIC_DATA_GENERATOR env var}
+      N_SITES: ${N_SITES:?Must set N_SITES env var}
+      N_CELLS: ${N_CELLS:?Must set N_CELLS env var}
+      N_SUBSCRIBERS: ${N_SUBSCRIBERS:?Must set N_SUBSCRIBERS env var}
+      N_DAYS: ${N_DAYS:?Must set N_DAYS env var}
+      N_CALLS: ${N_CALLS:?Must set N_CALLS env var}
+      N_SMS: ${N_SMS:?Must set N_SMS env var}
+      N_MDS: ${N_MDS:?Must set N_MDS env var}
+      N_TACS: ${N_TACS:?Must set N_TACS env var}
+      P_OUT_OF_AREA: ${P_OUT_OF_AREA:?Must set P_OUT_OF_AREA env var}
+      P_RELOCATE: ${P_RELOCATE:?Must set P_RELOCATE env var}
+      INTERACTIONS_MULTIPLIER: ${INTERACTIONS_MULTIPLIER:?Must set INTERACTIONS_MULTIPLIER env var}
+      DISASTER_START: ${DISASTER_START:?Must set DISASTER_START env var}
+      DISASTER_END: ${DISASTER_END:?Must set DISASTER_END env var}
     shm_size: 1G
     tty: true
     stdin_open: true
@@ -117,7 +108,7 @@ services:
     stdin_open: true
     environment:
       - LOG_LEVEL=${LOG_LEVEL:?Must set LOG_LEVEL env var}
-      - DEBUG=${DEBUG:?Must set DEBUG env var}
+      - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:?Must set FLOWMACHINE_SERVER_DEBUG_MODE env var}
       - FLOWDB_PORT=5432
       - FLOWDB_HOST=flowdb
       - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}

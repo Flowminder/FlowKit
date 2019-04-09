@@ -56,7 +56,7 @@ REDIS_PORT=6379
 
 ## FlowMachine server settings
 #asyncio debug mode
-DEBUG=false
+FLOWMACHINE_SERVER_DEBUG_MODE=false
 
 #Port to listen on for zmq
 FLOWMACHINE_PORT=5555
@@ -73,7 +73,7 @@ FLOWMACHINE_FLOWDB_USER=flowmachine
 # Flowapi user username
 FLOWAPI_FLOWDB_USER=flowapi 
 # Off by default, enables pldebugger
-#DEBUG 
+FLOWDB_DEBUG=False
 # Password for flowmachine user
 FLOWMACHINE_FLOWDB_PASS=foo 
 # Password for flowapi user

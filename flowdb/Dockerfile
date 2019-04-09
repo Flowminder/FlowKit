@@ -130,8 +130,6 @@ ENV FLOWAPI_FLOWDB_USER=reporter
 # Default location table
 ENV LOCATION_TABLE=infrastructure.cells
 
-# Setup pgadmin debugger
-ENV DEBUG=False
 
 #
 #  Copy file spinup build scripts to be execed.

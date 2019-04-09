@@ -17,16 +17,13 @@ TrapQuit() {
 trap TrapQuit EXIT
 
 if [ "$CI" != "true" ]; then
-	export PIPENV_DOTENV_LOCATION=$(pwd)/.env
     echo "Setting up docker containers"
     echo "Bringing down any existing ones."
-    docker-compose down
+    docker-compose down flowdb_testdata query_locker
     echo "Bringing up new ones."
-    docker-compose up -d
+    docker-compose up flowdb_testdata query_locker
     echo "Waiting for flowdb to be ready"
-    docker exec flowkit_integration_tests_flowdb bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
-else
-	export PIPENV_DONT_LOAD_ENV=1
+    docker exec flowdb_testdata bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
 fi
 echo "Installing."
 pipenv install --deploy
