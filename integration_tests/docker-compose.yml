@@ -13,7 +13,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:-foo}
-      - API_PASSWORD=${API_PASSWORD:-foo}
+      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:-foo}
     tty: true
     shm_size: 1G
     ports:

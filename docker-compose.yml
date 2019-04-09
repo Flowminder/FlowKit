@@ -19,7 +19,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:-foo}
-      - API_PASSWORD=${API_PASSWORD:-foo}
+      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:-foo}
     tty: true
     stdin_open: true
     restart: always
@@ -58,7 +58,7 @@ services:
       - SERVER=flowmachine
       - LOG_LEVEL=${LOG_LEVEL:-error}
       - FLOWDB_USER=reporter
-      - FLOWDB_PASS=${API_PASSWORD:-foo}
+      - FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:-foo}
       - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}

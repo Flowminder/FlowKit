@@ -124,8 +124,8 @@ ENV FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE
 
 # Default users
 
-ENV FM_USER=analyst
-ENV FLOWAPI_DB_USER=reporter
+ENV FLOWMACHINE_FLOWDB_USER=analyst
+ENV FLOWAPI_FLOWDB_USER=reporter
 
 # Default location table
 ENV LOCATION_TABLE=infrastructure.cells

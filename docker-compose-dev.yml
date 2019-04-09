@@ -25,7 +25,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:-foo}
-      - API_PASSWORD=${API_PASSWORD:-foo}
+      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:-foo}
       - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
       - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:-1000}
     shm_size: 1G
@@ -50,7 +50,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:-foo}
-      - API_PASSWORD=${API_PASSWORD:-foo}
+      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:-foo}
       - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
       - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:-1000}
     shm_size: 1G
@@ -75,7 +75,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-flowdb}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
       - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:-foo}
-      - API_PASSWORD=${API_PASSWORD:-foo}
+      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:-foo}
       - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
       - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:-1000}
       - N_DAYS=${N_DAYS:-7}

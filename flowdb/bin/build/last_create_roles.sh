@@ -23,7 +23,7 @@ set -e
 #               can write to most tables. Can't write to the tables under 
 #               the events schema.
 #
-#   * $FLOWAPI_DB_USER: user that reads data from the public table
+#   * $FLOWAPI_FLOWDB_USER: user that reads data from the public table
 #               and the geography table (for reference 
 #               data). This user is designed mainly 
 #               for visualization applications.
@@ -50,16 +50,16 @@ then
     FLOWMACHINE_FLOWDB_PASS=$(< /run/secrets/FLOWMACHINE_FLOWDB_PASS)
 fi
 
-if [ -e /run/secrets/FLOWAPI_DB_USER ];
+if [ -e /run/secrets/FLOWAPI_FLOWDB_USER ];
 then
     echo "Using secrets for reporter user."
-    FLOWAPI_DB_USER=$(< /run/secrets/FLOWAPI_DB_USER)
+    FLOWAPI_FLOWDB_USER=$(< /run/secrets/FLOWAPI_FLOWDB_USER)
 fi
 
 if [ -e /run/secrets/FLOWAPI_DB_PASS ];
 then
     echo "Using secrets for reporter password."
-    API_PASSWORD=$(< /run/secrets/FLOWAPI_DB_PASS)
+    FLOWAPI_FLOWDB_PASS=$(< /run/secrets/FLOWAPI_DB_PASS)
 fi
 
 psql --dbname="$POSTGRES_DB" -c "REVOKE CONNECT ON DATABASE $POSTGRES_DB FROM PUBLIC;"
@@ -72,11 +72,11 @@ if [[ $FLOWMACHINE_FLOWDB_PASS ]]
         exit 1
 fi
 
-if [[ $API_PASSWORD ]]
+if [[ $FLOWAPI_FLOWDB_PASS ]]
     then
-        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FLOWAPI_DB_USER WITH LOGIN PASSWORD '$API_PASSWORD';"
+        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FLOWAPI_FLOWDB_USER WITH LOGIN PASSWORD '$FLOWAPI_FLOWDB_PASS';"
     else
-        echo "No password supplied for '$FLOWAPI_DB_USER' user: $API_PASSWORD"
+        echo "No password supplied for '$FLOWAPI_FLOWDB_USER' user: $FLOWAPI_FLOWDB_PASS"
         exit 1
 fi
 
@@ -85,9 +85,9 @@ fi
 #  schemas.
 #
 psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FLOWMACHINE_FLOWDB_USER;"
-psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FLOWAPI_DB_USER;"
+psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FLOWAPI_FLOWDB_USER;"
 psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWMACHINE_FLOWDB_USER;"
-psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWAPI_DB_USER;"
+psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWAPI_FLOWDB_USER;"
 
 #
 #  Adding permissions.
@@ -157,18 +157,18 @@ psql --dbname="$POSTGRES_DB" -c "
     COMMIT;
     "
 
-echo "Give $FLOWAPI_DB_USER role read access to tables created under cache schema."
+echo "Give $FLOWAPI_FLOWDB_USER role read access to tables created under cache schema."
 psql --dbname="$POSTGRES_DB" -c "
     BEGIN;
         GRANT USAGE
             ON SCHEMA cache
-            TO $FLOWAPI_DB_USER;
+            TO $FLOWAPI_FLOWDB_USER;
         ALTER DEFAULT PRIVILEGES
             IN SCHEMA cache
-            GRANT SELECT ON TABLES TO $FLOWAPI_DB_USER;
+            GRANT SELECT ON TABLES TO $FLOWAPI_FLOWDB_USER;
         ALTER DEFAULT PRIVILEGES FOR ROLE $FLOWMACHINE_FLOWDB_USER
             IN SCHEMA cache
-            GRANT SELECT ON TABLES TO $FLOWAPI_DB_USER;
+            GRANT SELECT ON TABLES TO $FLOWAPI_FLOWDB_USER;
     END;
     "
 
@@ -178,11 +178,11 @@ psql --dbname="$POSTGRES_DB" -c "
             GRANT SELECT ON TABLES TO PUBLIC
         "
 
-# Allow $FLOWAPI_DB_USER role to read geography tables
+# Allow $FLOWAPI_FLOWDB_USER role to read geography tables
 
 psql --dbname="$POSTGRES_DB" -c "
         ALTER DEFAULT PRIVILEGES
                 IN SCHEMA geography
-                GRANT SELECT ON TABLES TO $FLOWAPI_DB_USER;
-        GRANT USAGE ON SCHEMA geography TO $FLOWAPI_DB_USER;
+                GRANT SELECT ON TABLES TO $FLOWAPI_FLOWDB_USER;
+        GRANT USAGE ON SCHEMA geography TO $FLOWAPI_FLOWDB_USER;
         "

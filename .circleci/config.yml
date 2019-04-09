@@ -15,7 +15,7 @@ defaults:
     POSTGRES_PASSWORD: flowflow
     POSTGRES_USER: flowdb
     FLOWMACHINE_FLOWDB_PASS: foo
-    API_PASSWORD: foo
+    FLOWAPI_FLOWDB_PASS: foo
   - &wait_for_flowdb
     name: Wait for flowdb to start
     command: |
@@ -84,7 +84,7 @@ executors:
         MPLBACKEND: "agg"
         FLOWDB_PORT: 5432
         FLOWMACHINE_FLOWDB_PASS: foo
-        API_PASSWORD: foo
+        FLOWAPI_FLOWDB_PASS: foo
         FLOWDB_PASS: foo
         REDIS_PASSWORD: fm_redis
         SYNTHETIC_DATA_DB_PORT: 5432
@@ -111,7 +111,7 @@ executors:
           N_CALLS: <<parameters.num_calls>>
           SYNTHETIC_DATA_GENERATOR: <<parameters.synthetic_data_generator>>
           FLOWMACHINE_FLOWDB_PASS: foo
-          API_PASSWORD: foo
+          FLOWAPI_FLOWDB_PASS: foo
           POSTGRES_PASSWORD: flowflow
       - image: bitnami/redis:latest
         environment:
@@ -226,13 +226,13 @@ jobs:
           name: Launch flowdb
           command: |
             docker run --name flowdb --publish $FLOWDB_PORT:5432 --user $(id -u):$(id -g) --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
-              --volume=${FLOWDB_INGESTION_DIR}:/ingestion:ro -e FLOWMACHINE_FLOWDB_PASS=foo -e API_PASSWORD=foo \
+              --volume=${FLOWDB_INGESTION_DIR}:/ingestion:ro -e FLOWMACHINE_FLOWDB_PASS=foo -e FLOWAPI_FLOWDB_PASS=foo \
               -e MAX_CPUS=2 -e MAX_WORKERS=2 -e MAX_WORKERS_PER_GATHER=2 \
               -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
               --detach flowminder/flowdb:$SAFE_TAG
 
             echo "Waiting for flowdb to be ready.."
-            docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASS=foo -e API_PASSWORD=foo \
+            docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASS=foo -e FLOWAPI_FLOWDB_PASS=foo \
             -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
              --detach flowminder/flowdb:oracle-$SAFE_TAG
             docker exec flowdb bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432 -U flowdb);do let i=i+1; echo Waiting 10s; sleep 10;done'

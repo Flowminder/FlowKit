@@ -158,7 +158,7 @@ The stack expects you to provide seven secrets:
  
     An SSL certificate file (should contain private key as well)
 
- - FLOWAPI_DB_USER
+ - FLOWAPI_FLOWDB_USER
  
     The username the API will use to connect to FlowDB
 
@@ -221,7 +221,7 @@ docker login
 docker swarm init
 openssl rand -base64 16 | docker secret create FLOWMACHINE_FLOWDB_PASS -
 echo "fm" | docker secret create FLOWMACHINE_DB_USER -
-echo "api" | docker secret create FLOWAPI_DB_USER -
+echo "api" | docker secret create FLOWAPI_FLOWDB_USER -
 openssl rand -base64 16 | docker secret create FLOWAPI_DB_PASS -
 openssl rand -base64 16 | docker secret create POSTGRES_PASSWORD_FILE -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
