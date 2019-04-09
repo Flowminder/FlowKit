@@ -23,7 +23,7 @@ set -e
 #               can write to most tables. Can't write to the tables under 
 #               the events schema.
 #
-#   * $API_USER: user that reads data from the public table
+#   * $FLOWAPI_DB_USER: user that reads data from the public table
 #               and the geography table (for reference 
 #               data). This user is designed mainly 
 #               for visualization applications.
@@ -53,7 +53,7 @@ fi
 if [ -e /run/secrets/FLOWAPI_DB_USER ];
 then
     echo "Using secrets for reporter user."
-    API_USER=$(< /run/secrets/FLOWAPI_DB_USER)
+    FLOWAPI_DB_USER=$(< /run/secrets/FLOWAPI_DB_USER)
 fi
 
 if [ -e /run/secrets/FLOWAPI_DB_PASS ];
@@ -74,9 +74,9 @@ fi
 
 if [[ $API_PASSWORD ]]
     then
-        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $API_USER WITH LOGIN PASSWORD '$API_PASSWORD';"
+        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FLOWAPI_DB_USER WITH LOGIN PASSWORD '$API_PASSWORD';"
     else
-        echo "No password supplied for '$API_USER' user: $API_PASSWORD"
+        echo "No password supplied for '$FLOWAPI_DB_USER' user: $API_PASSWORD"
         exit 1
 fi
 
@@ -85,9 +85,9 @@ fi
 #  schemas.
 #
 psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FM_USER;"
-psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $API_USER;"
+psql --dbname="$POSTGRES_DB" -c "GRANT CONNECT ON DATABASE $POSTGRES_DB TO $FLOWAPI_DB_USER;"
 psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FM_USER;"
-psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $API_USER;"
+psql --dbname="$POSTGRES_DB" -c "GRANT CREATE ON DATABASE $POSTGRES_DB TO $FLOWAPI_DB_USER;"
 
 #
 #  Adding permissions.
@@ -157,18 +157,18 @@ psql --dbname="$POSTGRES_DB" -c "
     COMMIT;
     "
 
-echo "Give $API_USER role read access to tables created under cache schema."
+echo "Give $FLOWAPI_DB_USER role read access to tables created under cache schema."
 psql --dbname="$POSTGRES_DB" -c "
     BEGIN;
         GRANT USAGE
             ON SCHEMA cache
-            TO $API_USER;
+            TO $FLOWAPI_DB_USER;
         ALTER DEFAULT PRIVILEGES
             IN SCHEMA cache
-            GRANT SELECT ON TABLES TO $API_USER;
+            GRANT SELECT ON TABLES TO $FLOWAPI_DB_USER;
         ALTER DEFAULT PRIVILEGES FOR ROLE $FM_USER
             IN SCHEMA cache
-            GRANT SELECT ON TABLES TO $API_USER;
+            GRANT SELECT ON TABLES TO $FLOWAPI_DB_USER;
     END;
     "
 
@@ -178,11 +178,11 @@ psql --dbname="$POSTGRES_DB" -c "
             GRANT SELECT ON TABLES TO PUBLIC
         "
 
-# Allow $API_USER role to read geography tables
+# Allow $FLOWAPI_DB_USER role to read geography tables
 
 psql --dbname="$POSTGRES_DB" -c "
         ALTER DEFAULT PRIVILEGES
                 IN SCHEMA geography
-                GRANT SELECT ON TABLES TO $API_USER;
-        GRANT USAGE ON SCHEMA geography TO $API_USER;
+                GRANT SELECT ON TABLES TO $FLOWAPI_DB_USER;
+        GRANT USAGE ON SCHEMA geography TO $FLOWAPI_DB_USER;
         "

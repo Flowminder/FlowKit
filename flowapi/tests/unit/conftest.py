@@ -134,7 +134,7 @@ def access_token_builder():
 def app(monkeypatch, tmpdir, dummy_db_pool):
     monkeypatch.setenv("LOG_LEVEL", "DEBUG")
     monkeypatch.setenv("SERVER", "localhost")
-    monkeypatch.setenv("FLOWDB_USER", "flowdb")
+    monkeypatch.setenv("FLOWAPI_DB_USER", "flowdb")
     monkeypatch.setenv("FLOWDB_HOST", "localhost")
     monkeypatch.setenv("FLOWDB_PASS", "flowflow")
     monkeypatch.setenv("JWT_SECRET_KEY", "secret")
