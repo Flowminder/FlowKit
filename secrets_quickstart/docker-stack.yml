@@ -61,7 +61,7 @@ services:
         ports:
           - "9090:9090"
         environment:
-            - SERVER=flowmachine
+            - FLOWMACHINE_SERVER=flowmachine
             - LOG_LEVEL=${LOG_LEVEL:-error}
             - FLOWDB_HOST=flowdb
         secrets:

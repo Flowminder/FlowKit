@@ -133,7 +133,7 @@ def access_token_builder():
 @pytest.fixture
 def app(monkeypatch, tmpdir, dummy_db_pool):
     monkeypatch.setenv("LOG_LEVEL", "DEBUG")
-    monkeypatch.setenv("SERVER", "localhost")
+    monkeypatch.setenv("FLOWMACHINE_SERVER", "localhost")
     monkeypatch.setenv("FLOWAPI_FLOWDB_USER", "flowdb")
     monkeypatch.setenv("FLOWDB_HOST", "localhost")
     monkeypatch.setenv("FLOWDB_PASS", "flowflow")
