@@ -118,6 +118,10 @@ At present, the following query types are accessible through FlowAPI:
 
     OD matrix between two individual-level "meaningful" locations (see above), aggregated to a spatial unit.
 
+- `total_network_objects`
+    
+    Count of mobile phone cells per area active based on CDR traffic within a time period, broken down into buckets.
+
 
 ### FlowAPI Access tokens
 

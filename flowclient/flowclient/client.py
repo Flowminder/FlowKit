@@ -1024,7 +1024,7 @@ def location_introversion(
 
 
 def total_network_objects(
-    *, start_date: str, end_date: str, aggregation_unit: str
+    *, start_date: str, end_date: str, aggregation_unit: str, period: str = "day"
 ) -> dict:
     """
     Return query spec for total network objects
@@ -1037,7 +1037,8 @@ def total_network_objects(
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
-
+    period : {"second", "minute", "hour", "day", "month", "year"}
+        Time period to bucket by
     Returns
     -------
     dict
@@ -1048,6 +1049,7 @@ def total_network_objects(
         "start_date": start_date,
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
+        "period": period,
     }
 
 
