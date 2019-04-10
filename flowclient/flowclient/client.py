@@ -509,6 +509,7 @@ def daily_location(
 ) -> dict:
     """
     Return query spec for a daily location query for a date and unit of aggregation.
+    Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
 
     Parameters
     ----------
@@ -839,6 +840,7 @@ def modal_location(
 ) -> dict:
     """
     Return query spec for a modal location query for a list of locations.
+    Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
 
     Parameters
     ----------
@@ -869,6 +871,7 @@ def modal_location_from_dates(
 ) -> dict:
     """
     Return query spec for a modal location query for an (inclusive) date range and unit of aggregation.
+    Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
 
     Parameters
     ----------
@@ -1022,3 +1025,19 @@ def total_network_objects(
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
     }
+
+def spatial_aggregate(locations_query: Dict[str, Union[str, Dict[str, str]]]) -> dict:
+    """
+    Return a query spec for a spatially aggregated modal or daily location.
+
+    Parameters
+    ----------
+    locations_query : dict
+        Modal or daily location query to aggregate spatially
+
+    Returns
+    -------
+    dict
+        Query specification for an aggregated daily or modal location
+    """
+    return {"query_kind": "spatial_aggregate", "locations":locations_query}
