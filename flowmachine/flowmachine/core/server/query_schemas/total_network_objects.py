@@ -17,7 +17,7 @@ class TotalNetworkObjectsSchema(Schema):
 
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
-    period = fields.String(default="day", validate=valid_periods)
+    period = fields.String(default="day", validate=OneOf(valid_periods))
     aggregation_unit = AggregationUnit()
 
     @post_load
