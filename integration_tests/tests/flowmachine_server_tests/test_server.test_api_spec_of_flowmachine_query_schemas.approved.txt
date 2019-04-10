@@ -625,6 +625,17 @@
         "format": "date",
         "type": "string"
       },
+      "period": {
+        "enum": [
+          "day",
+          "hour",
+          "minute",
+          "month",
+          "second",
+          "year"
+        ],
+        "type": "string"
+      },
       "start_date": {
         "format": "date",
         "type": "string"
