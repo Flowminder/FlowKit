@@ -14,16 +14,26 @@ from .utils import permissions_types, aggregation_types
     "query_kind, params",
     [
         (
-            "daily_location",
-            {"date": "2016-01-01", "aggregation_unit": "admin3", "method": "last"},
+            "spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                }
+            },
         ),
         (
-            "daily_location",
+            "spatial_aggregate",
             {
-                "date": "2016-01-01",
-                "aggregation_unit": "admin3",
-                "method": "most-common",
-                "subscriber_subset": None,
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "most-common",
+                    "subscriber_subset": None,
+                }
             },
         ),
         (
@@ -83,12 +93,15 @@ from .utils import permissions_types, aggregation_types
         #     },
         # ),
         (
-            "modal_location_from_dates",
+            "spatial_aggregate",
             {
-                "start_date": "2016-01-01",
-                "stop_date": "2016-01-03",
-                "aggregation_unit": "admin3",
-                "method": "most-common",
+                "locations": {
+                    "query_kind": "modal_location_from_dates",
+                    "start_date": "2016-01-01",
+                    "stop_date": "2016-01-03",
+                    "aggregation_unit": "admin3",
+                    "method": "most-common",
+                }
             },
         ),
         (
