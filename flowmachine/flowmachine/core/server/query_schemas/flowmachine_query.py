@@ -41,8 +41,6 @@ class FlowmachineQuerySchema(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {
         "dummy_query": DummyQuerySchema,
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
         "flows": FlowsSchema,
         "meaningful_locations_aggregate": MeaningfulLocationsAggregateSchema,
         "meaningful_locations_between_label_od_matrix": MeaningfulLocationsBetweenLabelODMatrixSchema,
@@ -59,10 +57,6 @@ class FlowmachineQuerySchema(OneOfSchema):
     def get_obj_type(self, obj):
         if isinstance(obj, DummyQueryExposed):
             return "dummy_query"
-        elif isinstance(obj, DailyLocationExposed):
-            return "daily_location"
-        elif isinstance(obj, ModalLocationExposed):
-            return "modal_location"
         elif isinstance(obj, FlowsExposed):
             return "flows"
         elif isinstance(obj, MeaningfulLocationsAggregateExposed):
