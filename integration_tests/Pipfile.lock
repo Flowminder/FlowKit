@@ -25,10 +25,10 @@
         },
         "apispec": {
             "hashes": [
-                "sha256:7af5cbf15f2196a825279d0dd7d7900edb283c6f984668c526ba0576630052dc",
-                "sha256:9567d86e840855491456cc986adf711d58482da2152bf03fd95af15f88445f7e"
+                "sha256:8f89282a5474e449ce158b3c9f7e3948a207c89d5eb624231bbb6ea87fcf9f4a",
+                "sha256:cc1e5454df092b6d0ae84f29cf6b4cb4b552a4d76255f6e7f2e2f123102b0dcb"
             ],
-            "version": "==1.1.2"
+            "version": "==1.2.0"
         },
         "apispec-oneofschema": {
             "hashes": [
@@ -192,10 +192,10 @@
         },
         "flask-jwt-extended": {
             "hashes": [
-                "sha256:68035dba637fd58c0f0b308e49103cba7f6977aa301d958ddbd7b811a91c6dec"
+                "sha256:c942e22aa4d523d6021bf4ce5d37d08d7423a94a756efc31aab13e1f44a82551"
             ],
             "index": "pypi",
-            "version": "==3.18.0"
+            "version": "==3.18.1"
         },
         "flowapi": {
             "editable": true,
@@ -594,10 +594,10 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:32b0891edff07e28efe91284ed9c31e123d84bea3fd98e1f72be2508f43ef8d9",
-                "sha256:d5f05e487007e29e03409f9398d074e158d920d36eb82eaf66fb1136b0c5374c"
+                "sha256:303879e36b721603cc54604edcac9d20401bdbe31e1e4fdee5b9f98d5d31dfda",
+                "sha256:d747dd3d23d77ef44c6a3526e274af6efeb0a6f1afd5a69ba4d5be4098c8e141"
             ],
-            "version": "==2018.9"
+            "version": "==2019.1"
         },
         "pyyaml": {
             "hashes": [
