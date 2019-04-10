@@ -27,6 +27,10 @@ from .location_introversion import (
     LocationIntroversionExposed,
 )
 from .total_network_objects import TotalNetworkObjectsSchema, TotalNetworkObjectsExposed
+from .aggregate_network_objects import (
+    AggregateNetworkObjectsSchema,
+    AggregateNetworkObjectsExposed,
+)
 from .dfs_metric_total_amount import (
     DFSTotalMetricAmountSchema,
     DFSTotalMetricAmountExposed,
@@ -48,6 +52,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "unique_subscriber_counts": UniqueSubscriberCountsSchema,
         "location_introversion": LocationIntroversionSchema,
         "total_network_objects": TotalNetworkObjectsSchema,
+        "aggregate_network_objects": AggregateNetworkObjectsSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
     }
 
@@ -76,6 +81,8 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "location_introversion"
         elif isinstance(obj, TotalNetworkObjectsExposed):
             return "total_network_objects"
+        elif isinstance(obj, AggregateNetworkObjectsExposed):
+            return "aggregate_network_objects"
         elif isinstance(obj, DFSTotalMetricAmountExposed):
             return "dfs_metric_total_amount"
         else:

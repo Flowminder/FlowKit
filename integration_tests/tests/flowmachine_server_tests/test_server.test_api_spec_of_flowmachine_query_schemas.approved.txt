@@ -87,6 +87,7 @@
   "FlowmachineQuerySchema": {
     "discriminator": {
       "mapping": {
+        "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects",
         "daily_location": "#/components/schemas/DailyLocation",
         "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
@@ -104,6 +105,9 @@
       "propertyName": "query_kind"
     },
     "oneOf": [
+      {
+        "$ref": "#/components/schemas/AggregateNetworkObjects"
+      },
       {
         "$ref": "#/components/schemas/DFSTotalMetricAmount"
       },
@@ -144,6 +148,33 @@
         "$ref": "#/components/schemas/UniqueSubscriberCounts"
       }
     ]
+  },
+  "AggregateNetworkObjects": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
+    ],
+    "type": "object"
   },
   "Flows": {
     "properties": {

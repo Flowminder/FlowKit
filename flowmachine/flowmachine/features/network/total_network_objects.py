@@ -203,7 +203,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         )
 
 
-class AggregateNetworkObjects(GeoDataMixin, Query):
+class AggregateNetworkObjects(TotalNetworkObjects, Query):
     """
     Class for calculating statistics about unique cells/sites
     and aggregate it by period.

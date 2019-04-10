@@ -31,6 +31,7 @@ from .client import (
     unique_subscriber_counts,
     location_introversion,
     total_network_objects,
+    aggregate_network_objects,
 )
 
 __all__ = [
@@ -54,4 +55,5 @@ __all__ = [
     "unique_subscriber_counts",
     "location_introversion",
     "total_network_objects",
+    "aggregate_network_objects",
 ]

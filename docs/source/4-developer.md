@@ -90,6 +90,10 @@ The API exposes four routes:
 
 At present, the following query types are accessible through FlowAPI:
 
+- `aggregate_network_objects`
+
+    Statistics about unique cells/sites aggregated to a period.
+
 - `daily_location`
 
     A statistic representing where subscribers are on a given day, aggregated to a spatial unit.
