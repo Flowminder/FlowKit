@@ -96,7 +96,7 @@ class UserObject:
         try:
             query_kind = query_json["query_kind"]
             if query_kind == "spatial_aggregate":
-                return self.get_query_kind_and_aggregation_unit(
+                return self._get_query_kind_and_aggregation_unit(
                     query_json=query_json["locations"]
                 )
         except KeyError:
@@ -127,7 +127,7 @@ class UserObject:
             If the user cannot run this kind of query at this level of aggregation
 
         """
-        query_kind, aggregation_unit = self.get_query_kind_and_aggregation_unit(
+        query_kind, aggregation_unit = self._get_query_kind_and_aggregation_unit(
             query_json=query_json
         )
 
@@ -193,7 +193,7 @@ class UserObject:
         """
 
         params = await self._get_params(query_id=query_id)
-        query_kind, aggregation_unit = self.get_query_kind_and_aggregation_unit(
+        query_kind, aggregation_unit = self._get_query_kind_and_aggregation_unit(
             query_json=params
         )
         return self.can_poll(query_kind=query_kind, aggregation_unit=aggregation_unit)
@@ -244,7 +244,7 @@ class UserObject:
             If the user cannot get the results of this kind of query at this level of aggregation
         """
         params = await self._get_params(query_id=query_id)
-        query_kind, aggregation_unit = self.get_query_kind_and_aggregation_unit(
+        query_kind, aggregation_unit = self._get_query_kind_and_aggregation_unit(
             query_json=params
         )
         return self.can_get_results(

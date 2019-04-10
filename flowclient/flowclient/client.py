@@ -1051,15 +1051,13 @@ def total_network_objects(
     }
 
 
-def spatial_aggregate(
-    *, locations_query: Dict[str, Union[str, Dict[str, str]]]
-) -> dict:
+def spatial_aggregate(*, locations: Dict[str, Union[str, Dict[str, str]]]) -> dict:
     """
     Return a query spec for a spatially aggregated modal or daily location.
 
     Parameters
     ----------
-    locations_query : dict
+    locations : dict
         Modal or daily location query to aggregate spatially
 
     Returns
@@ -1067,4 +1065,4 @@ def spatial_aggregate(
     dict
         Query specification for an aggregated daily or modal location
     """
-    return {"query_kind": "spatial_aggregate", "locations": locations_query}
+    return {"query_kind": "spatial_aggregate", "locations": locations}
