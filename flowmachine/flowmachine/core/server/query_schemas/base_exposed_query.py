@@ -50,31 +50,7 @@ class BaseExposedQuery(metaclass=ABCMeta):
         q = self._flowmachine_query_obj
         q.store()
 
-        # FIXME: currently we also aggregate the query here, but this is not
-        # the place to do this. Instead, there should be a separate query_kind
-        # to perform the spatial aggregation. Once we have this, the following
-        # code block should be removed and simply `q.md5` be returned as the
-        # query_id.
-        try:
-            # In addition to the actual query, also set an aggregated version running.
-            # This is the one which we return via the API so that we don't expose any
-            # individual-level data.
-            q_agg = q.aggregate()
-            q_agg.store()
-            query_id = q_agg.md5
-            # FIXME: this is a big hack to register the query info lookup also
-            # for the aggregated query. This should not be necessary any more once
-            # this whole code block is removed (see fixme comment above). To make
-            # it obvious that it is the lookup of an aggregated query we artificially
-            # insert two additional keys 'is_aggregate' and 'non_aggregated_query_id'.
-            q_agg_info_lookup = QueryInfoLookup(Query.redis)
-            query_params_agg = deepcopy(self.query_params)
-            query_params_agg["is_aggregate"] = True
-            query_params_agg["non_aggregated_query_id"] = self.query_id
-            q_agg_info_lookup.register_query(q_agg.md5, self.query_params)
-        except AttributeError:
-            # This can happen for flows, which doesn't support aggregation
-            query_id = q.md5
+        query_id = q.md5
 
         return query_id
 
