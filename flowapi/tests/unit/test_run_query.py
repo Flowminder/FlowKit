@@ -42,13 +42,13 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
     "query, expected_msg",
     [
         (
-            {"query_kind": "daily_location", "params": {"date": "2016-01-01"}},
+            {
+                "query_kind": "spatial_aggregation",
+                "locations": {"query_kind": "daily_location", "date": "2016-01-01"},
+            },
             "Aggregation unit must be specified when running a query.",
         ),
-        (
-            {"params": {"date": "2016-01-01"}},
-            "Query kind must be specified when running a query.",
-        ),
+        ({"date": "2016-01-01"}, "Query kind must be specified when running a query."),
     ],
 )
 @pytest.mark.asyncio
