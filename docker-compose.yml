@@ -28,7 +28,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
       FLOWMACHINE_FLOWDB_PASS: ${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
       FLOWAPI_FLOWDB_PASS: ${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
-      CACHE_SIZE: ${CACHE_SIZE:?Must set CACHE_SIZE env var}  # if empty, defaults to using 10% of the available disk space
+      CACHE_SIZE: ${CACHE_SIZE:?Must set CACHE_SIZE env var}
       CACHE_HALF_LIFE: ${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
       FLOWDB_DEBUG: ${FLOWDB_DEBUG:?Must set FLOWDB_DEBUG env var}
     shm_size: 1G
@@ -100,8 +100,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${FLOWMACHINE_PORT:?Must set FLOWMACHINE_PORT env var}:5555
-    volumes:
-      - ./flowmachine/:/flowapi
     depends_on:
       - query_locker
     tty: true
@@ -136,8 +134,6 @@ services:
       - FLOWDB_PORT=5432
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:?Must set JWT_SECRET_KEY env var}
       - LOG_LEVEL=${LOG_LEVEL:?Must set LOG_LEVEL env var}
-    volumes:
-      - ./flowapi/flowapi:/flowapi/flowapi
     tty: true
     stdin_open: true
     restart: always
