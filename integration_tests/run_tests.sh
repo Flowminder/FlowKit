@@ -18,10 +18,8 @@ trap TrapQuit EXIT
 
 if [ "$CI" != "true" ]; then
     echo "Setting up docker containers"
-    echo "Bringing down any existing ones."
-    docker-compose down flowdb_testdata query_locker
     echo "Bringing up new ones."
-    docker-compose up flowdb_testdata query_locker
+    (pushd .. && make up flowdb_testdata query_locker && popd)
     echo "Waiting for flowdb to be ready"
     docker exec flowdb_testdata bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
 fi

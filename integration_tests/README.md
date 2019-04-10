@@ -14,9 +14,7 @@ pipenv install
 pipenv run run-tests
 ```
 
-This will pull all necessary docker images, start the containers, bring up instances of FlowMachine (listening on port `5555`) and FlowAPI (listening on port `9090`). After the test suite has been run, the containers will be shut down agan.
+This will pull all necessary docker images, start the containers and bring up instances of FlowMachine and FlowAPI. After the test suite has been run, the containers will be shut down agan.
 
 
 If you are using an alternative environment manager, you should install the small number of packages listed in the Pipfile before running pytest.
-
-The test suite makes use of a `.env` file, found in this directory. The values in this `.env` are used both by the test suite, and to create the docker containers. `docker-compose` will make use of the `.env` automatically, but you may need to explicitly supply the values if you are using a different method to spin up containers.
