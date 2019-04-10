@@ -72,6 +72,17 @@ from .utils import permissions_types, aggregation_types
         (
             "spatial_aggregate",
             {
+                "locations": flowclient.modal_location_from_dates(
+                    start_date="2016-01-01",
+                    stop_date="2016-01-03",
+                    aggregation_unit="admin3",
+                    method="last",
+                )
+            },
+        ),
+        (
+            "spatial_aggregate",
+            {
                 "locations": {
                     "query_kind": "modal_location",
                     "aggregation_unit": "admin3",
