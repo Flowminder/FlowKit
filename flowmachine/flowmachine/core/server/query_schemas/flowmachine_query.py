@@ -4,6 +4,10 @@
 
 from marshmallow_oneofschema import OneOfSchema
 
+from flowmachine.core.server.query_schemas.spatial_aggregate import (
+    SpatialAggregateSchema,
+    SpatialAggregateExposed,
+)
 from .dummy_query import DummyQuerySchema, DummyQueryExposed
 from .daily_location import DailyLocationSchema, DailyLocationExposed
 from .modal_location import ModalLocationSchema, ModalLocationExposed
@@ -49,6 +53,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "location_introversion": LocationIntroversionSchema,
         "total_network_objects": TotalNetworkObjectsSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
+        "spatial_aggregate": SpatialAggregateSchema,
     }
 
     def get_obj_type(self, obj):
@@ -78,6 +83,8 @@ class FlowmachineQuerySchema(OneOfSchema):
             return "total_network_objects"
         elif isinstance(obj, DFSTotalMetricAmountExposed):
             return "dfs_metric_total_amount"
+        elif isinstance(obj, SpatialAggregateExposed):
+            return "spatial_aggregate"
         else:
             raise ValueError(
                 f"Object type '{obj.__class__.__name__}' not registered in FlowmachineQuerySchema."
