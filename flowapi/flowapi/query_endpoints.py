@@ -13,17 +13,9 @@ blueprint = Blueprint("query", __name__)
 @jwt_required
 async def run_query():
     json_data = await request.json
-    try:
-        query_kind = json_data["query_kind"]
-    except KeyError:
-        error_msg = "Query kind must be specified when running a query."
-        return jsonify({"msg": error_msg}), 400
-    try:
-        aggregation_unit = json_data["aggregation_unit"]
-    except KeyError:
-        error_msg = "Aggregation unit must be specified when running a query."
-        return jsonify({"msg": error_msg}), 400
-    current_user.can_run(query_kind=query_kind, aggregation_unit=aggregation_unit)
+
+
+    current_user.can_run(query_json=json_data)
     request.socket.send_json(
         {"request_id": request.request_id, "action": "run_query", "params": json_data}
     )
