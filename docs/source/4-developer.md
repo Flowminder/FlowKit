@@ -88,6 +88,8 @@ The API exposes four routes:
 
 - `/geography/<aggregation_unit>`: return geography data for a given aggregation unit.
 
+- `/available_dates` : return the dates available to calculate metrics over
+
 At present, the following query types are accessible through FlowAPI:
 
 - `daily_location`
