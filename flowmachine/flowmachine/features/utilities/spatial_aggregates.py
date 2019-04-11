@@ -97,7 +97,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             ...
     """
 
-    allowed_methods = ("mean", "median", "mode")
+    allowed_methods = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
 
     def __init__(self, *, metric, locations, method="mean"):
         self.metric = metric
@@ -168,17 +168,13 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             metric=metric, location=location, metric_list=metric_list, loc_list=loc_list
         )
 
-        if self.method == "mean":
-            av_cols = ", ".join("avg({0}) AS {0}".format(mc) for mc in metric_cols[1:])
-        if self.method == "median":
-            av_cols = ", ".join(
-                "median({0}) AS {0}".format(mc) for mc in metric_cols[1:]
-            )
         if self.method == "mode":
             av_cols = ", ".join(
                 "pg_catalog.mode() WITHIN GROUP(ORDER BY {0}) AS {0}".format(mc)
                 for mc in metric_cols[1:]
             )
+        else:
+            av_cols = ", ".join("avg({0}) AS {0}".format(mc) for mc in metric_cols[1:])
 
         # Now do the group by bit
         grouped = """
