@@ -248,9 +248,13 @@
       },
       "method": {
         "enum": [
-          "mean",
+          "avg",
+          "max",
           "median",
-          "mode"
+          "min",
+          "mode",
+          "stddev",
+          "variance"
         ],
         "type": "string"
       },
