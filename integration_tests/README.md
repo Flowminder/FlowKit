@@ -18,3 +18,9 @@ This will pull all necessary docker images, start the containers and bring up in
 
 
 If you are using an alternative environment manager, you should install the small number of packages listed in the Pipfile before running pytest.
+
+The test suite makes use of the environment variables defined in `development_environment` in the project root. You will need to source these variables before running the tests.
+
+### Running in PyCharm
+
+To run the tests from within PyCharm, you will need to run `FLOWDB_SERVICES="flowdb_testdata" DOCKER_SERVICES="flowdb_testdata query_locker"` in the project root, and ensure you have provided the environment variables in the top level `development_environment` file to PyCharm (for example, by using the EnvFile plugin).
