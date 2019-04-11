@@ -91,6 +91,7 @@
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
+        "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
         "location_introversion": "#/components/schemas/LocationIntroversion",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
@@ -114,6 +115,9 @@
       },
       {
         "$ref": "#/components/schemas/Geography"
+      },
+      {
+        "$ref": "#/components/schemas/JoinedSpatialAggregate"
       },
       {
         "$ref": "#/components/schemas/LocationEventCounts"
@@ -229,6 +233,36 @@
         "$ref": "#/components/schemas/ModalLocation"
       }
     ]
+  },
+  "JoinableMetrics": {
+    "discriminator": {
+      "mapping": {},
+      "propertyName": "query_kind"
+    },
+    "oneOf": []
+  },
+  "JoinedSpatialAggregate": {
+    "properties": {
+      "locations": {
+        "$ref": "#/components/schemas/InputToSpatialAggregate"
+      },
+      "method": {
+        "enum": [
+          "mean",
+          "median",
+          "mode"
+        ],
+        "type": "string"
+      },
+      "metric": {
+        "$ref": "#/components/schemas/JoinableMetrics"
+      }
+    },
+    "required": [
+      "locations",
+      "metric"
+    ],
+    "type": "object"
   },
   "LocationEventCounts": {
     "properties": {
