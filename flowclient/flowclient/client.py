@@ -1068,3 +1068,34 @@ def spatial_aggregate(*, locations: Dict[str, Union[str, Dict[str, str]]]) -> di
         Query specification for an aggregated daily or modal location
     """
     return {"query_kind": "spatial_aggregate", "locations": locations}
+
+
+def joined_spatial_aggregate(
+    *,
+    locations: Dict[str, Union[str, Dict[str, str]]],
+    metric: Dict[str, Union[str, Dict[str, str]]],
+    method: str = "avg",
+) -> dict:
+    """
+    Return a query spec for a metric aggregated by attaching location information.
+
+    Parameters
+    ----------
+    locations : dict
+        Modal or daily location query to use to localise the metric
+    metric: dict
+        Metric to calculate and aggregate
+    method: {"avg", "max", "min", "median", "mode", "stddev", "variance"}, default "avg"
+        Method of aggregation
+
+    Returns
+    -------
+    dict
+        Query specification for an aggregated daily or modal location
+    """
+    return {
+        "query_kind": "joined_spatial_aggregate",
+        "method": method,
+        "locations": locations,
+        "metric": metric,
+    }
