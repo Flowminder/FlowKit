@@ -14,10 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - New schema `aggregates` and table `aggregates.aggregates` have been created for maintaining a record of the process and completion of scheduled aggregates.
 
 ### Changed
+- All environment variables are now in a single `development_environment` file in the project root, development environment setup has been simplified
 
 ### Fixed
 
 ### Removed
+- Docs and integration tests now use top level compose file
 
 
 ## [0.5.2]

@@ -136,6 +136,9 @@ $ cd flowauth/
 $ pipenv run start-all
 ```
 
+!!! warning
+    If you have started FlowMachine and FlowAPI directly, you will need to set the `FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=TRUE` before running the integration tests.
+    Without this setting, both will be started automatically to allow test coverage to be collected.
 
 # Verifying the setup
 
