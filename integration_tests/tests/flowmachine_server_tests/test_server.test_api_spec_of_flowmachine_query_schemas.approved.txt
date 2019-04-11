@@ -236,10 +236,16 @@
   },
   "JoinableMetrics": {
     "discriminator": {
-      "mapping": {},
+      "mapping": {
+        "dummy_query": "#/components/schemas/DummyQuery"
+      },
       "propertyName": "query_kind"
     },
-    "oneOf": []
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DummyQuery"
+      }
+    ]
   },
   "JoinedSpatialAggregate": {
     "properties": {
