@@ -111,6 +111,8 @@ class UserObject:
                 location_spec = self._get_query_kinds_and_aggregation_units(
                     query_json=query_json["locations"]
                 )[0]
+                # Because metric specs don't have an aggregation unit, we stitch on the one
+                # from the locations
                 metric_spec = self._get_query_kinds_and_aggregation_units(
                     query_json=dict(
                         **query_json["metric"], aggregation_unit=location_spec[1]

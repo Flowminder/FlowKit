@@ -457,7 +457,7 @@ def test_joined_spatial_aggregate(access_token_builder, flowapi_url):
                     "permissions": {"run": True, "poll": True, "get_result": True},
                     "spatial_aggregation": ["admin3"],
                 },
-                "DUMMY_METRIC": {
+                "dummy_query": {
                     "permissions": {"run": True, "poll": True, "get_result": True},
                     "spatial_aggregation": ["admin3"],
                 },
@@ -465,8 +465,7 @@ def test_joined_spatial_aggregate(access_token_builder, flowapi_url):
         ),
     )
     with pytest.raises(
-        flowclient.client.FlowclientConnectionError,
-        match="Unsupported value: DUMMY_METRIC",
+        flowclient.client.FlowclientConnectionError, match="status 'errored'"
     ):
         result = flowclient.get_result(
             connection=con,
@@ -474,6 +473,6 @@ def test_joined_spatial_aggregate(access_token_builder, flowapi_url):
                 locations=flowclient.daily_location(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                metric={"query_kind": "DUMMY_METRIC"},
+                metric={"query_kind": "dummy_query", "dummy_param": "dummy_value"},
             ),
         )

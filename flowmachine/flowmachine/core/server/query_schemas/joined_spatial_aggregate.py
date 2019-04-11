@@ -6,6 +6,7 @@ from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
+from flowmachine.core.server.query_schemas.dummy_query import DummyQuerySchema
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     InputToSpatialAggregate,
 )
@@ -18,7 +19,9 @@ __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 
 class JoinableMetrics(OneOfSchema):
     type_field = "query_kind"
-    type_schemas = {}
+    type_schemas = {
+        "dummy_query": DummyQuerySchema
+    }  # TODO: Remove dummy once a real metric is added
 
 
 class JoinedSpatialAggregateSchema(Schema):
