@@ -117,6 +117,9 @@ executors:
           FLOWMACHINE_FLOWDB_PASS: foo
           FLOWAPI_FLOWDB_PASS: foo
           POSTGRES_PASSWORD: flowflow
+          SUBSCRIBERS_SEED: 12345
+          CALLS_SEED: 22222
+          CELLS_SEED: 99999
       - image: bitnami/redis:latest
         environment:
           REDIS_PASSWORD: "fm_redis"
