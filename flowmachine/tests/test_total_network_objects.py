@@ -115,7 +115,6 @@ def test_period_agg_default(period, expected):
     inst = AggregateNetworkObjects(
         total_network_objects=TotalNetworkObjects(
             start="2016-01-01", stop="2016-12-30", period=period
-        ),
-        period=period,
+        )
     )
     assert inst.by == expected

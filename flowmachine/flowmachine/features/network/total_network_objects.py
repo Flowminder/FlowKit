@@ -220,9 +220,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     """
 
-    def __init__(
-        self, *, total_network_objects, statistic="avg", period="day", by=None
-    ):
+    def __init__(self, *, total_network_objects, statistic="avg", by=None):
         self.total_objs = total_network_objects
         statistic = statistic.lower()
         if statistic in valid_stats:
@@ -234,15 +232,15 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
                 )
             )
         if by is None:
-            if period == "second":
+            if self.total_objs.period == "second":
                 self.by = "minute"
-            elif period == "minute":
+            elif self.total_objs.period == "minute":
                 self.by = "hour"
-            elif period == "hour":
+            elif self.total_objs.period == "hour":
                 self.by = "day"
-            elif period == "day":
+            elif self.total_objs.period == "day":
                 self.by = "month"
-            elif period == "month":
+            elif self.total_objs.period == "month":
                 self.by = "year"
             else:
                 self.by = "century"
