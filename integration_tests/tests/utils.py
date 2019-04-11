@@ -5,6 +5,10 @@ Duplicate of flowapi/tests/unit/utils.py
 
 from flask_jwt_extended.tokens import encode_access_token
 from json import JSONEncoder
+from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
+from flowmachine.core.server.query_schemas.spatial_aggregate import (
+    InputToSpatialAggregate,
+)
 
 
 def make_token(username, secret_key, lifetime, claims):
@@ -35,7 +39,9 @@ def make_token(username, secret_key, lifetime, claims):
     )
 
 
-query_kinds = ["daily_location", "modal_location", "flows"]
+query_kinds = list(FlowmachineQuerySchema.type_schemas.keys()) + list(
+    InputToSpatialAggregate.type_schemas.keys()
+)
 permissions_types = {"run": True, "poll": True, "get_result": True}
 aggregation_types = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 all_access_claims = {

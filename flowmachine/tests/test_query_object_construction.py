@@ -12,13 +12,16 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
     "expected_md5, query_spec",
     [
         (
-            "77ea8996b031a8712c71dbaf87828ca0",
+            "e39b0d45bc6b46b7700c67cd52f00455",
             {
-                "query_kind": "daily_location",
-                "date": "2016-01-01",
-                "aggregation_unit": "admin3",
-                "method": "last",
-                "subscriber_subset": None,
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                    "subscriber_subset": None,
+                },
             },
         ),
         (
@@ -35,26 +38,29 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
             },
         ),
         (
-            "fb7c3603f5e9a56812f59b118bde3425",
+            "a52ab55ee69ff6e6dd1c80e459aabd87",
             {
-                "query_kind": "modal_location",
-                "aggregation_unit": "admin3",
-                "locations": (
-                    {
-                        "query_kind": "daily_location",
-                        "date": "2016-01-01",
-                        "aggregation_unit": "admin3",
-                        "method": "last",
-                        "subscriber_subset": None,
-                    },
-                    {
-                        "query_kind": "daily_location",
-                        "date": "2016-01-02",
-                        "aggregation_unit": "admin3",
-                        "method": "last",
-                        "subscriber_subset": None,
-                    },
-                ),
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "modal_location",
+                    "aggregation_unit": "admin3",
+                    "locations": (
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-01",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-02",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                            "subscriber_subset": None,
+                        },
+                    ),
+                },
             },
         ),
         (

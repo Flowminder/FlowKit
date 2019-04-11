@@ -6,6 +6,7 @@ from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import TotalNetworkObjects
+from flowmachine.features.network.total_network_objects import valid_periods
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import AggregationUnit
 
@@ -16,6 +17,7 @@ class TotalNetworkObjectsSchema(Schema):
 
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
+    period = fields.String(default="day", validate=OneOf(valid_periods))
     aggregation_unit = AggregationUnit()
 
     @post_load
@@ -24,12 +26,13 @@ class TotalNetworkObjectsSchema(Schema):
 
 
 class TotalNetworkObjectsExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, aggregation_unit):
+    def __init__(self, *, start_date, end_date, aggregation_unit, period):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
+        self.period = period
 
     @property
     def _flowmachine_query_obj(self):
@@ -41,5 +44,8 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
         Query
         """
         return TotalNetworkObjects(
-            start=self.start_date, stop=self.end_date, level=self.aggregation_unit
+            start=self.start_date,
+            stop=self.end_date,
+            level=self.aggregation_unit,
+            period=self.period,
         )

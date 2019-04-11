@@ -20,10 +20,13 @@ def test_run_query_error_handled(monkeypatch, dummy_redis):
     """
     monkeypatch.setattr(Query, "redis", dummy_redis)
     msg = action_handler__run_query(
-        query_kind="daily_location",
-        date="2016-02-02",
-        method="last",
-        aggregation_unit="admin3",
+        query_kind="spatial_aggregate",
+        locations=dict(
+            query_kind="daily_location",
+            date="2016-02-02",
+            method="last",
+            aggregation_unit="admin3",
+        ),
     )
     assert msg.status == ZMQReplyStatus.ERROR
     assert msg.msg == "Unable to create query object."
