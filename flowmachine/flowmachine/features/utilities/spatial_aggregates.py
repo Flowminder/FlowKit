@@ -115,24 +115,14 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
                 != parse_datestring(self.locations.start).date()
             ):
                 warnings.warn(
-                    "{} and {} have different start dates: {}, and {}".format(
-                        self.metric,
-                        self.locations,
-                        self.metric.start,
-                        self.locations.start,
-                    )
+                    f"{self.metric} and {self.locations} have different start dates: {self.metric.start}, and {self.locations.start}"
                 )
             if (
                 parse_datestring(self.metric.stop).date()
                 != parse_datestring(self.locations.stop).date()
             ):
                 warnings.warn(
-                    "{} and {} have different stop dates: {}, and {}".format(
-                        self.metric,
-                        self.locations,
-                        self.metric.stop,
-                        self.locations.stop,
-                    )
+                    f"{self.metric} and {self.locations} have different stop dates: {self.metric.stop}, and {self.locations.stop}"
                 )
         except AttributeError:
             pass  # Not everything has a start/stop date
@@ -144,18 +134,18 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         location_cols = [cn for cn in self.locations.column_names if cn != "subscriber"]
 
         # Make some comma separated strings for use in the SQL query
-        metric_list = ", ".join("metric.{}".format(c) for c in metric_cols)
+        metric_list = ", ".join(f"metric.{c}" for c in metric_cols)
 
         # We need to do this because it may be the case that
         # a location is identified by more than one column, as
         # is the case for lat-lon values
-        loc_list = ", ".join("location.{}".format(lc) for lc in location_cols)
+        loc_list = ", ".join(f"location.{lc}" for lc in location_cols)
         loc_list_no_schema = ", ".join(location_cols)
 
         metric = self.metric.get_query()
         location = self.locations.get_query()
 
-        joined = """
+        joined = f"""
         SELECT
             {metric_list},
             {loc_list}
@@ -164,28 +154,26 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         INNER JOIN
             ({location}) AS location
         ON metric.subscriber=location.subscriber
-        """.format(
-            metric=metric, location=location, metric_list=metric_list, loc_list=loc_list
-        )
+        """
 
         if self.method == "mode":
             av_cols = ", ".join(
-                "pg_catalog.mode() WITHIN GROUP(ORDER BY {0}) AS {0}".format(mc)
+                f"pg_catalog.mode() WITHIN GROUP(ORDER BY {mc}) AS {mc}"
                 for mc in metric_cols[1:]
             )
         else:
-            av_cols = ", ".join("avg({0}) AS {0}".format(mc) for mc in metric_cols[1:])
+            av_cols = ", ".join(
+                f"{self.method}({mc}) AS {mc}" for mc in metric_cols[1:]
+            )
 
         # Now do the group by bit
-        grouped = """
+        grouped = f"""
         SELECT
-            {ll},
-            {ac}
+            {loc_list_no_schema},
+            {av_cols}
         FROM ({joined}) AS joined
-        GROUP BY {ll}
-        """.format(
-            joined=joined, ac=av_cols, ll=loc_list_no_schema
-        )
+        GROUP BY {loc_list_no_schema}
+        """
 
         return grouped
 
