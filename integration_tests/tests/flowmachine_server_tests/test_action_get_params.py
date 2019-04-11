@@ -15,18 +15,24 @@ from .helpers import poll_until_done
     "params",
     [
         {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "method": "last",
-            "aggregation_unit": "admin3",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
         {
-            "query_kind": "daily_location",
-            "date": "2016-01-04",
-            "method": "most-common",
-            "aggregation_unit": "admin1",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-04",
+                "method": "most-common",
+                "aggregation_unit": "admin1",
+                "subscriber_subset": None,
+            },
         },
     ],
 )

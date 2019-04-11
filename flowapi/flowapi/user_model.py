@@ -2,14 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from json import JSONEncoder
 
 from flask_jwt_extended.exceptions import UserClaimsVerificationError
 from quart.exceptions import HTTPException
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 
 from flask_jwt_extended import get_jwt_claims, get_jwt_identity
 from quart import current_app, request, abort
+
+from flowapi.flowapi_errors import MissingQueryKindError, MissingAggregationUnitError
 
 
 class UserObject:
@@ -76,16 +77,44 @@ class UserObject:
             raise UserClaimsVerificationError("Claims verification failed.")
         return True
 
-    def can_run(self, *, query_kind: str, aggregation_unit: str) -> bool:
+    def _get_query_kind_and_aggregation_unit(self, query_json: dict) -> Tuple[str, str]:
         """
-        Returns true if the user can run this kind of query at this unit of aggregation.
+        Extract the query kind and aggregation unit from a query spec dict.
 
         Parameters
         ----------
-        query_kind : str
-            Kind of the query
-        aggregation_unit : str
-            Aggregation unit/level of resolution
+        query_json : dict
+            Dictionary containing a query spec
+
+        Returns
+        -------
+        str, str
+            Query kind and aggregation unit
+
+        """
+
+        try:
+            query_kind = query_json["query_kind"]
+            if query_kind == "spatial_aggregate":
+                return self._get_query_kind_and_aggregation_unit(
+                    query_json=query_json["locations"]
+                )
+        except KeyError:
+            raise MissingQueryKindError
+        try:
+            aggregation_unit = query_json["aggregation_unit"]
+        except KeyError:
+            raise MissingAggregationUnitError
+        return query_kind, aggregation_unit
+
+    def can_run(self, *, query_json: dict) -> bool:
+        """
+        Returns true if the user can run this query.
+
+        Parameters
+        ----------
+        query_json : str
+            Query json
 
         Returns
         -------
@@ -98,6 +127,9 @@ class UserObject:
             If the user cannot run this kind of query at this level of aggregation
 
         """
+        query_kind, aggregation_unit = self._get_query_kind_and_aggregation_unit(
+            query_json=query_json
+        )
 
         return self.has_access(
             action="run", query_kind=query_kind, aggregation_unit=aggregation_unit
@@ -161,9 +193,10 @@ class UserObject:
         """
 
         params = await self._get_params(query_id=query_id)
-        return self.can_poll(
-            query_kind=params["query_kind"], aggregation_unit=params["aggregation_unit"]
+        query_kind, aggregation_unit = self._get_query_kind_and_aggregation_unit(
+            query_json=params
         )
+        return self.can_poll(query_kind=query_kind, aggregation_unit=aggregation_unit)
 
     def can_poll(self, *, query_kind: str, aggregation_unit: str) -> bool:
         """
@@ -211,8 +244,11 @@ class UserObject:
             If the user cannot get the results of this kind of query at this level of aggregation
         """
         params = await self._get_params(query_id=query_id)
+        query_kind, aggregation_unit = self._get_query_kind_and_aggregation_unit(
+            query_json=params
+        )
         return self.can_get_results(
-            query_kind=params["query_kind"], aggregation_unit=params["aggregation_unit"]
+            query_kind=query_kind, aggregation_unit=aggregation_unit
         )
 
     def can_get_results(self, *, query_kind: str, aggregation_unit: str) -> bool:

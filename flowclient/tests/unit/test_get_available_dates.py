@@ -20,4 +20,4 @@ def test_get_geography_error(http_code):
         FlowclientConnectionError,
         match=f"Could not get available dates. API returned with status code: {http_code}. Reason: MESSAGE",
     ):
-        get_available_dates(connection_mock, event_types=["FOOBAR"])
+        get_available_dates(connection=connection_mock, event_types=["FOOBAR"])

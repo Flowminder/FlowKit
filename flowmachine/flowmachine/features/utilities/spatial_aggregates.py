@@ -26,7 +26,7 @@ class SpatialAggregate(GeoDataMixin, Query):
     locations : subscriber location query
     """
 
-    def __init__(self, locations):
+    def __init__(self, *, locations):
 
         self.locations = locations
         self.level = locations.level

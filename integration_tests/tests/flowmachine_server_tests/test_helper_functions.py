@@ -17,11 +17,14 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
     msg_expected = {
         "action": "run_query",
         "params": {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "method": "last",
-            "aggregation_unit": "admin3",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
         "request_id": "DUMMY_ID",
     }

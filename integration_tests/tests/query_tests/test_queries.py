@@ -2,28 +2,39 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 import pytest
 from flowclient.client import get_result
 
 import flowclient
 
-from .utils import permissions_types, aggregation_types
+from tests.utils import permissions_types, aggregation_types
 
 
 @pytest.mark.parametrize(
     "query_kind, params",
     [
         (
-            "daily_location",
-            {"date": "2016-01-01", "aggregation_unit": "admin3", "method": "last"},
+            "spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                }
+            },
         ),
         (
-            "daily_location",
+            "spatial_aggregate",
             {
-                "date": "2016-01-01",
-                "aggregation_unit": "admin3",
-                "method": "most-common",
-                "subscriber_subset": None,
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "most-common",
+                    "subscriber_subset": None,
+                }
             },
         ),
         (
@@ -59,36 +70,38 @@ from .utils import permissions_types, aggregation_types
                 "direction": "in",
             },
         ),
-        # (
-        #     # TODO: currently flowclient.modal_location() doesn't accept a 'locations'
-        #     # argument but rather expects a list of location objects. We can't test this
-        #     # using the parametrized paradigm in this test...
-        #     "modal_location",
-        #     {
-        #         "aggregation_unit": "admin3",
-        #         "locations": [
-        #             {
-        #                 "query_kind": "daily_location",
-        #                 "date": "2016-01-01",
-        #                 "aggregation_unit": "admin3",
-        #                 "method": "last",
-        #             },
-        #             {
-        #                 "query_kind": "daily_location",
-        #                 "date": "2016-01-02",
-        #                 "aggregation_unit": "admin3",
-        #                 "method": "last",
-        #             },
-        #         ],
-        #     },
-        # ),
         (
-            "modal_location_from_dates",
+            "spatial_aggregate",
             {
-                "start_date": "2016-01-01",
-                "stop_date": "2016-01-03",
-                "aggregation_unit": "admin3",
-                "method": "most-common",
+                "locations": flowclient.modal_location_from_dates(
+                    start_date="2016-01-01",
+                    stop_date="2016-01-03",
+                    aggregation_unit="admin3",
+                    method="last",
+                )
+            },
+        ),
+        (
+            "spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "modal_location",
+                    "aggregation_unit": "admin3",
+                    "locations": [
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-01",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                        },
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-02",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                        },
+                    ],
+                }
             },
         ),
         (
@@ -109,39 +122,36 @@ from .utils import permissions_types, aggregation_types
                 "aggregation_unit": "admin3",
             },
         ),
-        # (
-        #     # TODO: currently flowclient.modal_location() doesn't accept a 'locations'
-        #     # argument but rather expects a list of location objects. We can't test this
-        #     # using the parametrized paradigm in this test...
-        #     "flows",
-        #     {
-        #         "from_location": {
-        #             "query_kind": "modal_location",
-        #             "aggregation_unit": "admin3",
-        #             "locations": [
-        #                 {
-        #                     "query_kind": "daily_location",
-        #                     "date": "2016-01-01",
-        #                     "aggregation_unit": "admin3",
-        #                     "method": "last",
-        #                 },
-        #                 {
-        #                     "query_kind": "daily_location",
-        #                     "date": "2016-01-02",
-        #                     "aggregation_unit": "admin3",
-        #                     "method": "last",
-        #                 }
-        #             ],
-        #         },
-        #         "to_location": {
-        #             "query_kind": "daily_location",
-        #             "date": "2016-01-04",
-        #             "aggregation_unit": "admin3",
-        #             "method": "last",
-        #         },
-        #         "aggregation_unit": "admin3",
-        #     },
-        # ),
+        (
+            "flows",
+            {
+                "from_location": {
+                    "query_kind": "modal_location",
+                    "aggregation_unit": "admin3",
+                    "locations": [
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-01",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                        },
+                        {
+                            "query_kind": "daily_location",
+                            "date": "2016-01-02",
+                            "aggregation_unit": "admin3",
+                            "method": "last",
+                        },
+                    ],
+                },
+                "to_location": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-04",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "aggregation_unit": "admin3",
+            },
+        ),
         (
             "meaningful_locations_aggregate",
             {
@@ -321,25 +331,15 @@ from .utils import permissions_types, aggregation_types
         ),
     ],
 )
-def test_run_query(query_kind, params, access_token_builder, flowapi_url):
+def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     """
     Test that queries can be run, and return a QueryResult object.
     """
     query_spec = getattr(flowclient, query_kind)(**params)
-    con = flowclient.Connection(
-        flowapi_url,
-        access_token_builder(
-            {
-                query_spec["query_kind"]: {
-                    "permissions": permissions_types,
-                    "spatial_aggregation": aggregation_types,
-                }
-            }
-        ),
-    )
+    con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
 
-    result_dataframe = get_result(con, query_spec)
-    assert 0 < len(result_dataframe)
+    result_dataframe = get_result(connection=con, query=query_spec)
+    assert len(result_dataframe) > 0
 
 
 def test_get_geography(access_token_builder, flowapi_url):
@@ -347,8 +347,8 @@ def test_get_geography(access_token_builder, flowapi_url):
     Test that queries can be run, and return a GeoJSON dict.
     """
     con = flowclient.Connection(
-        flowapi_url,
-        access_token_builder(
+        url=flowapi_url,
+        token=access_token_builder(
             {
                 "geography": {
                     "permissions": permissions_types,
@@ -357,7 +357,7 @@ def test_get_geography(access_token_builder, flowapi_url):
             }
         ),
     )
-    result_geojson = flowclient.get_geography(con, "admin3")
+    result_geojson = flowclient.get_geography(connection=con, aggregation_unit="admin3")
     assert "FeatureCollection" == result_geojson["type"]
     assert 0 < len(result_geojson["features"])
     feature0 = result_geojson["features"][0]
@@ -438,10 +438,10 @@ def test_get_available_dates(
     Test that queries can be run, and return the expected JSON result.
     """
     con = flowclient.Connection(
-        flowapi_url,
-        access_token_builder(
+        url=flowapi_url,
+        token=access_token_builder(
             {"available_dates": {"permissions": {"get_result": True}}}
         ),
     )
-    result = flowclient.get_available_dates(con, event_types=event_types)
+    result = flowclient.get_available_dates(connection=con, event_types=event_types)
     assert expected_result == result

@@ -87,7 +87,6 @@
   "FlowmachineQuerySchema": {
     "discriminator": {
       "mapping": {
-        "daily_location": "#/components/schemas/DailyLocation",
         "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
@@ -97,7 +96,7 @@
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
-        "modal_location": "#/components/schemas/ModalLocation",
+        "spatial_aggregate": "#/components/schemas/SpatialAggregate",
         "total_network_objects": "#/components/schemas/TotalNetworkObjects",
         "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts"
       },
@@ -106,9 +105,6 @@
     "oneOf": [
       {
         "$ref": "#/components/schemas/DFSTotalMetricAmount"
-      },
-      {
-        "$ref": "#/components/schemas/DailyLocation"
       },
       {
         "$ref": "#/components/schemas/DummyQuery"
@@ -135,7 +131,7 @@
         "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
       },
       {
-        "$ref": "#/components/schemas/ModalLocation"
+        "$ref": "#/components/schemas/SpatialAggregate"
       },
       {
         "$ref": "#/components/schemas/TotalNetworkObjects"
@@ -214,6 +210,23 @@
     "oneOf": [
       {
         "$ref": "#/components/schemas/DailyLocation"
+      }
+    ]
+  },
+  "InputToSpatialAggregate": {
+    "discriminator": {
+      "mapping": {
+        "daily_location": "#/components/schemas/DailyLocation",
+        "modal_location": "#/components/schemas/ModalLocation"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/ModalLocation"
       }
     ]
   },
@@ -586,6 +599,17 @@
     ],
     "type": "object"
   },
+  "SpatialAggregate": {
+    "properties": {
+      "locations": {
+        "$ref": "#/components/schemas/InputToSpatialAggregate"
+      }
+    },
+    "required": [
+      "locations"
+    ],
+    "type": "object"
+  },
   "TotalNetworkObjects": {
     "properties": {
       "aggregation_unit": {
@@ -599,6 +623,17 @@
       },
       "end_date": {
         "format": "date",
+        "type": "string"
+      },
+      "period": {
+        "enum": [
+          "day",
+          "hour",
+          "minute",
+          "month",
+          "second",
+          "year"
+        ],
         "type": "string"
       },
       "start_date": {
