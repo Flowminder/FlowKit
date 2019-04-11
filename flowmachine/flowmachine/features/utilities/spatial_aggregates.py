@@ -86,7 +86,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
                                               level='admin3')
         >>> rog = subscribers.RadiusOfGyration('2016-01-01',
                                          '2016-01-04')
-        >>> sm = JoinedSpatialAggregate( rog, mfl )
+        >>> sm = JoinedSpatialAggregate( metric=rog, locations=mfl )
         >>> sm.head()
                 name     rog
             0   Rasuwa   157.200039
@@ -97,14 +97,18 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             ...
     """
 
-    def __init__(self, metric, locations, method="mean"):
+    allowed_methods = ("mean", "median", "mode")
+
+    def __init__(self, *, metric, locations, method="mean"):
         self.metric = metric
         self.locations = locations
         self.level = locations.level
         self.column_name = locations.column_name
         self.method = method.lower()
-        if self.method not in ("mean", "median", "mode"):
-            raise ValueError("{} is not recognised method".format(method))
+        if self.method not in self.allowed_methods:
+            raise ValueError(
+                f"{method} is not recognised method, must be one of {self.allowed_methods}"
+            )
         try:
             if (
                 parse_datestring(self.metric.start).date()

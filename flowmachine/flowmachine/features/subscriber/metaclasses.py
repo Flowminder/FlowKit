@@ -43,7 +43,7 @@ class SubscriberFeature(Query):
             Query object representing a version of this metric aggregated to
             the location level.
         """
-        return JoinedSpatialAggregate(self, locations, method=method)
+        return JoinedSpatialAggregate(metric=self, locations=locations, method=method)
 
     def __getitem__(self, item):
 
