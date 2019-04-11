@@ -53,33 +53,3 @@ class FlowmachineQuerySchema(OneOfSchema):
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
         "spatial_aggregate": SpatialAggregateSchema,
     }
-
-    def get_obj_type(self, obj):
-        if isinstance(obj, DummyQueryExposed):
-            return "dummy_query"
-        elif isinstance(obj, FlowsExposed):
-            return "flows"
-        elif isinstance(obj, MeaningfulLocationsAggregateExposed):
-            return "meaningful_locations_aggregate"
-        elif isinstance(obj, MeaningfulLocationsBetweenLabelODMatrixExposed):
-            return "meaningful_locations_between_label_od_matrix"
-        elif isinstance(obj, MeaningfulLocationsBetweenDatesODMatrixExposed):
-            return "meaningful_locations_between_dates_od_matrix"
-        elif isinstance(obj, GeographyExposed):
-            return "geography"
-        elif isinstance(obj, LocationEventCountsExposed):
-            return "location_event_counts"
-        elif isinstance(obj, UniqueSubscriberCountsExposed):
-            return "unique_subscriber_counts"
-        elif isinstance(obj, LocationIntroversionExposed):
-            return "location_introversion"
-        elif isinstance(obj, TotalNetworkObjectsExposed):
-            return "total_network_objects"
-        elif isinstance(obj, DFSTotalMetricAmountExposed):
-            return "dfs_metric_total_amount"
-        elif isinstance(obj, SpatialAggregateExposed):
-            return "spatial_aggregate"
-        else:
-            raise ValueError(
-                f"Object type '{obj.__class__.__name__}' not registered in FlowmachineQuerySchema."
-            )

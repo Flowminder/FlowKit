@@ -64,35 +64,3 @@ class BaseExposedQuery(metaclass=ABCMeta):
         # by flowmachine.core.Query.md5, and the latter is currently being used by
         # the QueryStateMachine, so we need to use it to check the query state.
         return self._flowmachine_query_obj.md5
-
-    @property
-    def query_params(self):
-        """
-        Return the parameters from which the query is constructed. Note that this
-        includes the the parameters of any subqueries of which it is composed.
-
-        Returns
-        -------
-        dict
-            JSON representation of the query parameters, including those of subqueries.
-        """
-        # We need to dynamically import FlowmachineQuerySchema here in order to avoid
-        # a circular import in this file because currently there are dependencies of
-        # the following form (using the example of DailyLocation):
-        #
-        #     DailyLocationSchema -> DailyLocationExposed -> BaseExposedQuery -> FlowmachineQuerySchema -> DailyLocationSchema
-        #
-        # We break the dependency BaseExposedQuery -> FlowmachineQuerySchema here by using
-        # this dynamic import. There is possibly a better way to do this...
-        from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
-
-        return FlowmachineQuerySchema().dump(self)
-
-    def _create_query_info_lookup(self):
-        """
-        Create the query info lookup between query_id and query parameters, so that
-        we can get information about the query later using only its query_id.
-        """
-        # TODO: is this the right place for this or should this happen somewhere else?!
-        q_info_lookup = QueryInfoLookup(Query.redis)
-        q_info_lookup.register_query(self.query_id, self.query_params)
