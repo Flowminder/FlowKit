@@ -941,8 +941,10 @@ class Query(metaclass=ABCMeta):
         try:
             if self.subscriber_identifier in cols:
                 ixen.append(self.subscriber_identifier)
-            else:
+            elif "subscriber" in cols:
                 ixen.append('"subscriber"')
+            else:
+                pass
         except AttributeError:
             pass
         return ixen

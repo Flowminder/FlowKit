@@ -44,8 +44,6 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
         "payload": {
             "available_queries": [
                 "dummy_query",
-                "daily_location",
-                "modal_location",
                 "flows",
                 "meaningful_locations_aggregate",
                 "meaningful_locations_between_label_od_matrix",
@@ -57,6 +55,7 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
                 "total_network_objects",
                 "aggregate_network_objects",
                 "dfs_metric_total_amount",
+                "spatial_aggregate",
             ]
         },
     }
@@ -86,11 +85,14 @@ def test_run_daily_location_query(send_zmq_message_and_receive_reply):
     msg = {
         "action": "run_query",
         "params": {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "method": "most-common",
-            "aggregation_unit": "admin3",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "most-common",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
         "request_id": "DUMMY_ID",
     }
@@ -108,25 +110,28 @@ def test_run_modal_location_query(send_zmq_message_and_receive_reply):
     msg = {
         "action": "run_query",
         "params": {
-            "query_kind": "modal_location",
-            "locations": [
-                {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-01",
-                    "method": "most-common",
-                    "aggregation_unit": "admin3",
-                    "subscriber_subset": None,
-                },
-                {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-02",
-                    "method": "most-common",
-                    "aggregation_unit": "admin3",
-                    "subscriber_subset": None,
-                },
-            ],
-            "aggregation_unit": "admin3",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "modal_location",
+                "locations": [
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-01",
+                        "method": "most-common",
+                        "aggregation_unit": "admin3",
+                        "subscriber_subset": None,
+                    },
+                    {
+                        "query_kind": "daily_location",
+                        "date": "2016-01-02",
+                        "method": "most-common",
+                        "aggregation_unit": "admin3",
+                        "subscriber_subset": None,
+                    },
+                ],
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
         "request_id": "DUMMY_ID",
     }

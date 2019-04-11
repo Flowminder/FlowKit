@@ -18,11 +18,14 @@ async def test_get_sql(zmq_port, zmq_host):
     msg = {
         "action": "run_query",
         "params": {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "method": "last",
-            "aggregation_unit": "admin3",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
         "request_id": "DUMMY_ID",
     }

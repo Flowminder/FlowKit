@@ -143,17 +143,6 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         if self.period not in valid_periods:
             raise ValueError("{} is not a valid period.".format(self.period))
 
-        # FIXME: we are only storing these here so that they can be accessed by
-        #        AggregateNetworkObjects.from_total_network_objects() below. This
-        #        should be refactored soon.
-        self.column_name = column_name
-        self.size = size
-        self.polygon_table = polygon_table
-        self.geom_col = geom_col
-        self.hours = hours
-        self.subscriber_subset = subscriber_subset
-        self.subscriber_identifier = subscriber_identifier
-
         super().__init__()
 
     @property
@@ -184,24 +173,6 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         )
 
         return sql
-
-    def aggregate(self, by=None, statistic="avg"):
-        """
-
-        Parameters
-        ----------
-        by : {'second', 'minute', 'hour', 'day', 'month', 'year'}
-            Defaults to one level higher than the period
-        statistic : {'avg', 'median'}
-            Statistic to calculate, defaults to 'avg'.
-
-        Returns
-        -------
-        AggregateNetworkObjects
-        """
-        return AggregateNetworkObjects.from_total_network_objects(
-            self, by=by, statistic=statistic
-        )
 
 
 class AggregateNetworkObjects(GeoDataMixin, Query):
@@ -238,9 +209,8 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     """
 
-    def __init__(self, total_objs, statistic="avg", by=None):
-        self.total_objs = copy.deepcopy(total_objs)
-
+    def __init__(self, *, total_network_objects, statistic="avg", by=None):
+        self.total_objs = copy.deepcopy(total_network_objects)
         statistic = statistic.lower()
         if statistic in valid_stats:
             self.statistic = statistic
@@ -251,15 +221,15 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
                 )
             )
         if by is None:
-            if period == "second":
+            if self.total_objs.period == "second":
                 self.by = "minute"
-            elif period == "minute":
+            elif self.total_objs.period == "minute":
                 self.by = "hour"
-            elif period == "hour":
+            elif self.total_objs.period == "hour":
                 self.by = "day"
-            elif period == "day":
+            elif self.total_objs.period == "day":
                 self.by = "month"
-            elif period == "month":
+            elif self.total_objs.period == "month":
                 self.by = "year"
             else:
                 self.by = "century"
@@ -271,42 +241,6 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             )
 
         super().__init__()
-
-    @classmethod
-    def from_total_network_objects(cls, total_objs, statistic, by):
-        """
-
-        Parameters
-        ----------
-        total_objs : TotalNetworkObjects
-            Object to aggregate
-        statistic : {'avg', 'median'}
-            Stat to calculate
-        by : {'second', 'minute', 'hour', 'day', 'month', 'year'}
-             Time period to aggregate to
-
-        Returns
-        -------
-        AggregateNetworkObjects
-
-        """
-        return cls(
-            start=total_objs.start,
-            stop=total_objs.stop,
-            table=total_objs.table,
-            period=total_objs.period,
-            network_object=total_objs.network_object,
-            statistic=statistic,
-            by=by,
-            level=total_objs.level,
-            column_name=total_objs.column_name,
-            size=total_objs.size,
-            polygon_table=total_objs.polygon_table,
-            geom_col=total_objs.geom_col,
-            hours=total_objs.hours,
-            subscriber_subset=total_objs.subscriber_subset,
-            subscriber_identifier=total_objs.subscriber_identifier,
-        )
 
     @property
     def column_names(self) -> List[str]:

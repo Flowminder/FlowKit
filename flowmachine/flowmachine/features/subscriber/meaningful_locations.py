@@ -151,7 +151,7 @@ class MeaningfulLocationsAggregate(Query):
         ON ST_Contains(agg.geom::geometry, meaningful_locations.cluster::geometry)
         GROUP BY label, {level_cols}
         HAVING sum(1./n_clusters) > 15
-        ORDER BY {level_cols}
+        ORDER BY label, {level_cols}
         """
 
 
@@ -261,5 +261,5 @@ class MeaningfulLocationsOD(Query):
         ON ST_Contains(to_q.geom::geometry, meaningful_locations.cluster_to::geometry)
         GROUP BY label_from, label_to, {level_cols}
         HAVING sum(1./(n_clusters_from*n_clusters_to)) > 15
-        ORDER BY {level_cols}
+        ORDER BY label_from, label_to, {level_cols}
         """

@@ -15,7 +15,7 @@ def test_get_status_reports_running(running_status):
     con_mock = Mock()
     con_mock.get_url.return_value = Mock(status_code=202)
     con_mock.get_url.return_value.json.return_value = {"status": running_status}
-    status = get_status(con_mock, "foo")
+    status = get_status(connection=con_mock, query_id="foo")
     assert status == running_status
 
 
@@ -23,5 +23,5 @@ def test_get_status_reports_finished():
     """ Test that status code 303 is interpreted as query finished. """
     con_mock = Mock()
     con_mock.get_url.return_value = Mock(status_code=303)
-    status = get_status(con_mock, "foo")
+    status = get_status(connection=con_mock, query_id="foo")
     assert status == "Finished"

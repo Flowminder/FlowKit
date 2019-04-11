@@ -94,7 +94,7 @@ class BaseLocation:
         that represents the location, and the total counts of
         subscribers.
         """
-        return SpatialAggregate(self)
+        return SpatialAggregate(locations=self)
 
     def join_aggregate(self, metric, method="mean"):
         """

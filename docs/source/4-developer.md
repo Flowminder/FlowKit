@@ -88,6 +88,8 @@ The API exposes four routes:
 
 - `/geography/<aggregation_unit>`: return geography data for a given aggregation unit.
 
+- `/available_dates` : return the dates available to calculate metrics over
+
 At present, the following query types are accessible through FlowAPI:
 
 - `aggregate_network_objects`
@@ -96,11 +98,15 @@ At present, the following query types are accessible through FlowAPI:
 
 - `daily_location`
 
-    A statistic representing where subscribers are on a given day, aggregated to a spatial unit.
+    A statistic representing where subscribers are on a given day. Must be used in combination with `modal_location`, `flows` or `spatial_aggregate`.
 
 - `modal_location`
 
-    The mode of a set of daily locations.
+    The mode of a set of daily locations. Must be used in combination with `flows` or `spatial_aggregate`.
+
+- `spatial_aggregate`
+    
+    A spatial aggregate of `modal_location` or `daily_location`, suitable for return via the API.
 
 - `flows`
 
@@ -119,6 +125,10 @@ At present, the following query types are accessible through FlowAPI:
 - `meaningful_locations_od_matrix`
 
     OD matrix between two individual-level "meaningful" locations (see above), aggregated to a spatial unit.
+
+- `total_network_objects`
+    
+    Count of mobile phone cells per area active based on CDR traffic within a time period, broken down into time buckets.
 
 
 ### FlowAPI Access tokens
