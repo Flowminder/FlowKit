@@ -13,7 +13,11 @@ from .daily_location import DailyLocationSchema, DailyLocationExposed
 from .modal_location import ModalLocationSchema, ModalLocationExposed
 from .custom_fields import AggregationUnit
 
-__all__ = ["SpatialAggregateSchema", "SpatialAggregateExposed"]
+__all__ = [
+    "SpatialAggregateSchema",
+    "SpatialAggregateExposed",
+    "InputToSpatialAggregate",
+]
 
 
 class InputToSpatialAggregate(OneOfSchema):
