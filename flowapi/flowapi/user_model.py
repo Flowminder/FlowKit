@@ -110,12 +110,12 @@ class UserObject:
             elif query_kind == "joined_spatial_aggregate":
                 location_spec = self._get_query_kind_and_aggregation_unit(
                     query_json=query_json["locations"]
-                )
+                )[0]
                 metric_spec = self._get_query_kind_and_aggregation_unit(
                     query_json=dict(
                         **query_json["metric"], aggregation_unit=location_spec[1]
                     )
-                )
+                )[0]
                 return [location_spec, metric_spec]
         except (KeyError, SyntaxError):
             raise BadQueryError

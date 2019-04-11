@@ -16,9 +16,7 @@ class JSONHTTPException(HTTPException):
 class BadQueryError(JSONHTTPException):
     def __init__(self):
         super().__init__(
-            status_code=400,
-            description="Could not parse query spec..",
-            name="Bad query",
+            status_code=400, description="Could not parse query spec.", name="Bad query"
         )
 
 
