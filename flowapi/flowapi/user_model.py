@@ -8,9 +8,13 @@ from quart.exceptions import HTTPException
 from typing import Dict, Union, List, Tuple
 
 from flask_jwt_extended import get_jwt_claims, get_jwt_identity
-from quart import current_app, request, abort
+from quart import current_app, request
 
-from flowapi.flowapi_errors import MissingQueryKindError, MissingAggregationUnitError
+from flowapi.flowapi_errors import (
+    MissingQueryKindError,
+    MissingAggregationUnitError,
+    BadQueryError,
+)
 
 
 class UserObject:
@@ -36,7 +40,7 @@ class UserObject:
         self.claims = claims
 
     def has_access(
-        self, *, action: str, query_kind: str, aggregation_unit: str
+        self, *, action: str, query_kinds_and_aggregations: List[Tuple[str, str]]
     ) -> bool:
         """
         Returns true if the user can do 'action' with this kind of query at this unit of aggregation.
@@ -45,10 +49,8 @@ class UserObject:
         ----------
         action: {'run', 'poll', 'get_results'}
             Action to check
-        query_kind : str
-            Kind of the query
-        aggregation_unit : str
-            Aggregation unit/level of resolution
+        query_kinds_and_aggregations : list of tuples
+            List of tuples giving a query kind and aggregation unit
 
         Returns
         -------
@@ -60,24 +62,27 @@ class UserObject:
         UserClaimsVerificationError
             If the user cannot do action with this kind of query at this level of aggregation
         """
-        try:
-            action_rights = self.claims[query_kind]["permissions"][action]
-            aggregation_right = (
-                aggregation_unit in self.claims[query_kind]["spatial_aggregation"]
-            )
-            if not action_rights:
-                raise UserClaimsVerificationError(
-                    f"Token does not allow {action} for query kind '{query_kind}'"
+        for query_kind, aggregation_unit in query_kinds_and_aggregations:
+            try:
+                action_rights = self.claims[query_kind]["permissions"][action]
+                aggregation_right = (
+                    aggregation_unit in self.claims[query_kind]["spatial_aggregation"]
                 )
-            if not aggregation_right:
-                raise UserClaimsVerificationError(
-                    f"Token does not allow query kind '{query_kind}' at spatial aggregation '{aggregation_unit}'"
-                )
-        except KeyError:
-            raise UserClaimsVerificationError("Claims verification failed.")
+                if not action_rights:
+                    raise UserClaimsVerificationError(
+                        f"Token does not allow {action} for query kind '{query_kind}'"
+                    )
+                if not aggregation_right:
+                    raise UserClaimsVerificationError(
+                        f"Token does not allow query kind '{query_kind}' at spatial aggregation '{aggregation_unit}'"
+                    )
+            except KeyError:
+                raise UserClaimsVerificationError("Claims verification failed.")
         return True
 
-    def _get_query_kind_and_aggregation_unit(self, query_json: dict) -> Tuple[str, str]:
+    def _get_query_kind_and_aggregation_unit(
+        self, query_json: dict
+    ) -> List[Tuple[str, str]]:
         """
         Extract the query kind and aggregation unit from a query spec dict.
 
@@ -88,24 +93,37 @@ class UserObject:
 
         Returns
         -------
-        str, str
-            Query kind and aggregation unit
+        list of tuples str, str
+            List of tuples giving query kind and aggregation unit
 
         """
 
         try:
             query_kind = query_json["query_kind"]
+        except KeyError:
+            raise MissingQueryKindError
+        try:
             if query_kind == "spatial_aggregate":
                 return self._get_query_kind_and_aggregation_unit(
                     query_json=query_json["locations"]
                 )
-        except KeyError:
-            raise MissingQueryKindError
+            elif query_kind == "joined_spatial_aggregate":
+                location_spec = self._get_query_kind_and_aggregation_unit(
+                    query_json=query_json["locations"]
+                )
+                metric_spec = self._get_query_kind_and_aggregation_unit(
+                    query_json=dict(
+                        **query_json["metric"], aggregation_unit=location_spec[1]
+                    )
+                )
+                return [location_spec, metric_spec]
+        except (KeyError, SyntaxError):
+            raise BadQueryError
         try:
             aggregation_unit = query_json["aggregation_unit"]
         except KeyError:
             raise MissingAggregationUnitError
-        return query_kind, aggregation_unit
+        return [(query_kind, aggregation_unit)]
 
     def can_run(self, *, query_json: dict) -> bool:
         """
@@ -127,12 +145,12 @@ class UserObject:
             If the user cannot run this kind of query at this level of aggregation
 
         """
-        query_kind, aggregation_unit = self._get_query_kind_and_aggregation_unit(
+        query_kinds_and_aggregations = self._get_query_kind_and_aggregation_unit(
             query_json=query_json
         )
 
         return self.has_access(
-            action="run", query_kind=query_kind, aggregation_unit=aggregation_unit
+            action="run", query_kinds_and_aggregations=query_kinds_and_aggregations
         )
 
     @staticmethod
@@ -193,21 +211,19 @@ class UserObject:
         """
 
         params = await self._get_params(query_id=query_id)
-        query_kind, aggregation_unit = self._get_query_kind_and_aggregation_unit(
+        query_kinds_and_aggregations = self._get_query_kind_and_aggregation_unit(
             query_json=params
         )
-        return self.can_poll(query_kind=query_kind, aggregation_unit=aggregation_unit)
+        return self.can_poll(query_kinds_and_aggregations=query_kinds_and_aggregations)
 
-    def can_poll(self, *, query_kind: str, aggregation_unit: str) -> bool:
+    def can_poll(self, *, query_kinds_and_aggregations: List[Tuple[str, str]]) -> bool:
         """
         Returns true if the user can poll this kind of query at this unit of aggregation.
 
         Parameters
         ----------
-        query_kind : str
-            Kind of the query
-        aggregation_unit : str
-            Aggregation unit/level of resolution
+        query_kinds_and_aggregations : list of tuples
+            List of tuples giving a query kind and aggregation unit
 
         Returns
         -------
@@ -221,7 +237,7 @@ class UserObject:
         """
 
         return self.has_access(
-            action="poll", query_kind=query_kind, aggregation_unit=aggregation_unit
+            action="poll", query_kinds_and_aggregations=query_kinds_and_aggregations
         )
 
     async def can_get_results_by_query_id(self, *, query_id) -> bool:
@@ -244,22 +260,22 @@ class UserObject:
             If the user cannot get the results of this kind of query at this level of aggregation
         """
         params = await self._get_params(query_id=query_id)
-        query_kind, aggregation_unit = self._get_query_kind_and_aggregation_unit(
+        query_kinds_and_aggregations = self._get_query_kind_and_aggregation_unit(
             query_json=params
         )
         return self.can_get_results(
-            query_kind=query_kind, aggregation_unit=aggregation_unit
+            query_kinds_and_aggregations=query_kinds_and_aggregations
         )
 
-    def can_get_results(self, *, query_kind: str, aggregation_unit: str) -> bool:
+    def can_get_results(
+        self, *, query_kinds_and_aggregations: List[Tuple[str, str]]
+    ) -> bool:
         """
         Returns true if the user can get the results of this kind of query at this unit of aggregation.
         Parameters
         ----------
-        query_kind : str
-            Kind of the query
-        aggregation_unit : str
-            Aggregation unit/level of resolution
+        query_kinds_and_aggregations : list of tuples
+            List of tuples giving a query kind and aggregation unit
 
         Returns
         -------
@@ -274,8 +290,7 @@ class UserObject:
 
         return self.has_access(
             action="get_result",
-            query_kind=query_kind,
-            aggregation_unit=aggregation_unit,
+            query_kinds_and_aggregations=query_kinds_and_aggregations,
         )
 
     def can_get_geography(self, *, aggregation_unit: str) -> bool:
@@ -300,8 +315,7 @@ class UserObject:
 
         return self.has_access(
             action="get_result",
-            query_kind="geography",
-            aggregation_unit=aggregation_unit,
+            query_kinds_and_aggregations=[("geography", aggregation_unit)],
         )
 
     def can_get_available_dates(self) -> bool:

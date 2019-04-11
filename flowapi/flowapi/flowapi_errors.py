@@ -13,6 +13,15 @@ class JSONHTTPException(HTTPException):
         return {"Content-Type": "application/json"}
 
 
+class BadQueryError(JSONHTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=400,
+            description="Could not parse query spec..",
+            name="Bad query",
+        )
+
+
 class MissingQueryKindError(JSONHTTPException):
     def __init__(self):
         super().__init__(
