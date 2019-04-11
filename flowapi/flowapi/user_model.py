@@ -80,7 +80,7 @@ class UserObject:
                 raise UserClaimsVerificationError("Claims verification failed.")
         return True
 
-    def _get_query_kind_and_aggregation_unit(
+    def _get_query_kinds_and_aggregation_units(
         self, query_json: dict
     ) -> List[Tuple[str, str]]:
         """
@@ -104,14 +104,14 @@ class UserObject:
             raise MissingQueryKindError
         try:
             if query_kind == "spatial_aggregate":
-                return self._get_query_kind_and_aggregation_unit(
+                return self._get_query_kinds_and_aggregation_units(
                     query_json=query_json["locations"]
                 )
             elif query_kind == "joined_spatial_aggregate":
-                location_spec = self._get_query_kind_and_aggregation_unit(
+                location_spec = self._get_query_kinds_and_aggregation_units(
                     query_json=query_json["locations"]
                 )[0]
-                metric_spec = self._get_query_kind_and_aggregation_unit(
+                metric_spec = self._get_query_kinds_and_aggregation_units(
                     query_json=dict(
                         **query_json["metric"], aggregation_unit=location_spec[1]
                     )
@@ -145,7 +145,7 @@ class UserObject:
             If the user cannot run this kind of query at this level of aggregation
 
         """
-        query_kinds_and_aggregations = self._get_query_kind_and_aggregation_unit(
+        query_kinds_and_aggregations = self._get_query_kinds_and_aggregation_units(
             query_json=query_json
         )
 
@@ -211,7 +211,7 @@ class UserObject:
         """
 
         params = await self._get_params(query_id=query_id)
-        query_kinds_and_aggregations = self._get_query_kind_and_aggregation_unit(
+        query_kinds_and_aggregations = self._get_query_kinds_and_aggregation_units(
             query_json=params
         )
         return self.can_poll(query_kinds_and_aggregations=query_kinds_and_aggregations)
@@ -260,7 +260,7 @@ class UserObject:
             If the user cannot get the results of this kind of query at this level of aggregation
         """
         params = await self._get_params(query_id=query_id)
-        query_kinds_and_aggregations = self._get_query_kind_and_aggregation_unit(
+        query_kinds_and_aggregations = self._get_query_kinds_and_aggregation_units(
             query_json=params
         )
         return self.can_get_results(
