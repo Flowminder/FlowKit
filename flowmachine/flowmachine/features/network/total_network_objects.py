@@ -10,6 +10,7 @@ at the network level.
 
 
 """
+import copy
 from typing import List
 
 from ...core.mixins import GeoDataMixin
@@ -203,33 +204,21 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         )
 
 
-class AggregateNetworkObjects(TotalNetworkObjects, Query):
+class AggregateNetworkObjects(GeoDataMixin, Query):
     """
     Class for calculating statistics about unique cells/sites
     and aggregate it by period.
 
     Parameters
     ----------
-    start : datetime
-        Start time to filter query.
-    stop : datetime
-        Stop time to filter query.
-    period : {'second', 'minute', 'hour', 'day', 'month', 'year'}
-        A period definition to group data by.
+    TotalNetworkObjects
+
+    statistic : {'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}
+        Statistic to calculate, defaults to 'avg'.
+
     by : {'second', 'minute', 'hour', 'day', 'month', 'year', 'century'}
         A period definition to calculate statistics over, defaults to the one
         greater than period.
-    table : str
-        Either 'calls', 'sms', or other table under `events.*`. If
-        no specific table is provided this will collect
-        statistics from all tables.
-    statistic : {'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}
-        Statistic to calculate, defaults to 'avg'.
-    object : {'cell', 'versioned-cell', 'versioned-site'}
-        Objects to track, defaults to 'cells', the unversioned lowest
-        level of infrastructure available.
-    level : {'adminN', 'grid', 'polygon'}
-        Level to facet at, defaults to 'admin0'
 
     Other Parameters
     ----------------
@@ -249,39 +238,9 @@ class AggregateNetworkObjects(TotalNetworkObjects, Query):
 
     """
 
-    def __init__(
-        self,
-        start=None,
-        stop=None,
-        statistic="avg",
-        table="all",
-        period="day",
-        by=None,
-        network_object="cell",
-        level="admin0",
-        column_name=None,
-        size=None,
-        polygon_table=None,
-        geom_col="geom",
-        hours="all",
-        subscriber_subset=None,
-        subscriber_identifier="msisdn",
-    ):
-        self.total_objs = TotalNetworkObjects(
-            start=start,
-            stop=stop,
-            table=table,
-            period=period,
-            network_object=network_object,
-            level=level,
-            column_name=column_name,
-            size=size,
-            polygon_table=polygon_table,
-            geom_col=geom_col,
-            hours=hours,
-            subscriber_subset=subscriber_subset,
-            subscriber_identifier=subscriber_identifier,
-        )
+    def __init__(self, total_objs, statistic="avg", by=None):
+        self.total_objs = copy.deepcopy(total_objs)
+
         statistic = statistic.lower()
         if statistic in valid_stats:
             self.statistic = statistic

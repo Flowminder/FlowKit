@@ -41,5 +41,7 @@ class AggregateNetworkObjectsExposed(BaseExposedQuery):
         Query
         """
         return AggregateNetworkObjects(
-            start=self.start_date, stop=self.end_date, level=self.aggregation_unit
+            TotalNetworkObjects(
+                start=self.start_date, stop=self.end_date, level=self.aggregation_unit
+            )
         )

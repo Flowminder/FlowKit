@@ -1,4 +1,31 @@
 {
+  "AggregateNetworkObjects": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
+    ],
+    "type": "object"
+  },
   "DFSTotalMetricAmount": {
     "properties": {
       "aggregation_unit": {
@@ -148,33 +175,6 @@
         "$ref": "#/components/schemas/UniqueSubscriberCounts"
       }
     ]
-  },
-  "AggregateNetworkObjects": {
-    "properties": {
-      "aggregation_unit": {
-        "enum": [
-          "admin0",
-          "admin1",
-          "admin2",
-          "admin3"
-        ],
-        "type": "string"
-      },
-      "end_date": {
-        "format": "date",
-        "type": "string"
-      },
-      "start_date": {
-        "format": "date",
-        "type": "string"
-      }
-    },
-    "required": [
-      "aggregation_unit",
-      "end_date",
-      "start_date"
-    ],
-    "type": "object"
   },
   "Flows": {
     "properties": {
