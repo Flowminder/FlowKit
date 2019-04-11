@@ -70,6 +70,9 @@ executors:
       num_calls:
         type: integer
         default: 2000
+      num_tacs:
+        type: integer
+        default: 1000
       num_mds:
         type: integer
         default: 0
@@ -109,6 +112,7 @@ executors:
           N_SMS: <<parameters.num_sms>>
           N_MDS: <<parameters.num_mds>>
           N_CALLS: <<parameters.num_calls>>
+          N_TACS: <<parameters.num_tacs>>
           SYNTHETIC_DATA_GENERATOR: <<parameters.synthetic_data_generator>>
           FLOWMACHINE_FLOWDB_PASS: foo
           FLOWAPI_FLOWDB_PASS: foo
@@ -503,6 +507,7 @@ jobs:
       num_days: 60
       num_calls: 20000
       num_sms: 20000
+      num_tacs: 10000
       num_mds: 20000
       disaster_start_date: 2016-02-11
       disaster_end_date: 2016-03-01
