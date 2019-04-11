@@ -211,17 +211,6 @@ async def test_no_result_access_without_both_claims(
         {
             "status": "success",
             "msg": "",
-            "payload": {
-                "query_id": "DUMMY_QUERY_ID",
-                "query_params": {
-                    "aggregation_unit": "DUMMY_AGGREGATION",
-                    "query_kind": "DUMMY_QUERY_KIND",
-                },
-            },
-        },
-        {
-            "status": "success",
-            "msg": "",
             "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
         },
     )
@@ -307,3 +296,107 @@ async def test_access_logs_post(
     assert "test" == log_lines[1]["user"]
     assert "test" == log_lines[2]["user"]
     assert log_lines[0]["request_id"] == log_lines[1]["request_id"]
+
+
+@pytest.mark.parametrize(
+    "metric_claims, location_claims, expected_status_code",
+    [
+        (
+            {"permissions": {"get_result": True}, "spatial_aggregation": []},
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            401,
+        ),
+        (
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            {"permissions": {"get_result": True}, "spatial_aggregation": []},
+            401,
+        ),
+        (
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            200,
+        ),
+        (
+            {
+                "permissions": {"get_result": False},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            401,
+        ),
+        (
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            {
+                "permissions": {"get_result": False},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            401,
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_no_joined_aggregate_result_access_without_both_claims(
+    metric_claims,
+    location_claims,
+    expected_status_code,
+    app,
+    access_token_builder,
+    dummy_zmq_server,
+):
+    """
+    Test that permission on the metric, the locations, and the spatial aggregation
+    units of _both_ is required for joined_spatial_aggregate.
+    """
+    # Should test: get on both + unit on both, get on one + units on both, get on both + units on one
+
+    client, db, log_dir, app = app
+    token = access_token_builder(
+        {
+            "DUMMY_METRIC_QUERY_KIND": metric_claims,
+            "DUMMY_LOCATION_QUERY_KIND": location_claims,
+        }
+    )
+    dummy_zmq_server.side_effect = (
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {
+                "query_id": "DUMMY_QUERY_ID",
+                "query_params": {
+                    "query_kind": "joined_spatial_aggregate",
+                    "metric": {"query_kind": "DUMMY_METRIC_QUERY_KIND"},
+                    "locations": {
+                        "aggregation_unit": "DUMMY_AGGREGATION",
+                        "query_kind": "DUMMY_LOCATION_QUERY_KIND",
+                    },
+                },
+            },
+        },
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
+        },
+    )
+    response = await client.get(
+        f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == expected_status_code
