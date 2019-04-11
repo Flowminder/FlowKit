@@ -858,7 +858,7 @@ def meaningful_locations_between_dates_od_matrix(
 
 
 def modal_location(
-    *, locations: Dict[str, Union[str, Dict[str, str]]], aggregation_unit: str
+    *, locations: List[Dict[str, Union[str, Dict[str, str]]]], aggregation_unit: str
 ) -> dict:
     """
     Return query spec for a modal location query for a list of locations.
