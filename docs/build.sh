@@ -16,9 +16,9 @@ KillJobs() {
 }
 
 TrapQuit() {
-    if [ "$CI" != "true" ]; then
+    if [ "$CI" != "true" ] && [ "$KEEP_CONTAINERS_ALIVE" != "true" ]; then
 	    echo "Bringing down containers."
-	    docker-compose down flowdb_synthetic_data query_locker
+	    (pushd .. && make down flowdb_synthetic_data query_locker && popd)
 	fi
 
 	echo "Shutting down FlowMachine and FlowAPI"
@@ -28,7 +28,7 @@ TrapQuit() {
 trap TrapQuit EXIT
 
 if [ "$CI" != "true" ]; then
-    (pushd .. && make up flowdb_testdata query_locker && popd)
+    (pushd .. && make down && make up flowdb_synthetic_data query_locker && popd)
     echo "Waiting for flowdb to be ready"
     docker exec flowdb_synthetic_data bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
 fi
