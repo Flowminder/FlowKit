@@ -26,14 +26,14 @@ class SubscriberFeature(Query):
     case
     """
 
-    def join_aggregate(self, locations, method="mean"):
+    def join_aggregate(self, locations, method="avg"):
         """
         Join with a location representing object and aggregate
         spatially.
 
         Parameters
         ----------
-        method : {'mean', 'mode', 'median'}
+        method : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
         locations :
             Subscriber locating type query
 

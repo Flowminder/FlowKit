@@ -365,7 +365,6 @@ async def test_no_joined_aggregate_result_access_without_both_claims(
     Test that permission on the metric, the locations, and the spatial aggregation
     units of _both_ is required for joined_spatial_aggregate.
     """
-    # Should test: get on both + unit on both, get on one + units on both, get on both + units on one
 
     client, db, log_dir, app = app
     token = access_token_builder(
