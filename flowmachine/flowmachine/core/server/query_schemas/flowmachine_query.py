@@ -4,19 +4,17 @@
 
 from marshmallow_oneofschema import OneOfSchema
 
+from flowmachine.core.server.query_schemas.joined_spatial_aggregate import (
+    JoinedSpatialAggregateSchema,
+)
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     SpatialAggregateSchema,
-    SpatialAggregateExposed,
 )
-from .dummy_query import DummyQuerySchema, DummyQueryExposed
-from .daily_location import DailyLocationSchema, DailyLocationExposed
-from .modal_location import ModalLocationSchema, ModalLocationExposed
-from .flows import FlowsSchema, FlowsExposed
+from .dummy_query import DummyQuerySchema
+from .flows import FlowsSchema
 from .meaningful_locations import (
     MeaningfulLocationsAggregateSchema,
-    MeaningfulLocationsAggregateExposed,
     MeaningfulLocationsBetweenLabelODMatrixSchema,
-    MeaningfulLocationsBetweenLabelODMatrixExposed,
     MeaningfulLocationsBetweenDatesODMatrixSchema,
     MeaningfulLocationsBetweenDatesODMatrixExposed,
 )
@@ -57,4 +55,5 @@ class FlowmachineQuerySchema(OneOfSchema):
         "aggregate_network_objects": AggregateNetworkObjectsSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
         "spatial_aggregate": SpatialAggregateSchema,
+        "joined_spatial_aggregate": JoinedSpatialAggregateSchema,
     }

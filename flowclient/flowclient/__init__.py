@@ -33,6 +33,7 @@ from .client import (
     total_network_objects,
     aggregate_network_objects,
     spatial_aggregate,
+    joined_spatial_aggregate,
 )
 
 __all__ = [
@@ -58,4 +59,5 @@ __all__ = [
     "total_network_objects",
     "aggregate_network_objects",
     "spatial_aggregate",
+    "joined_spatial_aggregate",
 ]

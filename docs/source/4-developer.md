@@ -108,6 +108,10 @@ At present, the following query types are accessible through FlowAPI:
     
     A spatial aggregate of `modal_location` or `daily_location`, suitable for return via the API.
 
+- `joined_spatial_aggregate`
+
+    Spatial aggregate of a subscriber metric which does not have associated location information 
+
 - `flows`
 
     The difference in locations between two location queries.

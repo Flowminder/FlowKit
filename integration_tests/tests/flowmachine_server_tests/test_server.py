@@ -56,6 +56,7 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
                 "aggregate_network_objects",
                 "dfs_metric_total_amount",
                 "spatial_aggregate",
+                "joined_spatial_aggregate",
             ]
         },
     }
