@@ -86,7 +86,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
                                               level='admin3')
         >>> rog = subscribers.RadiusOfGyration('2016-01-01',
                                          '2016-01-04')
-        >>> sm = JoinedSpatialAggregate( metric=rog, locations=mfl )
+        >>> sm = JoinedSpatialAggregate(metric=rog, locations=mfl)
         >>> sm.head()
                 name     rog
             0   Rasuwa   157.200039
