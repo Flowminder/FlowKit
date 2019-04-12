@@ -1,28 +1,37 @@
 {
   "AggregateNetworkObjects": {
     "properties": {
-      "aggregation_unit": {
+      "by": {
         "enum": [
-          "admin0",
-          "admin1",
-          "admin2",
-          "admin3"
+          "day",
+          "hour",
+          "minute",
+          "month",
+          "second",
+          "year"
         ],
         "type": "string"
       },
-      "end_date": {
-        "format": "date",
+      "statistic": {
+        "enum": [
+          "avg",
+          "max",
+          "median",
+          "min",
+          "mode",
+          "stddev",
+          "variance"
+        ],
         "type": "string"
       },
-      "start_date": {
-        "format": "date",
-        "type": "string"
+      "total_network_objects": {
+        "$ref": "#/components/schemas/InputToAggregateNetworkObjects"
       }
     },
     "required": [
-      "aggregation_unit",
-      "end_date",
-      "start_date"
+      "by",
+      "statistic",
+      "total_network_objects"
     ],
     "type": "object"
   },

@@ -1071,27 +1071,28 @@ def spatial_aggregate(*, locations: Dict[str, Union[str, Dict[str, str]]]) -> di
 
 
 def aggregate_network_objects(
-    start_date: str, end_date: str, aggregation_unit: str
+    *, total_network_objects: dict, statistic: str, by: str
 ) -> dict:
     """
     Return query spec for aggregate network objects
 
     Parameters
     ----------
-    start_date : str
-        ISO format date of the first day of the count, e.g. "2016-01-01"
-    end_date : str
-        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
-    aggregation_unit : str
-        Unit of aggregation, e.g. "admin3"
+    total_network_objects : dict
+        TotalNetworkObjects query result
+    statistic : str
+        Statistic type
+    by : str
+        Period type
 
     Returns
     -------
     dict
-        Query specification for an aggregated daily or modal location
+        Query specification for an aggregated network objects query
     """
-    total_network_objs = total_network_objects(
-        start_date=start_date, end_date=end_date, aggregation_unit=aggregation_unit
-    )
-
-    return spatial_aggregate(locations=total_network_objs)
+    return {
+        "query_kind": "aggregate_network_objects",
+        "total_network_objects": total_network_objects,
+        "statistic": statistic,
+        "by": by,
+    }

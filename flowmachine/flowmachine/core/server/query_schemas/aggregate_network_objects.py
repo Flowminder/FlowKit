@@ -4,19 +4,28 @@
 
 from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Length
+from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features import AggregateNetworkObjects
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit
+from .total_network_objects import TotalNetworkObjectsSchema, TotalNetworkObjectsExposed
+from .custom_fields import AggregationUnit, Statistic, By
 
 __all__ = ["AggregateNetworkObjectsSchema", "AggregateNetworkObjectsExposed"]
 
 
+class InputToAggregateNetworkObjectsSchema(OneOfSchema):
+    type_field = "query_kind"
+    type_schemas = {"total_network_objects": TotalNetworkObjectsSchema}
+
+
 class AggregateNetworkObjectsSchema(Schema):
 
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
-    aggregation_unit = AggregationUnit()
+    total_network_objects = fields.Nested(
+        InputToAggregateNetworkObjectsSchema, required=True
+    )
+    statistic = Statistic()
+    by = By()
 
     @post_load
     def make_query_object(self, params):
@@ -24,12 +33,12 @@ class AggregateNetworkObjectsSchema(Schema):
 
 
 class AggregateNetworkObjectsExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, aggregation_unit):
+    def __init__(self, *, total_network_objects, statistic, by):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.start_date = start_date
-        self.end_date = end_date
-        self.aggregation_unit = aggregation_unit
+        self.total_network_objects = total_network_objects
+        self.statistic = statistic
+        self.by = by
 
     @property
     def _flowmachine_query_obj(self):
@@ -40,8 +49,8 @@ class AggregateNetworkObjectsExposed(BaseExposedQuery):
         -------
         Query
         """
+        tot_network_objs = self.total_network_objects._flowmachine_query_obj
+
         return AggregateNetworkObjects(
-            TotalNetworkObjects(
-                start=self.start_date, stop=self.end_date, level=self.aggregation_unit
-            )
+            tot_network_objs, statistic=self.statistic, by=self.by
         )
