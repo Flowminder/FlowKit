@@ -173,13 +173,13 @@ class Connection:
             )
         elif response.status_code == 401:
             try:
-                error = response.json()["msg"]
+                error_msg = response.json()["msg"]
             except ValueError:
-                error = "Unknown access denied error"
-            raise FlowclientConnectionError(error)
+                error_msg = "Unknown access denied error"
+            raise FlowclientConnectionError(error_msg)
         else:
             try:
-                error = response.json()["msg"]
+                error_msg = response.json()["msg"]
                 try:
                     payload_info = f" Payload: {response.json()['payload']}"
                 except KeyError:
@@ -187,10 +187,10 @@ class Connection:
             except ValueError:
                 # Happens if the response body does not contain valid JSON
                 # (see http://docs.python-requests.org/en/master/api/#requests.Response.json)
-                error = f"the response did not contain valid JSON"
+                error_msg = f"the response did not contain valid JSON"
                 payload_info = ""
             raise FlowclientConnectionError(
-                f"Something went wrong. API returned with status code {response.status_code}. Error message: '{error}'.{payload_info}"
+                f"Something went wrong. API returned with status code {response.status_code}. Error message: '{error_msg}'.{payload_info}"
             )
 
     def __repr__(self) -> str:
