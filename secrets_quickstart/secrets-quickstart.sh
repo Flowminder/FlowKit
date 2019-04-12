@@ -13,8 +13,8 @@ docker stack rm secrets_test
 # Remove existing secrets
 echo "Removing existing secrets"
 docker secret rm FLOWMACHINE_FLOWDB_PASS
-docker secret rm FLOWMACHINE_DB_USER
-docker secret rm FLOWAPI_DB_PASS
+docker secret rm FLOWMACHINE_FLOWDB_USER
+docker secret rm FLOWAPI_FLOWDB_PASS
 docker secret rm FLOWAPI_FLOWDB_USER
 docker secret rm POSTGRES_PASSWORD_FILE
 docker secret rm cert-flowkit.pem
@@ -22,9 +22,9 @@ docker secret rm JWT_SECRET_KEY
 docker secret rm REDIS_PASSWORD_FILE
 echo "Adding secrets"
 openssl rand -base64 16 | docker secret create FLOWMACHINE_FLOWDB_PASS -
-echo "fm" | docker secret create FLOWMACHINE_DB_USER -
+echo "fm" | docker secret create FLOWMACHINE_FLOWDB_USER -
 echo "api" | docker secret create FLOWAPI_FLOWDB_USER -
-openssl rand -base64 16 | docker secret create FLOWAPI_DB_PASS -
+openssl rand -base64 16 | docker secret create FLOWAPI_FLOWDB_PASS -
 openssl rand -base64 16 | docker secret create POSTGRES_PASSWORD_FILE -
 openssl rand -base64 16 | docker secret create REDIS_PASSWORD_FILE -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \

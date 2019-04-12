@@ -49,7 +49,7 @@ services:
             - LOG_LEVEL=${LOG_LEVEL:-error}
             - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
         secrets:
-          - FLOWMACHINE_DB_USER
+          - FLOWMACHINE_FLOWDB_USER
           - FLOWMACHINE_FLOWDB_PASS
           - REDIS_PASSWORD_FILE
         networks:
