@@ -18,7 +18,7 @@ set -e
 #               This user is mainly designed for ingesting 
 #               data into the events table.
 #
-#   * $FLOWMACHINE_FLOWDB_USER:  the for $FLOWMACHINE_FLOWDB_USERs that need access to raw data.
+#   * $FLOWMACHINE_FLOWDB_USER:  for users that need access to raw data.
 #               They can read all data available in the database and 
 #               can write to most tables. Can't write to the tables under 
 #               the events schema.
