@@ -180,14 +180,17 @@ class Connection:
         else:
             try:
                 error = response.json()["msg"]
-                payload_info = f" Payload: {response.json()['payload']}"
+                try:
+                    payload_info = f" Payload: {response.json()['payload']}"
+                except KeyError:
+                    payload_info = ""
             except ValueError:
                 # Happens if the response body does not contain valid JSON
                 # (see http://docs.python-requests.org/en/master/api/#requests.Response.json)
                 error = f"the response did not contain valid JSON"
                 payload_info = ""
             raise FlowclientConnectionError(
-                f"Something went wrong: {error}. API returned with status code: {response.status_code}.{payload_info}"
+                f"Something went wrong. API returned with status code {response.status_code}. Error message: '{error}'.{payload_info}"
             )
 
     def __repr__(self) -> str:
