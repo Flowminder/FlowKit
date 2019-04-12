@@ -74,7 +74,7 @@ from tests.utils import permissions_types, aggregation_types
             "aggregate_network_objects",
             {
                 "start_date": "2016-01-01",
-                "end_date": "2016-01-02",
+                "end_date": "2016-01-03",
                 "aggregation_unit": "admin3",
             },
         ),

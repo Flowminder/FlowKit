@@ -1090,11 +1090,8 @@ def aggregate_network_objects(
     dict
         Query specification for an aggregated daily or modal location
     """
-    local_network_objs = {
-        "query_kind": "total_network_objects",
-        "start_date": start_date,
-        "end_date": end_date,
-        "aggregation_unit": aggregation_unit,
-    }
+    total_network_objs = total_network_objects(
+        start_date=start_date, end_date=end_date, aggregation_unit=aggregation_unit
+    )
 
-    return {"query_kind": "spatial_aggregate", "locations": location_network_objs}
+    return spatial_aggregate(locations=total_network_objs)
