@@ -26,8 +26,11 @@ export FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
 
 all:
 
-up:
+up: flowdb-build
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build $(DOCKER_SERVICES)
+
+up-no_build:
+	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d $(DOCKER_SERVICES)
 
 down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) down
