@@ -227,6 +227,19 @@
     ],
     "type": "object"
   },
+  "InputToAggregateNetworkObjects": {
+    "discriminator": {
+      "mapping": {
+        "total_network_objects": "#/components/schemas/TotalNetworkObjects"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/TotalNetworkObjects"
+      }
+    ]
+  },
   "InputToFlows": {
     "discriminator": {
       "mapping": {
