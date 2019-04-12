@@ -43,10 +43,6 @@ MPLBACKEND="agg"
 REDIS_PASSWORD=fm_redis 
 # Error and debugging log level
 FLOWMACHINE_LOG_LEVEL=debug
-# Flowmachine db user
-FLOWMACHINE_FLOWDB_USER=analyst 
-# Flowmachine db password
-FLOWMACHINE_FLOWDB_PASS=foo 
 
 # Number of connections to keep open to flowdb
 #DB_CONNECTION_POOL_SIZE 
