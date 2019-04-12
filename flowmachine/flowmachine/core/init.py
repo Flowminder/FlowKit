@@ -77,8 +77,7 @@ def connect(
 
     Notes
     -----
-    All parameters can also be provided as environment variables, named the same
-    but in uppercase, e.g. `env LOG_LEVEL=error` instead of `connect(log_level="error")`.
+    All parameters can also be provided as environment variables.
     If a parameter is provided, and an environment variable is set,
     then the provided value is used. If neither is provided, the defaults as given
     in the docstring are used.
@@ -90,7 +89,7 @@ def connect(
     """
 
     log_level = (
-        getsecret("LOG_LEVEL", os.getenv("LOG_LEVEL", "error"))
+        getsecret("FLOWMACHINE_LOG_LEVEL", os.getenv("FLOWMACHINE_LOG_LEVEL", "error"))
         if log_level is None
         else log_level
     )

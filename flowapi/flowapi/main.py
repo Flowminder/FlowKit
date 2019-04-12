@@ -47,7 +47,7 @@ structlog.configure(
 
 
 async def connect_logger():
-    log_level = current_app.config["LOG_LEVEL"]
+    log_level = current_app.config["FLOWAPI_LOG_LEVEL"]
     logger = root_logger.getChild("debug")
     logger.setLevel(log_level)
     ch = logging.StreamHandler()

@@ -46,7 +46,7 @@ services:
         environment:
             - FLOWDB_PORT=5432
             - FLOWDB_HOST=flowdb
-            - LOG_LEVEL=${LOG_LEVEL:-error}
+            - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:-error}
             - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
         secrets:
           - FLOWMACHINE_FLOWDB_USER
@@ -62,7 +62,7 @@ services:
           - "9090:9090"
         environment:
             - FLOWMACHINE_SERVER=flowmachine
-            - LOG_LEVEL=${LOG_LEVEL:-error}
+            - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:-error}
             - FLOWDB_HOST=flowdb
         secrets:
           - cert-flowkit.pem

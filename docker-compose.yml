@@ -107,7 +107,7 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - LOG_LEVEL=${LOG_LEVEL:?Must set LOG_LEVEL env var}
+      - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:?Must set FLOWMACHINE_LOG_LEVEL env var}
       - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:?Must set FLOWMACHINE_SERVER_DEBUG_MODE env var}
       - FLOWDB_PORT=5432
       - FLOWDB_HOST=${FLOWDB_HOST:?Must set FLOWDB_HOST env var}
@@ -135,7 +135,7 @@ services:
       - FLOWDB_HOST=${FLOWDB_HOST:?Must set FLOWDB_HOST env var}
       - FLOWDB_PORT=5432
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:?Must set JWT_SECRET_KEY env var}
-      - LOG_LEVEL=${LOG_LEVEL:?Must set LOG_LEVEL env var}
+      - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:?Must set FLOWAPI_LOG_LEVEL env var}
     tty: true
     stdin_open: true
     restart: always

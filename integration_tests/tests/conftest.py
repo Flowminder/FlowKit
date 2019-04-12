@@ -33,7 +33,8 @@ def logging_config():
     from _pytest.monkeypatch import MonkeyPatch
 
     mpatch = MonkeyPatch()
-    mpatch.setenv("LOG_LEVEL", "debug")
+    mpatch.setenv("FLOWMACHINE_LOG_LEVEL", "debug")
+    mpatch.setenv("FLOWAPI_LOG_LEVEL", "debug")
     yield
     mpatch.undo()
 

@@ -32,7 +32,7 @@ def getsecret(key: str, default: str) -> str:
 
 def get_config():
     jwt_secret_key = getsecret("JWT_SECRET_KEY", os.getenv("JWT_SECRET_KEY"))
-    log_level = logging.getLevelName(os.getenv("LOG_LEVEL", "error").upper())
+    log_level = logging.getLevelName(os.getenv("FLOWAPI_LOG_LEVEL", "error").upper())
 
     flowmachine_server = os.getenv("FLOWMACHINE_SERVER", "localhost")
     flowmachine_port = os.getenv("FLOWMACHINE_PORT", "5555")
@@ -44,7 +44,7 @@ def get_config():
 
     return dict(
         JWT_SECRET_KEY=jwt_secret_key,
-        LOG_LEVEL=log_level,
+        FLOWAPI_LOG_LEVEL=log_level,
         FLOWMACHINE_SERVER=flowmachine_server,
         FLOWMACHINE_PORT=flowmachine_port,
         FLOWDB_DSN=f"postgres://{flowdb_user}:{flowdb_password}@{flowdb_host}:{flowdb_port}/flowdb",

@@ -24,8 +24,8 @@ JWT_SECRET_KEY=secret
 QUART_APP="flowapi.main:create_app()" 
 # Shouldn't be relevant as serving now done by hypercorn?
 QUART_DEBUG=1 
-# Error & debug loc level
-LOG_LEVEL=debug 
+# Error & debug log level
+FLOWAPI_LOG_LEVEL=debug 
 # Flowmachine ZMQ host
 FLOWMACHINE_SERVER=localhost
 FLOWAPI_PORT=9090
@@ -41,8 +41,8 @@ FLOWDB_PORT=9000
 MPLBACKEND="agg" 
 # Password for redis
 REDIS_PASSWORD=fm_redis 
-# Error and debugging lo level
-LOG_LEVEL=debug 
+# Error and debugging log level
+FLOWMACHINE_LOG_LEVEL=debug
 # Flowmachine db user
 FLOWMACHINE_FLOWDB_USER=analyst 
 # Flowmachine db password
