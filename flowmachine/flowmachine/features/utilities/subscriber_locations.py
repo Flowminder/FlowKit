@@ -96,7 +96,7 @@ class BaseLocation:
         """
         return SpatialAggregate(locations=self)
 
-    def join_aggregate(self, metric, method="mean"):
+    def join_aggregate(self, metric, method="avg"):
         """
         Join with a metric representing object and aggregate
         spatially.
@@ -104,14 +104,14 @@ class BaseLocation:
         Parameters
         ----------
         metric : Query
-        method : {"mean", "mode", "median"}
+        method : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
 
         Returns
         -------
         JoinedSpatialAggregate
         """
 
-        return JoinedSpatialAggregate(metric, self, method=method)
+        return JoinedSpatialAggregate(metric=metric, locations=self, method=method)
 
     def __getitem__(self, item):
 
