@@ -1,7 +1,7 @@
 {
   "AggregateNetworkObjects": {
     "properties": {
-      "by": {
+      "period": {
         "enum": [
           "day",
           "hour",
@@ -29,7 +29,6 @@
       }
     },
     "required": [
-      "by",
       "statistic",
       "total_network_objects"
     ],
