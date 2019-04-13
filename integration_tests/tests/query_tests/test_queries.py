@@ -80,7 +80,7 @@ from tests.utils import permissions_types, aggregation_types
                     "aggregation_unit": "admin3",
                 },
                 "statistic": "median",
-                "by": "day",
+                "period": "day",
             },
         ),
         (

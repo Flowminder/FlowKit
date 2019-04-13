@@ -25,24 +25,6 @@ class AggregationUnit(fields.String):
         super().__init__(required=required, validate=validate, **kwargs)
 
 
-class By(fields.String):
-    """
-    A string representing a period type, e.g. "day"
-    """
-
-    def __init__(self, required=True, validate=None, **kwargs):
-        if validate is not None:
-            raise ValueError(
-                "The Period field provides its own validation "
-                "and thus does not accept a the 'validate' argument."
-            )
-
-        validate = OneOf(
-            ["second", "minute", "hour", "day", "month", "year"]
-        )  # see total_network_objects.py
-        super().__init__(required=required, validate=validate, **kwargs)
-
-
 class EventTypes(fields.List):
     """
     A string representing an event type, for example "calls", "sms", "mds", "topups".
@@ -62,6 +44,24 @@ class EventTypes(fields.List):
             allow_none=True,
             **kwargs,
         )
+
+
+class Period(fields.String):
+    """
+    A string representing a period type, e.g. "day"
+    """
+
+    def __init__(self, required=False, validate=None, **kwargs):
+        if validate is not None:
+            raise ValueError(
+                "The Period field provides its own validation "
+                "and thus does not accept a the 'validate' argument."
+            )
+
+        validate = OneOf(
+            ["second", "minute", "hour", "day", "month", "year"]
+        )  # see total_network_objects.py
+        super().__init__(required=required, validate=validate, **kwargs)
 
 
 class Statistic(fields.String):

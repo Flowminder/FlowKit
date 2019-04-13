@@ -1106,7 +1106,7 @@ def joined_spatial_aggregate(
 
 
 def aggregate_network_objects(
-    *, total_network_objects: dict, statistic: str, by: str
+    *, total_network_objects: dict, statistic: str, period: str
 ) -> dict:
     """
     Return query spec for aggregate network objects
@@ -1117,7 +1117,7 @@ def aggregate_network_objects(
         TotalNetworkObjects query result
     statistic : str
         Statistic type
-    by : str
+    period : str
         Period type
 
     Returns
@@ -1125,9 +1125,14 @@ def aggregate_network_objects(
     dict
         Query specification for an aggregated network objects query
     """
+    total_network_objs = total_network_objects
+
+    if "period" not in total_network_objs:
+        total_network_objs["period"] = period
+
     return {
         "query_kind": "aggregate_network_objects",
-        "total_network_objects": total_network_objects,
+        "total_network_objects": total_network_objs,
         "statistic": statistic,
-        "by": by,
+        "period": period,
     }

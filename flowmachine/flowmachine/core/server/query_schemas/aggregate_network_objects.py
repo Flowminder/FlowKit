@@ -9,7 +9,7 @@ from marshmallow_oneofschema import OneOfSchema
 from flowmachine.features import AggregateNetworkObjects
 from .base_exposed_query import BaseExposedQuery
 from .total_network_objects import TotalNetworkObjectsSchema, TotalNetworkObjectsExposed
-from .custom_fields import AggregationUnit, Statistic, By
+from .custom_fields import AggregationUnit, Statistic, Period
 
 __all__ = ["AggregateNetworkObjectsSchema", "AggregateNetworkObjectsExposed"]
 
@@ -25,7 +25,7 @@ class AggregateNetworkObjectsSchema(Schema):
         InputToAggregateNetworkObjectsSchema, required=True
     )
     statistic = Statistic()
-    by = By()
+    period = Period()
 
     @post_load
     def make_query_object(self, params):
@@ -33,12 +33,15 @@ class AggregateNetworkObjectsSchema(Schema):
 
 
 class AggregateNetworkObjectsExposed(BaseExposedQuery):
-    def __init__(self, *, total_network_objects, statistic, by):
+    def __init__(self, *, total_network_objects, statistic, period):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.total_network_objects = total_network_objects
         self.statistic = statistic
-        self.by = by
+        self.period = period
+
+        if "period" not in self.total_network_objects:
+            self.total_network_objects["period"] = self.period
 
     @property
     def _flowmachine_query_obj(self):
@@ -52,5 +55,7 @@ class AggregateNetworkObjectsExposed(BaseExposedQuery):
         tot_network_objs = self.total_network_objects._flowmachine_query_obj
 
         return AggregateNetworkObjects(
-            tot_network_objs, statistic=self.statistic, by=self.by
+            total_network_objects=tot_network_objs,
+            statistic=self.statistic,
+            period=self.period,
         )
