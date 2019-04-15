@@ -793,8 +793,7 @@
       "name": "MPLv2",
       "url": "https://www.mozilla.org/en-US/MPL/2.0/"
     },
-    "title": "FlowAPI",
-    "version": "0.5.2+156.gf13a45b2.dirty"
+    "title": "FlowAPI"
   },
   "openapi": "3.0.1",
   "paths": {

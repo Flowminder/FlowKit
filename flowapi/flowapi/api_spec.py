@@ -5,8 +5,7 @@
 import yaml
 from quart import Blueprint, request, jsonify, render_template, current_app
 from zmq.asyncio import Socket
-
-from ._version import get_versions
+from flowapi import __version__
 
 blueprint = Blueprint("spec", __name__)
 
@@ -64,7 +63,7 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
         "openapi": "3.0.1",
         "info": {
             "description": "FlowKit Analytical API",
-            "version": get_versions()["version"],
+            "version": __version__,
             "title": "FlowAPI",
             "contact": {"email": "flowkit@flowminder.org"},
             "license": {
@@ -246,4 +245,4 @@ async def get_redoc_api_spec():
 
 @blueprint.route("/redoc")
 async def redoc_api_spec():
-    return await render_template("spec.html", api_version=get_versions()["version"])
+    return await render_template("spec.html", api_version=__version__)
