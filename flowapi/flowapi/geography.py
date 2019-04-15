@@ -30,6 +30,12 @@ async def get_geography(aggregation_unit):
           description: Downloading.
         '401':
           description: Unauthorized.
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Token does not grant run access to this spatial aggregation unit.
         '500':
           description: Server error.
       summary: Get geojson for an aggregation unit

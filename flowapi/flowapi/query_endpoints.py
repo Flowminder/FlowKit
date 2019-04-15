@@ -38,7 +38,13 @@ async def run_query():
             application/json:
               schema:
                 type: object
-          description: Bad query.
+          description: Token does not grant run access to this query or spatial aggregation unit.
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Query spec could not be run..
         '500':
           description: Server error.
       summary: Run a query
@@ -129,7 +135,7 @@ async def poll_query(query_id):
             application/json:
               schema:
                 type: object
-          description: Bad query.
+          description: Token does not grant poll access to this query or spatial aggregation unit.
         '404':
           description: Unknown ID
         '500':
@@ -198,7 +204,7 @@ async def get_query_result(query_id):
             application/json:
               schema:
                 type: object
-          description: Bad query.
+          description: Token does not grant results access to this query or spatial aggregation unit.
         '404':
           description: Unknown ID
         '500':
