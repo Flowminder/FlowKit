@@ -727,6 +727,7 @@
         "type": "string"
       },
       "total_by": {
+        "default": "day",
         "enum": [
           "day",
           "hour",

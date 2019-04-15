@@ -84,6 +84,6 @@ def test_generic_status_code_unknown_error(session_mock, token):
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(
         FlowclientConnectionError,
-        match="Something went wrong: the response did not contain valid JSON. API returned with status code: 418.",
+        match="Something went wrong. API returned with status code 418. Error message: 'the response did not contain valid JSON'.",
     ):
         connection.post_json(route="DUMMY_ROUTE", data={})
