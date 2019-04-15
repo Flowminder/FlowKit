@@ -20,16 +20,16 @@ services:
       context: ./flowdb/
       dockerfile: Dockerfile
     ports:
-      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
+      - ${LOCALHOST_FLOWDB_PORT:?Must set LOCALHOST_FLOWDB_PORT env var}:${FLOWDB_PORT:?Must set FLOWDB_PORT env var}
 
     environment: &base-flowdb-environment
       POSTGRES_DB: ${POSTGRES_DB:?Must set POSTGRES_DB env var}
       POSTGRES_USER: ${POSTGRES_USER:?Must set POSTGRES_USER env var}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
       FLOWMACHINE_FLOWDB_USER: ${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
-      FLOWMACHINE_FLOWDB_PASS: ${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
+      FLOWMACHINE_FLOWDB_PASSWORD: ${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
       FLOWAPI_FLOWDB_USER: ${FLOWAPI_FLOWDB_USER:?Must set FLOWAPI_FLOWDB_USER env var}
-      FLOWAPI_FLOWDB_PASS: ${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
+      FLOWAPI_FLOWDB_PASSWORD: ${FLOWAPI_FLOWDB_PASSWORD:?Must set FLOWAPI_FLOWDB_PASSWORD env var}
       CACHE_SIZE: ${CACHE_SIZE:-""}
       CACHE_HALF_LIFE: ${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
       FLOWDB_DEBUG: ${FLOWDB_DEBUG:?Must set FLOWDB_DEBUG env var}
@@ -49,7 +49,7 @@ services:
       context: ./flowdb/testdata/
       dockerfile: Dockerfile
     ports:
-      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
+      - ${LOCALHOST_FLOWDB_PORT:?Must set LOCALHOST_FLOWDB_PORT env var}:${FLOWDB_PORT:?Must set FLOWDB_PORT env var}
     environment:
       *base-flowdb-environment
     shm_size: 1G
@@ -68,7 +68,7 @@ services:
       context: ./flowdb/testdata/
       dockerfile: Dockerfile.synthetic_data
     ports:
-      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
+      - ${LOCALHOST_FLOWDB_PORT:?Must set LOCALHOST_FLOWDB_PORT env var}:${FLOWDB_PORT:?Must set FLOWDB_PORT env var}
     environment:
       << : *base-flowdb-environment
       SYNTHETIC_DATA_GENERATOR: ${SYNTHETIC_DATA_GENERATOR:?Must set SYNTHETIC_DATA_GENERATOR env var}
@@ -109,13 +109,13 @@ services:
     environment:
       - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:?Must set FLOWMACHINE_LOG_LEVEL env var}
       - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:?Must set FLOWMACHINE_SERVER_DEBUG_MODE env var}
-      - FLOWDB_PORT=5432
+      - FLOWDB_PORT=${FLOWDB_PORT:?Must set FLOWDB_PORT env var}
       - FLOWDB_HOST=${FLOWDB_HOST:?Must set FLOWDB_HOST env var}
       - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
-      - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
+      - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
       - REDIS_HOST=query_locker
       - REDIS_PORT=6379
-      - REDIS_PASS=${REDIS_PASS:?Must set REDIS_PASS env var}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
     restart: always
     networks:
       - zero
@@ -133,9 +133,9 @@ services:
     environment:
       - FLOWMACHINE_HOST=flowmachine
       - FLOWAPI_FLOWDB_USER=${FLOWAPI_FLOWDB_USER:?Must set FLOWAPI_FLOWDB_USER env var}
-      - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
+      - FLOWAPI_FLOWDB_PASSWORD=${FLOWAPI_FLOWDB_PASSWORD:?Must set FLOWAPI_FLOWDB_PASSWORD env var}
       - FLOWDB_HOST=${FLOWDB_HOST:?Must set FLOWDB_HOST env var}
-      - FLOWDB_PORT=5432
+      - FLOWDB_PORT=${FLOWDB_PORT:?Must set FLOWDB_PORT env var}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:?Must set JWT_SECRET_KEY env var}
       - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:?Must set FLOWAPI_LOG_LEVEL env var}
     tty: true
@@ -162,7 +162,7 @@ services:
     ports:
       - ${REDIS_PORT:?Must set REDIS_PORT env var}:6379
     environment:
-      - REDIS_PASS=${REDIS_PASS:?Must set REDIS_PASS env var}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
     restart: always
     networks:
       redis:

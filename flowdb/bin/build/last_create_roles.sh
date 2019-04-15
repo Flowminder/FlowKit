@@ -44,10 +44,10 @@ then
     FLOWMACHINE_FLOWDB_USER=$(< /run/secrets/FLOWMACHINE_FLOWDB_USER)
 fi
 
-if [ -e /run/secrets/FLOWMACHINE_FLOWDB_PASS ];
+if [ -e /run/secrets/FLOWMACHINE_FLOWDB_PASSWORD ];
 then
     echo "Using secrets for analyst password."
-    FLOWMACHINE_FLOWDB_PASS=$(< /run/secrets/FLOWMACHINE_FLOWDB_PASS)
+    FLOWMACHINE_FLOWDB_PASSWORD=$(< /run/secrets/FLOWMACHINE_FLOWDB_PASSWORD)
 fi
 
 if [ -e /run/secrets/FLOWAPI_FLOWDB_USER ];
@@ -56,27 +56,27 @@ then
     FLOWAPI_FLOWDB_USER=$(< /run/secrets/FLOWAPI_FLOWDB_USER)
 fi
 
-if [ -e /run/secrets/FLOWAPI_FLOWDB_PASS ];
+if [ -e /run/secrets/FLOWAPI_FLOWDB_PASSWORD ];
 then
     echo "Using secrets for reporter password."
-    FLOWAPI_FLOWDB_PASS=$(< /run/secrets/FLOWAPI_FLOWDB_PASS)
+    FLOWAPI_FLOWDB_PASSWORD=$(< /run/secrets/FLOWAPI_FLOWDB_PASSWORD)
 fi
 
 psql --dbname="$POSTGRES_DB" -c "REVOKE CONNECT ON DATABASE $POSTGRES_DB FROM PUBLIC;"
 
-if [[ $FLOWMACHINE_FLOWDB_PASS ]]
+if [[ $FLOWMACHINE_FLOWDB_PASSWORD ]]
     then
-        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FLOWMACHINE_FLOWDB_USER WITH LOGIN PASSWORD '$FLOWMACHINE_FLOWDB_PASS';"
+        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FLOWMACHINE_FLOWDB_USER WITH LOGIN PASSWORD '$FLOWMACHINE_FLOWDB_PASSWORD';"
     else
-        echo "No password supplied for '$FLOWMACHINE_FLOWDB_USER' user: $FLOWMACHINE_FLOWDB_PASS"
+        echo "No password supplied for '$FLOWMACHINE_FLOWDB_USER' user: $FLOWMACHINE_FLOWDB_PASSWORD"
         exit 1
 fi
 
-if [[ $FLOWAPI_FLOWDB_PASS ]]
+if [[ $FLOWAPI_FLOWDB_PASSWORD ]]
     then
-        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FLOWAPI_FLOWDB_USER WITH LOGIN PASSWORD '$FLOWAPI_FLOWDB_PASS';"
+        psql --dbname="$POSTGRES_DB" -c "CREATE ROLE $FLOWAPI_FLOWDB_USER WITH LOGIN PASSWORD '$FLOWAPI_FLOWDB_PASSWORD';"
     else
-        echo "No password supplied for '$FLOWAPI_FLOWDB_USER' user: $FLOWAPI_FLOWDB_PASS"
+        echo "No password supplied for '$FLOWAPI_FLOWDB_USER' user: $FLOWAPI_FLOWDB_PASSWORD"
         exit 1
 fi
 

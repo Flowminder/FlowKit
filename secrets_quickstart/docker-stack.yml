@@ -8,11 +8,11 @@ secrets:
     external: true
   FLOWAPI_FLOWDB_USER: # Database user used by FlowAPI
     external: true
-  FLOWAPI_FLOWDB_PASS: # Password for the FlowAPI database user
+  FLOWAPI_FLOWDB_PASSWORD: # Password for the FlowAPI database user
     external: true
   FLOWMACHINE_FLOWDB_USER: # Database user for FlowMachine
     external: true
-  FLOWMACHINE_FLOWDB_PASS: # Password for FlowDB
+  FLOWMACHINE_FLOWDB_PASSWORD: # Password for FlowDB
     external: true
   POSTGRES_PASSWORD_FILE: # Postgres superuser password
     external: true
@@ -31,9 +31,9 @@ services:
         secrets:
           - POSTGRES_PASSWORD_FILE
           - FLOWAPI_FLOWDB_USER
-          - FLOWAPI_FLOWDB_PASS
+          - FLOWAPI_FLOWDB_PASSWORD
           - FLOWMACHINE_FLOWDB_USER
-          - FLOWMACHINE_FLOWDB_PASS
+          - FLOWMACHINE_FLOWDB_PASSWORD
         tty: true
         shm_size: 1G
         stdin_open: true
@@ -50,7 +50,7 @@ services:
             - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
         secrets:
           - FLOWMACHINE_FLOWDB_USER
-          - FLOWMACHINE_FLOWDB_PASS
+          - FLOWMACHINE_FLOWDB_PASSWORD
           - REDIS_PASSWORD_FILE
         networks:
           - db
@@ -68,7 +68,7 @@ services:
           - cert-flowkit.pem
           - JWT_SECRET_KEY
           - FLOWAPI_FLOWDB_USER
-          - FLOWAPI_FLOWDB_PASS
+          - FLOWAPI_FLOWDB_PASSWORD
         networks:
           - zero
           - db

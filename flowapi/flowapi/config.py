@@ -38,7 +38,9 @@ def get_config():
     flowmachine_port = os.getenv("FLOWMACHINE_PORT", "5555")
 
     flowdb_user = getsecret("FLOWAPI_FLOWDB_USER", os.getenv("FLOWAPI_FLOWDB_USER"))
-    flowdb_password = getsecret("FLOWAPI_FLOWDB_PASS", os.getenv("FLOWAPI_FLOWDB_PASS"))
+    flowdb_password = getsecret(
+        "FLOWAPI_FLOWDB_PASSWORD", os.getenv("FLOWAPI_FLOWDB_PASSWORD")
+    )
     flowdb_host = os.getenv("FLOWDB_HOST")
     flowdb_port = os.getenv("FLOWDB_PORT", 5432)
 

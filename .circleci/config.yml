@@ -89,7 +89,7 @@ executors:
         FLOWMACHINE_FLOWDB_PASS: foo
         FLOWAPI_FLOWDB_PASS: foo
         FLOWAPI_FLOWDB_USER: reporter
-        REDIS_PASS: fm_redis
+        REDIS_PASSWORD: fm_redis
         SYNTHETIC_DATA_DB_PORT: 5432
         POSTGRES_USER: flowdb
         REDIS_HOST: "localhost"
@@ -123,7 +123,7 @@ executors:
           OUTPUT_ROOT_DIR: "/docker-entrypoint-initdb.d"
       - image: bitnami/redis:latest
         environment:
-          REDIS_PASS: "fm_redis"
+          REDIS_PASSWORD: "fm_redis"
 
 jobs:
   set_docker_tag_for_ci_images:

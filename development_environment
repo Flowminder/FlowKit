@@ -32,15 +32,16 @@ FLOWAPI_PORT=9090
 
 
 # Hostname to connect to flowdb
-FLOWDB_HOST=localhost 
+FLOWDB_HOST=flowdb
 # Port to connect to flowdb
-FLOWDB_PORT=9000 
+FLOWDB_PORT=5432
+LOCALHOST_FLOWDB_PORT=9000 
 
 ## FlowMachine settings
 # To avoid mpl errors
 MPLBACKEND="agg" 
 # Password for redis
-REDIS_PASS=fm_redis 
+REDIS_PASSWORD=fm_redis 
 # Error and debugging log level
 FLOWMACHINE_LOG_LEVEL=debug
 
@@ -75,9 +76,9 @@ FLOWAPI_FLOWDB_USER=flowapi
 # Off by default, enables pldebugger
 FLOWDB_DEBUG=False
 # Password for flowmachine user
-FLOWMACHINE_FLOWDB_PASS=foo 
+FLOWMACHINE_FLOWDB_PASSWORD=foo 
 # Password for flowapi user
-FLOWAPI_FLOWDB_PASS=foo 
+FLOWAPI_FLOWDB_PASSWORD=foo 
 # Size in bytes to limit cache to
 CACHE_SIZE=""
 # Decay rate for cache records
