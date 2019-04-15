@@ -19,7 +19,7 @@ This will pull all necessary docker images, start the containers and bring up in
 
 If you are using an alternative environment manager, you should install the small number of packages listed in the Pipfile before running pytest.
 
-The test suite makes use of the environment variables defined in `development_environment` in the project root. You will need to source these variables before running the tests.
+The test suite makes use of the environment variables defined in `development_environment` in the project root. You will need to source these variables before running the tests, by running `set -a && . ./development_environment && set +a` in the project root.
 
 ### Running in PyCharm
 
