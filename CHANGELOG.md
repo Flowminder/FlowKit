@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.5.3]
+### Added
 - Added new `spatial_aggregate` API endpoint and FlowClient function [#599](https://github.com/Flowminder/FlowKit/issues/599)
 - Implemented new flowclient API entrypoint, total_network_objects(), to access (with simplified parameters) equivalent flowmachine query [#581](https://github.com/Flowminder/FlowKit/issues/581)
 - Implemented new flowclient API entrypoint, location_introversion(), to access (with simplified parameters) equivalent flowmachine query [#577](https://github.com/Flowminder/FlowKit/issues/577)
@@ -19,8 +28,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - `total_network_objects` no longer returns results from `AggregateNetworkObjects` [#603](https://github.com/Flowminder/FlowKit/issues/603)
-
-### Removed
 
 
 ## [0.5.2]
@@ -197,7 +204,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.2...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.3...master
+[0.5.3]: https://github.com/Flowminder/FlowKit/compare/0.5.2...0.5.3
 [0.5.2]: https://github.com/Flowminder/FlowKit/compare/0.5.1...0.5.2
 [0.5.1]: https://github.com/Flowminder/FlowKit/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/Flowminder/FlowKit/compare/0.4.3...0.5.0
