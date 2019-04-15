@@ -17,7 +17,7 @@ class TotalNetworkObjectsSchema(Schema):
 
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
-    total_by = TotalBy(required=False, default="day")
+    total_by = TotalBy(required=False, missing="day")
     aggregation_unit = AggregationUnit()
 
     @post_load
