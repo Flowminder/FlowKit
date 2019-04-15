@@ -72,6 +72,9 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
         ),
     )
     spec.components._schemas = flowmachine_query_schemas
+    spec.components.security_scheme(
+        "token", dict(type="http", scheme="bearer", bearerFormat="JWT")
+    )
     # Loop over all the registered views and try to parse a yaml
     # openapi spec from their docstrings
     for endpoint_func_name, rule in current_app.url_map.endpoints.items():
