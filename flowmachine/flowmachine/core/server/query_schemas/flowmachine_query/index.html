@@ -1031,13 +1031,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get_obj_type" title="get_obj_type" class="md-nav__link">
-    get_obj_type
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#dict_class" title="dict_class" class="md-nav__link">
     dict_class
   </a>
@@ -1102,8 +1095,32 @@
 
 
   <li class="md-nav__item">
+    <a href="../joined_spatial_aggregate/" title="joined_spatial_aggregate" class="md-nav__link">
+      joined_spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../location_event_counts/" title="location_event_counts" class="md-nav__link">
       location_event_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../location_introversion/" title="location_introversion" class="md-nav__link">
+      location_introversion
     </a>
   </li>
 
@@ -1128,6 +1145,42 @@
   <li class="md-nav__item">
     <a href="../modal_location/" title="modal_location" class="md-nav__link">
       modal_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../spatial_aggregate/" title="spatial_aggregate" class="md-nav__link">
+      spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../total_network_objects/" title="total_network_objects" class="md-nav__link">
+      total_network_objects
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../unique_subscriber_counts/" title="unique_subscriber_counts" class="md-nav__link">
+      unique_subscriber_counts
     </a>
   </li>
 
@@ -2365,13 +2418,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get_obj_type" title="get_obj_type" class="md-nav__link">
-    get_obj_type
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#dict_class" title="dict_class" class="md-nav__link">
     dict_class
   </a>
@@ -2425,7 +2471,7 @@
     <span class="n">unknown</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/flowmachine_query.py#L27">flowmachine/core/server/query_schemas/flowmachine_query.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/flowmachine_query.py#L28">flowmachine/core/server/query_schemas/flowmachine_query.py</a></p>
 <p>This is a special kind of schema that actually multiplexes other schemas based on object type. When serializing values, it uses get_obj_type() method to get object type name. Then it uses <code>type_schemas</code> name-to-Schema mapping to get schema for that particular object type, serializes object using that schema and adds an extra "type" field with name of object type. Deserialization is reverse.
 Example:      class Foo(object):         def <strong>init</strong>(self, foo):             self.foo = foo      class Bar(object):         def <strong>init</strong>(self, bar):             self.bar = bar      class FooSchema(marshmallow.Schema):         foo = marshmallow.fields.String(required=True)          @marshmallow.post_load         def make_foo(self, data):             return Foo(**data)      class BarSchema(marshmallow.Schema):         bar = marshmallow.fields.Integer(required=True)          @marshmallow.post_load         def make_bar(self, data):             return Bar(**data)      class MyUberSchema(marshmallow.OneOfSchema):         type_schemas = {             'foo': FooSchema,             'bar': BarSchema,         }          def get_obj_type(self, obj):             if isinstance(obj, Foo):                 return 'foo'             elif isinstance(obj, Bar):                 return 'bar'             else:                 raise Exception('Unknown object type: %s' % repr(obj))      MyUberSchema().dump([Foo(foo='hello'), Bar(bar=123)], many=True).data     # =&gt; [{'type': 'foo', 'foo': 'hello'}, {'type': 'bar', 'bar': 123}]  You can control type field name added to serialized object representation by setting <code>type_field</code> class property.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
@@ -2438,11 +2484,6 @@ Example:      class Foo(object):         def <strong>init</strong>(self, foo):  
 </li>
 </ul>
 <h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
-<h4 id="get_obj_type">get_obj_type<a class="headerlink" href="#get_obj_type" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">get_obj_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
-</pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/flowmachine_query.py#L42">flowmachine/core/server/query_schemas/flowmachine_query.py</a></p>
-<p>Returns name of object schema</p>
 <h4 id="dict_class">dict_class<a class="headerlink" href="#dict_class" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dict_class</span>
 </pre></div>

@@ -1011,8 +1011,32 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/joined_spatial_aggregate/" title="joined_spatial_aggregate" class="md-nav__link">
+      joined_spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../core/server/query_schemas/location_event_counts/" title="location_event_counts" class="md-nav__link">
       location_event_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/location_introversion/" title="location_introversion" class="md-nav__link">
+      location_introversion
     </a>
   </li>
 
@@ -1037,6 +1061,42 @@
   <li class="md-nav__item">
     <a href="../../../core/server/query_schemas/modal_location/" title="modal_location" class="md-nav__link">
       modal_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/spatial_aggregate/" title="spatial_aggregate" class="md-nav__link">
+      spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/total_network_objects/" title="total_network_objects" class="md-nav__link">
+      total_network_objects
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/unique_subscriber_counts/" title="unique_subscriber_counts" class="md-nav__link">
+      unique_subscriber_counts
     </a>
   </li>
 
@@ -2788,7 +2848,7 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/spatial_aggregates.py#L0">flowmachine/features/utilities/spatial_aggregates.py</a></p>
 <p>Utility classes for performing spatial aggregate operations in CDRs.</p>
 <h2 id="class-joinedspatialaggregate">Class <strong>JoinedSpatialAggregate</strong><a class="headerlink" href="#class-joinedspatialaggregate" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">JoinedSpatialAggregate</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">JoinedSpatialAggregate</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/spatial_aggregates.py#L59">flowmachine/features/utilities/spatial_aggregates.py</a></p>
 <p>Creates spatially aggregated data from two objects, one of which is a metric of subscribers, and the other of which represents the subscribers location.
@@ -2845,7 +2905,7 @@ A general class that join metric information about a subscriber with location  i
 </li>
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt;  mfl = subscribers.MostFrequentLocation(&#39;2016-01-01&#39;,                                           &#39;2016-01-04&#39;,                                           level=&#39;admin3&#39;)     &gt;&gt;&gt; rog = subscribers.RadiusOfGyration(&#39;2016-01-01&#39;,                                      &#39;2016-01-04&#39;)     &gt;&gt;&gt; sm = JoinedSpatialAggregate( rog, mfl )     &gt;&gt;&gt; sm.head()             name     rog         0   Rasuwa   157.200039         1   Sindhuli 192.194037         2   Humla    123.676914         3   Gulmi    163.980299         4   Jumla    144.432886         ...
+<div class="codehilite"><pre><span></span>&gt;&gt;&gt;  mfl = subscribers.MostFrequentLocation(&#39;2016-01-01&#39;,                                           &#39;2016-01-04&#39;,                                           level=&#39;admin3&#39;)     &gt;&gt;&gt; rog = subscribers.RadiusOfGyration(&#39;2016-01-01&#39;,                                      &#39;2016-01-04&#39;)     &gt;&gt;&gt; sm = JoinedSpatialAggregate(metric=rog, locations=mfl)     &gt;&gt;&gt; sm.head()             name     rog         0   Rasuwa   157.200039         1   Sindhuli 192.194037         2   Humla    123.676914         3   Gulmi    163.980299         4   Jumla    144.432886         ...
 </pre></div>
 
 
@@ -2857,7 +2917,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/spatial_aggregates.py#L192">flowmachine/features/utilities/spatial_aggregates.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/spatial_aggregates.py#L180">flowmachine/features/utilities/spatial_aggregates.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="column_names_as_string_list">column_names_as_string_list<a class="headerlink" href="#column_names_as_string_list" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names_as_string_list</span>
@@ -2903,7 +2963,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/query.py#L647">flowmachine/core/query.py</a></p>
 <p>Returns a uniquename for the query to be stored as, based on a hash of the parameters, class, and subqueries.</p>
 <h2 id="class-spatialaggregate">Class <strong>SpatialAggregate</strong><a class="headerlink" href="#class-spatialaggregate" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">SpatialAggregate</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">SpatialAggregate</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">locations</span><span class="p">)</span>
 </pre></div>
 Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/utilities/spatial_aggregates.py#L17">flowmachine/features/utilities/spatial_aggregates.py</a></p>
 <p>Class representing the result of spatially aggregating a locations object. A locations object represents the location of multiple subscribers. This class represents the output of aggregating that data spatially.</p>

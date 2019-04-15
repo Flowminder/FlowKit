@@ -1153,8 +1153,32 @@
 
 
   <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate/" title="joined_spatial_aggregate" class="md-nav__link">
+      joined_spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/server/query_schemas/location_event_counts/" title="location_event_counts" class="md-nav__link">
       location_event_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/location_introversion/" title="location_introversion" class="md-nav__link">
+      location_introversion
     </a>
   </li>
 
@@ -1179,6 +1203,42 @@
   <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/server/query_schemas/modal_location/" title="modal_location" class="md-nav__link">
       modal_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/spatial_aggregate/" title="spatial_aggregate" class="md-nav__link">
+      spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/total_network_objects/" title="total_network_objects" class="md-nav__link">
+      total_network_objects
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/unique_subscriber_counts/" title="unique_subscriber_counts" class="md-nav__link">
+      unique_subscriber_counts
     </a>
   </li>
 
@@ -2706,7 +2766,7 @@ If query <code>big_query</code> is stored next, with a <code>half_life</code> of
 
 <p>Note that the <code>request_id</code> field is identical across the five log entries, which lets you match the request across the multiple services.</p>
 <h3 id="error-and-debugging-logs">Error and Debugging Logs<a class="headerlink" href="#error-and-debugging-logs" title="Permanent link">&para;</a></h3>
-<p>By default, FlowMachine and FlowAPI write error logs to stderr. For more verbose logging, set the <code>LOG_LEVEL</code> environment variable to <code>debug</code> when starting the docker container.</p>
+<p>FlowMachine and FlowAPI write logs to stderr. By default, the logging level is <code>error</code>. For more verbose logging, set the <code>LOG_LEVEL</code> environment variable to <code>info</code> or <code>debug</code> when starting the docker container.</p>
 <p>Log messages from FlowMachine will show the <code>logger</code> field of the log entry as <code>flowmachine.debug</code>, and the Python module that emitted the log entry in the <code>submodule</code> field (e.g. <code>{'logger':'flowmachine.debug', 'submodule':'flowmachine.core.query'}</code>. FlowAPI debugging messages set <code>logger</code> to <code>flowapi.debug</code>.</p>
 <h3 id="managing-and-monitoring-logs">Managing and Monitoring Logs<a class="headerlink" href="#managing-and-monitoring-logs" title="Permanent link">&para;</a></h3>
 <p>Because FlowKit employs structured logging, and all log messages are JSON objects, the access and usage logs are easy to use with tools like <a href="https://www.elastic.co/products/logstash">Logstash</a>.</p>

@@ -1011,8 +1011,32 @@
 
 
   <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/joined_spatial_aggregate/" title="joined_spatial_aggregate" class="md-nav__link">
+      joined_spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../../core/server/query_schemas/location_event_counts/" title="location_event_counts" class="md-nav__link">
       location_event_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/location_introversion/" title="location_introversion" class="md-nav__link">
+      location_introversion
     </a>
   </li>
 
@@ -1037,6 +1061,42 @@
   <li class="md-nav__item">
     <a href="../../../core/server/query_schemas/modal_location/" title="modal_location" class="md-nav__link">
       modal_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/spatial_aggregate/" title="spatial_aggregate" class="md-nav__link">
+      spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/total_network_objects/" title="total_network_objects" class="md-nav__link">
+      total_network_objects
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/server/query_schemas/unique_subscriber_counts/" title="unique_subscriber_counts" class="md-nav__link">
+      unique_subscriber_counts
     </a>
   </li>
 
@@ -1542,33 +1602,6 @@
   
     <nav class="md-nav">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aggregate" title="aggregate" class="md-nav__link">
-    aggregate
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_2" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#returns" title="Returns" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#cache_1" title="cache" class="md-nav__link">
@@ -2722,33 +2755,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#aggregate" title="aggregate" class="md-nav__link">
-    aggregate
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_2" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#returns" title="Returns" class="md-nav__link">
-    Returns
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#cache_1" title="cache" class="md-nav__link">
     cache
   </a>
@@ -2856,25 +2862,9 @@
 <p>Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L0">flowmachine/features/network/total_network_objects.py</a></p>
 <p>Calculates the total number of unique sites or cells at the network level.</p>
 <h2 id="class-aggregatenetworkobjects">Class <strong>AggregateNetworkObjects</strong><a class="headerlink" href="#class-aggregatenetworkobjects" title="Permanent link">&para;</a></h2>
-<p><div class="codehilite"><pre><span></span><span class="n">AggregateNetworkObjects</span><span class="p">(</span>
-    <span class="n">start</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">stop</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span>
-    <span class="n">table</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">period</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span>
-    <span class="n">by</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">network_object</span><span class="o">=</span><span class="s2">&quot;cell&quot;</span><span class="p">,</span>
-    <span class="n">level</span><span class="o">=</span><span class="s2">&quot;admin0&quot;</span><span class="p">,</span>
-    <span class="n">column_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">polygon_table</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">geom_col</span><span class="o">=</span><span class="s2">&quot;geom&quot;</span><span class="p">,</span>
-    <span class="n">hours</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-    <span class="n">subscriber_identifier</span><span class="o">=</span><span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
-<span class="p">)</span>
+<p><div class="codehilite"><pre><span></span><span class="n">AggregateNetworkObjects</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">total_network_objects</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s1">&#39;avg&#39;</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L206">flowmachine/features/network/total_network_objects.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L177">flowmachine/features/network/total_network_objects.py</a></p>
 <p>Class for calculating statistics about unique cells/sites and aggregate it by period.</p>
 <h3 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h3>
 <ul>
@@ -2967,7 +2957,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names">column_names<a class="headerlink" href="#column_names" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L352">flowmachine/features/network/total_network_objects.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L256">flowmachine/features/network/total_network_objects.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="column_names_as_string_list">column_names_as_string_list<a class="headerlink" href="#column_names_as_string_list" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names_as_string_list</span>
@@ -3090,25 +3080,6 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 </pre></div>
 
 <h3 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h3>
-<h4 id="aggregate">aggregate<a class="headerlink" href="#aggregate" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
-</pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L187">flowmachine/features/network/total_network_objects.py</a></p>
-<h5 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h5>
-<ul>
-<li>
-<p><code>by</code>: <code>{'second', 'minute', 'hour', 'day', 'month', 'year'}</code></p>
-<p>Defaults to one level higher than the period</p>
-</li>
-<li>
-<p><code>statistic</code>: <code>{'avg', 'median'}</code></p>
-<p>Statistic to calculate, defaults to 'avg'.</p>
-</li>
-</ul>
-<h5 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h5>
-<ul>
-<li><code>AggregateNetworkObjects</code></li>
-</ul>
 <h4 id="cache_1">cache<a class="headerlink" href="#cache_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">cache</span>
 </pre></div>
@@ -3116,7 +3087,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h4 id="column_names_1">column_names<a class="headerlink" href="#column_names_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L158">flowmachine/features/network/total_network_objects.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/features/network/total_network_objects.py#L147">flowmachine/features/network/total_network_objects.py</a></p>
 <p>Returns the column names.</p>
 <h4 id="column_names_as_string_list_1">column_names_as_string_list<a class="headerlink" href="#column_names_as_string_list_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">column_names_as_string_list</span>

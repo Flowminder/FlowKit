@@ -1227,8 +1227,32 @@
 
 
   <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate/" title="joined_spatial_aggregate" class="md-nav__link">
+      joined_spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/server/query_schemas/location_event_counts/" title="location_event_counts" class="md-nav__link">
       location_event_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/location_introversion/" title="location_introversion" class="md-nav__link">
+      location_introversion
     </a>
   </li>
 
@@ -1253,6 +1277,42 @@
   <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/server/query_schemas/modal_location/" title="modal_location" class="md-nav__link">
       modal_location
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/spatial_aggregate/" title="spatial_aggregate" class="md-nav__link">
+      spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/total_network_objects/" title="total_network_objects" class="md-nav__link">
+      total_network_objects
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/unique_subscriber_counts/" title="unique_subscriber_counts" class="md-nav__link">
+      unique_subscriber_counts
     </a>
   </li>
 
@@ -2744,16 +2804,27 @@
 <li>
 <p><code>/geography/&lt;aggregation_unit&gt;</code>: return geography data for a given aggregation unit.</p>
 </li>
+<li>
+<p><code>/available_dates</code> : return the dates available to calculate metrics over</p>
+</li>
 </ul>
 <p>At present, the following query types are accessible through FlowAPI:</p>
 <ul>
 <li>
 <p><code>daily_location</code></p>
-<p>A statistic representing where subscribers are on a given day, aggregated to a spatial unit.</p>
+<p>A statistic representing where subscribers are on a given day. Must be used in combination with <code>modal_location</code>, <code>flows</code> or <code>spatial_aggregate</code>.</p>
 </li>
 <li>
 <p><code>modal_location</code></p>
-<p>The mode of a set of daily locations.</p>
+<p>The mode of a set of daily locations. Must be used in combination with <code>flows</code> or <code>spatial_aggregate</code>.</p>
+</li>
+<li>
+<p><code>spatial_aggregate</code></p>
+<p>A spatial aggregate of <code>modal_location</code> or <code>daily_location</code>, suitable for return via the API.</p>
+</li>
+<li>
+<p><code>joined_spatial_aggregate</code></p>
+<p>Spatial aggregate of a subscriber metric which does not have associated location information </p>
 </li>
 <li>
 <p><code>flows</code></p>
@@ -2772,6 +2843,10 @@ aggregated to a spatial unit.</p>
 <li>
 <p><code>meaningful_locations_od_matrix</code></p>
 <p>OD matrix between two individual-level "meaningful" locations (see above), aggregated to a spatial unit.</p>
+</li>
+<li>
+<p><code>total_network_objects</code></p>
+<p>Count of mobile phone cells per area active based on CDR traffic within a time period, broken down into time buckets.</p>
 </li>
 </ul>
 <h3 id="flowapi-access-tokens">FlowAPI Access tokens<a class="headerlink" href="#flowapi-access-tokens" title="Permanent link">&para;</a></h3>

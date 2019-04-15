@@ -1017,8 +1017,32 @@
 
 
   <li class="md-nav__item">
+    <a href="../joined_spatial_aggregate/" title="joined_spatial_aggregate" class="md-nav__link">
+      joined_spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../location_event_counts/" title="location_event_counts" class="md-nav__link">
       location_event_counts
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../location_introversion/" title="location_introversion" class="md-nav__link">
+      location_introversion
     </a>
   </li>
 
@@ -1091,13 +1115,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get_obj_type" title="get_obj_type" class="md-nav__link">
-    get_obj_type
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#dict_class" title="dict_class" class="md-nav__link">
     dict_class
   </a>
@@ -1154,13 +1171,6 @@
           <li class="md-nav__item">
   <a href="#query_id" title="query_id" class="md-nav__link">
     query_id
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#query_params" title="query_params" class="md-nav__link">
-    query_params
   </a>
   
 </li>
@@ -1237,6 +1247,42 @@
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../spatial_aggregate/" title="spatial_aggregate" class="md-nav__link">
+      spatial_aggregate
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../total_network_objects/" title="total_network_objects" class="md-nav__link">
+      total_network_objects
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../unique_subscriber_counts/" title="unique_subscriber_counts" class="md-nav__link">
+      unique_subscriber_counts
+    </a>
   </li>
 
         
@@ -2473,13 +2519,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get_obj_type" title="get_obj_type" class="md-nav__link">
-    get_obj_type
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#dict_class" title="dict_class" class="md-nav__link">
     dict_class
   </a>
@@ -2536,13 +2575,6 @@
           <li class="md-nav__item">
   <a href="#query_id" title="query_id" class="md-nav__link">
     query_id
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#query_params" title="query_params" class="md-nav__link">
-    query_params
   </a>
   
 </li>
@@ -2654,11 +2686,6 @@ Example:      class Foo(object):         def <strong>init</strong>(self, foo):  
 </li>
 </ul>
 <h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
-<h4 id="get_obj_type">get_obj_type<a class="headerlink" href="#get_obj_type" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">get_obj_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
-</pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/modal_location.py#L18">flowmachine/core/server/query_schemas/modal_location.py</a></p>
-<p>Returns name of object schema</p>
 <h4 id="dict_class">dict_class<a class="headerlink" href="#dict_class" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dict_class</span>
 </pre></div>
@@ -2670,7 +2697,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 <h2 id="class-modallocationexposed">Class <strong>ModalLocationExposed</strong><a class="headerlink" href="#class-modallocationexposed" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">ModalLocationExposed</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">aggregation_unit</span><span class="p">,</span> <span class="n">subscriber_subset</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/modal_location.py#L37">flowmachine/core/server/query_schemas/modal_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/modal_location.py#L31">flowmachine/core/server/query_schemas/modal_location.py</a></p>
 <p>Base class for exposed flowmachine queries.
 Note: this class and derived classes are not meant to be instantiated directly! Instead, they are instantiated automatically by the class FlowmachineQuerySchema.  Example:      FlowmachineQuerySchema().load({"query_kind": "dummy_query", "dummy_param": "foobar"})</p>
 <h3 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h3>
@@ -2681,25 +2708,17 @@ Note: this class and derived classes are not meant to be instantiated directly! 
 <li>
 <p><a href="#query_id"><code>query_id</code></a></p>
 </li>
-<li>
-<p><a href="#query_params"><code>query_params</code></a></p>
-</li>
 </ul>
 <h3 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h3>
 <h4 id="_flowmachine_query_obj">_flowmachine_query_obj<a class="headerlink" href="#_flowmachine_query_obj" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">_flowmachine_query_obj</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/modal_location.py#L45">flowmachine/core/server/query_schemas/modal_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/modal_location.py#L39">flowmachine/core/server/query_schemas/modal_location.py</a></p>
 <p>Return the underlying flowmachine ModalLocation object.</p>
 <h4 id="query_id">query_id<a class="headerlink" href="#query_id" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">query_id</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_exposed_query.py#L81">flowmachine/core/server/query_schemas/base_exposed_query.py</a></p>
-<h4 id="query_params">query_params<a class="headerlink" href="#query_params" title="Permanent link">&para;</a></h4>
-<p><div class="codehilite"><pre><span></span><span class="n">query_params</span>
-</pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_exposed_query.py#L92">flowmachine/core/server/query_schemas/base_exposed_query.py</a></p>
-<p>Return the parameters from which the query is constructed. Note that this includes the the parameters of any subqueries of which it is composed.</p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/base_exposed_query.py#L57">flowmachine/core/server/query_schemas/base_exposed_query.py</a></p>
 <h2 id="class-modallocationschema">Class <strong>ModalLocationSchema</strong><a class="headerlink" href="#class-modallocationschema" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">ModalLocationSchema</span><span class="p">(</span>
     <span class="n">only</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
@@ -2712,7 +2731,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
     <span class="n">unknown</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/modal_location.py#L25">flowmachine/core/server/query_schemas/modal_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/modal_location.py#L19">flowmachine/core/server/query_schemas/modal_location.py</a></p>
 <p>Base schema class with which to define custom schemas.
 Example usage:  .. code-block:: python      import datetime as dt     from marshmallow import Schema, fields      class Album(object):         def <strong>init</strong>(self, title, release_date):             self.title = title             self.release_date = release_date      class AlbumSchema(Schema):         title = fields.Str()         release_date = fields.Date()      # Or, equivalently     class AlbumSchema2(Schema):         class Meta:             fields = ("title", "release_date")      album = Album("Beggars Banquet", dt.date(1968, 12, 6))     schema = AlbumSchema()     data = schema.dump(album)     data  # {'release_date': '1968-12-06', 'title': 'Beggars Banquet'}  :param tuple|list only: Whitelist of the declared fields to select when     instantiating the Schema. If None, all fields are used. Nested fields     can be represented with dot delimiters. :param tuple|list exclude: Blacklist of the declared fields to exclude     when instantiating the Schema. If a field appears in both <code>only</code> and     <code>exclude</code>, it is not used. Nested fields can be represented with dot     delimiters. :param bool many: Should be set to <code>True</code> if <code>obj</code> is a collection     so that the object will be serialized to a list. :param dict context: Optional context passed to :class:<code>fields.Method</code> and     :class:<code>fields.Function</code> fields. :param tuple|list load_only: Fields to skip during serialization (write-only fields) :param tuple|list dump_only: Fields to skip during deserialization (read-only fields) :param bool|tuple partial: Whether to ignore missing fields and not require     any fields declared. Propagates down to <code>Nested</code> fields as well. If     its value is an iterable, only missing fields listed in that iterable     will be ignored. Use dot delimiters to specify nested fields. :param unknown: Whether to exclude, include, or raise an error for unknown     fields in the data. Use <code>EXCLUDE</code>, <code>INCLUDE</code> or <code>RAISE</code>.  .. versionchanged:: 3.0.0     <code>prefix</code> parameter removed.  .. versionchanged:: 2.0.0     <code>__validators__</code>, <code>__preprocessors__</code>, and <code>__data_handlers__</code> are removed in favor of     <code>marshmallow.decorators.validates_schema</code>,     <code>marshmallow.decorators.pre_load</code> and <code>marshmallow.decorators.post_dump</code>.     <code>__accessor__</code> and <code>__error_handler__</code> are deprecated. Implement the     <code>handle_error</code> and <code>get_attribute</code> methods instead.</p>
 <h3 id="attributes_2">Attributes<a class="headerlink" href="#attributes_2" title="Permanent link">&para;</a></h3>
@@ -2728,7 +2747,7 @@ Example usage:  .. code-block:: python      import datetime as dt     from marsh
 <h4 id="make_query_object">make_query_object<a class="headerlink" href="#make_query_object" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">make_query_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/modal_location.py#L32">flowmachine/core/server/query_schemas/modal_location.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/modal_location.py#L26">flowmachine/core/server/query_schemas/modal_location.py</a></p>
 <h4 id="dict_class_1">dict_class<a class="headerlink" href="#dict_class_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dict_class</span>
 </pre></div>
@@ -2772,13 +2791,13 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
           </a>
         
         
-          <a href="../../server/" title="server" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../spatial_aggregate/" title="spatial_aggregate" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                server
+                spatial_aggregate
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
