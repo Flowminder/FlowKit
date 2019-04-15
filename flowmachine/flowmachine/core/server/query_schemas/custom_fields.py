@@ -46,7 +46,7 @@ class EventTypes(fields.List):
         )
 
 
-class Period(fields.String):
+class TotalBy(fields.String):
     """
     A string representing a period type, e.g. "day"
     """
@@ -54,12 +54,30 @@ class Period(fields.String):
     def __init__(self, required=False, validate=None, **kwargs):
         if validate is not None:
             raise ValueError(
-                "The Period field provides its own validation "
+                "The TotalBy field provides its own validation "
                 "and thus does not accept a the 'validate' argument."
             )
 
         validate = OneOf(
             ["second", "minute", "hour", "day", "month", "year"]
+        )  # see total_network_objects.py
+        super().__init__(required=required, validate=validate, **kwargs)
+
+
+class AggregateBy(fields.String):
+    """
+    A string representing a period type, e.g. "day"
+    """
+
+    def __init__(self, required=False, validate=None, **kwargs):
+        if validate is not None:
+            raise ValueError(
+                "The AggregateBy field provides its own validation "
+                "and thus does not accept a the 'validate' argument."
+            )
+
+        validate = OneOf(
+            ["second", "minute", "hour", "day", "month", "year", "century"]
         )  # see total_network_objects.py
         super().__init__(required=required, validate=validate, **kwargs)
 

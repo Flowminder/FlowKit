@@ -20,7 +20,7 @@ def test_count_returns_correct_values(get_dataframe):
 
     """
     instance = network.TotalNetworkObjects(
-        start="2016-01-01", stop="2016-12-30", table="calls", period="hour"
+        start="2016-01-01", stop="2016-12-30", table="calls", total_by="hour"
     )
     df = get_dataframe(instance)
 
@@ -34,7 +34,7 @@ def test_count_returns_correct_values(get_dataframe):
 
 @pytest.mark.parametrize(
     "bad_arg, bad_val",
-    [("period", "BAD_PERIOD"), ("level", "cell"), ("network_object", "BAD_OBJECT")],
+    [("total_by", "BAD_TOTAL_BY"), ("level", "cell"), ("network_object", "BAD_OBJECT")],
 )
 def test_bad_params(bad_arg, bad_val):
     """Test value errors are raised for bad params"""
@@ -62,9 +62,9 @@ def test_median_returns_correct_values(get_dataframe):
     """
     instance = AggregateNetworkObjects(
         total_network_objects=TotalNetworkObjects(
-            table="calls", period="hour", network_object="versioned-site"
+            table="calls", total_by="hour", network_object="versioned-site"
         ),
-        by="day",
+        aggregate_by="day",
         statistic="median",
     )
 
@@ -85,10 +85,10 @@ def test_mean_returns_correct_values(get_dataframe):
         total_network_objects=TotalNetworkObjects(
             start="2016-01-01",
             stop="2016-12-30",
-            period="hour",
+            total_by="hour",
             network_object="versioned-site",
         ),
-        by="day",
+        aggregate_by="day",
     )
 
     #
@@ -100,7 +100,7 @@ def test_mean_returns_correct_values(get_dataframe):
 
 
 @pytest.mark.parametrize(
-    "period, expected",
+    "total_by, aggregate_by_expected",
     [
         ("second", "minute"),
         ("minute", "hour"),
@@ -114,7 +114,7 @@ def test_period_agg_default(period, expected):
     """Correct aggregation period is deduced."""
     inst = AggregateNetworkObjects(
         total_network_objects=TotalNetworkObjects(
-            start="2016-01-01", stop="2016-12-30", period=period
+            start="2016-01-01", stop="2016-12-30", total_by=total_by
         )
     )
-    assert inst.by == expected
+    assert inst.aggregate_by == aggregate_by_expected

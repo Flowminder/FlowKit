@@ -1,8 +1,9 @@
 {
   "AggregateNetworkObjects": {
     "properties": {
-      "period": {
+      "aggregate_by": {
         "enum": [
+          "century",
           "day",
           "hour",
           "minute",
@@ -721,7 +722,11 @@
         "format": "date",
         "type": "string"
       },
-      "period": {
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "total_by": {
         "enum": [
           "day",
           "hour",
@@ -730,10 +735,6 @@
           "second",
           "year"
         ],
-        "type": "string"
-      },
-      "start_date": {
-        "format": "date",
         "type": "string"
       }
     },

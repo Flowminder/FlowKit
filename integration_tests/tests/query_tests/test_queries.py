@@ -54,6 +54,15 @@ from tests.utils import permissions_types, aggregation_types
             },
         ),
         (
+            "total_network_objects",
+            {
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-02",
+                "aggregation_unit": "admin3",
+                "total_by": "day",
+            },
+        ),
+        (
             "location_introversion",
             {
                 "start_date": "2016-01-01",
@@ -80,7 +89,7 @@ from tests.utils import permissions_types, aggregation_types
                     "aggregation_unit": "admin3",
                 },
                 "statistic": "median",
-                "period": "day",
+                "aggregate_by": "day",
             },
         ),
         (

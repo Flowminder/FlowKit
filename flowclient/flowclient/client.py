@@ -1027,7 +1027,7 @@ def location_introversion(
 
 
 def total_network_objects(
-    *, start_date: str, end_date: str, aggregation_unit: str, period: str = "day"
+    *, start_date: str, end_date: str, aggregation_unit: str, total_by: str = "day"
 ) -> dict:
     """
     Return query spec for total network objects
@@ -1040,7 +1040,7 @@ def total_network_objects(
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
-    period : {"second", "minute", "hour", "day", "month", "year"}
+    total_by : {"second", "minute", "hour", "day", "month", "year"}
         Time period to bucket by
     Returns
     -------
@@ -1052,7 +1052,7 @@ def total_network_objects(
         "start_date": start_date,
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
-        "period": period,
+        "total_by": total_by,
     }
 
 
@@ -1106,7 +1106,7 @@ def joined_spatial_aggregate(
 
 
 def aggregate_network_objects(
-    *, total_network_objects: dict, statistic: str, period: str
+    *, total_network_objects: Dict[str, str], statistic: str, aggregate_by: str = "day"
 ) -> dict:
     """
     Return query spec for aggregate network objects
@@ -1117,7 +1117,7 @@ def aggregate_network_objects(
         TotalNetworkObjects query result
     statistic : str
         Statistic type
-    period : str
+    aggregate_by : str
         Period type
 
     Returns
@@ -1127,12 +1127,9 @@ def aggregate_network_objects(
     """
     total_network_objs = total_network_objects
 
-    if "period" not in total_network_objs:
-        total_network_objs["period"] = period
-
     return {
         "query_kind": "aggregate_network_objects",
         "total_network_objects": total_network_objs,
         "statistic": statistic,
-        "period": period,
+        "aggregate_by": aggregate_by,
     }

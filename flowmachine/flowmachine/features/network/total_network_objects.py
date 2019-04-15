@@ -10,7 +10,7 @@ at the network level.
 
 
 """
-import copy
+
 from typing import List
 
 from ...core.mixins import GeoDataMixin
@@ -34,7 +34,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         Start time to filter query.
     stop : datetime
         Stop time to filter query.
-    period : {'second', 'minute', 'hour', 'day', 'month', 'year'}
+    total_by : {'second', 'minute', 'hour', 'day', 'month', 'year'}
         A period definition to group data by.
     table : str
         Either 'calls', 'sms', or other table under `events.*`. If
@@ -67,7 +67,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         stop=None,
         *,
         table="all",
-        period="day",
+        total_by="day",
         network_object="cell",
         level="admin0",
         column_name=None,
@@ -139,9 +139,9 @@ class TotalNetworkObjects(GeoDataMixin, Query):
             polygon_table=polygon_table,
             geom_col=geom_col,
         )
-        self.period = period.lower()
-        if self.period not in valid_periods:
-            raise ValueError("{} is not a valid period.".format(self.period))
+        self.total_by = total_by.lower()
+        if self.total_by not in valid_periods:
+            raise ValueError("{} is not a valid total_by value.".format(self.total_by))
 
         super().__init__()
 
@@ -161,12 +161,12 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         SELECT {group_cols}, COUNT(*) as total,
              datetime FROM
               (SELECT DISTINCT {group_cols}, {cols}, datetime FROM           
-                (SELECT {group_cols}, {cols}, date_trunc('{period}', x.datetime) AS datetime
+                (SELECT {group_cols}, {cols}, date_trunc('{total_by}', x.datetime) AS datetime
                 FROM ({etu}) x) y) _
             GROUP BY {group_cols}, datetime
             ORDER BY {group_cols}, datetime
         """.format(
-            period=self.period,
+            total_by=self.total_by,
             etu=self.joined.get_query(),
             cols=cols,
             group_cols=group_cols,
@@ -187,7 +187,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
     statistic : {'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}
         Statistic to calculate, defaults to 'avg'.
 
-    by : {'second', 'minute', 'hour', 'day', 'month', 'year', 'century'}
+    aggregate_by : {'second', 'minute', 'hour', 'day', 'month', 'year', 'century'}
         A period definition to calculate statistics over, defaults to the one
         greater than period.
 
@@ -209,8 +209,8 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     """
 
-    def __init__(self, *, total_network_objects, statistic="avg", by=None):
-        self.total_objs = copy.deepcopy(total_network_objects)
+    def __init__(self, *, total_network_objects, statistic="avg", aggregate_by=None):
+        self.total_objs = total_network_objects
         statistic = statistic.lower()
         if statistic in valid_stats:
             self.statistic = statistic
@@ -220,24 +220,24 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
                     statistic, valid_stats
                 )
             )
-        if by is None:
-            if self.total_objs.period == "second":
-                self.by = "minute"
-            elif self.total_objs.period == "minute":
-                self.by = "hour"
-            elif self.total_objs.period == "hour":
-                self.by = "day"
-            elif self.total_objs.period == "day":
-                self.by = "month"
-            elif self.total_objs.period == "month":
-                self.by = "year"
+        if aggregate_by is None:
+            if self.total_objs.total_by == "second":
+                self.aggregate_by = "minute"
+            elif self.total_objs.total_by == "minute":
+                self.aggregate_by = "hour"
+            elif self.total_objs.total_by == "hour":
+                self.aggregate_by = "day"
+            elif self.total_objs.total_by == "day":
+                self.aggregate_by = "month"
+            elif self.total_objs.total_by == "month":
+                self.aggregate_by = "year"
             else:
-                self.by = "century"
+                self.aggregate_by = "century"
         else:
-            self.by = by
-        if self.by not in valid_periods + ["century"]:
+            self.aggregate_by = aggregate_by
+        if self.aggregate_by not in valid_periods + ["century"]:
             raise ValueError(
-                "{} is not a valid period to aggregate by.".format(self.by)
+                "{} is not a valid aggregate_by value.".format(self.aggregate_by)
             )
 
         super().__init__()
@@ -256,12 +256,12 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
         )
         sql = """
         SELECT {group_cols}, {stat}(z.total) as {stat},
-        date_trunc('{by}', z.datetime) as datetime FROM 
+        date_trunc('{aggregate_by}', z.datetime) as datetime FROM 
             ({totals}) z
-        GROUP BY {group_cols}, date_trunc('{by}', z.datetime)
-        ORDER BY {group_cols}, date_trunc('{by}', z.datetime)
+        GROUP BY {group_cols}, date_trunc('{aggregate_by}', z.datetime)
+        ORDER BY {group_cols}, date_trunc('{aggregate_by}', z.datetime)
         """.format(
-            by=self.by,
+            aggregate_by=self.aggregate_by,
             stat=self.statistic,
             totals=self.total_objs.get_query(),
             group_cols=group_cols,
