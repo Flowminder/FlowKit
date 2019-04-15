@@ -20,8 +20,8 @@
             "enum": [
               "amount",
               "commission",
-              "fee",
-              "discount"
+              "discount",
+              "fee"
             ],
             "type": "string"
           },
@@ -40,8 +40,8 @@
           "aggregation_unit",
           "end_date",
           "metric",
-          "start_date",
-          "query_kind"
+          "query_kind",
+          "start_date"
         ],
         "type": "object"
       },
@@ -110,43 +110,43 @@
       "FlowmachineQuerySchema": {
         "oneOf": [
           {
+            "$ref": "#/components/schemas/DFSTotalMetricAmount"
+          },
+          {
             "$ref": "#/components/schemas/DummyQuery"
           },
           {
             "$ref": "#/components/schemas/Flows"
           },
           {
-            "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
-          },
-          {
-            "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
-          },
-          {
-            "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
-          },
-          {
             "$ref": "#/components/schemas/Geography"
+          },
+          {
+            "$ref": "#/components/schemas/JoinedSpatialAggregate"
           },
           {
             "$ref": "#/components/schemas/LocationEventCounts"
           },
           {
-            "$ref": "#/components/schemas/UniqueSubscriberCounts"
-          },
-          {
             "$ref": "#/components/schemas/LocationIntroversion"
           },
           {
-            "$ref": "#/components/schemas/TotalNetworkObjects"
+            "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
           },
           {
-            "$ref": "#/components/schemas/DFSTotalMetricAmount"
+            "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
+          },
+          {
+            "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
           },
           {
             "$ref": "#/components/schemas/SpatialAggregate"
           },
           {
-            "$ref": "#/components/schemas/JoinedSpatialAggregate"
+            "$ref": "#/components/schemas/TotalNetworkObjects"
+          },
+          {
+            "$ref": "#/components/schemas/UniqueSubscriberCounts"
           }
         ]
       },
@@ -177,8 +177,8 @@
         "required": [
           "aggregation_unit",
           "from_location",
-          "to_location",
-          "query_kind"
+          "query_kind",
+          "to_location"
         ],
         "type": "object"
       },
@@ -247,13 +247,13 @@
           },
           "method": {
             "enum": [
-              "mode",
-              "max",
               "avg",
-              "stddev",
+              "max",
               "median",
-              "variance",
-              "min"
+              "min",
+              "mode",
+              "stddev",
+              "variance"
             ],
             "type": "string"
           },
@@ -287,9 +287,9 @@
           },
           "direction": {
             "enum": [
+              "both",
               "in",
-              "out",
-              "both"
+              "out"
             ],
             "type": "string"
           },
@@ -301,8 +301,8 @@
             "items": {
               "enum": [
                 "calls",
-                "sms",
                 "mds",
+                "sms",
                 "topups"
               ],
               "type": "string"
@@ -313,8 +313,8 @@
           },
           "interval": {
             "enum": [
-              "hour",
               "day",
+              "hour",
               "min"
             ],
             "type": "string"
@@ -342,8 +342,8 @@
           "direction",
           "end_date",
           "interval",
-          "start_date",
-          "query_kind"
+          "query_kind",
+          "start_date"
         ],
         "type": "object"
       },
@@ -360,9 +360,9 @@
           },
           "direction": {
             "enum": [
+              "both",
               "in",
-              "out",
-              "both"
+              "out"
             ],
             "type": "string"
           },
@@ -384,8 +384,8 @@
         "required": [
           "aggregation_unit",
           "end_date",
-          "start_date",
-          "query_kind"
+          "query_kind",
+          "start_date"
         ],
         "type": "object"
       },
@@ -463,11 +463,11 @@
           "aggregation_unit",
           "label",
           "labels",
+          "query_kind",
           "start_date",
           "stop_date",
           "tower_day_of_week_scores",
-          "tower_hour_of_day_scores",
-          "query_kind"
+          "tower_hour_of_day_scores"
         ],
         "type": "object"
       },
@@ -552,13 +552,13 @@
         "required": [
           "aggregation_unit",
           "label",
+          "query_kind",
           "start_date_a",
           "start_date_b",
           "stop_date_a",
           "stop_date_b",
           "tower_day_of_week_scores",
-          "tower_hour_of_day_scores",
-          "query_kind"
+          "tower_hour_of_day_scores"
         ],
         "type": "object"
       },
@@ -639,11 +639,11 @@
           "aggregation_unit",
           "label_a",
           "label_b",
+          "query_kind",
           "start_date",
           "stop_date",
           "tower_day_of_week_scores",
-          "tower_hour_of_day_scores",
-          "query_kind"
+          "tower_hour_of_day_scores"
         ],
         "type": "object"
       },
@@ -720,11 +720,11 @@
           },
           "period": {
             "enum": [
-              "second",
-              "minute",
-              "hour",
               "day",
+              "hour",
+              "minute",
               "month",
+              "second",
               "year"
             ],
             "type": "string"
@@ -743,8 +743,8 @@
         "required": [
           "aggregation_unit",
           "end_date",
-          "start_date",
-          "query_kind"
+          "query_kind",
+          "start_date"
         ],
         "type": "object"
       },
@@ -777,8 +777,8 @@
         "required": [
           "aggregation_unit",
           "end_date",
-          "start_date",
-          "query_kind"
+          "query_kind",
+          "start_date"
         ],
         "type": "object"
       }
@@ -794,7 +794,7 @@
       "url": "https://www.mozilla.org/en-US/MPL/2.0/"
     },
     "title": "FlowAPI",
-    "version": "0.5.2+155.gee64d222"
+    "version": "0.5.2+156.gf13a45b2.dirty"
   },
   "openapi": "3.0.1",
   "paths": {
@@ -913,8 +913,8 @@
                     },
                     "status": {
                       "enum": [
-                        "queued",
-                        "executing"
+                        "executing",
+                        "queued"
                       ],
                       "type": "string"
                     }
@@ -969,43 +969,43 @@
               "schema": {
                 "oneOf": [
                   {
+                    "$ref": "#/components/schemas/DFSTotalMetricAmount"
+                  },
+                  {
                     "$ref": "#/components/schemas/DummyQuery"
                   },
                   {
                     "$ref": "#/components/schemas/Flows"
                   },
                   {
-                    "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
-                  },
-                  {
-                    "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
-                  },
-                  {
-                    "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
-                  },
-                  {
                     "$ref": "#/components/schemas/Geography"
+                  },
+                  {
+                    "$ref": "#/components/schemas/JoinedSpatialAggregate"
                   },
                   {
                     "$ref": "#/components/schemas/LocationEventCounts"
                   },
                   {
-                    "$ref": "#/components/schemas/UniqueSubscriberCounts"
-                  },
-                  {
                     "$ref": "#/components/schemas/LocationIntroversion"
                   },
                   {
-                    "$ref": "#/components/schemas/TotalNetworkObjects"
+                    "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
                   },
                   {
-                    "$ref": "#/components/schemas/DFSTotalMetricAmount"
+                    "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
+                  },
+                  {
+                    "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
                   },
                   {
                     "$ref": "#/components/schemas/SpatialAggregate"
                   },
                   {
-                    "$ref": "#/components/schemas/JoinedSpatialAggregate"
+                    "$ref": "#/components/schemas/TotalNetworkObjects"
+                  },
+                  {
+                    "$ref": "#/components/schemas/UniqueSubscriberCounts"
                   }
                 ]
               }
