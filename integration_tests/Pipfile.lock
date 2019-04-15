@@ -366,9 +366,9 @@
         },
         "networkx": {
             "hashes": [
-                "sha256:45e56f7ab6fe81652fb4bc9f44faddb0e9025f469f602df14e3b2551c2ea5c8b"
+                "sha256:8311ddef63cf5c5c5e7c1d0212dd141d9a1fe3f474915281b73597ed5f1d4e3d"
             ],
-            "version": "==2.2"
+            "version": "==2.3"
         },
         "numpy": {
             "hashes": [
@@ -727,11 +727,10 @@
                 "pytest"
             ],
             "hashes": [
-                "sha256:19ec68e93fff8ddbd2b036fe6a035ad769c89da00f2e8e1520189f04dc29ef70",
-                "sha256:4e2ffd9925c280a4f6fee0cd85918f34d23960e0b62999407b40c2febb7b4792"
+                "sha256:b8de507406d3b6a00c220be57468341885a56b0e10c3d53b9ee4e8bb7870b91f"
             ],
             "index": "pypi",
-            "version": "==0.26.2"
+            "version": "==0.26.3"
         },
         "typing-extensions": {
             "hashes": [

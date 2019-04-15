@@ -6,14 +6,16 @@ from marshmallow import Schema, fields, post_load
 from marshmallow_oneofschema import OneOfSchema
 
 
-from flowmachine.features import Flows
 from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
 from .base_exposed_query import BaseExposedQuery
-from .daily_location import DailyLocationSchema, DailyLocationExposed
-from .modal_location import ModalLocationSchema, ModalLocationExposed
-from .custom_fields import AggregationUnit
+from .daily_location import DailyLocationSchema
+from .modal_location import ModalLocationSchema
 
-__all__ = ["SpatialAggregateSchema", "SpatialAggregateExposed"]
+__all__ = [
+    "SpatialAggregateSchema",
+    "SpatialAggregateExposed",
+    "InputToSpatialAggregate",
+]
 
 
 class InputToSpatialAggregate(OneOfSchema):
