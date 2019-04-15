@@ -62,8 +62,6 @@ FLOWMACHINE_SERVER_DEBUG_MODE=false
 FLOWMACHINE_PORT=5555
 
 ## FlowDB Settings
-# Fixed, main db
-POSTGRES_DB=flowdb 
 # Superuser
 POSTGRES_USER=flowdb 
 # Superuser password

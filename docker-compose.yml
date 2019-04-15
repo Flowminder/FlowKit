@@ -23,7 +23,6 @@ services:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
 
     environment: &base-flowdb-environment
-      POSTGRES_DB: ${POSTGRES_DB:?Must set POSTGRES_DB env var}
       POSTGRES_USER: ${POSTGRES_USER:?Must set POSTGRES_USER env var}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
       FLOWMACHINE_FLOWDB_USER: ${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
