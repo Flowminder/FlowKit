@@ -110,7 +110,7 @@ def test_mean_returns_correct_values(get_dataframe):
         ("year", "century"),
     ],
 )
-def test_period_agg_default(period, expected):
+def test_period_agg_default(total_by, aggregate_by_expected):
     """Correct aggregation period is deduced."""
     inst = AggregateNetworkObjects(
         total_network_objects=TotalNetworkObjects(
