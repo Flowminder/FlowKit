@@ -248,9 +248,11 @@ def fm_conn():
     -------
     flowmachine.core.connection.Connection
     """
+    POSTGRES_USER = os.getenv("POSTGRES_USER", "flowdb")
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "flowflow")
     FLOWDB_HOST = os.getenv("FLOWDB_HOST", "localhost")
     FLOWDB_PORT = os.getenv("FLOWDB_PORT", "9000")
-    conn_str = f"postgresql://flowdb:flowflow@{FLOWDB_HOST}:{FLOWDB_PORT}/flowdb"
+    conn_str = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{FLOWDB_HOST}:{FLOWDB_PORT}/flowdb"
 
     fm_conn = Connection(conn_str=conn_str)
     flowmachine.connect(conn=fm_conn)
