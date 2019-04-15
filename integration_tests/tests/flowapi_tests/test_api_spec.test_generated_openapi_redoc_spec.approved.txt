@@ -797,9 +797,73 @@
   },
   "openapi": "3.0.1",
   "paths": {
-    "/geography/{aggregation_unit}": {
+    "/api/0/available_dates": {
       "get": {
-        "operationId": "get",
+        "operationId": "query.get_available_dates.get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "calls": {
+                      "items": {
+                        "format": "date",
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "mds": {
+                      "items": {
+                        "format": "date",
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "sms": {
+                      "items": {
+                        "format": "date",
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "topups": {
+                      "items": {
+                        "format": "date",
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Dates available for each event type."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "No access with this token."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        },
+        "summary": "Get the dates available to query over."
+      }
+    },
+    "/api/0/geography/<aggregation_unit>": {
+      "get": {
+        "operationId": "geography.get_geography.get",
         "parameters": [
           {
             "in": "path",
@@ -831,9 +895,9 @@
         "summary": "Get geojson for an aggregation unit"
       }
     },
-    "/get/{query_id}": {
+    "/api/0/get/<query_id>": {
       "get": {
-        "operationId": "get",
+        "operationId": "query.get_query_result.get",
         "parameters": [
           {
             "in": "path",
@@ -888,9 +952,9 @@
         "summary": "Get the output of query"
       }
     },
-    "/poll/{query_id}": {
+    "/api/0/poll/<query_id>": {
       "get": {
-        "operationId": "poll",
+        "operationId": "query.poll_query.get",
         "parameters": [
           {
             "in": "path",
@@ -959,54 +1023,14 @@
         "summary": "Get the status of a query"
       }
     },
-    "/run_query": {
+    "/api/0/run": {
       "post": {
-        "operationId": "runQuery",
+        "operationId": "query.run_query.post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/DFSTotalMetricAmount"
-                  },
-                  {
-                    "$ref": "#/components/schemas/DummyQuery"
-                  },
-                  {
-                    "$ref": "#/components/schemas/Flows"
-                  },
-                  {
-                    "$ref": "#/components/schemas/Geography"
-                  },
-                  {
-                    "$ref": "#/components/schemas/JoinedSpatialAggregate"
-                  },
-                  {
-                    "$ref": "#/components/schemas/LocationEventCounts"
-                  },
-                  {
-                    "$ref": "#/components/schemas/LocationIntroversion"
-                  },
-                  {
-                    "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
-                  },
-                  {
-                    "$ref": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix"
-                  },
-                  {
-                    "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
-                  },
-                  {
-                    "$ref": "#/components/schemas/SpatialAggregate"
-                  },
-                  {
-                    "$ref": "#/components/schemas/TotalNetworkObjects"
-                  },
-                  {
-                    "$ref": "#/components/schemas/UniqueSubscriberCounts"
-                  }
-                ]
+                "$ref": "#/components/schemas/FlowmachineQuerySchema"
               }
             }
           },

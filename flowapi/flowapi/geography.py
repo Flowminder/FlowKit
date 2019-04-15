@@ -11,6 +11,29 @@ blueprint = Blueprint("geography", __name__)
 @blueprint.route("/geography/<aggregation_unit>")
 @jwt_required
 async def get_geography(aggregation_unit):
+    """
+    Get geojson
+    ---
+    get:
+      parameters:
+        - in: path
+          name: aggregation_unit
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/geo+json:
+              schema:
+                type: object
+          description: Downloading.
+        '401':
+          description: Unauthorized.
+        '500':
+          description: Server error.
+      summary: Get geojson for an aggregation unit
+    """
     current_user.can_get_geography(aggregation_unit=aggregation_unit)
     msg = {
         "request_id": request.request_id,

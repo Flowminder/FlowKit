@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import yaml
+from apispec import APISpec, yaml_utils
 from quart import Blueprint, request, jsonify, render_template, current_app
 from zmq.asyncio import Socket
 from flowapi import __version__
@@ -12,7 +13,8 @@ blueprint = Blueprint("spec", __name__)
 
 def remove_discriminators(spec: dict) -> dict:
     """
-    Remove any discriminator keys from an openapi spec dict.
+    Remove any discriminator keys from an openapi spec dict, because
+    they are not supported properly by redoc.
 
     Parameters
     ----------
@@ -59,170 +61,36 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
             schema_dict["required"].append("query_kind")
         except KeyError:
             pass  # Doesn't have any properties
-    schema = {
-        "openapi": "3.0.1",
-        "info": {
-            "description": "FlowKit Analytical API",
-            "version": __version__,
-            "title": "FlowAPI",
-            "contact": {"email": "flowkit@flowminder.org"},
-            "license": {
-                "name": "MPLv2",
-                "url": "https://www.mozilla.org/en-US/MPL/2.0/",
-            },
-        },
-        "paths": {
-            "/run_query": {
-                "post": {
-                    "summary": "Run a query",
-                    "operationId": "runQuery",
-                    "requestBody": {
-                        "content": {
-                            "application/json": {
-                                "schema": flowmachine_query_schemas[
-                                    "FlowmachineQuerySchema"
-                                ]
-                            }
-                        },
-                        "required": True,
-                    },
-                    "responses": {
-                        "202": {
-                            "description": "Request accepted.",
-                            "headers": {
-                                "Location": {
-                                    "description": "URL to poll for status",
-                                    "schema": {"type": "string", "format": "url"},
-                                }
-                            },
-                        },
-                        "401": {"description": "Unauthorized."},
-                        "403": {
-                            "description": "Bad query.",
-                            "content": {
-                                "application/json": {"schema": {"type": "object"}}
-                            },
-                        },
-                        "500": {"description": "Server error."},
-                    },
-                }
-            },
-            "/poll/{query_id}": {
-                "get": {
-                    "summary": "Get the status of a query",
-                    "operationId": "poll",
-                    "parameters": [
-                        {
-                            "name": "query_id",
-                            "in": "path",
-                            "required": True,
-                            "schema": {"type": "string"},
-                        }
-                    ],
-                    "responses": {
-                        "202": {
-                            "description": "Request accepted.",
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "type": "object",
-                                        "properties": {
-                                            "status": {
-                                                "type": "string",
-                                                "enum": ["queued", "executing"],
-                                            },
-                                            "msg": {"type": "string"},
-                                        },
-                                    }
-                                }
-                            },
-                        },
-                        "303": {
-                            "description": "Data ready.",
-                            "headers": {
-                                "Location": {
-                                    "description": "URL to download data",
-                                    "schema": {"type": "string", "format": "url"},
-                                }
-                            },
-                        },
-                        "401": {"description": "Unauthorized."},
-                        "403": {
-                            "description": "Bad query.",
-                            "content": {
-                                "application/json": {"schema": {"type": "object"}}
-                            },
-                        },
-                        "500": {"description": "Server error."},
-                        "404": {"description": "Unknown ID"},
-                    },
-                }
-            },
-            "/get/{query_id}": {
-                "get": {
-                    "summary": "Get the output of query",
-                    "operationId": "get",
-                    "parameters": [
-                        {
-                            "name": "query_id",
-                            "in": "path",
-                            "required": True,
-                            "schema": {"type": "string"},
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "description": "Results returning.",
-                            "content": {
-                                "application/json": {"schema": {"type": "object"}}
-                            },
-                        },
-                        "202": {
-                            "description": "Request accepted.",
-                            "content": {
-                                "application/json": {"schema": {"type": "object"}}
-                            },
-                        },
-                        "401": {"description": "Unauthorized."},
-                        "403": {
-                            "description": "Bad query.",
-                            "content": {
-                                "application/json": {"schema": {"type": "object"}}
-                            },
-                        },
-                        "500": {"description": "Server error."},
-                        "404": {"description": "Unknown ID"},
-                    },
-                }
-            },
-            "/geography/{aggregation_unit}": {
-                "get": {
-                    "summary": "Get geojson for an aggregation unit",
-                    "operationId": "get",
-                    "parameters": [
-                        {
-                            "name": "aggregation_unit",
-                            "in": "path",
-                            "required": True,
-                            "schema": {"type": "string"},
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "description": "Downloading.",
-                            "content": {
-                                "application/geo+json": {"schema": {"type": "object"}}
-                            },
-                        },
-                        "401": {"description": "Unauthorized."},
-                        "500": {"description": "Server error."},
-                    },
-                }
-            },
-        },
-        "components": {"schemas": flowmachine_query_schemas},
-    }
-    return schema
+    spec = APISpec(
+        title="FlowAPI",
+        version=__version__,
+        openapi_version="3.0.1",
+        info=dict(
+            description="FlowKit Analytical API",
+            license=dict(name="MPLv2", url="https://www.mozilla.org/en-US/MPL/2.0/"),
+            contact=dict(email="flowkit@flowminder.org"),
+        ),
+    )
+    spec.components._schemas = flowmachine_query_schemas
+    # Loop over all the registered views and try to parse a yaml
+    # openapi spec from their docstrings
+    for endpoint_func_name, rule in current_app.url_map.endpoints.items():
+        try:
+            func = current_app.view_functions[endpoint_func_name]
+            operations = yaml_utils.load_operations_from_docstring(func.__doc__)
+            if len(operations) > 0:
+                for method, op in operations.items():
+                    op["operationId"] = f"{endpoint_func_name}.{method}"
+                spec.path(
+                    path=rule[
+                        0
+                    ].rule,  # In theory, could have multiple rules that match but will only be a single one here
+                    operations=operations,
+                )
+        except Exception as e:
+            pass  # Don't include in API
+
+    return spec.to_dict()
 
 
 @blueprint.route("/openapi.json")

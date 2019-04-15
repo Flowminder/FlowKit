@@ -12,6 +12,7 @@ flask-jwt-extended = "*"
 structlog = "*"
 python-rapidjson = "*"
 pyyaml = ">=5.1"
+apispec = "*"
 
 [dev-packages]
 pytest = "*"
