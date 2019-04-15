@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import pytest
 
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
@@ -11,18 +15,24 @@ from .helpers import poll_until_done
     "params",
     [
         {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "method": "last",
-            "aggregation_unit": "admin3",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
         {
-            "query_kind": "daily_location",
-            "date": "2016-01-04",
-            "method": "most-common",
-            "aggregation_unit": "admin1",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-04",
+                "method": "most-common",
+                "aggregation_unit": "admin1",
+                "subscriber_subset": None,
+            },
         },
     ],
 )
@@ -32,7 +42,7 @@ async def test_get_query_params(params, zmq_port, zmq_host):
     Running 'get_query_params' against an existing query_id returns the expected parameters with which the query was run.
     """
     #
-    # Run daily_location query.
+    # Run query.
     #
     msg = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 

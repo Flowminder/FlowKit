@@ -9,8 +9,27 @@ from flowmachine.core.server.action_handlers import (
     action_handler__get_geography,
     action_handler__get_query_params,
     action_handler__get_sql,
+    action_handler__run_query,
 )
 from flowmachine.core.server.zmq_helpers import ZMQReplyStatus
+
+
+def test_run_query_error_handled(monkeypatch, dummy_redis):
+    """
+    Run query handler should return an error status if query construction failed.
+    """
+    monkeypatch.setattr(Query, "redis", dummy_redis)
+    msg = action_handler__run_query(
+        query_kind="spatial_aggregate",
+        locations=dict(
+            query_kind="daily_location",
+            date="2016-02-02",
+            method="last",
+            aggregation_unit="admin3",
+        ),
+    )
+    assert msg.status == ZMQReplyStatus.ERROR
+    assert msg.msg == "Unable to create query object."
 
 
 @pytest.mark.parametrize("bad_unit", ["NOT_A_VALID_UNIT", "admin4"])
@@ -34,12 +53,12 @@ def test_get_query_bad_id():
 @pytest.mark.parametrize(
     "query_state", [state for state in QueryState if state is not QueryState.COMPLETED]
 )
-def test_get_sql_error_states(query_state, dummy_redis):
+def test_get_sql_error_states(query_state, dummy_redis, monkeypatch):
     """
     Test that get_sql handler replies with an error state when the query
     is not finished.
     """
-    Query.redis = dummy_redis
+    monkeypatch.setattr(Query, "redis", dummy_redis)
     dummy_redis.set("DUMMY_QUERY_ID", "KNOWN")
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
     dummy_redis.set(state_machine.state_machine._name, query_state)

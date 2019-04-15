@@ -11,7 +11,7 @@ from time import sleep
 
 import pytest
 import os
-import requests
+import pandas as pd
 import zmq
 
 import flowmachine
@@ -20,20 +20,20 @@ from flowmachine.core.cache import reset_cache
 import flowmachine.core.server.server
 import quart.flask_patch
 
+here = os.path.dirname(os.path.abspath(__file__))
+flowkit_toplevel_dir = os.path.join(here, "..", "..")
+
 
 @pytest.fixture(scope="session")
-def logging_config(tmpdir_factory):
+def logging_config():
     """
     Fixture which configures logging for flowmachine and flowapi.
-    Creates a temporary directory for log files to be written to, and sets the log level to debug.
+    Sets the log level to debug.
     """
-    tmpdir = tmpdir_factory.mktemp("logs")
     from _pytest.monkeypatch import MonkeyPatch
 
     mpatch = MonkeyPatch()
-    mpatch.setenv("LOG_DIRECTORY", str(tmpdir))
     mpatch.setenv("LOG_LEVEL", "debug")
-    print(f"Logs will be written to {tmpdir}")
     yield
     mpatch.undo()
 
@@ -140,6 +140,30 @@ def access_token_builder():
         return make_token("test", secret, timedelta(seconds=90), claims)
 
     return token_maker
+
+
+from .utils import query_kinds, permissions_types, aggregation_types
+
+
+@pytest.fixture
+def universal_access_token(access_token_builder):
+    all_claims = {
+        query_kind: {
+            "permissions": permissions_types,
+            "spatial_aggregation": aggregation_types,
+        }
+        for query_kind in query_kinds
+    }
+    all_claims.update(
+        {
+            "geography": {
+                "permissions": permissions_types,
+                "spatial_aggregation": aggregation_types,
+            },
+            "available_dates": {"permissions": {"get_result": True}},
+        }
+    )
+    return access_token_builder(all_claims)
 
 
 @pytest.fixture(scope="session")
@@ -267,7 +291,15 @@ def reset_cache_schema(fm_conn):
     print("Done.")
 
 
+@pytest.fixture
+def get_dataframe(fm_conn):
+    yield lambda query: pd.read_sql_query(query.get_query(), con=fm_conn.engine)
+
+
 @pytest.fixture(scope="session")
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
-    return diff_reporter_factory.get("opendiff")
+    diff_reporter_factory.load(
+        os.path.join(flowkit_toplevel_dir, "approvaltests_diff_reporters.json")
+    )
+    return diff_reporter_factory.get_first_working()

@@ -15,12 +15,6 @@ class InputToModalLocationSchema(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {"daily_location": DailyLocationSchema}
 
-    def get_obj_type(self, obj):
-        if isinstance(obj, DailyLocationExposed):
-            return "daily_location"
-        else:
-            raise Exception("Unknown object type: {obj.__class__.__name__}")
-
 
 class ModalLocationSchema(Schema):
     query_kind = fields.String(validate=OneOf(["modal_location"]))

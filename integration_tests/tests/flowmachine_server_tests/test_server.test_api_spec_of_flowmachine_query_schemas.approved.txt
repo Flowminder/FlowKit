@@ -87,25 +87,25 @@
   "FlowmachineQuerySchema": {
     "discriminator": {
       "mapping": {
-        "daily_location": "#/components/schemas/DailyLocation",
         "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
         "geography": "#/components/schemas/Geography",
+        "joined_spatial_aggregate": "#/components/schemas/JoinedSpatialAggregate",
         "location_event_counts": "#/components/schemas/LocationEventCounts",
+        "location_introversion": "#/components/schemas/LocationIntroversion",
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
-        "modal_location": "#/components/schemas/ModalLocation"
+        "spatial_aggregate": "#/components/schemas/SpatialAggregate",
+        "total_network_objects": "#/components/schemas/TotalNetworkObjects",
+        "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts"
       },
       "propertyName": "query_kind"
     },
     "oneOf": [
       {
         "$ref": "#/components/schemas/DFSTotalMetricAmount"
-      },
-      {
-        "$ref": "#/components/schemas/DailyLocation"
       },
       {
         "$ref": "#/components/schemas/DummyQuery"
@@ -117,7 +117,13 @@
         "$ref": "#/components/schemas/Geography"
       },
       {
+        "$ref": "#/components/schemas/JoinedSpatialAggregate"
+      },
+      {
         "$ref": "#/components/schemas/LocationEventCounts"
+      },
+      {
+        "$ref": "#/components/schemas/LocationIntroversion"
       },
       {
         "$ref": "#/components/schemas/MeaningfulLocationsAggregate"
@@ -129,7 +135,13 @@
         "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
       },
       {
-        "$ref": "#/components/schemas/ModalLocation"
+        "$ref": "#/components/schemas/SpatialAggregate"
+      },
+      {
+        "$ref": "#/components/schemas/TotalNetworkObjects"
+      },
+      {
+        "$ref": "#/components/schemas/UniqueSubscriberCounts"
       }
     ]
   },
@@ -205,6 +217,63 @@
       }
     ]
   },
+  "InputToSpatialAggregate": {
+    "discriminator": {
+      "mapping": {
+        "daily_location": "#/components/schemas/DailyLocation",
+        "modal_location": "#/components/schemas/ModalLocation"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DailyLocation"
+      },
+      {
+        "$ref": "#/components/schemas/ModalLocation"
+      }
+    ]
+  },
+  "JoinableMetrics": {
+    "discriminator": {
+      "mapping": {
+        "dummy_query": "#/components/schemas/DummyQuery"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/DummyQuery"
+      }
+    ]
+  },
+  "JoinedSpatialAggregate": {
+    "properties": {
+      "locations": {
+        "$ref": "#/components/schemas/InputToSpatialAggregate"
+      },
+      "method": {
+        "enum": [
+          "avg",
+          "max",
+          "median",
+          "min",
+          "mode",
+          "stddev",
+          "variance"
+        ],
+        "type": "string"
+      },
+      "metric": {
+        "$ref": "#/components/schemas/JoinableMetrics"
+      }
+    },
+    "required": [
+      "locations",
+      "metric"
+    ],
+    "type": "object"
+  },
   "LocationEventCounts": {
     "properties": {
       "aggregation_unit": {
@@ -267,6 +336,41 @@
       "direction",
       "end_date",
       "interval",
+      "start_date"
+    ],
+    "type": "object"
+  },
+  "LocationIntroversion": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "direction": {
+        "enum": [
+          "both",
+          "in",
+          "out"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
       "start_date"
     ],
     "type": "object"
@@ -536,6 +640,82 @@
     },
     "required": [
       "aggregation_unit"
+    ],
+    "type": "object"
+  },
+  "SpatialAggregate": {
+    "properties": {
+      "locations": {
+        "$ref": "#/components/schemas/InputToSpatialAggregate"
+      }
+    },
+    "required": [
+      "locations"
+    ],
+    "type": "object"
+  },
+  "TotalNetworkObjects": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "period": {
+        "enum": [
+          "day",
+          "hour",
+          "minute",
+          "month",
+          "second",
+          "year"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
+    ],
+    "type": "object"
+  },
+  "UniqueSubscriberCounts": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
     ],
     "type": "object"
   }

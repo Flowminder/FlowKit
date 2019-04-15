@@ -18,10 +18,10 @@
     "default": {
         "ansible": {
             "hashes": [
-                "sha256:6ee59d561c206f82e842f3aae4b56fc9a8b83ffecba4cab33bdb56f781717ea7"
+                "sha256:84a42d1e371c4222c82e575cb6961fafd3afe920d84e4b6d87affabe400be294"
             ],
             "index": "pypi",
-            "version": "==2.7.9"
+            "version": "==2.7.10"
         },
         "asn1crypto": {
             "hashes": [
@@ -113,10 +113,10 @@
         },
         "jinja2": {
             "hashes": [
-                "sha256:74c935a1b8bb9a3947c50a54766a969d4846290e1e788ea44c1392163723c3bd",
-                "sha256:f84be1bb0040caca4cea721fcbbbbd61f9be9464ca236387158b0feea01914a4"
+                "sha256:065c4f02ebe7f7cf559e49ee5a95fb800a9e4528727aec6f24402a5374c65013",
+                "sha256:14dd6caf1527abb21f08f86c784eac40853ba93edb79552aa1e4b8aef1b61c7b"
             ],
-            "version": "==2.10"
+            "version": "==2.10.1"
         },
         "markupsafe": {
             "hashes": [

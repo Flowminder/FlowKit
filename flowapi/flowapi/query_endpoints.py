@@ -2,17 +2,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from flask_jwt_extended import jwt_required, jwt_required, current_user
 from quart import Blueprint, current_app, request, url_for, stream_with_context, jsonify
 from .stream_results import stream_result_as_json
-from .check_claims import check_claims
 
 blueprint = Blueprint("query", __name__)
 
 
 @blueprint.route("/run", methods=["POST"])
-@check_claims("run")
+@jwt_required
 async def run_query():
     json_data = await request.json
+    current_user.can_run(query_json=json_data)
     request.socket.send_json(
         {"request_id": request.request_id, "action": "run_query", "params": json_data}
     )
@@ -54,8 +55,9 @@ async def run_query():
 
 
 @blueprint.route("/poll/<query_id>")
-@check_claims("poll")
+@jwt_required
 async def poll_query(query_id):
+    await current_user.can_poll_by_query_id(query_id=query_id)
     request.socket.send_json(
         {
             "request_id": request.request_id,
@@ -85,8 +87,9 @@ async def poll_query(query_id):
 
 
 @blueprint.route("/get/<query_id>")
-@check_claims("get_result")
+@jwt_required
 async def get_query_result(query_id):
+    await current_user.can_get_results_by_query_id(query_id=query_id)
     msg = {
         "request_id": request.request_id,
         "action": "get_sql_for_query_result",
@@ -136,3 +139,29 @@ async def get_query_result(query_id):
                 "Content-type": mimetype,
             },
         )
+
+
+@blueprint.route("/available_dates")
+@jwt_required
+async def get_available_dates():
+    current_user.can_get_available_dates()
+
+    json_data = await request.json
+    if json_data is None:
+        event_types = None
+    else:
+        event_types = json_data.get("event_types", None)
+    request.socket.send_json(
+        {
+            "request_id": request.request_id,
+            "action": "get_available_dates",
+            "params": {"event_types": event_types},
+        }
+    )
+    reply = await request.socket.recv_json()
+
+    if reply["status"] == "success":
+        return jsonify({"available_dates": reply["payload"]}), 200
+    else:
+        assert reply["status"] == "error"
+        return jsonify({"status": "error", "msg": reply["msg"]}), 500

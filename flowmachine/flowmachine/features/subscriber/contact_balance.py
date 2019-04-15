@@ -5,8 +5,8 @@
 # -*- coding: utf-8 -*-
 """
 The total number of events that a subscriber interacts
-with a counterpart, and the proportion of events 
-that a given contact participates out of the 
+with a counterpart, and the proportion of events
+that a given contact participates out of the
 subscriber's total event count.
 
 """
@@ -19,12 +19,12 @@ from ...core.mixins.graph_mixin import GraphMixin
 
 class ContactBalance(GraphMixin, SubscriberFeature):
     """
-    This class calculates the total number of events 
+    This class calculates the total number of events
     that a subscriber interacts with a counterpart,
     and the proportion of events that a given contact
     participates out of the subscriber's total event count.
     This can be used to calculate a subscriber's contact
-    network graph and the respective weighted edges 
+    network graph and the respective weighted edges
     for each contact.
 
     Parameters
@@ -53,6 +53,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
     --------
 
     >>> ContactBalance('2016-01-01', '2016-01-07')
+
                    msisdn       msisdn_counterpart  events     proportion
     0    038OVABN11Ak4W5P         09NrjaNNvDanD8pk     110           0.54
     1    09NrjaNNvDanD8pk         0ayZGYEQrqYlKw6g      94           0.44
@@ -80,6 +81,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         self.direction = direction
         self.subscriber_identifier = subscriber_identifier
         self.exclude_self_calls = exclude_self_calls
+        self.tables = tables
 
         if self.direction == "both":
             column_list = [self.subscriber_identifier, "msisdn_counterpart"]
@@ -99,6 +101,10 @@ class ContactBalance(GraphMixin, SubscriberFeature):
         )
         self._cols = ["subscriber", "msisdn_counterpart", "events", "proportion"]
         super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "msisdn_counterpart", "events", "proportion"]
 
     def _make_query(self):
 
@@ -136,7 +142,7 @@ class ContactBalance(GraphMixin, SubscriberFeature):
           FROM unioned as U) AS U
         JOIN total_events AS T
             ON U.subscriber = T.subscriber
-        GROUP BY U.subscriber, 
+        GROUP BY U.subscriber,
                  U.msisdn_counterpart,
                  T.events
         ORDER BY proportion DESC
@@ -144,6 +150,78 @@ class ContactBalance(GraphMixin, SubscriberFeature):
 
         return sql
 
+    def counterparts_subset(self, include_subscribers=False):
+        """
+        Returns the subset of counterparts. In some cases, we are interested in
+        obtaining information about the subset of subscribers contacts.
+
+        This method also allows one to get the subset of counterparts together
+        with subscribers by turning the `include_subscribers` flag to `True`.
+
+        Parameters
+        ----------
+        include_subscribers: bool, default True
+            Wether to include the list of subscribers in the subset as well.
+        """
+
+        return _ContactBalanceSubset(
+            contact_balance=self, include_subscribers=include_subscribers
+        )
+
+
+class _ContactBalanceSubset(SubscriberFeature):
+    """
+    This internal class returns the subset of counterparts. In some cases, we
+    are interested in obtaining information about the subset of subscribers
+    contacts.
+
+    This method also allows one to get the subset of counterparts together with
+    subscribers by turning the `include_subscribers` flag to `True`.
+
+    Parameters
+    ----------
+    include_subscribers: bool, default False
+        Wether to include the list of subscribers in the subset as well.
+    """
+
+    def __init__(self, contact_balance, include_subscribers=False):
+
+        self.contact_balance_query = contact_balance
+        self.include_subscribers = include_subscribers
+
+        if (
+            self.contact_balance_query.subscriber_identifier in {"imei"}
+            and self.include_subscribers
+        ):
+            raise ValueError(
+                """
+                The counterparts are always identified are identified via the
+                msisdn while the subscribers are being identified via the imei.
+                Therefore, it is not possible to extract the counterpart subset
+                and merge with the subscriber subset. Performing otherwise
+                would be inconsistent.
+            """
+            )
+
+        super().__init__()
+
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "msisdn_counterpart", "events", "proportion"]
+        return ["subscriber"]
+
+    def _make_query(self):
+
+        include_subscriber_clause = ""
+        if (
+            self.include_subscribers
+            and self.contact_balance_query.subscriber_identifier in {"msisdn"}
+        ):
+            include_subscriber_clause = f"""
+            UNION SELECT DISTINCT subscriber FROM ({self.contact_balance_query.get_query()}) C
+            """
+
+        return f"""
+        SELECT DISTINCT msisdn_counterpart AS subscriber
+        FROM ({self.contact_balance_query.get_query()}) C
+        {include_subscriber_clause}
+        """

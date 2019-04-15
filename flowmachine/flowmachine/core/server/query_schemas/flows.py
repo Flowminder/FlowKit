@@ -23,14 +23,6 @@ class InputToFlowsSchema(OneOfSchema):
         "modal_location": ModalLocationSchema,
     }
 
-    def get_obj_type(self, obj):
-        if isinstance(obj, DailyLocationExposed):
-            return "daily_location"
-        if isinstance(obj, ModalLocationExposed):
-            return "modal_location"
-        else:
-            raise Exception("Unknown object type: {obj.__class__.__name__}")
-
 
 class FlowsSchema(Schema):
     query_kind = fields.String(validate=OneOf(["flows"]))

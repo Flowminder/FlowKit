@@ -28,6 +28,8 @@ __all__ = [
     "MeaningfulLocationsAggregateExposed",
     "MeaningfulLocationsBetweenLabelODMatrixSchema",
     "MeaningfulLocationsBetweenLabelODMatrixExposed",
+    "MeaningfulLocationsBetweenDatesODMatrixSchema",
+    "MeaningfulLocationsBetweenDatesODMatrixExposed",
 ]
 
 

@@ -5,15 +5,47 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-
+- Added new `spatial_aggregate` API endpoint and FlowClient function [#599](https://github.com/Flowminder/FlowKit/issues/599)
+- Implemented new flowclient API entrypoint, total_network_objects(), to access (with simplified parameters) equivalent flowmachine query [#581](https://github.com/Flowminder/FlowKit/issues/581)
+- Implemented new flowclient API entrypoint, location_introversion(), to access (with simplified parameters) equivalent flowmachine query [#577](https://github.com/Flowminder/FlowKit/issues/577)
+- Implemented new flowclient API entrypoint, unique_subscriber_counts(), to access (with simplified parameters) equivalent flowmachine query [#562](https://github.com/Flowminder/FlowKit/issues/562)
+- New schema `aggregates` and table `aggregates.aggregates` have been created for maintaining a record of the process and completion of scheduled aggregates.
+- New `joined_spatial_aggregate` API endpoint and FlowClient function [#600](https://github.com/Flowminder/FlowKit/issues/600)
 
 ### Changed
-
+- `daily_location` and `modal_location` query types are no longer accepted as top-level queries, and must be wrapped using `spatial_aggregate`
+- `JoinedSpatialAggregate` no longer accepts positional arguments
+- `JoinedSpatialAggregate` now supports "avg", "max", "min", "median", "mode", "stddev" and "variance" stats
 
 ### Fixed
-
+- `total_network_objects` no longer returns results from `AggregateNetworkObjects` [#603](https://github.com/Flowminder/FlowKit/issues/603)
 
 ### Removed
+
+
+## [0.5.2]
+### Fixed
+- Fixed [#514](https://github.com/Flowminder/FlowKit/issues/514), which would cause the client to hang after submitting a query that couldn't be created
+- Fixed [#575](https://github.com/Flowminder/FlowKit/issues/575), so that events at midnight are now considered to be happening on the following day
+
+
+## [0.5.1]
+### Added
+- Added `HandsetStats` to FlowMachine.
+- Added new `ContactReferenceLocationStats` query class to FlowMachine.
+- A new zmq message `get_available_dates` was added to the flowmachine server, along with the `/available_dates`
+  endpoint in flowapi and the function `get_available_dates()` in flowclient. These allow to determine the dates
+  that are available in the database for the supported event types.
+
+### Changed
+- FlowMachine's debugging logs are now from a single logger (`flowmachine.debug`) and include the submodule in the submodule field instead of using it as the logger name
+- FlowMachine's query run logger now uses the logger name `flowmachine.query_run_log`
+- FlowAPI's access, run and debug loggers are now named `flowapi.access`, `flowapi.query` and `flowapi.debug`
+- FlowAPI's access and run loggers, and FlowMachine's query run logger now log to stdout instead of stderr
+- Passwords for Redis and FlowDB must now be explicitly provided to flowmachine via argument to `connect`, env var, or secret
+
+### Removed
+- FlowMachine and FlowAPI no longer support logging to a file
 
 
 ## [0.5.0]
@@ -165,7 +197,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.2...master
+[0.5.2]: https://github.com/Flowminder/FlowKit/compare/0.5.1...0.5.2
+[0.5.1]: https://github.com/Flowminder/FlowKit/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/Flowminder/FlowKit/compare/0.4.3...0.5.0
 [0.4.3]: https://github.com/Flowminder/FlowKit/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/Flowminder/FlowKit/compare/0.4.1...0.4.2

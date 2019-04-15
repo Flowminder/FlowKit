@@ -1,16 +1,16 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import uuid
+import rapidjson
 
+import uuid
+import sys
 
 import quart.flask_patch
 from quart import Quart, request, current_app
 import asyncpg
 import logging
-import os
 import zmq
-from logging.handlers import TimedRotatingFileHandler
 from zmq.asyncio import Context
 
 from flowapi.config import get_config
@@ -22,6 +22,13 @@ from flask_jwt_extended import JWTManager
 
 import structlog
 
+from flowapi.user_model import user_loader_callback
+
+
+root_logger = logging.getLogger("flowapi")
+root_logger.setLevel(logging.DEBUG)
+
+
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,
@@ -31,54 +38,42 @@ structlog.configure(
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(),
+        structlog.processors.JSONRenderer(serializer=rapidjson.dumps),
     ],
-    context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),
     wrapper_class=structlog.stdlib.BoundLogger,
+    context_class=dict,
     cache_logger_on_first_use=True,
 )
 
 
 async def connect_logger():
     log_level = current_app.config["LOG_LEVEL"]
-    log_root = current_app.config["LOG_DIRECTORY"]
-    logger = logging.getLogger("flowapi")
+    logger = root_logger.getChild("debug")
     logger.setLevel(log_level)
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
     logger.addHandler(ch)
     # Debug logger. Quart doesn't allow us to override current_app.logger, but won't use it by default.
     current_app.flowapi_logger = structlog.wrap_logger(logger)
+    current_app.flowapi_logger.debug("Started")
 
     # Logger for authentication
 
-    logger = logging.getLogger("flowkit-access")
+    logger = root_logger.getChild("access")
     logger.setLevel(logging.INFO)
-    ch = logging.StreamHandler()
+    ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(log_level)
     logger.addHandler(ch)
-
-    fh = TimedRotatingFileHandler(
-        os.path.join(log_root, "flowkit-access.log"), when="midnight"
-    )
-    fh.setLevel(logging.INFO)
-    logger.addHandler(fh)
+    # Debug logger. Quart doesn't allow us to override current_app.logger, but won't use it by default.
     current_app.access_logger = structlog.wrap_logger(logger)
 
     # Logger for all queries run or accessed
-
-    logger = logging.getLogger("flowkit-query")
+    logger = root_logger.getChild("query")
     logger.setLevel(logging.INFO)
-    ch = logging.StreamHandler()
+    ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(log_level)
     logger.addHandler(ch)
-
-    fh = TimedRotatingFileHandler(
-        os.path.join(log_root, "query-runs.log"), when="midnight"
-    )
-    fh.setLevel(logging.INFO)
-    logger.addHandler(fh)
     current_app.query_run_logger = structlog.wrap_logger(logger)
 
 
@@ -109,7 +104,7 @@ def close_zmq(exc):
 
 async def create_db():
     dsn = current_app.config["FLOWDB_DSN"]
-    current_app.pool = await asyncpg.create_pool(dsn, max_size=20)
+    current_app.db_conn_pool = await asyncpg.create_pool(dsn, max_size=20)
 
 
 def create_app():
@@ -133,5 +128,6 @@ def create_app():
     app.register_blueprint(spec_blueprint, url_prefix="/api/0/spec")
 
     register_logging_callbacks(jwt)
+    jwt.user_loader_callback_loader(user_loader_callback)
 
     return app

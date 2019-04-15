@@ -38,7 +38,7 @@ from flowmachine.utils import _sleep
 
 from flowmachine.core.cache import write_query_to_cache
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 # This is the maximum length that postgres will allow for its
 # table name. This should only be changed if postgres is updated
@@ -941,8 +941,10 @@ class Query(metaclass=ABCMeta):
         try:
             if self.subscriber_identifier in cols:
                 ixen.append(self.subscriber_identifier)
-            else:
+            elif "subscriber" in cols:
                 ixen.append('"subscriber"')
+            else:
+                pass
         except AttributeError:
             pass
         return ixen

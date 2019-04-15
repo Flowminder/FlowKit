@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import json
-import os
 
 import pytest
 from asynctest import return_once
@@ -12,7 +10,7 @@ from .utils import query_kinds, exemplar_query_params
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("route", ["/api/0/poll/foo", "/api/0/get/foo"])
-async def test_protected_get_routes(route, app):
+async def test_protected_get_routes(route, app, json_log):
     """
     Test that protected routes return a 401 without a valid token.
 
@@ -27,10 +25,12 @@ async def test_protected_get_routes(route, app):
 
     response = await client.get(route)
     assert 401 == response.status_code
-    with open(os.path.join(log_dir, "flowkit-access.log")) as log_file:
-        log_lines = log_file.readlines()
-    assert 1 == len(log_lines)
-    assert "UNAUTHORISED" in log_lines[0]
+
+    log_lines = json_log().out
+    assert 1 == len(log_lines)  # One entry written to stdout
+    assert log_lines[0]["logger"] == "flowapi.access"
+
+    assert "UNAUTHORISED" == log_lines[0]["event"]
 
 
 @pytest.mark.asyncio
@@ -43,7 +43,16 @@ async def test_granular_run_access(
 
     """
     client, db, log_dir, app = app
-    token = access_token_builder({query_kind: {"permissions": {"run": True}}})
+    token = access_token_builder(
+        {
+            query_kind: {
+                "permissions": {"run": True},
+                "spatial_aggregation": [
+                    exemplar_query_params[query_kind]["aggregation_unit"]
+                ],
+            }
+        }
+    )
     expected_responses = dict.fromkeys(query_kinds, 401)
     expected_responses[query_kind] = 202
     dummy_zmq_server.return_value = {
@@ -71,23 +80,31 @@ async def test_granular_poll_access(
 
     """
     client, db, log_dir, app = app
-    token = access_token_builder({query_kind: {"permissions": {"poll": True}}})
+    token = access_token_builder(
+        {
+            query_kind: {
+                "permissions": {"poll": True},
+                "spatial_aggregation": [
+                    exemplar_query_params[query_kind]["aggregation_unit"]
+                ],
+            }
+        }
+    )
     expected_responses = dict.fromkeys(query_kinds, 401)
     expected_responses[query_kind] = 303
 
     responses = {}
     for q_kind in query_kinds:
-        dummy_zmq_server.side_effect = return_once(
+        dummy_zmq_server.side_effect = (
             {
                 "status": "success",
                 "msg": "",
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
-                    "query_kind": q_kind,
-                    "query_state": "executing",
+                    "query_params": exemplar_query_params[q_kind],
                 },
             },
-            then={
+            {
                 "status": "success",
                 "msg": "",
                 "payload": {
@@ -120,7 +137,9 @@ async def test_granular_json_access(
         {
             query_kind: {
                 "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+                "spatial_aggregation": [
+                    exemplar_query_params[query_kind]["aggregation_unit"]
+                ],
             }
         }
     )
@@ -132,14 +151,9 @@ async def test_granular_json_access(
             {
                 "status": "success",
                 "msg": "",
-                "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": q_kind},
-            },
-            {
-                "status": "success",
-                "msg": "",
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
-                    "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
+                    "query_params": exemplar_query_params[q_kind],
                 },
             },
             {
@@ -163,6 +177,14 @@ async def test_granular_json_access(
     [
         {"permissions": {"get_result": True}, "spatial_aggregation": []},
         {"permissions": {}, "spatial_aggregation": ["DUMMY_AGGREGATION"]},
+        {
+            "permissions": {"get_result": True},
+            "spatial_aggregation": ["A_DIFFERENT_AGGREGATION"],
+        },
+        {
+            "permissions": {"get_result": False},
+            "spatial_aggregation": ["DUMMY_AGGREGATION"],
+        },
     ],
 )
 async def test_no_result_access_without_both_claims(
@@ -178,14 +200,12 @@ async def test_no_result_access_without_both_claims(
         {
             "status": "success",
             "msg": "",
-            "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query"},
-        },
-        {
-            "status": "success",
-            "msg": "",
             "payload": {
                 "query_id": "DUMMY_QUERY_ID",
-                "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
+                "query_params": {
+                    "aggregation_unit": "DUMMY_AGGREGATION",
+                    "query_kind": "DUMMY_QUERY_KIND",
+                },
             },
         },
         {
@@ -195,9 +215,7 @@ async def test_no_result_access_without_both_claims(
         },
     )
     response = await client.get(
-        f"/api/0/get/DUMMY_QUERY_ID",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"query_kind": "DUMMY_QUERY_KIND"},
+        f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert 401 == response.status_code
 
@@ -208,7 +226,7 @@ async def test_no_result_access_without_both_claims(
     "route", ["/api/0/poll/DUMMY_QUERY_ID", "/api/0/get/DUMMY_QUERY_ID"]
 )
 async def test_access_logs_gets(
-    query_kind, route, app, access_token_builder, dummy_zmq_server
+    query_kind, route, app, access_token_builder, dummy_zmq_server, json_log
 ):
     """
     Test that access logs are written for attempted unauthorized access to 'poll' and get' routes.
@@ -216,48 +234,168 @@ async def test_access_logs_gets(
     """
     client, db, log_dir, app = app
     token = access_token_builder({query_kind: {"permissions": {}}})
-    dummy_zmq_server.return_value = {
-        "status": "success",
-        "msg": "",
-        "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query_kind"},
-    }
-    response = await client.get(
-        route,
-        headers={"Authorization": f"Bearer {token}"},
-        json={"query_kind": query_kind},
+    dummy_zmq_server.side_effect = (
+        {
+            "status": "success",
+            "payload": {
+                "query_id": "5ffe4a96dbe33a117ae9550178b81836",
+                "query_params": {
+                    "aggregation_unit": "DUMMY_AGGREGATION",
+                    "query_kind": "dummy_query_kind",
+                },
+            },
+        },
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query_kind"},
+        },
     )
+    response = await client.get(route, headers={"Authorization": f"Bearer {token}"})
     assert 401 == response.status_code
-    with open(os.path.join(log_dir, "query-runs.log")) as log_file:
-        log_lines = log_file.readlines()
-    assert 2 == len(log_lines)
-    assert "DUMMY_QUERY_KIND" == json.loads(log_lines[0])["query_kind"]
-    assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" in log_lines[1]
-    assert "test" in log_lines[0]
-    assert "test" in log_lines[1]
-    assert (
-        json.loads(log_lines[0])["request_id"] == json.loads(log_lines[1])["request_id"]
-    )
+    log_lines = json_log().out
+    assert 3 == len(log_lines)  # One access log, two query logs
+    assert log_lines[0]["logger"] == "flowapi.access"
+    assert log_lines[1]["logger"] == "flowapi.access"
+    assert log_lines[2]["logger"] == "flowapi.access"
+    assert "CLAIMS_VERIFICATION_FAILED" == log_lines[2]["event"]
+    assert "test" == log_lines[0]["user"]
+    assert "test" == log_lines[1]["user"]
+    assert "test" == log_lines[2]["user"]
+    assert log_lines[0]["request_id"] == log_lines[1]["request_id"]
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("query_kind", query_kinds)
-async def test_access_logs_post(query_kind, app, access_token_builder):
+async def test_access_logs_post(
+    query_kind, app, access_token_builder, dummy_zmq_server, json_log
+):
     """
     Test that access logs are written for attempted unauthorized access to 'run' route.
 
     """
     client, db, log_dir, app = app
-    token = access_token_builder({query_kind: {"permissions": {}}})
+    token = access_token_builder(
+        {query_kind: {"permissions": {}, "spatial_aggregation": []}}
+    )
     response = await client.post(
         f"/api/0/run",
         headers={"Authorization": f"Bearer {token}"},
-        json={"query_kind": query_kind},
+        json={"query_kind": query_kind, "aggregation_unit": "admin3"},
     )
     assert 401 == response.status_code
-    with open(os.path.join(log_dir, "query-runs.log")) as log_file:
-        log_lines = log_file.readlines()
-    assert 2 == len(log_lines)
-    assert query_kind.upper() in log_lines[0]
-    assert "CLAIM_TYPE_NOT_ALLOWED_BY_TOKEN" in log_lines[1]
-    assert "test" in log_lines[0]
-    assert "test" in log_lines[1]
+
+    log_lines = json_log().out
+    assert 3 == len(log_lines)  # One access log, two query logs
+    assert log_lines[0]["logger"] == "flowapi.access"
+    assert log_lines[1]["logger"] == "flowapi.access"
+    assert log_lines[2]["logger"] == "flowapi.access"
+    assert log_lines[2]["json_payload"]["query_kind"] == query_kind
+    assert "CLAIMS_VERIFICATION_FAILED" == log_lines[2]["event"]
+    assert "test" == log_lines[0]["user"]
+    assert "test" == log_lines[1]["user"]
+    assert "test" == log_lines[2]["user"]
+    assert log_lines[0]["request_id"] == log_lines[1]["request_id"]
+
+
+@pytest.mark.parametrize(
+    "metric_claims, location_claims, expected_status_code",
+    [
+        (
+            {"permissions": {"get_result": True}, "spatial_aggregation": []},
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            401,
+        ),
+        (
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            {"permissions": {"get_result": True}, "spatial_aggregation": []},
+            401,
+        ),
+        (
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            200,
+        ),
+        (
+            {
+                "permissions": {"get_result": False},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            401,
+        ),
+        (
+            {
+                "permissions": {"get_result": True},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            {
+                "permissions": {"get_result": False},
+                "spatial_aggregation": ["DUMMY_AGGREGATION"],
+            },
+            401,
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_no_joined_aggregate_result_access_without_both_claims(
+    metric_claims,
+    location_claims,
+    expected_status_code,
+    app,
+    access_token_builder,
+    dummy_zmq_server,
+):
+    """
+    Test that permission on the metric, the locations, and the spatial aggregation
+    units of _both_ is required for joined_spatial_aggregate.
+    """
+
+    client, db, log_dir, app = app
+    token = access_token_builder(
+        {
+            "DUMMY_METRIC_QUERY_KIND": metric_claims,
+            "DUMMY_LOCATION_QUERY_KIND": location_claims,
+        }
+    )
+    dummy_zmq_server.side_effect = (
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {
+                "query_id": "DUMMY_QUERY_ID",
+                "query_params": {
+                    "query_kind": "joined_spatial_aggregate",
+                    "metric": {"query_kind": "DUMMY_METRIC_QUERY_KIND"},
+                    "locations": {
+                        "aggregation_unit": "DUMMY_AGGREGATION",
+                        "query_kind": "DUMMY_LOCATION_QUERY_KIND",
+                    },
+                },
+            },
+        },
+        {
+            "status": "success",
+            "msg": "",
+            "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
+        },
+    )
+    response = await client.get(
+        f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == expected_status_code

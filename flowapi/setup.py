@@ -29,11 +29,12 @@ setup(
         "quart",
         "pyzmq",
         "hypercorn",
-        "ujson",
+        "python-rapidjson",
         "structlog",
         "flask-jwt-extended",
         "asyncpg",
         "pyyaml >= 5.1",
+        "python-rapidjson",
     ],
     extras_require={"test": ["pytest", "coverage"]},
 )

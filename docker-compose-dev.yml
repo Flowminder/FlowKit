@@ -109,6 +109,7 @@ services:
       - DEBUG=${FM_DEBUG:-True}
       - FLOWDB_PORT=${FLOWDB_PORT:-5432}
       - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
+      - FLOWDB_PASS=${FLOWDB_PASS:-foo}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PASSWORD=${REDIS_PASSWORD:-fm_redis}
     restart: always

@@ -15,11 +15,14 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     msg_run_query = {
         "action": "run_query",
         "params": {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "method": "last",
-            "aggregation_unit": "admin3",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
         "request_id": "DUMMY_ID",
     }
@@ -53,8 +56,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     # and that it contains the expected number of rows.
     #
     output_cache_table = f"x{expected_query_id}"
-    implicit_cache_table = f"x77ea8996b031a8712c71dbaf87828ca0"
-    assert [implicit_cache_table, output_cache_table] == get_cache_tables(fm_conn)
+    assert [output_cache_table] == get_cache_tables(fm_conn)
     num_rows = fm_conn.engine.execute(
         f"SELECT COUNT(*) FROM cache.{output_cache_table}"
     ).fetchone()[0]
@@ -65,12 +67,12 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     #
 
     first_few_rows_expected = [
-        ("524 3 09 50", 18),
-        ("524 5 13 67", 17),
+        ("524 1 01 04", 13),
+        ("524 1 02 09", 26),
         ("524 1 03 13", 20),
     ]
     first_few_rows = fm_conn.engine.execute(
-        f"SELECT * FROM cache.{output_cache_table} LIMIT 3"
+        f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
     ).fetchall()
     assert first_few_rows_expected == first_few_rows
 
@@ -80,49 +82,75 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     [
         (
             {
-                "query_kind": "daily_location",
-                "date": "2000-88-99",
-                "method": "last",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": None,
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2000-88-99",
+                    "method": "last",
+                    "aggregation_unit": "admin3",
+                    "subscriber_subset": None,
+                },
             },
-            {"0": {"date": ["Not a valid date."]}},
+            {"0": {"locations": {"0": {"date": ["Not a valid date."]}}}},
         ),
         (
             {
-                "query_kind": "daily_location",
-                "date": "2016-01-01",
-                "method": "FOOBAR",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": None,
-            },
-            {"0": {"method": ["Must be one of: last, most-common."]}},
-        ),
-        (
-            {
-                "query_kind": "daily_location",
-                "date": "2016-01-01",
-                "method": "last",
-                "aggregation_unit": "admin9999",
-                "subscriber_subset": None,
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "method": "FOOBAR",
+                    "aggregation_unit": "admin3",
+                    "subscriber_subset": None,
+                },
             },
             {
                 "0": {
-                    "aggregation_unit": [
-                        "Must be one of: admin0, admin1, admin2, admin3."
-                    ]
+                    "locations": {
+                        "0": {"method": ["Must be one of: last, most-common."]}
+                    }
                 }
             },
         ),
         (
             {
-                "query_kind": "daily_location",
-                "date": "2016-01-01",
-                "method": "last",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": "virtually_all_subscribers",
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "method": "last",
+                    "aggregation_unit": "admin9999",
+                    "subscriber_subset": None,
+                },
             },
-            {"0": {"subscriber_subset": ["Must be one of: None."]}},
+            {
+                "0": {
+                    "locations": {
+                        "0": {
+                            "aggregation_unit": [
+                                "Must be one of: admin0, admin1, admin2, admin3."
+                            ]
+                        }
+                    }
+                }
+            },
+        ),
+        (
+            {
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "method": "last",
+                    "aggregation_unit": "admin3",
+                    "subscriber_subset": "virtually_all_subscribers",
+                },
+            },
+            {
+                "0": {
+                    "locations": {"0": {"subscriber_subset": ["Must be one of: None."]}}
+                }
+            },
         ),
     ],
 )

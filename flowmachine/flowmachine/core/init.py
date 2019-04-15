@@ -15,7 +15,6 @@ import logging
 import os
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-from logging.handlers import TimedRotatingFileHandler
 
 import redis
 
@@ -26,12 +25,11 @@ from . import Connection, Query
 
 import structlog
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 def connect(
     log_level: Union[str, None] = None,
-    write_log_file: Union[bool, None] = None,
     db_port: Union[int, None] = None,
     db_user: Union[str, None] = None,
     db_pass: Union[str, None] = None,
@@ -52,11 +50,6 @@ def connect(
     ----------
     log_level : str, default "error"
         Level to log at
-    write_log_file : bool, default False
-        If True, logging output will be written to the file 'flowmachine-debug.log'
-        in the directory '/var/log/flowmachine/' (or the directory given by the
-        environment variable 'LOG_DIRECTORY' if it is set). Log files are rotated
-        at midnight.
     db_port : int, default 9000
         Port number to connect to flowdb
     db_user : str, default "analyst"
@@ -101,14 +94,6 @@ def connect(
         if log_level is None
         else log_level
     )
-    write_log_file = (
-        (
-            "TRUE"
-            == getsecret("WRITE_LOG_FILE", os.getenv("WRITE_LOG_FILE", "FALSE")).upper()
-        )
-        if write_log_file is None
-        else write_log_file
-    )
     db_port = int(
         getsecret("FLOWDB_PORT", os.getenv("FLOWDB_PORT", 9000))
         if db_port is None
@@ -120,7 +105,7 @@ def connect(
         else db_user
     )
     db_pass = (
-        getsecret("FLOWDB_PASS", os.getenv("FLOWDB_PASS", "foo"))
+        getsecret("FLOWDB_PASS", os.getenv("FLOWDB_PASS"))
         if db_pass is None
         else db_pass
     )
@@ -157,16 +142,26 @@ def connect(
         else redis_port
     )
     redis_pw = (
-        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD", "fm_redis"))
+        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD"))
         if redis_password is None
         else redis_password
     )
+
+    if db_pass is None:
+        raise ValueError(
+            "You must provide a secret named FLOWDB_PASS, set an environment variable named FLOWDB_PASS, or provide a db_pass argument."
+        )
+
+    if redis_pw is None:
+        raise ValueError(
+            "You must provide a secret named REDIS_PASSWORD_FILE, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
+        )
 
     try:
         Query.connection
         warnings.warn("FlowMachine already started. Ignoring.")
     except AttributeError:
-        _init_logging(log_level, write_log_file)
+        _init_logging(log_level)
         if conn is None:
             conn = Connection(
                 host=db_host,
@@ -192,18 +187,13 @@ def connect(
     return Query.connection
 
 
-def _init_logging(log_level, write_log_file):
+def _init_logging(log_level):
     """
 
     Parameters
     ----------
     log_level : str
         Level to emit logs at
-    write_log_file : bool
-        If True, logging output will be written to the file 'flowmachine-debug.log'
-        in the directory '/var/log/flowmachine/' (or the directory given by the
-        environment variable 'LOG_DIRECTORY' if it is set). Log files are rotated
-        at midnight.
 
     Returns
     -------
@@ -215,24 +205,12 @@ def _init_logging(log_level, write_log_file):
     except (AttributeError, TypeError):
         log_level = logging.ERROR
     true_log_level = logging.getLevelName(log_level)
-    logger = logging.getLogger("flowmachine")
+    logger = logging.getLogger("flowmachine").getChild("debug")
     logger.setLevel(true_log_level)
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
     logger.addHandler(ch)
     logger.info(f"Logger created with level {true_log_level}")
-    if write_log_file:
-        log_root = os.getenv("LOG_DIRECTORY", "/var/log/flowmachine/")
-        if not os.path.exists(log_root):
-            logger.info(
-                f"Creating log_root directory because it does not exist: {log_root}"
-            )
-            os.makedirs(log_root)
-        log_file = os.path.join(log_root, "flowmachine-debug.log")
-        fh = TimedRotatingFileHandler(log_file, when="midnight")
-        fh.setLevel(true_log_level)
-        logger.addHandler(fh)
-        logger.info(f"Added log file handler, logging to {log_file}")
 
 
 def _start_threadpool(*, thread_pool_size=None):

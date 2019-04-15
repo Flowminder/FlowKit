@@ -32,7 +32,6 @@ def getsecret(key: str, default: str) -> str:
 
 def get_config():
     jwt_secret_key = getsecret("JWT_SECRET_KEY", os.getenv("JWT_SECRET_KEY"))
-    log_directory = os.getenv("LOG_DIRECTORY", "/var/log/flowapi/")
     log_level = logging.getLevelName(os.getenv("LOG_LEVEL", "error").upper())
 
     flowmachine_server = os.getenv("FLOWMACHINE_SERVER", "localhost")
@@ -45,7 +44,6 @@ def get_config():
 
     return dict(
         JWT_SECRET_KEY=jwt_secret_key,
-        LOG_DIRECTORY=log_directory,
         LOG_LEVEL=log_level,
         FLOWMACHINE_SERVER=flowmachine_server,
         FLOWMACHINE_PORT=flowmachine_port,

@@ -1,17 +1,18 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+import flowmachine
 import numpy as np
 import pandas as pd
 import pytest
 
-import flowmachine
 from flowmachine.core import CustomQuery
 from flowmachine.core.subscriber_subsetter import *
 
-# TODO: This call to flowmachine.connect() is needed to create
+
 flowmachine.connect()
+# TODO: This is necessary because it is not possible to use a Query object without a connection,
+# and no connection is available when the parameterised tests are collected
 
 
 @pytest.mark.parametrize(

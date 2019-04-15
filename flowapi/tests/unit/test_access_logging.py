@@ -18,7 +18,7 @@ from flowapi.jwt_auth_callbacks import (
 
 
 @pytest.mark.asyncio
-async def test_invalid_token(app):
+async def test_invalid_token(app, json_log):
     """
     Test that invalid tokens are logged correctly.
 
@@ -33,15 +33,15 @@ async def test_invalid_token(app):
     async with app.test_request_context("GET", "/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await invalid_token_callback("DUMMY_ERROR_STRING")
-        with open(os.path.join(log_dir, "flowkit-access.log")) as log_file:
-            log_lines = log_file.readlines()
+        log_lines = json_log().out
         assert len(log_lines) == 1
-        assert json.loads(log_lines[0])["event"] == "INVALID_TOKEN"
-        assert json.loads(log_lines[0])["request_id"] == "DUMMY_REQUEST_ID"
+        assert log_lines[0]["logger"] == "flowapi.access"
+        assert log_lines[0]["event"] == "INVALID_TOKEN"
+        assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
 
 
 @pytest.mark.asyncio
-async def test_expired_token(app):
+async def test_expired_token(app, json_log):
     """
     Test that expired tokens are logged correctly.
 
@@ -71,15 +71,15 @@ async def test_expired_token(app):
     async with app.test_request_context("GET", "/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await expired_token_callback(dummy_decoded_expired_token)
-        with open(os.path.join(log_dir, "flowkit-access.log")) as log_file:
-            log_lines = log_file.readlines()
+        log_lines = json_log().out
         assert len(log_lines) == 1
-        assert json.loads(log_lines[0])["event"] == "EXPIRED_TOKEN"
-        assert json.loads(log_lines[0])["request_id"] == "DUMMY_REQUEST_ID"
+        assert log_lines[0]["logger"] == "flowapi.access"
+        assert log_lines[0]["event"] == "EXPIRED_TOKEN"
+        assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
 
 
 @pytest.mark.asyncio
-async def test_claims_verify_fail(app):
+async def test_claims_verify_fail(app, json_log):
     """
     Test that failure to verify claims is logged.
 
@@ -94,15 +94,15 @@ async def test_claims_verify_fail(app):
     async with app.test_request_context("GET", "/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await claims_verification_failed_callback()
-        with open(os.path.join(log_dir, "flowkit-access.log")) as log_file:
-            log_lines = log_file.readlines()
+        log_lines = json_log().out
         assert len(log_lines) == 1
-        assert json.loads(log_lines[0])["event"] == "CLAIMS_VERIFICATION_FAILED"
-        assert json.loads(log_lines[0])["request_id"] == "DUMMY_REQUEST_ID"
+        assert log_lines[0]["logger"] == "flowapi.access"
+        assert log_lines[0]["event"] == "CLAIMS_VERIFICATION_FAILED"
+        assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"
 
 
 @pytest.mark.asyncio
-async def test_revoked_token(app):
+async def test_revoked_token(app, json_log):
     """
     Test that revoked tokens are logged.
 
@@ -117,8 +117,8 @@ async def test_revoked_token(app):
     async with app.test_request_context("GET", "/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await revoked_token_callback()
-        with open(os.path.join(log_dir, "flowkit-access.log")) as log_file:
-            log_lines = log_file.readlines()
+        log_lines = json_log().out
         assert len(log_lines) == 1
-        assert json.loads(log_lines[0])["event"] == "REVOKED_TOKEN"
-        assert json.loads(log_lines[0])["request_id"] == "DUMMY_REQUEST_ID"
+        assert log_lines[0]["logger"] == "flowapi.access"
+        assert log_lines[0]["event"] == "REVOKED_TOKEN"
+        assert log_lines[0]["request_id"] == "DUMMY_REQUEST_ID"

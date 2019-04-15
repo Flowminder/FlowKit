@@ -46,7 +46,7 @@ def test_proportion_reciprocal(get_dataframe):
         exclude_self_calls=False,
     )
     df = get_dataframe(query).set_index("subscriber")
-    assert df.value[0] == pytest.approx(0.00009999)
+    assert df.value[0] == pytest.approx(0.00009997)
 
     query = ProportionEventReciprocal(
         "2016-01-01",

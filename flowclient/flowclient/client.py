@@ -57,6 +57,7 @@ class Connection:
 
     def __init__(
         self,
+        *,
         url: str,
         token: str,
         api_version: int = 0,
@@ -80,7 +81,9 @@ class Connection:
             self.session.verify = ssl_certificate
         self.session.headers["Authorization"] = f"Bearer {self.token}"
 
-    def get_url(self, route: str) -> requests.Response:
+    def get_url(
+        self, *, route: str, data: Union[None, dict] = None
+    ) -> requests.Response:
         """
         Attempt to get something from the API, and return the raw
         response object if an error response wasn't received.
@@ -91,6 +94,9 @@ class Connection:
         route : str
             Path relative to API host to get
 
+        data : dict, optional
+            JSON data to send in the request body (optional)
+
         Returns
         -------
         requests.Response
@@ -99,7 +105,9 @@ class Connection:
         logger.debug(f"Getting {self.url}/api/{self.api_version}/{route}")
         try:
             response = self.session.get(
-                f"{self.url}/api/{self.api_version}/{route}", allow_redirects=False
+                f"{self.url}/api/{self.api_version}/{route}",
+                allow_redirects=False,
+                json=data,
             )
         except ConnectionError as e:
             error_msg = f"Unable to connect to FlowKit API at {self.url}: {e}"
@@ -130,7 +138,7 @@ class Connection:
                 f"Something went wrong: {error}. API returned with status code: {response.status_code} and status '{status}'"
             )
 
-    def post_json(self, route: str, data: dict) -> requests.Response:
+    def post_json(self, *, route: str, data: dict) -> requests.Response:
         """
         Attempt to post json to the API, and return the raw
         response object if an error response wasn't received.
@@ -187,7 +195,11 @@ class Connection:
 
 
 def connect(
-    url: str, token: str, api_version: int = 0, ssl_certificate: Union[str, None] = None
+    *,
+    url: str,
+    token: str,
+    api_version: int = 0,
+    ssl_certificate: Union[str, None] = None,
 ) -> Connection:
     """
     Connect to a FlowKit API server and return the resulting Connection object.
@@ -205,11 +217,13 @@ def connect(
     -------
     Connection
     """
-    return Connection(url, token, api_version, ssl_certificate)
+    return Connection(
+        url=url, token=token, api_version=api_version, ssl_certificate=ssl_certificate
+    )
 
 
 def query_is_ready(
-    connection: Connection, query_id: str
+    *, connection: Connection, query_id: str
 ) -> Tuple[bool, requests.Response]:
     """
     Check if a query id has results available.
@@ -230,7 +244,7 @@ def query_is_ready(
     logger.info(
         f"Polling server on {connection.url}/api/{connection.api_version}/poll/{query_id}"
     )
-    reply = connection.get_url(f"poll/{query_id}")
+    reply = connection.get_url(route=f"poll/{query_id}")
 
     if reply.status_code == 303:
         logger.info(
@@ -245,7 +259,7 @@ def query_is_ready(
         )
 
 
-def get_status(connection: Connection, query_id: str) -> str:
+def get_status(*, connection: Connection, query_id: str) -> str:
     """
     Check the status of a query.
 
@@ -262,7 +276,7 @@ def get_status(connection: Connection, query_id: str) -> str:
         "Finished" or "Running"
 
     """
-    ready, reply = query_is_ready(connection, query_id)
+    ready, reply = query_is_ready(connection=connection, query_id=query_id)
     if ready:
         return "Finished"
     else:
@@ -272,7 +286,7 @@ def get_status(connection: Connection, query_id: str) -> str:
             raise FlowclientConnectionError(f"No status reported.")
 
 
-def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFrame:
+def get_result_by_query_id(*, connection: Connection, query_id: str) -> pd.DataFrame:
     """
     Get a query by id, and return it as a dataframe
 
@@ -289,11 +303,15 @@ def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFram
         Dataframe containing the result
 
     """
-    query_ready, reply = query_is_ready(connection, query_id)  # Poll the server
+    query_ready, reply = query_is_ready(
+        connection=connection, query_id=query_id
+    )  # Poll the server
     while not query_ready:
         logger.info("Waiting before polling again.")
         time.sleep(1)  # Wait a second, then check if the query is ready again
-        query_ready, reply = query_is_ready(connection, query_id)  # Poll the server
+        query_ready, reply = query_is_ready(
+            connection=connection, query_id=query_id
+        )  # Poll the server
 
     logger.info(f"Getting {connection.url}/api/{connection.api_version}/get/{query_id}")
     result_location = reply.headers[
@@ -302,7 +320,7 @@ def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFram
     result_location = re.sub(
         "^/api/[0-9]+/", "", result_location
     )  # strip off the /api/<api_version>/
-    response = connection.get_url(result_location)
+    response = connection.get_url(route=result_location)
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
@@ -317,7 +335,7 @@ def get_result_by_query_id(connection: Connection, query_id: str) -> pd.DataFram
     return pd.DataFrame.from_records(result["query_result"])
 
 
-def get_result(connection: Connection, query: dict) -> pd.DataFrame:
+def get_result(*, connection: Connection, query: dict) -> pd.DataFrame:
     """
     Run and retrieve a query of a specified kind with parameters.
 
@@ -334,10 +352,12 @@ def get_result(connection: Connection, query: dict) -> pd.DataFrame:
        Pandas dataframe containing the results
 
     """
-    return get_result_by_query_id(connection, run_query(connection, query))
+    return get_result_by_query_id(
+        connection=connection, query_id=run_query(connection=connection, query=query)
+    )
 
 
-def get_geography(connection: Connection, aggregation_unit: str) -> dict:
+def get_geography(*, connection: Connection, aggregation_unit: str) -> dict:
     """
     Get geography data from the database.
 
@@ -357,7 +377,7 @@ def get_geography(connection: Connection, aggregation_unit: str) -> dict:
     logger.info(
         f"Getting {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
     )
-    response = connection.get_url(f"geography/{aggregation_unit}")
+    response = connection.get_url(route=f"geography/{aggregation_unit}")
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
@@ -374,7 +394,47 @@ def get_geography(connection: Connection, aggregation_unit: str) -> dict:
     return result
 
 
-def run_query(connection: Connection, query: dict) -> str:
+def get_available_dates(
+    *, connection: Connection, event_types: Union[None, List[str]] = None
+) -> dict:
+    """
+    Get available dates for different event types from the database.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection to use
+    event_types : list of str, optional
+        The event types for which to return available dates (for example: ["calls", "sms"]).
+        If None, return available dates for all available event types.
+
+    Returns
+    -------
+    dict
+        Available dates in the format {event_type: [list of dates]}
+
+    """
+    logger.info(
+        f"Getting {connection.url}/api/{connection.api_version}/available_dates"
+    )
+    response = connection.get_url(
+        route=f"available_dates", data={"event_types": event_types}
+    )
+    if response.status_code != 200:
+        try:
+            msg = response.json()["msg"]
+            more_info = f" Reason: {msg}"
+        except KeyError:
+            more_info = ""
+        raise FlowclientConnectionError(
+            f"Could not get available dates. API returned with status code: {response.status_code}.{more_info}"
+        )
+    result = response.json()["available_dates"]
+    logger.info(f"Got {connection.url}/api/{connection.api_version}/available_dates")
+    return result
+
+
+def run_query(*, connection: Connection, query: dict) -> str:
     """
     Run a query of a specified kind with parameters and get the identifier for it.
 
@@ -411,6 +471,7 @@ def run_query(connection: Connection, query: dict) -> str:
 
 
 def location_event_counts(
+    *,
     start_date: str,
     end_date: str,
     aggregation_unit: str,
@@ -459,6 +520,7 @@ def location_event_counts(
 
 
 def daily_location(
+    *,
     date: str,
     aggregation_unit: str,
     method: str,
@@ -466,6 +528,7 @@ def daily_location(
 ) -> dict:
     """
     Return query spec for a daily location query for a date and unit of aggregation.
+    Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
 
     Parameters
     ----------
@@ -496,6 +559,7 @@ def daily_location(
 
 
 def meaningful_locations_aggregate(
+    *,
     start_date: str,
     stop_date: str,
     label: str,
@@ -591,6 +655,7 @@ def meaningful_locations_aggregate(
 
 
 def meaningful_locations_between_label_od_matrix(
+    *,
     start_date: str,
     stop_date: str,
     label_a: str,
@@ -688,6 +753,7 @@ def meaningful_locations_between_label_od_matrix(
 
 
 def meaningful_locations_between_dates_od_matrix(
+    *,
     start_date_a: str,
     stop_date_a: str,
     start_date_b: str,
@@ -792,10 +858,11 @@ def meaningful_locations_between_dates_od_matrix(
 
 
 def modal_location(
-    *locations: Dict[str, Union[str, Dict[str, str]]], aggregation_unit: str
+    *, locations: List[Dict[str, Union[str, Dict[str, str]]]], aggregation_unit: str
 ) -> dict:
     """
     Return query spec for a modal location query for a list of locations.
+    Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
 
     Parameters
     ----------
@@ -818,6 +885,7 @@ def modal_location(
 
 
 def modal_location_from_dates(
+    *,
     start_date: str,
     stop_date: str,
     aggregation_unit: str,
@@ -826,6 +894,7 @@ def modal_location_from_dates(
 ) -> dict:
     """
     Return query spec for a modal location query for an (inclusive) date range and unit of aggregation.
+    Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
 
     Parameters
     ----------
@@ -853,17 +922,18 @@ def modal_location_from_dates(
     ]
     daily_locations = [
         daily_location(
-            date,
+            date=date,
             aggregation_unit=aggregation_unit,
             method=method,
             subscriber_subset=subscriber_subset,
         )
         for date in dates
     ]
-    return modal_location(*daily_locations, aggregation_unit=aggregation_unit)
+    return modal_location(locations=daily_locations, aggregation_unit=aggregation_unit)
 
 
 def flows(
+    *,
     from_location: Dict[str, Union[str, Dict[str, str]]],
     to_location: Dict[str, Union[str, Dict[str, str]]],
     aggregation_unit: str,
@@ -891,4 +961,141 @@ def flows(
         "from_location": from_location,
         "to_location": to_location,
         "aggregation_unit": aggregation_unit,
+    }
+
+
+def unique_subscriber_counts(
+    *, start_date: str, end_date: str, aggregation_unit: str
+) -> dict:
+    """
+    Return query spec for unique subscriber counts
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "unique_subscriber_counts",
+        "start_date": start_date,
+        "end_date": end_date,
+        "aggregation_unit": aggregation_unit,
+    }
+
+
+def location_introversion(
+    *, start_date: str, end_date: str, aggregation_unit: str, direction: str = "both"
+) -> dict:
+    """
+    Return query spec for location introversion
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    direction : {"in", "out", "both"}, default "both"
+        Optionally, include only ingoing or outbound calls/texts
+>
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "location_introversion",
+        "start_date": start_date,
+        "end_date": end_date,
+        "aggregation_unit": aggregation_unit,
+        "direction": direction,
+    }
+
+
+def total_network_objects(
+    *, start_date: str, end_date: str, aggregation_unit: str, period: str = "day"
+) -> dict:
+    """
+    Return query spec for total network objects
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    aggregation_unit : str
+        Unit of aggregation, e.g. "admin3"
+    period : {"second", "minute", "hour", "day", "month", "year"}
+        Time period to bucket by
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "total_network_objects",
+        "start_date": start_date,
+        "end_date": end_date,
+        "aggregation_unit": aggregation_unit,
+        "period": period,
+    }
+
+
+def spatial_aggregate(*, locations: Dict[str, Union[str, Dict[str, str]]]) -> dict:
+    """
+    Return a query spec for a spatially aggregated modal or daily location.
+
+    Parameters
+    ----------
+    locations : dict
+        Modal or daily location query to aggregate spatially
+
+    Returns
+    -------
+    dict
+        Query specification for an aggregated daily or modal location
+    """
+    return {"query_kind": "spatial_aggregate", "locations": locations}
+
+
+def joined_spatial_aggregate(
+    *,
+    locations: Dict[str, Union[str, Dict[str, str]]],
+    metric: Dict[str, Union[str, Dict[str, str]]],
+    method: str = "avg",
+) -> dict:
+    """
+    Return a query spec for a metric aggregated by attaching location information.
+
+    Parameters
+    ----------
+    locations : dict
+        Modal or daily location query to use to localise the metric
+    metric: dict
+        Metric to calculate and aggregate
+    method: {"avg", "max", "min", "median", "mode", "stddev", "variance"}, default "avg"
+        Method of aggregation
+
+    Returns
+    -------
+    dict
+        Query specification for an aggregated daily or modal location
+    """
+    return {
+        "query_kind": "joined_spatial_aggregate",
+        "method": method,
+        "locations": locations,
+        "metric": metric,
     }

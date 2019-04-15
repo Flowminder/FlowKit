@@ -77,6 +77,18 @@ claims = {
         "permissions": {"run": True, "poll": True, "get_result": True},
         "spatial_aggregation": ["admin3", "admin2", "admin1"],
     },
+    "unique_subscriber_counts": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
+    "location_introversion": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
+    "total_network_objects": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
 }
 
 TOKEN = make_token(

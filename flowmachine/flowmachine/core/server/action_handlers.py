@@ -99,7 +99,14 @@ def action_handler__run_query(**action_params):
         query_id = q_info_lookup.get_query_id(action_params)
     except QueryInfoLookupError:
         # Set the query running (it's safe to call this even if the query was set running before)
-        query_id = query_obj.store_async()
+        try:
+            query_id = query_obj.store_async()
+        except Exception as e:
+            return ZMQReply(
+                status="error",
+                msg="Unable to create query object.",
+                payload={"exception": str(e)},
+            )
 
         # Register the query as "known" (so that we can later look up the query kind
         # and its parameters from the query_id).
@@ -277,6 +284,43 @@ def action_handler__get_geography(aggregation_unit):
     return ZMQReply(status="success", payload=payload)
 
 
+def action_handler__get_available_dates(event_types=None):
+    """
+    Handler for the 'get_available_dates' action.
+
+    Returns a dict of the form {"calls": [...], "sms": [...], ...}.
+
+    Parameters
+    ----------
+    event_types: list of str, optional
+        List of event types for which to return available dates.
+
+    Returns
+    -------
+    ZMQReply
+        The reply from the action handler.
+    """
+    conn = Query.connection
+    if event_types is None:
+        event_types = tuple(
+            sorted([table_name for table_name, _, _, _ in conn.available_tables])
+        )
+    elif isinstance(event_types, (list, tuple)):
+        event_types = tuple(event_types)
+    else:
+        return ZMQReply(
+            status="error", msg=f"Invalid value for argument `event_types`."
+        )
+
+    available_dates = {
+        event_type: [date.strftime("%Y-%m-%d") for date in dates]
+        for (event_type, dates) in conn.available_dates(
+            table=event_types, strictness=2
+        ).items()
+    }
+    return ZMQReply(status="success", payload=available_dates)
+
+
 def get_action_handler(action):
     try:
         return ACTION_HANDLERS[action]
@@ -329,4 +373,5 @@ ACTION_HANDLERS = {
     "get_query_params": action_handler__get_query_params,
     "get_sql_for_query_result": action_handler__get_sql,
     "get_geography": action_handler__get_geography,
+    "get_available_dates": action_handler__get_available_dates,
 }

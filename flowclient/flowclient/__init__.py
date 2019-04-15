@@ -27,6 +27,12 @@ from .client import (
     get_status,
     query_is_ready,
     run_query,
+    get_available_dates,
+    unique_subscriber_counts,
+    location_introversion,
+    total_network_objects,
+    spatial_aggregate,
+    joined_spatial_aggregate,
 )
 
 __all__ = [
@@ -46,4 +52,10 @@ __all__ = [
     "get_status",
     "query_is_ready",
     "run_query",
+    "get_available_dates",
+    "unique_subscriber_counts",
+    "location_introversion",
+    "total_network_objects",
+    "spatial_aggregate",
+    "joined_spatial_aggregate",
 ]

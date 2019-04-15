@@ -11,18 +11,24 @@ from .helpers import poll_until_done
     "params",
     [
         {
-            "query_kind": "daily_location",
-            "date": "2016-01-01",
-            "method": "last",
-            "aggregation_unit": "admin3",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
         {
-            "query_kind": "daily_location",
-            "date": "2016-01-04",
-            "method": "most-common",
-            "aggregation_unit": "admin1",
-            "subscriber_subset": None,
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-04",
+                "method": "most-common",
+                "aggregation_unit": "admin1",
+                "subscriber_subset": None,
+            },
         },
     ],
 )
@@ -32,7 +38,7 @@ async def test_get_query_kind(params, zmq_port, zmq_host):
     Running 'get_query_kind' against an existing query_id returns the expected query kind.
     """
     #
-    # Run daily_location query.
+    # Run query.
     #
     msg = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
@@ -58,7 +64,7 @@ async def test_get_query_kind(params, zmq_port, zmq_host):
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert "success" == reply["status"]
     assert query_id == reply["payload"]["query_id"]
-    assert "daily_location" == reply["payload"]["query_kind"]
+    assert "spatial_aggregate" == reply["payload"]["query_kind"]
 
 
 @pytest.mark.asyncio

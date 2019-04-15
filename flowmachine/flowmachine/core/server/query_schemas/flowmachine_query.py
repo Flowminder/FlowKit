@@ -4,63 +4,41 @@
 
 from marshmallow_oneofschema import OneOfSchema
 
-from .dummy_query import DummyQuerySchema, DummyQueryExposed
-from .daily_location import DailyLocationSchema, DailyLocationExposed
-from .modal_location import ModalLocationSchema, ModalLocationExposed
-from .flows import FlowsSchema, FlowsExposed
+from flowmachine.core.server.query_schemas.joined_spatial_aggregate import (
+    JoinedSpatialAggregateSchema,
+)
+from flowmachine.core.server.query_schemas.spatial_aggregate import (
+    SpatialAggregateSchema,
+)
+from .dummy_query import DummyQuerySchema
+from .flows import FlowsSchema
 from .meaningful_locations import (
     MeaningfulLocationsAggregateSchema,
-    MeaningfulLocationsAggregateExposed,
     MeaningfulLocationsBetweenLabelODMatrixSchema,
-    MeaningfulLocationsBetweenLabelODMatrixExposed,
     MeaningfulLocationsBetweenDatesODMatrixSchema,
-    MeaningfulLocationsBetweenDatesODMatrixExposed,
 )
-from .geography import GeographySchema, GeographyExposed
-from .location_event_counts import LocationEventCountsSchema, LocationEventCountsExposed
-from .dfs_metric_total_amount import (
-    DFSTotalMetricAmountSchema,
-    DFSTotalMetricAmountExposed,
-)
+from .geography import GeographySchema
+from .location_event_counts import LocationEventCountsSchema
+from .unique_subscriber_counts import UniqueSubscriberCountsSchema
+from .location_introversion import LocationIntroversionSchema
+from .total_network_objects import TotalNetworkObjectsSchema
+from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {
         "dummy_query": DummyQuerySchema,
-        "daily_location": DailyLocationSchema,
-        "modal_location": ModalLocationSchema,
         "flows": FlowsSchema,
         "meaningful_locations_aggregate": MeaningfulLocationsAggregateSchema,
         "meaningful_locations_between_label_od_matrix": MeaningfulLocationsBetweenLabelODMatrixSchema,
         "meaningful_locations_between_dates_od_matrix": MeaningfulLocationsBetweenDatesODMatrixSchema,
         "geography": GeographySchema,
         "location_event_counts": LocationEventCountsSchema,
+        "unique_subscriber_counts": UniqueSubscriberCountsSchema,
+        "location_introversion": LocationIntroversionSchema,
+        "total_network_objects": TotalNetworkObjectsSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
+        "spatial_aggregate": SpatialAggregateSchema,
+        "joined_spatial_aggregate": JoinedSpatialAggregateSchema,
     }
-
-    def get_obj_type(self, obj):
-        if isinstance(obj, DummyQueryExposed):
-            return "dummy_query"
-        elif isinstance(obj, DailyLocationExposed):
-            return "daily_location"
-        elif isinstance(obj, ModalLocationExposed):
-            return "modal_location"
-        elif isinstance(obj, FlowsExposed):
-            return "flows"
-        elif isinstance(obj, MeaningfulLocationsAggregateExposed):
-            return "meaningful_locations_aggregate"
-        elif isinstance(obj, MeaningfulLocationsBetweenLabelODMatrixExposed):
-            return "meaningful_locations_between_label_od_matrix"
-        elif isinstance(obj, MeaningfulLocationsBetweenDatesODMatrixExposed):
-            return "meaningful_locations_between_dates_od_matrix"
-        elif isinstance(obj, GeographyExposed):
-            return "geography"
-        elif isinstance(obj, LocationEventCountsExposed):
-            return "location_event_counts"
-        elif isinstance(obj, DFSTotalMetricAmountExposed):
-            return "dfs_metric_total_amount"
-        else:
-            raise ValueError(
-                f"Object type '{obj.__class__.__name__}' not registered in FlowmachineQuerySchema."
-            )
