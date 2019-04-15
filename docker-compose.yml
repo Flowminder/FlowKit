@@ -113,7 +113,8 @@ services:
       - FLOWDB_HOST=${FLOWDB_HOST:?Must set FLOWDB_HOST env var}
       - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
       - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
-      - REDIS_HOST=${REDIS_HOST:?Must set REDIS_HOST env var}
+      - REDIS_HOST=query_locker
+      - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
     restart: always
     networks:
@@ -130,7 +131,7 @@ services:
     ports:
       - ${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}:9090
     environment:
-      - FLOWMACHINE_SERVER=flowmachine
+      - FLOWMACHINE_HOST=flowmachine
       - FLOWAPI_FLOWDB_USER=${FLOWAPI_FLOWDB_USER:?Must set FLOWAPI_FLOWDB_USER env var}
       - FLOWAPI_FLOWDB_PASS=${FLOWAPI_FLOWDB_PASS:?Must set FLOWAPI_FLOWDB_PASS env var}
       - FLOWDB_HOST=${FLOWDB_HOST:?Must set FLOWDB_HOST env var}

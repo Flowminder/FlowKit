@@ -27,7 +27,7 @@ QUART_DEBUG=1
 # Error & debug log level
 FLOWAPI_LOG_LEVEL=debug 
 # Flowmachine ZMQ host
-FLOWMACHINE_SERVER=localhost
+FLOWMACHINE_HOST=localhost
 FLOWAPI_PORT=9090
 
 

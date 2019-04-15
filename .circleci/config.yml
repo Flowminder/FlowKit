@@ -96,7 +96,7 @@ executors:
         QUART_APP: "flowapi.main:create_app()"
         FLOWMACHINE_FLOWDB_USER: analyst
         LOG_DIRECTORY: "."
-        FLOWMACHINE_SERVER: localhost
+        FLOWMACHINE_HOST: localhost
         FLOWDB_HOST: localhost
         JWT_SECRET_KEY: secret
     docker:

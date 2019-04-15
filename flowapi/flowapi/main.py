@@ -82,7 +82,7 @@ async def connect_zmq():
     current_app.flowapi_logger.debug("Connecting to FlowMachine server…")
     socket = context.socket(zmq.REQ)
     socket.connect(
-        f"tcp://{current_app.config['FLOWMACHINE_SERVER']}:{current_app.config['FLOWMACHINE_PORT']}"
+        f"tcp://{current_app.config['FLOWMACHINE_HOST']}:{current_app.config['FLOWMACHINE_PORT']}"
     )
     request.socket = socket
     current_app.flowapi_logger.debug("Connected.")
