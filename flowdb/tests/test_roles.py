@@ -64,7 +64,7 @@ class TestRole(object):
             The usr password.
         """
         return env["{}_FLOWDB_PASSWORD".format(usr_env_prefix.upper())]
-    
+
     @pytest.fixture(scope="class", autouse=True)
     def usr(self, usr_env_prefix, env):
         """
