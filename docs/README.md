@@ -9,7 +9,7 @@ FlowKit's documentation is built using [Mkdocs](http://mkdocs.org).
 - Docker
 - Pipenv
 
-To build the docs, first install the necessary dependencies by running `pipenv install` (in the `docs/` subfolder). Once this completes, you can build the docs by running `pipenv run build`, after sourcing the top level `development_environment` file.
+To build the docs, first install the necessary dependencies by running `pipenv install` (in the `docs/` subfolder). Once this completes, you can build the docs by running `pipenv run build`, after sourcing the top level `development_environment` file by running `set -a && . ./development_environment && set +a` in the project root.
 
 This will create any necessary Docker containers, run all notebooks, generate markdown for the APIs, and finally build all the resulting markdown to HTML. Built docs will be in the `flowkit-docs` directory.
 
