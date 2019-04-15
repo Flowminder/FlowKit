@@ -21,7 +21,7 @@
 DOCKER_COMPOSE_FILE_DEV ?= docker-compose.yml
 FLOWDB_SERVICES ?= flowdb_testdata
 DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth query_locker
-export FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
+export DOCKER_FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
 
 
 all:

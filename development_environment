@@ -32,10 +32,9 @@ FLOWAPI_PORT=9090
 
 
 # Hostname to connect to flowdb
-FLOWDB_HOST=flowdb
+FLOWDB_HOST=localhost
 # Port to connect to flowdb
-FLOWDB_PORT=5432
-LOCALHOST_FLOWDB_PORT=9000 
+FLOWDB_PORT=9000 
 
 ## FlowMachine settings
 # To avoid mpl errors
