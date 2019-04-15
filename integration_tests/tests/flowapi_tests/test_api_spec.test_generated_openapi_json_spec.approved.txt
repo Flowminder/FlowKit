@@ -826,6 +826,13 @@
         ],
         "type": "object"
       }
+    },
+    "securitySchemes": {
+      "token": {
+        "bearerFormat": "JWT",
+        "scheme": "bearer",
+        "type": "http"
+      }
     }
   },
   "info": {
