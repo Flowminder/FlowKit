@@ -70,7 +70,7 @@ def test_generic_status_code_error(session_mock, token):
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(
         FlowclientConnectionError,
-        match="Something went wrong: I AM A TEAPOT. API returned with status code: 418",
+        match="Something went wrong. API returned with status code 418. Error message: 'I AM A TEAPOT'. Payload: {}",
     ):
         connection.post_json(route="DUMMY_ROUTE", data={})
 
