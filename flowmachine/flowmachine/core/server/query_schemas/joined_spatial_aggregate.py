@@ -25,6 +25,7 @@ class JoinableMetrics(OneOfSchema):
 
 
 class JoinedSpatialAggregateSchema(Schema):
+    query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
     locations = fields.Nested(InputToSpatialAggregate, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
     method = fields.String(

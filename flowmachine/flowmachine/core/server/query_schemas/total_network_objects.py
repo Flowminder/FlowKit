@@ -14,7 +14,7 @@ __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
 
 
 class TotalNetworkObjectsSchema(Schema):
-
+    query_kind = fields.String(validate=OneOf(["total_network_objects"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
     period = fields.String(default="day", validate=OneOf(valid_periods))
