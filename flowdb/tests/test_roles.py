@@ -9,8 +9,8 @@ Test for the database roles.
 The database has three different roles:
 
     * `flowdb`: database super user.
-    * `analyst`: FlowMachine user with read access to raw tables.
-    * `reporter`: has read access to public tables only and
+    * `$FLOWMACHINE_FLOWDB_USER`: FlowMachine user with read access to raw tables.
+    * `$FLOWAPI_FLOWDB_USER`: has read access to public tables only and
                   reference tables.
 """
 
@@ -19,8 +19,8 @@ import psycopg2 as pg
 
 
 @pytest.fixture
-def test_tables():
-    """Define the test tables for testing the analyst and reporter roles.
+def test_tables(env):
+    """Define the test tables for testing the flowmachine and flowapi user roles.
 
     Returns
     -------
@@ -37,10 +37,10 @@ def test_tables():
             CREATE TABLE IF NOT EXISTS
                 routing.foo ()
             """,
-        "cache.blah": """
+        "cache.blah": f"""
             CREATE TABLE IF NOT EXISTS
                 cache.blah();
-            ALTER TABLE cache.blah OWNER TO analyst;
+            ALTER TABLE cache.blah OWNER TO {env["FLOWMACHINE_FLOWDB_USER"]};
             """,
         "geography.admin0": """
             CREATE TABLE IF NOT EXISTS 
@@ -51,38 +51,50 @@ def test_tables():
 
 
 @pytest.mark.usefixtures("create_test_tables")
-@pytest.mark.parametrize("usr", ["analyst", "reporter"], scope="class")
+@pytest.mark.parametrize("usr_env_prefix", ["flowmachine", "flowapi"], scope="class")
 class TestRole(object):
     @pytest.fixture(scope="class", autouse=True)
-    def pwd(self, usr, env):
+    def pwd(self, usr_env_prefix, env):
         """
-        Returns the password for the given usr.
+        Returns the password for the given usr_env_prefix.
 
         Returns
         -------
         str
             The usr password.
         """
-        return env["{}_PASSWORD".format(usr.upper())]
+        return env["{}_FLOWDB_PASSWORD".format(usr_env_prefix.upper())]
+    
+    @pytest.fixture(scope="class", autouse=True)
+    def usr(self, usr_env_prefix, env):
+        """
+        Returns the usr for the given usr_env_prefix.
+
+        Returns
+        -------
+        str
+            The usr
+        """
+        return env["{}_FLOWDB_USER".format(usr_env_prefix.upper())]
 
     def test_cannot_drop_events(self, cursor):
         """Role cannot DROP TABLE on events."""
         with pytest.raises(pg.ProgrammingError):
             cursor.execute("DROP TABLE events.calls")
 
-    @pytest.mark.skip_usrs(["reporter"])
+    @pytest.mark.skip_usrs(["flowapi"])
     def test_select_events(self, cursor):
         """Role can do SELECT on events.calls."""
         cursor.execute("SELECT * FROM events.calls")
 
         cursor.execute("SELECT * FROM routing.foo")
 
-    @pytest.mark.skip_usrs(["reporter"])
+    @pytest.mark.skip_usrs(["flowapi"])
     def test_select_new_events(self, cursor):
         """Role can read new tables created under the events schema."""
         cursor.execute("SELECT * FROM events.calls_20160101;")
 
-    @pytest.mark.skip_usrs(["analyst"])
+    @pytest.mark.skip_usrs(["flowmachine"])
     def test_cannot_select_events(self, cursor):
         """Role cannot do SELECT on events.calls."""
         with pytest.raises(pg.ProgrammingError):
@@ -106,15 +118,15 @@ class TestRole(object):
         cursor.execute("CREATE TABLE foo(id TEXT)")
         cursor.execute("DROP TABLE foo")
 
-    @pytest.mark.skip_usrs(["analyst"])
+    @pytest.mark.skip_usrs(["flowmachine"])
     def test_cannot_drop_geo(self, cursor):
-        """Reporter cannot drop geography tables."""
+        """Flowapi cannot drop geography tables."""
         with pytest.raises(pg.ProgrammingError):
             cursor.execute("DROP TABLE geography.admin0")
 
-    @pytest.mark.skip_usrs(["analyst"])
+    @pytest.mark.skip_usrs(["flowmachine"])
     def test_cannot_drop_cache_tables(self, cursor):
-        """Reporter cannot drop cache tables"""
+        """Flowapi cannot drop cache tables"""
         with pytest.raises(pg.ProgrammingError):
             cursor.execute("DROP TABLE cache.blah")
 
@@ -123,9 +135,9 @@ class TestRole(object):
         with pytest.raises(pg.ProgrammingError):
             cursor.execute("DROP TABLE cache.cached")
 
-    @pytest.mark.skip_usrs(["analyst"])
+    @pytest.mark.skip_usrs(["flowmachine"])
     def test_cannot_select_cache_metadata_table(self, cursor):
-        """Reporter cannot read cache metadata"""
+        """Flowapi cannot read cache metadata"""
         with pytest.raises(pg.ProgrammingError):
             cursor.execute("SELECT * FROM cache.cached")
 
@@ -134,9 +146,9 @@ class TestRole(object):
         with pytest.raises(pg.ProgrammingError):
             cursor.execute("DROP TABLE cache.dependencies")
 
-    @pytest.mark.skip_usrs(["reporter"])
+    @pytest.mark.skip_usrs(["flowapi"])
     def test_can_drop_cache_tables(self, cursor):
-        """Analyst can drop cache tables"""
+        """Flowmachine can drop cache tables"""
         cursor.execute("DROP TABLE cache.blah")
 
     def test_select_cache(self, cursor):
@@ -147,12 +159,12 @@ class TestRole(object):
         """Everybody can SELECT from the geography tables."""
         cursor.execute("SELECT * FROM geography.admin0")
 
-    @pytest.mark.skip_usrs(["reporter"])
+    @pytest.mark.skip_usrs(["flowapi"])
     def test_select_cache_metadata_table(self, cursor):
         """Role can do SELECT on cache tables."""
         cursor.execute("SELECT * FROM cache.cached")
 
-    @pytest.mark.skip_usrs(["reporter"])
+    @pytest.mark.skip_usrs(["flowapi"])
     def test_select_cache_dependencies_table(self, cursor):
-        """Analyst can do SELECT on cache dependencies table."""
+        """Flowmachine can do SELECT on cache dependencies table."""
         cursor.execute("SELECT * FROM cache.dependencies")

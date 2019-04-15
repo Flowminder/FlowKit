@@ -220,8 +220,8 @@ cd secrets_quickstart
 docker login
 docker swarm init
 openssl rand -base64 16 | docker secret create FLOWMACHINE_WORD -
-echo "fm" | docker secret create FLOWMACHINE_FLOWDB_USER -
-echo "api" | docker secret create FLOWAPI_FLOWDB_USER -
+echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
+echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
 openssl rand -base64 16 | docker secret create FLOWAPI_FLOWDB_PASSWORD -
 openssl rand -base64 16 | docker secret create POSTGRES_PASSWORD_FILE -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \

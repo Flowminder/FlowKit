@@ -40,25 +40,25 @@ fi
 
 if [ -e /run/secrets/FLOWMACHINE_FLOWDB_USER ];
 then
-    echo "Using secrets for analyst user."
+    echo "Using secrets for flowmachine user."
     FLOWMACHINE_FLOWDB_USER=$(< /run/secrets/FLOWMACHINE_FLOWDB_USER)
 fi
 
 if [ -e /run/secrets/FLOWMACHINE_FLOWDB_PASSWORD ];
 then
-    echo "Using secrets for analyst password."
+    echo "Using secrets for flowmachine user password."
     FLOWMACHINE_FLOWDB_PASSWORD=$(< /run/secrets/FLOWMACHINE_FLOWDB_PASSWORD)
 fi
 
 if [ -e /run/secrets/FLOWAPI_FLOWDB_USER ];
 then
-    echo "Using secrets for reporter user."
+    echo "Using secrets for flowapi user."
     FLOWAPI_FLOWDB_USER=$(< /run/secrets/FLOWAPI_FLOWDB_USER)
 fi
 
 if [ -e /run/secrets/FLOWAPI_FLOWDB_PASSWORD ];
 then
-    echo "Using secrets for reporter password."
+    echo "Using secrets for flowapi user password."
     FLOWAPI_FLOWDB_PASSWORD=$(< /run/secrets/FLOWAPI_FLOWDB_PASSWORD)
 fi
 

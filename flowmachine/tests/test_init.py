@@ -134,7 +134,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_logging_mock.assert_called_with("error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
-        user="analyst",
+        user="flowmachine",
         password="foo",
         host="localhost",
         database="flowdb",

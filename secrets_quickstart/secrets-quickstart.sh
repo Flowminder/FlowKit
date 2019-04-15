@@ -22,8 +22,8 @@ docker secret rm JWT_SECRET_KEY
 docker secret rm REDIS_PASSWORD_FILE
 echo "Adding secrets"
 openssl rand -base64 16 | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
-echo "fm" | docker secret create FLOWMACHINE_FLOWDB_USER -
-echo "api" | docker secret create FLOWAPI_FLOWDB_USER -
+echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
+echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
 openssl rand -base64 16 | docker secret create FLOWAPI_FLOWDB_PASSWORD -
 openssl rand -base64 16 | docker secret create POSTGRES_PASSWORD_FILE -
 openssl rand -base64 16 | docker secret create REDIS_PASSWORD_FILE -

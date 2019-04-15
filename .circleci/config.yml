@@ -14,6 +14,8 @@ defaults:
     FLOWDB_INGESTION_DIR: /home/circleci/project/flowdb/tests/data
     POSTGRES_PASSWORD: flowflow
     POSTGRES_USER: flowdb
+    FLOWMACHINE_FLOWDB_USER: flowmachine
+    FLOWAPI_FLOWDB_USER: flowapi
     FLOWMACHINE_FLOWDB_PASSWORD: foo
     FLOWAPI_FLOWDB_PASSWORD: foo
   - &wait_for_flowdb
@@ -88,13 +90,13 @@ executors:
         FLOWDB_PORT: 5432
         FLOWMACHINE_FLOWDB_PASSWORD: foo
         FLOWAPI_FLOWDB_PASSWORD: foo
-        FLOWAPI_FLOWDB_USER: reporter
+        FLOWAPI_FLOWDB_USER: flowapi
         REDIS_PASSWORD: fm_redis
         SYNTHETIC_DATA_DB_PORT: 5432
         POSTGRES_USER: flowdb
         REDIS_HOST: "localhost"
         QUART_APP: "flowapi.main:create_app()"
-        FLOWMACHINE_FLOWDB_USER: analyst
+        FLOWMACHINE_FLOWDB_USER: flowmachine
         LOG_DIRECTORY: "."
         FLOWMACHINE_HOST: localhost
         FLOWDB_HOST: localhost

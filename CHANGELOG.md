@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `daily_location` and `modal_location` query types are no longer accepted as top-level queries, and must be wrapped using `spatial_aggregate`
 - `JoinedSpatialAggregate` no longer accepts positional arguments
 - `JoinedSpatialAggregate` now supports "avg", "max", "min", "median", "mode", "stddev" and "variance" stats
+- Default FlowDB users for FlowMachine and FlowAPI have changed from "analyst" and "reporter" to "flowmachine" and "flowapi", respectively
 
 ### Fixed
 - `total_network_objects` no longer returns results from `AggregateNetworkObjects` [#603](https://github.com/Flowminder/FlowKit/issues/603)

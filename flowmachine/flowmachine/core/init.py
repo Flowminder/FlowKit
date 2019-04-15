@@ -52,7 +52,7 @@ def connect(
         Level to log at
     db_port : int, default 9000
         Port number to connect to flowdb
-    db_user : str, default "analyst"
+    db_user : str, default "flowmachine"
         Name of user to connect to flowdb as
     db_pass : str, default "foo"
         Password to connect to flowdb
@@ -100,7 +100,8 @@ def connect(
     )
     db_user = (
         getsecret(
-            "FLOWMACHINE_FLOWDB_USER", os.getenv("FLOWMACHINE_FLOWDB_USER", "analyst")
+            "FLOWMACHINE_FLOWDB_USER",
+            os.getenv("FLOWMACHINE_FLOWDB_USER", "flowmachine"),
         )
         if db_user is None
         else db_user
