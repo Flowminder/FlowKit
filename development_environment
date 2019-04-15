@@ -40,7 +40,7 @@ FLOWDB_PORT=9000
 # To avoid mpl errors
 MPLBACKEND="agg" 
 # Password for redis
-REDIS_PASSWORD=fm_redis 
+REDIS_PASS=fm_redis 
 # Error and debugging log level
 FLOWMACHINE_LOG_LEVEL=debug
 

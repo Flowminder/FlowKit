@@ -55,7 +55,7 @@ def test_param_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", "7777")
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
     monkeypatch.setenv("REDIS_PORT", "7777")
-    monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
+    monkeypatch.setenv("REDIS_PASS", "DUMMY_ENV_REDIS_PASS")
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
     )
@@ -69,7 +69,7 @@ def test_param_priority(mocked_connections, monkeypatch):
         db_connection_pool_overflow=1011,
         redis_host="dummy_redis_host",
         redis_port=1213,
-        redis_password="dummy_redis_password",
+        redis_pass="dummy_redis_password",
     )
     core_init_logging_mock.assert_called_with("dummy_log_level")
     core_init_Connection_mock.assert_called_with(
@@ -101,7 +101,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", "2020")
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
     monkeypatch.setenv("REDIS_PORT", "5050")
-    monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
+    monkeypatch.setenv("REDIS_PASS", "DUMMY_ENV_REDIS_PASS")
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
     )
@@ -117,7 +117,7 @@ def test_env_priority(mocked_connections, monkeypatch):
         overflow=2020,
     )
     core_init_StrictRedis_mock.assert_called_with(
-        host="DUMMY_ENV_REDIS_HOST", port=5050, password="DUMMY_ENV_REDIS_PASSWORD"
+        host="DUMMY_ENV_REDIS_HOST", port=5050, password="DUMMY_ENV_REDIS_PASS"
     )
     core_init_start_threadpool_mock.assert_called_with(
         thread_pool_size=7777
@@ -130,7 +130,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_logging_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
     )
-    connect(db_pass="foo", redis_password="fm_redis")
+    connect(db_pass="foo", redis_pass="fm_redis")
     core_init_logging_mock.assert_called_with("error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
@@ -150,9 +150,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
 
 
 @pytest.mark.usefixtures("clean_env")
-@pytest.mark.parametrize(
-    "args", [{}, {"db_pass": "foo"}, {"redis_password": "fm_redis"}]
-)
+@pytest.mark.parametrize("args", [{}, {"db_pass": "foo"}, {"redis_pass": "fm_redis"}])
 def test_connect_passwords_required(args):
     """Test connect raises a valueerror if no password is set for db or redis"""
     with pytest.raises(ValueError):

@@ -38,7 +38,7 @@ def connect(
     db_connection_pool_overflow: Union[int, None] = None,
     redis_host: Union[str, None] = None,
     redis_port: Union[int, None] = None,
-    redis_password: Union[str, None] = None,
+    redis_pass: Union[str, None] = None,
     conn: Union[Connection, None] = None,
 ) -> Connection:
     """
@@ -66,7 +66,7 @@ def connect(
         Hostname for redis server.
     redis_port : int, default 6379
         Port the redis server is available on
-    redis_password : str, default "fm_redis"
+    redis_pass : str, default "fm_redis"
         Password for the redis instance
     conn : flowmachine.core.Connection
         Optionally provide an existing Connection object to use, overriding any the db options specified here.
@@ -143,9 +143,9 @@ def connect(
         else redis_port
     )
     redis_pw = (
-        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD"))
-        if redis_password is None
-        else redis_password
+        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASS"))
+        if redis_pass is None
+        else redis_pass
     )
 
     if db_pass is None:
@@ -155,7 +155,7 @@ def connect(
 
     if redis_pw is None:
         raise ValueError(
-            "You must provide a secret named REDIS_PASSWORD_FILE, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
+            "You must provide a secret named REDIS_PASSWORD_FILE, set an environment variable named REDIS_PASS, or provide a redis_pass argument."
         )
 
     try:

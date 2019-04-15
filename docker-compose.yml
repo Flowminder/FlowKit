@@ -115,7 +115,7 @@ services:
       - FLOWMACHINE_FLOWDB_PASS=${FLOWMACHINE_FLOWDB_PASS:?Must set FLOWMACHINE_FLOWDB_PASS env var}
       - REDIS_HOST=query_locker
       - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+      - REDIS_PASS=${REDIS_PASS:?Must set REDIS_PASS env var}
     restart: always
     networks:
       - zero
@@ -162,7 +162,7 @@ services:
     ports:
       - ${REDIS_PORT:?Must set REDIS_PORT env var}:6379
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+      - REDIS_PASS=${REDIS_PASS:?Must set REDIS_PASS env var}
     restart: always
     networks:
       redis:
