@@ -33,7 +33,7 @@ def remove_discriminators(spec: dict) -> dict:
     return newdict
 
 
-async def get_spec(socket: Socket, request_id: str) -> dict:
+async def get_spec(socket: Socket, request_id: str) -> APISpec:
     """
     Construct open api spec by interrogating FlowMachine.
 
@@ -45,6 +45,8 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
 
     Returns
     -------
+    APISpec
+        The specification object
 
     """
     msg = {"request_id": request_id, "action": "get_query_schemas"}
@@ -93,25 +95,25 @@ async def get_spec(socket: Socket, request_id: str) -> dict:
         except Exception as e:
             pass  # Don't include in API
 
-    return spec.to_dict()
+    return spec
 
 
 @blueprint.route("/openapi.json")
 async def get_api_spec():
-    return jsonify(await get_spec(request.socket, request.request_id))
+    spec = await get_spec(request.socket, request.request_id)
+    return jsonify(spec.to_dict())
 
 
 @blueprint.route("/openapi.yaml")
 async def get_yaml_api_spec():
-    yaml_spec = yaml.dump(await get_spec(request.socket, request.request_id))
-    return current_app.response_class(yaml_spec, content_type="application/x-yaml")
+    spec = await get_spec(request.socket, request.request_id)
+    return current_app.response_class(spec.to_yaml(), content_type="application/x-yaml")
 
 
 @blueprint.route("/openapi-redoc.json")
 async def get_redoc_api_spec():
-    return jsonify(
-        remove_discriminators(await get_spec(request.socket, request.request_id))
-    )
+    spec = await get_spec(request.socket, request.request_id)
+    return jsonify(remove_discriminators(spec.to_dict()))
 
 
 @blueprint.route("/redoc")

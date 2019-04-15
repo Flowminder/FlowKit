@@ -35,7 +35,7 @@ setup(
         "asyncpg",
         "pyyaml >= 5.1",
         "python-rapidjson",
-        "apispec",
+        "apispec[yaml]",
     ],
     extras_require={"test": ["pytest", "coverage"]},
 )
