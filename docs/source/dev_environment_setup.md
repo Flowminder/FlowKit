@@ -66,7 +66,7 @@ manually add it to this file. See the ApprovalTests [README](https://github.com/
 examples (illustrative particularly for file paths on Windows).
 
 !!! warning
-    The project root contains an env file (`development_environment`), in which are default values for _all_ of the environment variables used to control and configure the FlowDB, FlowAPI, FlowMachine and FlowAuth. You will need to source this file, or otherwise set the environment variables before running _any other command_.
+    The project root contains an env file (`development_environment`), in which are default values for _all_ of the environment variables used to control and configure the FlowDB, FlowAPI, FlowMachine and FlowAuth. You will need to source this file (`set -a && . ./development_environment && set +a`), or otherwise set the environment variables before running _any other command_.
 
 ## Option 1: Starting up all FlowKit components inside a dockerised development environment
 
