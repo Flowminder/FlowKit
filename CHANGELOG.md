@@ -7,10 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- All environment variables are now in a single `development_environment` file in the project root, development environment setup has been simplified
+- Default FlowDB users for FlowMachine and FlowAPI have changed from "analyst" and "reporter" to "flowmachine" and "flowapi", respectively
 
 ### Fixed
 
 ### Removed
+- Docs and integration tests now use top level compose file
+
 
 ## [0.5.3]
 ### Added
@@ -22,17 +26,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - New `joined_spatial_aggregate` API endpoint and FlowClient function [#600](https://github.com/Flowminder/FlowKit/issues/600)
 
 ### Changed
-- All environment variables are now in a single `development_environment` file in the project root, development environment setup has been simplified
 - `daily_location` and `modal_location` query types are no longer accepted as top-level queries, and must be wrapped using `spatial_aggregate`
 - `JoinedSpatialAggregate` no longer accepts positional arguments
 - `JoinedSpatialAggregate` now supports "avg", "max", "min", "median", "mode", "stddev" and "variance" stats
-- Default FlowDB users for FlowMachine and FlowAPI have changed from "analyst" and "reporter" to "flowmachine" and "flowapi", respectively
 
 ### Fixed
 - `total_network_objects` no longer returns results from `AggregateNetworkObjects` [#603](https://github.com/Flowminder/FlowKit/issues/603)
-
-### Removed
-- Docs and integration tests now use top level compose file
 
 
 ## [0.5.2]
