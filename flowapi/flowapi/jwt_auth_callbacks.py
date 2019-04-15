@@ -88,7 +88,7 @@ async def claims_verification_failed_callback() -> Response:
         src_ip=request.headers.get("Remote-Addr"),
         json_payload=await request.json,
     )
-    return jsonify({"msg": "User claims verification failed"}), 401
+    return jsonify({"msg": "User claims verification failed"}), 403
 
 
 async def invalid_token_callback(error_string) -> Response:
