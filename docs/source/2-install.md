@@ -152,7 +152,7 @@ The standard Docker compose file supplies a number of 'secret' values as environ
 
 Instead, you should make use of [docker secrets](https://docs.docker.com/engine/swarm/secrets/), which are stored securely in docker and only made available _inside_ containers.  The `secrets_quickstart` directory contains a [docker _stack_](https://docs.docker.com/docker-cloud/apps/stack-yaml-reference/) file (`docker-stack.yml`). The stack file is very similar to a compose file, but removes container names, and adds a new section - secrets.
 
-The stack expects you to provide seven secrets:
+The stack expects you to provide eight secrets:
 
  - cert-flowkit.pem
  
@@ -174,9 +174,13 @@ The stack expects you to provide seven secrets:
  
     The password that FlowMachine will use to connect to FlowDB
 
- - POSTGRES_PASSWORD_FILE
+ - POSTGRES_PASSWORD
  
     The superuser password for the `flowdb` user 
+
+ - REDIS_PASSWORD
+ 
+    The password for redis 
 
  - JWT_SECRET_KEY
  
@@ -219,17 +223,18 @@ conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certifi
 cd secrets_quickstart
 docker login
 docker swarm init
-openssl rand -base64 16 | docker secret create FLOWMACHINE_WORD -
+openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
 echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
-openssl rand -base64 16 | docker secret create FLOWAPI_FLOWDB_PASSWORD -
-openssl rand -base64 16 | docker secret create POSTGRES_PASSWORD_FILE -
+openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAPI_FLOWDB_PASSWORD -
+openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create POSTGRES_PASSWORD -
+openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create REDIS_PASSWORD -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
     -extensions SAN \
     -config <( cat $( [[ "Darwin" -eq "$(uname -s)" ]]  && echo /System/Library/OpenSSL/openssl.cnf || echo /etc/ssl/openssl.cnf  ) \
     <(printf "[SAN]\nsubjectAltName='DNS.1:localhost,DNS.2:flow.api'")) \
     -keyout cert.key -out cert.pem
-cat client_cert.key cert.pem > cert-flowkit.pem
+cat cert.key cert.pem > cert-flowkit.pem
 docker secret create cert-flowkit.pem cert-flowkit.pem
 echo "secret" | docker secret create JWT_SECRET_KEY -
 docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
@@ -245,7 +250,7 @@ You can then provide the certificate to `flowclient`, and finally connect via ht
 
 ```python
 import flowclient
-conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certificate="<path_to_cert.pem>")
+conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", ssl_certificate="<path_to_cert.pem>")
 ```
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)

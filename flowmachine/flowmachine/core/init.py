@@ -146,7 +146,7 @@ def connect(
         else redis_port
     )
     redis_pw = (
-        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD"))
+        getsecret("REDIS_PASSWORD", os.getenv("REDIS_PASSWORD"))
         if redis_password is None
         else redis_password
     )
@@ -158,7 +158,7 @@ def connect(
 
     if redis_pw is None:
         raise ValueError(
-            "You must provide a secret named REDIS_PASSWORD_FILE, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
+            "You must provide a secret named REDIS_PASSWORD, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
         )
 
     try:

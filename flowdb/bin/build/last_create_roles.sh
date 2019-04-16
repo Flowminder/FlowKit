@@ -31,10 +31,10 @@ set -e
 
 export PGUSER="$POSTGRES_USER"
 
-if [ ! -e /run/secrets/POSTGRES_PASSWORD_FILE -a -z "$POSTGRES_PASSWORD" ];
+if [ ! -e /run/secrets/POSTGRES_PASSWORD -a -z "$POSTGRES_PASSWORD" ];
 then
     echo "No password supplied for superuser!"
-    echo "Set the POSTGRES_PASSWORD environment variable, or provide the POSTGRES_PASSWORD_FILE secret"
+    echo "Set the POSTGRES_PASSWORD environment variable, or provide the POSTGRES_PASSWORD secret"
     exit 1
 fi
 

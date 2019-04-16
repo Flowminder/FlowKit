@@ -2,7 +2,7 @@
 # Stack file for flowkit integration tests
 #
 
-version: '3.1'
+version: '3.7'
 secrets:
   cert-flowkit.pem: # SSL Certificate used to serve FlowAPI over https
     external: true
@@ -14,11 +14,11 @@ secrets:
     external: true
   FLOWMACHINE_FLOWDB_PASSWORD: # Password for FlowDB
     external: true
-  POSTGRES_PASSWORD_FILE: # Postgres superuser password
+  POSTGRES_PASSWORD: # Postgres superuser password
     external: true
   JWT_SECRET_KEY: # Secret used to sign api tokens
     external: true
-  REDIS_PASSWORD_FILE: # Redis password
+  REDIS_PASSWORD: # Redis password
     external: true
 networks:
   db:
@@ -28,14 +28,22 @@ networks:
 services:
     flowdb:
         image: "flowminder/flowdb-testdata:${CIRCLE_BRANCH:-latest}"
+        environment:
+          - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_PASSWORD
+        ports:
+          - "9000:5432"
         secrets:
-          - POSTGRES_PASSWORD_FILE
+          - POSTGRES_PASSWORD
           - FLOWAPI_FLOWDB_USER
           - FLOWAPI_FLOWDB_PASSWORD
           - FLOWMACHINE_FLOWDB_USER
           - FLOWMACHINE_FLOWDB_PASSWORD
         tty: true
-        shm_size: 1G
+        volumes:
+          - type: tmpfs
+            target: /dev/shm
+            tmpfs:
+              size: 1000000000
         stdin_open: true
         networks:
           db:
@@ -48,10 +56,11 @@ services:
             - FLOWDB_HOST=flowdb
             - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:-error}
             - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
+            - REDIS_HOST=query_locker
         secrets:
           - FLOWMACHINE_FLOWDB_USER
           - FLOWMACHINE_FLOWDB_PASSWORD
-          - REDIS_PASSWORD_FILE
+          - REDIS_PASSWORD
         networks:
           - db
           - redis
@@ -75,8 +84,10 @@ services:
           - api
     query_locker:
         image: bitnami/redis:latest
+        environment:
+          - REDIS_PASSWORD_FILE=/run/secrets/REDIS_PASSWORD
         secrets:
-          - REDIS_PASSWORD_FILE
+          - REDIS_PASSWORD
         networks:
           redis:
             aliases:
