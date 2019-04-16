@@ -10,7 +10,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - The `period` argument to `TotalNetworkObjects` in FlowMachine has been renamed `total_by`
 - The `period` argument to `total_network_objects` in FlowClient has been renamed `total_by`
-  - The `by` argument to `AggregateNetworkObjects` in FlowMachine has been renamed to `aggregate_by`
  - The `by` argument to `AggregateNetworkObjects` in FlowMachine has been renamed to `aggregate_by`
 ### Fixed
 
