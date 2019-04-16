@@ -15,12 +15,6 @@ class AggregationUnit(fields.String):
     """
 
     def __init__(self, required=True, **kwargs):
-        # if validate is not None:
-        #     raise ValueError(
-        #         "The AggregationUnit field provides its own validation "
-        #         "and thus does not accept a the 'validate' argument."
-        #     )
-        #
         validate = OneOf(["admin0", "admin1", "admin2", "admin3"])
         super().__init__(required=required, validate=validate, **kwargs)
 
@@ -52,12 +46,6 @@ class TotalBy(fields.String):
     """
 
     def __init__(self, required=False, **kwargs):
-        # if validate is not None:
-        #     raise ValueError(
-        #         "The TotalBy field provides its own validation "
-        #         "and thus does not accept a the 'validate' argument."
-        #     )
-
         validate = OneOf(
             ["second", "minute", "hour", "day", "month", "year"]
         )  # see total_network_objects.py

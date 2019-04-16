@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
-- Added new flowclient API entrypoint, aggregate_network_objects(), to access (with simplified parameters) equivalent flowmachine query [#601](https://github.com/Flowminder/FlowKit/issues/601)
+- Added new flowclient API entrypoint, `aggregate_network_objects`, to access equivalent flowmachine query [#601](https://github.com/Flowminder/FlowKit/issues/601)
 
 ### Changed
 

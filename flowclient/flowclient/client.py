@@ -1114,10 +1114,10 @@ def aggregate_network_objects(
     Parameters
     ----------
     total_network_objects : dict
-        TotalNetworkObjects query result
-    statistic : str
+        Query spec produced by total_network_objects
+    statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
         Statistic type
-    aggregate_by : str
+    aggregate_by : {"second", "minute", "hour", "day", "month", "year", "century"}
         Period type
 
     Returns
