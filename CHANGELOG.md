@@ -8,8 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added new flowclient API entrypoint, `aggregate_network_objects`, to access equivalent flowmachine query [#601](https://github.com/Flowminder/FlowKit/issues/601)
 
 ### Changed
-- Amended time aggregation parameter names used in existing `TotalNetworkObjects` query from "period" in flowclient & "by" in flowmachine to "total_by" in both.
-  Likewise time aggregation parameter name in new `AggregateNetworkObjects` query is "aggregate_by", also used in both flowclient & flowmachine [#601](https://github.com/Flowminder/FlowKit/issues/601)
+- The `period` argument to `TotalNetworkObjects` in FlowMachine has been renamed `total_by`
+- The `period` argument to `total_network_objects` in FlowClient has been renamed `total_by`
+  - The `by` argument to `AggregateNetworkObjects` in FlowMachine has been renamed to `aggregate_by`
 
 ### Fixed
 
