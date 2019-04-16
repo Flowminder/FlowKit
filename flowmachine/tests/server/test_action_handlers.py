@@ -21,15 +21,20 @@ def test_run_query_type_error(monkeypatch):
     """
     Test that developer errors when creating schemas return the error message.
     """
+
     class BrokenSchema(Schema):
         def load(self, *args, **kwargs):
             raise TypeError("DUMMY_FAIL_MESSAGE")
-    monkeypatch.setattr(flowmachine.core.server.action_handlers, "FlowmachineQuerySchema", BrokenSchema)
-    msg = action_handler__run_query(
-        query_kind={}
+
+    monkeypatch.setattr(
+        flowmachine.core.server.action_handlers, "FlowmachineQuerySchema", BrokenSchema
     )
+    msg = action_handler__run_query(query_kind={})
     assert msg.status == ZMQReplyStatus.ERROR
-    assert msg.msg == "Internal flowmachine server error: could not create query object using query schema. The original error was: 'DUMMY_FAIL_MESSAGE'"
+    assert (
+        msg.msg
+        == "Internal flowmachine server error: could not create query object using query schema. The original error was: 'DUMMY_FAIL_MESSAGE'"
+    )
 
 
 def test_run_query_error_handled(monkeypatch, dummy_redis):
