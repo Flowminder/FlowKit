@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 - Amended time aggregation parameter names used in existing `total_network_objects` query from "period" in flowclient & "by" in flowmachine to "total_by" in both.
-  Likewise time aggregation parameter name in new `aggregate_network_objects` is "aggregate_by", also used in both flowclient & flowmachine [#599](https://github.com/Flowminder/FlowKit/issues/599)
+  Likewise time aggregation parameter name in new `aggregate_network_objects` is "aggregate_by", also used in both flowclient & flowmachine [#601](https://github.com/Flowminder/FlowKit/issues/601)
 - Added new flowclient API entrypoint, `aggregate_network_objects`, to access equivalent flowmachine query [#601](https://github.com/Flowminder/FlowKit/issues/601)
 
 ### Changed
