@@ -2,6 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import pytest
+from marshmallow import Schema, fields
+
+import flowmachine
 from flowmachine.core import Query
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 
@@ -12,6 +15,21 @@ from flowmachine.core.server.action_handlers import (
     action_handler__run_query,
 )
 from flowmachine.core.server.zmq_helpers import ZMQReplyStatus
+
+
+def test_run_query_type_error(monkeypatch):
+    """
+    Test that developer errors when creating schemas return the error message.
+    """
+    class BrokenSchema(Schema):
+        def load(self, *args, **kwargs):
+            raise TypeError("DUMMY_FAIL_MESSAGE")
+    monkeypatch.setattr(flowmachine.core.server.action_handlers, "FlowmachineQuerySchema", BrokenSchema)
+    msg = action_handler__run_query(
+        query_kind={}
+    )
+    assert msg.status == ZMQReplyStatus.ERROR
+    assert msg.msg == "Internal flowmachine server error: could not create query object using query schema. The original error was: 'DUMMY_FAIL_MESSAGE'"
 
 
 def test_run_query_error_handled(monkeypatch, dummy_redis):
