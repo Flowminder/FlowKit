@@ -33,7 +33,8 @@ def logging_config():
     from _pytest.monkeypatch import MonkeyPatch
 
     mpatch = MonkeyPatch()
-    mpatch.setenv("LOG_LEVEL", "debug")
+    mpatch.setenv("FLOWMACHINE_LOG_LEVEL", "debug")
+    mpatch.setenv("FLOWAPI_LOG_LEVEL", "debug")
     yield
     mpatch.undo()
 
@@ -62,7 +63,7 @@ def autostart_flowmachine_server(logging_config):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def autostart_flowapi_server(logging_config):
+def autostart_flowapi_server(logging_config, flowapi_port):
     """
     Starts a FlowAPI server in a separate process for the tests to talk to.
     """
@@ -79,7 +80,7 @@ def autostart_flowapi_server(logging_config):
 
         api_thread = Process(
             target=hypercorn.__main__.main,
-            args=(["--bind", "0.0.0.0:9090", "flowapi.main:create_app()"],),
+            args=(["--bind", f"0.0.0.0:{flowapi_port}", "flowapi.main:create_app()"],),
         )
         api_thread.start()
         sleep(2)
@@ -247,9 +248,11 @@ def fm_conn():
     -------
     flowmachine.core.connection.Connection
     """
+    POSTGRES_USER = os.getenv("POSTGRES_USER", "flowdb")
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "flowflow")
     FLOWDB_HOST = os.getenv("FLOWDB_HOST", "localhost")
     FLOWDB_PORT = os.getenv("FLOWDB_PORT", "9000")
-    conn_str = f"postgresql://flowdb:flowflow@{FLOWDB_HOST}:{FLOWDB_PORT}/flowdb"
+    conn_str = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{FLOWDB_HOST}:{FLOWDB_PORT}/flowdb"
 
     fm_conn = Connection(conn_str=conn_str)
     flowmachine.connect(conn=fm_conn)

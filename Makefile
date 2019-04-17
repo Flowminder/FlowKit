@@ -18,16 +18,19 @@
 #
 # flowmachine and flowapi will connected to the first flowdb service in the list.
 
-DOCKER_COMPOSE_FILE_DEV ?= docker-compose-dev.yml
+DOCKER_COMPOSE_FILE_DEV ?= docker-compose.yml
 FLOWDB_SERVICES ?= flowdb_testdata
-DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth redis
-export FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
+DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth query_locker
+export DOCKER_FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
 
 
 all:
 
-up:
+up: flowdb-build
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d --build $(DOCKER_SERVICES)
+
+up-no_build:
+	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d $(DOCKER_SERVICES)
 
 down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) down
@@ -104,8 +107,8 @@ flowauth-build:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) build flowauth
 
 
-redis-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d redis
+query_locker-up:
+	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) up -d query_locker
 
-redis-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v redis
+query_locker-down:
+	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v query_locker

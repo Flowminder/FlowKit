@@ -2,23 +2,23 @@
 # Stack file for flowkit integration tests
 #
 
-version: '3.1'
+version: '3.7'
 secrets:
   cert-flowkit.pem: # SSL Certificate used to serve FlowAPI over https
     external: true
-  FLOWAPI_DB_USER: # Database user used by FlowAPI
+  FLOWAPI_FLOWDB_USER: # Database user used by FlowAPI
     external: true
-  FLOWAPI_DB_PASS: # Password for the FlowAPI database user
+  FLOWAPI_FLOWDB_PASSWORD: # Password for the FlowAPI database user
     external: true
-  FLOWMACHINE_DB_USER: # Database user for FlowMachine
+  FLOWMACHINE_FLOWDB_USER: # Database user for FlowMachine
     external: true
-  FLOWMACHINE_DB_PASS: # Password for FlowDB
+  FLOWMACHINE_FLOWDB_PASSWORD: # Password for FlowDB
     external: true
-  POSTGRES_PASSWORD_FILE: # Postgres superuser password
+  POSTGRES_PASSWORD: # Postgres superuser password
     external: true
   JWT_SECRET_KEY: # Secret used to sign api tokens
     external: true
-  REDIS_PASSWORD_FILE: # Redis password
+  REDIS_PASSWORD: # Redis password
     external: true
 networks:
   db:
@@ -28,14 +28,22 @@ networks:
 services:
     flowdb:
         image: "flowminder/flowdb-testdata:${CIRCLE_BRANCH:-latest}"
+        environment:
+          - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_PASSWORD
+        ports:
+          - "9000:5432"
         secrets:
-          - POSTGRES_PASSWORD_FILE
-          - FLOWAPI_DB_USER
-          - FLOWAPI_DB_PASS
-          - FLOWMACHINE_DB_USER
-          - FLOWMACHINE_DB_PASS
+          - POSTGRES_PASSWORD
+          - FLOWAPI_FLOWDB_USER
+          - FLOWAPI_FLOWDB_PASSWORD
+          - FLOWMACHINE_FLOWDB_USER
+          - FLOWMACHINE_FLOWDB_PASSWORD
         tty: true
-        shm_size: 1G
+        volumes:
+          - type: tmpfs
+            target: /dev/shm
+            tmpfs:
+              size: 1000000000
         stdin_open: true
         networks:
           db:
@@ -46,12 +54,13 @@ services:
         environment:
             - FLOWDB_PORT=5432
             - FLOWDB_HOST=flowdb
-            - LOG_LEVEL=${LOG_LEVEL:-error}
-            - DEBUG=${FM_DEBUG:-False}
+            - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:-error}
+            - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
+            - REDIS_HOST=query_locker
         secrets:
-          - FLOWMACHINE_DB_USER
-          - FLOWMACHINE_DB_PASS
-          - REDIS_PASSWORD_FILE
+          - FLOWMACHINE_FLOWDB_USER
+          - FLOWMACHINE_FLOWDB_PASSWORD
+          - REDIS_PASSWORD
         networks:
           - db
           - redis
@@ -61,22 +70,24 @@ services:
         ports:
           - "9090:9090"
         environment:
-            - SERVER=flowmachine
-            - LOG_LEVEL=${LOG_LEVEL:-error}
+            - FLOWMACHINE_HOST=flowmachine
+            - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:-error}
             - FLOWDB_HOST=flowdb
         secrets:
           - cert-flowkit.pem
           - JWT_SECRET_KEY
-          - FLOWAPI_DB_USER
-          - FLOWAPI_DB_PASS
+          - FLOWAPI_FLOWDB_USER
+          - FLOWAPI_FLOWDB_PASSWORD
         networks:
           - zero
           - db
           - api
     query_locker:
         image: bitnami/redis:latest
+        environment:
+          - REDIS_PASSWORD_FILE=/run/secrets/REDIS_PASSWORD
         secrets:
-          - REDIS_PASSWORD_FILE
+          - REDIS_PASSWORD
         networks:
           redis:
             aliases:

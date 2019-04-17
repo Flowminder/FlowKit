@@ -185,7 +185,7 @@ def main():
     flowmachine.connect()
 
     # Set debug mode if required
-    debug_mode = "true" == os.getenv("DEBUG", "false").lower()
+    debug_mode = "true" == os.getenv("FLOWMACHINE_SERVER_DEBUG_MODE", "false").lower()
     if debug_mode:
         logger.info("Enabling asyncio's debugging mode.")
 
