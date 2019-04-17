@@ -122,7 +122,12 @@ class UserObject:
         except (KeyError, SyntaxError):
             raise BadQueryError
         try:
-            aggregation_unit = query_json["aggregation_unit"]
+            if "total_network_objects" in query_json:
+                aggregation_unit = query_json["total_network_objects"][
+                    "aggregation_unit"
+                ]
+            else:
+                aggregation_unit = query_json["aggregation_unit"]
         except KeyError:
             raise MissingAggregationUnitError
         return [(query_kind, aggregation_unit)]

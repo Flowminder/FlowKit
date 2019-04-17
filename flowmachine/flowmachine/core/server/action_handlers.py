@@ -83,7 +83,21 @@ def action_handler__run_query(**action_params):
     parameters needed to construct the query.
     """
     try:
-        query_obj = FlowmachineQuerySchema().load(action_params)
+        try:
+            query_obj = FlowmachineQuerySchema().load(action_params)
+        except TypeError as exc:
+            # We need to catch TypeError here, otherwise they propagate up to
+            # perform_action() and result in a very misleading error message.
+            orig_error_msg = exc.args[0]
+            error_msg = (
+                f"Internal flowmachine server error: could not create query object using query schema. "
+                f"The original error was: '{orig_error_msg}'"
+            )
+            return ZMQReply(
+                status="error",
+                msg=error_msg,
+                payload={"params": action_params, "orig_error_msg": orig_error_msg},
+            )
     except ValidationError as exc:
         # The dictionary of marshmallow errors can contain integers as keys,
         # which will raise an error when converting to JSON (where the keys
