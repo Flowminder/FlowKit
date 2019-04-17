@@ -71,7 +71,7 @@ class Listing extends React.Component {
             <IconButton
               color="inherit"
               aria-label="New"
-              onClick={() => editAction(false)}
+              onClick={() => editAction(-1)}
               id="new"
             >
               <AddIcon />
