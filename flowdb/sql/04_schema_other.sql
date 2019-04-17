@@ -70,7 +70,7 @@ Schema used for temp storage during etl.
 CREATE SCHEMA IF NOT EXISTS etl;
 
 CREATE TYPE cdrtype AS ENUM ('voice', 'sms', 'mds', 'topups');
-CREATE TYPE status AS ENUM ('in_process', 'done', 'quarantine');
+CREATE TYPE etl_status AS ENUM ('in_process', 'done', 'quarantine');
 CREATE TABLE etl.etl (
 	id SERIAL NOT NULL,
 	file_name VARCHAR,
