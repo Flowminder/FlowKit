@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import Schema, fields, post_load
+from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
 
@@ -27,6 +28,7 @@ class InputToSpatialAggregate(OneOfSchema):
 
 
 class SpatialAggregateSchema(Schema):
+    query_kind = fields.String(validate=OneOf(["spatial_aggregate"]))
     locations = fields.Nested(InputToSpatialAggregate, required=True)
 
     @post_load

@@ -2,7 +2,7 @@ Title: Developer
 
 # Information for Developers
 
-Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](2-install.md). 
+Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](install.md). 
 
 An outline roadmap is provided below together with details about [contributing to the project](#contrib).
 
@@ -92,6 +92,10 @@ The API exposes four routes:
 
 At present, the following query types are accessible through FlowAPI:
 
+- `aggregate_network_objects`
+
+    Statistics about unique cells/sites aggregated to a period.
+
 - `daily_location`
 
     A statistic representing where subscribers are on a given day. Must be used in combination with `modal_location`, `flows` or `spatial_aggregate`.
@@ -133,7 +137,7 @@ At present, the following query types are accessible through FlowAPI:
 
 ### FlowAPI Access tokens
 
-As explained in the [quick install guide](2-install.md), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
+As explained in the [quick install guide](install.md), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
 
 - API route permissions
 
@@ -143,7 +147,7 @@ As explained in the [quick install guide](2-install.md), user authentication and
 
     Level of spatial aggregation at which the user is allowed to access the results of queries. Currently supports administrative levels `admin0`, `admin1`, `admin2`, `admin3`.
 
-JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The [FlowAuth](2-install.md#installing-flowauth) authentication management system is designed to generate JWTs for accessing FlowAPI.
+JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The [FlowAuth](install.md#installing-flowauth) authentication management system is designed to generate JWTs for accessing FlowAPI.
 
 
 <a name="flowmachine">

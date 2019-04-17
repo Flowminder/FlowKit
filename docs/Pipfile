@@ -23,8 +23,8 @@ marshmallow = {editable = true, ref = "3.0.0rc5", git = "https://github.com/mars
 marshmallow-oneofschema = {editable = true, ref = "8195dc3e595fa33a5f007f10ba7cfc08f2177515", git = "https://github.com/marshmallow-code/marshmallow-oneofschema.git"} # Temporarily required while there's a marshmallow versions conflict
 descartes = "*"
 seaborn = "*"
-flowclient = {editable = true, path = "./../flowclient"}
-flowapi = {editable = true, path = "./../flowapi"}
+flowclient = {editable = true,path = "./../flowclient"}
+flowapi = {editable = true,path = "./../flowapi"}
 mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
@@ -43,3 +43,6 @@ python_version = "3.7"
 build = "bash build.sh"
 serve = "bash build.sh serve --dirtyreload"
 deploy = "bash build.sh gh-deploy"
+
+[pipenv]
+allow_prereleases = true

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import Schema, fields, post_load
+from marshmallow.validate import OneOf
 from typing import Union, Dict, List
 
 from flowmachine.features import (
@@ -33,6 +34,7 @@ __all__ = [
 
 
 class MeaningfulLocationsAggregateSchema(Schema):
+    query_kind = fields.String(validate=OneOf(["meaningful_locations_aggregate"]))
     start_date = fields.Date(required=True)
     stop_date = fields.Date(required=True)
     aggregation_unit = AggregationUnit(required=True)
@@ -146,6 +148,9 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
 
 
 class MeaningfulLocationsBetweenLabelODMatrixSchema(Schema):
+    query_kind = fields.String(
+        validate=OneOf(["meaningful_locations_between_label_od_matrix"])
+    )
     start_date = fields.Date(required=True)
     stop_date = fields.Date(required=True)
     aggregation_unit = AggregationUnit(required=True)
@@ -227,6 +232,9 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
 
 
 class MeaningfulLocationsBetweenDatesODMatrixSchema(Schema):
+    query_kind = fields.String(
+        validate=OneOf(["meaningful_locations_between_dates_od_matrix"])
+    )
     start_date_a = fields.Date(required=True)
     stop_date_a = fields.Date(required=True)
     start_date_b = fields.Date(required=True)

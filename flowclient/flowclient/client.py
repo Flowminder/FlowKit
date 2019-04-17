@@ -119,7 +119,7 @@ class Connection:
             raise FileNotFoundError(
                 f"{self.url}/api/{self.api_version}/{route} not found."
             )
-        elif response.status_code == 401:
+        elif response.status_code in {401, 403}:
             try:
                 error = response.json()["msg"]
             except (ValueError, KeyError):
@@ -171,23 +171,26 @@ class Connection:
             raise FileNotFoundError(
                 f"{self.url}/api/{self.api_version}/{route} not found."
             )
-        elif response.status_code == 401:
+        elif response.status_code in {401, 403}:
             try:
-                error = response.json()["msg"]
+                error_msg = response.json()["msg"]
             except ValueError:
-                error = "Unknown access denied error"
-            raise FlowclientConnectionError(error)
+                error_msg = "Unknown access denied error"
+            raise FlowclientConnectionError(error_msg)
         else:
             try:
-                error = response.json()["msg"]
-                payload_info = f" Payload: {response.json()['payload']}"
+                error_msg = response.json()["msg"]
+                try:
+                    payload_info = f" Payload: {response.json()['payload']}"
+                except KeyError:
+                    payload_info = ""
             except ValueError:
                 # Happens if the response body does not contain valid JSON
                 # (see http://docs.python-requests.org/en/master/api/#requests.Response.json)
-                error = f"the response did not contain valid JSON"
+                error_msg = f"the response did not contain valid JSON"
                 payload_info = ""
             raise FlowclientConnectionError(
-                f"Something went wrong: {error}. API returned with status code: {response.status_code}.{payload_info}"
+                f"Something went wrong. API returned with status code {response.status_code}. Error message: '{error_msg}'.{payload_info}"
             )
 
     def __repr__(self) -> str:
@@ -1024,7 +1027,7 @@ def location_introversion(
 
 
 def total_network_objects(
-    *, start_date: str, end_date: str, aggregation_unit: str, period: str = "day"
+    *, start_date: str, end_date: str, aggregation_unit: str, total_by: str = "day"
 ) -> dict:
     """
     Return query spec for total network objects
@@ -1037,7 +1040,7 @@ def total_network_objects(
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
-    period : {"second", "minute", "hour", "day", "month", "year"}
+    total_by : {"second", "minute", "hour", "day", "month", "year"}
         Time period to bucket by
     Returns
     -------
@@ -1049,7 +1052,7 @@ def total_network_objects(
         "start_date": start_date,
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
-        "period": period,
+        "total_by": total_by,
     }
 
 
@@ -1091,6 +1094,7 @@ def joined_spatial_aggregate(
     Returns
     -------
     dict
+
         Query specification for an aggregated daily or modal location
     """
     return {
@@ -1098,4 +1102,34 @@ def joined_spatial_aggregate(
         "method": method,
         "locations": locations,
         "metric": metric,
+    }
+
+
+def aggregate_network_objects(
+    *, total_network_objects: Dict[str, str], statistic: str, aggregate_by: str = "day"
+) -> dict:
+    """
+    Return query spec for aggregate network objects
+
+    Parameters
+    ----------
+    total_network_objects : dict
+        Query spec produced by total_network_objects
+    statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+        Statistic type
+    aggregate_by : {"second", "minute", "hour", "day", "month", "year", "century"}
+        Period type
+
+    Returns
+    -------
+    dict
+        Query specification for an aggregated network objects query
+    """
+    total_network_objs = total_network_objects
+
+    return {
+        "query_kind": "aggregate_network_objects",
+        "total_network_objects": total_network_objs,
+        "statistic": statistic,
+        "aggregate_by": aggregate_by,
     }

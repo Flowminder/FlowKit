@@ -39,6 +39,9 @@ pipenv install
 pipenv run flowmachine &
 echo "Started FlowMachine."
 pipenv run quart run --port 9090 &
+echo "Retrieving API spec"
+sleep 5
+curl http://localhost:9090/api/0/spec/openapi-redoc.json -o source/_static/openapi-redoc.json
 echo "Started FlowAPI."
 echo "Starting build."
 

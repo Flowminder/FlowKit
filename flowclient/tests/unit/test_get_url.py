@@ -33,18 +33,20 @@ def test_404_raises_error(session_mock, token):
         connection.get_url(route="DUMMY_ROUTE")
 
 
-def test_401_error(session_mock, token):
-    """If a msg field is available for a 401, it should be used as the error message."""
-    session_mock.get.return_value.status_code = 401
+@pytest.mark.parametrize("denial_status_code", [401, 403])
+def test_access_denied_error(denial_status_code, session_mock, token):
+    """If a msg field is available for an access denied it should be used as the error message."""
+    session_mock.get.return_value.status_code = denial_status_code
     session_mock.get.return_value.json.return_value = {"msg": "ERROR_MESSAGE"}
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(FlowclientConnectionError, match="ERROR_MESSAGE"):
         connection.get_url(route="DUMMY_ROUTE")
 
 
-def test_401_unknown_error(session_mock, token):
-    """If a msg field is not available for a 401, a generic message is used."""
-    session_mock.get.return_value.status_code = 401
+@pytest.mark.parametrize("denial_status_code", [401, 403])
+def test_access_denied_error(denial_status_code, session_mock, token):
+    """If a msg field is not available for an access denied a generic error should be used."""
+    session_mock.get.return_value.status_code = denial_status_code
     session_mock.get.return_value.json.return_value = {}
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(FlowclientConnectionError, match="Unknown access denied error"):

@@ -13,6 +13,7 @@ __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 
 
 class DailyLocationSchema(Schema):
+    query_kind = fields.String(validate=OneOf(["daily_location"]))
     date = fields.Date(required=True)
     method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
     aggregation_unit = AggregationUnit()
