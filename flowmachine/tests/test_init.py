@@ -24,14 +24,14 @@ def test_double_connect_warning(monkeypatch):
 
 def test_bad_log_level_goes_to_error(monkeypatch):
     """Test that a bad log level is coerced to ERROR."""
-    monkeypatch.setenv("LOG_LEVEL", "BAD_LEVEL")
+    monkeypatch.setenv("FLOWMACHINE_LOG_LEVEL", "BAD_LEVEL")
     connect()
     assert logging.ERROR == logging.getLogger("flowmachine.debug").level
 
 
 def test_log_level_set_env(monkeypatch):
     """Test that a log level can be set via env."""
-    monkeypatch.setenv("LOG_LEVEL", "INFO")
+    monkeypatch.setenv("FLOWMACHINE_LOG_LEVEL", "INFO")
     connect()
     assert logging.INFO == logging.getLogger("flowmachine.debug").level
 
@@ -46,10 +46,10 @@ def test_log_level_set(monkeypatch):
 def test_param_priority(mocked_connections, monkeypatch):
     """Explicit parameters to connect should be respected"""
     # Use monkeypatch to set environment variable only for this test
-    monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
+    monkeypatch.setenv("FLOWMACHINE_LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
     monkeypatch.setenv("FLOWDB_PORT", "7777")
-    monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
-    monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
+    monkeypatch.setenv("FLOWMACHINE_FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
+    monkeypatch.setenv("FLOWDB_PASSWORD", "DUMMY_ENV_FLOWDB_PASSWORD")
     monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", "7777")
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", "7777")
@@ -92,10 +92,10 @@ def test_param_priority(mocked_connections, monkeypatch):
 def test_env_priority(mocked_connections, monkeypatch):
     """Env vars should be used over defaults in connect"""
     # Use monkeypatch to set environment variable only for this test
-    monkeypatch.setenv("LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
+    monkeypatch.setenv("FLOWMACHINE_LOG_LEVEL", "DUMMY_ENV_LOG_LEVEL")
     monkeypatch.setenv("FLOWDB_PORT", "6969")
-    monkeypatch.setenv("FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
-    monkeypatch.setenv("FLOWDB_PASS", "DUMMY_ENV_FLOWDB_PASS")
+    monkeypatch.setenv("FLOWMACHINE_FLOWDB_USER", "DUMMY_ENV_FLOWDB_USER")
+    monkeypatch.setenv("FLOWMACHINE_FLOWDB_PASSWORD", "DUMMY_ENV_FLOWDB_PASSWORD")
     monkeypatch.setenv("FLOWDB_HOST", "DUMMY_ENV_FLOWDB_HOST")
     monkeypatch.setenv("DB_CONNECTION_POOL_SIZE", "7777")
     monkeypatch.setenv("DB_CONNECTION_POOL_OVERFLOW", "2020")
@@ -110,7 +110,7 @@ def test_env_priority(mocked_connections, monkeypatch):
     core_init_Connection_mock.assert_called_with(
         port=6969,
         user="DUMMY_ENV_FLOWDB_USER",
-        password="DUMMY_ENV_FLOWDB_PASS",
+        password="DUMMY_ENV_FLOWDB_PASSWORD",
         host="DUMMY_ENV_FLOWDB_HOST",
         database="flowdb",
         pool_size=7777,
@@ -134,7 +134,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_init_logging_mock.assert_called_with("error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
-        user="analyst",
+        user="flowmachine",
         password="foo",
         host="localhost",
         database="flowdb",

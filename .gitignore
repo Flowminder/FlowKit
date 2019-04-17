@@ -1,3 +1,5 @@
+.env
+
 # Notebook output
 docs/test.csv
 docs/tower_metrics.csv

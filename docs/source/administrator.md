@@ -239,7 +239,7 @@ Note that the `request_id` field is identical across the five log entries, which
 
 ### Error and Debugging Logs
 
-FlowMachine and FlowAPI write logs to stderr. By default, the logging level is `error`. For more verbose logging, set the `LOG_LEVEL` environment variable to `info` or `debug` when starting the docker container.
+FlowMachine and FlowAPI write logs to stderr. By default, the logging level is `error`. For more verbose logging, set the `FLOWMACHINE_LOG_LEVEL` and/or `FLOWAPI_LOG_LEVEL` environment variables to `info` or `debug` when starting the docker container(s).
 
 Log messages from FlowMachine will show the `logger` field of the log entry as `flowmachine.debug`, and the Python module that emitted the log entry in the `submodule` field (e.g. `{'logger':'flowmachine.debug', 'submodule':'flowmachine.core.query'}`. FlowAPI debugging messages set `logger` to `flowapi.debug`.
 

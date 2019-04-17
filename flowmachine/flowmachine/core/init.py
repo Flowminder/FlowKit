@@ -52,7 +52,7 @@ def connect(
         Level to log at
     db_port : int, default 9000
         Port number to connect to flowdb
-    db_user : str, default "analyst"
+    db_user : str, default "flowmachine"
         Name of user to connect to flowdb as
     db_pass : str, default "foo"
         Password to connect to flowdb
@@ -77,8 +77,7 @@ def connect(
 
     Notes
     -----
-    All parameters can also be provided as environment variables, named the same
-    but in uppercase, e.g. `env LOG_LEVEL=error` instead of `connect(log_level="error")`.
+    All parameters can also be provided as environment variables.
     If a parameter is provided, and an environment variable is set,
     then the provided value is used. If neither is provided, the defaults as given
     in the docstring are used.
@@ -90,7 +89,7 @@ def connect(
     """
 
     log_level = (
-        getsecret("LOG_LEVEL", os.getenv("LOG_LEVEL", "error"))
+        getsecret("FLOWMACHINE_LOG_LEVEL", os.getenv("FLOWMACHINE_LOG_LEVEL", "error"))
         if log_level is None
         else log_level
     )
@@ -100,12 +99,17 @@ def connect(
         else db_port
     )
     db_user = (
-        getsecret("FLOWDB_USER", os.getenv("FLOWDB_USER", "analyst"))
+        getsecret(
+            "FLOWMACHINE_FLOWDB_USER",
+            os.getenv("FLOWMACHINE_FLOWDB_USER", "flowmachine"),
+        )
         if db_user is None
         else db_user
     )
     db_pass = (
-        getsecret("FLOWDB_PASS", os.getenv("FLOWDB_PASS"))
+        getsecret(
+            "FLOWMACHINE_FLOWDB_PASSWORD", os.getenv("FLOWMACHINE_FLOWDB_PASSWORD")
+        )
         if db_pass is None
         else db_pass
     )
@@ -142,19 +146,19 @@ def connect(
         else redis_port
     )
     redis_pw = (
-        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD"))
+        getsecret("REDIS_PASSWORD", os.getenv("REDIS_PASSWORD"))
         if redis_password is None
         else redis_password
     )
 
     if db_pass is None:
         raise ValueError(
-            "You must provide a secret named FLOWDB_PASS, set an environment variable named FLOWDB_PASS, or provide a db_pass argument."
+            "You must provide a secret named FLOWMACHINE_FLOWDB_PASSWORD, set an environment variable named FLOWMACHINE_FLOWDB_PASSWORD, or provide a db_pass argument."
         )
 
     if redis_pw is None:
         raise ValueError(
-            "You must provide a secret named REDIS_PASSWORD_FILE, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
+            "You must provide a secret named REDIS_PASSWORD, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
         )
 
     try:
