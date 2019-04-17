@@ -98,7 +98,7 @@ executors:
         JWT_SECRET_KEY: secret
     docker:
       - image: circleci/python:3.7
-      - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_WORKFLOW_ID
+      - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_SHA1
         environment:
           N_DAYS: <<parameters.num_days>>
           DISASTER_START_DATE: <<parameters.disaster_start_date>>
@@ -171,18 +171,18 @@ jobs:
           name: Build main image
           command: |
             echo Building version $FLOWDB_VERSION
-            echo Tagging as $SAFE_TAG and $CIRCLE_WORKFLOW_ID
+            echo Tagging as $SAFE_TAG and $CIRCLE_SHA1
             docker pull flowminder/flowdb:latest && export BUILD_CACHE_TAG=latest || true
             docker pull flowminder/flowdb:$SAFE_TAG && export BUILD_CACHE_TAG=$SAFE_TAG || true
             echo Using cache from $BUILD_CACHE_TAG
             docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
-              --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_WORKFLOW_ID flowdb
+              --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_SHA1 flowdb
       - run:
           name: Build testdata image
           command: |
             echo Building testdata version $FLOWDB_VERSION
-            echo Tagging as testdata-$SAFE_TAG and testdata-$CIRCLE_WORKFLOW_ID
-            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-testdata:$SAFE_TAG -t flowminder/flowdb-testdata:$CIRCLE_WORKFLOW_ID \
+            echo Tagging as testdata-$SAFE_TAG and testdata-$CIRCLE_SHA1
+            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-testdata:$SAFE_TAG -t flowminder/flowdb-testdata:$CIRCLE_SHA1 \
             flowdb/testdata
             touch .testdata-build-done
           background: true
@@ -199,8 +199,8 @@ jobs:
           name: Build synthetic data image
           command: |
             echo Building synthetic testdata version $FLOWDB_VERSION.
-            echo Tagging as synthetic-data-$SAFE_TAG synthetic-data-$CIRCLE_WORKFLOW_ID
-            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-synthetic-data:$SAFE_TAG -t flowminder/flowdb-synthetic-data:$CIRCLE_WORKFLOW_ID \
+            echo Tagging as synthetic-data-$SAFE_TAG synthetic-data-$CIRCLE_SHA1
+            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-synthetic-data:$SAFE_TAG -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
               -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
             touch .synthetic-data-build-done
           background: true
@@ -257,13 +257,13 @@ jobs:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowdb:${SAFE_TAG}
-            docker push flowminder/flowdb:${CIRCLE_WORKFLOW_ID}
+            docker push flowminder/flowdb:${CIRCLE_SHA1}
 
             docker push flowminder/flowdb-testdata:${SAFE_TAG}
-            docker push flowminder/flowdb-testdata:${CIRCLE_WORKFLOW_ID}
+            docker push flowminder/flowdb-testdata:${CIRCLE_SHA1}
 
             docker push flowminder/flowdb-synthetic-data:${SAFE_TAG}
-            docker push flowminder/flowdb-synthetic-data:${CIRCLE_WORKFLOW_ID}
+            docker push flowminder/flowdb-synthetic-data:${CIRCLE_SHA1}
       - persist_to_workspace:
           root: /home/circleci/
           paths:
@@ -453,12 +453,12 @@ jobs:
       - run:
           name: Build <<parameters.component>> image
           command: |
-            echo "Tagging as $CIRCLE_WORKFLOW_ID"
-            docker build -t flowminder/<<parameters.component>>:$CIRCLE_WORKFLOW_ID ./<<parameters.component>>
+            echo "Tagging as $CIRCLE_SHA1"
+            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 ./<<parameters.component>>
       - run:
           name: Push images to Docker cloud
           command: |
-            docker push flowminder/<<parameters.component>>:$CIRCLE_WORKFLOW_ID
+            docker push flowminder/<<parameters.component>>:$CIRCLE_SHA1
 
   integration_tests:
     executor:
@@ -594,7 +594,7 @@ jobs:
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
             for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth; do
-              docker-retag flowminder/$IMAGE:$CIRCLE_WORKFLOW_ID ${<< parameters.tag >>:-latest}
+              docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
 
