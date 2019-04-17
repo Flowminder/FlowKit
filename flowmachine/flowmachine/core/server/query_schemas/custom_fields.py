@@ -14,13 +14,7 @@ class AggregationUnit(fields.String):
     A string representing an aggregation unit (for example: "admin0", "admin1", "admin2", ...)
     """
 
-    def __init__(self, required=True, validate=None, **kwargs):
-        if validate is not None:
-            raise ValueError(
-                "The AggregationUnit field provides its own validation "
-                "and thus does not accept a the 'validate' argument."
-            )
-
+    def __init__(self, required=True, **kwargs):
         validate = OneOf(["admin0", "admin1", "admin2", "admin3"])
         super().__init__(required=required, validate=validate, **kwargs)
 
@@ -44,6 +38,54 @@ class EventTypes(fields.List):
             allow_none=True,
             **kwargs,
         )
+
+
+class TotalBy(fields.String):
+    """
+    A string representing a period type, e.g. "day"
+    """
+
+    def __init__(self, required=False, **kwargs):
+        validate = OneOf(
+            ["second", "minute", "hour", "day", "month", "year"]
+        )  # see total_network_objects.py
+        super().__init__(required=required, validate=validate, **kwargs)
+
+
+class AggregateBy(fields.String):
+    """
+    A string representing a period type, e.g. "day"
+    """
+
+    def __init__(self, required=False, validate=None, **kwargs):
+        if validate is not None:
+            raise ValueError(
+                "The AggregateBy field provides its own validation "
+                "and thus does not accept a the 'validate' argument."
+            )
+
+        validate = OneOf(
+            ["second", "minute", "hour", "day", "month", "year", "century"]
+        )  # see total_network_objects.py
+        super().__init__(required=required, validate=validate, **kwargs)
+
+
+class Statistic(fields.String):
+    """
+    A string representing a statistic type, e.g. "median"
+    """
+
+    def __init__(self, required=True, validate=None, **kwargs):
+        if validate is not None:
+            raise ValueError(
+                "The Statistic field provides its own validation "
+                "and thus does not accept a the 'validate' argument."
+            )
+
+        validate = OneOf(
+            ["avg", "max", "min", "median", "mode", "stddev", "variance"]
+        )  # see total_network_objects.py
+        super().__init__(required=required, validate=validate, **kwargs)
 
 
 class SubscriberSubset(fields.String):

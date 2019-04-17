@@ -523,6 +523,7 @@ def make_demodata():  # pragma: no cover
         "unique_subscriber_counts",
         "location_introversion",
         "total_network_objects",
+        "aggregate_network_objects",
     ):
         c = Capability(name=c)
         db.session.add(c)

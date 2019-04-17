@@ -1,4 +1,46 @@
 {
+  "AggregateNetworkObjects": {
+    "properties": {
+      "aggregate_by": {
+        "enum": [
+          "century",
+          "day",
+          "hour",
+          "minute",
+          "month",
+          "second",
+          "year"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "aggregate_network_objects"
+        ],
+        "type": "string"
+      },
+      "statistic": {
+        "enum": [
+          "avg",
+          "max",
+          "median",
+          "min",
+          "mode",
+          "stddev",
+          "variance"
+        ],
+        "type": "string"
+      },
+      "total_network_objects": {
+        "$ref": "#/components/schemas/InputToAggregateNetworkObjects"
+      }
+    },
+    "required": [
+      "statistic",
+      "total_network_objects"
+    ],
+    "type": "object"
+  },
   "DFSTotalMetricAmount": {
     "properties": {
       "aggregation_unit": {
@@ -105,6 +147,7 @@
   "FlowmachineQuerySchema": {
     "discriminator": {
       "mapping": {
+        "aggregate_network_objects": "#/components/schemas/AggregateNetworkObjects",
         "dfs_metric_total_amount": "#/components/schemas/DFSTotalMetricAmount",
         "dummy_query": "#/components/schemas/DummyQuery",
         "flows": "#/components/schemas/Flows",
@@ -122,6 +165,9 @@
       "propertyName": "query_kind"
     },
     "oneOf": [
+      {
+        "$ref": "#/components/schemas/AggregateNetworkObjects"
+      },
       {
         "$ref": "#/components/schemas/DFSTotalMetricAmount"
       },
@@ -216,6 +262,19 @@
       "aggregation_unit"
     ],
     "type": "object"
+  },
+  "InputToAggregateNetworkObjects": {
+    "discriminator": {
+      "mapping": {
+        "total_network_objects": "#/components/schemas/TotalNetworkObjects"
+      },
+      "propertyName": "query_kind"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/TotalNetworkObjects"
+      }
+    ]
   },
   "InputToFlows": {
     "discriminator": {
@@ -747,17 +806,6 @@
         "format": "date",
         "type": "string"
       },
-      "period": {
-        "enum": [
-          "day",
-          "hour",
-          "minute",
-          "month",
-          "second",
-          "year"
-        ],
-        "type": "string"
-      },
       "query_kind": {
         "enum": [
           "total_network_objects"
@@ -766,6 +814,18 @@
       },
       "start_date": {
         "format": "date",
+        "type": "string"
+      },
+      "total_by": {
+        "default": "day",
+        "enum": [
+          "day",
+          "hour",
+          "minute",
+          "month",
+          "second",
+          "year"
+        ],
         "type": "string"
       }
     },
