@@ -13,6 +13,7 @@ __all__ = ["LocationEventCountsSchema", "LocationEventCountsExposed"]
 
 
 class LocationEventCountsSchema(Schema):
+    query_kind = fields.String(validate=OneOf(["location_event_counts"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
     interval = fields.String(

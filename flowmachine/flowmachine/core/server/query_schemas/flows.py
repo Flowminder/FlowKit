@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import Schema, fields, post_load
+from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
 
@@ -24,6 +25,7 @@ class InputToFlowsSchema(OneOfSchema):
 
 
 class FlowsSchema(Schema):
+    query_kind = fields.String(validate=OneOf(["flows"]))
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
     # TODO: validate that the aggregation unit coincides with the ones in {from|to}_location

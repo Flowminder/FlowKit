@@ -119,7 +119,7 @@ class Connection:
             raise FileNotFoundError(
                 f"{self.url}/api/{self.api_version}/{route} not found."
             )
-        elif response.status_code == 401:
+        elif response.status_code in {401, 403}:
             try:
                 error = response.json()["msg"]
             except (ValueError, KeyError):
@@ -171,7 +171,7 @@ class Connection:
             raise FileNotFoundError(
                 f"{self.url}/api/{self.api_version}/{route} not found."
             )
-        elif response.status_code == 401:
+        elif response.status_code in {401, 403}:
             try:
                 error = response.json()["msg"]
             except ValueError:

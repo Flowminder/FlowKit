@@ -18,6 +18,25 @@ plugins:
       preamble: "notebook_preamble.py"
       timeout: 600
 
+nav:
+  - index.md
+  - install.md
+  - analyst.md
+  - developer.md
+  - administrator.md
+  - license.md
+  - dev_environment_setup.md
+  - Worked examples:
+      - worked_examples/index.md
+      - worked_examples/Flows.ipynb
+      - worked_examples/mobile-data-usage.ipynb
+      - worked_examples/commuting-patterns.ipynb
+  - FlowAPI specification: api-spec.html
+  - api-docs-flowmachine
+  - FlowClient:
+      - flowclient/example_usage.ipynb
+      - api-docs-flowclient
+
 theme:
   name: "material"
   # Don't include MkDocs' JavaScript
