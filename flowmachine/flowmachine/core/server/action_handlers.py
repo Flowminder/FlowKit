@@ -222,33 +222,10 @@ def action_handler__get_sql(query_id):
         sql = q.get_query()
         payload = {"query_id": query_id, "query_state": query_state, "sql": sql}
         return ZMQReply(status="success", payload=payload)
-    elif query_state == QueryState.EXECUTING:
-        msg = f"Query with id '{query_id}' is still running."
-        payload = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, payload=payload)
-    elif query_state == QueryState.QUEUED:
-        msg = f"Query with id '{query_id}' is still queued."
-        payload = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, payload=payload)
-    elif query_state == QueryState.ERRORED:
-        msg = f"Query with id '{query_id}' is failed."
-        payload = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, payload=payload)
-    elif query_state == QueryState.CANCELLED:
-        msg = f"Query with id '{query_id}' was cancelled."
-        payload = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, payload=payload)
-    elif query_state == QueryState.RESETTING:
-        msg = f"Query with id '{query_id}' is being removed from cache."
-        payload = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, payload=payload)
-    elif query_state == QueryState.KNOWN:
-        msg = f"Query with id '{query_id}' has not been run yet, or was reset."
-        payload = {"query_id": query_id, "query_state": query_state}
-        return ZMQReply(status="error", msg=msg, payload=payload)
     else:
-        msg = f"Unknown state for query with id '{query_id}'. Got {query_state}."
-        return ZMQReply(status="error", msg=msg)
+        msg = f"Query with id '{query_id}' {query_state.description}"
+        payload = {"query_id": query_id, "query_state": query_state}
+        return ZMQReply(status="error", msg=msg, payload=payload)
 
 
 def action_handler__get_geography(aggregation_unit):

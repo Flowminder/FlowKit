@@ -26,13 +26,19 @@ class QueryState(str, Enum):
     Possible states for a query to be in.
     """
 
-    QUEUED = "queued"
-    COMPLETED = "completed"
-    CANCELLED = "cancelled"
-    EXECUTING = "executing"
-    ERRORED = "errored"
-    RESETTING = "resetting"
-    KNOWN = "known"
+    QUEUED = ("queued", "is queued.")
+    COMPLETED = ("completed", "is ready.")
+    CANCELLED = ("cancelled", "was cancelled.")
+    EXECUTING = ("executing", "is currently running.")
+    ERRORED = ("errored", "finished with an error.")
+    RESETTING = ("resetting", "is being reset.")
+    KNOWN = ("known", "is known, but has not yet been run.")
+
+    def __new__(cls, name, desc, **kwargs):
+        obj = str.__new__(cls, name)
+        obj._value_ = name
+        obj.description = desc
+        return obj
 
 
 class QueryEvent(str, Enum):
