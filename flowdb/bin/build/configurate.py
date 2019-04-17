@@ -62,7 +62,7 @@ cores = int(os.getenv("MAX_CPUS", floor(0.9 * psutil.cpu_count())))
 workers = int(os.getenv("MAX_WORKERS", ceil(cores / 2)))
 workers_per_gather = int(os.getenv("MAX_WORKERS_PER_GATHER", ceil(cores / 2)))
 effective_cache_size = _humansize(ceil(0.75 * total_mem))
-debugging = ",plugin_debugger" if bool_env("DEBUG") else ""
+debugging = ",plugin_debugger" if bool_env("FLOWDB_DEBUG") else ""
 use_jit = "on" if bool_env("JIT") else "off"
 stats_target = int(
     os.getenv("STATS_TARGET", 10000)

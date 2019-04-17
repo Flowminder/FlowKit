@@ -65,6 +65,8 @@ will try to find. Currently only `opendiff` is listed there (but we may add addi
 manually add it to this file. See the ApprovalTests [README](https://github.com/approvals/ApprovalTests.Python) for
 examples (illustrative particularly for file paths on Windows).
 
+!!! warning
+    The project root contains an env file (`development_environment`), in which are default values for _all_ of the environment variables used to control and configure the FlowDB, FlowAPI, FlowMachine and FlowAuth. You will need to source this file (`set -a && . ./development_environment && set +a`), or otherwise set the environment variables before running _any other command_.
 
 ## Option 1: Starting up all FlowKit components inside a dockerised development environment
 
@@ -74,7 +76,7 @@ components by running:
 $ make up
 ```
 
-This will use the specifications in `docker-compose-dev.yml` to spin up development versions of `flowdb_testdata`,
+This will use the specifications in `docker-compose.yml` to spin up development versions of `flowdb_testdata`,
 `flowmachine`, `flowapi` and `flowauth` (as well as a `redis` container, which is used internally by `flowmachine`).
 
 The first time you run this command it will build the docker images locally, which will take ~15 minutes. Subsequent
@@ -90,7 +92,7 @@ CONTAINER ID        IMAGE                               COMMAND                 
 e57c8eeb7d38        flowminder/flowmachine:latest       "/bin/sh -c 'pipenv …"   5 minutes ago       Up 5 minutes        0.0.0.0:5555->5555/tcp             flowmachine
 3d54ce0c4484        flowminder/flowapi:latest           "/bin/sh -c 'pipenv …"   5 minutes ago       Up 5 minutes        0.0.0.0:9090->9090/tcp             flowapi
 89e9575c8d42        flowminder/flowauth:latest          "/entrypoint.sh /sta…"   5 minutes ago       Up 5 minutes        443/tcp, 0.0.0.0:8080->80/tcp      flowauth
-384355e94ae6        bitnami/redis                       "/entrypoint.sh /run…"   5 minutes ago       Up 5 minutes        0.0.0.0:6379->6379/tcp             redis_flowkit
+384355e94ae6        bitnami/redis                       "/entrypoint.sh /run…"   5 minutes ago       Up 5 minutes        0.0.0.0:6379->6379/tcp             query_locker
 ```
 
 **Note:** _Currently there is a glitch which means that `flowmachine` may not start up correctly if `flowdb_testdata`
@@ -98,19 +100,7 @@ is still in the start-up phase while the `flowmachine` container is already up a
 time being you can check if there was an error by checking the `flowmachine` logs (via `docker logs -f flowmachine`),
 and if necessary running `make flowmachine-down` followed by `make flowmachine-up`)._
 
-In this dev setup, the `flowmachine/` and `flowapi/` source folders are mounted as volumes inside the `flowmachine`
-and `flowapi` containers. In addition, the `flowmachine` and `flowapi` services are being run in "live reload" mode
-(in `flowmachine`'s case this is achieved via [watchdog](https://pythonhosted.org/watchdog/)).
-This ensures that any changes to the source code automatically trigger a restart of the process and there is no need to
-re-build the images or re-start the docker containers when changes to the code are made during development. (The
-only exception is if new dependencies are added, in which case you can run `make down` followed by `make up` to
-re-build the images and re-start the containers.)
-
-_(Note: currently this live reload is not enabled for flowauth, but it is planned and will be available very shortly.)_
-
-Any changes to `flowdb` - for example, tweaks to the database schema - will require a re-build and a re-start of the
-`flowdb` and/or `flowdb_testdata` image and a re-start of the container. Simply run `make down` followed by `make up`
-to achieve this.
+To make changes to the containers, you should run `make down && make up`.
 
 
 ## Option 2: Starting Flowmachine and FlowAPI manually, outside the dockerised setup
@@ -126,7 +116,6 @@ $ make flowmachine_testdata-up flowauth-up
 ```
 
 Next, run one or more of the following commands (in separate terminals) to start up the remaining components.
-(These commands are the same as the ones inside the `Dockerfile-dev` file for each component.) 
 
 ### Flowmachine
 ```bash
@@ -142,8 +131,14 @@ $ pipenv run hypercorn --debug --reload --bind 0.0.0.0:9090 "app.main:create_app
 
 ### FlowAuth
 
-_TODO_
+```bash
+$ cd flowauth/
+$ pipenv run start-all
+```
 
+!!! warning
+    If you have started FlowMachine and FlowAPI directly, you will need to set the `FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=TRUE` before running the integration tests.
+    Without this setting, both will be started automatically to allow test coverage to be collected.
 
 # Verifying the setup
 
