@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import Schema, fields, post_load
+from marshmallow.validate import OneOf
 
 from flowmachine.features.dfs import DFSTotalMetricAmount
 from .base_exposed_query import BaseExposedQuery
@@ -12,6 +13,7 @@ __all__ = ["DFSTotalMetricAmountSchema", "DFSTotalMetricAmountExposed"]
 
 
 class DFSTotalMetricAmountSchema(Schema):
+    query_kind = fields.String(validate=OneOf(["dfs_metric_total_amount"]))
     metric = DFSMetric()
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)

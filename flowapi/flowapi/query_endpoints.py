@@ -12,6 +12,44 @@ blueprint = Blueprint("query", __name__)
 @blueprint.route("/run", methods=["POST"])
 @jwt_required
 async def run_query():
+    """
+    Run a query.
+    ---
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowmachineQuerySchema'
+        required: true
+      responses:
+        '202':
+          description: Request accepted.
+          headers:
+            Location:
+              description: URL to poll for status
+              schema:
+                format: url
+                type: string
+        '401':
+          description: Unauthorized.
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Token does not grant run access to this query or spatial aggregation unit.
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Query spec could not be run..
+        '500':
+          description: Server error.
+      summary: Run a query
+
+    """
     json_data = await request.json
     current_user.can_run(query_json=json_data)
     request.socket.send_json(
@@ -57,6 +95,53 @@ async def run_query():
 @blueprint.route("/poll/<query_id>")
 @jwt_required
 async def poll_query(query_id):
+    """
+    Get the status of a previously submitted query.
+    ---
+    get:
+      parameters:
+        - in: path
+          name: query_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                properties:
+                  msg:
+                    type: string
+                  status:
+                    enum:
+                      - executing
+                      - queued
+                    type: string
+                type: object
+          description: Request accepted.
+        '303':
+          description: Data ready.
+          headers:
+            Location:
+              description: URL to download data
+              schema:
+                format: url
+                type: string
+        '401':
+          description: Unauthorized.
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Token does not grant poll access to this query or spatial aggregation unit.
+        '404':
+          description: Unknown ID
+        '500':
+          description: Server error.
+      summary: Get the status of a query
+    """
     await current_user.can_poll_by_query_id(query_id=query_id)
     request.socket.send_json(
         {
@@ -89,6 +174,43 @@ async def poll_query(query_id):
 @blueprint.route("/get/<query_id>")
 @jwt_required
 async def get_query_result(query_id):
+    """
+    Get the output of a completed query.
+    ---
+    get:
+      parameters:
+        - in: path
+          name: query_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Results returning.
+        '202':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Request accepted.
+        '401':
+          description: Unauthorized.
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: Token does not grant results access to this query or spatial aggregation unit.
+        '404':
+          description: Unknown ID
+        '500':
+          description: Server error.
+      summary: Get the output of query
+    """
     await current_user.can_get_results_by_query_id(query_id=query_id)
     msg = {
         "request_id": request.request_id,
@@ -144,6 +266,50 @@ async def get_query_result(query_id):
 @blueprint.route("/available_dates")
 @jwt_required
 async def get_available_dates():
+    """
+    Get dates available for queries.
+    ---
+    get:
+      responses:
+        '200':
+          description: Dates available for each event type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  calls:
+                    type: array
+                    items:
+                      type: string
+                      format: date
+                  sms:
+                    type: array
+                    items:
+                      type: string
+                      format: date
+                  mds:
+                    type: array
+                    items:
+                      type: string
+                      format: date
+                  topups:
+                    type: array
+                    items:
+                      type: string
+                      format: date
+        '401':
+          description: Unauthorized.
+        '403':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: No access with this token.
+        '500':
+          description: Server error.
+      summary: Get the dates available to query over.
+    """
     current_user.can_get_available_dates()
 
     json_data = await request.json

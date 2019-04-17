@@ -53,7 +53,7 @@ async def test_granular_run_access(
             }
         }
     )
-    expected_responses = dict.fromkeys(query_kinds, 401)
+    expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 202
     dummy_zmq_server.return_value = {
         "status": "success",
@@ -90,7 +90,7 @@ async def test_granular_poll_access(
             }
         }
     )
-    expected_responses = dict.fromkeys(query_kinds, 401)
+    expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 303
 
     responses = {}
@@ -143,7 +143,7 @@ async def test_granular_json_access(
             }
         }
     )
-    expected_responses = dict.fromkeys(query_kinds, 401)
+    expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 200
     responses = {}
     for q_kind in query_kinds:
@@ -217,7 +217,7 @@ async def test_no_result_access_without_both_claims(
     response = await client.get(
         f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
-    assert 401 == response.status_code
+    assert 403 == response.status_code
 
 
 @pytest.mark.asyncio
@@ -252,7 +252,7 @@ async def test_access_logs_gets(
         },
     )
     response = await client.get(route, headers={"Authorization": f"Bearer {token}"})
-    assert 401 == response.status_code
+    assert 403 == response.status_code
     log_lines = json_log().out
     assert 3 == len(log_lines)  # One access log, two query logs
     assert log_lines[0]["logger"] == "flowapi.access"
@@ -283,7 +283,7 @@ async def test_access_logs_post(
         headers={"Authorization": f"Bearer {token}"},
         json={"query_kind": query_kind, "aggregation_unit": "admin3"},
     )
-    assert 401 == response.status_code
+    assert 403 == response.status_code
 
     log_lines = json_log().out
     assert 3 == len(log_lines)  # One access log, two query logs
@@ -307,7 +307,7 @@ async def test_access_logs_post(
                 "permissions": {"get_result": True},
                 "spatial_aggregation": ["DUMMY_AGGREGATION"],
             },
-            401,
+            403,
         ),
         (
             {
@@ -315,7 +315,7 @@ async def test_access_logs_post(
                 "spatial_aggregation": ["DUMMY_AGGREGATION"],
             },
             {"permissions": {"get_result": True}, "spatial_aggregation": []},
-            401,
+            403,
         ),
         (
             {
@@ -337,7 +337,7 @@ async def test_access_logs_post(
                 "permissions": {"get_result": True},
                 "spatial_aggregation": ["DUMMY_AGGREGATION"],
             },
-            401,
+            403,
         ),
         (
             {
@@ -348,7 +348,7 @@ async def test_access_logs_post(
                 "permissions": {"get_result": False},
                 "spatial_aggregation": ["DUMMY_AGGREGATION"],
             },
-            401,
+            403,
         ),
     ],
 )

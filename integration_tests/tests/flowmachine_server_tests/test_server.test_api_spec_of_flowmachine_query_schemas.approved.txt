@@ -13,6 +13,12 @@
         ],
         "type": "string"
       },
+      "query_kind": {
+        "enum": [
+          "aggregate_network_objects"
+        ],
+        "type": "string"
+      },
       "statistic": {
         "enum": [
           "avg",
@@ -59,6 +65,12 @@
         ],
         "type": "string"
       },
+      "query_kind": {
+        "enum": [
+          "dfs_metric_total_amount"
+        ],
+        "type": "string"
+      },
       "start_date": {
         "format": "date",
         "type": "string"
@@ -94,6 +106,12 @@
         ],
         "type": "string"
       },
+      "query_kind": {
+        "enum": [
+          "daily_location"
+        ],
+        "type": "string"
+      },
       "subscriber_subset": {
         "enum": [
           null
@@ -112,6 +130,12 @@
   "DummyQuery": {
     "properties": {
       "dummy_param": {
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "dummy_query"
+        ],
         "type": "string"
       }
     },
@@ -199,6 +223,12 @@
       "from_location": {
         "$ref": "#/components/schemas/InputToFlows"
       },
+      "query_kind": {
+        "enum": [
+          "flows"
+        ],
+        "type": "string"
+      },
       "to_location": {
         "$ref": "#/components/schemas/InputToFlows"
       }
@@ -218,6 +248,12 @@
           "admin1",
           "admin2",
           "admin3"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "geography"
         ],
         "type": "string"
       }
@@ -319,6 +355,12 @@
       },
       "metric": {
         "$ref": "#/components/schemas/JoinableMetrics"
+      },
+      "query_kind": {
+        "enum": [
+          "joined_spatial_aggregate"
+        ],
+        "type": "string"
       }
     },
     "required": [
@@ -372,6 +414,12 @@
         ],
         "type": "string"
       },
+      "query_kind": {
+        "enum": [
+          "location_event_counts"
+        ],
+        "type": "string"
+      },
       "start_date": {
         "format": "date",
         "type": "string"
@@ -416,6 +464,12 @@
         "format": "date",
         "type": "string"
       },
+      "query_kind": {
+        "enum": [
+          "location_introversion"
+        ],
+        "type": "string"
+      },
       "start_date": {
         "format": "date",
         "type": "string"
@@ -447,6 +501,12 @@
           "type": "object"
         },
         "type": "object"
+      },
+      "query_kind": {
+        "enum": [
+          "meaningful_locations_aggregate"
+        ],
+        "type": "string"
       },
       "start_date": {
         "format": "date",
@@ -522,6 +582,12 @@
           "type": "object"
         },
         "type": "object"
+      },
+      "query_kind": {
+        "enum": [
+          "meaningful_locations_between_dates_od_matrix"
+        ],
+        "type": "string"
       },
       "start_date_a": {
         "format": "date",
@@ -610,6 +676,12 @@
         },
         "type": "object"
       },
+      "query_kind": {
+        "enum": [
+          "meaningful_locations_between_label_od_matrix"
+        ],
+        "type": "string"
+      },
       "start_date": {
         "format": "date",
         "type": "string"
@@ -683,6 +755,12 @@
         "minItems": 1,
         "type": "array"
       },
+      "query_kind": {
+        "enum": [
+          "modal_location"
+        ],
+        "type": "string"
+      },
       "subscriber_subset": {
         "enum": [
           null
@@ -700,6 +778,12 @@
     "properties": {
       "locations": {
         "$ref": "#/components/schemas/InputToSpatialAggregate"
+      },
+      "query_kind": {
+        "enum": [
+          "spatial_aggregate"
+        ],
+        "type": "string"
       }
     },
     "required": [
@@ -720,6 +804,12 @@
       },
       "end_date": {
         "format": "date",
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "total_network_objects"
+        ],
         "type": "string"
       },
       "start_date": {
@@ -759,6 +849,12 @@
       },
       "end_date": {
         "format": "date",
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "unique_subscriber_counts"
+        ],
         "type": "string"
       },
       "start_date": {

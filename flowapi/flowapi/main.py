@@ -17,6 +17,7 @@ from flowapi.config import get_config
 from flowapi.jwt_auth_callbacks import register_logging_callbacks
 from flowapi.query_endpoints import blueprint as query_endpoints_blueprint
 from flowapi.geography import blueprint as geography_blueprint
+from flowapi.api_spec import blueprint as spec_blueprint
 from flask_jwt_extended import JWTManager
 
 import structlog
@@ -124,6 +125,7 @@ def create_app():
 
     app.register_blueprint(query_endpoints_blueprint, url_prefix="/api/0")
     app.register_blueprint(geography_blueprint, url_prefix="/api/0")
+    app.register_blueprint(spec_blueprint, url_prefix="/api/0/spec")
 
     register_logging_callbacks(jwt)
     jwt.user_loader_callback_loader(user_loader_callback)

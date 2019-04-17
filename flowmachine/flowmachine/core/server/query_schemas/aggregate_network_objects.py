@@ -20,7 +20,7 @@ class InputToAggregateNetworkObjectsSchema(OneOfSchema):
 
 
 class AggregateNetworkObjectsSchema(Schema):
-
+    query_kind = fields.String(validate=OneOf(["aggregate_network_objects"]))
     total_network_objects = fields.Nested(
         InputToAggregateNetworkObjectsSchema, required=True
     )
