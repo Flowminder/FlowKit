@@ -93,6 +93,22 @@ from tests.utils import permissions_types, aggregation_types
             },
         ),
         (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "radius_of_gyration",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                },
+            },
+        ),
+        (
             "spatial_aggregate",
             {
                 "locations": flowclient.modal_location_from_dates(

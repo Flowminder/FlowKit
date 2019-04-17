@@ -158,6 +158,7 @@
         "meaningful_locations_aggregate": "#/components/schemas/MeaningfulLocationsAggregate",
         "meaningful_locations_between_dates_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenDatesODMatrix",
         "meaningful_locations_between_label_od_matrix": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix",
+        "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
         "spatial_aggregate": "#/components/schemas/SpatialAggregate",
         "total_network_objects": "#/components/schemas/TotalNetworkObjects",
         "unique_subscriber_counts": "#/components/schemas/UniqueSubscriberCounts"
@@ -197,6 +198,9 @@
       },
       {
         "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
+      },
+      {
+        "$ref": "#/components/schemas/RadiusOfGyration"
       },
       {
         "$ref": "#/components/schemas/SpatialAggregate"
@@ -771,6 +775,30 @@
     },
     "required": [
       "aggregation_unit"
+    ],
+    "type": "object"
+  },
+  "RadiusOfGyration": {
+    "properties": {
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "end_date",
+      "start_date"
     ],
     "type": "object"
   },
