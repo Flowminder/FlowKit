@@ -76,7 +76,7 @@ CREATE TABLE etl.etl (
 	file_name VARCHAR,
 	cdr_type cdrtype,
 	cdr_date DATE,
-	status status,
+	status etl_status,
 	time_stamp TIMESTAMP WITH TIME ZONE,
 	PRIMARY KEY (id)
 );
