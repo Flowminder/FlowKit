@@ -1,6 +1,49 @@
 {
   "components": {
     "schemas": {
+      "AggregateNetworkObjects": {
+        "properties": {
+          "aggregate_by": {
+            "enum": [
+              "century",
+              "day",
+              "hour",
+              "minute",
+              "month",
+              "second",
+              "year"
+            ],
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "aggregate_network_objects"
+            ],
+            "type": "string"
+          },
+          "statistic": {
+            "enum": [
+              "avg",
+              "max",
+              "median",
+              "min",
+              "mode",
+              "stddev",
+              "variance"
+            ],
+            "type": "string"
+          },
+          "total_network_objects": {
+            "$ref": "#/components/schemas/InputToAggregateNetworkObjects"
+          }
+        },
+        "required": [
+          "query_kind",
+          "statistic",
+          "total_network_objects"
+        ],
+        "type": "object"
+      },
       "DFSTotalMetricAmount": {
         "properties": {
           "aggregation_unit": {
@@ -110,6 +153,9 @@
       "FlowmachineQuerySchema": {
         "oneOf": [
           {
+            "$ref": "#/components/schemas/AggregateNetworkObjects"
+          },
+          {
             "$ref": "#/components/schemas/DFSTotalMetricAmount"
           },
           {
@@ -205,6 +251,13 @@
           "query_kind"
         ],
         "type": "object"
+      },
+      "InputToAggregateNetworkObjects": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/TotalNetworkObjects"
+          }
+        ]
       },
       "InputToFlows": {
         "oneOf": [
@@ -718,17 +771,6 @@
             "format": "date",
             "type": "string"
           },
-          "period": {
-            "enum": [
-              "day",
-              "hour",
-              "minute",
-              "month",
-              "second",
-              "year"
-            ],
-            "type": "string"
-          },
           "query_kind": {
             "enum": [
               "total_network_objects"
@@ -737,6 +779,18 @@
           },
           "start_date": {
             "format": "date",
+            "type": "string"
+          },
+          "total_by": {
+            "default": "day",
+            "enum": [
+              "day",
+              "hour",
+              "minute",
+              "month",
+              "second",
+              "year"
+            ],
             "type": "string"
           }
         },
@@ -781,6 +835,13 @@
           "start_date"
         ],
         "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "token": {
+        "bearerFormat": "JWT",
+        "scheme": "bearer",
+        "type": "http"
       }
     }
   },
@@ -888,6 +949,16 @@
           "401": {
             "description": "Unauthorized."
           },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Token does not grant run access to this spatial aggregation unit."
+          },
           "500": {
             "description": "Server error."
           }
@@ -940,7 +1011,7 @@
                 }
               }
             },
-            "description": "Bad query."
+            "description": "Token does not grant results access to this query or spatial aggregation unit."
           },
           "404": {
             "description": "Unknown ID"
@@ -1011,7 +1082,7 @@
                 }
               }
             },
-            "description": "Bad query."
+            "description": "Token does not grant poll access to this query or spatial aggregation unit."
           },
           "404": {
             "description": "Unknown ID"
@@ -1049,6 +1120,16 @@
               }
             }
           },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Query spec could not be run.."
+          },
           "401": {
             "description": "Unauthorized."
           },
@@ -1060,7 +1141,7 @@
                 }
               }
             },
-            "description": "Bad query."
+            "description": "Token does not grant run access to this query or spatial aggregation unit."
           },
           "500": {
             "description": "Server error."
