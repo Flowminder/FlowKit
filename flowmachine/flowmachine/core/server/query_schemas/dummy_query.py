@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import Schema, fields, post_load
+from marshmallow.validate import OneOf
 
 from flowmachine.core.dummy_query import DummyQuery
 from .base_exposed_query import BaseExposedQuery
@@ -15,6 +16,7 @@ class DummyQuerySchema(Schema):
     Dummy query useful for testing.
     """
 
+    query_kind = fields.String(validate=OneOf(["dummy_query"]))
     dummy_param = fields.String(required=True)
 
     @post_load

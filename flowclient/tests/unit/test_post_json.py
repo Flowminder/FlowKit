@@ -39,9 +39,10 @@ def test_404_raises_error(session_mock, token):
         connection.post_json(route="DUMMY_ROUTE", data={})
 
 
-def test_401_error(session_mock, token):
-    """If a msg field is available for a 401, it should be used as the error message."""
-    session_mock.post.return_value.status_code = 401
+@pytest.mark.parametrize("denial_status_code", [401, 403])
+def test_access_denied_error(denial_status_code, session_mock, token):
+    """If a msg field is available for an access denied it should be used as the error message."""
+    session_mock.post.return_value.status_code = denial_status_code
     session_mock.post.return_value.json.return_value = ZMQReply(
         status="error", msg="ERROR_MESSAGE"
     ).as_json()
@@ -50,15 +51,14 @@ def test_401_error(session_mock, token):
         connection.post_json(route="DUMMY_ROUTE", data={})
 
 
-def test_401_unknown_error(session_mock, token):
-    """If a msg field is not available for a 401, a generic message is used."""
-    session_mock.get.return_value.status_code = 401
-    session_mock.get.return_value.json.return_value = ZMQReply(
-        status="error", msg="Unknown access denied error", payload={}
-    ).as_json()
+@pytest.mark.parametrize("denial_status_code", [401, 403])
+def test_access_denied_unknown_error(denial_status_code, session_mock, token):
+    """If a msg field is not available for an access denied a generic message is supplied."""
+    session_mock.post.return_value.status_code = denial_status_code
+    session_mock.post.return_value.json.side_effect = ValueError
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(FlowclientConnectionError, match="Unknown access denied error"):
-        connection.get_url(route="DUMMY_ROUTE")
+        connection.post_json(route="DUMMY_ROUTE", data={})
 
 
 def test_generic_status_code_error(session_mock, token):
@@ -70,7 +70,7 @@ def test_generic_status_code_error(session_mock, token):
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(
         FlowclientConnectionError,
-        match="Something went wrong: I AM A TEAPOT. API returned with status code: 418",
+        match="Something went wrong. API returned with status code 418. Error message: 'I AM A TEAPOT'. Payload: {}",
     ):
         connection.post_json(route="DUMMY_ROUTE", data={})
 
@@ -84,6 +84,18 @@ def test_generic_status_code_unknown_error(session_mock, token):
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(
         FlowclientConnectionError,
-        match="Something went wrong: the response did not contain valid JSON. API returned with status code: 418.",
+        match="Something went wrong. API returned with status code 418. Error message: 'the response did not contain valid JSON'.",
+    ):
+        connection.post_json(route="DUMMY_ROUTE", data={})
+
+
+def test_generic_status_code_no_payload(session_mock, token):
+    """An error should be raised for status codes that aren't expected, with a blank payload if not given."""
+    session_mock.post.return_value.status_code = 418
+    session_mock.post.return_value.json.return_value = dict(msg="DUMMY_ERROR")
+    connection = flowclient.connect(url="DUMMY_API", token=token)
+    with pytest.raises(
+        FlowclientConnectionError,
+        match="Something went wrong. API returned with status code 418. Error message: 'DUMMY_ERROR'.",
     ):
         connection.post_json(route="DUMMY_ROUTE", data={})

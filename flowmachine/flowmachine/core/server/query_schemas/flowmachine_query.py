@@ -16,13 +16,27 @@ from .meaningful_locations import (
     MeaningfulLocationsAggregateSchema,
     MeaningfulLocationsBetweenLabelODMatrixSchema,
     MeaningfulLocationsBetweenDatesODMatrixSchema,
+    MeaningfulLocationsBetweenDatesODMatrixExposed,
 )
-from .geography import GeographySchema
-from .location_event_counts import LocationEventCountsSchema
-from .unique_subscriber_counts import UniqueSubscriberCountsSchema
-from .location_introversion import LocationIntroversionSchema
-from .total_network_objects import TotalNetworkObjectsSchema
-from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
+from .geography import GeographySchema, GeographyExposed
+from .location_event_counts import LocationEventCountsSchema, LocationEventCountsExposed
+from .unique_subscriber_counts import (
+    UniqueSubscriberCountsSchema,
+    UniqueSubscriberCountsExposed,
+)
+from .location_introversion import (
+    LocationIntroversionSchema,
+    LocationIntroversionExposed,
+)
+from .total_network_objects import TotalNetworkObjectsSchema, TotalNetworkObjectsExposed
+from .aggregate_network_objects import (
+    AggregateNetworkObjectsSchema,
+    AggregateNetworkObjectsExposed,
+)
+from .dfs_metric_total_amount import (
+    DFSTotalMetricAmountSchema,
+    DFSTotalMetricAmountExposed,
+)
 
 
 class FlowmachineQuerySchema(OneOfSchema):
@@ -38,6 +52,7 @@ class FlowmachineQuerySchema(OneOfSchema):
         "unique_subscriber_counts": UniqueSubscriberCountsSchema,
         "location_introversion": LocationIntroversionSchema,
         "total_network_objects": TotalNetworkObjectsSchema,
+        "aggregate_network_objects": AggregateNetworkObjectsSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
         "spatial_aggregate": SpatialAggregateSchema,
         "joined_spatial_aggregate": JoinedSpatialAggregateSchema,
