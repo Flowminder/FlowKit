@@ -223,7 +223,7 @@ def action_handler__get_sql(query_id):
         payload = {"query_id": query_id, "query_state": query_state, "sql": sql}
         return ZMQReply(status="success", payload=payload)
     else:
-        msg = f"Query with id '{query_id}' {query_state.description}"
+        msg = f"Query with id '{query_id}' {query_state.description}."
         payload = {"query_id": query_id, "query_state": query_state}
         return ZMQReply(status="error", msg=msg, payload=payload)
 
