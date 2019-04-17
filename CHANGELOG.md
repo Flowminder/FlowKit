@@ -6,14 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 - Added new flowclient API entrypoint, `aggregate_network_objects`, to access equivalent flowmachine query [#601](https://github.com/Flowminder/FlowKit/issues/601)
+- Added Makefile target `make up-no_build`, to spin up all containers without building the images
 
 ### Changed
 - The `period` argument to `TotalNetworkObjects` in FlowMachine has been renamed `total_by`
 - The `period` argument to `total_network_objects` in FlowClient has been renamed `total_by`
  - The `by` argument to `AggregateNetworkObjects` in FlowMachine has been renamed to `aggregate_by`
+
+
+### Changed
+- All environment variables are now in a single `development_environment` file in the project root, development environment setup has been simplified
+- Default FlowDB users for FlowMachine and FlowAPI have changed from "analyst" and "reporter" to "flowmachine" and "flowapi", respectively
+- Docs and integration tests now use top level compose file
+- The following environment variables have been renamed:
+  - `FLOWMACHINE_SERVER` (FlowAPI) -> `FLOWMACHINE_HOST`
+  - `FM_PASSWORD` (FlowDB), `FLOWDB_PASS` (FlowMachine) -> `FLOWMACHINE_FLOWDB_PASSWORD`
+  - `API_PASSWORD` (FlowDB), `FLOWDB_PASS` (FlowAPI) -> `FLOWAPI_FLOWDB_PASSWORD`
+  - `FM_USER` (FlowDB), `FLOWDB_USER` (FlowMachine) -> `FLOWMACHINE_FLOWDB_USER`
+  - `API_USER` (FlowDB), `FLOWDB_USER` (FlowAPI) -> `FLOWAPI_FLOWDB_USER`
+  - `LOG_LEVEL` (FlowMachine) -> `FLOWMACHINE_LOG_LEVEL`
+  - `LOG_LEVEL` (FlowAPI) -> `FLOWAPI_LOG_LEVEL`
+  - `DEBUG` (FlowDB) -> `FLOWDB_DEBUG`
+  - `DEBUG` (FlowMachine) -> `FLOWMACHINE_SERVER_DEBUG_MODE`
+- The following Docker secrets have been renamed:
+  - `FLOWAPI_DB_USER` -> `FLOWAPI_FLOWDB_USER`
+  - `FLOWAPI_DB_PASS` -> `FLOWAPI_FLOWDB_PASSWORD`
+  - `FLOWMACHINE_DB_USER` -> `FLOWMACHINE_FLOWDB_USER`
+  - `FLOWMACHINE_DB_PASS` -> `FLOWMACHINE_FLOWDB_PASSWORD`
+  - `POSTGRES_PASSWORD_FILE` -> `POSTGRES_PASSWORD`
+  - `REDIS_PASSWORD_FILE` -> `REDIS_PASSWORD`
+
 ### Fixed
+- Fixed being unable to add new users or servers when running FlowAuth with a Postgres database [#622](https://github.com/Flowminder/FlowKit/issues/622)
 
 ### Removed
+- Removed `docker-compose-dev.yml`, and docker-compose files in `docs/`, `flowdb/tests/` and `integration_tests/`.
+- Removed `Dockerfile-dev` Dockerfiles
+- Removed `ENV` defaults from the FlowMachine Dockerfile
+
 
 ## [0.5.3]
 ### Added

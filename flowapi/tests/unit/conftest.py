@@ -132,11 +132,11 @@ def access_token_builder():
 
 @pytest.fixture
 def app(monkeypatch, tmpdir, dummy_db_pool):
-    monkeypatch.setenv("LOG_LEVEL", "DEBUG")
-    monkeypatch.setenv("SERVER", "localhost")
-    monkeypatch.setenv("FLOWDB_USER", "flowdb")
+    monkeypatch.setenv("FLOWAPI_LOG_LEVEL", "DEBUG")
+    monkeypatch.setenv("FLOWMACHINE_HOST", "localhost")
+    monkeypatch.setenv("FLOWAPI_FLOWDB_USER", "flowapi")
     monkeypatch.setenv("FLOWDB_HOST", "localhost")
-    monkeypatch.setenv("FLOWDB_PASS", "flowflow")
+    monkeypatch.setenv("FLOWAPI_FLOWDB_PASSWORD", "foo")
     monkeypatch.setenv("JWT_SECRET_KEY", "secret")
     current_app = create_app()
     yield current_app.test_client(), dummy_db_pool, tmpdir, current_app
