@@ -47,7 +47,7 @@ structlog.configure(
 
 
 async def connect_logger():
-    log_level = current_app.config["LOG_LEVEL"]
+    log_level = current_app.config["FLOWAPI_LOG_LEVEL"]
     logger = root_logger.getChild("debug")
     logger.setLevel(log_level)
     ch = logging.StreamHandler()
@@ -82,7 +82,7 @@ async def connect_zmq():
     current_app.flowapi_logger.debug("Connecting to FlowMachine server…")
     socket = context.socket(zmq.REQ)
     socket.connect(
-        f"tcp://{current_app.config['FLOWMACHINE_SERVER']}:{current_app.config['FLOWMACHINE_PORT']}"
+        f"tcp://{current_app.config['FLOWMACHINE_HOST']}:{current_app.config['FLOWMACHINE_PORT']}"
     )
     request.socket = socket
     current_app.flowapi_logger.debug("Connected.")

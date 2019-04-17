@@ -9,11 +9,13 @@ FlowKit's documentation is built using [Mkdocs](http://mkdocs.org).
 - Docker
 - Pipenv
 
-To build the docs, first install the necessary dependencies by running `pipenv install` (in the `docs/` subfolder). Once this completes, you can build the docs by running `pipenv run build`.
+To build the docs, first install the necessary dependencies by running `pipenv install` (in the `docs/` subfolder). Once this completes, you can build the docs by running `pipenv run build`, after sourcing the top level `development_environment` file by running `set -a && . ./development_environment && set +a` in the project root.
 
 This will create any necessary Docker containers, run all notebooks, generate markdown for the APIs, and finally build all the resulting markdown to HTML. Built docs will be in the `flowkit-docs` directory.
 
 For local development, you can also run `pipenv run serve`, which will build the docs, and then start a live reloading web server. You can view the docs at http://localhost:8000, and any changes you make to markdown files in the `build` directory will be reflected immediately.
+
+Alternatively, you can build the docs by sourcing `development_environment` and  running `FLOWDB_SERVICES="flowdb_synthetic_data" make up` in the project root to bring up the required containers, and then running `pipenv run mkdocs` directly.
 
 ### Editing
 
@@ -25,13 +27,11 @@ While editing, you can use `pipenv run serve` to get an automatically rebuilding
 
 The `build.sh` script:
 
-1. If not on CircleCI, runs docker-compose to bring up a redis container, and the FlowDB testdata container on ports `9998` and `9999`.
-2. Copies the content of `source` to `build` (to avoid including the markdown generated from notebooks in commits)
-3. Copies the readme files from the root, flowdb and flowmachine directories to build
-4. Uses `nbconvert` on all notebooks found in `build/analyst/notebooks` and writes the resulting markdown to `build/analyst`
-5. Generates markdown API documentation for FlowMachine at `build/components/flowmachine`
-6. Generates markdown API documentation for FlowClient at `build/components/flowclient`
-7. Builds HTML from the markdown using mkdocs
+1. If not on CircleCI, runs docker-compose to bring up a redis container, and the FlowDB synthetic data container.
+1. Uses `nbconvert` on all notebooks found in `source` and (optionally) executes them.
+1. Generates markdown API documentation for FlowMachine at `build/components/flowmachine`
+1. Generates markdown API documentation for FlowClient at `build/components/flowclient`
+1. Builds HTML from the markdown using mkdocs
 
 ### Notes
 

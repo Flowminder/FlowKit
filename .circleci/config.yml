@@ -14,8 +14,10 @@ defaults:
     FLOWDB_INGESTION_DIR: /home/circleci/project/flowdb/tests/data
     POSTGRES_PASSWORD: flowflow
     POSTGRES_USER: flowdb
-    FM_PASSWORD: foo
-    API_PASSWORD: foo
+    FLOWMACHINE_FLOWDB_USER: flowmachine
+    FLOWAPI_FLOWDB_USER: flowapi
+    FLOWMACHINE_FLOWDB_PASSWORD: foo
+    FLOWAPI_FLOWDB_PASSWORD: foo
   - &wait_for_flowdb
     name: Wait for flowdb to start
     command: |
@@ -70,6 +72,9 @@ executors:
       num_calls:
         type: integer
         default: 2000
+      num_tacs:
+        type: integer
+        default: 1000
       num_mds:
         type: integer
         default: 0
@@ -83,17 +88,17 @@ executors:
         POSTGRES_PASSWORD: flowflow
         MPLBACKEND: "agg"
         FLOWDB_PORT: 5432
-        FM_PASSWORD: foo
-        API_PASSWORD: foo
-        FLOWDB_PASS: foo
+        FLOWMACHINE_FLOWDB_PASSWORD: foo
+        FLOWAPI_FLOWDB_PASSWORD: foo
+        FLOWAPI_FLOWDB_USER: flowapi
         REDIS_PASSWORD: fm_redis
         SYNTHETIC_DATA_DB_PORT: 5432
         POSTGRES_USER: flowdb
         REDIS_HOST: "localhost"
         QUART_APP: "flowapi.main:create_app()"
-        FLOWDB_USER: analyst
+        FLOWMACHINE_FLOWDB_USER: flowmachine
         LOG_DIRECTORY: "."
-        SERVER: localhost
+        FLOWMACHINE_HOST: localhost
         FLOWDB_HOST: localhost
         JWT_SECRET_KEY: secret
     docker:
@@ -109,10 +114,15 @@ executors:
           N_SMS: <<parameters.num_sms>>
           N_MDS: <<parameters.num_mds>>
           N_CALLS: <<parameters.num_calls>>
+          N_TACS: <<parameters.num_tacs>>
           SYNTHETIC_DATA_GENERATOR: <<parameters.synthetic_data_generator>>
-          FM_PASSWORD: foo
-          API_PASSWORD: foo
+          FLOWMACHINE_FLOWDB_PASSWORD: foo
+          FLOWAPI_FLOWDB_PASSWORD: foo
           POSTGRES_PASSWORD: flowflow
+          SUBSCRIBERS_SEED: 12345
+          CALLS_SEED: 22222
+          CELLS_SEED: 99999
+          OUTPUT_ROOT_DIR: "/docker-entrypoint-initdb.d"
       - image: bitnami/redis:latest
         environment:
           REDIS_PASSWORD: "fm_redis"
@@ -226,13 +236,13 @@ jobs:
           name: Launch flowdb
           command: |
             docker run --name flowdb --publish $FLOWDB_PORT:5432 --user $(id -u):$(id -g) --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
-              --volume=${FLOWDB_INGESTION_DIR}:/ingestion:ro -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+              --volume=${FLOWDB_INGESTION_DIR}:/ingestion:ro -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
               -e MAX_CPUS=2 -e MAX_WORKERS=2 -e MAX_WORKERS_PER_GATHER=2 \
               -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
               --detach flowminder/flowdb:$SAFE_TAG
 
             echo "Waiting for flowdb to be ready.."
-            docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FM_PASSWORD=foo -e API_PASSWORD=foo \
+            docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
             -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
              --detach flowminder/flowdb:oracle-$SAFE_TAG
             docker exec flowdb bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432 -U flowdb);do let i=i+1; echo Waiting 10s; sleep 10;done'
@@ -366,6 +376,9 @@ jobs:
   run_flowauth_backend_tests:
     docker:
       - image: circleci/python:3.7
+    environment:
+      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
+      FLASK_APP: flowauth
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
@@ -383,6 +396,9 @@ jobs:
   run_flowauth_frontend_tests:
     docker:
       - image: circleci/python:3.7
+    environment:
+      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
+      FLASK_APP: flowauth
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
@@ -474,7 +490,7 @@ jobs:
       - run:
           name: Run integration tests
           command: |
-            PIPENV_DONT_LOAD_ENV=1 pipenv run run-tests -sv --junitxml=test_results/pytest/results.xml --durations=10 \
+            PIPENV_DONT_LOAD_ENV=1 FLOWAPI_PORT=9090 pipenv run run-tests -sv --junitxml=test_results/pytest/results.xml --durations=10 \
             --cov=../flowmachine --cov=../flowclient --cov=../flowapi \
             --cov-report xml \
             --cov-report term
@@ -497,6 +513,7 @@ jobs:
       num_days: 60
       num_calls: 20000
       num_sms: 20000
+      num_tacs: 10000
       num_mds: 20000
       disaster_start_date: 2016-02-11
       disaster_end_date: 2016-03-01
