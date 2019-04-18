@@ -9,10 +9,8 @@
 # are made to either file they should also be reflected in the others.
 #
 
-import rapidjson
 from enum import Enum
 
-from .exceptions import FlowmachineServerError
 
 __all__ = ["ZMQReplyStatus", "ZMQReplyMessage", "ZMQReplyPayload", "ZMQReply"]
 
@@ -46,14 +44,15 @@ class ZMQReplyPayload(dict):
         super().__init__(payload)
 
 
-class ZMQReply:
+class ZMQReply(dict):
     """
     Class representing a zmq reply.
 
     It has the following responsibilities:
 
       - Ensure that the reply status can only be one of the valid values defined in ZMQReplyStatus.
-      - Ensure the JSON structure of the reply (as returned by the as_json() method) is consistent.
+      - Ensure the JSON structure of the reply is consistent.
+      - Ensure that at least one of a message and payload is provided
     """
 
     def __init__(self, status, msg="", payload=None):
@@ -69,9 +68,6 @@ class ZMQReply:
         self.status = ZMQReplyStatus(status)
         self.msg = ZMQReplyMessage(msg)
         self.payload = ZMQReplyPayload(payload)
-
-    def as_json(self):
-        """
-        Return a JSON object
-        """
-        return {"status": self.status.value, "msg": self.msg, "payload": self.payload}
+        dict.__init__(
+            self, **self.__dict__
+        )  # This allows the object to be dumped to JSON directly
