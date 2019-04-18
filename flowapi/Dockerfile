@@ -6,7 +6,7 @@ FROM python:3.7-alpine
 
 WORKDIR /flowapi
 COPY Pipfile* /
-RUN apk update && apk add --virtual build-dependencies apk add --virtual build-dependencies build-base gcc wget git libzmq musl-dev zeromq-dev && \
+RUN apk update && apk add --virtual build-dependencies build-base gcc wget git libzmq musl-dev zeromq-dev && \
     pip install pipenv Cython && pipenv install --deploy && \
     apk del build-dependencies
 COPY . /flowapi/
