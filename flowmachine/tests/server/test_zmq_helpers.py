@@ -4,9 +4,8 @@
 
 import pytest
 
-from flowmachine.core.server.exceptions import FlowmachineServerError
+from flowmachine.core.server.server import get_reply_for_message
 from flowmachine.core.server.zmq_helpers import *
-from flowmachine.core.server.zmq_helpers import parse_zmq_message
 
 
 def test_one_kwarg_required():
@@ -77,29 +76,29 @@ def test_zmq_reply_as_json():
     assert expected_json == reply.as_json()
 
 
-def test_zmq_msg_default_params():
-    """Test an ommitted params key gets a default of an empty dict"""
-    action, request_id, action_params = parse_zmq_message(
-        '{"action": "DUMMY_ACTION", "request_id": "DUMMY_REQUEST_ID"}'
-    )
-    assert action == "DUMMY_ACTION"
-    assert request_id == "DUMMY_REQUEST_ID"
-    assert action_params == {}
-
-
 @pytest.mark.parametrize(
-    "bad_message",
+    "bad_message, expected_message",
     [
-        "NOT_JSON",
-        '{"action": "DUMMY_ACTION", "params": {}, "request_id": "DUMMY_REQUEST_ID", "EXTRA_KEY": "EXTRA_KEY_VALUE"}',
-        '{"params": {}, "request_id": "DUMMY_REQUEST_ID"}',
-        '{"action": "DUMMY_ACTION", "params": {}}',
-        '{"action": -1, "params": {}}',
-        '{"action": "DUMMY_ACTION", "params": "NOT_A_DICT", "request_id": "DUMMY_REQUEST_ID"}',
-        '{"action": "DUMMY_ACTION", "params": {}, "request_id": -1}',
+        ("NOT_JSON", "Invalid JSON."),
+        (
+            '{"action": "DUMMY_ACTION", "params": {}, "request_id": "DUMMY_REQUEST_ID", "EXTRA_KEY": "EXTRA_KEY_VALUE"}',
+            "Invalid action request.",
+        ),
+        ('{"params": {}, "request_id": "DUMMY_REQUEST_ID"}', "Invalid action request."),
+        ('{"action": "DUMMY_ACTION", "params": {}}', "Invalid action request."),
+        ('{"action": -1, "params": {}}', "Invalid action request."),
+        (
+            '{"action": "DUMMY_ACTION", "params": "NOT_A_DICT", "request_id": "DUMMY_REQUEST_ID"}',
+            "Invalid action request.",
+        ),
+        (
+            '{"action": "DUMMY_ACTION", "params": {}, "request_id": -1}',
+            "Invalid action request.",
+        ),
     ],
 )
-def test_zmq_msg_parse_error(bad_message):
+def test_zmq_msg_parse_error(bad_message, expected_message):
     """Test errors are raised as expected when failing to parse zmq messages"""
-    with pytest.raises(FlowmachineServerError):
-        parse_zmq_message(bad_message)
+    reply = get_reply_for_message(bad_message)
+    assert reply["status"] == "error"
+    assert reply["msg"] == expected_message
