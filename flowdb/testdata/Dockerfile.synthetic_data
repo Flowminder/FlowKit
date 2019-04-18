@@ -19,7 +19,7 @@ FROM flowminder/flowdb:${CODE_VERSION}
 RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.list \
         && apt-get -y update \
         && apt-get -y install python3.7 python3.7-distutils python3-psutil \
-        && pip3 install pipenv \
+        && pip3 install --no-cache-dir pipenv \
         && apt-get clean --yes \
         && apt-get autoclean --yes \
         && apt-get autoremove --yes \
@@ -30,7 +30,7 @@ RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.l
 # Install python dependencies
 #
 COPY --chown=postgres ./synthetic_data/Pipfile* /tmp/
-RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
+RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clean --system --deploy --three \
     && rm /tmp/Pipfile*
 
 #

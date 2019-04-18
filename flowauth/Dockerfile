@@ -18,4 +18,4 @@ WORKDIR /app
 COPY backend .
 COPY Pipfile .
 COPY Pipfile.lock .
-RUN pip install pipenv && pipenv install --deploy --system && pip install .
+RUN pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && pip install .
