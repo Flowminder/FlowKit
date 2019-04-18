@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The `period` argument to `TotalNetworkObjects` in FlowMachine has been renamed `total_by`
 - The `period` argument to `total_network_objects` in FlowClient has been renamed `total_by`
 - The `by` argument to `AggregateNetworkObjects` in FlowMachine has been renamed to `aggregate_by`
+- The `stop_date` argument to the `modal_location_from_dates` and `meaningful_locations_*` functions in FlowClient has been renamed `end_date` [#470](https://github.com/Flowminder/FlowKit/issues/470) 
 - `get_result_by_query_id` now accepts a `poll_interval` argument, which allows polling frequency to be changed
 
 

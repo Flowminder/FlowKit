@@ -73,7 +73,7 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
                 "query_kind": "meaningful_locations_aggregate",
                 "aggregation_unit": "admin1",
                 "start_date": "2016-01-01",
-                "stop_date": "2016-01-02",
+                "end_date": "2016-01-02",
                 "label": "unknown",
                 "labels": {
                     "evening": {
@@ -135,7 +135,7 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
                 "query_kind": "meaningful_locations_between_label_od_matrix",
                 "aggregation_unit": "admin1",
                 "start_date": "2016-01-01",
-                "stop_date": "2016-01-02",
+                "end_date": "2016-01-02",
                 "label_a": "day",
                 "label_b": "evening",
                 "labels": {
@@ -198,9 +198,9 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
                 "query_kind": "meaningful_locations_between_dates_od_matrix",
                 "aggregation_unit": "admin1",
                 "start_date_a": "2016-01-01",
-                "stop_date_a": "2016-01-02",
+                "end_date_a": "2016-01-02",
                 "start_date_b": "2016-01-01",
-                "stop_date_b": "2016-01-05",
+                "end_date_b": "2016-01-05",
                 "label": "unknown",
                 "labels": {
                     "day": {

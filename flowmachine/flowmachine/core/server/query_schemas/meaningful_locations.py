@@ -36,7 +36,7 @@ __all__ = [
 class MeaningfulLocationsAggregateSchema(Schema):
     query_kind = fields.String(validate=OneOf(["meaningful_locations_aggregate"]))
     start_date = fields.Date(required=True)
-    stop_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
     aggregation_unit = AggregationUnit(required=True)
     label = fields.String(required=True)
     labels = fields.Dict(
@@ -56,7 +56,7 @@ class MeaningfulLocationsAggregateSchema(Schema):
 def _make_meaningful_locations_object(
     *,
     start_date,
-    stop_date,
+    end_date,
     label,
     labels,
     subscriber_subset,
@@ -67,7 +67,7 @@ def _make_meaningful_locations_object(
 ):
     q_subscriber_locations = subscriber_locations(
         start=start_date,
-        stop=stop_date,
+        stop=end_date,
         level="versioned-site",  # note this 'level' is not the same as the exposed parameter 'aggregation_unit'
         subscriber_subset=subscriber_subset,
     )
@@ -80,7 +80,7 @@ def _make_meaningful_locations_object(
     )
     q_event_score = EventScore(
         start=start_date,
-        stop=stop_date,
+        stop=end_date,
         score_hour=tower_hour_of_day_scores,
         score_dow=tower_day_of_week_scores,
         level="versioned-site",  # note this 'level' is not the same as the exposed parameter 'aggregation_unit'
@@ -97,7 +97,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         self,
         *,
         start_date: str,
-        stop_date: str,
+        end_date: str,
         aggregation_unit: str,
         label: str,
         labels: Dict[str, Dict[str, dict]],
@@ -110,7 +110,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
-        self.stop_date = stop_date
+        self.end_date = end_date
         self.aggregation_unit = aggregation_unit
         self.label = label
         self.labels = labels
@@ -124,7 +124,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
             label=label,
             labels=labels,
             start_date=start_date,
-            stop_date=stop_date,
+            end_date=end_date,
             subscriber_subset=subscriber_subset,
             tower_cluster_call_threshold=tower_cluster_call_threshold,
             tower_cluster_radius=tower_cluster_radius,
@@ -152,7 +152,7 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(Schema):
         validate=OneOf(["meaningful_locations_between_label_od_matrix"])
     )
     start_date = fields.Date(required=True)
-    stop_date = fields.Date(required=True)
+    end_date = fields.Date(required=True)
     aggregation_unit = AggregationUnit(required=True)
     label_a = fields.String(required=True)
     label_b = fields.String(required=True)
@@ -175,7 +175,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         self,
         *,
         start_date: str,
-        stop_date: str,
+        end_date: str,
         aggregation_unit: str,
         label_a: str,
         label_b: str,
@@ -189,7 +189,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
-        self.stop_date = stop_date
+        self.end_date = end_date
         self.aggregation_unit = aggregation_unit
         self.label_a = label_a
         self.label_b = label_b
@@ -203,7 +203,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         common_params = dict(
             labels=labels,
             start_date=start_date,
-            stop_date=stop_date,
+            end_date=end_date,
             subscriber_subset=subscriber_subset,
             tower_cluster_call_threshold=tower_cluster_call_threshold,
             tower_cluster_radius=tower_cluster_radius,
@@ -236,9 +236,9 @@ class MeaningfulLocationsBetweenDatesODMatrixSchema(Schema):
         validate=OneOf(["meaningful_locations_between_dates_od_matrix"])
     )
     start_date_a = fields.Date(required=True)
-    stop_date_a = fields.Date(required=True)
+    end_date_a = fields.Date(required=True)
     start_date_b = fields.Date(required=True)
-    stop_date_b = fields.Date(required=True)
+    end_date_b = fields.Date(required=True)
     aggregation_unit = AggregationUnit(required=True)
     label = fields.String(required=True)
     labels = fields.Dict(
@@ -260,9 +260,9 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         self,
         *,
         start_date_a: str,
-        stop_date_a: str,
+        end_date_a: str,
         start_date_b: str,
-        stop_date_b: str,
+        end_date_b: str,
         aggregation_unit: str,
         label: str,
         labels: Dict[str, Dict[str, dict]],
@@ -276,8 +276,8 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         # so that marshmallow can serialise the object correctly.
         self.start_date_a = start_date_a
         self.start_date_b = start_date_b
-        self.stop_date_a = stop_date_a
-        self.stop_date_b = stop_date_b
+        self.end_date_a = end_date_a
+        self.end_date_b = end_date_b
         self.aggregation_unit = aggregation_unit
         self.label = label
         self.labels = labels
@@ -297,10 +297,10 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
             tower_hour_of_day_scores=tower_hour_of_day_scores,
         )
         locs_a = _make_meaningful_locations_object(
-            start_date=start_date_a, stop_date=stop_date_a, **common_params
+            start_date=start_date_a, end_date=end_date_a, **common_params
         )
         locs_b = _make_meaningful_locations_object(
-            start_date=start_date_b, stop_date=stop_date_b, **common_params
+            start_date=start_date_b, end_date=end_date_b, **common_params
         )
 
         self.q_meaningful_locations_od = MeaningfulLocationsOD(

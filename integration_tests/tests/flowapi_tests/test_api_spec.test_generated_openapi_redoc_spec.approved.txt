@@ -453,6 +453,10 @@
             ],
             "type": "string"
           },
+          "end_date": {
+            "format": "date",
+            "type": "string"
+          },
           "label": {
             "type": "string"
           },
@@ -469,10 +473,6 @@
             "type": "string"
           },
           "start_date": {
-            "format": "date",
-            "type": "string"
-          },
-          "stop_date": {
             "format": "date",
             "type": "string"
           },
@@ -514,11 +514,11 @@
         },
         "required": [
           "aggregation_unit",
+          "end_date",
           "label",
           "labels",
           "query_kind",
           "start_date",
-          "stop_date",
           "tower_day_of_week_scores",
           "tower_hour_of_day_scores"
         ],
@@ -533,6 +533,14 @@
               "admin2",
               "admin3"
             ],
+            "type": "string"
+          },
+          "end_date_a": {
+            "format": "date",
+            "type": "string"
+          },
+          "end_date_b": {
+            "format": "date",
             "type": "string"
           },
           "label": {
@@ -558,14 +566,6 @@
             "format": "date",
             "type": "string"
           },
-          "stop_date_a": {
-            "format": "date",
-            "type": "string"
-          },
-          "stop_date_b": {
-            "format": "date",
-            "type": "string"
-          },
           "subscriber_subset": {
             "enum": [
               null
@@ -604,12 +604,12 @@
         },
         "required": [
           "aggregation_unit",
+          "end_date_a",
+          "end_date_b",
           "label",
           "query_kind",
           "start_date_a",
           "start_date_b",
-          "stop_date_a",
-          "stop_date_b",
           "tower_day_of_week_scores",
           "tower_hour_of_day_scores"
         ],
@@ -624,6 +624,10 @@
               "admin2",
               "admin3"
             ],
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
             "type": "string"
           },
           "label_a": {
@@ -648,10 +652,6 @@
             "format": "date",
             "type": "string"
           },
-          "stop_date": {
-            "format": "date",
-            "type": "string"
-          },
           "subscriber_subset": {
             "enum": [
               null
@@ -690,11 +690,11 @@
         },
         "required": [
           "aggregation_unit",
+          "end_date",
           "label_a",
           "label_b",
           "query_kind",
           "start_date",
-          "stop_date",
           "tower_day_of_week_scores",
           "tower_hour_of_day_scores"
         ],
