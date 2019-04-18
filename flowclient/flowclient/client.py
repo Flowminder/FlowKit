@@ -289,9 +289,12 @@ def get_status(*, connection: Connection, query_id: str) -> str:
             raise FlowclientConnectionError(f"No status reported.")
 
 
-def get_result_by_query_id(*, connection: Connection, query_id: str) -> pd.DataFrame:
+def wait_for_query_to_be_ready(
+    *, connection: Connection, query_id: str, poll_interval: int = 1
+) -> requests.Response:
     """
-    Get a query by id, and return it as a dataframe
+    Wait until a query id has finished running, and if it finished successfully
+    return the reply from flowapi.
 
     Parameters
     ----------
@@ -299,6 +302,76 @@ def get_result_by_query_id(*, connection: Connection, query_id: str) -> pd.DataF
         API connection  to use
     query_id : str
         Identifier of the query to retrieve
+    poll_interval : int
+        Number of seconds to wait between checks for the query being ready
+
+    Returns
+    -------
+    requests.Response
+        Response object containing the reply to flowapi
+
+    Raises
+    ------
+    FlowclientConnectionError
+        If the query has finished running unsuccessfully
+    """
+    query_ready, reply = query_is_ready(
+        connection=connection, query_id=query_id
+    )  # Poll the server
+    while not query_ready:
+        logger.info("Waiting before polling again.")
+        time.sleep(
+            poll_interval
+        )  # Wait a second, then check if the query is ready again
+        query_ready, reply = query_is_ready(
+            connection=connection, query_id=query_id
+        )  # Poll the server
+    return reply
+
+
+def get_result_location_from_id_when_ready(
+    *, connection: Connection, query_id: str, poll_interval: int = 1
+) -> str:
+    """
+    Return, once ready, the location at which results of a query will be obtainable.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection  to use
+    query_id : str
+        Identifier of the query to retrieve
+    poll_interval : int
+        Number of seconds to wait between checks for the query being ready
+
+    Returns
+    -------
+    str
+        Endpoint to retrieve results from
+
+    """
+    reply = wait_for_query_to_be_ready(
+        connection=connection, query_id=query_id, poll_interval=poll_interval
+    )
+
+    result_location = reply.headers[
+        "Location"
+    ]  # Need to strip off the /api/<api_version>/
+    return re.sub(
+        "^/api/[0-9]+/", "", result_location
+    )  # strip off the /api/<api_version>/
+
+
+def get_json_dataframe(*, connection: Connection, location: str) -> pd.DataFrame:
+    """
+    Get a dataframe from a json source.
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection  to use
+    location : str
+        API enpoint to retrieve json from
 
     Returns
     -------
@@ -306,24 +379,8 @@ def get_result_by_query_id(*, connection: Connection, query_id: str) -> pd.DataF
         Dataframe containing the result
 
     """
-    query_ready, reply = query_is_ready(
-        connection=connection, query_id=query_id
-    )  # Poll the server
-    while not query_ready:
-        logger.info("Waiting before polling again.")
-        time.sleep(1)  # Wait a second, then check if the query is ready again
-        query_ready, reply = query_is_ready(
-            connection=connection, query_id=query_id
-        )  # Poll the server
 
-    logger.info(f"Getting {connection.url}/api/{connection.api_version}/get/{query_id}")
-    result_location = reply.headers[
-        "Location"
-    ]  # Need to strip off the /api/<api_version>/
-    result_location = re.sub(
-        "^/api/[0-9]+/", "", result_location
-    )  # strip off the /api/<api_version>/
-    response = connection.get_url(route=result_location)
+    response = connection.get_url(route=location)
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
@@ -334,8 +391,35 @@ def get_result_by_query_id(*, connection: Connection, query_id: str) -> pd.DataF
             f"Could not get result. API returned with status code: {response.status_code}.{more_info}"
         )
     result = response.json()
-    logger.info(f"Got {connection.url}/api/{connection.api_version}/{query_id}")
+    logger.info(f"Got {connection.url}/api/{connection.api_version}/{location}")
     return pd.DataFrame.from_records(result["query_result"])
+
+
+def get_result_by_query_id(
+    *, connection: Connection, query_id: str, poll_interval: int = 1
+) -> pd.DataFrame:
+    """
+    Get a query by id, and return it as a dataframe
+
+    Parameters
+    ----------
+    connection : Connection
+        API connection  to use
+    query_id : str
+        Identifier of the query to retrieve
+    poll_interval : int
+        Number of seconds to wait between checks for the query being ready
+
+    Returns
+    -------
+    pandas.DataFrame
+        Dataframe containing the result
+
+    """
+    result_endpoint = get_result_location_from_id_when_ready(
+        connection=connection, query_id=query_id, poll_interval=poll_interval
+    )
+    return get_json_dataframe(connection=connection, location=result_endpoint)
 
 
 def get_result(*, connection: Connection, query: dict) -> pd.DataFrame:
