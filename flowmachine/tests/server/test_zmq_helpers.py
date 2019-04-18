@@ -73,7 +73,7 @@ def test_zmq_reply_as_json():
     """
     reply = ZMQReply("success", msg="foobar", payload={"a": 1, "b": 2})
     expected_json = {"status": "success", "msg": "foobar", "payload": {"a": 1, "b": 2}}
-    assert expected_json == reply.as_json()
+    assert expected_json == reply
 
 
 @pytest.mark.parametrize(
