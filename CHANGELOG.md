@@ -45,6 +45,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Removed `docker-compose-dev.yml`, and docker-compose files in `docs/`, `flowdb/tests/` and `integration_tests/`.
 - Removed `Dockerfile-dev` Dockerfiles
 - Removed `ENV` defaults from the FlowMachine Dockerfile
+- Removed `POSTGRES_DB` environment variable from FlowDB Dockerfile, database name is now hardcoded as `flowdb`
 
 
 ## [0.5.3]
