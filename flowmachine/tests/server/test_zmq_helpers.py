@@ -95,6 +95,10 @@ def test_zmq_reply_as_json():
             '{"action": "DUMMY_ACTION", "params": {}, "request_id": -1}',
             "Invalid action request.",
         ),
+        (
+            '{"action": "ping", "params": {"DUMMY_PARAM":"DUMMY_PARAM_VALUE"}, "request_id": "DUMMY_REQUEST_ID"}',
+            "Internal flowmachine server error: wrong arguments passed to handler for action 'ping'.",
+        ),
     ],
 )
 def test_zmq_msg_parse_error(bad_message, expected_message):
