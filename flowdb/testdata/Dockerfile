@@ -31,7 +31,7 @@ RUN echo "deb http://ftp.de.debian.org/debian testing main" > /etc/apt/sources.l
 # Install python dependencies
 #
 COPY --chown=postgres ./test_data/Pipfile* /tmp/
-RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clean --system --deploy --three \
+RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy --three \
     && rm /tmp/Pipfile*
 
 #
