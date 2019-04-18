@@ -14,6 +14,19 @@ import flowmachine.features.network as network
 from flowmachine.features import TotalNetworkObjects, AggregateNetworkObjects
 
 
+def test_tno_at_lat_lng(get_dataframe):
+    """
+    Regression test for #108. TNO should work at lat-lng level.
+    """
+    tno = TotalNetworkObjects(
+        start="2016-01-01",
+        stop="2016-01-07",
+        network_object="versioned-cell",
+        level="lat-lon",
+    )
+    assert tno.get_dataframe().sum().total == 330
+
+
 def test_count_returns_correct_values(get_dataframe):
     """
     TotalNetworkObjects returns correct values.
