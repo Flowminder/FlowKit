@@ -11,7 +11,6 @@ omit =
     */_version.py
     */versioneer.py
     *__init__*
-    flowmachine/core/server/server.py
 
 exclude_lines =
     # Need to explicitly re-enable the standard pragma
