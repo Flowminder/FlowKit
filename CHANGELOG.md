@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - `FLOWMACHINE_DB_PASS` -> `FLOWMACHINE_FLOWDB_PASSWORD`
   - `POSTGRES_PASSWORD_FILE` -> `POSTGRES_PASSWORD`
   - `REDIS_PASSWORD_FILE` -> `REDIS_PASSWORD`
+- `status` enum in FlowDB renamed to `etl_status`
 
 ### Fixed
 - Fixed being unable to add new users or servers when running FlowAuth with a Postgres database [#622](https://github.com/Flowminder/FlowKit/issues/622)
