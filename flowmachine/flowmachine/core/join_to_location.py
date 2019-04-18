@@ -248,10 +248,8 @@ class JoinToLocation(Query):
 
     def _make_query(self):
 
-        right_columns = self.right_query.column_names
+        right_columns = get_columns_for_level(self.level, self.column_name)
         left_columns = self.left.column_names
-        print(right_columns)
-        print(left_columns)
         for column in right_columns:
             if column in left_columns:
                 left_columns.remove(column)
