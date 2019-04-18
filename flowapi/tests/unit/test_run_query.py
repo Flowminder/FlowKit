@@ -24,7 +24,7 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
     )
     dummy_zmq_server.return_value = ZMQReply(
         status="success", payload={"query_id": "DUMMY_QUERY_ID"}
-    ).as_json()
+    )
     response = await client.post(
         f"/api/0/run",
         headers={"Authorization": f"Bearer {token}"},
@@ -95,9 +95,7 @@ async def test_post_query_error(
     client, db, log_dir, app = app
 
     token = access_token_builder({"daily_location": {"permissions": {"run": True}}})
-    dummy_zmq_server.return_value = ZMQReply(
-        status="error", msg="Broken query"
-    ).as_json()
+    dummy_zmq_server.return_value = ZMQReply(status="error", msg="Broken query")
     response = await client.post(
         f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=query
     )

@@ -35,7 +35,7 @@ async def test_get_geography(app, access_token_builder, dummy_zmq_server):
     zmq_reply = ZMQReply(
         status="success", payload={"query_state": "completed", "sql": "SELECT 1;"}
     )
-    dummy_zmq_server.side_effect = (zmq_reply.as_json(),)
+    dummy_zmq_server.side_effect = (zmq_reply,)
     response = await client.get(
         f"/api/0/geography/{aggregation_unit}",
         headers={"Authorization": f"Bearer {token}"},
@@ -74,7 +74,7 @@ async def test_get_geography_status(
         }
     )
     zmq_reply = ZMQReply(status="error", msg="Some error")
-    dummy_zmq_server.side_effect = (zmq_reply.as_json(),)
+    dummy_zmq_server.side_effect = (zmq_reply,)
     response = await client.get(
         f"/api/0/geography/DUMMY_AGGREGATION",
         headers={"Authorization": f"Bearer {token}"},

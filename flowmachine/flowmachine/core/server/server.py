@@ -4,6 +4,8 @@
 
 import asyncio
 import os
+from json import JSONDecodeError
+
 import rapidjson
 
 
@@ -11,19 +13,22 @@ import signal
 import structlog
 import zmq
 from functools import partial
+
+from marshmallow import ValidationError
 from zmq.asyncio import Context
 
 import flowmachine
-from .action_handlers import perform_action
+from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
-from .zmq_helpers import ZMQReply, parse_zmq_message
-
+from .zmq_helpers import ZMQReply
+from flowmachine.core.server.action_request_schema import ActionRequest
+from .action_handlers import perform_action
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 query_run_log = structlog.get_logger("flowmachine.query_run_log")
 
 
-def get_reply_for_message(msg_str: str) -> dict:
+def get_reply_for_message(msg_str: str) -> ZMQReply:
     """
     Parse the zmq message string, perform the desired action and return the result in JSON format.
 
@@ -39,31 +44,44 @@ def get_reply_for_message(msg_str: str) -> dict:
     """
 
     try:
-        action_name, request_id, action_params = parse_zmq_message(msg_str)
+        action_request = ActionRequest().loads(msg_str)
 
         query_run_log.info(
-            f"Attempting to perform action: '{action_name}'",
-            request_id=request_id,
-            action=action_name,
-            action_params=action_params,
+            f"Attempting to perform action: '{action_request.action}'",
+            request_id=action_request.request_id,
+            action=action_request.action,
+            params=action_request.params,
         )
 
-        reply = perform_action(action_name, action_params)
+        reply = perform_action(action_request.action, action_request.params)
 
         query_run_log.info(
             f"Action completed with status: '{reply.status}'",
-            request_id=request_id,
-            action=action_name,
-            action_params=action_params,
+            request_id=action_request.request_id,
+            action=action_request.action,
+            params=action_request.params,
             reply_status=reply.status,
             reply_msg=reply.msg,
             reply_payload=reply.payload,
         )
     except FlowmachineServerError as exc:
-        return ZMQReply(status="error", msg=exc.error_msg).as_json()
+        return ZMQReply(status="error", msg=exc.error_msg)
+    except ValidationError as exc:
+        # The dictionary of marshmallow errors can contain integers as keys,
+        # which will raise an error when converting to JSON (where the keys
+        # must be strings). Therefore we transform the keys to strings here.
+        error_msg = "Invalid action request."
+        validation_error_messages = convert_dict_keys_to_strings(exc.messages)
+        return ZMQReply(
+            status="error", msg=error_msg, payload=validation_error_messages
+        )
+    except JSONDecodeError as exc:
+        return ZMQReply(
+            status="error", msg="Invalid JSON.", payload={"decode_error": exc.msg}
+        )
 
     # Return the reply (in JSON format)
-    return reply.as_json()
+    return reply
 
 
 async def receive_next_zmq_message_and_send_back_reply(socket):

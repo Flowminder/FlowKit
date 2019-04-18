@@ -29,7 +29,7 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
             status="error",
             msg=f"Unknown query id: 'DUMMY_QUERY_ID'",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "awol"},
-        ).as_json()
+        )
     )
     response = await client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
@@ -83,11 +83,11 @@ async def test_poll_query(
                     "aggregation_unit": "DUMMY_AGGREGATION",
                 },
             },
-        ).as_json(),
+        ),
         then=ZMQReply(
             status="success",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": query_state},
-        ).as_json(),
+        ),
     )
     response = await client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
@@ -111,11 +111,11 @@ async def test_poll_query_query_error(app, access_token_builder, dummy_zmq_serve
         ZMQReply(
             status="success",
             payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
-        ).as_json(),
+        ),
         then=ZMQReply(
             status="error",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "error"},
-        ).as_json(),
+        ),
     )
     response = await client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
