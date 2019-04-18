@@ -6,8 +6,9 @@ FROM python:3.7-alpine
 
 WORKDIR /app
 COPY Pipfile* /app/
-RUN apk update && apk add --virtual build-dependencies build-base gcc wget git libzmq musl-dev zeromq-dev && \
-    pip install pipenv Cython && pipenv install --deploy && apk del build-dependencies
+RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-base gcc wget git musl-dev zeromq-dev && \
+    pip install pipenv Cython && pipenv install --deploy && \
+    apk del build-dependencies
 COPY . /app/
 RUN pipenv install --skip-lock .
 CMD ["pipenv", "run", "flowmachine"]
