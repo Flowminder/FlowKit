@@ -523,7 +523,7 @@
             "format": "date",
             "type": "string"
           },
-          "stop_date": {
+          "end_date": {
             "format": "date",
             "type": "string"
           },
@@ -569,7 +569,7 @@
           "labels",
           "query_kind",
           "start_date",
-          "stop_date",
+          "end_date",
           "tower_day_of_week_scores",
           "tower_hour_of_day_scores"
         ],
@@ -609,11 +609,11 @@
             "format": "date",
             "type": "string"
           },
-          "stop_date_a": {
+          "end_date_a": {
             "format": "date",
             "type": "string"
           },
-          "stop_date_b": {
+          "end_date_b": {
             "format": "date",
             "type": "string"
           },
@@ -659,8 +659,8 @@
           "query_kind",
           "start_date_a",
           "start_date_b",
-          "stop_date_a",
-          "stop_date_b",
+          "end_date_a",
+          "end_date_b",
           "tower_day_of_week_scores",
           "tower_hour_of_day_scores"
         ],
@@ -699,7 +699,7 @@
             "format": "date",
             "type": "string"
           },
-          "stop_date": {
+          "end_date": {
             "format": "date",
             "type": "string"
           },
@@ -745,7 +745,7 @@
           "label_b",
           "query_kind",
           "start_date",
-          "stop_date",
+          "end_date",
           "tower_day_of_week_scores",
           "tower_hour_of_day_scores"
         ],
