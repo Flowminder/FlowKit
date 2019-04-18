@@ -109,6 +109,17 @@ from tests.utils import permissions_types, aggregation_types
             },
         ),
         (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.radius_of_gyration(
+                    start_date="2016-01-01", end_date="2016-01-02"
+                ),
+            },
+        ),
+        (
             "spatial_aggregate",
             {
                 "locations": flowclient.modal_location_from_dates(
@@ -483,34 +494,3 @@ def test_get_available_dates(
     )
     result = flowclient.get_available_dates(connection=con, event_types=event_types)
     assert expected_result == result
-
-
-def test_joined_spatial_aggregate(access_token_builder, flowapi_url):
-    """TODO: Once there are metrics that can be used, replace this test"""
-    con = flowclient.Connection(
-        url=flowapi_url,
-        token=access_token_builder(
-            {
-                "daily_location": {
-                    "permissions": {"run": True, "poll": True, "get_result": True},
-                    "spatial_aggregation": ["admin3"],
-                },
-                "dummy_query": {
-                    "permissions": {"run": True, "poll": True, "get_result": True},
-                    "spatial_aggregation": ["admin3"],
-                },
-            }
-        ),
-    )
-    with pytest.raises(
-        flowclient.client.FlowclientConnectionError, match="status 'errored'"
-    ):
-        result = flowclient.get_result(
-            connection=con,
-            query=flowclient.joined_spatial_aggregate(
-                locations=flowclient.daily_location(
-                    date="2016-01-01", aggregation_unit="admin3", method="last"
-                ),
-                metric={"query_kind": "dummy_query", "dummy_param": "dummy_value"},
-            ),
-        )
