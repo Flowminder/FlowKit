@@ -15,6 +15,7 @@
 #
 
 import functools
+from typing import Callable, List, Optional, Union
 
 from apispec import APISpec
 from apispec_oneofschema import MarshmallowPlugin
@@ -36,7 +37,7 @@ from .zmq_helpers import ZMQReply
 __all__ = ["perform_action"]
 
 
-def action_handler__ping():
+def action_handler__ping() -> ZMQReply:
     """
     Handler for 'ping' action.
 
@@ -45,7 +46,7 @@ def action_handler__ping():
     return ZMQReply(status="success", msg="pong")
 
 
-def action_handler__get_available_queries():
+def action_handler__get_available_queries() -> ZMQReply:
     """
     Handler for 'get_available_queries' action.
 
@@ -56,7 +57,7 @@ def action_handler__get_available_queries():
 
 
 @functools.lru_cache(maxsize=1)
-def action_handler__get_query_schemas():
+def action_handler__get_query_schemas() -> ZMQReply:
     """
     Handler for the 'get_query_schemas' action.
 
@@ -74,7 +75,7 @@ def action_handler__get_query_schemas():
     return ZMQReply(status="success", payload={"query_schemas": schemas_spec})
 
 
-def action_handler__run_query(**action_params):
+def action_handler__run_query(**action_params: dict) -> ZMQReply:
     """
     Handler for the 'run_query' action.
 
@@ -130,7 +131,7 @@ def action_handler__run_query(**action_params):
     return ZMQReply(status="success", payload={"query_id": query_id})
 
 
-def _get_query_kind_for_query_id(query_id):
+def _get_query_kind_for_query_id(query_id: str) -> Union[None, str]:
     """
     Helper function to look up the query kind corresponding to the
     given query id. Returns `None` if the query_id does not exist.
@@ -153,7 +154,7 @@ def _get_query_kind_for_query_id(query_id):
         return None
 
 
-def action_handler__poll_query(query_id):
+def action_handler__poll_query(query_id: str) -> ZMQReply:
     """
     Handler for the 'poll_query' action.
 
@@ -177,7 +178,7 @@ def action_handler__poll_query(query_id):
         return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_query_kind(query_id):
+def action_handler__get_query_kind(query_id: str) -> ZMQReply:
     """
     Handler for the 'get_query_kind' action.
 
@@ -193,7 +194,7 @@ def action_handler__get_query_kind(query_id):
         return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_query_params(query_id):
+def action_handler__get_query_params(query_id: str) -> ZMQReply:
     """
     Handler for the 'get_query_params' action.
 
@@ -212,7 +213,7 @@ def action_handler__get_query_params(query_id):
     return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_sql(query_id):
+def action_handler__get_sql(query_id: str) -> ZMQReply:
     """
     Handler for the 'get_sql' action.
 
@@ -242,7 +243,7 @@ def action_handler__get_sql(query_id):
         return ZMQReply(status="error", msg=msg, payload=payload)
 
 
-def action_handler__get_geography(aggregation_unit):
+def action_handler__get_geography(aggregation_unit: str) -> ZMQReply:
     """
     Handler for the 'get_query_geography' action.
 
@@ -275,7 +276,9 @@ def action_handler__get_geography(aggregation_unit):
     return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_available_dates(event_types=None):
+def action_handler__get_available_dates(
+    event_types: Optional[List[str]] = None
+) -> ZMQReply:
     """
     Handler for the 'get_available_dates' action.
 
@@ -312,14 +315,15 @@ def action_handler__get_available_dates(event_types=None):
     return ZMQReply(status="success", payload=available_dates)
 
 
-def get_action_handler(action):
+def get_action_handler(action: str) -> Callable:
+    """Exception should be raised for handlers that don't exist."""
     try:
         return ACTION_HANDLERS[action]
     except KeyError:
         raise FlowmachineServerError(f"Unknown action: '{action}'")
 
 
-def perform_action(action_name, action_params):
+def perform_action(action_name: str, action_params: dict) -> ZMQReply:
     """
     Perform action with the given action parameters.
 
