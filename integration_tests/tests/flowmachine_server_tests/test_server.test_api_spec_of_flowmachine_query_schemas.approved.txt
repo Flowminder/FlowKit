@@ -330,13 +330,13 @@
   "JoinableMetrics": {
     "discriminator": {
       "mapping": {
-        "dummy_query": "#/components/schemas/DummyQuery"
+        "radius_of_gyration": "#/components/schemas/RadiusOfGyration"
       },
       "propertyName": "query_kind"
     },
     "oneOf": [
       {
-        "$ref": "#/components/schemas/DummyQuery"
+        "$ref": "#/components/schemas/RadiusOfGyration"
       }
     ]
   },
@@ -782,6 +782,12 @@
     "properties": {
       "end_date": {
         "format": "date",
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "radius_of_gyration"
+        ],
         "type": "string"
       },
       "start_date": {
