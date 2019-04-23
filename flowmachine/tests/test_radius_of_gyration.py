@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+import pytest
 
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 from flowmachine.features.subscriber import *
@@ -16,6 +16,14 @@ def test_has_right_columns():
     RoG = RadiusOfGyration("2016-01-01", "2016-01-02")
     expected_columns = ["subscriber", "value"]
     assert RoG.column_names == expected_columns
+
+
+def test_bad_unit():
+    """
+    RadiusOfGyration() raises a valueerror when given a bad unit
+    """
+    with pytest.raises(ValueError):
+        RadiusOfGyration("2016-01-01", "2016-01-02", unit="NOT_A_UNIT")
 
 
 def test_values(get_dataframe):
