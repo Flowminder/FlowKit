@@ -51,7 +51,7 @@ readme = read("README.md")
 
 # Test requirements
 
-test_requirements = ["pytest", "pytest-cov", "pytest-asyncio", "asynctest"]
+test_requirements = ["pytest", "pytest-cov", "pytest-asyncio", "asynctest", "pandas"]
 
 setup(
     name="flowmachine",
@@ -76,7 +76,6 @@ setup(
         "marshmallow-oneofschema==2.0.0b2",  # TODO: unpin
         "numpy",
         "networkx",
-        "pandas",
         "pglast",
         "python-dateutil",
         "pytz",
@@ -91,7 +90,7 @@ setup(
     ],
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,
-    extras_require={"test": test_requirements},
+    extras_require={"test": test_requirements, "pandas": ["pandas"]},
     include_package_data=True,
     zip_safe=False,
     platforms=["MacOS X", "Linux"],
