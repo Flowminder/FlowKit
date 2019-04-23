@@ -64,6 +64,14 @@ def test_parse(datestring):
     assert parse_datestring(datestring).date() == datetime.date(2016, 1, 1)
 
 
+def test_parse_datestring_valueerror():
+    """
+    parse_datestring should give a valueerror for really not datelike things.
+    """
+    with pytest.raises(ValueError):
+        parse_datestring("NOT_A_DATE")
+
+
 def test_dependency_graph():
     """
     Test that dependency graph util runs and has some correct entries.
