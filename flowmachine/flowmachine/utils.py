@@ -10,7 +10,6 @@ from time import sleep
 
 import datetime
 
-from flowmachine.core.errors.flowmachine_errors import MissingColumnsError
 
 from pathlib import Path
 from pglast import prettify
@@ -19,7 +18,6 @@ from psycopg2._psycopg import adapt
 
 from typing import List, Union
 
-import flowmachine
 from flowmachine.core.errors import BadLevelError
 
 import structlog

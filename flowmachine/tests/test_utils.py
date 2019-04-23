@@ -21,9 +21,8 @@ from flowmachine.utils import (
     pretty_sql,
     _makesafe,
     sort_recursively,
+    time_period_add,
 )
-
-from flowmachine.utils import time_period_add
 from flowmachine.features import daily_location, EventTableSubset
 
 
@@ -93,25 +92,6 @@ def test_dependency_graph():
         "2016-01-01", "2016-01-02", columns=["msisdn", "datetime", "location_id"]
     )
     assert "x{}".format(sd.md5) in g.nodes()
-
-
-def test_proj4(flowmachine_connect):
-    """
-    Test that correct proj4 strings are returned.
-    """
-    wsg84 = "+proj=longlat +datum=WGS84 +no_defs"
-    haiti = "+proj=lcc +lat_1=35.46666666666667 +lat_2=34.03333333333333 +lat_0=33.5 +lon_0=-118 +x_0=2000000 +y_0=500000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-    assert proj4string(flowmachine_connect) == wsg84  # Default
-    assert proj4string(flowmachine_connect, wsg84) == wsg84
-    assert proj4string(flowmachine_connect, 2770) == haiti  # Known proj4
-
-
-def test_proj4_errors(flowmachine_connect):
-    """Test that appropriate errors are raised for bad inputs."""
-    with pytest.raises(ValueError):
-        proj4string(flowmachine_connect, ("foo",))
-    with pytest.raises(ValueError):
-        proj4string(flowmachine_connect, 1)
 
 
 def test_convert_number_to_str():
