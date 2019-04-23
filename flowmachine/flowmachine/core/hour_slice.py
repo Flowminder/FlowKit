@@ -92,7 +92,7 @@ def make_hour_slice_period(freq, *, weekday=None):
 
 class HourOfDay:
     """
-    Represents an hour of the day
+    Represents an hour of the day and allows filtering a timestamp column accordingly.
     """
 
     def __init__(self, hour_str: Union[str, None]):
@@ -233,8 +233,8 @@ class MultipleHourSlices:
     def __init__(self, *, hour_slices: List[HourSlice]):
         assert isinstance(hour_slices, (tuple, list))
         assert all([isinstance(x, HourSlice) for x in hour_slices])
+        # TODO: would be good to check that hour slices are non-overlapping
         self.hour_slices = list(hour_slices)
-        # TODO: check hour slices are non-overlapping
 
     def __repr__(self):
         return f"<HourSlices: {self.hour_slices}>"
