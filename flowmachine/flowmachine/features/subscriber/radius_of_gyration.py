@@ -82,18 +82,6 @@ class RadiusOfGyration(SubscriberFeature):
 
         super().__init__()
 
-    def _get_dist_string(self, lo1, la1, lo2, la2):
-        """
-        Private method for getting the distance
-        query string.
-        """
-        return """
-        ST_Distance(ST_Point({}, {})::geography,
-                    ST_point({}, {})::geography)
-        """.format(
-            lo1, la1, lo2, la2
-        )
-
     @property
     def column_names(self) -> List[str]:
         return ["subscriber", "value"]
@@ -104,51 +92,44 @@ class RadiusOfGyration(SubscriberFeature):
         metaclass Query().
         """
 
-        av_dist = """
+        av_dist = f"""
         SELECT 
             subscriber_locs.subscriber, 
             avg(lat) AS av_lat, 
             avg(lon) AS av_long
-        FROM ({subscriber_locs}) AS subscriber_locs
+        FROM ({self.ul.get_query()}) AS subscriber_locs
         GROUP BY subscriber_locs.subscriber
-        """.format(
-            subscriber_locs=self.ul.get_query()
-        )
+        """
 
-        distance_string = self._get_dist_string(
-            "locs.lon", "locs.lat", "mean.av_long", "mean.av_lat"
-        )
+        distance_string = """
+        ST_Distance(ST_Point(locs.lon, locs.lat)::geography,
+                    ST_point(mean.av_long, mean.av_lat)::geography)
+        """
 
         # It seems like I'm creating the sub query twice here
         # I wonder whether this slows things down at all.
-        dist = """
+        dist = f"""
         SELECT
             locs.subscriber,
             ({distance_string})^2
             AS distance_sqr
         FROM
-            ({locs}) AS locs
+            ({self.ul.get_query()}) AS locs
         INNER JOIN
             ({av_dist}) AS mean
             ON locs.subscriber=mean.subscriber
-        """.format(
-            av_dist=av_dist, distance_string=distance_string, locs=self.ul.get_query()
-        )
+        """
 
         if self.unit == "km":
             divisor = 1000
         elif self.unit == "m":
             divisor = 1
 
-        RoG = """
+        return f"""
         SELECT
             dist.subscriber,
-            sqrt( avg( distance_sqr ) )/{} AS value
+            sqrt( avg( distance_sqr ) )/{divisor} AS value
         FROM 
             ({dist}) AS dist
         GROUP BY dist.subscriber
-        """.format(
-            divisor, dist=dist
-        )
-
-        return RoG
+        """
