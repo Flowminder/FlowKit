@@ -186,6 +186,7 @@ class DummyRedis:
 
     def __init__(self):
         self._store = {}
+        self.flush = True
 
     def setnx(self, name, val):
         if name not in self._store:
@@ -213,6 +214,10 @@ class DummyRedis:
 
     def keys(self):
         return sorted(self._store.keys())
+
+    def flushdb(self):
+        if self.flush:
+            self._store = {}
 
 
 @pytest.fixture(scope="function")
