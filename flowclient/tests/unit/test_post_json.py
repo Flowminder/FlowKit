@@ -45,7 +45,7 @@ def test_access_denied_error(denial_status_code, session_mock, token):
     session_mock.post.return_value.status_code = denial_status_code
     session_mock.post.return_value.json.return_value = ZMQReply(
         status="error", msg="ERROR_MESSAGE"
-    ).as_json()
+    )
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(FlowclientConnectionError, match="ERROR_MESSAGE"):
         connection.post_json(route="DUMMY_ROUTE", data={})
@@ -66,7 +66,7 @@ def test_generic_status_code_error(session_mock, token):
     session_mock.post.return_value.status_code = 418
     session_mock.post.return_value.json.return_value = ZMQReply(
         status="error", msg="I AM A TEAPOT"
-    ).as_json()
+    )
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(
         FlowclientConnectionError,

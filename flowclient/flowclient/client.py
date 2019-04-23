@@ -648,7 +648,7 @@ def daily_location(
 def meaningful_locations_aggregate(
     *,
     start_date: str,
-    stop_date: str,
+    end_date: str,
     label: str,
     labels: Dict[str, Dict[str, dict]],
     tower_day_of_week_scores: Dict[str, float],
@@ -676,7 +676,7 @@ def meaningful_locations_aggregate(
     ----------
     start_date : str
         ISO format date that begins the period, e.g. "2016-01-01"
-    stop_date : str
+    end_date : str
         ISO format date that begins the period, e.g. "2016-01-07"
     label : str
         One of the labels specified in `labels`, or 'unknown'. Locations with this
@@ -730,7 +730,7 @@ def meaningful_locations_aggregate(
         "query_kind": "meaningful_locations_aggregate",
         "aggregation_unit": aggregation_unit,
         "start_date": start_date,
-        "stop_date": stop_date,
+        "end_date": end_date,
         "label": label,
         "labels": labels,
         "tower_day_of_week_scores": tower_day_of_week_scores,
@@ -744,7 +744,7 @@ def meaningful_locations_aggregate(
 def meaningful_locations_between_label_od_matrix(
     *,
     start_date: str,
-    stop_date: str,
+    end_date: str,
     label_a: str,
     label_b: str,
     labels: Dict[str, Dict[str, dict]],
@@ -774,7 +774,7 @@ def meaningful_locations_between_label_od_matrix(
     ----------
     start_date : str
         ISO format date that begins the period, e.g. "2016-01-01"
-    stop_date : str
+    end_date : str
         ISO format date that begins the period, e.g. "2016-01-07"
     label_a, label_b : str
         One of the labels specified in `labels`, or 'unknown'. Calculates the OD between these two labels.
@@ -827,7 +827,7 @@ def meaningful_locations_between_label_od_matrix(
         "query_kind": "meaningful_locations_between_label_od_matrix",
         "aggregation_unit": aggregation_unit,
         "start_date": start_date,
-        "stop_date": stop_date,
+        "end_date": end_date,
         "label_a": label_a,
         "label_b": label_b,
         "labels": labels,
@@ -842,9 +842,9 @@ def meaningful_locations_between_label_od_matrix(
 def meaningful_locations_between_dates_od_matrix(
     *,
     start_date_a: str,
-    stop_date_a: str,
+    end_date_a: str,
     start_date_b: str,
-    stop_date_b: str,
+    end_date_b: str,
     label: str,
     labels: Dict[str, Dict[str, dict]],
     tower_day_of_week_scores: Dict[str, float],
@@ -877,7 +877,7 @@ def meaningful_locations_between_dates_od_matrix(
     ----------
     start_date_a, start_date_b : str
         ISO format date that begins the period, e.g. "2016-01-01"
-    stop_date_a, stop_date_b : str
+    end_date_a, end_date_b : str
         ISO format date that begins the period, e.g. "2016-01-07"
     label : str
         One of the labels specified in `labels`, or 'unknown'. Locations with this
@@ -931,9 +931,9 @@ def meaningful_locations_between_dates_od_matrix(
         "query_kind": "meaningful_locations_between_dates_od_matrix",
         "aggregation_unit": aggregation_unit,
         "start_date_a": start_date_a,
-        "stop_date_a": stop_date_a,
+        "end_date_a": end_date_a,
         "start_date_b": start_date_b,
-        "stop_date_b": stop_date_b,
+        "end_date_b": end_date_b,
         "label": label,
         "labels": labels,
         "tower_day_of_week_scores": tower_day_of_week_scores,
@@ -974,7 +974,7 @@ def modal_location(
 def modal_location_from_dates(
     *,
     start_date: str,
-    stop_date: str,
+    end_date: str,
     aggregation_unit: str,
     method: str,
     subscriber_subset: Union[dict, None] = None,
@@ -987,8 +987,8 @@ def modal_location_from_dates(
     ----------
     start_date : str
         ISO format date that begins the period, e.g. "2016-01-01"
-    stop_date : str
-        ISO format date that begins the period, e.g. "2016-01-07"
+    end_date : str
+        ISO format date that ends the period, e.g. "2016-01-07"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     method : str
@@ -1005,7 +1005,7 @@ def modal_location_from_dates(
 
     """
     dates = [
-        d.strftime("%Y-%m-%d") for d in pd.date_range(start_date, stop_date, freq="D")
+        d.strftime("%Y-%m-%d") for d in pd.date_range(start_date, end_date, freq="D")
     ]
     daily_locations = [
         daily_location(

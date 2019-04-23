@@ -26,8 +26,12 @@ def test_unknown_action_returns_error(send_zmq_message_and_receive_reply):
     reply = send_zmq_message_and_receive_reply(msg)
     expected_reply = {
         "status": "error",
-        "msg": "Unknown action: 'foobar'",
-        "payload": {},
+        "msg": "Invalid action request.",
+        "payload": {
+            "action": [
+                "Must be one of: ping, get_available_queries, get_query_schemas, run_query, poll_query, get_query_kind, get_query_params, get_sql_for_query_result, get_geography, get_available_dates."
+            ]
+        },
     }
     assert expected_reply == reply
 

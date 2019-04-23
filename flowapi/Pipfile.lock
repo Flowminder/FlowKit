@@ -28,11 +28,11 @@
                 "yaml"
             ],
             "hashes": [
-                "sha256:8f89282a5474e449ce158b3c9f7e3948a207c89d5eb624231bbb6ea87fcf9f4a",
-                "sha256:cc1e5454df092b6d0ae84f29cf6b4cb4b552a4d76255f6e7f2e2f123102b0dcb"
+                "sha256:59a343c6b292ba25b927c5ee1ebe813e63df90fd9bc5e80a3c593815561c9257",
+                "sha256:fa75d14989f7c55da027af3948a14f4eb9044bf51778972eb81f23c881a876ef"
             ],
             "index": "pypi",
-            "version": "==1.2.0"
+            "version": "==1.2.1"
         },
         "asyncpg": {
             "hashes": [
@@ -290,11 +290,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:4df12c7909e25e5d7adeab936a173efb4e7ff3da7a907004f3234d3e8350c0c4",
-                "sha256:bbf6ead887aeca9af053b59c3072cbf9dd68ec6681320ff72107ad2cd4e02ab0"
+                "sha256:06ad6c71f12e6f64625bebd4e591903fa653740df4b0e50de2e8722a6370011e",
+                "sha256:aba4694fa5eaf535e3ebb89dbf3d8d123af51eabe436f104d416fe9562f80c52"
             ],
             "index": "pypi",
-            "version": "==0.8.1"
+            "version": "==0.9.0"
         },
         "six": {
             "hashes": [
