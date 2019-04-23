@@ -216,7 +216,7 @@ class DummyRedis:
         return sorted(self._store.keys())
 
     def flushdb(self):
-        if self.flush:
+        if self.flush:  # Set flush attribute to False to simulate concurrent writes
             self._store = {}
 
 
