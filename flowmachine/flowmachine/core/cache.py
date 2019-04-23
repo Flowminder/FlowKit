@@ -276,12 +276,17 @@ def resync_redis_with_cache(connection: "Connection", redis: StrictRedis) -> Non
     logger.debug("Flushing redis.")
     for event in (QueryEvent.QUEUE, QueryEvent.EXECUTE, QueryEvent.FINISH):
         for qid in queries_in_cache:
-
+            new_state, changed = QueryStateMachine(redis, qid[0]).trigger_event(event)
             logger.debug(
                 "Redis resync",
                 fast_forwarded=qid[0],
-                new_state=QueryStateMachine(redis, qid[0]).trigger_event(event),
+                new_state=new_state,
+                fast_forward_succeeded=changed,
             )
+            if not changed:
+                raise RuntimeError(
+                    f"Failed to trigger {event} on '{qid[0]}', ensure nobody else is accessing redis!"
+                )
 
 
 def invalidate_cache_by_id(
