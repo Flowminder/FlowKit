@@ -2,9 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from sqlalchemy.sql import func, and_, true
+from typing import List
 
-__all__ = ["HourSlice"]
+from sqlalchemy.sql import func, and_, or_, true
+
+__all__ = ["HourSlice", "MultipleHourSlices"]
 
 
 class DayPeriod:
@@ -14,7 +16,8 @@ class DayPeriod:
 
     def __init__(self, weekday=None):
         self.freq = "day"
-        if weekday is not None:
+        self.weekday = weekday
+        if self.weekday is not None:
             raise ValueError(
                 "If freq='day' then the `weekday` argument must not be provided."
             )
@@ -63,7 +66,9 @@ class DayOfWeekPeriod:
         self.weekday = weekday
 
     def filter_timestamp_column(self, ts_col):
-        return func.extract("dow", ts_col) == self.weekday
+        return (
+            func.extract("dow", ts_col) == self.weekday_indices_postgres[self.weekday]
+        )
 
 
 def make_hour_slice_period(freq, *, weekday=None):
@@ -109,6 +114,12 @@ class HourSlice:
         self.stop_hour = stop_hour
         self.period = make_hour_slice_period(freq, weekday=weekday)
 
+    def __repr__(self):
+        return (
+            f"HourSlice(start_hour={self.start_hour!r}, stop_hour={self.stop_hour!r}, "
+            f"freq={self.period.freq!r}, weekday={self.period.weekday!r})"
+        )
+
     def filter_timestamp_column(self, ts_col):
         """
         Filter timestamp column using this hour slice.
@@ -129,3 +140,27 @@ class HourSlice:
             func.to_char(ts_col, "HH24:MI") < self.stop_hour,
             self.period.filter_timestamp_column(ts_col),
         )
+
+
+class MultipleHourSlices:
+    """
+    Represents a collection of multiple non-overlapping hour slices.
+
+    Parameters
+    ----------
+    hour_slices : list of HourSlice
+        List of hour slices. These are assumed to be non-overlapping
+        (but note that this is not currently enforced).
+    """
+
+    def __init__(self, *, hour_slices: List[HourSlice]):
+        assert isinstance(hour_slices, (tuple, list))
+        assert all([isinstance(x, HourSlice) for x in hour_slices])
+        self.hour_slices = list(hour_slices)
+        # TODO: check hour slices are non-overlapping
+
+    def __repr__(self):
+        return f"<HourSlices: {self.hour_slices}>"
+
+    def filter_timestamp_column(self, ts_col):
+        return or_(*[hs.filter_timestamp_column(ts_col) for hs in self.hour_slices])
