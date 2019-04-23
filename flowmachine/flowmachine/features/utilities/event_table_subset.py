@@ -240,7 +240,7 @@ class EventTableSubset(Query):
             select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime < ts_stop)
 
         select_stmt = select_stmt.where(
-            self.hour_slices.filter_timestamp_column(self.sqlalchemy_table.c.datetime)
+            self.hour_slices.get_subsetting_condition(self.sqlalchemy_table.c.datetime)
         )
         select_stmt = self.subscriber_subsetter.apply_subset_if_needed(
             select_stmt, subscriber_identifier=self.subscriber_identifier

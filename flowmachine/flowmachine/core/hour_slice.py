@@ -239,5 +239,18 @@ class MultipleHourSlices:
     def __repr__(self):
         return f"<HourSlices: {self.hour_slices}>"
 
-    def filter_timestamp_column(self, ts_col):
+    def get_subsetting_condition(self, ts_col):
+        """
+        Return sqlalchemy expression which represents subsetting
+        the given timestamp column by hours of the day.
+
+        Parameters
+        ----------
+        ts_col : sqlalchemy column
+            The timestamp column to which to apply the subsetting.
+
+        Returns
+        -------
+        sqlalchemy.sql.elements.BooleanClauseList
+        """
         return or_(*[hs.filter_timestamp_column(ts_col) for hs in self.hour_slices])

@@ -172,7 +172,7 @@ def test_multiple_our_slices():
     mhs = MultipleHourSlices(hour_slices=[hs1, hs2])
 
     ts_col = EventsCallsTable.datetime
-    expr = mhs.filter_timestamp_column(ts_col)
+    expr = mhs.get_subsetting_condition(ts_col)
     expected = (
         "to_char(events.calls.datetime, 'HH24:MI') >= '08:00' AND "
         "to_char(events.calls.datetime, 'HH24:MI') < '16:30' OR "
