@@ -8,14 +8,20 @@ COPY frontend /
 RUN npm install --production
 RUN PUBLIC_URL=/static npm run-script build
 
+
 FROM tiangolo/uwsgi-nginx-flask:python3.6-alpine3.8
+COPY Pipfile .
+COPY Pipfile.lock .
+# Install dependencies required for argon crypto
+RUN apk update && apk add --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
+    libressl-dev libffi-dev && \
+    pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system
 ENV STATIC_PATH /app/static
 ENV STATIC_INDEX 1
 ENV FLASK_APP flowauth
+ENV PIPENV_COLORBLIND=1
 WORKDIR /app/static
 COPY --from=builder /build .
 WORKDIR /app
 COPY backend .
-COPY Pipfile .
-COPY Pipfile.lock .
-RUN pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && pip install .
+RUN pip install --no-cache-dir .
