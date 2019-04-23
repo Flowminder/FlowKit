@@ -105,31 +105,38 @@ def get_columns_for_level(
         raise BadLevelError(level)
 
 
-def parse_datestring(datestring):
+def parse_datestring(
+    datestring: Union[str, datetime.datetime, datetime.date]
+) -> datetime.datetime:
     """
 
     Parameters
     ----------
-    datestring : str
-        ISO string date
+    datestring : str, datetime, or date
+        ISO string date, or a datetime or date object
 
     Returns
     -------
     datetime.datetime
 
     """
-    try:
-        return datetime.datetime.strptime(datestring, "%Y-%m-%d %X")
-    except ValueError:
+    if isinstance(datestring, datetime.datetime):
+        return datestring
+    elif isinstance(datestring, datetime.date):
+        return datetime.datetime(datestring.year, datestring.month, datestring.day)
+    else:
         try:
-            return datetime.datetime.strptime(datestring, "%Y-%m-%d %H:%M")
+            return datetime.datetime.strptime(datestring, "%Y-%m-%d %X")
         except ValueError:
             try:
-                return datetime.datetime.strptime(datestring, "%Y-%m-%d")
+                return datetime.datetime.strptime(datestring, "%Y-%m-%d %H:%M")
             except ValueError:
-                raise ValueError(
-                    "{} could not be parsed as as date.".format(datestring)
-                )
+                try:
+                    return datetime.datetime.strptime(datestring, "%Y-%m-%d")
+                except ValueError:
+                    raise ValueError(
+                        "{} could not be parsed as as date.".format(datestring)
+                    )
 
 
 def list_of_dates(start, stop):
