@@ -375,7 +375,7 @@ jobs:
 
   run_flowauth_backend_tests:
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.6
     environment:
       FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth

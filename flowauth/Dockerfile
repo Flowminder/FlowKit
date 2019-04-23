@@ -8,7 +8,7 @@ COPY frontend /
 RUN npm install --production
 RUN PUBLIC_URL=/static npm run-script build
 
-FROM tiangolo/uwsgi-nginx-flask:python3.7
+FROM tiangolo/uwsgi-nginx-flask:python3.6-alpine3.8
 ENV STATIC_PATH /app/static
 ENV STATIC_INDEX 1
 ENV FLASK_APP flowauth
