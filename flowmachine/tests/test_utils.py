@@ -72,6 +72,7 @@ def test_time_period_add_other_units():
     [
         "2016-01-01 10:00",
         "2016-01-01 10:00:00",
+        "2016-01-01",
         datetime.date(2016, 1, 1),
         datetime.datetime(2016, 1, 1, 10, 10),
     ],
@@ -81,14 +82,6 @@ def test_parse(datestring):
     Test that several variations on a datestring give the same date
     """
     assert parse_datestring(datestring).date() == datetime.date(2016, 1, 1)
-
-
-def test_parse_datestring_valueerror():
-    """
-    parse_datestring should give a valueerror for really not datelike things.
-    """
-    with pytest.raises(ValueError):
-        parse_datestring("NOT_A_DATE")
 
 
 def test_dependency_graph():
