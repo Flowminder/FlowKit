@@ -8,7 +8,7 @@ from typing import List, Union
 
 from sqlalchemy.sql import func, and_, or_, true
 
-__all__ = ["HourSlice", "MultipleHourSlices"]
+__all__ = ["HourInterval", "HourSlice"]
 
 
 class DayPeriod:
@@ -74,7 +74,7 @@ class DayOfWeekPeriod:
         )
 
 
-def make_hour_slice_period(freq, *, weekday=None):
+def make_hour_interval_period(freq, *, weekday=None):
     """
     Returns an appropriate instance of `DayPeriod` or `DayOfWeekPeriod`,
     depending on the value of `freq`.
@@ -161,7 +161,7 @@ class HourOfDay:
             return cmp_op(func.to_char(ts_col, "HH24:MI"), self.hour_str)
 
 
-class HourSlice:
+class HourInterval:
     """
     Represents an interval of hours during the day which is repeated
     regularly, for example each day, or every Tuesday.
@@ -169,17 +169,17 @@ class HourSlice:
     Parameters
     ----------
     start_hour : str
-        Start hour of this hour-slice in the format 'HH:MM' (e.g. '08:00').
+        Start hour of this hour interval in the format 'HH:MM' (e.g. '08:00').
     stop_hour : str (optional)
-        Stop hour of this hour-slice in the format 'HH:MM' (e.g. '19:30').
-        The stop hour can also be `None`, indicating that the hour slice
+        Stop hour of this hour interval in the format 'HH:MM' (e.g. '19:30').
+        The stop hour can also be `None`, indicating that the hour interval
         extends until midnight.
     freq : str
         Frequency at which the underlying time interval is repeated. This
         must be either "day" or "week". In the latter case the `weekday`
         argument must also be provided.
     weekday : str
-        The day of the week for which this hour slice is valid. This argument
+        The day of the week for which this hour interval is valid. This argument
         is only relevant if `freq="week"` and is ignored otherwise.
     """
 
@@ -188,17 +188,17 @@ class HourSlice:
     ):
         self.start_hour = HourOfDay(start_hour)
         self.stop_hour = HourOfDay(stop_hour)
-        self.period = make_hour_slice_period(freq, weekday=weekday)
+        self.period = make_hour_interval_period(freq, weekday=weekday)
 
     def __repr__(self):
         return (
-            f"HourSlice(start_hour={self.start_hour!r}, stop_hour={self.stop_hour!r}, "
+            f"HourInterval(start_hour={self.start_hour!r}, stop_hour={self.stop_hour!r}, "
             f"freq={self.period.freq!r}, weekday={self.period.weekday!r})"
         )
 
     def filter_timestamp_column(self, ts_col):
         """
-        Filter timestamp column using this hour slice.
+        Filter timestamp column using this hour interval.
 
         Parameters
         ----------
@@ -219,25 +219,25 @@ class HourSlice:
         )
 
 
-class MultipleHourSlices:
+class HourSlice:
     """
-    Represents a collection of multiple non-overlapping hour slices.
+    Represents a collection of multiple non-overlapping hour intervals.
 
     Parameters
     ----------
-    hour_slices : list of HourSlice
-        List of hour slices. These are assumed to be non-overlapping
+    hour_intervals : list of HourInterval
+        List of hour interval. These are assumed to be non-overlapping
         (but note that this is not currently enforced).
     """
 
-    def __init__(self, *, hour_slices: List[HourSlice]):
-        assert isinstance(hour_slices, (tuple, list))
-        assert all([isinstance(x, HourSlice) for x in hour_slices])
+    def __init__(self, *, hour_intervals: List[HourInterval]):
+        assert isinstance(hour_intervals, (tuple, list))
+        assert all([isinstance(x, HourInterval) for x in hour_intervals])
         # TODO: would be good to check that hour slices are non-overlapping
-        self.hour_slices = list(hour_slices)
+        self.hour_intervals = list(hour_intervals)
 
     def __repr__(self):
-        return f"<HourSlices: {self.hour_slices}>"
+        return f"<HourSlice: {self.hour_intervals}>"
 
     def get_subsetting_condition(self, ts_col):
         """
@@ -253,4 +253,4 @@ class MultipleHourSlices:
         -------
         sqlalchemy.sql.elements.BooleanClauseList
         """
-        return or_(*[hs.filter_timestamp_column(ts_col) for hs in self.hour_slices])
+        return or_(*[hs.filter_timestamp_column(ts_col) for hs in self.hour_intervals])

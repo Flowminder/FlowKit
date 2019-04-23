@@ -17,7 +17,7 @@ from ...core.sqlalchemy_utils import (
     get_sql_string,
 )
 from flowmachine.utils import list_of_dates
-from flowmachine.core.hour_slice import MultipleHourSlices, HourSlice
+from flowmachine.core.hour_slice import HourSlice, HourInterval
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
 import structlog
@@ -106,18 +106,20 @@ class EventTableSubset(Query):
             start_hour_str = f"{start_hour:02d}:00"
             stop_hour_str = f"{stop_hour:02d}:00"
             if start_hour <= stop_hour:
-                hs = HourSlice(
+                hs = HourInterval(
                     start_hour=start_hour_str, stop_hour=stop_hour_str, freq="day"
                 )
-                self.hour_slices = MultipleHourSlices(hour_slices=[hs])
+                self.hour_slices = HourSlice(hour_intervals=[hs])
             else:
                 # If hours are backwards, then this is interpreted as spanning midnight,
                 # so we split it into two time slices for the beginning/end of the day.
-                hs1 = HourSlice(start_hour=None, stop_hour=stop_hour_str, freq="day")
-                hs2 = HourSlice(start_hour=start_hour_str, stop_hour=None, freq="day")
-                self.hour_slices = MultipleHourSlices(hour_slices=[hs1, hs2])
+                hs1 = HourInterval(start_hour=None, stop_hour=stop_hour_str, freq="day")
+                hs2 = HourInterval(
+                    start_hour=start_hour_str, stop_hour=None, freq="day"
+                )
+                self.hour_slices = HourSlice(hour_intervals=[hs1, hs2])
         else:
-            self.hour_slices = MultipleHourSlices(hour_slices=[])
+            self.hour_slices = HourSlice(hour_intervals=[])
 
         self.start = start
         self.stop = stop
