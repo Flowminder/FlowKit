@@ -1,0 +1,12 @@
+SELECT events.calls.datetime,
+       events.calls.duration,
+       events.calls.id,
+       events.calls.location_id,
+       events.calls.msisdn AS subscriber,
+       events.calls.msisdn_counterpart,
+       events.calls.outgoing,
+       events.calls.tac
+FROM events.calls
+WHERE (events.calls.datetime >= '2016-01-03 00:00:00')
+  AND (events.calls.datetime < '2016-01-05 00:00:00')
+  AND EXTRACT(HOUR FROM events.calls.datetime) BETWEEN 7 AND 12
