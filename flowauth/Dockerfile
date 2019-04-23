@@ -12,10 +12,11 @@ RUN PUBLIC_URL=/static npm run-script build
 FROM tiangolo/uwsgi-nginx-flask:python3.6-alpine3.8
 COPY Pipfile .
 COPY Pipfile.lock .
-# Install dependencies required for argon crypto
+# Install dependencies required for argon crypto & psycopg2
 RUN apk update && apk add --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
     libressl-dev libffi-dev && \
-    pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system
+    pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
+    apk del build-dependencies
 ENV STATIC_PATH /app/static
 ENV STATIC_INDEX 1
 ENV FLASK_APP flowauth
