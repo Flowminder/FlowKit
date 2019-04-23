@@ -2,7 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import List
+import re
+from operator import lt as less_than, ge as greater_or_equal
+from typing import List, Union
 
 from sqlalchemy.sql import func, and_, or_, true
 
@@ -22,7 +24,8 @@ class DayPeriod:
                 "If freq='day' then the `weekday` argument must not be provided."
             )
 
-    def filter_timestamp_column(self, ts_col):
+    def filter_timestamp_column_by_day_of_week(self, ts_col):
+        # no additional filtering needed to limit the day of the week
         return true()
 
 
@@ -65,7 +68,7 @@ class DayOfWeekPeriod:
         self.freq = "week"
         self.weekday = weekday
 
-    def filter_timestamp_column(self, ts_col):
+    def filter_timestamp_column_by_day_of_week(self, ts_col):
         return (
             func.extract("dow", ts_col) == self.weekday_indices_postgres[self.weekday]
         )
@@ -87,6 +90,77 @@ def make_hour_slice_period(freq, *, weekday=None):
     return cls(weekday=weekday)
 
 
+class HourOfDay:
+    """
+    Represents an hour of the day
+    """
+
+    def __init__(self, hour_str: Union[str, None]):
+        self._validate_hour_string(hour_str)
+        self.hour_str = hour_str
+
+    def __eq__(self, other):
+        if isinstance(other, HourOfDay):
+            return self.hour_str == other.hour_str
+        elif isinstance(other, str) or other is None:
+            return self.hour_str == other
+        else:
+            raise TypeError(
+                f"HourOfDay cannot be compared to object of type {type(other)}"
+            )
+
+    def _validate_hour_string(self, hour_str):
+        """
+        Return the input string if it is a valid hour string in the format 'HH:MM'
+        and raise a ValueError otherwise.
+        """
+        if hour_str is None:
+            return
+        elif isinstance(hour_str, str):
+            m = re.match("^(\d\d):(\d\d)$", hour_str)
+            if not m:
+                raise ValueError(
+                    f"Hour string must have the format 'HH:MM'. Got: '{hour_str}'"
+                )
+            hour = int(m.group(1))
+            minutes = int(m.group(2))
+            if not (0 <= hour and hour < 24):
+                raise ValueError(
+                    f"Invalid hour value: {hour} (must be between 0 and 23, inclusively)"
+                )
+            if not (0 <= minutes and minutes < 60):
+                raise ValueError(
+                    f"Invalid minutes value: {minutes} (must be between 0 and 59, inclusively)"
+                )
+        else:
+            raise ValueError(
+                f"Input argument must be a string the format 'HH:MM'. Got: {hour_str}"
+            )
+
+    def filter_timestamp_column(self, ts_col, cmp_op):
+        """
+        Filter timestamp column by comparing to this hour-of-day using the given comparison operator.
+
+        Parameters
+        ----------
+        ts_col : sqlalchemy column
+            The timestamp column to filter.
+        cmp_op : callable
+            Comparison operator to use. For example: `operator.lt`, `operator.ge`.
+
+        Returns
+        -------
+        sqlalchemy.sql.elements.BooleanClauseList
+            Sqlalchemy expression representing the filtered timestamp column.
+            This can be used in WHERE clauses of other sql queries.
+        """
+        if self.hour_str is None:
+            # no filtering needed
+            return true()
+        else:
+            return cmp_op(func.to_char(ts_col, "HH24:MI"), self.hour_str)
+
+
 class HourSlice:
     """
     Represents an interval of hours during the day which is repeated
@@ -96,8 +170,10 @@ class HourSlice:
     ----------
     start_hour : str
         Start hour of this hour-slice in the format 'HH:MM' (e.g. '08:00').
-    stop_hour : str
+    stop_hour : str (optional)
         Stop hour of this hour-slice in the format 'HH:MM' (e.g. '19:30').
+        The stop hour can also be `None`, indicating that the hour slice
+        extends until midnight.
     freq : str
         Frequency at which the underlying time interval is repeated. This
         must be either "day" or "week". In the latter case the `weekday`
@@ -110,8 +186,8 @@ class HourSlice:
     def __init__(
         self, *, start_hour: str, stop_hour: str, freq: str, weekday: str = None
     ):
-        self.start_hour = start_hour
-        self.stop_hour = stop_hour
+        self.start_hour = HourOfDay(start_hour)
+        self.stop_hour = HourOfDay(stop_hour)
         self.period = make_hour_slice_period(freq, weekday=weekday)
 
     def __repr__(self):
@@ -135,10 +211,11 @@ class HourSlice:
             Sqlalchemy expression representing the filtered timestamp column.
             This can be used in WHERE clauses of other sql queries.
         """
+
         return and_(
-            func.to_char(ts_col, "HH24:MI") >= self.start_hour,
-            func.to_char(ts_col, "HH24:MI") < self.stop_hour,
-            self.period.filter_timestamp_column(ts_col),
+            self.start_hour.filter_timestamp_column(ts_col, cmp_op=greater_or_equal),
+            self.stop_hour.filter_timestamp_column(ts_col, cmp_op=less_than),
+            self.period.filter_timestamp_column_by_day_of_week(ts_col),
         )
 
 
