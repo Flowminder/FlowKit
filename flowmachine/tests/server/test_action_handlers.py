@@ -13,8 +13,16 @@ from flowmachine.core.server.action_handlers import (
     action_handler__get_query_params,
     action_handler__get_sql,
     action_handler__run_query,
+    get_action_handler,
 )
+from flowmachine.core.server.exceptions import FlowmachineServerError
 from flowmachine.core.server.zmq_helpers import ZMQReplyStatus
+
+
+def test_bad_action_handler():
+    """Exception should be raised if we try to get a handler that doesn't exist."""
+    with pytest.raises(FlowmachineServerError):
+        get_action_handler("NOT_A_HANDLER")
 
 
 def test_run_query_type_error(monkeypatch):

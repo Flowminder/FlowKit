@@ -97,7 +97,7 @@ from tests.utils import permissions_types, aggregation_types
             {
                 "locations": flowclient.modal_location_from_dates(
                     start_date="2016-01-01",
-                    stop_date="2016-01-03",
+                    end_date="2016-01-03",
                     aggregation_unit="admin3",
                     method="last",
                 )
@@ -178,7 +178,7 @@ from tests.utils import permissions_types, aggregation_types
             "meaningful_locations_aggregate",
             {
                 "start_date": "2016-01-01",
-                "stop_date": "2016-01-02",
+                "end_date": "2016-01-02",
                 "aggregation_unit": "admin1",
                 "label": "unknown",
                 "tower_hour_of_day_scores": [
@@ -236,7 +236,7 @@ from tests.utils import permissions_types, aggregation_types
             "meaningful_locations_between_label_od_matrix",
             {
                 "start_date": "2016-01-01",
-                "stop_date": "2016-01-02",
+                "end_date": "2016-01-02",
                 "aggregation_unit": "admin1",
                 "label_a": "unknown",
                 "label_b": "evening",
@@ -295,9 +295,9 @@ from tests.utils import permissions_types, aggregation_types
             "meaningful_locations_between_dates_od_matrix",
             {
                 "start_date_a": "2016-01-01",
-                "stop_date_a": "2016-01-02",
+                "end_date_a": "2016-01-02",
                 "start_date_b": "2016-01-01",
-                "stop_date_b": "2016-01-05",
+                "end_date_b": "2016-01-05",
                 "aggregation_unit": "admin1",
                 "tower_hour_of_day_scores": [
                     -1,
