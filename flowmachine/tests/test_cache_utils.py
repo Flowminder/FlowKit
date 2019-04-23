@@ -456,11 +456,10 @@ def test_cache_reset(flowmachine_connect):
     assert not stored_query.is_stored
 
 
-def test_redis_resync_runtimeerror(flowmachine_connect, dummy_redis, monkeypatch):
+def test_redis_resync_runtimeerror(flowmachine_connect, dummy_redis):
     """
     Test that a runtime error is raised if redis is being updated from multiple places when trying to resync.
     """
-    monkeypatch.setattr("flowmachine.core.query.Query.redis", dummy_redis)
     stored_query = daily_location("2016-01-01").store().result()
     assert (
         QueryStateMachine(Table.redis, stored_query.md5).current_query_state

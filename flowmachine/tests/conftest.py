@@ -223,5 +223,7 @@ class DummyRedis:
 
 
 @pytest.fixture(scope="function")
-def dummy_redis():
-    return DummyRedis()
+def dummy_redis(monkeypatch):
+    dummy_redis = DummyRedis()
+    monkeypatch.setattr(Query, "redis", dummy_redis)
+    return dummy_redis
