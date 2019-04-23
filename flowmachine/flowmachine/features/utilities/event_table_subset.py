@@ -248,53 +248,6 @@ class EventTableSubset(Query):
 
         return get_sql_string(select_stmt)
 
-    def _make_query_ORIG(self):  # pragma: no cover
-        # Note: this is the original implementation of _make_query. It is kept for
-        # reference for the time being but will likely be removed in the near future.
-        # The one currently being used is _make_query_with_sqlalchemy above.
-
-        where_clause = ""
-        if self.start is not None:
-            where_clause += f"WHERE (datetime >= '{self.start}'::timestamptz)"
-        if self.stop is not None:
-            where_clause += "WHERE " if where_clause == "" else " AND "
-            where_clause += f"(datetime < '{self.stop}'::timestamptz)"
-
-        sql = f"""
-        SELECT {", ".join(self.columns)}
-        FROM {self.table_ORIG.fully_qualified_table_name}
-        {where_clause}
-        """
-
-        if self.hours != "all":
-            if self.hours[0] < self.hours[1]:
-                sql += f" AND EXTRACT(hour FROM datetime) BETWEEN {self.hours[0]} and {self.hours[1] - 1}"
-            # If dates are backwards, then this will be interpreted as
-            # spanning midnight
-            else:
-                sql += f" AND (   EXTRACT(hour FROM datetime)  >= {self.hours[0]}"
-                sql += f"      OR EXTRACT(hour FROM datetime)  < {self.hours[1]})"
-
-        if self.subscriber_subset_ORIG is not None:
-            try:
-                subs_table = self.subscriber_subset_ORIG.get_query()
-                cols = ", ".join(
-                    c if "AS subscriber" not in c else "subscriber"
-                    for c in self.columns
-                )
-                sql = f"SELECT {cols} FROM ({sql}) ss INNER JOIN ({subs_table}) subs USING (subscriber)"
-            except AttributeError:
-                where_clause = "WHERE " if where_clause == "" else " AND "
-                try:
-                    assert not isinstance(self.subscriber_subset_ORIG, str)
-                    ss = tuple(self.subscriber_subset_ORIG)
-                except (TypeError, AssertionError):
-                    ss = (self.subscriber_subset_ORIG,)
-                sql = f"{sql} {where_clause} {self.subscriber_identifier} IN {_makesafe(ss)}"
-
-        return sql
-
-    # _make_query = _make_query_ORIG
     _make_query = _make_query_with_sqlalchemy
 
     @property
