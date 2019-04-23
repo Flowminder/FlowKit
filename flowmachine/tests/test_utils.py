@@ -27,6 +27,25 @@ from flowmachine.utils import time_period_add
 from flowmachine.features import daily_location, EventTableSubset
 
 
+@pytest.mark.parametrize("crs", (None, 4326, "+proj=longlat +datum=WGS84 +no_defs"))
+def test_proj4string(crs, flowmachine_connect):
+    """
+    Test proj4string behaviour for known codes
+    """
+    assert (
+        proj4string(flowmachine_connect, crs) == "+proj=longlat +datum=WGS84 +no_defs"
+    )
+
+
+@pytest.mark.parametrize("crs", (-1, (1, 1)))
+def test_proj4string_valueerror(crs, flowmachine_connect):
+    """
+    Test proj4string valueerrors for bad values
+    """
+    with pytest.raises(ValueError):
+        proj4string(flowmachine_connect, crs)
+
+
 def test_time_period_add():
     """
     flowmachine.utils.time_period_add does what it says on the tin.
