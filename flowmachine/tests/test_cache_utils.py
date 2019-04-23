@@ -440,7 +440,7 @@ def test_redis_resync(flowmachine_connect):
 
 def test_cache_reset(flowmachine_connect):
     """
-    Test that cache and redis are reset.
+    Test that cache and redis are both reset.
     """
     stored_query = daily_location("2016-01-01").store().result()
     assert (
