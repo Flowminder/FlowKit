@@ -466,6 +466,6 @@ def test_redis_resync_runtimeerror(flowmachine_connect, dummy_redis, monkeypatch
         QueryStateMachine(Table.redis, stored_query.md5).current_query_state
         == QueryState.COMPLETED
     )
-    dummy_redis.flush = False
+    dummy_redis.allow_flush = False
     with pytest.raises(RuntimeError):
         resync_redis_with_cache(flowmachine_connect, dummy_redis)

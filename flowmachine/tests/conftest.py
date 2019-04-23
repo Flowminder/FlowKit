@@ -186,7 +186,7 @@ class DummyRedis:
 
     def __init__(self):
         self._store = {}
-        self.flush = True
+        self.allow_flush = True
 
     def setnx(self, name, val):
         if name not in self._store:
@@ -216,7 +216,9 @@ class DummyRedis:
         return sorted(self._store.keys())
 
     def flushdb(self):
-        if self.flush:  # Set flush attribute to False to simulate concurrent writes
+        if (
+            self.allow_flush
+        ):  # Set allow_flush attribute to False to simulate concurrent writes
             self._store = {}
 
 
