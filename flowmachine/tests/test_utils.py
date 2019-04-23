@@ -5,6 +5,7 @@
 """
 Tests for flowmachine small helper functions
 """
+import datetime
 import unittest.mock
 from pathlib import Path
 
@@ -47,18 +48,20 @@ def test_time_period_add_other_units():
     )
 
 
-def test_parse():
+@pytest.mark.parametrize(
+    "datestring",
+    [
+        "2016-01-01 10:00",
+        "2016-01-01 10:00:00",
+        datetime.date(2016, 1, 1),
+        datetime.datetime(2016, 1, 1, 10, 10),
+    ],
+)
+def test_parse(datestring):
     """
     Test that several variations on a datestring give the same date
     """
-    assert (
-        parse_datestring("2016-01-01").date()
-        == parse_datestring("2016-01-01 10:00").date()
-    )
-    assert (
-        parse_datestring("2016-01-01").date()
-        == parse_datestring("2016-01-01 10:00:00").date()
-    )
+    assert parse_datestring(datestring).date() == datetime.date(2016, 1, 1)
 
 
 def test_dependency_graph():
