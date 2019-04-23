@@ -30,7 +30,7 @@ async def test_invalid_token(app, json_log):
     client, db, log_dir, app = app
     await client.get("/")  # Need to trigger setup
 
-    async with app.test_request_context("GET", "/"):
+    async with app.test_request_context(method="GET", path="/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await invalid_token_callback("DUMMY_ERROR_STRING")
         log_lines = json_log().out
@@ -68,7 +68,7 @@ async def test_expired_token(app, json_log):
         "user_claims": {},
     }
 
-    async with app.test_request_context("GET", "/"):
+    async with app.test_request_context(method="GET", path="/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await expired_token_callback(dummy_decoded_expired_token)
         log_lines = json_log().out
@@ -91,7 +91,7 @@ async def test_claims_verify_fail(app, json_log):
     client, db, log_dir, app = app
     await client.get("/")  # Need to trigger setup
 
-    async with app.test_request_context("GET", "/"):
+    async with app.test_request_context(method="GET", path="/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await claims_verification_failed_callback()
         log_lines = json_log().out
@@ -114,7 +114,7 @@ async def test_revoked_token(app, json_log):
     client, db, log_dir, app = app
     await client.get("/")  # Need to trigger setup
 
-    async with app.test_request_context("GET", "/"):
+    async with app.test_request_context(method="GET", path="/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await revoked_token_callback()
         log_lines = json_log().out
