@@ -6,7 +6,17 @@ FROM python:3.7-slim
 
 WORKDIR /app
 COPY Pipfile* /app/
-RUN pip install --no-cache-dir pipenv && pipenv install --clear --deploy
+RUN apt-get update && \
+        apt-get install -y --no-install-recommends git && \
+        pip install --no-cache-dir pipenv && pipenv install --clear --deploy && \
+        apt-get -y remove git && \
+        apt purge -y --auto-remove && \
+        rm -rf /var/lib/apt/lists/*
 COPY . /app/
-RUN pipenv install --clear --skip-lock .
+RUN apt-get update && \
+        apt-get install -y --no-install-recommends git && \
+        pipenv install --clear --skip-lock . && \
+        apt-get -y remove git && \
+        apt purge -y --auto-remove && \
+        rm -rf /var/lib/apt/lists/*
 CMD ["pipenv", "run", "flowmachine"]
