@@ -15,7 +15,9 @@ class DayPeriod:
     def __init__(self, weekday=None):
         self.freq = "day"
         if weekday is not None:
-            raise ValueError("If freq='day' then `weekday` must not be given.")
+            raise ValueError(
+                "If freq='day' then the `weekday` argument must not be provided."
+            )
 
     def filter_timestamp_column(self, ts_col):
         return true()
@@ -47,8 +49,11 @@ class DayOfWeekPeriod:
 
     def __init__(self, weekday):
         if weekday is None:
-            raise ValueError("If freq='week' then `weekday` must be given.")
-        if weekday.title() not in self.valid_weekdays:
+            raise ValueError(
+                "If freq='week' then the `weekday` argument must be provided."
+            )
+        weekday = weekday.capitalize()
+        if weekday not in self.valid_weekdays:
             valid_weekdays_list = ", ".join([repr(x) for x in self.valid_weekdays])
             raise ValueError(
                 f"Invalid value for `weekday`. Must be one of: {valid_weekdays_list}."
@@ -81,16 +86,46 @@ class HourSlice:
     """
     Represents an interval of hours during the day which is repeated
     regularly, for example each day, or every Tuesday.
+
+    Parameters
+    ----------
+    start_hour : str
+        Start hour of this hour-slice in the format 'HH:MM' (e.g. '08:00').
+    stop_hour : str
+        Stop hour of this hour-slice in the format 'HH:MM' (e.g. '19:30').
+    freq : str
+        Frequency at which the underlying time interval is repeated. This
+        must be either "day" or "week". In the latter case the `weekday`
+        argument must also be provided.
+    weekday : str
+        The day of the week for which this hour slice is valid. This argument
+        is only relevant if `freq="week"` and is ignored otherwise.
     """
 
-    def __init__(self, *, start, stop, freq, weekday=None):
-        self.start = start
-        self.stop = stop
+    def __init__(
+        self, *, start_hour: str, stop_hour: str, freq: str, weekday: str = None
+    ):
+        self.start_hour = start_hour
+        self.stop_hour = stop_hour
         self.period = make_hour_slice_period(freq, weekday=weekday)
 
     def filter_timestamp_column(self, ts_col):
+        """
+        Filter timestamp column using this hour slice.
+
+        Parameters
+        ----------
+        ts_col : sqlalchemy column
+            The timestamp column to filter.
+
+        Returns
+        -------
+        sqlalchemy.sql.elements.BooleanClauseList
+            Sqlalchemy expression representing the filtered timestamp column.
+            This can be used in WHERE clauses of other sql queries.
+        """
         return and_(
-            func.to_char(ts_col, "HH24:MI") >= self.start,
-            func.to_char(ts_col, "HH24:MI") < self.stop,
+            func.to_char(ts_col, "HH24:MI") >= self.start_hour,
+            func.to_char(ts_col, "HH24:MI") < self.stop_hour,
             self.period.filter_timestamp_column(ts_col),
         )

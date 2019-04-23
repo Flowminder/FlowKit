@@ -10,9 +10,9 @@ from flowmachine.core.hour_slice import HourSlice
 
 
 def test_daily_hour_slice():
-    hs = HourSlice(start="00:00", stop="06:30", freq="day")
-    assert hs.start == "00:00"
-    assert hs.stop == "06:30"
+    hs = HourSlice(start_hour="00:00", stop_hour="06:30", freq="day")
+    assert hs.start_hour == "00:00"
+    assert hs.stop_hour == "06:30"
     assert hs.period.freq == "day"
 
     ts_col = EventsCallsTable.datetime
@@ -22,9 +22,11 @@ def test_daily_hour_slice():
 
 
 def test_weekly_hour_slice():
-    hs = HourSlice(start="04:00", stop="07:45", freq="week", weekday="Tuesday")
-    assert hs.start == "04:00"
-    assert hs.stop == "07:45"
+    hs = HourSlice(
+        start_hour="04:00", stop_hour="07:45", freq="week", weekday="tuesday"
+    )
+    assert hs.start_hour == "04:00"
+    assert hs.stop_hour == "07:45"
     assert hs.period.freq == "week"
     assert hs.period.weekday == "Tuesday"
 
@@ -42,17 +44,18 @@ def test_invalid_arguments():
     with pytest.raises(
         ValueError, match="Argument `freq` must be one of: 'day', 'week'."
     ):
-        HourSlice(start="00:00", stop="08:00", freq="foobar")
+        HourSlice(start_hour="00:00", stop_hour="08:00", freq="foobar")
 
     with pytest.raises(
-        ValueError, match="If freq='week' then `weekday` must be given."
+        ValueError, match="If freq='week' then the `weekday` argument must be provided."
     ):
-        HourSlice(start="00:00", stop="08:00", freq="week", weekday=None)
+        HourSlice(start_hour="00:00", stop_hour="08:00", freq="week", weekday=None)
 
     with pytest.raises(ValueError, match="Invalid value for `weekday`."):
-        HourSlice(start="00:00", stop="08:00", freq="week", weekday="foobar")
+        HourSlice(start_hour="00:00", stop_hour="08:00", freq="week", weekday="foobar")
 
     with pytest.raises(
-        ValueError, match="If freq='day' then `weekday` must not be given."
+        ValueError,
+        match="If freq='day' then the `weekday` argument must not be provided.",
     ):
-        HourSlice(start="00:00", stop="08:00", freq="day", weekday="Monday")
+        HourSlice(start_hour="00:00", stop_hour="08:00", freq="day", weekday="Monday")
