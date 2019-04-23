@@ -164,9 +164,9 @@ class HourOfDay:
 class HourInterval:
     """
     Represents an interval of hours during the day which is repeated
-    regularly, for example each day, or every Tuesday. The interval
-    is considered to be half-open, i.e. the left endpoint is included
-    and the right endpoint is excluded: start_hour <= timestamp < stop_hour.
+    regularly, for example each day, or every Tuesday. The interval is
+    considered to be half-open, i.e. the left endpoint is included and
+    the right endpoint is excluded. For example: 08:30 <= HH:MM < 16:00.
 
     Parameters
     ----------
