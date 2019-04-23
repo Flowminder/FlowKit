@@ -27,7 +27,10 @@ from flowmachine.core.cache import (
     set_cache_half_life,
     invalidate_cache_by_id,
     cache_table_exists,
+    resync_redis_with_cache,
+    reset_cache,
 )
+from flowmachine.core.query_state import QueryState, QueryStateMachine
 from flowmachine.features import daily_location
 
 
@@ -410,3 +413,44 @@ def test_cache_table_exists(flowmachine_connect):
     assert cache_table_exists(
         flowmachine_connect, daily_location("2016-01-01").store().result().md5
     )
+
+
+def test_redis_resync(flowmachine_connect):
+    """
+    Test that redis states can be resynced to the flowdb cache.
+    """
+    stored_query = daily_location("2016-01-01").store().result()
+    assert (
+        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        == QueryState.COMPLETED
+    )
+    assert stored_query.is_stored
+    Table.redis.flushdb()
+    assert stored_query.is_stored
+    assert (
+        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        == QueryState.KNOWN
+    )
+    resync_redis_with_cache(flowmachine_connect, Table.redis)
+    assert (
+        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        == QueryState.COMPLETED
+    )
+
+
+def test_cache_reset(flowmachine_connect):
+    """
+    Test that cache and redis are reset.
+    """
+    stored_query = daily_location("2016-01-01").store().result()
+    assert (
+        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        == QueryState.COMPLETED
+    )
+    assert stored_query.is_stored
+    reset_cache(flowmachine_connect, Table.redis)
+    assert (
+        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        == QueryState.KNOWN
+    )
+    assert not stored_query.is_stored
