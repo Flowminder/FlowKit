@@ -21,8 +21,8 @@ FROM (SELECT subscriber_locs.subscriber,
                               FROM events.calls
                               WHERE (events.calls.datetime >= '2016-01-05 00:00:00')
                                 AND (events.calls.datetime < '2016-01-06 00:00:00')
-                                AND ((   (EXTRACT(HOUR FROM events.calls.datetime) >= 22)
-                                      OR (EXTRACT(HOUR FROM events.calls.datetime) < 6)))) AS tbl
+                                AND ((   (to_char(events.calls.datetime, 'HH24:MI') < '06:00')
+                                      OR (to_char(events.calls.datetime, 'HH24:MI') >= '22:00')))) AS tbl
                              INNER JOIN (SELECT *
                                          FROM ((VALUES ('dr9xNYK006wykgXj'))) AS tmp(subscriber)) AS subset_query ON tbl.subscriber = subset_query.subscriber) AS foo
                   WHERE (location_id IS NOT NULL)
