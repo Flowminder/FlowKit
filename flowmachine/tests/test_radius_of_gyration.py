@@ -14,7 +14,7 @@ def test_has_right_columns():
     RadiusOfGyration() dataframe returns the right columns.
     """
     RoG = RadiusOfGyration("2016-01-01", "2016-01-02")
-    expected_columns = ["subscriber", "rog"]
+    expected_columns = ["subscriber", "value"]
     assert RoG.column_names == expected_columns
 
 
@@ -25,8 +25,8 @@ def test_values(get_dataframe):
     RoG = RadiusOfGyration("2016-01-01", "2016-01-02")
     df = get_dataframe(RoG)
     df.set_index("subscriber", inplace=True)
-    assert int(df.rog["dM4aLP8N97eYABwR"] * 100.0) == 26506
-    assert int(df.rog["GNLM7eW5J5wmlwRa"] * 100.0) == 16882
+    assert int(df.value["dM4aLP8N97eYABwR"] * 100.0) == 26506
+    assert int(df.value["GNLM7eW5J5wmlwRa"] * 100.0) == 16882
 
 
 def test_can_return_in_meters(get_dataframe):
@@ -37,7 +37,7 @@ def test_can_return_in_meters(get_dataframe):
     RoG_meters = RadiusOfGyration("2016-01-01", "2016-01-02", unit="m")
     df_m = get_dataframe(RoG_meters)
     df_km = get_dataframe(RoG)
-    ratio = df_km["rog"] / df_m["rog"]
+    ratio = df_km["value"] / df_m["value"]
     ratio_clean = ratio.dropna()
     ration_clean_round = ratio_clean.round(3)
     assert list(ration_clean_round.dropna().unique()) == [0.001]
@@ -52,4 +52,4 @@ def test_can_be_joined(get_dataframe):
     rog_JA = RoG.join_aggregate(dl)
     df = get_dataframe(rog_JA)
     assert isinstance(df, pd.DataFrame)
-    assert rog_JA.column_names == ["pcod", "rog"]
+    assert rog_JA.column_names == ["pcod", "value"]

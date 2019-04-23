@@ -96,7 +96,7 @@ class RadiusOfGyration(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "rog"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
         """
@@ -143,7 +143,7 @@ class RadiusOfGyration(SubscriberFeature):
         RoG = """
         SELECT
             dist.subscriber,
-            sqrt( avg( distance_sqr ) )/{} AS rog
+            sqrt( avg( distance_sqr ) )/{} AS value
         FROM 
             ({dist}) AS dist
         GROUP BY dist.subscriber
