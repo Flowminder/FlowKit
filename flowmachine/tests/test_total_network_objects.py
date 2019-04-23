@@ -16,7 +16,7 @@ from flowmachine.features import TotalNetworkObjects, AggregateNetworkObjects
 
 def test_tno_at_lat_lng(get_dataframe):
     """
-    Regression test for #108. TNO should work at lat-lng level.
+    Regression test for #108. TNO should work at lat-lon level.
     """
     tno = TotalNetworkObjects(
         start="2016-01-01",
