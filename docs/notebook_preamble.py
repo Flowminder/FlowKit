@@ -93,6 +93,10 @@ claims = {
         "permissions": {"run": True, "poll": True, "get_result": True},
         "spatial_aggregation": ["admin3", "admin2", "admin1"],
     },
+    "radius_of_gyration": {
+        "permissions": {"run": True, "poll": True, "get_result": True},
+        "spatial_aggregation": ["admin3", "admin2", "admin1"],
+    },
 }
 
 TOKEN = make_token(
