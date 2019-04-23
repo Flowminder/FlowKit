@@ -18,6 +18,7 @@ from ...core.sqlalchemy_utils import (
     get_sql_string,
 )
 from flowmachine.utils import list_of_dates
+from flowmachine.core.hour_slice import MultipleHourSlices, HourSlice
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
 import structlog
@@ -74,6 +75,7 @@ class EventTableSubset(Query):
         start=None,
         stop=None,
         hours="all",
+        hour_slices=None,
         table="events.calls",
         subscriber_subset=None,
         columns=["*"],
@@ -87,6 +89,36 @@ class EventTableSubset(Query):
             start = start.strftime("%Y-%m-%d")
         if isinstance(stop, datetime.date):
             stop = stop.strftime("%Y-%m-%d")
+
+        if hours != "all" and hour_slices is not None:
+            raise ValueError(
+                "The arguments `hours` and `hour_slice` are mutually exclusive."
+            )
+        if hours != "all":
+            assert (
+                isinstance(hours, tuple)
+                and len(hours) == 2
+                and isinstance(hours[0], int)
+                and isinstance(hours[1], int)
+            )  # sanity check
+
+            start_hour = hours[0]
+            stop_hour = hours[1]
+            start_hour_str = f"{start_hour:02d}:00"
+            stop_hour_str = f"{stop_hour:02d}:00"
+            if start_hour <= stop_hour:
+                hs = HourSlice(
+                    start_hour=start_hour_str, stop_hour=stop_hour_str, freq="day"
+                )
+                self.hour_slices = MultipleHourSlices(hour_slices=[hs])
+            else:
+                # If hours are backwards, then this is interpreted as spanning midnight,
+                # so we split it into two time slices for the beginning/end of the day.
+                hs1 = HourSlice(start_hour=None, stop_hour=stop_hour_str, freq="day")
+                hs2 = HourSlice(start_hour=start_hour_str, stop_hour=None, freq="day")
+                self.hour_slices = MultipleHourSlices(hour_slices=[hs1, hs2])
+        else:
+            self.hour_slices = MultipleHourSlices(hour_slices=[])
 
         self.start = start
         self.stop = stop
@@ -207,25 +239,9 @@ class EventTableSubset(Query):
             ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
             select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime < ts_stop)
 
-        if self.hours != "all":
-            hour_start, hour_end = self.hours
-            if hour_start < hour_end:
-                select_stmt = select_stmt.where(
-                    between(
-                        extract("hour", self.sqlalchemy_table.c.datetime),
-                        hour_start,
-                        hour_end - 1,
-                    )
-                )
-            else:
-                # If dates are backwards, then this will be interpreted as spanning midnight
-                select_stmt = select_stmt.where(
-                    or_(
-                        extract("hour", self.sqlalchemy_table.c.datetime) >= hour_start,
-                        extract("hour", self.sqlalchemy_table.c.datetime) < hour_end,
-                    )
-                )
-
+        select_stmt = select_stmt.where(
+            self.hour_slices.filter_timestamp_column(self.sqlalchemy_table.c.datetime)
+        )
         select_stmt = self.subscriber_subsetter.apply_subset_if_needed(
             select_stmt, subscriber_identifier=self.subscriber_identifier
         )

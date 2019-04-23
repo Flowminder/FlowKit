@@ -9,4 +9,5 @@ SELECT events.calls.datetime,
 FROM events.calls
 WHERE (events.calls.datetime >= '2016-01-03 00:00:00')
   AND (events.calls.datetime < '2016-01-05 00:00:00')
-  AND EXTRACT(HOUR FROM events.calls.datetime) BETWEEN 7 AND 12
+  AND (to_char(events.calls.datetime, 'HH24:MI') >= '07:00')
+  AND (to_char(events.calls.datetime, 'HH24:MI') < '13:00')
