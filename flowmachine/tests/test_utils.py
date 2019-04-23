@@ -5,6 +5,7 @@
 """
 Tests for flowmachine small helper functions
 """
+import datetime
 import unittest.mock
 from pathlib import Path
 
@@ -20,10 +21,28 @@ from flowmachine.utils import (
     pretty_sql,
     _makesafe,
     sort_recursively,
+    time_period_add,
 )
-
-from flowmachine.utils import time_period_add
 from flowmachine.features import daily_location, EventTableSubset
+
+
+@pytest.mark.parametrize("crs", (None, 4326, "+proj=longlat +datum=WGS84 +no_defs"))
+def test_proj4string(crs, flowmachine_connect):
+    """
+    Test proj4string behaviour for known codes
+    """
+    assert (
+        proj4string(flowmachine_connect, crs) == "+proj=longlat +datum=WGS84 +no_defs"
+    )
+
+
+@pytest.mark.parametrize("crs", (-1, (1, 1)))
+def test_proj4string_valueerror(crs, flowmachine_connect):
+    """
+    Test proj4string valueerrors for bad values
+    """
+    with pytest.raises(ValueError):
+        proj4string(flowmachine_connect, crs)
 
 
 def test_time_period_add():
@@ -47,18 +66,21 @@ def test_time_period_add_other_units():
     )
 
 
-def test_parse():
+@pytest.mark.parametrize(
+    "datestring",
+    [
+        "2016-01-01 10:00",
+        "2016-01-01 10:00:00",
+        "2016-01-01",
+        datetime.date(2016, 1, 1),
+        datetime.datetime(2016, 1, 1, 10, 10),
+    ],
+)
+def test_parse(datestring):
     """
     Test that several variations on a datestring give the same date
     """
-    assert (
-        parse_datestring("2016-01-01").date()
-        == parse_datestring("2016-01-01 10:00").date()
-    )
-    assert (
-        parse_datestring("2016-01-01").date()
-        == parse_datestring("2016-01-01 10:00:00").date()
-    )
+    assert parse_datestring(datestring).date() == datetime.date(2016, 1, 1)
 
 
 def test_dependency_graph():
@@ -70,25 +92,6 @@ def test_dependency_graph():
         "2016-01-01", "2016-01-02", columns=["msisdn", "datetime", "location_id"]
     )
     assert "x{}".format(sd.md5) in g.nodes()
-
-
-def test_proj4(flowmachine_connect):
-    """
-    Test that correct proj4 strings are returned.
-    """
-    wsg84 = "+proj=longlat +datum=WGS84 +no_defs"
-    haiti = "+proj=lcc +lat_1=35.46666666666667 +lat_2=34.03333333333333 +lat_0=33.5 +lon_0=-118 +x_0=2000000 +y_0=500000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-    assert proj4string(flowmachine_connect) == wsg84  # Default
-    assert proj4string(flowmachine_connect, wsg84) == wsg84
-    assert proj4string(flowmachine_connect, 2770) == haiti  # Known proj4
-
-
-def test_proj4_errors(flowmachine_connect):
-    """Test that appropriate errors are raised for bad inputs."""
-    with pytest.raises(ValueError):
-        proj4string(flowmachine_connect, ("foo",))
-    with pytest.raises(ValueError):
-        proj4string(flowmachine_connect, 1)
 
 
 def test_convert_number_to_str():

@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added new flowclient API entrypoint, `aggregate_network_objects`, to access equivalent flowmachine query [#601](https://github.com/Flowminder/FlowKit/issues/601)
 - FlowAPI now exposes the API spec at the `spec/openapi.json` endpoint, and an interactive version of the spec at the `spec/redoc` endpoint
 - Added Makefile target `make up-no_build`, to spin up all containers without building the images
+- Added new flowclient API entrypoint, `radius_of_gyration`, to access (with simplified parameters) equivalent flowmachine query `RadiusOfGyration` [#602](https://github.com/Flowminder/FlowKit/issues/602)
 
 ### Changed
 - The `period` argument to `TotalNetworkObjects` in FlowMachine has been renamed `total_by`
@@ -15,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The `by` argument to `AggregateNetworkObjects` in FlowMachine has been renamed to `aggregate_by`
 - The `stop_date` argument to the `modal_location_from_dates` and `meaningful_locations_*` functions in FlowClient has been renamed `end_date` [#470](https://github.com/Flowminder/FlowKit/issues/470) 
 - `get_result_by_query_id` now accepts a `poll_interval` argument, which allows polling frequency to be changed
-
+- `RadiusOfGyration` now returns a `value` column instead of an `rog` column
 
 ### Changed
 - All environment variables are now in a single `development_environment` file in the project root, development environment setup has been simplified
