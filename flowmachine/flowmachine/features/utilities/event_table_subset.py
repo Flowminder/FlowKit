@@ -6,12 +6,11 @@
 import datetime
 import pandas as pd
 import warnings
-from sqlalchemy import select, between, extract, or_
+from sqlalchemy import select
 from typing import List
 
 from ...core import Query, Table
 from ...core.errors import MissingDateError
-from flowmachine.utils import _makesafe
 from ...core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
     make_sqlalchemy_column_from_flowmachine_column_description,
