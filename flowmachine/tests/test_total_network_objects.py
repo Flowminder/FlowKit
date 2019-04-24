@@ -24,7 +24,40 @@ def test_tno_at_lat_lng(get_dataframe):
         network_object="versioned-cell",
         level="lat-lon",
     )
-    assert tno.get_dataframe().sum().total == 330
+    assert tno.get_dataframe().sum().value == 330
+
+
+@pytest.mark.parametrize(
+    "stat, expected",
+    [
+        ("avg", 30.541666666666668),
+        ("max", 38),
+        ("min", 21),
+        ("median", 31.0),
+        ("mode", 27),
+        ("stddev", 4.096437122848253),
+        ("variance", 16.780797101449277),
+    ],
+)
+def test_aggregate_returns_correct_values(stat, expected, get_dataframe):
+    """
+    AggregateNetworkObjects returns correct values.
+
+    """
+    instance = network.AggregateNetworkObjects(
+        total_network_objects=network.TotalNetworkObjects(
+            start="2016-01-01", stop="2016-12-30", table="calls", total_by="hour"
+        ),
+        statistic=stat,
+    )
+    df = get_dataframe(instance)
+
+    #
+    #  This will compare the very first
+    #  value with an independently
+    #  computed value.
+    #
+    assert pytest.approx(df.value[0]) == expected
 
 
 def test_count_returns_correct_values(get_dataframe):
@@ -42,7 +75,7 @@ def test_count_returns_correct_values(get_dataframe):
     #  value with an independently
     #  computed value.
     #
-    assert df.total[34] == 31
+    assert df.value[34] == 31
 
 
 @pytest.mark.parametrize(
@@ -86,7 +119,7 @@ def test_median_returns_correct_values(get_dataframe):
     #  value with an independently
     #  computed value.
     #
-    assert get_dataframe(instance).head(1)["median"][0] == 25
+    assert get_dataframe(instance).head(1)["value"][0] == 25
 
 
 def test_mean_returns_correct_values(get_dataframe):
@@ -109,7 +142,7 @@ def test_mean_returns_correct_values(get_dataframe):
     #  value with an independently
     #  computed value.
     #
-    assert get_dataframe(instance).head(1)["avg"][0] == pytest.approx(28.7916666666)
+    assert get_dataframe(instance).head(1)["value"][0] == pytest.approx(28.7916666666)
 
 
 @pytest.mark.parametrize(
