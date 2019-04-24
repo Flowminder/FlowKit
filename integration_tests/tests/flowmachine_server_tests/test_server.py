@@ -58,7 +58,6 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
                 "location_introversion",
                 "total_network_objects",
                 "aggregate_network_objects",
-                "radius_of_gyration",
                 "dfs_metric_total_amount",
                 "spatial_aggregate",
                 "joined_spatial_aggregate",
