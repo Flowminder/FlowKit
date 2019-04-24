@@ -115,10 +115,10 @@ def make_hour_interval_period(freq, *, weekday: Union[str, None] = None):
     return cls(weekday=weekday)
 
 
-class HourOfDay:
+class HourAndMinutesTimestamp:
     """
-    Represents an hour of the day (or a "missing" hour) and allows filtering
-    a timestamp column accordingly.
+    Represents an HH:MM period of the day (or a "missing" period)
+    and allows filtering a timestamp column accordingly.
 
     Parameters
     ----------
@@ -131,13 +131,13 @@ class HourOfDay:
         self.hour_str = hour_str
 
     def __eq__(self, other):
-        if isinstance(other, HourOfDay):
+        if isinstance(other, HourAndMinutesTimestamp):
             return self.hour_str == other.hour_str
         elif isinstance(other, str) or other is None:
             return self.hour_str == other
         else:
             raise TypeError(
-                f"HourOfDay cannot be compared to object of type {type(other)}"
+                f"HourAndMinutesTimestamp cannot be compared to object of type {type(other)}"
             )
 
     def _validate_hour_string(self, hour_str: str):
@@ -173,8 +173,8 @@ class HourOfDay:
     def filter_timestamp_column(self, ts_col, cmp_op: callable) -> ColumnElement:
         """
         Filter timestamp column by comparing to this hour-of-day using the given comparison operator.
-        If this HourOfDay represents a "missing" hour (if the input value was None) then this simply
-        returns the expression TRUE which implies no constraint.
+        If this HourAndMinutesTimestamp represents a "missing" hour (if the input value was None) then
+        this simply returns the expression TRUE which implies no constraint.
 
         Parameters
         ----------
@@ -225,8 +225,8 @@ class HourInterval:
     def __init__(
         self, *, start_hour: str, stop_hour: str, freq: str, weekday: str = None
     ):
-        self.start_hour = HourOfDay(start_hour)
-        self.stop_hour = HourOfDay(stop_hour)
+        self.start_hour = HourAndMinutesTimestamp(start_hour)
+        self.stop_hour = HourAndMinutesTimestamp(stop_hour)
         self.period = make_hour_interval_period(freq, weekday=weekday)
 
     def __repr__(self):

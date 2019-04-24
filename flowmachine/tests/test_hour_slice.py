@@ -7,23 +7,23 @@ from operator import ge as greater_or_equal, lt as less_than
 
 from flowmachine.core.sqlalchemy_table_definitions import EventsCallsTable
 from flowmachine.core.sqlalchemy_utils import get_string_representation
-from flowmachine.core.hour_slice import HourOfDay, HourInterval, HourSlice
+from flowmachine.core.hour_slice import HourAndMinutesTimestamp, HourInterval, HourSlice
 
 
 def test_filter_by_hour_of_day():
-    hd = HourOfDay(hour_str="09:00")
+    hd = HourAndMinutesTimestamp(hour_str="09:00")
     expr = hd.filter_timestamp_column(
         EventsCallsTable.datetime, cmp_op=greater_or_equal
     )
     expected = "to_char(events.calls.datetime, 'HH24:MI') >= '09:00'"
     assert expected == get_string_representation(expr)
 
-    hd = HourOfDay(hour_str="12:40")
+    hd = HourAndMinutesTimestamp(hour_str="12:40")
     expr = hd.filter_timestamp_column(EventsCallsTable.datetime, cmp_op=less_than)
     expected = "to_char(events.calls.datetime, 'HH24:MI') < '12:40'"
     assert expected == get_string_representation(expr)
 
-    hd = HourOfDay(hour_str=None)
+    hd = HourAndMinutesTimestamp(hour_str=None)
     expr = hd.filter_timestamp_column(EventsCallsTable.datetime, cmp_op=less_than)
     expected = "true"
     assert expected == get_string_representation(expr)
@@ -40,13 +40,13 @@ def test_filter_by_hour_of_day():
 )
 def test_invalid_input_format(input_value, expected_error_msg):
     with pytest.raises(ValueError, match=expected_error_msg):
-        HourOfDay(hour_str=input_value)
+        HourAndMinutesTimestamp(hour_str=input_value)
 
 
 def test_compare_hour_of_day():
-    hd1 = HourOfDay(hour_str="11:50")
-    hd2 = HourOfDay(hour_str="13:20")
-    hd3 = HourOfDay(hour_str=None)
+    hd1 = HourAndMinutesTimestamp(hour_str="11:50")
+    hd2 = HourAndMinutesTimestamp(hour_str="13:20")
+    hd3 = HourAndMinutesTimestamp(hour_str=None)
 
     assert hd1 == hd1 == "11:50"
     assert hd2 == hd2 == "13:20"
@@ -55,7 +55,8 @@ def test_compare_hour_of_day():
     assert hd1 != hd3
 
     with pytest.raises(
-        TypeError, match="HourOfDay cannot be compared to object of type <class 'int'>"
+        TypeError,
+        match="HourAndMinutesTimestamp cannot be compared to object of type <class 'int'>",
     ):
         hd1 == 42
 
