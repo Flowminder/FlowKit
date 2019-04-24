@@ -14,7 +14,7 @@ def test_turn_off_caching():
     """
     *.turn_off_caching() 'forgets' generated dataframe.
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-02")
+    sd = EventTableSubset(start="2016-01-01", stop="2016-01-02")
     sd.get_dataframe()
     sd.turn_off_caching()
     with pytest.raises(AttributeError):
@@ -25,7 +25,7 @@ def test_turn_off_caching_handles_error():
     """
     *.turn_off_caching() works even if ._df attribute is not present.
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-02")
+    sd = EventTableSubset(start="2016-01-01", stop="2016-01-02")
     sd.get_dataframe()
     sd.turn_off_caching()
     sd.turn_on_caching()
@@ -39,7 +39,7 @@ def test_get_df_without_caching():
     """
     *.get_dataframe() can still retrieve the dataframe without caching.
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-02")
+    sd = EventTableSubset(start="2016-01-01", stop="2016-01-02")
     sd.get_dataframe()
     sd.turn_off_caching()
     assert isinstance(sd.get_dataframe(), pd.DataFrame)
@@ -50,7 +50,7 @@ def test_turn_on_caching():
     """
     *.get_dataframe() dataframe is retained when we turning on caching.
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-02")
+    sd = EventTableSubset(start="2016-01-01", stop="2016-01-02")
     sd.get_dataframe()
     sd.turn_off_caching()
     sd.turn_on_caching()
@@ -62,7 +62,7 @@ def test_cache_is_returned():
     """
     Cache property is returned when called.
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-02")
+    sd = EventTableSubset(start="2016-01-01", stop="2016-01-02")
     sd.get_dataframe()
     sd.turn_on_caching()
     assert sd.cache
