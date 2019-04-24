@@ -21,10 +21,10 @@ def test_can_numsubset_with_low_and_high(get_dataframe):
     high = 155
     rog_df = (
         get_dataframe(rog)
-        .query("{low} <= rog <= {high}".format(low=low, high=high))
+        .query("{low} <= value <= {high}".format(low=low, high=high))
         .set_index("subscriber")
     )
-    sub = get_dataframe(rog.numeric_subset(col="rog", low=low, high=high)).set_index(
+    sub = get_dataframe(rog.numeric_subset(col="value", low=low, high=high)).set_index(
         "subscriber"
     )
 
@@ -38,8 +38,8 @@ def test_can_numsubset_with_inf(get_dataframe):
     rog = RadiusOfGyration("2016-01-01", "2016-01-02")
     low = -float("Infinity")
     high = float("Infinity")
-    sub = get_dataframe(rog.numeric_subset(col="rog", low=low, high=high))
-    df = get_dataframe(rog).query("{low} <= rog <= {high}".format(low=low, high=high))
+    sub = get_dataframe(rog.numeric_subset(col="value", low=low, high=high))
+    df = get_dataframe(rog).query("{low} <= value <= {high}".format(low=low, high=high))
     pd.testing.assert_frame_equal(sub, df)
 
 
@@ -50,9 +50,9 @@ def test_call_with_str_raises_error():
     rog = RadiusOfGyration("2016-01-01", "2016-01-02")
 
     with pytest.raises(TypeError):
-        rog.numeric_subset(col="rog", low="foo", high=1)
+        rog.numeric_subset(col="value", low="foo", high=1)
     with pytest.raises(TypeError):
-        rog.numeric_subset(col="rog", low=1, high="bar")
+        rog.numeric_subset(col="value", low=1, high="bar")
 
 
 def test_num_subset_can_be_stored(get_dataframe):
@@ -63,13 +63,13 @@ def test_num_subset_can_be_stored(get_dataframe):
     low = 150
     high = 155
     rog_df = get_dataframe(rog).query(
-        "{low} <= rog <= {high}".format(low=low, high=high)
+        "{low} <= value <= {high}".format(low=low, high=high)
     )
-    sub = rog.numeric_subset(col="rog", low=low, high=high)
+    sub = rog.numeric_subset(col="value", low=low, high=high)
     sub.store().result()
     assert sub.is_stored
     # Test that the store is of the right length
-    sub = rog.numeric_subset(col="rog", low=low, high=high)
+    sub = rog.numeric_subset(col="value", low=low, high=high)
     assert len(get_dataframe(sub)) == len(rog_df)
 
 
@@ -127,7 +127,7 @@ def test_special_chars(get_dataframe):
 
 
 def test_can_get_item_subscriber_metric(get_dataframe):
-    """
+    """g
     flowmachine.SubscriberFeature allows for getting items
     """
     rog = RadiusOfGyration("2016-01-01", "2016-01-03")

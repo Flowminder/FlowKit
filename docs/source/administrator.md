@@ -56,7 +56,12 @@ There are two parameters which control FlowKit's cache, both of which are in the
 
 These values can be overridden when creating a new FlowDB container by setting the `CACHE_SIZE` and `CACHE_HALF_LIFE` environment variables for the container, set by updating the `cache.cache_config` table after connecting directly to FlowDB, or modified using the cache submodule.
 
-    
+#### Redis and the Query Cache
+
+FlowMachine also tracks the execution state of queries using redis. In some cases, it is possible for redis and the cache metadata table to get out of sync with one another (for example, if either redis or FlowDB has been manually edited). To deal with this, you can forcibly resync redis with FlowDB's cache table, using the `resync_redis_with_cache` function. This will reset redis, and repopulate it based _only_ on the contents of `cache.cached`.
+
+!!! warning
+    You _must_ ensure that no queries are currently running before using this function. Any queries that are currently running will become out of sync.    
 
 [^1]:By default, this uses the value set for `cache_size` in `cache.cache_config`.
 

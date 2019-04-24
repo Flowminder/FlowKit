@@ -28,7 +28,7 @@ def test_collects_metrics():
     ]
     expected_columns = [
         "subscriber",
-        "rog_radiusofgyration_0",
+        "value_radiusofgyration_0",
         "value_nocturnalevents_1",
         "value_subscriberdegree_2",
     ]
@@ -47,7 +47,7 @@ def test_from_list_of_classes():
     metrics = [RadiusOfGyration, NocturnalEvents, SubscriberDegree]
     expected_columns = [
         "subscriber",
-        "rog_radiusofgyration_0",
+        "value_radiusofgyration_0",
         "value_nocturnalevents_1",
         "value_subscriberdegree_2",
     ]

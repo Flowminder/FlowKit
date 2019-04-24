@@ -45,11 +45,10 @@ def test_run_query_type_error(monkeypatch):
     )
 
 
-def test_run_query_error_handled(monkeypatch, dummy_redis):
+def test_run_query_error_handled(dummy_redis):
     """
     Run query handler should return an error status if query construction failed.
     """
-    monkeypatch.setattr(Query, "redis", dummy_redis)
     msg = action_handler__run_query(
         query_kind="spatial_aggregate",
         locations=dict(
@@ -84,12 +83,11 @@ def test_get_query_bad_id():
 @pytest.mark.parametrize(
     "query_state", [state for state in QueryState if state is not QueryState.COMPLETED]
 )
-def test_get_sql_error_states(query_state, dummy_redis, monkeypatch):
+def test_get_sql_error_states(query_state, dummy_redis):
     """
     Test that get_sql handler replies with an error state when the query
     is not finished.
     """
-    monkeypatch.setattr(Query, "redis", dummy_redis)
     dummy_redis.set("DUMMY_QUERY_ID", "KNOWN")
     state_machine = QueryStateMachine(dummy_redis, "DUMMY_QUERY_ID")
     dummy_redis.set(state_machine.state_machine._name, query_state)
