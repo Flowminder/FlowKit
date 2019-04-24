@@ -71,30 +71,23 @@ class DayOfWeekPeriod:
         "Saturday",
         "Sunday",
     ]
-    weekday_indices_postgres = {
-        "Sunday": 0,
-        "Monday": 1,
-        "Tuesday": 2,
-        "Wednesday": 3,
-        "Thursday": 4,
-        "Friday": 5,
-        "Saturday": 6,
-    }
 
     def __init__(self, weekday: str):
         if weekday is None:
             raise ValueError(
                 "If freq='week' then the `weekday` argument must be provided."
             )
-        weekday = weekday.capitalize()
-        if weekday not in self.valid_weekdays:
+
+        self.freq = "week"
+        self.weekday = weekday
+
+        try:
+            self.weekday_idx = self.valid_weekdays.index(weekday)
+        except ValueError:
             valid_weekdays_list = ", ".join([repr(x) for x in self.valid_weekdays])
             raise ValueError(
                 f"Invalid value for `weekday`. Must be one of: {valid_weekdays_list}."
             )
-
-        self.freq = "week"
-        self.weekday = weekday
 
     def filter_timestamp_column_by_day_of_week(self, ts_col: InstrumentedAttribute):
         """
