@@ -29,17 +29,18 @@ def test_filter_by_hour_of_day():
     assert expected == get_string_representation(expr)
 
 
-def test_invalid_input_format():
-    with pytest.raises(
-        ValueError, match="Input argument must be a string the format 'HH:MM'."
-    ):
-        HourOfDay(hour_str=99999)
-    with pytest.raises(ValueError, match="Hour string must have the format 'HH:MM'"):
-        HourOfDay(hour_str="999:999")
-    with pytest.raises(ValueError, match="Hour string must have the format 'HH:MM'"):
-        HourOfDay(hour_str="99:99")
-    with pytest.raises(ValueError, match="Hour string must have the format 'HH:MM'"):
-        HourOfDay(hour_str="14:99")
+@pytest.mark.parametrize(
+    "input_value, expected_error_msg",
+    [
+        (99999, "Input argument must be a string the format 'HH:MM'."),
+        ("999:999", "Hour string must have the format 'HH:MM'"),
+        ("99:99", "Hour string must have the format 'HH:MM'"),
+        ("14:99", "Hour string must have the format 'HH:MM'"),
+    ],
+)
+def test_invalid_input_format(input_value, expected_error_msg):
+    with pytest.raises(ValueError, match=expected_error_msg):
+        HourOfDay(hour_str=input_value)
 
 
 def test_compare_hour_of_day():
