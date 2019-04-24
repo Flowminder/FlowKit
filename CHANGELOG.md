@@ -4,6 +4,16 @@ All notable changes to FlowKit will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.6.0]
 ### Added
 - Added new flowclient API entrypoint, `aggregate_network_objects`, to access equivalent flowmachine query [#601](https://github.com/Flowminder/FlowKit/issues/601)
 - FlowAPI now exposes the API spec at the `spec/openapi.json` endpoint, and an interactive version of the spec at the `spec/redoc` endpoint
@@ -248,7 +258,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.3...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.0...master
+[0.6.0]: https://github.com/Flowminder/FlowKit/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/Flowminder/FlowKit/compare/0.5.2...0.5.3
 [0.5.2]: https://github.com/Flowminder/FlowKit/compare/0.5.1...0.5.2
 [0.5.1]: https://github.com/Flowminder/FlowKit/compare/0.5.0...0.5.1
