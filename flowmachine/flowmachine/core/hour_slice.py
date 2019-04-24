@@ -8,6 +8,7 @@ from operator import lt as less_than, ge as greater_or_equal
 from typing import List, Union
 
 from sqlalchemy.sql import func, and_, or_, true
+from sqlalchemy.sql.elements import BooleanClauseList
 
 __all__ = ["HourInterval", "HourSlice"]
 
@@ -15,6 +16,13 @@ __all__ = ["HourInterval", "HourSlice"]
 class DayPeriod:
     """
     Represents a repeated "daily" time period.
+
+    Parameters
+    ----------
+    weekday : None
+        This argument must be None for `DayPeriod` (it only exists
+        for compatibility with the sister class `DayOfWeekPeriod`).
+        An error is raised if a different value is passed.
     """
 
     def __init__(self, weekday=None):
@@ -33,6 +41,12 @@ class DayPeriod:
 class DayOfWeekPeriod:
     """
     Represents a repeated "day-of-the-week" time period.
+
+    Parameters
+    ----------
+    weekday : str
+        The weekday during which this day period is repeated every week.
+        Should be one of: 'Monday', "Tuesday", "Wednesday", etc.
     """
 
     valid_weekdays = [
@@ -54,7 +68,7 @@ class DayOfWeekPeriod:
         "Saturday": 6,
     }
 
-    def __init__(self, weekday):
+    def __init__(self, weekday: str):
         if weekday is None:
             raise ValueError(
                 "If freq='week' then the `weekday` argument must be provided."
@@ -75,10 +89,24 @@ class DayOfWeekPeriod:
         )
 
 
-def make_hour_interval_period(freq, *, weekday=None):
+def make_hour_interval_period(freq, *, weekday: Union[str, None] = None):
     """
     Returns an appropriate instance of `DayPeriod` or `DayOfWeekPeriod`,
     depending on the value of `freq`.
+
+    Parameters
+    ----------
+    freq : {"day", "week"}
+        Indicated whether the interval period should be repeated every day
+        or on a particular day of the week ("week").
+    weekday : str or None
+        The weekday during which this day period is repeated every week.
+        If `freq="day"` then the value of `weekday` must be None. Otherwise
+        it should be one of: 'Monday', "Tuesday", "Wednesday", etc.
+
+    Returns
+    -------
+    DayPeriod or DayOfWeekPeriod
     """
     cls_lookup = {"day": DayPeriod, "week": DayOfWeekPeriod}
 
@@ -93,7 +121,13 @@ def make_hour_interval_period(freq, *, weekday=None):
 
 class HourOfDay:
     """
-    Represents an hour of the day and allows filtering a timestamp column accordingly.
+    Represents an hour of the day (or a "missing" hour) and allows filtering
+    a timestamp column accordingly.
+
+    Parameters
+    ----------
+    hour_str : str or None
+        An hour string in the format 'HH:MM', or None.
     """
 
     def __init__(self, hour_str: Union[str, None]):
@@ -112,7 +146,7 @@ class HourOfDay:
 
     def _validate_hour_string(self, hour_str):
         """
-        Return the input string if it is a valid hour string in the format 'HH:MM'
+        Check if the input string is a valid hour string in the format 'HH:MM'
         and raise a ValueError otherwise.
         """
         if hour_str is None:
@@ -130,9 +164,11 @@ class HourOfDay:
                 f"Input argument must be a string the format 'HH:MM'. Got: {hour_str}"
             )
 
-    def filter_timestamp_column(self, ts_col, cmp_op):
+    def filter_timestamp_column(self, ts_col, cmp_op: callable) -> BooleanClauseList:
         """
         Filter timestamp column by comparing to this hour-of-day using the given comparison operator.
+        If this HourOfDay represents a "missing" hour (if the input value was None) then this simply
+        returns the expression TRUE which implies no constraint.
 
         Parameters
         ----------
@@ -191,7 +227,7 @@ class HourInterval:
             f"freq={self.period.freq!r}, weekday={self.period.weekday!r})"
         )
 
-    def filter_timestamp_column(self, ts_col):
+    def filter_timestamp_column(self, ts_col) -> BooleanClauseList:
         """
         Filter timestamp column using this hour interval.
 
@@ -234,7 +270,7 @@ class HourSlice:
     def __repr__(self):
         return f"<HourSlice: {self.hour_intervals}>"
 
-    def get_subsetting_condition(self, ts_col):
+    def get_subsetting_condition(self, ts_col) -> BooleanClauseList:
         """
         Return sqlalchemy expression which represents subsetting
         the given timestamp column by hours of the day.
