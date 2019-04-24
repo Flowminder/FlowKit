@@ -108,7 +108,7 @@ def test_weekly_hour_slice():
     expected = (
         "to_char(events.calls.datetime, 'HH24:MI') >= '04:00' AND "
         "to_char(events.calls.datetime, 'HH24:MI') < '07:45' AND "
-        "EXTRACT(dow FROM events.calls.datetime) = 2"
+        "EXTRACT(isodow FROM events.calls.datetime) = 2"
     )
     assert expected == get_string_representation(expr)
 
@@ -126,7 +126,7 @@ def test_weekly_hour_slice_without_start_value():
     expr = hs.filter_timestamp_column(ts_col)
     expected = (
         "to_char(events.calls.datetime, 'HH24:MI') < '16:38' AND "
-        "EXTRACT(dow FROM events.calls.datetime) = 3"
+        "EXTRACT(isodow FROM events.calls.datetime) = 3"
     )
     assert expected == get_string_representation(expr)
 
@@ -144,7 +144,7 @@ def test_weekly_hour_slice_without_stop_value():
     expr = hs.filter_timestamp_column(ts_col)
     expected = (
         "to_char(events.calls.datetime, 'HH24:MI') >= '10:00' AND "
-        "EXTRACT(dow FROM events.calls.datetime) = 6"
+        "EXTRACT(isodow FROM events.calls.datetime) = 6"
     )
     assert expected == get_string_representation(expr)
 
@@ -188,6 +188,6 @@ def test_multiple_our_slices():
         "to_char(events.calls.datetime, 'HH24:MI') < '16:30' OR "
         "to_char(events.calls.datetime, 'HH24:MI') >= '10:00' AND "
         "to_char(events.calls.datetime, 'HH24:MI') < '18:45' AND "
-        "EXTRACT(dow FROM events.calls.datetime) = 4"
+        "EXTRACT(isodow FROM events.calls.datetime) = 4"
     )
     assert expected == get_string_representation(expr)

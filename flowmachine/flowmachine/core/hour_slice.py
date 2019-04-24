@@ -75,7 +75,7 @@ class DayOfWeekPeriod:
             raise ValueError(f"Invalid value for `weekday`: {weekday}.")
 
         self.freq = "week"
-        self.weekday = weekday
+        self.weekday = weekday.capitalize()
         self.weekday_idx = parse(weekday).isoweekday()
 
     def filter_timestamp_column_by_day_of_week(self, ts_col: InstrumentedAttribute):
