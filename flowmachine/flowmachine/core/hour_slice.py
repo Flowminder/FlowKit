@@ -4,6 +4,7 @@
 
 
 import datetime as dt
+from dateutil.parser import parse
 from operator import lt as less_than, ge as greater_or_equal
 from typing import List, Union
 
@@ -59,35 +60,23 @@ class DayOfWeekPeriod:
     ----------
     weekday : str
         The weekday during which this day period is repeated every week.
-        Should be one of: 'Monday', "Tuesday", "Wednesday", etc.
+        Should be one of: 'Monday', "Tuesday", "Wednesday", etc. (or an
+        equivalent name if a non-English locale is being used).
     """
-
-    valid_weekdays = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-    ]
 
     def __init__(self, weekday: str):
         if weekday is None:
             raise ValueError(
                 "If freq='week' then the `weekday` argument must be provided."
             )
+        try:
+            dt.datetime.strptime(weekday, "%A")
+        except ValueError:
+            raise ValueError(f"Invalid value for `weekday`: {weekday}.")
 
         self.freq = "week"
         self.weekday = weekday
-
-        try:
-            self.weekday_idx = self.valid_weekdays.index(weekday)
-        except ValueError:
-            valid_weekdays_list = ", ".join([repr(x) for x in self.valid_weekdays])
-            raise ValueError(
-                f"Invalid value for `weekday`. Must be one of: {valid_weekdays_list}."
-            )
+        self.weekday_idx = parse(weekday).isoweekday()
 
     def filter_timestamp_column_by_day_of_week(self, ts_col: InstrumentedAttribute):
         """
