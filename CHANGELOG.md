@@ -29,8 +29,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `get_result_by_query_id` now accepts a `poll_interval` argument, which allows polling frequency to be changed
 - `RadiusOfGyration` now returns a `value` column instead of an `rog` column
 - `TotalNetworkObjects` and `AggregateNetworkObjects` now return a `value` column, rather than `statistic_name`
-
-### Changed
 - All environment variables are now in a single `development_environment` file in the project root, development environment setup has been simplified
 - Default FlowDB users for FlowMachine and FlowAPI have changed from "analyst" and "reporter" to "flowmachine" and "flowapi", respectively
 - Docs and integration tests now use top level compose file
