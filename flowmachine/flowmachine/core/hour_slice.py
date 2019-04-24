@@ -2,7 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import re
+
+import datetime as dt
 from operator import lt as less_than, ge as greater_or_equal
 from typing import List, Union
 
@@ -117,20 +118,12 @@ class HourOfDay:
         if hour_str is None:
             return
         elif isinstance(hour_str, str):
-            m = re.match("^(\d\d):(\d\d)$", hour_str)
-            if not m:
+            try:
+                dt.datetime.strptime(hour_str, "%H:%M")
+            except ValueError:
+                # re-raise error with a slightly more custom error message
                 raise ValueError(
                     f"Hour string must have the format 'HH:MM'. Got: '{hour_str}'"
-                )
-            hour = int(m.group(1))
-            minutes = int(m.group(2))
-            if not (0 <= hour and hour < 24):
-                raise ValueError(
-                    f"Invalid hour value: {hour} (must be between 0 and 23, inclusively)"
-                )
-            if not (0 <= minutes and minutes < 60):
-                raise ValueError(
-                    f"Invalid minutes value: {minutes} (must be between 0 and 59, inclusively)"
                 )
         else:
             raise ValueError(
