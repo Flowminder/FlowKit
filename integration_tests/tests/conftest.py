@@ -272,7 +272,7 @@ def reset_flowdb_and_redis(fm_conn):
     test has a clean database to work with.
     """
     print("[DDD] Resetting flowdb and redis into a pristine state")
-    reset_cache_schema(fm_conn)
+    reset_cache_schema(fm_conn, redis_instance=Query.redis)
     delete_all_redis_keys(redis_instance=Query.redis)
 
 
@@ -283,14 +283,14 @@ def delete_all_redis_keys(redis_instance):
     redis_instance.flushall()
 
 
-def reset_cache_schema(fm_conn):
+def reset_cache_schema(fm_conn, redis_instance):
     """
     Reset the cache schema in flowdb by removing any tables for cached queries,
     and truncating the internal tables 'cache.cached' and 'cache.dependencies'
     so that they are empty.
     """
     print("[DDD] Recreating cache schema... ", end="", flush=True)
-    reset_cache(fm_conn)
+    reset_cache(fm_conn, redis_instance)
     print("Done.")
 
 
