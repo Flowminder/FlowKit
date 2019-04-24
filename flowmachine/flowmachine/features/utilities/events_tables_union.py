@@ -98,8 +98,8 @@ class EventsTablesUnion(Query):
         for table in self.tables:
             try:
                 sql = EventTableSubset(
-                    self.start,
-                    self.stop,
+                    start=self.start,
+                    stop=self.stop,
                     table=table,
                     columns=self.columns,
                     hours=hours,

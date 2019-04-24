@@ -20,7 +20,8 @@ FROM (SELECT times_visited.subscriber,
                               FROM events.calls
                               WHERE (events.calls.datetime >= '2016-01-04 00:00:00')
                                 AND (events.calls.datetime < '2016-01-05 00:00:00')
-                                AND EXTRACT(HOUR FROM events.calls.datetime) BETWEEN 3 AND 8
+                                AND (to_char(events.calls.datetime, 'HH24:MI') >= '03:00')
+                                AND (to_char(events.calls.datetime, 'HH24:MI') < '09:00')
                                 AND events.calls.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')
 
                               UNION ALL
@@ -31,7 +32,8 @@ FROM (SELECT times_visited.subscriber,
                               FROM events.sms
                               WHERE (events.sms.datetime >= '2016-01-04 00:00:00')
                                 AND (events.sms.datetime < '2016-01-05 00:00:00')
-                                AND EXTRACT(HOUR FROM events.sms.datetime) BETWEEN 3 AND 8
+                                AND (to_char(events.sms.datetime, 'HH24:MI') >= '03:00')
+                                AND (to_char(events.sms.datetime, 'HH24:MI') < '09:00')
                                 AND events.sms.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')) AS foo) AS l
                        INNER JOIN (SELECT location_id,
                                           version,

@@ -89,7 +89,9 @@ def test_dependency_graph():
     """
     g = daily_location("2016-01-01").dependency_graph(analyse=True)
     sd = EventTableSubset(
-        "2016-01-01", "2016-01-02", columns=["msisdn", "datetime", "location_id"]
+        start="2016-01-01",
+        stop="2016-01-02",
+        columns=["msisdn", "datetime", "location_id"],
     )
     assert "x{}".format(sd.md5) in g.nodes()
 

@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The `by` argument to `AggregateNetworkObjects` in FlowMachine has been renamed to `aggregate_by`
 - The `stop_date` argument to the `modal_location_from_dates` and `meaningful_locations_*` functions in FlowClient has been renamed `end_date` [#470](https://github.com/Flowminder/FlowKit/issues/470) 
 - `get_result_by_query_id` now accepts a `poll_interval` argument, which allows polling frequency to be changed
+- The `start` and `stop` argument to `EventTableSubset` are now mandatory.
 - `RadiusOfGyration` now returns a `value` column instead of an `rog` column
 - `TotalNetworkObjects` and `AggregateNetworkObjects` now return a `value` column, rather than `statistic_name`
 - All environment variables are now in a single `development_environment` file in the project root, development environment setup has been simplified

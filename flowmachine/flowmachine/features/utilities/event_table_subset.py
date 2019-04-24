@@ -6,18 +6,18 @@
 import datetime
 import pandas as pd
 import warnings
-from sqlalchemy import select, between, extract, or_
+from sqlalchemy import select
 from typing import List
 
 from ...core import Query, Table
 from ...core.errors import MissingDateError
-from flowmachine.utils import _makesafe
 from ...core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
     make_sqlalchemy_column_from_flowmachine_column_description,
     get_sql_string,
 )
 from flowmachine.utils import list_of_dates
+from flowmachine.core.hour_slice import HourSlice, HourInterval
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
 import structlog
@@ -63,18 +63,18 @@ class EventTableSubset(Query):
 
     Examples
     --------
-    >>> sd = EventTableSubset('2016-01-01 13:30:30',
-                         '2016-01-02 16:25:00')
+    >>> sd = EventTableSubset(start='2016-01-01 13:30:30', stop='2016-01-02 16:25:00')
     >>> sd.head()
 
     """
 
     def __init__(
         self,
+        *,
         start=None,
         stop=None,
-        *,
         hours="all",
+        hour_slices=None,
         table="events.calls",
         subscriber_subset=None,
         columns=["*"],
@@ -88,6 +88,38 @@ class EventTableSubset(Query):
             start = start.strftime("%Y-%m-%d")
         if isinstance(stop, datetime.date):
             stop = stop.strftime("%Y-%m-%d")
+
+        if hours != "all" and hour_slices is not None:
+            raise ValueError(
+                "The arguments `hours` and `hour_slice` are mutually exclusive."
+            )
+        if hours != "all":
+            assert (
+                isinstance(hours, tuple)
+                and len(hours) == 2
+                and isinstance(hours[0], int)
+                and isinstance(hours[1], int)
+            )  # sanity check
+
+            start_hour = hours[0]
+            stop_hour = hours[1]
+            start_hour_str = f"{start_hour:02d}:00"
+            stop_hour_str = f"{stop_hour:02d}:00"
+            if start_hour <= stop_hour:
+                hs = HourInterval(
+                    start_hour=start_hour_str, stop_hour=stop_hour_str, freq="day"
+                )
+                self.hour_slices = HourSlice(hour_intervals=[hs])
+            else:
+                # If hours are backwards, then this is interpreted as spanning midnight,
+                # so we split it into two time slices for the beginning/end of the day.
+                hs1 = HourInterval(start_hour=None, stop_hour=stop_hour_str, freq="day")
+                hs2 = HourInterval(
+                    start_hour=start_hour_str, stop_hour=None, freq="day"
+                )
+                self.hour_slices = HourSlice(hour_intervals=[hs1, hs2])
+        else:
+            self.hour_slices = HourSlice(hour_intervals=[])
 
         self.start = start
         self.stop = stop
@@ -208,78 +240,15 @@ class EventTableSubset(Query):
             ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
             select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime < ts_stop)
 
-        if self.hours != "all":
-            hour_start, hour_end = self.hours
-            if hour_start < hour_end:
-                select_stmt = select_stmt.where(
-                    between(
-                        extract("hour", self.sqlalchemy_table.c.datetime),
-                        hour_start,
-                        hour_end - 1,
-                    )
-                )
-            else:
-                # If dates are backwards, then this will be interpreted as spanning midnight
-                select_stmt = select_stmt.where(
-                    or_(
-                        extract("hour", self.sqlalchemy_table.c.datetime) >= hour_start,
-                        extract("hour", self.sqlalchemy_table.c.datetime) < hour_end,
-                    )
-                )
-
+        select_stmt = select_stmt.where(
+            self.hour_slices.get_subsetting_condition(self.sqlalchemy_table.c.datetime)
+        )
         select_stmt = self.subscriber_subsetter.apply_subset_if_needed(
             select_stmt, subscriber_identifier=self.subscriber_identifier
         )
 
         return get_sql_string(select_stmt)
 
-    def _make_query_ORIG(self):  # pragma: no cover
-        # Note: this is the original implementation of _make_query. It is kept for
-        # reference for the time being but will likely be removed in the near future.
-        # The one currently being used is _make_query_with_sqlalchemy above.
-
-        where_clause = ""
-        if self.start is not None:
-            where_clause += f"WHERE (datetime >= '{self.start}'::timestamptz)"
-        if self.stop is not None:
-            where_clause += "WHERE " if where_clause == "" else " AND "
-            where_clause += f"(datetime < '{self.stop}'::timestamptz)"
-
-        sql = f"""
-        SELECT {", ".join(self.columns)}
-        FROM {self.table_ORIG.fully_qualified_table_name}
-        {where_clause}
-        """
-
-        if self.hours != "all":
-            if self.hours[0] < self.hours[1]:
-                sql += f" AND EXTRACT(hour FROM datetime) BETWEEN {self.hours[0]} and {self.hours[1] - 1}"
-            # If dates are backwards, then this will be interpreted as
-            # spanning midnight
-            else:
-                sql += f" AND (   EXTRACT(hour FROM datetime)  >= {self.hours[0]}"
-                sql += f"      OR EXTRACT(hour FROM datetime)  < {self.hours[1]})"
-
-        if self.subscriber_subset_ORIG is not None:
-            try:
-                subs_table = self.subscriber_subset_ORIG.get_query()
-                cols = ", ".join(
-                    c if "AS subscriber" not in c else "subscriber"
-                    for c in self.columns
-                )
-                sql = f"SELECT {cols} FROM ({sql}) ss INNER JOIN ({subs_table}) subs USING (subscriber)"
-            except AttributeError:
-                where_clause = "WHERE " if where_clause == "" else " AND "
-                try:
-                    assert not isinstance(self.subscriber_subset_ORIG, str)
-                    ss = tuple(self.subscriber_subset_ORIG)
-                except (TypeError, AssertionError):
-                    ss = (self.subscriber_subset_ORIG,)
-                sql = f"{sql} {where_clause} {self.subscriber_identifier} IN {_makesafe(ss)}"
-
-        return sql
-
-    # _make_query = _make_query_ORIG
     _make_query = _make_query_with_sqlalchemy
 
     @property

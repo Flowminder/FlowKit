@@ -64,7 +64,7 @@ class GroupValues(Query):
         else:
             self.value = value
 
-        self.subset = EventTableSubset(start, stop, **kwargs)
+        self.subset = EventTableSubset(start=start, stop=stop, **kwargs)
 
         super().__init__()
 
