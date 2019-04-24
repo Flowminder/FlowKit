@@ -14,7 +14,7 @@ zxcvbn = "*"
 versioneer = "*"
 passlib = "*"
 argon2_cffi = "*"
-"psycopg2-binary" = "*"
+psycopg2 = "*"
 cryptography = "*"
 
 [dev-packages]
@@ -23,7 +23,7 @@ pytest-cov = "*"
 "flowauth" = {editable = true, path = "./backend"}
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
 
 [scripts]
 build-frontend = "bash start.sh build"
