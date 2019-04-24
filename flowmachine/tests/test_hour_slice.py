@@ -50,15 +50,9 @@ def test_compare_hour_of_day():
 
     assert hd1 == hd1 == "11:50"
     assert hd2 == hd2 == "13:20"
-    assert hd3 == hd3 == None
     assert hd1 != hd2
     assert hd1 != hd3
-
-    with pytest.raises(
-        TypeError,
-        match="HourAndMinutesTimestamp cannot be compared to object of type <class 'int'>",
-    ):
-        hd1 == 42
+    assert hd1 != 42
 
 
 def test_daily_hour_slice():
@@ -74,7 +68,7 @@ def test_daily_hour_slice():
 
 def test_daily_hour_slice_without_start_hour():
     hs = HourInterval(start_hour=None, stop_hour="17:50", freq="day")
-    assert hs.start_hour == None
+    assert hs.start_hour.is_missing
     assert hs.stop_hour == "17:50"
     assert hs.period.freq == "day"
 
@@ -86,7 +80,7 @@ def test_daily_hour_slice_without_start_hour():
 def test_daily_hour_slice_without_stop_hour():
     hs = HourInterval(start_hour="07:20", stop_hour=None, freq="day")
     assert hs.start_hour == "07:20"
-    assert hs.stop_hour == None
+    assert hs.stop_hour.is_missing
     assert hs.period.freq == "day"
 
     expr = hs.filter_timestamp_column(EventsCallsTable.datetime)
@@ -117,7 +111,7 @@ def test_weekly_hour_slice_without_start_value():
     hs = HourInterval(
         start_hour=None, stop_hour="16:38", freq="week", weekday="Wednesday"
     )
-    assert hs.start_hour == None
+    assert hs.start_hour.is_missing
     assert hs.stop_hour == "16:38"
     assert hs.period.freq == "week"
     assert hs.period.weekday == "Wednesday"
@@ -136,7 +130,7 @@ def test_weekly_hour_slice_without_stop_value():
         start_hour="10:00", stop_hour=None, freq="week", weekday="Saturday"
     )
     assert hs.start_hour == "10:00"
-    assert hs.stop_hour == None
+    assert hs.stop_hour.is_missing
     assert hs.period.freq == "week"
     assert hs.period.weekday == "Saturday"
 

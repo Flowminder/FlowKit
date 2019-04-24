@@ -115,30 +115,59 @@ def make_hour_interval_period(freq, *, weekday: Union[str, None] = None):
     return cls(weekday=weekday)
 
 
-class HourAndMinutesTimestamp:
+class MissingHourAndMinutesTimestamp:
     """
-    Represents an HH:MM period of the day (or a "missing" period)
-    and allows filtering a timestamp column accordingly.
+    Represents a "missing" HH:MM timestamp. This is used to represent time intervals
+    during the day where the start or end is missing (i.e. extends until midnight)
+    """
+
+    def __init__(self):
+        self.is_missing = True
+
+    def filter_timestamp_column(self, ts_col, cmp_op: callable) -> ColumnElement:
+        """
+        Filter timestamp column by comparing to this hour-of-day using the given
+        comparison operator.
+
+        Note that for the class `MissingHourAndMinutesTimestamp` this always
+        returns TRUE, since a missing timestamp imposes no constraint.
+
+        Parameters
+        ----------
+        ts_col : sqlalchemy column
+            The timestamp column to filter.
+        cmp_op : callable
+            Comparison operator to use. For example: `operator.lt`, `operator.ge`.
+
+        Returns
+        -------
+        sqlalchemy.sql.elements.True_
+        """
+        return true()
+
+
+class HourAndMinutesTimestamp(str):
+    """
+    Represents an HH:MM period of the day and allows filtering a timestamp column accordingly.
 
     Parameters
     ----------
-    hour_str : str or None
-        An hour string in the format 'HH:MM', or None.
+    hour_str : str
+        A string in the format 'HH:MM'.
     """
 
-    def __init__(self, hour_str: Union[str, None]):
+    def __new__(cls, hour_str, **kwargs):
+        if hour_str is None:
+            return MissingHourAndMinutesTimestamp()
+        else:
+            obj = str.__new__(cls, hour_str)
+            obj._value_ = hour_str
+            return obj
+
+    def __init__(self, hour_str: str):
         self._validate_hour_string(hour_str)
         self.hour_str = hour_str
-
-    def __eq__(self, other):
-        if isinstance(other, HourAndMinutesTimestamp):
-            return self.hour_str == other.hour_str
-        elif isinstance(other, str) or other is None:
-            return self.hour_str == other
-        else:
-            raise TypeError(
-                f"HourAndMinutesTimestamp cannot be compared to object of type {type(other)}"
-            )
+        self.is_missing = False
 
     def _validate_hour_string(self, hour_str: str):
         """
@@ -155,9 +184,7 @@ class HourAndMinutesTimestamp:
         ValueError
             If the input value is not a valid hour string in the format 'HH:MM'.
         """
-        if hour_str is None:
-            return
-        elif isinstance(hour_str, str):
+        if isinstance(hour_str, str):
             try:
                 dt.datetime.strptime(hour_str, "%H:%M")
             except ValueError:
@@ -173,8 +200,6 @@ class HourAndMinutesTimestamp:
     def filter_timestamp_column(self, ts_col, cmp_op: callable) -> ColumnElement:
         """
         Filter timestamp column by comparing to this hour-of-day using the given comparison operator.
-        If this HourAndMinutesTimestamp represents a "missing" hour (if the input value was None) then
-        this simply returns the expression TRUE which implies no constraint.
 
         Parameters
         ----------
@@ -189,11 +214,7 @@ class HourAndMinutesTimestamp:
             Sqlalchemy expression representing the filtered timestamp column.
             This can be used in WHERE clauses of other sql queries.
         """
-        if self.hour_str is None:
-            # no filtering needed
-            return true()
-        else:
-            return cmp_op(func.to_char(ts_col, "HH24:MI"), self.hour_str)
+        return cmp_op(func.to_char(ts_col, "HH24:MI"), self.hour_str)
 
 
 class HourInterval:
