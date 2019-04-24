@@ -151,10 +151,20 @@ class HourOfDay:
                 f"HourOfDay cannot be compared to object of type {type(other)}"
             )
 
-    def _validate_hour_string(self, hour_str):
+    def _validate_hour_string(self, hour_str: str):
         """
         Check if the input string is a valid hour string in the format 'HH:MM'
         and raise a ValueError otherwise.
+
+        Parameters
+        ----------
+        hour_str : str
+            The hour string to validate.
+
+        Raises
+        ------
+        ValueError
+            If the input value is not a valid hour string in the format 'HH:MM'.
         """
         if hour_str is None:
             return
@@ -208,6 +218,8 @@ class HourInterval:
     ----------
     start_hour : str
         Start hour of this hour interval in the format 'HH:MM' (e.g. '08:00').
+        The start hour can also be `None`, indicating that the hour interval
+        starts at midnight at the beginning of the day.
     stop_hour : str (optional)
         Stop hour of this hour interval in the format 'HH:MM' (e.g. '19:30').
         The stop hour can also be `None`, indicating that the hour interval
