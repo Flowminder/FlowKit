@@ -43,7 +43,6 @@ class FlowmachineQuerySchema(OneOfSchema):
         "location_introversion": LocationIntroversionSchema,
         "total_network_objects": TotalNetworkObjectsSchema,
         "aggregate_network_objects": AggregateNetworkObjectsSchema,
-        "radius_of_gyration": RadiusOfGyrationSchema,
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
         "spatial_aggregate": SpatialAggregateSchema,
         "joined_spatial_aggregate": JoinedSpatialAggregateSchema,

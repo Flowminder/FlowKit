@@ -186,9 +186,6 @@
             "$ref": "#/components/schemas/MeaningfulLocationsBetweenLabelODMatrix"
           },
           {
-            "$ref": "#/components/schemas/RadiusOfGyration"
-          },
-          {
             "$ref": "#/components/schemas/SpatialAggregate"
           },
           {
