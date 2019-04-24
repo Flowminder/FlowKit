@@ -217,7 +217,7 @@ jobs:
       - run:
          name: Test that not providing a superuser password causes the container to exit
          command: |
-           if docker run flowminder/flowdb:$SAFE_TAG; then
+           if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo flowminder/flowdb:$SAFE_TAG; then
                exit 1
            else
                echo "Correctly failed with no superuser password"
@@ -232,6 +232,14 @@ jobs:
             while [ ! -f ".synthetic-data-build-done" ] || [ ! -f ".oracle-build-done" ] || [ ! -f ".testdata-build-done" ]; do
               echo "Waiting for docker image builds to complete"
             done
+      - run:
+          name: Test that a data generator must be set for synth data
+          command: |
+            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD flowminder/flowdb-synthetic-data:$SAFE_TAG; then
+                exit 1
+            else
+                echo "Correctly failed with no data generator selected"
+            fi
       - run:
           name: Launch flowdb
           command: |

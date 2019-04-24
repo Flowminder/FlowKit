@@ -67,4 +67,7 @@ elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC
       --disaster-zone ${DISASTER_REGION_PCOD:-"524 4 12"} \
       --disaster-start-date ${DISASTER_START:-"2015-01-01"} \
       --disaster-end-date ${DISASTER_END:-"2015-01-01"}
+else
+    echo "Must set SYNTHETIC_DATA_GENERATOR environment variable to 'sql' or 'python'."
+    exit 1
 fi

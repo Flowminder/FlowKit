@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- FlowDB synthetic data container no longer silently fails to generate data if data generator is not set [#654](https://github.com/Flowminder/FlowKit/issues/654)
 
 ### Removed
 
