@@ -10,10 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
-- Fixed `TotalNetworkObjects` raising an error when run with a lat-long level [#108](https://github.com/Flowminder/FlowKit/issues/108)
-- Radius of gyration no longer incorrectly appears as a top level api query
 
 ### Removed
+
+## [0.6.1]
+### Fixed
+- Fixed `TotalNetworkObjects` raising an error when run with a lat-long level [#108](https://github.com/Flowminder/FlowKit/issues/108)
+- Radius of gyration no longer incorrectly appears as a top level api query
 
 ## [0.6.0]
 ### Added
@@ -258,7 +261,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.0...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.1...master
+[0.6.1]: https://github.com/Flowminder/FlowKit/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/Flowminder/FlowKit/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/Flowminder/FlowKit/compare/0.5.2...0.5.3
 [0.5.2]: https://github.com/Flowminder/FlowKit/compare/0.5.1...0.5.2
