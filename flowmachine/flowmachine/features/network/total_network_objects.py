@@ -148,29 +148,27 @@ class TotalNetworkObjects(GeoDataMixin, Query):
     @property
     def column_names(self) -> List[str]:
         return get_columns_for_level(self.level, self.joined.column_name) + [
-            "total",
+            "value",
             "datetime",
         ]
 
     def _make_query(self):
-        cols = ",".join(get_columns_for_level(self.network_object))
-        group_cols = ",".join(
-            get_columns_for_level(self.level, self.joined.column_name)
-        )
-        sql = """
-        SELECT {group_cols}, COUNT(*) as total,
+        cols = get_columns_for_level(self.network_object)
+        group_cols = get_columns_for_level(self.level, self.joined.column_name)
+        for column in group_cols:
+            if column in cols:
+                cols.remove(column)
+        cols_str = ",".join(cols)
+        group_cols_str = ",".join(group_cols)
+        sql = f"""
+        SELECT {group_cols_str}, COUNT(*) as value,
              datetime FROM
-              (SELECT DISTINCT {group_cols}, {cols}, datetime FROM           
-                (SELECT {group_cols}, {cols}, date_trunc('{total_by}', x.datetime) AS datetime
-                FROM ({etu}) x) y) _
-            GROUP BY {group_cols}, datetime
-            ORDER BY {group_cols}, datetime
-        """.format(
-            total_by=self.total_by,
-            etu=self.joined.get_query(),
-            cols=cols,
-            group_cols=group_cols,
-        )
+              (SELECT DISTINCT {group_cols_str}, {cols_str}, datetime FROM           
+                (SELECT {group_cols_str}, {cols_str}, date_trunc('{self.total_by}', x.datetime) AS datetime
+                FROM ({self.joined.get_query()}) x) y) _
+            GROUP BY {group_cols_str}, datetime
+            ORDER BY {group_cols_str}, datetime
+        """
 
         return sql
 
@@ -246,7 +244,7 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
     def column_names(self) -> List[str]:
         return get_columns_for_level(
             self.total_objs.level, self.total_objs.joined.column_name
-        ) + [self.statistic, "datetime"]
+        ) + ["value", "datetime"]
 
     def _make_query(self):
         group_cols = ",".join(
@@ -254,16 +252,15 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
                 self.total_objs.level, self.total_objs.joined.column_name
             )
         )
-        sql = """
-        SELECT {group_cols}, {stat}(z.total) as {stat},
-        date_trunc('{aggregate_by}', z.datetime) as datetime FROM 
-            ({totals}) z
-        GROUP BY {group_cols}, date_trunc('{aggregate_by}', z.datetime)
-        ORDER BY {group_cols}, date_trunc('{aggregate_by}', z.datetime)
-        """.format(
-            aggregate_by=self.aggregate_by,
-            stat=self.statistic,
-            totals=self.total_objs.get_query(),
-            group_cols=group_cols,
-        )
+        if self.statistic == "mode":
+            av_call = f"pg_catalog.mode() WITHIN GROUP(ORDER BY z.value)"
+        else:
+            av_call = f"{self.statistic}(z.value)"
+        sql = f"""
+        SELECT {group_cols}, {av_call} as value,
+        date_trunc('{self.aggregate_by}', z.datetime) as datetime FROM 
+            ({self.total_objs.get_query()}) z
+        GROUP BY {group_cols}, date_trunc('{self.aggregate_by}', z.datetime)
+        ORDER BY {group_cols}, date_trunc('{self.aggregate_by}', z.datetime)
+        """
         return sql

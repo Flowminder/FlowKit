@@ -4,10 +4,27 @@ All notable changes to FlowKit will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.6.1]
+### Fixed
+- Fixed `TotalNetworkObjects` raising an error when run with a lat-long level [#108](https://github.com/Flowminder/FlowKit/issues/108)
+- Radius of gyration no longer incorrectly appears as a top level api query
+
+## [0.6.0]
 ### Added
 - Added new flowclient API entrypoint, `aggregate_network_objects`, to access equivalent flowmachine query [#601](https://github.com/Flowminder/FlowKit/issues/601)
 - FlowAPI now exposes the API spec at the `spec/openapi.json` endpoint, and an interactive version of the spec at the `spec/redoc` endpoint
 - Added Makefile target `make up-no_build`, to spin up all containers without building the images
+- Added `resync_redis_with_cache` function to cache utils, to allow administrators to align redis with FlowDB [#636](https://github.com/Flowminder/FlowKit/issues/636)
+- Added new flowclient API entrypoint, `radius_of_gyration`, to access (with simplified parameters) equivalent flowmachine query `RadiusOfGyration` [#602](https://github.com/Flowminder/FlowKit/issues/602)
 
 ### Changed
 - The `period` argument to `TotalNetworkObjects` in FlowMachine has been renamed `total_by`
@@ -16,7 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The `stop_date` argument to the `modal_location_from_dates` and `meaningful_locations_*` functions in FlowClient has been renamed `end_date` [#470](https://github.com/Flowminder/FlowKit/issues/470) 
 - `get_result_by_query_id` now accepts a `poll_interval` argument, which allows polling frequency to be changed
 - The `start` and `stop` argument to `EventTableSubset` are now mandatory.
-
+- `RadiusOfGyration` now returns a `value` column instead of an `rog` column
+- `TotalNetworkObjects` and `AggregateNetworkObjects` now return a `value` column, rather than `statistic_name`
 - All environment variables are now in a single `development_environment` file in the project root, development environment setup has been simplified
 - Default FlowDB users for FlowMachine and FlowAPI have changed from "analyst" and "reporter" to "flowmachine" and "flowapi", respectively
 - Docs and integration tests now use top level compose file
@@ -38,9 +56,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - `POSTGRES_PASSWORD_FILE` -> `POSTGRES_PASSWORD`
   - `REDIS_PASSWORD_FILE` -> `REDIS_PASSWORD`
 - `status` enum in FlowDB renamed to `etl_status`
+- `reset_cache` now requires a redis client argument
 
 ### Fixed
 - Fixed being unable to add new users or servers when running FlowAuth with a Postgres database [#622](https://github.com/Flowminder/FlowKit/issues/622)
+- Resetting the cache using `reset_cache` will now reset the state of queries in redis as well [#650](https://github.com/Flowminder/FlowKit/issues/650)
+- Fixed `mode` statistic for `AggregateNetworkObjects` [#651](https://github.com/Flowminder/FlowKit/issues/651)
 
 ### Removed
 - Removed `docker-compose-dev.yml`, and docker-compose files in `docs/`, `flowdb/tests/` and `integration_tests/`.
@@ -241,7 +262,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.5.3...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.1...master
+[0.6.1]: https://github.com/Flowminder/FlowKit/compare/0.6.0...0.6.1
+[0.6.0]: https://github.com/Flowminder/FlowKit/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/Flowminder/FlowKit/compare/0.5.2...0.5.3
 [0.5.2]: https://github.com/Flowminder/FlowKit/compare/0.5.1...0.5.2
 [0.5.1]: https://github.com/Flowminder/FlowKit/compare/0.5.0...0.5.1

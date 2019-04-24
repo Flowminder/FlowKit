@@ -108,7 +108,7 @@ def skip_datecheck(request, monkeypatch):
 def flowmachine_connect():
     con = flowmachine.connect()
     yield con
-    reset_cache(con)
+    reset_cache(con, Query.redis)
     con.engine.dispose()  # Close the connection
     Query.redis.flushdb()  # Empty the redis
     del Query.connection  # Ensure we recreate everything at next use
@@ -186,6 +186,7 @@ class DummyRedis:
 
     def __init__(self):
         self._store = {}
+        self.allow_flush = True
 
     def setnx(self, name, val):
         if name not in self._store:
@@ -214,7 +215,15 @@ class DummyRedis:
     def keys(self):
         return sorted(self._store.keys())
 
+    def flushdb(self):
+        if (
+            self.allow_flush
+        ):  # Set allow_flush attribute to False to simulate concurrent writes
+            self._store = {}
+
 
 @pytest.fixture(scope="function")
-def dummy_redis():
-    return DummyRedis()
+def dummy_redis(monkeypatch):
+    dummy_redis = DummyRedis()
+    monkeypatch.setattr(Query, "redis", dummy_redis)
+    return dummy_redis

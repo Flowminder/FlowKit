@@ -334,13 +334,13 @@
       "JoinableMetrics": {
         "discriminator": {
           "mapping": {
-            "dummy_query": "#/components/schemas/DummyQuery"
+            "radius_of_gyration": "#/components/schemas/RadiusOfGyration"
           },
           "propertyName": "query_kind"
         },
         "oneOf": [
           {
-            "$ref": "#/components/schemas/DummyQuery"
+            "$ref": "#/components/schemas/RadiusOfGyration"
           }
         ]
       },
@@ -786,6 +786,37 @@
         "required": [
           "aggregation_unit",
           "query_kind"
+        ],
+        "type": "object"
+      },
+      "RadiusOfGyration": {
+        "properties": {
+          "end_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "radius_of_gyration"
+            ],
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "end_date",
+          "query_kind",
+          "start_date"
         ],
         "type": "object"
       },

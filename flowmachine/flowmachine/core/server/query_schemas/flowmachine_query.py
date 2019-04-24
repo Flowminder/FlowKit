@@ -16,27 +16,17 @@ from .meaningful_locations import (
     MeaningfulLocationsAggregateSchema,
     MeaningfulLocationsBetweenLabelODMatrixSchema,
     MeaningfulLocationsBetweenDatesODMatrixSchema,
-    MeaningfulLocationsBetweenDatesODMatrixExposed,
 )
-from .geography import GeographySchema, GeographyExposed
-from .location_event_counts import LocationEventCountsSchema, LocationEventCountsExposed
-from .unique_subscriber_counts import (
-    UniqueSubscriberCountsSchema,
-    UniqueSubscriberCountsExposed,
-)
-from .location_introversion import (
-    LocationIntroversionSchema,
-    LocationIntroversionExposed,
-)
-from .total_network_objects import TotalNetworkObjectsSchema, TotalNetworkObjectsExposed
-from .aggregate_network_objects import (
-    AggregateNetworkObjectsSchema,
-    AggregateNetworkObjectsExposed,
-)
-from .dfs_metric_total_amount import (
-    DFSTotalMetricAmountSchema,
-    DFSTotalMetricAmountExposed,
-)
+
+from .aggregate_network_objects import AggregateNetworkObjectsSchema
+
+from .geography import GeographySchema
+from .location_event_counts import LocationEventCountsSchema
+from .unique_subscriber_counts import UniqueSubscriberCountsSchema
+from .location_introversion import LocationIntroversionSchema
+from .total_network_objects import TotalNetworkObjectsSchema
+from .radius_of_gyration import RadiusOfGyrationSchema
+from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):

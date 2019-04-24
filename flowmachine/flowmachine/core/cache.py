@@ -23,7 +23,7 @@ from flowmachine.core.errors.flowmachine_errors import (
     QueryErroredException,
     StoreFailedException,
 )
-from flowmachine.core.query_state import QueryStateMachine
+from flowmachine.core.query_state import QueryStateMachine, QueryEvent
 
 if TYPE_CHECKING:
     from .query import Query
@@ -217,14 +217,21 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def reset_cache(connection: "Connection") -> None:
+def reset_cache(connection: "Connection", redis: StrictRedis) -> None:
     """
-    Reset the query cache. Deletes any tables under cache schema, resets the cache count
-    and clears the cached and dependencies tables.
+    Reset the query cache. Deletes any tables under cache schema, resets the cache count,
+    clears the cached and dependencies tables.
 
     Parameters
     ----------
     connection : Connection
+    redis : StrictRedis
+
+    Notes
+    -----
+    You _must_ ensure that no queries are currently running when calling this function.
+    Any queries currently running will no longer be tracked by redis, and UNDEFINED BEHAVIOUR
+    will occur.
     """
     # For deletion purposes, we ignore Table objects. These either point to something
     # outside the cache schema and hence shouldn't be removed by calling this, or
@@ -239,6 +246,47 @@ def reset_cache(connection: "Connection") -> None:
             trans.execute(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
         trans.execute("TRUNCATE cache.cached CASCADE")
         trans.execute("TRUNCATE cache.dependencies CASCADE")
+    resync_redis_with_cache(connection=connection, redis=redis)
+
+
+def resync_redis_with_cache(connection: "Connection", redis: StrictRedis) -> None:
+    """
+    Reset redis to be in sync with the current contents of the cache.
+
+    Parameters
+    ----------
+    connection : Connection
+    redis : StrictRedis
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    You _must_ ensure that no queries are currently running when calling this function.
+    Any queries currently running will no longer be tracked by redis, and UNDEFINED BEHAVIOUR
+    will occur.
+    """
+    logger.debug("Redis resync")
+    qry = f"SELECT query_id FROM cache.cached"
+    queries_in_cache = connection.fetch(qry)
+    logger.debug("Redis resync", queries_in_cache=queries_in_cache)
+    redis.flushdb()
+    logger.debug("Flushing redis.")
+    for event in (QueryEvent.QUEUE, QueryEvent.EXECUTE, QueryEvent.FINISH):
+        for qid in queries_in_cache:
+            new_state, changed = QueryStateMachine(redis, qid[0]).trigger_event(event)
+            logger.debug(
+                "Redis resync",
+                fast_forwarded=qid[0],
+                new_state=new_state,
+                fast_forward_succeeded=changed,
+            )
+            if not changed:
+                raise RuntimeError(
+                    f"Failed to trigger {event} on '{qid[0]}', ensure nobody else is accessing redis!"
+                )
 
 
 def invalidate_cache_by_id(

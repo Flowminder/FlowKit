@@ -524,6 +524,7 @@ def make_demodata():  # pragma: no cover
         "location_introversion",
         "total_network_objects",
         "aggregate_network_objects",
+        "radius_of_gyration",
     ):
         c = Capability(name=c)
         db.session.add(c)
