@@ -8,7 +8,8 @@ from operator import lt as less_than, ge as greater_or_equal
 from typing import List, Union
 
 from sqlalchemy.sql import func, and_, or_, true
-from sqlalchemy.sql.elements import BooleanClauseList
+from sqlalchemy.sql.elements import ColumnElement
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 __all__ = ["HourInterval", "HourSlice"]
 
@@ -33,8 +34,20 @@ class DayPeriod:
                 "If freq='day' then the `weekday` argument must not be provided."
             )
 
-    def filter_timestamp_column_by_day_of_week(self, ts_col):
-        # no additional filtering needed to limit the day of the week
+    def filter_timestamp_column_by_day_of_week(
+        self, ts_col: InstrumentedAttribute
+    ) -> ColumnElement:
+        """
+        Returns an expression equivalent to TRUE (because no additional
+        filtering is needed to limit the day of the week).
+
+        Parameters
+        ----------
+        ts_col : sqlalchemy.orm.attributes.InstrumentedAttribute
+            The timestamp column to filter. Note that this input argument
+            is ignored for the DayPeriod class because it requires no
+            additional filtering to limit the day of the week.
+        """
         return true()
 
 
@@ -83,10 +96,11 @@ class DayOfWeekPeriod:
         self.freq = "week"
         self.weekday = weekday
 
-    def filter_timestamp_column_by_day_of_week(self, ts_col):
-        return (
-            func.extract("dow", ts_col) == self.weekday_indices_postgres[self.weekday]
-        )
+    def filter_timestamp_column_by_day_of_week(self, ts_col: InstrumentedAttribute):
+        """
+        Returns a sql expression which filters the timestamp column
+        """
+        return func.extract("isodow", ts_col) == self.weekday_idx
 
 
 def make_hour_interval_period(freq, *, weekday: Union[str, None] = None):
@@ -164,7 +178,7 @@ class HourOfDay:
                 f"Input argument must be a string the format 'HH:MM'. Got: {hour_str}"
             )
 
-    def filter_timestamp_column(self, ts_col, cmp_op: callable) -> BooleanClauseList:
+    def filter_timestamp_column(self, ts_col, cmp_op: callable) -> ColumnElement:
         """
         Filter timestamp column by comparing to this hour-of-day using the given comparison operator.
         If this HourOfDay represents a "missing" hour (if the input value was None) then this simply
@@ -179,7 +193,7 @@ class HourOfDay:
 
         Returns
         -------
-        sqlalchemy.sql.elements.BooleanClauseList
+        sqlalchemy.sql.elements.ColumnElement
             Sqlalchemy expression representing the filtered timestamp column.
             This can be used in WHERE clauses of other sql queries.
         """
@@ -227,7 +241,7 @@ class HourInterval:
             f"freq={self.period.freq!r}, weekday={self.period.weekday!r})"
         )
 
-    def filter_timestamp_column(self, ts_col) -> BooleanClauseList:
+    def filter_timestamp_column(self, ts_col) -> ColumnElement:
         """
         Filter timestamp column using this hour interval.
 
@@ -238,7 +252,7 @@ class HourInterval:
 
         Returns
         -------
-        sqlalchemy.sql.elements.BooleanClauseList
+        sqlalchemy.sql.elements.ColumnElement
             Sqlalchemy expression representing the filtered timestamp column.
             This can be used in WHERE clauses of other sql queries.
         """
@@ -270,7 +284,7 @@ class HourSlice:
     def __repr__(self):
         return f"<HourSlice: {self.hour_intervals}>"
 
-    def get_subsetting_condition(self, ts_col) -> BooleanClauseList:
+    def get_subsetting_condition(self, ts_col) -> ColumnElement:
         """
         Return sqlalchemy expression which represents subsetting
         the given timestamp column by hours of the day.
