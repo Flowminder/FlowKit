@@ -312,17 +312,8 @@ async def get_available_dates():
     """
     current_user.can_get_available_dates()
 
-    json_data = await request.json
-    if json_data is None:
-        event_types = None
-    else:
-        event_types = json_data.get("event_types", None)
     request.socket.send_json(
-        {
-            "request_id": request.request_id,
-            "action": "get_available_dates",
-            "params": {"event_types": event_types},
-        }
+        {"request_id": request.request_id, "action": "get_available_dates"}
     )
     reply = await request.socket.recv_json()
 

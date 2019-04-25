@@ -276,18 +276,11 @@ def action_handler__get_geography(aggregation_unit: str) -> ZMQReply:
     return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_available_dates(
-    event_types: Optional[List[str]] = None
-) -> ZMQReply:
+def action_handler__get_available_dates() -> ZMQReply:
     """
     Handler for the 'get_available_dates' action.
 
     Returns a dict of the form {"calls": [...], "sms": [...], ...}.
-
-    Parameters
-    ----------
-    event_types: list of str, optional
-        List of event types for which to return available dates.
 
     Returns
     -------
@@ -295,16 +288,9 @@ def action_handler__get_available_dates(
         The reply from the action handler.
     """
     conn = Query.connection
-    if event_types is None:
-        event_types = tuple(
-            sorted([table_name for table_name, _, _, _ in conn.available_tables])
-        )
-    elif isinstance(event_types, (list, tuple)):
-        event_types = tuple(event_types)
-    else:
-        return ZMQReply(
-            status="error", msg=f"Invalid value for argument `event_types`."
-        )
+    event_types = tuple(
+        sorted([table_name for table_name, _, _, _ in conn.available_tables])
+    )
 
     available_dates = {
         event_type: [date.strftime("%Y-%m-%d") for date in dates]
