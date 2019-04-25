@@ -504,9 +504,7 @@ def get_available_dates(
     logger.info(
         f"Getting {connection.url}/api/{connection.api_version}/available_dates"
     )
-    response = connection.get_url(
-        route=f"available_dates", data={"event_types": event_types}
-    )
+    response = connection.get_url(route=f"available_dates")
     if response.status_code != 200:
         try:
             msg = response.json()["msg"]
@@ -518,7 +516,10 @@ def get_available_dates(
         )
     result = response.json()["available_dates"]
     logger.info(f"Got {connection.url}/api/{connection.api_version}/available_dates")
-    return result
+    if event_types is None:
+        return result
+    else:
+        return {k: v for k, v in result.items() if k in event_types}
 
 
 def run_query(*, connection: Connection, query: dict) -> str:
