@@ -2,14 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, current_app
 from flask.json import JSONEncoder
-from flask_jwt_extended.tokens import encode_access_token
 from flask_login import login_required, current_user
 
 from .models import *
 from .invalid_usage import InvalidUsage, Unauthorized
 from zxcvbn import zxcvbn
+import jwt
+import uuid
 
 blueprint = Blueprint(__name__, __name__)
 
@@ -204,18 +205,23 @@ def add_token(server):
                 raise Unauthorized(
                     f"You do not have access to {claim} at {agg_unit} on {server.name}"
                 )
-    token_string = encode_access_token(
-        identity=current_user.username,
-        secret=server.secret_key,
-        algorithm="HS256",
-        expires_delta=lifetime,
-        fresh=True,
+    now = datetime.datetime.utcnow()
+    token_data = dict(
+        iat=now,
+        nbf=now,
+        jti=str(uuid.uuid4()),
         user_claims=json["claims"],
-        csrf=False,
-        identity_claim_key="identity",
-        user_claims_key="user_claims",
-        json_encoder=JSONEncoder,
+        aud=server.secret_key,
+        identity=current_user.username,
+        exp=now + lifetime,
     )
+    token_string = jwt.encode(
+        token_data,
+        secret=server.secret_key,  # current_app.config["PRIVATE_JWT_SIGNING_KEY"],
+        algorithm="HS256",
+        json_encoder=JSONEncoder,
+    ).decode("utf-8")
+
     token = Token(
         name=json["name"],
         token=token_string,
