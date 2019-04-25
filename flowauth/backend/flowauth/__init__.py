@@ -10,6 +10,7 @@ from flask_principal import Principal, identity_loaded, UserNeed, RoleNeed
 from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
 from cryptography.fernet import Fernet
 
+from flowapi.config import get_config
 from .invalid_usage import InvalidUsage
 from .models import *
 from .admin import blueprint as admin_blueprint
@@ -18,17 +19,10 @@ from .login import blueprint as login_blueprint
 from .spatial_aggregation import blueprint as aggregation_unit_blueprint
 
 
-def create_app(test_config=None):
+def create_app():
     app = Flask(__name__, instance_relative_config=True)
 
-    app.config.from_object("config")
-
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile("config.py", silent=True)
-    else:
-        # load the test config if passed in
-        app.config.update(test_config)
+    app.config.from_mapping(get_config())
 
     # Connect the db
     db.init_app(app)

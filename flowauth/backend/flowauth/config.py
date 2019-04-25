@@ -31,12 +31,22 @@ def getsecret(key: str, default: str) -> str:
         return default
 
 
-SQLALCHEMY_DATABASE_URI = getsecret(
-    "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
-)
-SECRET_KEY = getsecret("SECRET_KEY", os.getenv("SECRET_KEY", "secret"))
-SESSION_PROTECTION = "strong"
-SQLALCHEMY_TRACK_MODIFICATIONS = False
-FERNET_KEY = getsecret("FERNET_KEY", os.getenv("FERNET_KEY", "")).encode()
-Fernet(FERNET_KEY)  # Error if fernet key is bad
-DEMO_MODE = True if os.getenv("DEMO_MODE") is not None else False
+def get_config():
+    SQLALCHEMY_DATABASE_URI = getsecret(
+        "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
+    )
+    SECRET_KEY = getsecret("SECRET_KEY", os.getenv("SECRET_KEY", "secret"))
+    SESSION_PROTECTION = "strong"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    FERNET_KEY = getsecret("FERNET_KEY", os.getenv("FERNET_KEY", "")).encode()
+    Fernet(FERNET_KEY)  # Error if fernet key is bad
+    DEMO_MODE = True if os.getenv("DEMO_MODE") is not None else False
+
+    return dict(
+        SQLALCHEMY_DATABASE_URI=SQLALCHEMY_DATABASE_URI,
+        SECRET_KEY=SECRET_KEY,
+        SESSION_PROTECTION=SESSION_PROTECTION,
+        SQLALCHEMY_TRACK_MODIFICATIONS=SQLALCHEMY_TRACK_MODIFICATIONS,
+        FERNET_KEY=FERNET_KEY,
+        DEMO_MODE=DEMO_MODE,
+    )
