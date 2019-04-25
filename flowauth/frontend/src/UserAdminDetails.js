@@ -28,7 +28,8 @@ var zxcvbn = require("zxcvbn");
 
 class UserAdminDetails extends React.Component {
   state = {
-    username: "",
+    name: "",
+    usernameError: "",
     password: "",
     edit_mode: false,
     groups: [],
@@ -54,7 +55,7 @@ class UserAdminDetails extends React.Component {
     var passStrength = zxcvbn(pass);
     this.setState({
       password: pass,
-      password_strength: passStrength
+      password_strength: passStrength.score
     });
   };
 
@@ -65,6 +66,24 @@ class UserAdminDetails extends React.Component {
     var state = {
       [name]: event.target.value
     };
+    if (name === "name") {
+      var letters = /^[A-Za-z_]+$/;
+      let username = event.target.value;
+      console.log(username);
+      if (username.match(letters) && username.length > 5) {
+        state = Object.assign(state, {
+          usernameError: ""
+        });
+      } else if (username.length <= 5) {
+        state = Object.assign(state, {
+          usernameError: "Username should be more than 6 charactor"
+        });
+      } else {
+        state = Object.assign(state, {
+          usernameError: "Please use only letters and _"
+        });
+      }
+    }
     if (name === "password") {
       var passStrength = zxcvbn(event.target.value);
       state = Object.assign(state, {
@@ -81,25 +100,35 @@ class UserAdminDetails extends React.Component {
   };
   handleSubmit = () => {
     const { item_id, onClick } = this.props;
-    const { edit_mode, name, password, servers, groups, is_admin } = this.state;
-    var task;
-    var uid;
-    if (edit_mode) {
-      task = editUser(item_id, name, password, is_admin);
-    } else {
-      task = createUser(name, password, is_admin);
+    const {
+      edit_mode,
+      name,
+      password,
+      servers,
+      groups,
+      is_admin,
+      usernameError
+    } = this.state;
+    if (usernameError === "") {
+      var task;
+      var uid;
+      if (edit_mode) {
+        task = editUser(item_id, name, password, is_admin);
+      } else {
+        task = createUser(name, password, is_admin);
+      }
+      task
+        .then(json => {
+          uid = json.id;
+          return editGroupServers(json.group_id, servers);
+        })
+        .then(json => {
+          return editGroupMemberships(uid, groups);
+        })
+        .then(json => {
+          onClick();
+        });
     }
-    task
-      .then(json => {
-        uid = json.id;
-        return editGroupServers(json.group_id, servers);
-      })
-      .then(json => {
-        return editGroupMemberships(uid, groups);
-      })
-      .then(json => {
-        onClick();
-      });
   };
 
   render() {
@@ -123,20 +152,24 @@ class UserAdminDetails extends React.Component {
         </Grid>
         <Grid xs={6}>
           <TextField
-            id="standard-name"
+            id="username"
             label="Username"
             className={classes.textField}
+            required={true}
             value={name}
             onChange={this.handleChange("name")}
             margin="normal"
             InputLabelProps={{ shrink: true }}
+            error={this.state.usernameError}
+            helperText={this.state.usernameError}
           />
         </Grid>
         <Grid xs={6}>
           <TextField
-            id="standard-name"
+            id="password"
             className={classes.textField}
             value={password}
+            required={true}
             label="Reset Password"
             onChange={this.handleChange("password")}
             margin="normal"
