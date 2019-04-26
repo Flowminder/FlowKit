@@ -6,13 +6,15 @@
 Tests for flowmachine small helper functions
 """
 import datetime
-import unittest.mock
-from pathlib import Path
-
 import pytest
 import pglast
+import textwrap
+import unittest.mock
+from io import StringIO
+from pathlib import Path
 
 from flowmachine.core.errors import BadLevelError
+from flowmachine.features import daily_location, EventTableSubset
 from flowmachine.utils import (
     parse_datestring,
     proj4string,
@@ -20,10 +22,10 @@ from flowmachine.utils import (
     getsecret,
     pretty_sql,
     _makesafe,
+    print_dependency_tree,
     sort_recursively,
     time_period_add,
 )
-from flowmachine.features import daily_location, EventTableSubset
 
 
 @pytest.mark.parametrize("crs", (None, 4326, "+proj=longlat +datum=WGS84 +no_defs"))
@@ -202,3 +204,34 @@ def test_sort_recursively():
     }
 
     assert d_sorted_expected == sort_recursively(d)
+
+
+def test_print_dependency_tree():
+    """
+    Test that `print_dependency_tree` displays the expected dependency tree for a daily location query.
+    """
+    q = daily_location(date="2016-01-02", level="admin2", method="most-common")
+
+    expected_output = textwrap.dedent(
+        """\
+        <Query of type: MostFrequentLocation, query_id: '19aabccf1f1ef32ad6041181bbf5875e'>
+          - <Query of type: JoinToLocation, query_id: 'ef46f32a2b3c22260be0c8bff98c227d'>
+             - <Query of type: CellToAdmin, query_id: '08ff6da2cc691c39c11dccfc32532a26'>
+                - <Query of type: CellToPolygon, query_id: 'a0d9c44428722e2d84788f6eef59aa80'>
+             - <Query of type: _SubscriberCells, query_id: 'e306ae8f07b6e6993e93e419d617ba45'>
+                - <Query of type: EventsTablesUnion, query_id: 'a63e86682865cbdcab945864b3cdf62b'>
+                   - <Query of type: EventTableSubset, query_id: '5745a8af4793dcd1f2994258c890c064'>
+                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'a4fc378b674770bf78002c2d0d6b2a03'>
+                      - <Table: 'events.sms'>
+                         - <Table: 'events.sms'>
+                   - <Query of type: EventTableSubset, query_id: '7864377b0e7604d593ee233b7e083eab'>
+                      - <Table: 'events.calls'>
+                         - <Table: 'events.calls'>
+                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'a4fc378b674770bf78002c2d0d6b2a03'>
+        """
+    )
+
+    printed_output = StringIO()
+    print_dependency_tree(q, stream=printed_output)
+
+    assert expected_output == printed_output.getvalue()
