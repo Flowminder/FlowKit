@@ -71,13 +71,14 @@ def test_get_table_is_self():
     assert t.get_table() is t
 
 
-def test_table_parent():
+def test_no_dependencies():
     """
-    Check that creating a table which contains only some columns depends on the
-    main table.
+    Check that a table (with or without explicit columns) has no other queries as a dependency.
     """
-    t = Table("events.calls", columns=["id"])
-    assert t.dependencies.pop().md5 == Table("events.calls").md5
+    t1 = Table("events.calls")
+    t2 = Table("events.calls", columns=["id"])
+    assert t1.dependencies == set()
+    assert t2.dependencies == set()
 
 
 def test_subset():
