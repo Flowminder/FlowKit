@@ -743,7 +743,7 @@ class Query(metaclass=ABCMeta):
                     "{} added to cache.".format(self.fully_qualified_table_name)
                 )
                 if not in_cache:
-                    for dep in self._get_stored_dependencies(include_root=True):
+                    for dep in self._get_stored_dependencies(exclude_self=True):
                         con.execute(
                             "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
                             (self.md5, dep.md5),
@@ -777,13 +777,13 @@ class Query(metaclass=ABCMeta):
         return dependencies
 
     def _get_stored_dependencies(
-        self, include_root=False, discovered_dependencies=None
+        self, exclude_self=False, discovered_dependencies=None
     ):
         """
 
         Parameters
         ----------
-        include_root : bool
+        exclude_self : bool
             Set to true to exclude this query from the resulting set.
         discovered_dependencies : set
             Keeps track of dependencies already discovered (during recursive calls).
@@ -796,7 +796,7 @@ class Query(metaclass=ABCMeta):
         """
         if discovered_dependencies is None:
             discovered_dependencies = set()
-        if not include_root and self.is_stored:
+        if not exclude_self and self.is_stored:
             discovered_dependencies.add(self)
         else:
             for d in self.dependencies - discovered_dependencies:
