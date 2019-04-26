@@ -61,7 +61,7 @@ def test_object_representation_is_correct():
 
     o = inherits_object_representation()
     r = o.__repr__()
-    assert "Query object of type" in r
+    assert r.startswith("<Query of type:")
 
 
 def test_instantiating_base_class_raises_error():
