@@ -95,7 +95,9 @@ class Query(metaclass=ABCMeta):
             for key, item in sorted(state.items()):
                 try:
                     if isinstance(item, list) or isinstance(item, tuple):
-                        item = sorted(item)
+                        item = sorted(
+                            item, key=lambda x: x.md5 if isinstance(x, Query) else x
+                        )
                     elif isinstance(item, dict):
                         item = json.dumps(item, sort_keys=True, default=str)
 
