@@ -103,10 +103,12 @@ class Query(metaclass=ABCMeta):
 
                     try:
                         hashes.append(str(item))
-                    except TypeError:
-                        pass
-                except:
-                    pass
+                    except TypeError as exc:
+                        logger.warning(f"[EEE] Case 1: {exc}")
+                        raise
+                except Exception as exc:
+                    logger.warning(f"[EEE] Case 2: {exc}")
+                    raise
             hashes.append(self.__class__.__name__)
             hashes.sort()
             self._md5 = md5(str(hashes).encode()).hexdigest()
