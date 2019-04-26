@@ -776,15 +776,17 @@ class Query(metaclass=ABCMeta):
 
         return dependencies
 
-    def _get_stored_dependencies(self, include_root=False, stored_dependencies=None):
+    def _get_stored_dependencies(
+        self, include_root=False, discovered_dependencies=None
+    ):
         """
 
         Parameters
         ----------
         include_root : bool
-            Set to true to exclude this query from the resulting set
-        stored_dependencies : set
-            Keeps track of dependencies already discovered
+            Set to true to exclude this query from the resulting set.
+        discovered_dependencies : set
+            Keeps track of dependencies already discovered (during recursive calls).
 
         Returns
         -------
@@ -792,14 +794,16 @@ class Query(metaclass=ABCMeta):
             The set of all stored queries this one depends on
 
         """
-        if stored_dependencies is None:
-            stored_dependencies = set()
+        if discovered_dependencies is None:
+            discovered_dependencies = set()
         if not include_root and self.is_stored:
-            stored_dependencies.add(self)
+            discovered_dependencies.add(self)
         else:
-            for d in self.dependencies - stored_dependencies:
-                d._get_stored_dependencies(stored_dependencies=stored_dependencies)
-        return stored_dependencies.difference([self])
+            for d in self.dependencies - discovered_dependencies:
+                d._get_stored_dependencies(
+                    discovered_dependencies=discovered_dependencies
+                )
+        return discovered_dependencies.difference([self])
 
     def invalidate_db_cache(self, name=None, schema=None, cascade=True, drop=True):
         """
