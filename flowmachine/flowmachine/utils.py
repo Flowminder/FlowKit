@@ -9,6 +9,7 @@ Various simple utilities.
 
 import datetime
 import structlog
+import sys
 from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
@@ -380,7 +381,7 @@ def sort_recursively(d):
         return d
 
 
-def print_dependency_tree(query_obj, level=0):
+def print_dependency_tree(query_obj, level=0, stream=sys.stdout):
     """
     Print the dependencies of a flowmachine query in a tree-like structure.
 
@@ -390,10 +391,12 @@ def print_dependency_tree(query_obj, level=0):
         An instance of a query object.
     level : int
         The current level of indentation.
+    stream : io.IOBase, optional
+        The stream to which the output should be written (default: sys.stdout).
     """
     indent_per_level = 3
     indent = " " * (indent_per_level * level - 1)
     prefix = "" if level == 0 else "- "
-    print(f"{indent}{prefix}{query_obj}")
+    stream.write(f"{indent}{prefix}{query_obj}\n")
     for dep in query_obj.dependencies:
-        print_dependency_tree(dep, level=level + 1)
+        print_dependency_tree(dep, level=level + 1, stream=stream)
