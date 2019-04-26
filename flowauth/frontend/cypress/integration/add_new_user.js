@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 describe("Login screen", function() {
   Cypress.Cookies.debug(true);
 
@@ -8,33 +12,49 @@ describe("Login screen", function() {
     cy.get("#user_list").click();
   });
 
-  // it("Log in as an admin", function () {
-  //     cy.get("#username").type("TEST_ADMIN");
-  //     cy.get("#password").type("DUMMY_PASSWORD");
-  //     cy.get("button").click();
-  //     cy.getCookie("session").should("exist");
-  //     cy.getCookie("X-CSRF").should("exist");
-  //     //cy.get("#user_list").click();
-  // });
   it("Add Username with space", function() {
     cy.get("#new").click();
-    // checking with sapce in username
+    // adding username with sapce
     cy.get("#username").type("USER ");
-    //checking with less then 5 char
-    cy.get("#username").type("USER");
-    cy.get("#username").type("{selectall}USER_TEST");
+    //checking validation text
+    cy.get("#username-helper-text").should(
+      "have.text",
+      "You can use letters only."
+    );
   });
-  it("Add Username with 4 character", function() {
+  it("Add blank Username", function() {
     cy.get("#new").click();
-    //checking with less then 4 char
-    cy.get("#username").type("USER");
-    cy.get("#username").type("{selectall}USER_TEST");
+    //adding blank username
+    cy.get("#username")
+      .type(" ")
+      .clear();
+    //checking validation text
+    cy.get("#username-helper-text").should(
+      "have.text",
+      "Username can not be blank."
+    );
   });
-  it("Add Password with less strength", function() {
+  it("Add blank Password", function() {
     cy.get("#new").click();
-    //checking with less then 4 char
-    cy.get("#password").type("TEST_PASSWORD");
-    cy.get("#password").type("{selectall}C>K,7|~44]44:ibK");
+    //Add blank password
+    cy.get("#password")
+      .type(" ")
+      .clear();
+
+    cy.get("#password-helper-text").should(
+      "have.text",
+      "Use a few words, avoid common phrases"
+    );
+  });
+  it("Add password with less strength", function() {
+    cy.get("#new").click();
+    //Add password with less strength
+    cy.get("#password").type("USER_TEST");
+
+    cy.get("#password-helper-text").should(
+      "have.text",
+      "Add another word or two. Uncommon words are better."
+    );
   });
   it("Add User", function() {
     cy.get("#new").click();
