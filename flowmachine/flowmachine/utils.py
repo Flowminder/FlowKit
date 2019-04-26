@@ -373,10 +373,7 @@ def sort_recursively(d):
             d_new[key] = sort_recursively(d[key])
         return d_new
     elif isinstance(d, list):
-        try:
-            return sorted(d, key=to_nested_list)
-        except:
-            breakpoint()
+        return sorted(d, key=to_nested_list)
     else:
         return d
 
