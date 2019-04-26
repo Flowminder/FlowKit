@@ -124,6 +124,9 @@ class Table(Query):
         self._db_store_cache_metadata(compute_time=0)
         q_state_machine.finish()
 
+    def __repr__(self):
+        return f"<Table: '{self.schema}.{self.name}'>"
+
     @property
     def column_names(self) -> List[str]:
         return list(self.columns)
