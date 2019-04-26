@@ -743,7 +743,7 @@ class Query(metaclass=ABCMeta):
                     "{} added to cache.".format(self.fully_qualified_table_name)
                 )
                 if not in_cache:
-                    for dep in self._get_deps(include_root=True):
+                    for dep in self._get_stored_dependencies(include_root=True):
                         con.execute(
                             "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
                             (self.md5, dep.md5),
@@ -776,7 +776,7 @@ class Query(metaclass=ABCMeta):
 
         return dependencies
 
-    def _get_deps(self, include_root=False, stored_dependencies=None):
+    def _get_stored_dependencies(self, include_root=False, stored_dependencies=None):
         """
 
         Parameters
@@ -798,7 +798,7 @@ class Query(metaclass=ABCMeta):
             stored_dependencies.add(self)
         else:
             for d in self.dependencies - stored_dependencies:
-                d._get_deps(stored_dependencies=stored_dependencies)
+                d._get_stored_dependencies(stored_dependencies=stored_dependencies)
         return stored_dependencies.difference([self])
 
     def invalidate_db_cache(self, name=None, schema=None, cascade=True, drop=True):

@@ -219,8 +219,8 @@ def test_deps_cache_multi():
     dl1.store().result()
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     dep = dl1.md5
-    assert 3 == len(hl1._get_deps())
-    assert dep in [x.md5 for x in hl1._get_deps()]
+    assert 3 == len(hl1._get_stored_dependencies())
+    assert dep in [x.md5 for x in hl1._get_stored_dependencies()]
 
 
 def test_deps_cache_chain():
@@ -236,9 +236,9 @@ def test_deps_cache_chain():
     flow = Flows(hl1, hl2)
     bad_dep = dl1.md5
     good_dep = hl1.md5
-    assert 5 == len(flow._get_deps())
-    assert good_dep in [x.md5 for x in flow._get_deps()]
-    assert bad_dep not in [x.md5 for x in flow._get_deps()]
+    assert 5 == len(flow._get_stored_dependencies())
+    assert good_dep in [x.md5 for x in flow._get_stored_dependencies()]
+    assert bad_dep not in [x.md5 for x in flow._get_stored_dependencies()]
 
 
 def test_deps_cache_broken_chain():
@@ -253,8 +253,8 @@ def test_deps_cache_broken_chain():
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     dep = dl1.md5
-    assert 7 == len(flow._get_deps())
-    assert dep in [x.md5 for x in flow._get_deps()]
+    assert 7 == len(flow._get_stored_dependencies())
+    assert dep in [x.md5 for x in flow._get_stored_dependencies()]
 
 
 def test_retrieve(get_dataframe):
