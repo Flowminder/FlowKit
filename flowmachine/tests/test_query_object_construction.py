@@ -12,7 +12,7 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
     "expected_md5, query_spec",
     [
         (
-            "e374eab38bd3934054c2bac589145953",
+            "d4faabf59b3e108c0dd98ca75ce1c0cd",
             {
                 "query_kind": "spatial_aggregate",
                 "locations": {
@@ -25,7 +25,7 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
             },
         ),
         (
-            "3f00b5c2aadf103cc54c084b7843784c",
+            "02462cdd7a8d684c2814f63d2026f059",
             {
                 "query_kind": "location_event_counts",
                 "start_date": "2016-01-01",
@@ -38,7 +38,7 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
             },
         ),
         (
-            "b8dce95079c342cf8343a3f384ffdbe3",
+            "767d98a4ad4ca101d8a5e0f037eaf2fe",
             {
                 "query_kind": "spatial_aggregate",
                 "locations": {
@@ -68,7 +68,7 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
             {"query_kind": "geography", "aggregation_unit": "admin3"},
         ),
         (
-            "8ea8ff7faaaa3afbd83e6df3af56714e",
+            "fee98e046f249a7c9c1bcc31c1af0672",
             {
                 "query_kind": "meaningful_locations_aggregate",
                 "aggregation_unit": "admin1",
@@ -130,7 +130,7 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
             },
         ),
         (
-            "5fcfc6aeb30e0a6e18a4376ddfe8a7e4",
+            "e416a5cdae261e77997ba47705c2f13d",
             {
                 "query_kind": "meaningful_locations_between_label_od_matrix",
                 "aggregation_unit": "admin1",
@@ -193,7 +193,7 @@ from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
             },
         ),
         (
-            "faef1d0f53675df711aea0e958238bfa",
+            "f711f4b6833aed807750a78fa83ea0eb",
             {
                 "query_kind": "meaningful_locations_between_dates_od_matrix",
                 "aggregation_unit": "admin1",
