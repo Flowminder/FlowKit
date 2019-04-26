@@ -90,10 +90,14 @@ class Query(metaclass=ABCMeta):
         try:
             return self._md5
         except:
+            dependencies = self.dependencies
             state = self.__getstate__()
-            hashes = sorted([x.md5 for x in self.dependencies])
+            hashes = sorted([x.md5 for x in dependencies])
             for key, item in sorted(state.items()):
-                if isinstance(item, list) or isinstance(item, tuple):
+                if isinstance(item, Query) and item in dependencies:
+                    # this item is already included in `hashes`
+                    continue
+                elif isinstance(item, list) or isinstance(item, tuple):
                     item = sorted(
                         item, key=lambda x: x.md5 if isinstance(x, Query) else x
                     )
