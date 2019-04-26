@@ -24,6 +24,7 @@ from flowmachine.utils import (
     pretty_sql,
     _makesafe,
     print_dependency_tree,
+    convert_dict_keys_to_strings,
     sort_recursively,
     time_period_add,
 )
@@ -187,6 +188,16 @@ def test_get_secrets_default(monkeypatch):
     the_secret_name = "SECRET"
     secret = getsecret(the_secret_name, the_secret)
     assert the_secret == secret
+
+
+def test_convert_dict_keys_to_strings():
+    """
+    Test that any dict keys that are numbers are converted to strings.
+    """
+    d = {0: {0: "foo", 1: "bar"}, 1: {"A": "baz", 2: "quux"}}
+    d_out_expected = {"0": {"0": "foo", "1": "bar"}, "1": {"A": "baz", "2": "quux"}}
+    d_out = convert_dict_keys_to_strings(d)
+    assert d_out_expected == d_out
 
 
 def test_sort_recursively():
