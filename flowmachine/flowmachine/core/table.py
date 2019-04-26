@@ -122,7 +122,7 @@ class Table(Query):
         q_state_machine.finish()
 
     def __repr__(self):
-        return f"<Table: '{self.schema}.{self.name}'>"
+        return f"<Table: '{self.schema}.{self.name}', query_id: '{self.md5}'>"
 
     @property
     def column_names(self) -> List[str]:
