@@ -119,7 +119,7 @@ class Query(metaclass=ABCMeta):
 
         # Default representation, derived classes might want to
         # add something more specific
-        return f"<Query object of type: {self.__class__.__name__}>"
+        return f"<Query of type: {self.__class__.__name__}, query_id: '{self.md5}'>"
 
     def __iter__(self):
         con = self.connection.engine
