@@ -8,6 +8,7 @@ Tests for flowmachine small helper functions
 import datetime
 import pytest
 import pglast
+import re
 import textwrap
 import unittest.mock
 from io import StringIO
@@ -214,22 +215,24 @@ def test_print_dependency_tree():
 
     expected_output = textwrap.dedent(
         """\
-        <Query of type: MostFrequentLocation, query_id: '27fc3c74e1616fa6c2fae8b9ec833bbb'>
-          - <Query of type: JoinToLocation, query_id: 'a75212da8e8511500d5a977ad1f563d0'>
-             - <Query of type: CellToAdmin, query_id: '08ff6da2cc691c39c11dccfc32532a26'>
-                - <Query of type: CellToPolygon, query_id: 'a0d9c44428722e2d84788f6eef59aa80'>
-             - <Query of type: _SubscriberCells, query_id: 'e844967711727d7b75db892db2ef9df3'>
-                - <Query of type: EventsTablesUnion, query_id: '76287958d191b1203d6d42336059b8be'>
-                   - <Query of type: EventTableSubset, query_id: '6b26c243fe3a7b23d430310ae91e995e'>
-                      - <Table: 'events.sms', query_id: '16e5fd9c05e40b41f3a96f85fa65062d'>
-                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'a4fc378b674770bf78002c2d0d6b2a03'>
-                   - <Query of type: EventTableSubset, query_id: 'd71a798ad98a731653c5b0ba352653f7'>
-                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'a4fc378b674770bf78002c2d0d6b2a03'>
-                      - <Table: 'events.calls', query_id: 'd9456648468a20a3452d5a375c4d7c0a'>
+        <Query of type: MostFrequentLocation, query_id: 'xxxxx'>
+          - <Query of type: JoinToLocation, query_id: 'xxxxx'>
+             - <Query of type: _SubscriberCells, query_id: 'xxxxx'>
+                - <Query of type: EventsTablesUnion, query_id: 'xxxxx'>
+                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
+                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'xxxxx'>
+                      - <Table: 'events.calls', query_id: 'xxxxx'>
+                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
+                      - <Table: 'events.sms', query_id: 'xxxxx'>
+                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'xxxxx'>
+             - <Query of type: CellToAdmin, query_id: 'xxxxx'>
+                - <Query of type: CellToPolygon, query_id: 'xxxxx'>
         """
     )
 
-    printed_output = StringIO()
-    print_dependency_tree(q, stream=printed_output)
+    s = StringIO()
+    print_dependency_tree(q, stream=s)
+    output = s.getvalue()
+    output_with_query_ids_replaced = re.sub(r"\b[0-9a-f]+\b", "xxxxx", output)
 
-    assert expected_output == printed_output.getvalue()
+    assert expected_output == output_with_query_ids_replaced
