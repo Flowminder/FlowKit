@@ -93,22 +93,17 @@ class Query(metaclass=ABCMeta):
             state = self.__getstate__()
             hashes = sorted([x.md5 for x in self.dependencies])
             for key, item in sorted(state.items()):
-                try:
-                    if isinstance(item, list) or isinstance(item, tuple):
-                        item = sorted(
-                            item, key=lambda x: x.md5 if isinstance(x, Query) else x
-                        )
-                    elif isinstance(item, dict):
-                        item = json.dumps(item, sort_keys=True, default=str)
+                if isinstance(item, list) or isinstance(item, tuple):
+                    item = sorted(
+                        item, key=lambda x: x.md5 if isinstance(x, Query) else x
+                    )
+                elif isinstance(item, dict):
+                    item = json.dumps(item, sort_keys=True, default=str)
+                else:
+                    # if it's not a list or a dict we leave the item as it is
+                    pass
 
-                    try:
-                        hashes.append(str(item))
-                    except TypeError as exc:
-                        logger.warning(f"[EEE] Case 1: {exc}")
-                        raise
-                except Exception as exc:
-                    logger.warning(f"[EEE] Case 2: {exc}")
-                    raise
+                hashes.append(str(item))
             hashes.append(self.__class__.__name__)
             hashes.sort()
             self._md5 = md5(str(hashes).encode()).hexdigest()
