@@ -29,7 +29,7 @@ async def test_get_sql(zmq_port, zmq_host):
         },
         "request_id": "DUMMY_ID",
     }
-    expected_query_id = "e242574581e5236fd8ccb5b02ac740fa"
+    expected_query_id = "e374eab38bd3934054c2bac589145953"
 
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     # assert reply["status"] in ("executing", "queued", "completed")
