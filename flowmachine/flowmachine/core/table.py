@@ -114,7 +114,7 @@ class Table(Query):
                     )
                 )
 
-        # Recorded provided columns to ensure that md5 differs with different columns
+        # Record provided columns to ensure that md5 differs with different columns
         self.columns = columns
         super().__init__()
         # Table is immediately in a 'finished executing' state
