@@ -398,5 +398,6 @@ def print_dependency_tree(query_obj, level=0, stream=sys.stdout):
     indent = " " * (indent_per_level * level - 1)
     prefix = "" if level == 0 else "- "
     stream.write(f"{indent}{prefix}{query_obj}\n")
-    for dep in query_obj.dependencies:
+    deps_sorted_by_query_id = sorted(query_obj.dependencies, key=lambda q: q.md5)
+    for dep in deps_sorted_by_query_id:
         print_dependency_tree(dep, level=level + 1, stream=stream)
