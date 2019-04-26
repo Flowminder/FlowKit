@@ -758,16 +758,7 @@ class Query(metaclass=ABCMeta):
         Returns
         -------
         set
-            Query's this one is directly dependent on
-        """
-        return self._adjacent()
-
-    def _adjacent(self):
-        """
-        Returns
-        -------
-        set
-            Query's this one is directly dependent on
+            The set of queries which this one is directly dependent on.
         """
         dependencies = set()
         for x in self.__dict__.values():
