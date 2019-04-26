@@ -29,8 +29,9 @@ var zxcvbn = require("zxcvbn");
 class UserAdminDetails extends React.Component {
   state = {
     name: "",
-    usernameError: "",
+    username_helper_text: "",
     password: "",
+    password_helper_text: "",
     edit_mode: false,
     groups: [],
     servers: [],
@@ -69,25 +70,26 @@ class UserAdminDetails extends React.Component {
     if (name === "name") {
       var letters = /^[A-Za-z_]+$/;
       let username = event.target.value;
-      console.log(username);
-      if (username.match(letters) && username.length > 5) {
+      if (username.match(letters)) {
         state = Object.assign(state, {
-          usernameError: ""
+          username_helper_text: ""
         });
-      } else if (username.length <= 5) {
+      } else if (username.length == 0) {
         state = Object.assign(state, {
-          usernameError: "Username should be more than 6 charactor"
+          username_helper_text: "Username can not be blank."
         });
       } else {
         state = Object.assign(state, {
-          usernameError: "Please use only letters and _"
+          username_helper_text: "You can use letters only."
         });
       }
     }
     if (name === "password") {
       var passStrength = zxcvbn(event.target.value);
+      console.log(passStrength.feedback.warning);
       state = Object.assign(state, {
-        password_strength: passStrength.score
+        password_strength: passStrength.score,
+        password_helper_text: passStrength.feedback.suggestions
       });
     }
     this.setState(state);
@@ -107,9 +109,10 @@ class UserAdminDetails extends React.Component {
       servers,
       groups,
       is_admin,
-      usernameError
+      username_helper_text,
+      password_strength
     } = this.state;
-    if (usernameError === "") {
+    if (username_helper_text === "" && password_strength > 3) {
       var task;
       var uid;
       if (edit_mode) {
@@ -160,8 +163,8 @@ class UserAdminDetails extends React.Component {
             onChange={this.handleChange("name")}
             margin="normal"
             InputLabelProps={{ shrink: true }}
-            error={this.state.usernameError}
-            helperText={this.state.usernameError}
+            error={this.state.username_helper_text}
+            helperText={this.state.username_helper_text}
           />
         </Grid>
         <Grid xs={6}>
@@ -173,6 +176,8 @@ class UserAdminDetails extends React.Component {
             label="Reset Password"
             onChange={this.handleChange("password")}
             margin="normal"
+            error={this.state.password_helper_text[0]}
+            helperText={this.state.password_helper_text[0]}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
