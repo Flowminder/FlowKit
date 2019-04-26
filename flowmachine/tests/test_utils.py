@@ -214,20 +214,18 @@ def test_print_dependency_tree():
 
     expected_output = textwrap.dedent(
         """\
-        <Query of type: MostFrequentLocation, query_id: '19aabccf1f1ef32ad6041181bbf5875e'>
-          - <Query of type: JoinToLocation, query_id: 'ef46f32a2b3c22260be0c8bff98c227d'>
+        <Query of type: MostFrequentLocation, query_id: '27fc3c74e1616fa6c2fae8b9ec833bbb'>
+          - <Query of type: JoinToLocation, query_id: 'a75212da8e8511500d5a977ad1f563d0'>
              - <Query of type: CellToAdmin, query_id: '08ff6da2cc691c39c11dccfc32532a26'>
                 - <Query of type: CellToPolygon, query_id: 'a0d9c44428722e2d84788f6eef59aa80'>
-             - <Query of type: _SubscriberCells, query_id: 'e306ae8f07b6e6993e93e419d617ba45'>
-                - <Query of type: EventsTablesUnion, query_id: 'a63e86682865cbdcab945864b3cdf62b'>
-                   - <Query of type: EventTableSubset, query_id: '5745a8af4793dcd1f2994258c890c064'>
+             - <Query of type: _SubscriberCells, query_id: 'e844967711727d7b75db892db2ef9df3'>
+                - <Query of type: EventsTablesUnion, query_id: '76287958d191b1203d6d42336059b8be'>
+                   - <Query of type: EventTableSubset, query_id: '6b26c243fe3a7b23d430310ae91e995e'>
+                      - <Table: 'events.sms', query_id: '16e5fd9c05e40b41f3a96f85fa65062d'>
                       - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'a4fc378b674770bf78002c2d0d6b2a03'>
-                      - <Table: 'events.sms'>
-                         - <Table: 'events.sms'>
-                   - <Query of type: EventTableSubset, query_id: '7864377b0e7604d593ee233b7e083eab'>
-                      - <Table: 'events.calls'>
-                         - <Table: 'events.calls'>
+                   - <Query of type: EventTableSubset, query_id: 'd71a798ad98a731653c5b0ba352653f7'>
                       - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'a4fc378b674770bf78002c2d0d6b2a03'>
+                      - <Table: 'events.calls', query_id: 'd9456648468a20a3452d5a375c4d7c0a'>
         """
     )
 
