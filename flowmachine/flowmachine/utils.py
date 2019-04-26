@@ -383,3 +383,22 @@ def sort_recursively(d):
             breakpoint()
     else:
         return d
+
+
+def print_dependency_tree(query_obj, level=0):
+    """
+    Print the dependencies of a flowmachine query in a tree-like structure.
+
+    Parameters
+    ----------
+    query_obj : Query
+        An instance of a query object.
+    level : int
+        The current level of indentation.
+    """
+    indent_per_level = 3
+    indent = " " * (indent_per_level * level - 1)
+    prefix = "" if level == 0 else "- "
+    print(f"{indent}{prefix}{query_obj}")
+    for dep in query_obj.dependencies:
+        print_dependency_tree(dep, level=level + 1)
