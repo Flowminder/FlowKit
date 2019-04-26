@@ -6,21 +6,16 @@
 """
 Various simple utilities.
 """
-from time import sleep
 
 import datetime
-
-
+import structlog
 from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
-
-
+from time import sleep
 from typing import List, Union
 
 from flowmachine.core.errors import BadLevelError
-
-import structlog
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
