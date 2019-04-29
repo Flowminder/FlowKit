@@ -182,7 +182,6 @@ def add_token(server):
     """
     server = Server.query.filter(Server.id == server).first_or_404()
     json = request.get_json()
-    print(json)
     if "name" not in json:
         raise InvalidUsage("No name.", payload={"bad_field": "name"})
     expiry = datetime.datetime.strptime(json["expiry"], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -191,7 +190,6 @@ def add_token(server):
     if expiry > latest_lifetime:
         raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
     allowed_claims = current_user.allowed_claims(server)
-    print(allowed_claims)
     for claim, rights in json["claims"].items():
         if claim not in allowed_claims:
             raise Unauthorized(f"You do not have access to {claim} on {server.name}")
@@ -211,13 +209,13 @@ def add_token(server):
         nbf=now,
         jti=str(uuid.uuid4()),
         user_claims=json["claims"],
-        aud=server.secret_key,
+        # aud=server.secret_key,
         identity=current_user.username,
         exp=now + lifetime,
     )
     token_string = jwt.encode(
-        token_data,
-        secret=server.secret_key,  # current_app.config["PRIVATE_JWT_SIGNING_KEY"],
+        payload=token_data,
+        key=server.secret_key,  # current_app.config["PRIVATE_JWT_SIGNING_KEY"],
         algorithm="HS256",
         json_encoder=JSONEncoder,
     ).decode("utf-8")
