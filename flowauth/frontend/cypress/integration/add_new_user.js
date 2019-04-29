@@ -37,9 +37,6 @@ describe("Login screen", function () {
       "have.text",
       "Username can not be blank."
     );
-    cy.get("#username")
-      .type(" ")
-      .clear();
     cy.get("#username").type("USER_TEST01");
   });
   it("Add blank Password", function () {
