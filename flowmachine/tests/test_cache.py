@@ -163,28 +163,6 @@ def test_invalidate_cache_midchain(flowmachine_connect):
     assert has_deps  # Daily location deps should remain
 
 
-def test_invalidate_cache_multi(flowmachine_connect):
-    """
-    Test that invalidating a simple query that is part of
-    a bigger one drops both tables, cleans up dependencies
-    and removes both from cache.
-
-    """
-    dl1 = daily_location("2016-01-01")
-    dl1.store().result()
-    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
-    hl1.store().result()
-    assert dl1.is_stored
-    assert hl1.is_stored
-    dl1.invalidate_db_cache()
-    assert not dl1.is_stored
-    assert not hl1.is_stored
-    assert not cache_table_exists(flowmachine_connect, dl1.md5)
-    assert not cache_table_exists(flowmachine_connect, hl1.md5)
-    has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
-    assert not has_deps
-
-
 def test_invalidate_cascade(flowmachine_connect):
     """
     Test that invalidation does not cascade if cascade=False.
