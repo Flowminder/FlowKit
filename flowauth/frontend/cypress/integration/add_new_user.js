@@ -25,10 +25,7 @@ describe("Login screen", function () {
       .type(" ")
       .clear();
     cy.get("#username").type("USER_TEST01");
-    cy.get("#username-helper-text").should(
-      "not.have.value",
-      "Username may on contain letters, numbers and underscores."
-    );
+    cy.contains("#username-helper-text").should("not.exist");
   });
   it("Add blank Username", function () {
     cy.get("#new").click();
@@ -42,10 +39,7 @@ describe("Login screen", function () {
       "Username can not be blank."
     );
     cy.get("#username").type("USER_TEST01");
-    cy.get("#username-helper-text").should(
-      "not.have.value",
-      "Username can not be blank."
-    );
+    cy.contains("#username-helper-text").should("not.exist");
   });
   it("Add blank Password", function () {
     cy.get("#new").click();
@@ -53,21 +47,26 @@ describe("Login screen", function () {
     cy.get("#password")
       .type(" ")
       .clear();
-
     cy.get("#password-helper-text").should(
       "have.text",
       "Use a few words, avoid common phrases"
     );
+    cy.get("#password").type("C>K,7|~44]44:ibK");
+    cy.get("#password-helper-text").should("not.exist");
   });
   it("Add password with less strength", function () {
     cy.get("#new").click();
     //Add password with less strength
     cy.get("#password").type("USER_TEST");
-
     cy.get("#password-helper-text").should(
       "have.text",
       "Add another word or two. Uncommon words are better."
     );
+    cy.get("#password")
+      .type(" ")
+      .clear();
+    cy.get("#password").type("C>K,7|~44]44:ibK");
+    cy.get("#password-helper-text").should("not.exist");
   });
   it("Add User", function () {
     cy.get("#new").click();
