@@ -209,14 +209,14 @@ def add_token(server):
         nbf=now,
         jti=str(uuid.uuid4()),
         user_claims=json["claims"],
-        # aud=server.secret_key,
+        aud=server.secret_key,
         identity=current_user.username,
         exp=now + lifetime,
     )
     token_string = jwt.encode(
         payload=token_data,
-        key=server.secret_key,  # current_app.config["PRIVATE_JWT_SIGNING_KEY"],
-        algorithm="HS256",
+        key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
+        algorithm="RS256",
         json_encoder=JSONEncoder,
     ).decode("utf-8")
 

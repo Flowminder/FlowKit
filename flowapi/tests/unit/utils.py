@@ -23,7 +23,7 @@ def make_token(username, secret_key, lifetime, claims):
     return encode_access_token(
         identity=username,
         secret=secret_key,
-        algorithm="HS256",
+        algorithm="RS256",
         expires_delta=lifetime,
         fresh=True,
         user_claims=claims,

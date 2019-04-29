@@ -59,7 +59,10 @@ def test_token_generation(client, auth, app):
     assert 200 == response.status_code
     token_json = response.get_json()
     decoded_token = jwt.decode(
-        token_json["token"].encode(), "DUMMY_SERVER_A_KEY", algorithms=["HS256"]
+        audience="DUMMY_SERVER_A_KEY",
+        jwt=token_json["token"].encode(),
+        key=app.config["PUBLIC_JWT_SIGNING_KEY"],
+        algorithms=["RS256"],
     )
     assert {
         "DUMMY_ROUTE_A": {

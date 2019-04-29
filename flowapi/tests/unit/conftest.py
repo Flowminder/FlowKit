@@ -117,7 +117,7 @@ def access_token_builder():
         # return encode_access_token(
         #     identity="test",
         #     secret="secret",
-        #     algorithm="HS256",
+        #     algorithm="RS256",
         #     expires_delta=timedelta(seconds=10),
         #     fresh=True,
         #     user_claims=claims,

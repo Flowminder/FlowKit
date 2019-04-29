@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, current_app
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 from zxcvbn import zxcvbn
@@ -858,3 +858,14 @@ def list_all_tokens():
             for token in Token.query.all()
         ]
     )
+
+
+@blueprint.route("/public_key")
+@login_required
+@admin_permission.require(http_exception=401)
+def get_public_key():
+    """
+    Get the public key which can be used to verify tokens for this
+    flowauth server.
+    """
+    return current_app.config["PUBLIC_JWT_SIGNING_KEY"].decode(), 200
