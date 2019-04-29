@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import { logout } from "./util/api";
+import ErrorBoundry from "./ErrorBoundry";
 
 class App extends Component {
   constructor(props) {
@@ -11,28 +12,32 @@ class App extends Component {
       is_admin: false
     };
   }
-  setLoggedIn = (is_admin) => {
+  setLoggedIn = is_admin => {
     this.setState({
       loggedIn: true,
       is_admin: is_admin
     });
-  }
-  componentDidCatch(error, info) {
-    console.log(error);
-    logout().then(json => { this.setLoggedOut() });
-  }
+  };
+  // componentDidCatch(error, info) {
+  //   console.log(error);
+  //   logout().then(json => { this.setLoggedOut() });
+  // }
   setLoggedOut = () => {
     this.setState({
       loggedIn: false,
       is_admin: false
     });
-  }
+  };
   render() {
     if (this.state.hasError) throw this.state.error;
 
     const { loggedIn, is_admin } = this.state;
     if (loggedIn) {
-      return <Dashboard setLoggedOut={this.setLoggedOut} is_admin={is_admin} />;
+      return (
+        <ErrorBoundry>
+          <Dashboard setLoggedOut={this.setLoggedOut} is_admin={is_admin} />
+        </ErrorBoundry>
+      );
     } else {
       return <Login setLoggedIn={this.setLoggedIn} />;
     }

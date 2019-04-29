@@ -130,6 +130,13 @@ class UserAdminDetails extends React.Component {
         })
         .then(json => {
           onClick();
+        })
+        .catch((err, info) => {
+          this.setState({
+            hasError: true,
+            error: err,
+            info: info
+          });
         });
     }
   };
