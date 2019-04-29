@@ -68,7 +68,7 @@ class UserAdminDetails extends React.Component {
       [name]: event.target.value
     };
     if (name === "name") {
-      var letters = /^[A-Za-z0-9_]+$/;
+      var letters = /^[A-Za-z_]+$/;
       let username = event.target.value;
       if (username.match(letters)) {
         state = Object.assign(state, {
