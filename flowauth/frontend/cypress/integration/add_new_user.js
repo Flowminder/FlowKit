@@ -25,6 +25,10 @@ describe("Login screen", function () {
       .type(" ")
       .clear();
     cy.get("#username").type("USER_TEST01");
+    cy.get("#username-helper-text").should(
+      "not.have.value",
+      "Username may on contain letters, numbers and underscores."
+    );
   });
   it("Add blank Username", function () {
     cy.get("#new").click();
@@ -38,6 +42,10 @@ describe("Login screen", function () {
       "Username can not be blank."
     );
     cy.get("#username").type("USER_TEST01");
+    cy.get("#username-helper-text").should(
+      "not.have.value",
+      "Username can not be blank."
+    );
   });
   it("Add blank Password", function () {
     cy.get("#new").click();
