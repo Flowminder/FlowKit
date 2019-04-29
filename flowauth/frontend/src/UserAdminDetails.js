@@ -68,7 +68,7 @@ class UserAdminDetails extends React.Component {
       [name]: event.target.value
     };
     if (name === "name") {
-      var letters = /^[A-Za-z_]+$/;
+      var letters = /^[A-Za-z0-9_]+$/;
       let username = event.target.value;
       if (username.match(letters)) {
         state = Object.assign(state, {
@@ -80,7 +80,8 @@ class UserAdminDetails extends React.Component {
         });
       } else {
         state = Object.assign(state, {
-          username_helper_text: "You can use letters only."
+          username_helper_text:
+            "Username may on contain letters, numbers and underscores."
         });
       }
     }

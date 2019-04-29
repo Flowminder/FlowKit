@@ -2,27 +2,31 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-describe("Login screen", function() {
+describe("Login screen", function () {
   Cypress.Cookies.debug(true);
 
-  beforeEach(function() {
+  beforeEach(function () {
     // Log in and navigate to user details screen
     cy.login_admin();
     cy.visit("/");
     cy.get("#user_list").click();
   });
 
-  it("Add Username with space", function() {
+  it("Add Username with space", function () {
     cy.get("#new").click();
-    // adding username with sapce
+    // adding username with space
     cy.get("#username").type("USER ");
     //checking validation text
     cy.get("#username-helper-text").should(
       "have.text",
-      "You can use letters only."
+      "Username may on contain letters, numbers and underscores."
     );
+    cy.get("#username")
+      .type(" ")
+      .clear();
+    cy.get("#username").type("USER_TEST01");
   });
-  it("Add blank Username", function() {
+  it("Add blank Username", function () {
     cy.get("#new").click();
     //adding blank username
     cy.get("#username")
@@ -33,8 +37,12 @@ describe("Login screen", function() {
       "have.text",
       "Username can not be blank."
     );
+    cy.get("#username")
+      .type(" ")
+      .clear();
+    cy.get("#username").type("USER_TEST01");
   });
-  it("Add blank Password", function() {
+  it("Add blank Password", function () {
     cy.get("#new").click();
     //Add blank password
     cy.get("#password")
@@ -46,7 +54,7 @@ describe("Login screen", function() {
       "Use a few words, avoid common phrases"
     );
   });
-  it("Add password with less strength", function() {
+  it("Add password with less strength", function () {
     cy.get("#new").click();
     //Add password with less strength
     cy.get("#password").type("USER_TEST");
@@ -56,11 +64,12 @@ describe("Login screen", function() {
       "Add another word or two. Uncommon words are better."
     );
   });
-  it("Add User", function() {
+  it("Add User", function () {
     cy.get("#new").click();
-    //checking with less then 4 char
-    cy.get("#username").type("USER_TEST");
+    //Add new user with password
+    cy.get("#username").type("USER_TEST01");
     cy.get("#password").type("C>K,7|~44]44:ibK");
     cy.contains("Save").click();
+    cy.contains("USER_TEST01").should("be.visible");
   });
 });
