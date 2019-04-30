@@ -5,7 +5,7 @@ To provision the machine:
   pipenv install
   ```
 
-- Create a file called `ssh_keys/authorized_keys.txt` which contains the public
+- Create a file called `./ssh_keys/authorized_keys.txt` which contains the public
   SSH keys of the users who should be able to log into the `flowkit` account
   once the machine is provisioned.
 
