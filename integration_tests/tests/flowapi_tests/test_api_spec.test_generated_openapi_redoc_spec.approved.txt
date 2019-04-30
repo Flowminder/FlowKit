@@ -362,7 +362,7 @@
             },
             "minItems": 1,
             "nullable": true,
-            "type": "string"
+            "type": "array"
           },
           "interval": {
             "enum": [
@@ -498,7 +498,7 @@
               "minimum": -1.0,
               "type": "number"
             },
-            "type": "string"
+            "type": "object"
           },
           "tower_hour_of_day_scores": {
             "items": {
@@ -509,7 +509,7 @@
             },
             "maxItems": 24,
             "minItems": 24,
-            "type": "string"
+            "type": "array"
           }
         },
         "required": [
@@ -588,7 +588,7 @@
               "minimum": -1.0,
               "type": "number"
             },
-            "type": "string"
+            "type": "object"
           },
           "tower_hour_of_day_scores": {
             "items": {
@@ -599,7 +599,7 @@
             },
             "maxItems": 24,
             "minItems": 24,
-            "type": "string"
+            "type": "array"
           }
         },
         "required": [
@@ -674,7 +674,7 @@
               "minimum": -1.0,
               "type": "number"
             },
-            "type": "string"
+            "type": "object"
           },
           "tower_hour_of_day_scores": {
             "items": {
@@ -685,7 +685,7 @@
             },
             "maxItems": 24,
             "minItems": 24,
-            "type": "string"
+            "type": "array"
           }
         },
         "required": [
