@@ -1,8 +1,9 @@
 To provision the machine:
 
-- Set up the pipenv environment:
+- Set up the pipenv environment and install auxiliary Ansible roles.
   ```bash
   pipenv install
+  pipenv run ansible-galaxy install -p ./roles -r requirements.yml
   ```
 
 - Create a file called `./ssh_keys/authorized_keys.txt` which contains the public
@@ -31,13 +32,12 @@ To provision the machine:
 
   Here is an example setting the relevant environment variables:
   ```bash
-  # Required
+  # Required settings
   export HOST=<some_host_name>
   export SSH_PROVISIONING_USER=root
 
   # Optional (only needed if you want to change the username or password).
-  # See here for details how to determine the password hash:
-  #    https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module
+  # See above how to determine the hashed password.
   export FLOWKIT_USER_NAME=flowkit
   export FLOWKIT_USER_PASSWORD='$6$YaOatFoRa91eOA06$cLJCvJCdd0sLKBEM01eQ2wJ7ZKkTZJz.YWGFK5r0bs4yqiwAz1Lw9pmExiS.PPBBJv13cuBpiHYU88ThX4TeG/'
   ```
@@ -45,8 +45,6 @@ To provision the machine:
 - Finally, run the following command (make sure you don't forget the comma
   after `${HOST}` if you type it manually):
   ```bash
-  pipenv run ansible-galaxy install -p ./roles -r requirements.yml
-
   # Option 1 (using the default username and password)
   pipenv run ansible-playbook -i ${HOST}, --user=${SSH_PROVISIONING_USER} provision.yml
 
@@ -54,7 +52,7 @@ To provision the machine:
   pipenv run ansible-playbook -i ${HOST}, --user=${SSH_PROVISIONING_USER} --extra-vars="username=${FLOWKIT_USER_NAME} password=${FLOWKIT_USER_PASSWORD_SHA512}" provision.yml
   ```
 
-You can also replace `provision.yml` with `provision-dev.yml` in the last line.
+You can also replace `provision.yml` with `provision-dev.yml` in the previous commands.
 In addition to the standard provisioning tasks (the same as in `provision.yml`)
 this will also install Python 3 via `pyenv` and clone the FlowKit repository
 at `/home/flowkit/code/FlowKit`.
