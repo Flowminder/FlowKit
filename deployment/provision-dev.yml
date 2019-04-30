@@ -1,0 +1,30 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+- hosts: all
+  roles:
+    - base_packages
+    - docker
+    - user_accounts
+    - role: avanov.pyenv
+      pyenv_env: "system"
+      pyenv_path: "/usr/local/pyenv"
+      pyenv_owner: "{{ ansible_user }}"
+      pyenv_global: "3.7.3"
+      pyenv_python_versions:
+       - "3.7.3"
+      pyenv_virtualenvs:
+       - venv_name: "v3.7.3"
+         py_version: "3.7.3"
+
+  tasks:
+    - name: "Clone FlowKit repo"
+      become: yes
+      become_user: flowkit
+      git:
+        repo: 'https://github.com/Flowminder/FlowKit.git'
+        dest: ~flowkit/code/FlowKit
+        version: master
+        update: no

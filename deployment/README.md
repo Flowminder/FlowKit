@@ -12,7 +12,12 @@ To provision the machine:
   after `${HOST}` if you type it manually):
   ```
   pipenv install
+  pipenv run ansible-galaxy install -p ./roles -r requirements.yml
   pipenv run ansible-playbook -i ${HOST}, --user=${SSH_USER} provision.yml
   ```
+
+You can also replace `provision.yml` with `provision-dev.yml` in the last line.
+This runs the standard provisioning (the same as in `provision.yml`) and will also
+install Python 3 via `pyenv` and clone the FlowKit repository at `/home/flowkit/code/FlowKit`.
 
 This has been tested with CentOS Linux release 7.5.1804.
