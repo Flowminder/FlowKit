@@ -1,5 +1,10 @@
 To provision the machine:
 
+- Set up the pipenv environment:
+  ```bash
+  pipenv install
+  ```
+
 - Create a file called `ssh_keys/authorized_keys.txt` which contains the public
   SSH keys of the users who should be able to log into the `flowkit` account
   once the machine is provisioned.
@@ -14,11 +19,17 @@ To provision the machine:
   and `FLOWKIT_USER_PASSWORD_SHA512`. These specify the username and (hashed)
   password of the user account that will install FlowKit. The default username
   is `flowkit` (with the password being the same). Note that the password env
-  var must contain the password in _hashed_ form. See the Ansible
+  var must contain the password in _hashed_ form. You can determine this using
+  the following command (which presents an interactive prompt where you can
+  enter the password):
+  ```bash
+  pipenv run python -c "from passlib.hash import sha512_crypt; import getpass; print(sha512_crypt.using(rounds=5000).hash(getpass.getpass()))"
+  ```
+  (See the Ansible
   [FAQ](https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-crypted-passwords-for-the-user-module)
-  for details how to determine a SHA512 hash of the password.
+  for alternative methods to determine a SHA512 hash of the password.)
 
-  Here is an example:
+  Here is an example setting the relevant environment variables:
   ```bash
   # Required
   export HOST=<some_host_name>
@@ -34,7 +45,6 @@ To provision the machine:
 - Finally, run the following command (make sure you don't forget the comma
   after `${HOST}` if you type it manually):
   ```bash
-  pipenv install
   pipenv run ansible-galaxy install -p ./roles -r requirements.yml
 
   # Option 1 (using the default username and password)
