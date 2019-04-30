@@ -506,6 +506,17 @@ jobs:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash)
 
+  test_quickstart:
+    machine:
+      image: circleci/classic:201808-01
+    working_directory: /home/circleci/project
+    environment:
+      BRANCH: $CIRCLE_BRANCH
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run: ./quick_start.sh
+
   build_docs:
     parameters:
       deploy:
@@ -706,6 +717,13 @@ workflows:
           requires:
             - run_flowmachine_tests
             - integration_tests
+          <<: *run_always_org_context
+      - test_quickstart:
+          requires:
+            - build_flowdb
+            - build_flowapi
+            - build_flowmachine
+            - build_flowauth
           <<: *run_always_org_context
       - integration_tests:
           requires:
