@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - A new Ansible playbook was added in `deployment/provision-dev.yml`. In addition to the standard provisioning
-  this installs pyenv and Python 3.7, and clones the FlowKit repository, which is useful for development purposes.
+  this installs pyenv, Python 3.7, pipenv and clones the FlowKit repository, which is useful for development purposes.
 
 ### Changed
 - FlowAPI's `available_dates` endpoint now always returns available dates for all event types and does not accept JSON
