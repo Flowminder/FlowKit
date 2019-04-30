@@ -19,7 +19,7 @@ describe("Login screen", function () {
     //checking validation text
     cy.get("#username-helper-text").should(
       "have.text",
-      "Username may on contain letters, numbers and underscores."
+      "Username may only contain letters, numbers and underscores."
     );
     cy.get("#username")
       .type(" ")

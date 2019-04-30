@@ -81,7 +81,7 @@ class UserAdminDetails extends React.Component {
       } else {
         state = Object.assign(state, {
           username_helper_text:
-            "Username may on contain letters, numbers and underscores."
+            "Username may only contain letters, numbers and underscores."
         });
       }
     }
