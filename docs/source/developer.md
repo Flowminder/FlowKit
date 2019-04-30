@@ -153,6 +153,19 @@ As explained in the [quick install guide](install.md), user authentication and a
 
 JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The [FlowAuth](install.md#installing-flowauth) authentication management system is designed to generate JWTs for accessing FlowAPI.
 
+#### Test Tokens
+
+FlowKit includes the `flowkit-jwt-generator` package, which can be used to generate tokens for testing purposes. This package supplies: 
+
+- Two commandline tools
+    - `generate-jwt`, which allows you to specify the claims
+    - `all-access-jwt`, which generates a token which grants access to all query types on a specific running instance of FlowAPI
+- Two pytest plugins with analogous functionality to the CLI tools
+    - `access_token_builder`
+    - `universal_access_token`
+
+Alternatively, the `generate_token` function can be used directly.
+
 
 <a name="flowmachine">
 

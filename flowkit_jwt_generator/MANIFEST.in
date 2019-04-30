@@ -1,0 +1,2 @@
+include versioneer.py
+include flowkit_jwt_generator/_version.py

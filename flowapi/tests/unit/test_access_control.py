@@ -4,7 +4,6 @@
 
 
 import pytest
-from asynctest import return_once
 from .utils import query_kinds, exemplar_query_params
 
 

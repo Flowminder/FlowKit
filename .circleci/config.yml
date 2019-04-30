@@ -364,6 +364,23 @@ jobs:
       - store_test_results:
           path: test_results
 
+  run_token_generator_tests:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowkit_jwt_generator
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run: pipenv install --deploy --dev
+      - run:
+          name: Run API unit tests
+          command: |
+            pipenv run python -m pytest --junitxml=test_results/pytest/results.xml --cov=flowkit_jwt_generator/ \
+             --cov-report term --cov-report xml --durations=10
+      - store_test_results:
+          path: test_results
+      - run: bash <(curl -s https://codecov.io/bash)
+
   run_flowkit_api_tests:
     docker:
       - image: circleci/python:3.7
@@ -630,6 +647,8 @@ workflows:
   run_build_pipeline:
     jobs:
       - set_docker_tag_for_ci_images:
+          <<: *run_always_org_context
+      - run_token_generator_tests:
           <<: *run_always_org_context
       - build_flowdb:
           requires:
