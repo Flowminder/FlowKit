@@ -7,6 +7,7 @@
   vars:
     username: flowkit
     password: "$6$YaOatFoRa91eOA06$cLJCvJCdd0sLKBEM01eQ2wJ7ZKkTZJz.YWGFK5r0bs4yqiwAz1Lw9pmExiS.PPBBJv13cuBpiHYU88ThX4TeG/"
+    pyenv_path: "/usr/local/pyenv"
     pyenv_global_python_version: "3.7.3"
   roles:
     - base_packages
@@ -16,7 +17,6 @@
       password: "{{ password }}"
     - role: avanov.pyenv
       pyenv_env: "system"
-      pyenv_path: "/usr/local/pyenv"
       pyenv_owner: "{{ ansible_user }}"
       pyenv_global: "{{ pyenv_global_python_version }}"
       pyenv_python_versions:
@@ -26,6 +26,10 @@
          py_version: "{{ pyenv_global_python_version }}"
 
   tasks:
+    - name: "Install pipenv"
+      pip:
+        name: pipenv
+        executable: "{{ pyenv_path }}/shims/pip"
     - name: "Clone FlowKit repo"
       become: yes
       become_user: "{{ username }}"
