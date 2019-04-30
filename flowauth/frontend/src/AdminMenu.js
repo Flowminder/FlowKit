@@ -16,7 +16,7 @@ class AdminMenu extends React.Component {
       <React.Fragment>
         <List>
           <ListSubheader inset>Admin</ListSubheader>
-          <ListItem button onClick={() => onClick("user_admin")}>
+          <ListItem button onClick={() => onClick("user_admin")} id="user_list">
             <ListItemText primary="Users" />
           </ListItem>
           <ListItem button onClick={() => onClick("server_admin")}>
