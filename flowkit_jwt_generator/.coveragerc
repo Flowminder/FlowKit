@@ -1,10 +1,12 @@
 [run]
 branch = True
 
+
 [report]
 omit =
     */python?.?/*
     */venv/*
+    */site-packages/nose/*
     */tests/*
     */_version.py
     */versioneer.py
