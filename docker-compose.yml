@@ -16,9 +16,6 @@ services:
   flowdb:
     container_name: flowdb
     image: flowminder/flowdb:latest
-    build:
-      context: ./flowdb/
-      dockerfile: Dockerfile
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
 
@@ -44,9 +41,6 @@ services:
   flowdb_testdata:
     container_name: flowdb_testdata
     image: flowminder/flowdb-testdata:latest
-    build:
-      context: ./flowdb/testdata/
-      dockerfile: Dockerfile
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
@@ -63,9 +57,6 @@ services:
   flowdb_synthetic_data:
     container_name: flowdb_synthetic_data
     image: flowminder/flowdb-synthetic-data:latest
-    build:
-      context: ./flowdb/testdata/
-      dockerfile: Dockerfile.synthetic_data
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
@@ -96,9 +87,6 @@ services:
   flowmachine:
     container_name: flowmachine
     image: flowminder/flowmachine:latest
-    build:
-      context: ./flowmachine
-      dockerfile: Dockerfile
     ports:
       - ${FLOWMACHINE_PORT:?Must set FLOWMACHINE_PORT env var}:5555
     depends_on:
@@ -125,9 +113,6 @@ services:
   flowapi:
     container_name: flowapi
     image: flowminder/flowapi:latest
-    build:
-      context: ./flowapi
-      dockerfile: Dockerfile
     ports:
       - ${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}:9090
     environment:
@@ -149,9 +134,6 @@ services:
   flowauth:
     container_name: flowauth
     image: flowminder/flowauth:latest
-    build:
-      context: ./flowauth
-      dockerfile: Dockerfile
     ports:
       - ${FLOWAUTH_PORT:?Must set FLOWAUTH_PORT env var}:80
     environment:

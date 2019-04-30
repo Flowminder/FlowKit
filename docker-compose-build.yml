@@ -1,0 +1,43 @@
+#
+# DOCKER COMPOSE BUILDER FOR FLOWKIT
+#
+
+version: '3.7'
+
+services:
+
+  flowdb:
+    image: flowminder/flowdb:latest
+    build:
+      context: ./flowdb/
+      dockerfile: Dockerfile
+
+  flowdb_testdata:
+    image: flowminder/flowdb-testdata:latest
+    build:
+      context: ./flowdb/testdata/
+      dockerfile: Dockerfile
+
+  flowdb_synthetic_data:
+    image: flowminder/flowdb-synthetic-data:latest
+    build:
+      context: ./flowdb/testdata/
+      dockerfile: Dockerfile.synthetic_data
+
+  flowmachine:
+    image: flowminder/flowmachine:latest
+    build:
+      context: ./flowmachine
+      dockerfile: Dockerfile
+
+  flowapi:
+    image: flowminder/flowapi:latest
+    build:
+      context: ./flowapi
+      dockerfile: Dockerfile
+
+  flowauth:
+    image: flowminder/flowauth:latest
+    build:
+      context: ./flowauth
+      dockerfile: Dockerfile
