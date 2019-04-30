@@ -2,18 +2,26 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-- name: "Create user 'flowkit'"
+- name: "Create user '{{ USERNAME }}'"
   become: yes
   user:
-    name: flowkit
+    name: "{{ USERNAME }}"
     state: present
     groups: docker, wheel
-    password: "$6$YaOatFoRa91eOA06$cLJCvJCdd0sLKBEM01eQ2wJ7ZKkTZJz.YWGFK5r0bs4yqiwAz1Lw9pmExiS.PPBBJv13cuBpiHYU88ThX4TeG/"
+    password: "{{ PASSWORD }}"
+
+- name: "Check that file {{ AUTHORIZED_KEYS_FILE }} exists"
+  local_action: stat path="{{ playbook_dir }}/{{ AUTHORIZED_KEYS_FILE }}"
+  register: p
+- debug:
+    msg: "Please add public ssh keys to the file: {{ playbook_dir }}/{{ AUTHORIZED_KEYS_FILE }}"
+  when: not p.stat.exists
+  failed_when: not p.stat.exists
 
 - name: "Enable ssh access for users defined above"
   authorized_key:
     user: "{{ item }}"
     state: present
-    key: "{{ lookup('file', playbook_dir + '/ssh_keys/authorized_keys.txt') }}"
+    key: "{{ lookup('file', playbook_dir + '/' + AUTHORIZED_KEYS_FILE) }}"
   with_items:
-    - flowkit
+    - "{{ USERNAME }}"
