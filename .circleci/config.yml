@@ -682,7 +682,6 @@ workflows:
           component: flowmachine
           requires:
             - run_flowmachine_tests
-            - integration_tests
           <<: *run_always_org_context
       - build_docs:
           name: build_docs
@@ -702,7 +701,6 @@ workflows:
           component: flowapi
           requires:
             - run_flowkit_api_tests
-            - integration_tests
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
@@ -733,19 +731,13 @@ workflows:
       - retag_images:
           name: retag_master_branch
           requires:
-            - build_flowmachine
-            - build_flowdb
-            - build_flowapi
-            - build_flowauth
+            - test_quickstart
             - build_docs
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
           requires:
-            - build_flowmachine
-            - build_flowdb
-            - build_flowapi
-            - build_flowauth
+            - test_quickstart
             - build_docs
           tag: CIRCLE_TAG
           <<: *tag_only_org_context
