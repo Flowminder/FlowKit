@@ -367,6 +367,8 @@ jobs:
   run_token_generator_tests:
     docker:
       - image: circleci/python:3.7
+    environment:
+      JWT_SECRET_KEY: secret
     working_directory: /home/circleci/project/flowkit_jwt_generator
     steps:
       - checkout:
