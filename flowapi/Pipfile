@@ -13,7 +13,6 @@ structlog = "*"
 python-rapidjson = "*"
 pyyaml = ">=5.1"
 apispec = {extras = ["yaml"],version = "*"}
-flowkit-jwt-generator = {path = "./../flowkit_jwt_generator"}
 
 [dev-packages]
 pytest = "*"

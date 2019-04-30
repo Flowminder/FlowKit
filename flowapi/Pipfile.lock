@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0f9031c1593bcc1d3520ebcd415c872713e3c8f931a19e371cf8f0291fff50a8"
+            "sha256": "6b21378224a7ec998c8276b8474fe738ea1698a313365a15a911d2c2f9595948"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -82,9 +82,6 @@
             ],
             "index": "pypi",
             "version": "==3.18.1"
-        },
-        "flowkit-jwt-generator": {
-            "path": "./../flowkit_jwt_generator"
         },
         "h11": {
             "hashes": [
@@ -504,6 +501,7 @@
             "version": "==2.6.1"
         },
         "flowkit-jwt-generator": {
+            "editable": true,
             "path": "./../flowkit_jwt_generator"
         },
         "idna": {
