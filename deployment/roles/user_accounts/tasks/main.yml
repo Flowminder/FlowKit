@@ -2,19 +2,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-- name: "Create user '{{ USERNAME }}'"
+- name: "Create user '{{ username }}'"
   become: yes
   user:
-    name: "{{ USERNAME }}"
+    name: "{{ username }}"
     state: present
     groups: docker, wheel
-    password: "{{ PASSWORD }}"
+    password: "{{ password }}"
 
-- name: "Check that file {{ AUTHORIZED_KEYS_FILE }} exists"
-  local_action: stat path="{{ playbook_dir }}/{{ AUTHORIZED_KEYS_FILE }}"
+- name: "Check that file {{ authorized_keys_file }} exists"
+  local_action: stat path="{{ playbook_dir }}/{{ authorized_keys_file }}"
   register: p
 - debug:
-    msg: "Please add public ssh keys to the file: {{ playbook_dir }}/{{ AUTHORIZED_KEYS_FILE }}"
+    msg: "Please add public ssh keys to the file: {{ playbook_dir }}/{{ authorized_keys_file }}"
   when: not p.stat.exists
   failed_when: not p.stat.exists
 
@@ -22,6 +22,6 @@
   authorized_key:
     user: "{{ item }}"
     state: present
-    key: "{{ lookup('file', playbook_dir + '/' + AUTHORIZED_KEYS_FILE) }}"
+    key: "{{ lookup('file', playbook_dir + '/' + authorized_keys_file) }}"
   with_items:
-    - "{{ USERNAME }}"
+    - "{{ username }}"

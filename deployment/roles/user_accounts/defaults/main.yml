@@ -3,6 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ---
-USERNAME: "flowkit"
-PASSWORD: "$6$YaOatFoRa91eOA06$cLJCvJCdd0sLKBEM01eQ2wJ7ZKkTZJz.YWGFK5r0bs4yqiwAz1Lw9pmExiS.PPBBJv13cuBpiHYU88ThX4TeG/"
-AUTHORIZED_KEYS_FILE: "./ssh_keys/authorized_keys.txt"
+username: "flowkit"
+password: "$6$YaOatFoRa91eOA06$cLJCvJCdd0sLKBEM01eQ2wJ7ZKkTZJz.YWGFK5r0bs4yqiwAz1Lw9pmExiS.PPBBJv13cuBpiHYU88ThX4TeG/"
+authorized_keys_file: "./ssh_keys/authorized_keys.txt"

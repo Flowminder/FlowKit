@@ -12,8 +12,8 @@
     - base_packages
     - docker
     - role: user_accounts
-      USERNAME: "{{ username }}"
-      PASSWORD: "{{ password }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
     - role: avanov.pyenv
       pyenv_env: "system"
       pyenv_path: "/usr/local/pyenv"
