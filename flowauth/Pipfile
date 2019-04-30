@@ -14,7 +14,7 @@ zxcvbn = "*"
 versioneer = "*"
 passlib = "*"
 argon2_cffi = "*"
-psycopg2 = "*"
+psycopg2-binary = "*"
 cryptography = "*"
 
 [dev-packages]
