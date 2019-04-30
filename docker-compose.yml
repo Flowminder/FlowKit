@@ -18,7 +18,7 @@ services:
 
   flowdb:
     container_name: flowdb
-    image: flowminder/flowdb:latest
+    image: flowminder/flowdb:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
 
@@ -43,7 +43,7 @@ services:
 
   flowdb_testdata:
     container_name: flowdb_testdata
-    image: flowminder/flowdb-testdata:latest
+    image: flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
@@ -59,7 +59,7 @@ services:
 
   flowdb_synthetic_data:
     container_name: flowdb_synthetic_data
-    image: flowminder/flowdb-synthetic-data:latest
+    image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
@@ -89,7 +89,7 @@ services:
 
   flowmachine:
     container_name: flowmachine
-    image: flowminder/flowmachine:latest
+    image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWMACHINE_PORT:?Must set FLOWMACHINE_PORT env var}:5555
     depends_on:
@@ -115,7 +115,7 @@ services:
 
   flowapi:
     container_name: flowapi
-    image: flowminder/flowapi:latest
+    image: flowminder/flowapi:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}:9090
     environment:
@@ -136,7 +136,7 @@ services:
 
   flowauth:
     container_name: flowauth
-    image: flowminder/flowauth:latest
+    image: flowminder/flowauth:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWAUTH_PORT:?Must set FLOWAUTH_PORT env var}:80
     environment:
