@@ -14,7 +14,12 @@ To provision the machine:
   of the machine to be provisioned and the username of the provisioning user.
   Note that this user needs admin permissions because it needs to be able to
   install packages on the system. For a cloud VM the provisioning user will
-  typically be the root user
+  typically be the root user.
+
+  You should also set `PROVISIONING_PLAYBOOK` to either `provision.yml` or
+  `provision-dev.yml`. In addition to the standard provisioning tasks (the
+  same as in `provision.yml`), the latter will also install Python 3 via
+  `pyenv` and clone the FlowKit repository at `/home/flowkit/code/FlowKit`.
 
   Optionally, you can also set the environment variables `FLOWKIT_USER_NAME`
   and `FLOWKIT_USER_PASSWORD_SHA512`. These specify the username and (hashed)
@@ -35,6 +40,7 @@ To provision the machine:
   # Required settings
   export HOST=<some_host_name>
   export SSH_PROVISIONING_USER=root
+  export PROVISIONING_PLAYBOOK=provision.yml  # alternatively, use "provision-dev.yml"
 
   # Optional (only needed if you want to change the username or password).
   # See above how to determine the hashed password.
@@ -46,15 +52,10 @@ To provision the machine:
   after `${HOST}` if you type it manually):
   ```bash
   # Option 1 (using the default username and password)
-  pipenv run ansible-playbook -i ${HOST}, --user=${SSH_PROVISIONING_USER} provision.yml
+  pipenv run ansible-playbook -i ${HOST}, --user=${SSH_PROVISIONING_USER} ${PROVISIONING_PLAYBOOK}
 
   # Option 2 (run this line if you changed the username or password above)
-  pipenv run ansible-playbook -i ${HOST}, --user=${SSH_PROVISIONING_USER} --extra-vars="username=${FLOWKIT_USER_NAME} password=${FLOWKIT_USER_PASSWORD_SHA512}" provision.yml
+  pipenv run ansible-playbook -i ${HOST}, --user=${SSH_PROVISIONING_USER} --extra-vars="username=${FLOWKIT_USER_NAME} password=${FLOWKIT_USER_PASSWORD_SHA512}" ${PROVISIONING_PLAYBOOK}
   ```
-
-You can also replace `provision.yml` with `provision-dev.yml` in the previous commands.
-In addition to the standard provisioning tasks (the same as in `provision.yml`)
-this will also install Python 3 via `pyenv` and clone the FlowKit repository
-at `/home/flowkit/code/FlowKit`.
 
 This has been tested with CentOS Linux release 7.5.1804.
