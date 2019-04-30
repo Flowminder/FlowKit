@@ -531,10 +531,10 @@ def make_demodata():  # pragma: no cover
         caps.append(c)
     # Add some servers
     test_server = Server(
-        name="Aruba",
+        name="TEST_SERVER",
         longest_token_life=2880,
         latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
-        secret_key="a_very_secret_key",
+        secret_key="secret",
     )
 
     db.session.add(test_server)
@@ -559,6 +559,9 @@ def make_demodata():  # pragma: no cover
         gsp.spatial_aggregation.append(
             agg_units[0]
         )  # Give Bob access to admin0 agg units
+        gsp.spatial_aggregation.append(
+            agg_units[1]
+        )  # Give Bob access to admin1 agg units
         db.session.add(gsp)
     db.session.add(
         GroupServerTokenLimits(
