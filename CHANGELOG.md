@@ -6,9 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- A new Ansible playbook was added in `deployment/provision-dev.yml`. In addition to the standard provisioning
+  this installs pyenv and Python 3.7, and clones the FlowKit repository, which is useful for development purposes.
 
 ### Changed
-- FlowAPI's `available_dates` endpoint now always returns available dates for all event types and does not accept JSON 
+- FlowAPI's `available_dates` endpoint now always returns available dates for all event types and does not accept JSON
+- The Ansible playbooks in `deployment/` now allow configuring the username and password for the FlowKit user account.
 
 ### Fixed
 - FlowDB synthetic data container no longer silently fails to generate data if data generator is not set [#654](https://github.com/Flowminder/FlowKit/issues/654)
