@@ -4,7 +4,13 @@
 
 ---
 - hosts: all
+  vars:
+    username: flowkit
+    password: "$6$YaOatFoRa91eOA06$cLJCvJCdd0sLKBEM01eQ2wJ7ZKkTZJz.YWGFK5r0bs4yqiwAz1Lw9pmExiS.PPBBJv13cuBpiHYU88ThX4TeG/"
+    pyenv_global_python_version: "3.7.3"
   roles:
     - base_packages
     - docker
-    - user_accounts
+    - role: user_accounts
+      username: "{{ username }}"
+      password: "{{ password }}"
