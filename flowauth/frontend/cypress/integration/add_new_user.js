@@ -41,6 +41,27 @@ describe("Login screen", function () {
     cy.get("#username").type("USER_TEST01");
     cy.contains("#username-helper-text").should("not.exist");
   });
+  it("Add duplicate Username", function () {
+    cy.get("#new").click();
+    //adding existing username and new password
+    cy.get("#username")
+      .type("TEST_ADMIN");
+    cy.get("#password").type("C>K,7|~44]44:ibK");
+    cy.contains("Save").click();
+    //checking error dialogue text
+    cy.get("#error-dialog-description").should(
+      "have.text",
+      "Username already exists."
+    );
+    cy.contains("OK").click();
+    cy.get("#username")
+      .type(" ")
+      .clear();
+    cy.get("#username").type("USER_TEST02");
+    cy.get("#password").type("C>K,7|~44]44:ibK");
+    cy.contains("Save").click();
+    cy.contains("#error-dialog").should("not.exist");
+  });
   it("Add blank Password", function () {
     cy.get("#new").click();
     //Add blank password

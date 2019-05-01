@@ -643,12 +643,13 @@ def add_user():
         raise InvalidUsage(
             "Username already exists.", payload={"bad_field": "username"}
         )
-    user_group = Group(name=user.username, user_group=True)
-    user.groups.append(user_group)
-    db.session.add(user)
-    db.session.add(user_group)
-    db.session.commit()
-    return jsonify({"id": user.id, "group_id": user_group.id})
+    else:
+        user_group = Group(name=user.username, user_group=True)
+        user.groups.append(user_group)
+        db.session.add(user)
+        db.session.add(user_group)
+        db.session.commit()
+        return jsonify({"id": user.id, "group_id": user_group.id})
 
 
 @blueprint.route("/users/<user_id>", methods=["DELETE"])
