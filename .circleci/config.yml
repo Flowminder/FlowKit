@@ -478,7 +478,7 @@ jobs:
           name: Build <<parameters.component>> image
           command: |
             echo "Tagging as $CIRCLE_SHA1"
-            if [[ <<parameters.component>> != "flowkit-examples ]]; then
+            if [[ "<<parameters.component>>" != "flowkit-examples" ]]; then
               cd <<parameters.component>>
             fi
             docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 .
