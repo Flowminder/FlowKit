@@ -737,6 +737,10 @@ workflows:
             - test_quickstart
             - integration_tests
             - build_docs
+            - run_flowkit_api_tests
+            - run_flowauth_backend_tests
+            - run_flowauth_frontend_tests
+            - run_flowclient_tests
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
@@ -744,6 +748,10 @@ workflows:
             - test_quickstart
             - integration_tests
             - build_docs
+            - run_flowkit_api_tests
+            - run_flowauth_backend_tests
+            - run_flowauth_frontend_tests
+            - run_flowclient_tests
           tag: CIRCLE_TAG
           <<: *tag_only_org_context
       - push_wheel:
