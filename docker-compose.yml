@@ -117,7 +117,7 @@ services:
     container_name: worked_examples
     image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
     ports:
-      - 8888
+      - ${WORKED_EXAMPLES_PORT:?Must set WORKED_EXAMPLES_PORT env var}:8888
     tty: true
     stdin_open: true
     environment:

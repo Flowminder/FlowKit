@@ -79,9 +79,12 @@ else
     echo "FlowAPI ready."
     i=0; until [ $i -ge 24 ] || (curl -s http://localhost:$FLOWAUTH_PORT > /dev/null) ; do let i=i+1; echo Waiting 10s; sleep 10; done || (>&2 echo "FlowAuth failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAuth,bug including the output of running 'docker logs flowauth'" && exit 1)
     echo "FlowAuth ready."
+    i=0; until [ $i -ge 24 ] || (curl -s http://localhost:$WORKED_EXAMPLES_PORT > /dev/null) ; do let i=i+1; echo Waiting 10s; sleep 10; done || (>&2 echo "Worked examples failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=docs,bug including the output of running 'docker logs worked_examples'" && exit 1)
+    echo "Worked examples ready."
     echo "All containers ready!"
     echo "Access FlowDB using 'PGHOST=$FLOWDB_HOST PGPORT=$FLOWDB_PORT PGDATABASE=flowdb PGUSER=$FLOWMACHINE_FLOWDB_USER PGPASSWORD=$FLOWMACHINE_FLOWDB_PASSWORD psql'"
     echo "Access FlowAPI using FlowClient at http://localhost:$FLOWAPI_PORT"
     echo "View the FlowAPI spec at http://localhost:$FLOWAPI_PORT/api/0/spec/redoc"
     echo "Generate FlowAPI access tokens using FlowAuth with user TEST_USER and password DUMMY_PASSWORD at http://localhost:$FLOWAUTH_PORT"
+    echo "Try out the interactive examples at http://localhost:$FLOWAUTH_PORT/?token=b2a960c88d617bde49e592da8b60d09b3527873cb5a50db2"
 fi
