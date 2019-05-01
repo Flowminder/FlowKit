@@ -32,7 +32,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.2">
     
     
       
@@ -684,6 +684,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/hour_slice/" title="hour_slice" class="md-nav__link">
+      hour_slice
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/init/" title="init" class="md-nav__link">
       init
     </a>
@@ -721,13 +733,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-12" type="checkbox" id="nav-10-1-2-12">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-13" type="checkbox" id="nav-10-1-2-13">
     
-    <label class="md-nav__link" for="nav-10-1-2-12">
+    <label class="md-nav__link" for="nav-10-1-2-13">
       Mixins
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
-      <label class="md-nav__title" for="nav-10-1-2-12">
+      <label class="md-nav__title" for="nav-10-1-2-13">
         Mixins
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -853,13 +865,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-19" type="checkbox" id="nav-10-1-2-19">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-20" type="checkbox" id="nav-10-1-2-20">
     
-    <label class="md-nav__link" for="nav-10-1-2-19">
+    <label class="md-nav__link" for="nav-10-1-2-20">
       Server
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="4">
-      <label class="md-nav__title" for="nav-10-1-2-19">
+      <label class="md-nav__title" for="nav-10-1-2-20">
         Server
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -920,13 +932,13 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-19-5" type="checkbox" id="nav-10-1-2-19-5">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10-1-2-20-5" type="checkbox" id="nav-10-1-2-20-5">
     
-    <label class="md-nav__link" for="nav-10-1-2-19-5">
+    <label class="md-nav__link" for="nav-10-1-2-20-5">
       Query schemas
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="5">
-      <label class="md-nav__title" for="nav-10-1-2-19-5">
+      <label class="md-nav__title" for="nav-10-1-2-20-5">
         Query schemas
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
@@ -1203,6 +1215,18 @@
         
       </ul>
     </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/sqlalchemy_table_definitions/" title="sqlalchemy_table_definitions" class="md-nav__link">
+      sqlalchemy_table_definitions
+    </a>
   </li>
 
         
@@ -2637,7 +2661,7 @@ CONTAINER ID        IMAGE                               COMMAND                 
 e57c8eeb7d38        flowminder/flowmachine:latest       &quot;/bin/sh -c &#39;pipenv …&quot;   5 minutes ago       Up 5 minutes        0.0.0.0:5555-&gt;5555/tcp             flowmachine
 3d54ce0c4484        flowminder/flowapi:latest           &quot;/bin/sh -c &#39;pipenv …&quot;   5 minutes ago       Up 5 minutes        0.0.0.0:9090-&gt;9090/tcp             flowapi
 89e9575c8d42        flowminder/flowauth:latest          &quot;/entrypoint.sh /sta…&quot;   5 minutes ago       Up 5 minutes        443/tcp, 0.0.0.0:8080-&gt;80/tcp      flowauth
-384355e94ae6        bitnami/redis                       &quot;/entrypoint.sh /run…&quot;   5 minutes ago       Up 5 minutes        0.0.0.0:6379-&gt;6379/tcp             query_locker
+384355e94ae6        bitnami/redis                       &quot;/entrypoint.sh /run…&quot;   5 minutes ago       Up 5 minutes        0.0.0.0:6379-&gt;6379/tcp             flowmachine_query_locker
 </pre></div></p>
 <p><strong>Note:</strong> <em>Currently there is a glitch which means that <code>flowmachine</code> may not start up correctly if <code>flowdb_testdata</code>
 is still in the start-up phase while the <code>flowmachine</code> container is already up and running. This will be fixed soon but for the
@@ -2793,7 +2817,7 @@ variable <code>TOKEN</code>.</p>
       
     </div>
     
-      <script src="../assets/javascripts/application.dc02f8ce.js"></script>
+      <script src="../assets/javascripts/application.267712eb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
