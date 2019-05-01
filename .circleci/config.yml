@@ -128,18 +128,6 @@ executors:
           REDIS_PASSWORD: "fm_redis"
 
 jobs:
-  set_docker_tag_for_ci_images:
-    docker: *base_docker
-    steps:
-      - run:
-          name: Set a common docker tag
-          command: |
-            echo "export SAFE_TAG=${CIRCLE_TAG:-$(echo -n $CIRCLE_BRANCH | md5sum | cut -d" " -f1)}"| tee -a $BASH_ENV /home/circleci/.env
-      - persist_to_workspace:
-          root: /home/circleci/
-          paths:
-            - .env
-
   build_flowdb:
     machine:
       image: circleci/classic:201808-01
@@ -147,6 +135,10 @@ jobs:
     environment: *flowdb_env
     steps:
       - checkout
+      - run:
+          name: Set a common docker tag
+          command: |
+            echo "export SAFE_TAG=${CIRCLE_TAG:-$(echo -n $CIRCLE_BRANCH | md5sum | cut -d" " -f1)}"| tee -a $BASH_ENV /home/circleci/.env
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
@@ -643,11 +635,7 @@ jobs:
 workflows:
   run_build_pipeline:
     jobs:
-      - set_docker_tag_for_ci_images:
-          <<: *run_always_org_context
       - build_flowdb:
-          requires:
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - install_flowmachine_deps:
           <<: *run_always_org_context
