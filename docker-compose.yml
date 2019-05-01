@@ -113,6 +113,29 @@ services:
       - db
       - redis
 
+  worked_examples:
+    container_name: worked_examples
+    image: flowminder/flowkit_worked_examples:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8888
+    tty: true
+    stdin_open: true
+    environment:
+      - FLOWDB_PORT=5432
+      - FLOWDB_HOST=${DOCKER_FLOWDB_HOST:?Must set DOCKER_FLOWDB_HOST env var}
+      - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
+      - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
+      - REDIS_HOST=query_locker
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+    restart: always
+    networks:
+      - db
+      - redis
+
   flowapi:
     container_name: flowapi
     image: flowminder/flowapi:${CONTAINER_TAG:-latest}
