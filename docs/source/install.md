@@ -29,7 +29,7 @@ Start the FlowKit test system by running
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh)
 ``` 
 
-This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default, and the FlowAuth authentication system accessible by visiting http://localhost:8000 using your web browser.
+This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default, and the FlowAuth authentication system accessible by visiting <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a> using your web browser.
 
 The default system includes a small amount of test data. For a test system with considerably more data you can run
 
@@ -37,7 +37,41 @@ The default system includes a small amount of test data. For a test system with 
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) synth
 ```  
 
-In order to use the test system, now install FlowClient. 
+In order to use the test system, now install FlowClient, and generate a token using FlowAuth.
+
+#### FlowAuth Quickstart
+
+Visit <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a> and log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`. `TEST_USER` is already set up to generate tokens for the FlowAPI instance started by the quick start script.
+
+#### Granting user permissions in FlowAuth
+
+The following steps using the FlowAuth administration tool are required to add a user and allow them to generate access tokens to communicate with a FlowKit server through FlowAPI:
+
+1. Log into FlowAuth as an administrator.
+
+2. Under "API Routes", add any applicable API routes (e.g. `daily_location`).
+
+3. Under "Aggregation Units", add any applicable aggregation units (e.g. `admin3`).
+
+3. Under "Servers", add a new server and give it a name and secret key. Note that the Secret Key must match the `JWT_SECRET_KEY` set in the flowapi docker container on this server ('secret' in the example above).
+
+4. Enable any permissions for this server under "API Permissions", and aggregation units under "Aggregation Units".
+
+5. Under "Users", add a new user, and set the username and password.
+
+6. Either:
+    - Add a server to the user, and enable/disable API permissions and aggregation units,
+    <p>
+7. Or:
+    <p>
+    - Under "Groups", add a new group,
+
+    - Add a server to the group, and enable/disable API permissions and aggregation units,
+
+    - Add the user to the group.
+
+
+The user can then log into FlowAuth and generate a token (see the [analyst section](analyst.md#flowauth) for instructions).
 
 
 ### FlowClient <a name="flowclient"> </a>
@@ -48,7 +82,7 @@ The FlowClient Python client is used to perform CDR analysis using the JupyterLa
 pip install flowclient
 ```
 
-Quick install is continued with an example of FlowClient usage [here](3-analyst.md#flowclient).
+Quick install is continued with an example of FlowClient usage [here](analyst.md#flowclient).
 
 <a name="developers">
 
