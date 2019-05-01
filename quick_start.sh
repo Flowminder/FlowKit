@@ -86,5 +86,5 @@ else
     echo "Access FlowAPI using FlowClient at http://localhost:$FLOWAPI_PORT"
     echo "View the FlowAPI spec at http://localhost:$FLOWAPI_PORT/api/0/spec/redoc"
     echo "Generate FlowAPI access tokens using FlowAuth with user TEST_USER and password DUMMY_PASSWORD at http://localhost:$FLOWAUTH_PORT"
-    echo "Try out the interactive examples at http://localhost:$FLOWAUTH_PORT"
+    echo "Try out the interactive examples at http://localhost:$WORKED_EXAMPLES_PORT"
 fi
