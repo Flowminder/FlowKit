@@ -639,6 +639,10 @@ def add_user():
         raise InvalidUsage(
             "Password not complex enough.", payload={"bad_field": "password"}
         )
+    if User.query.filter(User.username == json["username"]).first() is not None:
+        raise InvalidUsage(
+            "Username already exists.", payload={"bad_field": "username"}
+        )
     user_group = Group(name=user.username, user_group=True)
     user.groups.append(user_group)
     db.session.add(user)

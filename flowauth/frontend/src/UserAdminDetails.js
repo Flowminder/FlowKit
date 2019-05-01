@@ -18,6 +18,7 @@ import Switch from "@material-ui/core/Switch";
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import SubmitButtons from "./SubmitButtons";
+import ErrorDialog from "./ErrorDialog";
 import {
   getUser,
   editGroupMemberships,
@@ -37,7 +38,9 @@ class UserAdminDetails extends React.Component {
     servers: [],
     group_id: null,
     is_admin: false,
-    password_strength: null
+    password_strength: null,
+    pageError: false,
+    errors: { message: "" }
   };
   componentDidMount() {
     getUser(this.props.item_id)
@@ -64,6 +67,10 @@ class UserAdminDetails extends React.Component {
     this.setState({ is_admin: event.target.checked });
   };
   handleChange = name => event => {
+    this.setState({
+      pageError: false,
+      errors: ""
+    });
     var state = {
       [name]: event.target.value
     };
@@ -131,6 +138,9 @@ class UserAdminDetails extends React.Component {
         })
         .then(json => {
           onClick();
+        })
+        .catch(err => {
+          this.setState({ pageError: true, errors: err });
         });
     }
   };
@@ -234,6 +244,10 @@ class UserAdminDetails extends React.Component {
           updateServers={this.updateServers}
           servers={servers}
           classes={classes}
+        />
+        <ErrorDialog
+          open={this.state.pageError}
+          message={this.state.errors.message}
         />
         <Grid item xs={12} />
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
