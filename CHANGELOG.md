@@ -7,10 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Added a new module, `flowkit-jwt-generator`, which generates test JWT tokens for use with FlowAPI [#564](https://github.com/Flowminder/FlowKit/issues/564)
+- A new Ansible playbook was added in `deployment/provision-dev.yml`. In addition to the standard provisioning
+  this installs pyenv, Python 3.7, pipenv and clones the FlowKit repository, which is useful for development purposes.
 
 ### Changed
-- FlowAPI's `available_dates` endpoint now always returns available dates for all event types and does not accept JSON 
+- FlowAPI's `available_dates` endpoint now always returns available dates for all event types and does not accept JSON
 - Hints are now displayed in the add user form of FlowAuth if the form is not completed [#679](https://github.com/Flowminder/FlowKit/issues/679)
+- The Ansible playbooks in `deployment/` now allow configuring the username and password for the FlowKit user account.
 
 ### Fixed
 - FlowDB synthetic data container no longer silently fails to generate data if data generator is not set [#654](https://github.com/Flowminder/FlowKit/issues/654)
