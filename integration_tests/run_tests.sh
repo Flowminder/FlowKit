@@ -7,7 +7,7 @@
 set -e
 
 export FLOWDB_SERVICES="flowdb_testdata"
-export DOCKER_SERVICES="flowdb_testdata query_locker"
+export DOCKER_SERVICES="flowdb_testdata flowmachine_query_locker"
 
 TrapQuit() {
     if [ "$CI" != "true" ] && [ "$KEEP_CONTAINERS_ALIVE" != "true" ]; then
