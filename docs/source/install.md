@@ -24,10 +24,18 @@ These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pi
 Docker containers for FlowAPI, FlowMachine and FlowDB are provided in the [DockerCloud](https://cloud.docker.com/) repositories `flowminder/flowapi`, `flowminder/flowmachine` and `flowminder/flowdb`, respectively. You will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 Start the FlowKit test system by running 
+
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh)
 ``` 
-This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default, and the FlowAuth authentication system accessible by visiting http://localhost:8000 using your web browser.  
+
+This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default, and the FlowAuth authentication system accessible by visiting http://localhost:8000 using your web browser.
+
+The default system includes a small amount of test data. For a test system with considerably more data you can run
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) synth
+```  
 
 In order to use the test system, now install FlowClient. 
 

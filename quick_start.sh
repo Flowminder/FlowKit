@@ -49,6 +49,13 @@ if [ "$CI" = "true" ]; then
     export BRANCH=$CIRCLE_SHA1
 fi
 
+if [ $# -gt 0 ] && [ "$1" = "synth" ]
+then
+    export DOCKER_FLOWDB_HOST=flowdb_synthetic_data
+else
+    export DOCKER_FLOWDB_HOST=flowdb_testdata
+fi
+
 if [ $# -gt 0 ] && [ "$1" = "stop" ]
 then
     export DOCKER_FLOWDB_HOST=flowdb_testdata
@@ -57,9 +64,8 @@ then
     curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - down
 else
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
-    export DOCKER_FLOWDB_HOST=flowdb_testdata
     echo "Starting containers"
-    RUNNING=`curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - ps -q flowdb_testdata flowapi flowmachine flowauth query_locker`
+    RUNNING=`curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - ps -q {$DOCKER_FLOWDB_HOST} flowapi flowmachine flowauth query_locker`
     if [[ "$RUNNING" != "" ]]; then
         confirm "Existing containers are running and will be replaced. Are you sure?" || exit 1
     fi
