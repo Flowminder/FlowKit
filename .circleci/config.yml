@@ -689,8 +689,6 @@ workflows:
           name: build_flowmachine
           component: flowmachine
           component_path: flowmachine
-          requires:
-            - run_flowmachine_tests
           <<: *run_always_org_context
       - build_docs:
           name: build_docs
@@ -702,30 +700,23 @@ workflows:
           name: build_flowauth
           component: flowauth
           component_path: flowauth
-          requires:
-            - run_flowauth_backend_tests
-            - run_flowauth_frontend_tests
           <<: *run_always_org_context
       - build_docker_image:
           name: build_flowapi
           component: flowapi
           component_path: flowapi
-          requires:
-            - run_flowkit_api_tests
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
           project_name: flowclient
           requires:
-            - run_flowclient_tests
-            - integration_tests
+            - install_flowmachine_deps
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowmachine_wheel
           project_name: flowmachine
           requires:
-            - run_flowmachine_tests
-            - integration_tests
+            - install_flowmachine_deps
           <<: *run_always_org_context
       - test_quickstart:
           requires:
@@ -733,6 +724,7 @@ workflows:
             - build_flowapi
             - build_flowmachine
             - build_flowauth
+            - build_examples
           <<: *run_always_org_context
       - integration_tests:
           requires:
@@ -743,12 +735,14 @@ workflows:
           name: retag_master_branch
           requires:
             - test_quickstart
+            - integration_tests
             - build_docs
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
           requires:
             - test_quickstart
+            - integration_tests
             - build_docs
           tag: CIRCLE_TAG
           <<: *tag_only_org_context
@@ -756,19 +750,17 @@ workflows:
           name: push_flowclient_wheel
           project_name: flowclient
           requires:
-            - build_flowclient_wheel
+            - retag_tagged_build
           <<: *tag_only_org_context
       - push_wheel:
           name: push_flowmachine_wheel
           project_name: flowmachine
           requires:
-            - build_flowmachine_wheel
+            - retag_tagged_build
           <<: *tag_only_org_context
       - build_docs:
           name: Deploy docs
           deploy: true
           requires:
-            - build_docs
             - retag_tagged_build
-            - push_flowclient_wheel
           <<: *tag_only_org_context
