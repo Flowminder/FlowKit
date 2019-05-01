@@ -461,7 +461,10 @@ jobs:
     parameters:
       component:
         type: enum
-        enum: ["flowmachine", "flowauth", "flowapi"]
+        enum: ["flowmachine", "flowauth", "flowapi", "flowkit-examples"]
+      component_path:
+        type: string
+        default: <<parameters.component>>
     docker:
       - image: circleci/python:3.7
     working_directory: /home/circleci/project/
@@ -478,7 +481,7 @@ jobs:
           name: Build <<parameters.component>> image
           command: |
             echo "Tagging as $CIRCLE_SHA1"
-            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 ./<<parameters.component>>
+            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 ./<<parameters.component_path>>
       - run:
           name: Push images to Docker cloud
           command: |
@@ -630,7 +633,7 @@ jobs:
           command: |
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
-            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth; do
+            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples; do
               docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
@@ -677,6 +680,10 @@ workflows:
           synthetic_data_generator: sql
           requires:
             - build_flowdb
+          <<: *run_always_org_context
+      - build_docker_image:
+          name: build_examples
+          component: flowkit-examples
           <<: *run_always_org_context
       - build_docker_image:
           name: build_flowmachine

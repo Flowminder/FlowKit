@@ -115,7 +115,7 @@ services:
 
   worked_examples:
     container_name: worked_examples
-    image: flowminder/flowkit_worked_examples:latest
+    image: flowminder/flowkit-examples:latest
     build:
       context: .
       dockerfile: Dockerfile
