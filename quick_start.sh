@@ -4,19 +4,20 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 set -e
 
-
-if [ $# -gt 0 ] && [ "$1" = "stop" ]
-then
-    export DOCKER_FLOWDB_HOST=flowdb_testdata
-    echo "Stopping containers"
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - down
-else
-    set -a
+set -a
     export CONTAINER_TAG=$CONTAINER_TAG
     if [ "$CI" = "true" ]; then
         export CONTAINER_TAG=$CIRCLE_SHA1
         export BRANCH=$CIRCLE_SHA1
     fi
+
+if [ $# -gt 0 ] && [ "$1" = "stop" ]
+then
+    export DOCKER_FLOWDB_HOST=flowdb_testdata
+    echo "Stopping containers"
+    source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
+    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - down
+else
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
     export DOCKER_FLOWDB_HOST=flowdb_testdata
     echo "Starting containers"
@@ -24,7 +25,7 @@ else
     echo "Waiting for containers to be ready.."
     docker exec ${DOCKER_FLOWDB_HOST} bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including:" && docker logs flowdb && exit 1)
     echo "FlowDB ready."
-    nc -z localhost $FLOWMACHINE_PORT 2> /dev/null || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including:" && docker logs flowmachine && exit 1)
+    (netstat -an | grep -q $FLOWMACHINE_PORT) || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including:" && docker logs flowmachine && exit 1)
     echo "FlowMachine ready"
     curl -s http://localhost:$FLOWAPI_PORT/api/0/spec/openapi-redoc.json > /dev/null || (>&2 echo "FlowAPI failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAPI,bug including:" && docker logs flowapi && exit 1)
     echo "FlowAPI ready."

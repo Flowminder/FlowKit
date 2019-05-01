@@ -516,6 +516,7 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - run: ./quick_start.sh
+      - run: ./quick_start.sh stop
 
   build_docs:
     parameters:
