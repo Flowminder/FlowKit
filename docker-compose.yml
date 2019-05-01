@@ -143,7 +143,7 @@ services:
       DEMO_MODE: ${DEMO_MODE:?Must set DEMO_MODE env var}
 
   query_locker:
-    container_name: redis_flowkit
+    container_name: query_locker
     image: bitnami/redis
     ports:
       - ${REDIS_PORT:?Must set REDIS_PORT env var}:6379
