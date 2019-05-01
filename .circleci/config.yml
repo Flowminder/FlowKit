@@ -462,9 +462,6 @@ jobs:
       component:
         type: enum
         enum: ["flowmachine", "flowauth", "flowapi", "flowkit-examples"]
-      component_path:
-        type: string
-        default: <<parameters.component>>
     docker:
       - image: circleci/python:3.7
     working_directory: /home/circleci/project/
@@ -481,7 +478,10 @@ jobs:
           name: Build <<parameters.component>> image
           command: |
             echo "Tagging as $CIRCLE_SHA1"
-            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 ./<<parameters.component_path>>
+            if [[ <<parameters.component>> != "flowkit-examples ]]; then
+              cd <<parameters.component>>
+            fi
+            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 .
       - run:
           name: Push images to Docker cloud
           command: |
