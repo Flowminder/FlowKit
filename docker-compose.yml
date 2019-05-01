@@ -133,7 +133,7 @@ services:
       - db
       - redis
     command:
-      ["start-notebook.sh", "c.NotebookApp.token = 'b2a960c88d617bde49e592da8b60d09b3527873cb5a50db2'"]
+      ["start-notebook.sh", "--NotebookApp.token = 'b2a960c88d617bde49e592da8b60d09b3527873cb5a50db2'"]
 
   flowapi:
     container_name: flowapi
