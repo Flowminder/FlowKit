@@ -7,7 +7,7 @@
 set -e
 
 export FLOWDB_SERVICES="flowdb_synthetic_data"
-export DOCKER_SERVICES="flowdb_synthetic_data query_locker"
+export DOCKER_SERVICES="flowdb_synthetic_data flowmachine_query_locker"
 
 KillJobs() {
     for job in $(jobs -p); do
