@@ -23,67 +23,13 @@ These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pi
 
 Docker containers for FlowAPI, FlowMachine and FlowDB are provided in the [DockerCloud](https://cloud.docker.com/) repositories `flowminder/flowapi`, `flowminder/flowmachine` and `flowminder/flowdb`, respectively. You will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
-Create a directory for your FlowKit install and move into it. Download the [`docker-compose.yml`](https://github.com/Flowminder/FlowKit/raw/master/docker-compose.yml) file.
-
-```
-wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/docker-compose.yml
-```
-Note, it is possible to replace `master` in the above url to install other releases.
-
-The compose file expects the `JWT_SECRET_KEY` environment variable to be set. It is used on FlowAuth and FlowAPI to sign and verify access to the API.
-
 Start the FlowKit test system by running 
 ```bash
-JWT_SECRET_KEY=secret docker-compose up -d
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh)
 ``` 
-This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default.  
+This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default, and the FlowAuth authentication system accessible by visiting http://localhost:8000 using your web browser.  
 
-In order to use the test system, now install FlowClient and FlowAuth. 
-
-### Installing FlowAuth
-
-FlowAuth must be installed to provide centralised token based authentication management for FlowKit systems.
-
-
-#### FlowAuth Quickstart
-
-To run a demonstration version of FlowAuth use:
-
-```bash
-docker run -p 8000:80 -e DEMO_MODE=1 flowminder/flowauth
-```
-
-This will start FlowAuth at <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a>, and pre-populate a disposable sqlite database with some dummy data. Log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`.
-
-#### Granting user permissions in FlowAuth
-
-The following steps using the FlowAuth administration tool are required to add a user and allow them to generate access tokens to communicate with a FlowKit server through FlowAPI:
-
-1. Log into FlowAuth as an administrator.
-
-2. Under "API Routes", add any applicable API routes (e.g. `daily_location`).
-
-3. Under "Aggregation Units", add any applicable aggregation units (e.g. `admin3`).
-
-3. Under "Servers", add a new server and give it a name and secret key. Note that the Secret Key must match the `JWT_SECRET_KEY` set in the flowapi docker container on this server ('secret' in the example above).
-
-4. Enable any permissions for this server under "API Permissions", and aggregation units under "Aggregation Units".
-
-5. Under "Users", add a new user, and set the username and password.
-
-6. Either:
-    - Add a server to the user, and enable/disable API permissions and aggregation units,
-    <p>
-7. Or:
-    <p>
-    - Under "Groups", add a new group,
-
-    - Add a server to the group, and enable/disable API permissions and aggregation units,
-
-    - Add the user to the group.
-
-
-The user can then log into FlowAuth and generate a token (see the [analyst section](3-analyst.md#flowauth) for instructions).
+In order to use the test system, now install FlowClient. 
 
 
 ### FlowClient <a name="flowclient"> </a>
