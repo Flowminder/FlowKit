@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.6.2]
+
+### Added
 - A new Ansible playbook was added in `deployment/provision-dev.yml`. In addition to the standard provisioning
   this installs pyenv, Python 3.7, pipenv and clones the FlowKit repository, which is useful for development purposes.
 - Added a 'quick start' setup script for trying out a complete FlowKit system [#688](https://github.com/Flowminder/FlowKit/issues/688).
@@ -18,8 +28,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - FlowDB synthetic data container no longer silently fails to generate data if data generator is not set [#654](https://github.com/Flowminder/FlowKit/issues/654)
-
-### Removed
 
 ## [0.6.1]
 ### Fixed
@@ -270,7 +278,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.1...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.2...master
+[0.6.2]: https://github.com/Flowminder/FlowKit/compare/0.6.1...0.6.2
 [0.6.1]: https://github.com/Flowminder/FlowKit/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/Flowminder/FlowKit/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/Flowminder/FlowKit/compare/0.5.2...0.5.3
@@ -289,3 +298,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 [0.1.1]: https://github.com/Flowminder/FlowKit/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/Flowminder/FlowKit/compare/0.0.5...0.1.0
 [0.0.5]: https://github.com/Flowminder/FlowKit/compare/0.0.4...0.0.5
+
