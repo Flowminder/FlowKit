@@ -13,7 +13,7 @@ then
 else
     set -a
     export CONTAINER_TAG=$CONTAINER_TAG
-    if [ "$CI" != "true" ]; then
+    if [ "$CI" = "true" ]; then
         export CONTAINER_TAG=$CIRCLE_SHA1
         export BRANCH=$CIRCLE_SHA1
     fi
