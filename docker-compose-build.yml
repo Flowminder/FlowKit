@@ -33,6 +33,13 @@ services:
       context: ./flowmachine
       dockerfile: Dockerfile
 
+  worked_examples:
+    container_name: worked_examples
+    image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+
   flowapi:
     image: flowminder/flowapi:${CONTAINER_TAG:-latest}
     build:

@@ -108,6 +108,16 @@ flowauth-build:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowauth
 
 
+worked-examples-up: worked-examples-build
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build worked_examples
+
+worked-examples-down:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v worked_examples
+
+worked-examples-build:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build worked_examples
+
+
 flowmachine_query_locker-up:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) up -d flowmachine_query_locker
 

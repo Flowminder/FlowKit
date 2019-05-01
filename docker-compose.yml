@@ -115,10 +115,7 @@ services:
 
   worked_examples:
     container_name: worked_examples
-    image: flowminder/flowkit-examples:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
     ports:
       - 8888
     tty: true
