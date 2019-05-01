@@ -23,4 +23,4 @@ The test suite makes use of the environment variables defined in `development_en
 
 ### Running in PyCharm
 
-To run the tests from within PyCharm, you will need to run `FLOWDB_SERVICES="flowdb_testdata" DOCKER_SERVICES="flowdb_testdata query_locker"` in the project root, and ensure you have provided the environment variables in the top level `development_environment` file to PyCharm (for example, by using the EnvFile plugin).
+To run the tests from within PyCharm, you will need to run `FLOWDB_SERVICES="flowdb_testdata" DOCKER_SERVICES="flowdb_testdata flowmachine_query_locker"` in the project root, and ensure you have provided the environment variables in the top level `development_environment` file to PyCharm (for example, by using the EnvFile plugin).

@@ -56,7 +56,7 @@ services:
             - FLOWDB_HOST=flowdb
             - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:-error}
             - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
-            - REDIS_HOST=query_locker
+            - REDIS_HOST=flowmachine_query_locker
         secrets:
           - FLOWMACHINE_FLOWDB_USER
           - FLOWMACHINE_FLOWDB_PASSWORD
@@ -82,7 +82,7 @@ services:
           - zero
           - db
           - api
-    query_locker:
+    flowmachine_query_locker:
         image: bitnami/redis:latest
         environment:
           - REDIS_PASSWORD_FILE=/run/secrets/REDIS_PASSWORD

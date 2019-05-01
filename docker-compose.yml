@@ -93,7 +93,7 @@ services:
     ports:
       - ${FLOWMACHINE_PORT:?Must set FLOWMACHINE_PORT env var}:5555
     depends_on:
-      - query_locker
+      - flowmachine_query_locker
     tty: true
     stdin_open: true
     environment:
@@ -104,7 +104,7 @@ services:
       - FLOWDB_HOST=${DOCKER_FLOWDB_HOST:?Must set DOCKER_FLOWDB_HOST env var}
       - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
       - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
-      - REDIS_HOST=query_locker
+      - REDIS_HOST=flowmachine_query_locker
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
     restart: always
@@ -142,8 +142,8 @@ services:
     environment:
       DEMO_MODE: ${DEMO_MODE:?Must set DEMO_MODE env var}
 
-  query_locker:
-    container_name: query_locker
+  flowmachine_query_locker:
+    container_name: flowmachine_query_locker
     image: bitnami/redis
     ports:
       - ${REDIS_PORT:?Must set REDIS_PORT env var}:6379
