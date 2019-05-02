@@ -126,8 +126,8 @@ class Connection:
 
     def __check_flowdb_version(self):
         """
-        Private method that checks what is the version
-        of `flowdb` currently deployed.
+        Private method which checks that the version of `flowdb` currently deployed
+        is compatible with this version of flowmachine.
         """
 
         from ..versions import __version__, __min_flowdb_version__
