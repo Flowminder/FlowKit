@@ -141,6 +141,7 @@ def test_create_user_fail_with_short_password(client, auth, test_admin):
 
     assert 404 == response.status_code
 
+
 def test_create_user_fail_with_same_username(client, auth, test_admin):
     uid, username, password = test_admin
     # Log in first
@@ -153,7 +154,7 @@ def test_create_user_fail_with_same_username(client, auth, test_admin):
             "password": "A_VERY_STRONG_DUMMY_PASSWORD_THAT_IS_VERY_LONG",
         },
     )  # Make a user first
-    
+
     assert 200 == response.status_code  # Should get an OK
     response = client.post(
         "/admin/users",
@@ -169,6 +170,7 @@ def test_create_user_fail_with_same_username(client, auth, test_admin):
         "message": "Username already exists.",
         "bad_field": "username",
     } == response.get_json()
+
 
 def test_cannot_delete_only_admin(client, auth, test_admin):
     uid, username, password = test_admin
