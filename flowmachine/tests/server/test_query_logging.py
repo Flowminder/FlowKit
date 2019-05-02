@@ -5,7 +5,6 @@ import json
 import sys
 from logging import getLogger
 
-import pytest
 from flowmachine.core.init import _set_log_level
 from flowmachine.core.server.server import get_reply_for_message
 from flowmachine.core import Query
