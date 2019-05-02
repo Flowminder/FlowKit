@@ -513,8 +513,8 @@ jobs:
       - run: ./quick_start.sh stop
       - run: ./quick_start.sh examples
       - run: ./quick_start.sh stop
-      - run: ./quick_start.sh synth
-      - run: ./quick_start.sh stop
+      #- run: ./quick_start.sh synth # Synth data spinup with this data volume is very slow so not testing it right now on CI
+      #- run: ./quick_start.sh stop
       - run:
           name: Check all containers are down
           command:

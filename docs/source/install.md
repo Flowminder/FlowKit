@@ -34,8 +34,25 @@ This will pull any necessary docker containers, and start the system in the back
 The default system includes a small amount of test data. For a test system with considerably more data you can run
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) synth
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) larger_data
 ```  
+
+!!! warning
+    The larger data container will take considerably longer to start up, as it generates data when first run.
+
+The [worked examples](worked_examples) are also available as part of the demo system. To install these run 
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples
+```  
+
+for the examples with a small dataset, or 
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples larger_data
+```  
+
+to get the examples with the larger dataset (the one used when producing this documentation).
 
 In order to use the test system, now install FlowClient, and generate a token using FlowAuth.
 

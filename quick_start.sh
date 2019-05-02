@@ -49,17 +49,16 @@ if [ "$CI" = "true" ]; then
     export BRANCH=$CIRCLE_SHA1
 fi
 
-if [ $# -gt 0 ] && [ "$1" = "synth" ]
+if [ $# -gt 0 ] && [ "$1" = "larger_data" ] || [ "$2" = "larger_data" ]
 then
     export DOCKER_FLOWDB_HOST=flowdb_synthetic_data
 else
     export DOCKER_FLOWDB_HOST=flowdb_testdata
 fi
 
-if [ $# -gt 0 ] && [ "$1" = "examples" ]
+if [ $# -gt 0 ] && [ "$1" = "examples" ] || [ "$2" = "examples" ]
 then
     export WORKED_EXAMPLES=worked_examples
-    export DOCKER_FLOWDB_HOST=flowdb_synthetic_data
 else
     export WORKED_EXAMPLES=
 fi
