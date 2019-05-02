@@ -45,6 +45,7 @@ def init_logging():
 
 def set_log_level(log_level):
     """
+    Set logging level for logger `flowmachine.debug`.
 
     Parameters
     ----------
@@ -53,7 +54,7 @@ def set_log_level(log_level):
 
     Returns
     -------
-
+    None
     """
     try:
         log_level = logging.getLevelName(log_level.upper())
