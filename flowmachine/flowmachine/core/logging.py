@@ -56,14 +56,22 @@ def set_log_level(log_level):
     -------
     None
     """
-    try:
-        log_level = logging.getLevelName(log_level.upper())
-        log_level + 1
-    except (AttributeError, TypeError):
-        log_level = logging.ERROR
-    true_log_level = logging.getLevelName(log_level)
+    user_provided_log_level = log_level.upper()
     logger = logging.getLogger("flowmachine").getChild("debug")
-    logger.setLevel(true_log_level)
+    try:
+        logger.setLevel(user_provided_log_level)
+        true_log_level = user_provided_log_level
+        user_provided_log_level_is_valid = True
+    except ValueError:
+        true_log_level = "ERROR"
+        user_provided_log_level_is_valid = False
+        logger.setLevel(true_log_level)
+
     for h in logger.handlers:
-        h.setLevel(log_level)
+        h.setLevel(true_log_level)
+
+    if not user_provided_log_level_is_valid:
+        logger.error(
+            f"Invalid user-provided log level: '{user_provided_log_level}', using '{true_log_level}' instead."
+        )
     logger.info(f"Logging level for logger 'flowmachine.debug' set to {true_log_level}")
