@@ -77,8 +77,8 @@ def set_log_level(logger_name, log_level):
         user_provided_log_level_is_valid = False
         logger.setLevel(true_log_level)
 
-    for h in logger.handlers:
-        h.setLevel(true_log_level)
+    for handler in logger.handlers:
+        handler.setLevel(true_log_level)
 
     if not user_provided_log_level_is_valid:
         logger.error(
