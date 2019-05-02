@@ -56,6 +56,14 @@ else
     export DOCKER_FLOWDB_HOST=flowdb_testdata
 fi
 
+if [ $# -gt 0 ] && [ "$1" = "examples" ]
+then
+    export WORKED_EXAMPLES=worked_examples
+    export DOCKER_FLOWDB_HOST=flowdb_synthetic_data
+else
+    export WORKED_EXAMPLES=
+fi
+
 if [ $# -gt 0 ] && [ "$1" = "stop" ]
 then
     export DOCKER_FLOWDB_HOST=flowdb_testdata
@@ -65,11 +73,11 @@ then
 else
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
     echo "Starting containers"
-    RUNNING=`curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - ps -q $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker worked_examples`
+    RUNNING=`curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - ps -q $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
     if [[ "$RUNNING" != "" ]]; then
         confirm "Existing containers are running and will be replaced. Are you sure?" || exit 1
     fi
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - up -d $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker worked_examples
+    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - up -d $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES
     echo "Waiting for containers to be ready.."
     docker exec ${DOCKER_FLOWDB_HOST} bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
     echo "FlowDB ready."
@@ -79,12 +87,18 @@ else
     echo "FlowAPI ready."
     i=0; until [ $i -ge 24 ] || (curl -s http://localhost:$FLOWAUTH_PORT > /dev/null) ; do let i=i+1; echo Waiting 10s; sleep 10; done || (>&2 echo "FlowAuth failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAuth,bug including the output of running 'docker logs flowauth'" && exit 1)
     echo "FlowAuth ready."
-    i=0; until [ $i -ge 24 ] || (curl -s http://localhost:$WORKED_EXAMPLES_PORT > /dev/null) ; do let i=i+1; echo Waiting 10s; sleep 10; done || (>&2 echo "Worked examples failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=docs,bug including the output of running 'docker logs worked_examples'" && exit 1)
+    if [[ "$WORKED_EXAMPLES" = "worked_examples" ]]
+    then
+        i=0; until [ $i -ge 24 ] || (curl -s http://localhost:$WORKED_EXAMPLES_PORT > /dev/null) ; do let i=i+1; echo Waiting 10s; sleep 10; done || (>&2 echo "Worked examples failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=docs,bug including the output of running 'docker logs worked_examples'" && exit 1)
+    fi
     echo "Worked examples ready."
     echo "All containers ready!"
     echo "Access FlowDB using 'PGHOST=$FLOWDB_HOST PGPORT=$FLOWDB_PORT PGDATABASE=flowdb PGUSER=$FLOWMACHINE_FLOWDB_USER PGPASSWORD=$FLOWMACHINE_FLOWDB_PASSWORD psql'"
     echo "Access FlowAPI using FlowClient at http://localhost:$FLOWAPI_PORT"
     echo "View the FlowAPI spec at http://localhost:$FLOWAPI_PORT/api/0/spec/redoc"
     echo "Generate FlowAPI access tokens using FlowAuth with user TEST_USER and password DUMMY_PASSWORD at http://localhost:$FLOWAUTH_PORT"
-    echo "Try out the interactive examples at http://localhost:$WORKED_EXAMPLES_PORT"
+    if [[ "$WORKED_EXAMPLES" = "worked_examples" ]]
+    then
+        echo "Try out the interactive examples at http://localhost:$WORKED_EXAMPLES_PORT"
+    fi
 fi

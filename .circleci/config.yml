@@ -511,6 +511,18 @@ jobs:
           path: /home/circleci/project/
       - run: ./quick_start.sh
       - run: ./quick_start.sh stop
+      - run: ./quick_start.sh examples
+      - run: ./quick_start.sh stop
+      - run: ./quick_start.sh synth
+      - run: ./quick_start.sh stop
+      - run:
+          name: Check all containers are down
+          command:
+            RUNNING=`docker-compose -q`
+            if [[ "$RUNNING" != "" ]]
+            then
+              exit 1
+            fi
 
   build_docs:
     parameters:
