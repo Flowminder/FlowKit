@@ -130,18 +130,16 @@ class Connection:
         of `flowdb` currently deployed.
         """
 
-        from ..__init__ import __version__, __flowdb_version__
+        from ..versions import __version__, __min_flowdb_version__
 
-        query = "SELECT * FROM flowdb_version();"
-        for i in self.fetch(query):
-            flowdb_version = i[0]
-            if __flowdb_version__ > flowdb_version.replace("v", ""):
-                raise EnvironmentError(
-                    "The current version of Flowdb "
-                    + "(%s) is not supported. " % flowdb_version
-                    + "FlowMachine (%s) only supports " % __version__
-                    + "Flowdb %s or higher." % __flowdb_version__
-                )
+        query_output = self.fetch("SELECT * FROM flowdb_version();")
+        flowdb_version = query_output[0][0]
+        if __min_flowdb_version__ > flowdb_version.replace("v", ""):
+            raise OSError(
+                f"The current version of Flowdb ({flowdb_version}) is not supported. "
+                f"FlowMachine ({__version__}) only supports "
+                f"Flowdb {__min_flowdb_version__} or higher."
+            )
 
     def fetch(self, query):
         """

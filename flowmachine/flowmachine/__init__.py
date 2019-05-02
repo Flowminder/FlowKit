@@ -18,13 +18,7 @@ and inherit from FlowMachine's main `Query()` class.
 
 """
 
-
-from ._version import get_versions
-
-__version__ = get_versions()["version"]
-__flowdb_version__ = "0.2.0"
-
-del get_versions
+from .versions import __version__
 
 import structlog
 import rapidjson
