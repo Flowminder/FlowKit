@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Error is displayed in the add user form of Flowauth if username is alredy exists. [#690](https://github.com/Flowminder/FlowKit/issues/690)
 
 ### Added
-- FlowKit's worked examples are now available as part of the quick setup script
+- FlowKit's worked examples are now Dockerized, and available as part of the quick setup script [#614](https://github.com/Flowminder/FlowKit/issues/614)
 
 ### Changed
 
