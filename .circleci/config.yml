@@ -517,7 +517,7 @@ jobs:
       #- run: ./quick_start.sh stop
       - run:
           name: Check all containers are down
-          command:
+          command: |
             RUNNING=`docker ps -q`
             if [[ "$RUNNING" != "" ]]
             then
