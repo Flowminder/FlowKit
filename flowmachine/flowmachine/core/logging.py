@@ -49,7 +49,7 @@ def init_logging():
     )
 
 
-def set_log_level(logger_name, log_level):
+def set_log_level(logger_name: str, log_level: str) -> None:
     """
     Set log level for logger `flowmachine.debug`.
 
