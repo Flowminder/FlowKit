@@ -23,7 +23,6 @@ def init_logging():
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
     debug_logger.addHandler(ch)
-    debug_logger.info(f"Debug logger created.")
 
     structlog.configure(
         processors=[
