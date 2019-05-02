@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- FlowClient docs rendered to website now show the options available for arguments that require a string from some set of possibilities [#695](https://github.com/Flowminder/FlowKit/issues/695).
 
 ### Removed
 
@@ -298,4 +299,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 [0.1.1]: https://github.com/Flowminder/FlowKit/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/Flowminder/FlowKit/compare/0.0.5...0.1.0
 [0.0.5]: https://github.com/Flowminder/FlowKit/compare/0.0.4...0.0.5
-
