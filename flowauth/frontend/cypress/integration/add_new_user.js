@@ -103,11 +103,13 @@ describe("Login screen", function () {
     cy.get("#username").type("USER_TEST01");
     cy.get("#password").type("C>K,7|~44]44:ibK");
     cy.clearCookies();
-    // cy.on('uncaught:exception', (err, runnable) => {
-    //   cy.get('body').type("{esc}"); // Dismiss the error
-    // });
+    cy.on('uncaught:exception', (err, runnable) => {
+      debugger
+      return false
+    });
     cy.contains("Save").click();
     cy.wait(500);
     cy.contains("Sign in").should("exist");
+
   });
 });
