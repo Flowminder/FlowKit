@@ -30,7 +30,6 @@ def init_logging():
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.INFO)
     query_run_log.addHandler(ch)
-    # query_run_log = structlog.wrap_logger(query_run_log)
 
     structlog.configure(
         processors=[
