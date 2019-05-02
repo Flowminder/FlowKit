@@ -2,9 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import structlog
-import rapidjson
 import logging
+import rapidjson
+import structlog
+import sys
 
 __all__ = ["init_logging", "set_log_level"]
 
@@ -23,6 +24,13 @@ def init_logging():
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
     debug_logger.addHandler(ch)
+
+    # Logger for all queries run or accessed (used by flowmachine server)
+    query_run_log = logging.getLogger("flowmachine").getChild("query_run_log")
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setLevel(logging.INFO)
+    query_run_log.addHandler(ch)
+    # query_run_log = structlog.wrap_logger(query_run_log)
 
     structlog.configure(
         processors=[
