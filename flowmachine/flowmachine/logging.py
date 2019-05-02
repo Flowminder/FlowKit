@@ -6,7 +6,7 @@ import structlog
 import rapidjson
 import logging
 
-__all__ = ["init_logging"]
+__all__ = ["init_logging", "set_log_level"]
 
 
 def init_logging():
@@ -41,3 +41,28 @@ def init_logging():
         wrapper_class=structlog.stdlib.BoundLogger,
         cache_logger_on_first_use=True,
     )
+
+
+def set_log_level(log_level):
+    """
+
+    Parameters
+    ----------
+    log_level : str
+        Level to emit logs at
+
+    Returns
+    -------
+
+    """
+    try:
+        log_level = logging.getLevelName(log_level.upper())
+        log_level + 1
+    except (AttributeError, TypeError):
+        log_level = logging.ERROR
+    true_log_level = logging.getLevelName(log_level)
+    logger = logging.getLogger("flowmachine").getChild("debug")
+    logger.setLevel(true_log_level)
+    for h in logger.handlers:
+        h.setLevel(log_level)
+    logger.info(f"Logging level for logger 'flowmachine.debug' set to {true_log_level}")
