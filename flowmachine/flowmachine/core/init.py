@@ -211,10 +211,9 @@ def _init_logging(log_level):
     true_log_level = logging.getLevelName(log_level)
     logger = logging.getLogger("flowmachine").getChild("debug")
     logger.setLevel(true_log_level)
-    ch = logging.StreamHandler()
-    ch.setLevel(log_level)
-    logger.addHandler(ch)
-    logger.info(f"Logger created with level {true_log_level}")
+    for h in logger.handlers:
+        h.setLevel(log_level)
+    logger.info(f"Logging level for logger 'flowmachine.debug' set to {true_log_level}")
 
 
 def _start_threadpool(*, thread_pool_size=None):

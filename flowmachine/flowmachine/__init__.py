@@ -26,6 +26,14 @@ import logging
 
 root_logger = logging.getLogger("flowmachine")
 root_logger.setLevel(logging.DEBUG)
+
+debug_logger = logging.getLogger("flowmachine").getChild("debug")
+debug_logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+debug_logger.addHandler(ch)
+debug_logger.info(f"Debug logger created.")
+
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,
