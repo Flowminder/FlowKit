@@ -518,7 +518,7 @@ jobs:
       - run:
           name: Check all containers are down
           command:
-            RUNNING=`docker-compose -q`
+            RUNNING=`docker ps -q`
             if [[ "$RUNNING" != "" ]]
             then
               exit 1

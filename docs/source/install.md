@@ -18,10 +18,7 @@ The bulk of the installation process consists of downloading [Docker](https://do
 
 These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pipenv](https://github.com/pypa/pipenv). [Anaconda](https://www.anaconda.com/what-is-anaconda/) stack based installation commands may be different. 
 
-
-### Server and Authentication Installation
-
-Docker containers for FlowAPI, FlowMachine and FlowDB are provided in the [DockerCloud](https://cloud.docker.com/) repositories `flowminder/flowapi`, `flowminder/flowmachine` and `flowminder/flowdb`, respectively. You will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+Docker containers for [FlowAPI](http://https://hub.docker.com/r/flowminder/flowapi), [FlowMachine](http://https://hub.docker.com/r/flowminder/flowmachine), [FlowDB](http://https://hub.docker.com/r/flowminder/flowdb), [FlowAuth](http://https://hub.docker.com/r/flowminder/flowauth) and the [worked examples](http://https://hub.docker.com/r/flowminder/flowkit-examples) are provided in the [DockerCloud](https://hub.docker.com/) repositories `flowminder/flowapi`, `flowminder/flowmachine`, `flowminder/flowdb`, `flowminder/flowauth`, and `flowminder/flowkit-examples` respectively. You will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 Start the FlowKit test system by running 
 
