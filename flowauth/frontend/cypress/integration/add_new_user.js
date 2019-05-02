@@ -97,4 +97,17 @@ describe("Login screen", function () {
     cy.contains("Save").click();
     cy.contains("USER_TEST01").should("be.visible");
   });
+  it("Unauthorised access", function () {
+    cy.get("#new").click();
+    //Add new user with password
+    cy.get("#username").type("USER_TEST01");
+    cy.get("#password").type("C>K,7|~44]44:ibK");
+    cy.clearCookies();
+    cy.contains("Save").click();
+    cy.on('uncaught:exception', (err, runnable) => {
+      expect(err.message).to.include('Username already exists.')
+      done()
+      return false
+    })
+  });
 });

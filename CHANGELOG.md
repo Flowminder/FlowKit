@@ -5,6 +5,7 @@ All notable changes to FlowKit will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+- Error is displayed in the add user form of Flowauth if username is alredy exists. [#690](https://github.com/Flowminder/FlowKit/issues/690)
 
 ### Added
 
@@ -25,7 +26,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - FlowAPI's `available_dates` endpoint now always returns available dates for all event types and does not accept JSON
 - Hints are now displayed in the add user form of FlowAuth if the form is not completed [#679](https://github.com/Flowminder/FlowKit/issues/679)
-- Error is displayed in the add user form of Flowauth if username is alredy exists. [#690](https://github.com/Flowminder/FlowKit/issues/690)
 - The Ansible playbooks in `deployment/` now allow configuring the username and password for the FlowKit user account.
 - Default compose file no longer includes build blocks, these have been moved to `docker-compose-build.yml`.
 
