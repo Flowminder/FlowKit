@@ -21,7 +21,7 @@ import flowmachine
 from typing import Union
 from flowmachine.utils import getsecret
 from . import Connection, Query
-from ..logging import set_log_level
+from flowmachine.core.logging import set_log_level
 
 import structlog
 

@@ -5,7 +5,7 @@ import json
 import sys
 from logging import getLogger
 
-from flowmachine.logging import set_log_level
+from flowmachine.core.logging import set_log_level
 from flowmachine.core.server.server import get_reply_for_message
 from flowmachine.core import Query
 

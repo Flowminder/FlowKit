@@ -21,7 +21,7 @@ and inherit from FlowMachine's main `Query()` class.
 from .versions import __version__
 from .core.init import connect
 from .features.utilities import GroupValues, feature_collection
-from .logging import init_logging
+from flowmachine.core.logging import init_logging
 import flowmachine.models
 import flowmachine.features
 import flowmachine.utils
