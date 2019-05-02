@@ -12,18 +12,17 @@ should live - for example configuring loggers.
 """
 
 import os
+import redis
+import structlog
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-
-import redis
+from typing import Union
 
 import flowmachine
-from typing import Union
-from flowmachine.utils import getsecret
-from . import Connection, Query
+from flowmachine.core import Connection, Query
 from flowmachine.core.logging import set_log_level
+from flowmachine.utils import getsecret
 
-import structlog
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
