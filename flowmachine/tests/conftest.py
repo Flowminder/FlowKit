@@ -127,7 +127,7 @@ def mocked_connections(monkeypatch):
     Yields
     ------
     tuple of mocks
-        Mocks for _init_logging, Connection, StrictRedis and _start_threadpool
+        Mocks for init_logging, Connection, StrictRedis and _start_threadpool
 
     """
     logging_mock = Mock()
@@ -135,7 +135,7 @@ def mocked_connections(monkeypatch):
     redis_mock = Mock()
     tp_mock = Mock()
     monkeypatch.delattr("flowmachine.core.query.Query.connection", raising=False)
-    monkeypatch.setattr(flowmachine.core.init, "_init_logging", logging_mock)
+    monkeypatch.setattr(flowmachine.core.init, "set_log_level", logging_mock)
     monkeypatch.setattr(flowmachine.core.Connection, "__init__", connection_mock)
     monkeypatch.setattr("redis.StrictRedis", redis_mock)
     monkeypatch.setattr(flowmachine.core.init, "_start_threadpool", tp_mock)
