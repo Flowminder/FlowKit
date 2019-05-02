@@ -581,10 +581,11 @@ def location_event_counts(
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     count_interval : {"day", "hour", "minute"}
+        Can be one of "day", "hour" or "minute".
     direction : {"in", "out", "both"}, default "both"
-        Optionally, include only ingoing or outbound calls/texts
+        Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
     event_types : None or list of {"calls", "sms", "mds"}, default None
-        Optionally, include only a subset of events.
+        Optionally, include only a subset of events. Can be one of "calls", "sms" or "mds"
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -1095,7 +1096,7 @@ def location_introversion(
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     direction : {"in", "out", "both"}, default "both"
-        Optionally, include only ingoing or outbound calls/texts
+        Optionally, include only ingoing or outbound calls/texts can be one of "in", "out" or "both"
 >
     Returns
     -------
@@ -1126,7 +1127,7 @@ def total_network_objects(
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     total_by : {"second", "minute", "hour", "day", "month", "year"}
-        Time period to bucket by
+        Time period to bucket by one of "second", "minute", "hour", "day", "month" or "year"
     Returns
     -------
     dict
@@ -1204,7 +1205,7 @@ def joined_spatial_aggregate(
     metric: dict
         Metric to calculate and aggregate
     method: {"avg", "max", "min", "median", "mode", "stddev", "variance"}, default "avg"
-        Method of aggregation
+        Method of aggregation one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
 
     Returns
     -------
@@ -1231,9 +1232,9 @@ def aggregate_network_objects(
     total_network_objects : dict
         Query spec produced by total_network_objects
     statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
-        Statistic type
+        Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
     aggregate_by : {"second", "minute", "hour", "day", "month", "year", "century"}
-        Period type
+        Period type one of "second", "minute", "hour", "day", "month", "year" or "century".
 
     Returns
     -------
