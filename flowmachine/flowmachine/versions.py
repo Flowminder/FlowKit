@@ -7,4 +7,4 @@ from ._version import get_versions
 __version__ = get_versions()["version"]
 del get_versions
 
-__min_flowdb_version__ = "0.2.0"
+__min_flowdb_version__ = "0.5.0"
