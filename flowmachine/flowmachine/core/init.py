@@ -164,7 +164,7 @@ def connect(
         Query.connection
         warnings.warn("FlowMachine already started. Ignoring.")
     except AttributeError:
-        set_log_level(log_level)
+        set_log_level("flowmachine.debug", log_level)
         if conn is None:
             conn = Connection(
                 host=db_host,

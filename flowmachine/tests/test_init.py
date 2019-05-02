@@ -71,7 +71,7 @@ def test_param_priority(mocked_connections, monkeypatch):
         redis_port=1213,
         redis_password="dummy_redis_password",
     )
-    core_set_log_level_mock.assert_called_with("dummy_log_level")
+    core_set_log_level_mock.assert_called_with("flowmachine.debug", "dummy_log_level")
     core_init_Connection_mock.assert_called_with(
         port=1234,
         user="dummy_db_user",
@@ -106,7 +106,9 @@ def test_env_priority(mocked_connections, monkeypatch):
         mocked_connections
     )
     connect()
-    core_set_log_level_mock.assert_called_with("DUMMY_ENV_LOG_LEVEL")
+    core_set_log_level_mock.assert_called_with(
+        "flowmachine.debug", "DUMMY_ENV_LOG_LEVEL"
+    )
     core_init_Connection_mock.assert_called_with(
         port=6969,
         user="DUMMY_ENV_FLOWDB_USER",
@@ -131,7 +133,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
         mocked_connections
     )
     connect(db_pass="foo", redis_password="fm_redis")
-    core_set_log_level_mock.assert_called_with("error")
+    core_set_log_level_mock.assert_called_with("flowmachine.debug", "error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
         user="flowmachine",

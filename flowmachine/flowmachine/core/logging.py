@@ -49,21 +49,25 @@ def init_logging():
     )
 
 
-def set_log_level(log_level):
+def set_log_level(logger_name, log_level):
     """
     Set log level for logger `flowmachine.debug`.
 
     Parameters
     ----------
+    logger_name : str
+        Name of the logger for which to set the log level.
     log_level : str
-        Level to emit logs at
+        Level to emit logs at. This must be one of the standard
+        pre-defined log levels ("DEBUG", "INFO", "ERROR", etc.).
+        If an invalid log level is passed, "ERROR" will be used.
 
     Returns
     -------
     None
     """
     user_provided_log_level = log_level.upper()
-    logger = logging.getLogger("flowmachine").getChild("debug")
+    logger = logging.getLogger(logger_name)
     try:
         logger.setLevel(user_provided_log_level)
         true_log_level = user_provided_log_level
@@ -80,4 +84,4 @@ def set_log_level(log_level):
         logger.error(
             f"Invalid user-provided log level: '{user_provided_log_level}', using '{true_log_level}' instead."
         )
-    logger.info(f"Log level for logger 'flowmachine.debug' set to '{true_log_level}'.")
+    logger.info(f"Log level for logger '{logger_name}' set to '{true_log_level}'.")
