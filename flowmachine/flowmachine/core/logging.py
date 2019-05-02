@@ -44,7 +44,7 @@ def init_logging():
 
 def set_log_level(log_level):
     """
-    Set logging level for logger `flowmachine.debug`.
+    Set log level for logger `flowmachine.debug`.
 
     Parameters
     ----------
@@ -73,4 +73,4 @@ def set_log_level(log_level):
         logger.error(
             f"Invalid user-provided log level: '{user_provided_log_level}', using '{true_log_level}' instead."
         )
-    logger.info(f"Logging level for logger 'flowmachine.debug' set to {true_log_level}")
+    logger.info(f"Log level for logger 'flowmachine.debug' set to '{true_log_level}'.")
