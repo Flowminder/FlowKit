@@ -163,7 +163,7 @@ def test_create_user_fail_with_same_username(client, auth, test_admin):
             "username": "TEST_USER",
             "password": "A_DIFFERENT_STRONG_DUMMY_PASSWORD_THAT_IS_VERY_LONG",
         },
-    )  # Make a user first
+    )  # Try to make the user again
     assert 400 == response.status_code
     assert {
         "code": 400,
