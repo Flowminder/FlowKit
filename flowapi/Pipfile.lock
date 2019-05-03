@@ -28,11 +28,11 @@
                 "yaml"
             ],
             "hashes": [
-                "sha256:22d32acd0731f12b521d33e61a8fa9ab5c5883cb75fa475b4b4d9820826d3360",
-                "sha256:6cac7a5bf6d377b8c57ae4313c3976fb2de9f18c2ea8f4182fc8094b7482144b"
+                "sha256:5fc37237d444a956bd692b3496de7b0ea1d2e7070a6a582a5eaa217f1044af89",
+                "sha256:c57ad192b21a7f70e298754b13933c6fdfd3c4f48f18cbe49e6c0f0465a5638f"
             ],
             "index": "pypi",
-            "version": "==1.3.1"
+            "version": "==1.3.2"
         },
         "asyncpg": {
             "hashes": [
