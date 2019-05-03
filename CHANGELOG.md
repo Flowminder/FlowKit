@@ -8,12 +8,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
-- FlowAPI's `available_dates` endpoint now always returns available dates for all event types and does not accept JSON 
+
+### Fixed
+- FlowClient docs rendered to website now show the options available for arguments that require a string from some set of possibilities [#695](https://github.com/Flowminder/FlowKit/issues/695).
+- The Flowmachine loggers are now initialised only once when flowmachine is imported, with a call to `connect()` only changing the log level [#691](https://github.com/Flowminder/FlowKit/issues/691)
+
+### Removed
+
+## [0.6.2]
+
+### Added
+- A new Ansible playbook was added in `deployment/provision-dev.yml`. In addition to the standard provisioning
+  this installs pyenv, Python 3.7, pipenv and clones the FlowKit repository, which is useful for development purposes.
+- Added a 'quick start' setup script for trying out a complete FlowKit system [#688](https://github.com/Flowminder/FlowKit/issues/688).
+
+### Changed
+- FlowAPI's `available_dates` endpoint now always returns available dates for all event types and does not accept JSON
+- Hints are now displayed in the add user form of FlowAuth if the form is not completed [#679](https://github.com/Flowminder/FlowKit/issues/679)
+- The Ansible playbooks in `deployment/` now allow configuring the username and password for the FlowKit user account.
+- Default compose file no longer includes build blocks, these have been moved to `docker-compose-build.yml`.
 
 ### Fixed
 - FlowDB synthetic data container no longer silently fails to generate data if data generator is not set [#654](https://github.com/Flowminder/FlowKit/issues/654)
-
-### Removed
 
 ## [0.6.1]
 ### Fixed
@@ -264,7 +280,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.1...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.2...master
+[0.6.2]: https://github.com/Flowminder/FlowKit/compare/0.6.1...0.6.2
 [0.6.1]: https://github.com/Flowminder/FlowKit/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/Flowminder/FlowKit/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/Flowminder/FlowKit/compare/0.5.2...0.5.3

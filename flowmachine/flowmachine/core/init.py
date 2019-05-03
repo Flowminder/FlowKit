@@ -11,19 +11,18 @@ From a developer perspective, this is where one-time operations
 should live - for example configuring loggers.
 """
 
-import logging
 import os
+import redis
+import structlog
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-
-import redis
+from typing import Union
 
 import flowmachine
-from typing import Union
+from flowmachine.core import Connection, Query
+from flowmachine.core.logging import set_log_level
 from flowmachine.utils import getsecret
-from . import Connection, Query
 
-import structlog
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -165,7 +164,7 @@ def connect(
         Query.connection
         warnings.warn("FlowMachine already started. Ignoring.")
     except AttributeError:
-        _init_logging(log_level)
+        set_log_level("flowmachine.debug", log_level)
         if conn is None:
             conn = Connection(
                 host=db_host,
@@ -189,32 +188,6 @@ def connect(
             f"Flowdb running on: {db_host}:{db_port}/flowdb (connecting user: {db_user})"
         )
     return Query.connection
-
-
-def _init_logging(log_level):
-    """
-
-    Parameters
-    ----------
-    log_level : str
-        Level to emit logs at
-
-    Returns
-    -------
-
-    """
-    try:
-        log_level = logging.getLevelName(log_level.upper())
-        log_level + 1
-    except (AttributeError, TypeError):
-        log_level = logging.ERROR
-    true_log_level = logging.getLevelName(log_level)
-    logger = logging.getLogger("flowmachine").getChild("debug")
-    logger.setLevel(true_log_level)
-    ch = logging.StreamHandler()
-    ch.setLevel(log_level)
-    logger.addHandler(ch)
-    logger.info(f"Logger created with level {true_log_level}")
 
 
 def _start_threadpool(*, thread_pool_size=None):

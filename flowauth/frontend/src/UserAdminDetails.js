@@ -28,8 +28,10 @@ var zxcvbn = require("zxcvbn");
 
 class UserAdminDetails extends React.Component {
   state = {
-    username: "",
+    name: "",
+    username_helper_text: "",
     password: "",
+    password_helper_text: "",
     edit_mode: false,
     groups: [],
     servers: [],
@@ -54,7 +56,7 @@ class UserAdminDetails extends React.Component {
     var passStrength = zxcvbn(pass);
     this.setState({
       password: pass,
-      password_strength: passStrength
+      password_strength: passStrength.score
     });
   };
 
@@ -65,10 +67,30 @@ class UserAdminDetails extends React.Component {
     var state = {
       [name]: event.target.value
     };
+    if (name === "name") {
+      var letters = /^[A-Za-z0-9_]+$/;
+      let username = event.target.value;
+      if (username.match(letters)) {
+        state = Object.assign(state, {
+          username_helper_text: ""
+        });
+      } else if (username.length == 0) {
+        state = Object.assign(state, {
+          username_helper_text: "Username can not be blank."
+        });
+      } else {
+        state = Object.assign(state, {
+          username_helper_text:
+            "Username may only contain letters, numbers and underscores."
+        });
+      }
+    }
     if (name === "password") {
       var passStrength = zxcvbn(event.target.value);
+      console.log(passStrength.feedback.warning);
       state = Object.assign(state, {
-        password_strength: passStrength.score
+        password_strength: passStrength.score,
+        password_helper_text: passStrength.feedback.suggestions
       });
     }
     this.setState(state);
@@ -81,25 +103,36 @@ class UserAdminDetails extends React.Component {
   };
   handleSubmit = () => {
     const { item_id, onClick } = this.props;
-    const { edit_mode, name, password, servers, groups, is_admin } = this.state;
-    var task;
-    var uid;
-    if (edit_mode) {
-      task = editUser(item_id, name, password, is_admin);
-    } else {
-      task = createUser(name, password, is_admin);
+    const {
+      edit_mode,
+      name,
+      password,
+      servers,
+      groups,
+      is_admin,
+      username_helper_text,
+      password_strength
+    } = this.state;
+    if (username_helper_text === "" && password_strength > 3) {
+      var task;
+      var uid;
+      if (edit_mode) {
+        task = editUser(item_id, name, password, is_admin);
+      } else {
+        task = createUser(name, password, is_admin);
+      }
+      task
+        .then(json => {
+          uid = json.id;
+          return editGroupServers(json.group_id, servers);
+        })
+        .then(json => {
+          return editGroupMemberships(uid, groups);
+        })
+        .then(json => {
+          onClick();
+        });
     }
-    task
-      .then(json => {
-        uid = json.id;
-        return editGroupServers(json.group_id, servers);
-      })
-      .then(json => {
-        return editGroupMemberships(uid, groups);
-      })
-      .then(json => {
-        onClick();
-      });
   };
 
   render() {
@@ -123,23 +156,29 @@ class UserAdminDetails extends React.Component {
         </Grid>
         <Grid xs={6}>
           <TextField
-            id="standard-name"
+            id="username"
             label="Username"
             className={classes.textField}
+            required={true}
             value={name}
             onChange={this.handleChange("name")}
             margin="normal"
             InputLabelProps={{ shrink: true }}
+            error={this.state.username_helper_text}
+            helperText={this.state.username_helper_text}
           />
         </Grid>
         <Grid xs={6}>
           <TextField
-            id="standard-name"
+            id="password"
             className={classes.textField}
             value={password}
+            required={true}
             label="Reset Password"
             onChange={this.handleChange("password")}
             margin="normal"
+            error={this.state.password_helper_text[0]}
+            helperText={this.state.password_helper_text[0]}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">

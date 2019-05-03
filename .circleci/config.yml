@@ -506,6 +506,18 @@ jobs:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash)
 
+  test_quickstart:
+    machine:
+      image: circleci/classic:201808-01
+    working_directory: /home/circleci/project
+    environment:
+      BRANCH: $CIRCLE_BRANCH
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run: ./quick_start.sh
+      - run: ./quick_start.sh stop
+
   build_docs:
     parameters:
       deploy:
@@ -671,7 +683,6 @@ workflows:
           component: flowmachine
           requires:
             - run_flowmachine_tests
-            - integration_tests
           <<: *run_always_org_context
       - build_docs:
           name: build_docs
@@ -691,7 +702,6 @@ workflows:
           component: flowapi
           requires:
             - run_flowkit_api_tests
-            - integration_tests
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
@@ -707,6 +717,13 @@ workflows:
             - run_flowmachine_tests
             - integration_tests
           <<: *run_always_org_context
+      - test_quickstart:
+          requires:
+            - build_flowdb
+            - build_flowapi
+            - build_flowmachine
+            - build_flowauth
+          <<: *run_always_org_context
       - integration_tests:
           requires:
             - install_flowmachine_deps
@@ -715,19 +732,13 @@ workflows:
       - retag_images:
           name: retag_master_branch
           requires:
-            - build_flowmachine
-            - build_flowdb
-            - build_flowapi
-            - build_flowauth
+            - test_quickstart
             - build_docs
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
           requires:
-            - build_flowmachine
-            - build_flowdb
-            - build_flowapi
-            - build_flowauth
+            - test_quickstart
             - build_docs
           tag: CIRCLE_TAG
           <<: *tag_only_org_context
