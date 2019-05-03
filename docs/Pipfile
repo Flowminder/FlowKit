@@ -29,9 +29,8 @@ mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
 quart = "*"
-python-dotenv = "*"
 structlog = "*"
-folium = "*"
+gitpython = "*"
 
 [dev-packages]
 jupyterlab = "*"

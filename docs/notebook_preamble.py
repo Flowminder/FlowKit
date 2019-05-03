@@ -11,15 +11,17 @@ import pprint
 import warnings
 import os
 import sys
-from dotenv import find_dotenv
+import git
 from datetime import timedelta
 
 path_to_utils_module = os.path.join(
-    os.path.dirname(find_dotenv()), "..", "integration_tests", "tests"
+    git.Repo(".", search_parent_directories=True).working_tree_dir,
+    "integration_tests",
+    "tests",
 )
 sys.path.insert(0, path_to_utils_module)
 
-from utils import make_token
+from utils import make_token, all_access_claims
 
 # Ignore warnings in notebook output
 
@@ -48,57 +50,9 @@ get_ipython().display_formatter.formatters["text/markdown"].for_type(
 
 # Create an API access token
 
-claims = {
-    "daily_location": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2"],
-    },
-    "modal_location": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2"],
-    },
-    "flows": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "location_event_counts": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "meaningful_locations_aggregate": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "meaningful_locations_between_label_od_matrix": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "geography": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "unique_subscriber_counts": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "location_introversion": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "total_network_objects": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "aggregate_network_objects": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "radius_of_gyration": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-}
-
 TOKEN = make_token(
-    username="testuser", secret_key="secret", lifetime=timedelta(days=1), claims=claims
+    username="docsuser",
+    secret_key="secret",
+    lifetime=timedelta(days=1),
+    claims=all_access_claims,
 )
