@@ -891,7 +891,6 @@
                 "sha256:c68ea4d3ba1705da1e0d85da6684ac657912679a649e8868bd850d2c299cce13",
                 "sha256:e23d0cc5299223dcc37885dae624f382297717e459ea24053709675a976a3e19"
             ],
-            "markers": "extra == 'yaml'",
             "version": "==5.1"
         },
         "pyzmq": {
