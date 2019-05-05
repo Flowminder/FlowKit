@@ -222,6 +222,31 @@ def test_create_group(client, auth, test_admin):
     } == response.get_json()
 
 
+def test_create_group_fail_with_same_name(client, auth, test_admin):
+    uid, username, password = test_admin
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/groups",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={"name": "TEST_GROUP"},
+    )
+    assert 200 == response.status_code  # Should get an OK
+    response = client.get("/admin/groups/2", headers={"X-CSRF-Token": csrf_cookie})
+
+    response = client.post(
+        "/admin/groups",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={"name": "TEST_GROUP"},
+    )
+    assert 400 == response.status_code
+    assert {
+        "code": 400,
+        "message": "Group name already exists.",
+        "bad_field": "groupname",
+    } == response.get_json()
+
+
 def test_edit_group(client, auth, test_admin):
     uid, username, password = test_admin
     # Log in first
