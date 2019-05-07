@@ -50,7 +50,7 @@ This architecture is shown in the figure below.
 
     A further container is created to host a redis message platform used internally by FlowMachine.  
 
-FlowKit is in active development, visit the project's  [roadmap](4-developer.md#roadmap) to get a sense about upcoming developments.
+FlowKit is in active development, visit the project's  [roadmap](developer.md#roadmap) to get a sense about upcoming developments.
 
 Continue to the FlowKit [installation documents](install.md) to find out what type of install meets your requirements.
 

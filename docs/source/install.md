@@ -23,37 +23,25 @@ These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pi
 
 Docker containers for FlowAPI, FlowMachine and FlowDB are provided in the [DockerCloud](https://cloud.docker.com/) repositories `flowminder/flowapi`, `flowminder/flowmachine` and `flowminder/flowdb`, respectively. You will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
-Create a directory for your FlowKit install and move into it. Download the [`docker-compose.yml`](https://github.com/Flowminder/FlowKit/raw/master/docker-compose.yml) file.
-
-```
-wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/docker-compose.yml
-```
-Note, it is possible to replace `master` in the above url to install other releases.
-
-The compose file expects the `JWT_SECRET_KEY` environment variable to be set. It is used on FlowAuth and FlowAPI to sign and verify access to the API.
-
 Start the FlowKit test system by running 
+
 ```bash
-JWT_SECRET_KEY=secret docker-compose up -d
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh)
 ``` 
-This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default.  
 
-In order to use the test system, now install FlowClient and FlowAuth. 
+This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default, and the FlowAuth authentication system accessible by visiting <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a> using your web browser.
 
-### Installing FlowAuth
+The default system includes a small amount of test data. For a test system with considerably more data you can run
 
-FlowAuth must be installed to provide centralised token based authentication management for FlowKit systems.
+```bash
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) synth
+```  
 
+In order to use the test system, now install FlowClient, and generate a token using FlowAuth.
 
 #### FlowAuth Quickstart
 
-To run a demonstration version of FlowAuth use:
-
-```bash
-docker run -p 8000:80 -e DEMO_MODE=1 flowminder/flowauth
-```
-
-This will start FlowAuth at <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a>, and pre-populate a disposable sqlite database with some dummy data. Log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`.
+Visit <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a> and log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`. `TEST_USER` is already set up to generate tokens for the FlowAPI instance started by the quick start script.
 
 #### Granting user permissions in FlowAuth
 
@@ -83,7 +71,7 @@ The following steps using the FlowAuth administration tool are required to add a
     - Add the user to the group.
 
 
-The user can then log into FlowAuth and generate a token (see the [analyst section](3-analyst.md#flowauth) for instructions).
+The user can then log into FlowAuth and generate a token (see the [analyst section](analyst.md#flowauth) for instructions).
 
 
 ### FlowClient <a name="flowclient"> </a>
@@ -94,7 +82,7 @@ The FlowClient Python client is used to perform CDR analysis using the JupyterLa
 pip install flowclient
 ```
 
-Quick install is continued with an example of FlowClient usage [here](3-analyst.md#flowclient).
+Quick install is continued with an example of FlowClient usage [here](analyst.md#flowclient).
 
 <a name="developers">
 

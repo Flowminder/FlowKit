@@ -92,7 +92,7 @@ CONTAINER ID        IMAGE                               COMMAND                 
 e57c8eeb7d38        flowminder/flowmachine:latest       "/bin/sh -c 'pipenv …"   5 minutes ago       Up 5 minutes        0.0.0.0:5555->5555/tcp             flowmachine
 3d54ce0c4484        flowminder/flowapi:latest           "/bin/sh -c 'pipenv …"   5 minutes ago       Up 5 minutes        0.0.0.0:9090->9090/tcp             flowapi
 89e9575c8d42        flowminder/flowauth:latest          "/entrypoint.sh /sta…"   5 minutes ago       Up 5 minutes        443/tcp, 0.0.0.0:8080->80/tcp      flowauth
-384355e94ae6        bitnami/redis                       "/entrypoint.sh /run…"   5 minutes ago       Up 5 minutes        0.0.0.0:6379->6379/tcp             query_locker
+384355e94ae6        bitnami/redis                       "/entrypoint.sh /run…"   5 minutes ago       Up 5 minutes        0.0.0.0:6379->6379/tcp             flowmachine_query_locker
 ```
 
 **Note:** _Currently there is a glitch which means that `flowmachine` may not start up correctly if `flowdb_testdata`
