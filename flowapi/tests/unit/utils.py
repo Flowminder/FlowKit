@@ -6,13 +6,6 @@ Utilities to generate access tokens for testing purposes
 query_kinds = ["daily_location", "modal_location", "flow"]
 permissions_types = ["run", "poll", "get_result"]
 aggregation_types = ["admin0", "admin1", "admin2", "admin3", "admin4"]
-all_access_claims = {
-    query_kind: {
-        "permissions": permissions_types,
-        "spatial_aggregation": aggregation_types,
-    }
-    for query_kind in query_kinds
-}
 
 
 exemplar_query_params = {
