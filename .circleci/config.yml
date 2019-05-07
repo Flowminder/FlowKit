@@ -178,6 +178,7 @@ jobs:
       - run:
           name: Push image to Docker cloud
           command: |
+            source /home/circleci/.env 
             docker push flowminder/flowetl:${SAFE_TAG}
             docker push flowminder/flowetl:${CIRCLE_SHA1}        
 
