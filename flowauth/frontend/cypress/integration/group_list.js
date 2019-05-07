@@ -59,6 +59,8 @@ describe("Group list screen", function () {
         cy.get("#name").type("Group_TEST");
         cy.contains("Save").click();
         cy.contains("#error-dialog").should("not.exist");
+        cy.contains("Test_Group").its("length").should("be", 1);
+        cy.contains("Group_TEST").should("be.visible");
     });
 
     it("Add group", function () {
