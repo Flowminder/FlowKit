@@ -40,16 +40,22 @@ bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick
 The [worked examples](worked_examples) are also available as part of the demo system. To install these run 
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples smaller_data
 ```  
 
 for the examples with a small dataset, or 
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples larger_data
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples
 ```  
 
 to get the examples with the larger dataset (the one used when producing this documentation).
+
+To shut down the system, you can either stop all the docker containers directly, or run
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) stop
+```
 
 In order to use the test system, now install FlowClient, and generate a token using FlowAuth.
 

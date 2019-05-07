@@ -61,6 +61,12 @@ fi
 if [ $# -gt 0 ] && [ "$1" = "examples" ] || [ "$2" = "examples" ]
 then
     export WORKED_EXAMPLES=worked_examples
+    if [ $# -gt 0 ] && [ "$1" = "smaller_data" ] || [ "$2" = "smaller_data" ]
+    then
+        export DOCKER_FLOWDB_HOST=flowdb_testdata
+    else
+        export DOCKER_FLOWDB_HOST=flowdb_testdata
+    fi
 else
     export WORKED_EXAMPLES=
 fi
