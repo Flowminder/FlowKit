@@ -141,46 +141,6 @@ jobs:
           paths:
             - .env
 
-  build_flowetl:
-    machine:
-      image: circleci/classic:201808-01
-    working_directory: /home/circleci/project
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /home/circleci/
-      - run:
-          name: Log in to docker cloud
-          command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
-      - run:
-          name: Build image
-          command: |
-            source /home/circleci/.env 
-            echo Tagging as $SAFE_TAG and $CIRCLE_SHA1
-            docker pull flowminder/flowetl:latest && export BUILD_CACHE_TAG=latest || true
-            docker pull flowminder/flowetl:$SAFE_TAG && export BUILD_CACHE_TAG=$SAFE_TAG || true
-            echo Using cache from $BUILD_CACHE_TAG
-            docker build --cache-from flowminder/flowetl:$BUILD_CACHE_TAG -t flowminder/flowetl:$SAFE_TAG -t flowminder/flowetl:$CIRCLE_SHA1 flowetl
-      - run:
-          name: Test that can start with specified UID/GID
-          command: |
-            source /home/circleci/.env 
-            expecteduser=1003
-            expectedgroup=1002
-            gotuser=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${SAFE_TAG} bash -c 'id -u'`
-            gotgroup=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${SAFE_TAG} bash -c 'id -g'`
-            if [ $gotuser -ne $expecteduser -a  $gotgroup -ne $expectedgroup ]; then
-                 exit 1
-            else
-               echo "running as correct user and group"
-            fi
-      - run:
-          name: Push image to Docker cloud
-          command: |
-            source /home/circleci/.env 
-            docker push flowminder/flowetl:${SAFE_TAG}
-            docker push flowminder/flowetl:${CIRCLE_SHA1}        
-
   build_flowdb:
     machine:
       image: circleci/classic:201808-01
@@ -502,7 +462,7 @@ jobs:
     parameters:
       component:
         type: enum
-        enum: ["flowmachine", "flowauth", "flowapi"]
+        enum: ["flowmachine", "flowauth", "flowapi", "flowetl"]
     docker:
       - image: circleci/python:3.7
     working_directory: /home/circleci/project/
@@ -520,6 +480,22 @@ jobs:
           command: |
             echo "Tagging as $CIRCLE_SHA1"
             docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 ./<<parameters.component>>
+      - run:
+          name: test running with specified UID/GID for flowetl
+          command: |
+            if [ <<parameters.component>> == "flowetl"]; then
+              expecteduser=1003
+              expectedgroup=1002
+              gotuser=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -u'`
+              gotgroup=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -g'`
+              if [ $gotuser -ne $expecteduser -a  $gotgroup -ne $expectedgroup ]; then
+                exit 1
+              else
+                echo "running as correct user and group"
+              fi
+            else
+              echo "Not flowetl skipping"
+            fi
       - run:
           name: Push images to Docker cloud
           command: |
@@ -688,10 +664,6 @@ workflows:
           requires:
             - set_docker_tag_for_ci_images
           <<: *run_always_org_context
-      - build_flowetl:
-          requires:
-            - set_docker_tag_for_ci_images
-          <<: *run_always_org_context
       - install_flowmachine_deps:
           <<: *run_always_org_context
       - run_flowkit_api_tests:
@@ -747,6 +719,12 @@ workflows:
           component: flowapi
           requires:
             - run_flowkit_api_tests
+          <<: *run_always_org_context
+      - build_docker_image:
+          name: build_flowetl
+          component: flowetl
+          requires:
+            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
