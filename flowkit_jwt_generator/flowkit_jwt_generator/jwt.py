@@ -85,7 +85,7 @@ def get_all_claims_from_flowapi(
     flowapi_url: str
 ) -> Dict[str, Union[Dict[str, bool], List[str]]]:
     """
-    Retrieve all the queries types available on an instance of flowapi and
+    Retrieve all the query types available on an instance of flowapi and
     generate a claims dictionary which grants total access to them.
 
     Parameters
