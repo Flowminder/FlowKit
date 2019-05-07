@@ -155,11 +155,13 @@ jobs:
       - run:
           name: Build image
           command: |
+            cat /home/circleci/.env >> $BASH_ENV
             echo Tagging as $SAFE_TAG and $CIRCLE_SHA1
             # docker pull flowminder/flowetl:latest && export BUILD_CACHE_TAG=latest || true
             # docker pull flowminder/flowetl:$SAFE_TAG && export BUILD_CACHE_TAG=$SAFE_TAG || true
             echo Using cache from $BUILD_CACHE_TAG
-            docker build --cache-from flowminder/flowetl:$BUILD_CACHE_TAG -t flowminder/flowetl:$SAFE_TAG -t flowminder/flowetl:$CIRCLE_SHA1 flowetl
+            docker build -t flowminder/flowetl:$SAFE_TAG -t flowminder/flowetl:$CIRCLE_SHA1 flowetl
+            # docker build --cache-from flowminder/flowetl:$BUILD_CACHE_TAG -t flowminder/flowetl:$SAFE_TAG -t flowminder/flowetl:$CIRCLE_SHA1 flowetl
       - run:
           name: Test that can start with specified UID/GID
           command: |
