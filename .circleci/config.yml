@@ -378,13 +378,9 @@ jobs:
       - run:
           name: Run token generator unit tests
           command: |
-            # Run tests twice in order to pick up coverage of pytest plugin
-            pipenv run pytest --junitxml=test_results/pytest/results.xml \
-                                    --cov=flowkit_jwt_generator/ \
-                                    --cov-report term --cov-report xml --durations=10
             pipenv run pytest --junitxml=test_results/pytest/results.xml \
                         --cov=flowkit_jwt_generator/ \
-                        --cov-report term --cov-report xml --durations=10 --cov-append
+                        --cov-report term --cov-report xml --durations=10
           environment:
             COV_CORE_SOURCE:  flowkit_jwt_generator/
             COV_CORE_CONFIG: .coveragerc
