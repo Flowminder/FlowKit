@@ -1,4 +1,5 @@
 .env
+.python-version
 
 # Notebook output
 docs/test.csv
