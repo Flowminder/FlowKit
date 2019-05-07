@@ -128,7 +128,7 @@ services:
       - REDIS_HOST=query_locker
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
-      -
+      - FLOWAPI_URL="http://flowapi:9090"
     restart: always
     networks:
       - db
@@ -150,7 +150,6 @@ services:
       - FLOWDB_PORT=5432
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:?Must set JWT_SECRET_KEY env var}
       - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:?Must set FLOWAPI_LOG_LEVEL env var}
-      - FLOWAPI_URL="http://flowapi:9090"
     tty: true
     stdin_open: true
     restart: always
