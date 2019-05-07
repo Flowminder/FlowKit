@@ -50,7 +50,7 @@ class GroupDetails extends React.Component {
       [name]: event.target.value
     };
     if (name === "name") {
-      var letters = /^[A-Za-z0-9 ]+$/;
+      var letters = /^[A-Za-z0-9_]+$/;
       let groupname = event.target.value;
       if (groupname.match(letters)) {
         state = Object.assign(state, {
@@ -62,7 +62,7 @@ class GroupDetails extends React.Component {
         });
       } else {
         state = Object.assign(state, {
-          name_helper_text: "Group name may only contain letters, numbers and space."
+          name_helper_text: "Group name may only contain letters, numbers and underscores."
         });
       }
       // console.log(event.target.value);
