@@ -14,7 +14,7 @@ RUN USER=airflow && \
         mkdir -p /etc/fixuid && \
         printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
 
-RUN rm /entrypoint.sh
+RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY entrypoint.sh /entrypoint.sh
 
 USER airflow
