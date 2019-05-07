@@ -644,12 +644,17 @@ def add_user():
         raise InvalidUsage(
             "Password not complex enough.", payload={"bad_field": "password"}
         )
-    user_group = Group(name=user.username, user_group=True)
-    user.groups.append(user_group)
-    db.session.add(user)
-    db.session.add(user_group)
-    db.session.commit()
-    return jsonify({"id": user.id, "group_id": user_group.id})
+    if User.query.filter(User.username == json["username"]).first() is not None:
+        raise InvalidUsage(
+            "Username already exists.", payload={"bad_field": "username"}
+        )
+    else:
+        user_group = Group(name=user.username, user_group=True)
+        user.groups.append(user_group)
+        db.session.add(user)
+        db.session.add(user_group)
+        db.session.commit()
+        return jsonify({"id": user.id, "group_id": user_group.id})
 
 
 @blueprint.route("/users/<user_id>", methods=["DELETE"])
