@@ -556,12 +556,9 @@ def make_demodata():  # pragma: no cover
         gsp = GroupServerPermission(
             group=groups[0], server_capability=sc, get_result=True, run=True, poll=True
         )
-        gsp.spatial_aggregation.append(
-            agg_units[0]
-        )  # Give Bob access to admin0 agg units
-        gsp.spatial_aggregation.append(
-            agg_units[1]
-        )  # Give Bob access to admin1 agg units
+        for agg_units in agg_units[:4]:  # Give Bob access to adminX agg units
+            gsp.spatial_aggregation.append(agg_units[0])
+
         db.session.add(gsp)
     db.session.add(
         GroupServerTokenLimits(
