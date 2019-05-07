@@ -167,8 +167,8 @@ jobs:
           command: |
             expecteduser=1003
             expectedgroup=1002
-            gotuser=`docker run --user $expecteduser:$expectedgroup flowminder/flowetl:$SAFE_TAG bash -c 'id -u'`
-            gotgroup=`docker run --user $expecteduser:$expectedgroup flowminder/flowetl:$SAFE_TAG bash -c 'id -g'`
+            gotuser=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${SAFE_TAG} bash -c 'id -u'`
+            gotgroup=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${SAFE_TAG} bash -c 'id -g'`
             if [ $gotuser -ne $expecteduser -a  $gotgroup -ne $expectedgroup ]; then
                  exit 1
             else
