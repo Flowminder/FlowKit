@@ -165,6 +165,7 @@ jobs:
       - run:
           name: Test that can start with specified UID/GID
           command: |
+            source /home/circleci/.env 
             expecteduser=1003
             expectedgroup=1002
             gotuser=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${SAFE_TAG} bash -c 'id -u'`
