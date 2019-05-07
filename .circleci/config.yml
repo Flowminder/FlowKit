@@ -141,7 +141,7 @@ jobs:
           paths:
             - .env
 
-  build_airflow:
+  build_flowetl:
     machine:
       image: circleci/classic:201808-01
     working_directory: /home/circleci/project
@@ -682,6 +682,10 @@ workflows:
       - set_docker_tag_for_ci_images:
           <<: *run_always_org_context
       - build_flowdb:
+          requires:
+            - set_docker_tag_for_ci_images
+          <<: *run_always_org_context
+      - build_flowetl:
           requires:
             - set_docker_tag_for_ci_images
           <<: *run_always_org_context
