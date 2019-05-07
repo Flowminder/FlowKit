@@ -103,8 +103,10 @@ def dummy_db_pool(monkeypatch):
 def app(monkeypatch, tmpdir, dummy_db_pool):
     monkeypatch.setenv("FLOWAPI_LOG_LEVEL", "DEBUG")
     monkeypatch.setenv("FLOWMACHINE_HOST", "localhost")
+    monkeypatch.setenv("FLOWMACHINE_PORT", "5555")
     monkeypatch.setenv("FLOWAPI_FLOWDB_USER", "flowapi")
     monkeypatch.setenv("FLOWDB_HOST", "localhost")
+    monkeypatch.setenv("FLOWDB_PORT", "5432")
     monkeypatch.setenv("FLOWAPI_FLOWDB_PASSWORD", "foo")
     monkeypatch.setenv("JWT_SECRET_KEY", "secret")
     current_app = create_app()

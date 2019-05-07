@@ -1,12 +1,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import json
 import sys
 from logging import getLogger
 
-import pytest
-from flowmachine.core.init import _init_logging
+from flowmachine.core.logging import set_log_level
 from flowmachine.core.server.server import get_reply_for_message
 from flowmachine.core import Query
 
@@ -20,7 +20,9 @@ def test_query_run_logged(json_log):
         "request_id": "DUMMY_API_REQUEST_ID",
         "params": {"query_kind": "dummy_query", "dummy_param": "DUMMY"},
     }
-    _init_logging("ERROR")  # Logging of query runs should be independent of other logs
+    set_log_level(
+        "flowmachine.debug", "ERROR"
+    )  # Logging of query runs should be independent of other logs
     Query.redis.get.return_value = (
         b"known"
     )  # Mock enough redis to get to the log messages

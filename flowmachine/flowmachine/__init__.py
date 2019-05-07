@@ -18,47 +18,18 @@ and inherit from FlowMachine's main `Query()` class.
 
 """
 
-
-from ._version import get_versions
-
-__version__ = get_versions()["version"]
-__flowdb_version__ = "0.2.0"
-
-del get_versions
-
-import structlog
-import rapidjson
-import logging
-
-root_logger = logging.getLogger("flowmachine")
-root_logger.setLevel(logging.DEBUG)
-structlog.configure(
-    processors=[
-        structlog.stdlib.filter_by_level,
-        structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(serializer=rapidjson.dumps),
-    ],
-    context_class=dict,
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    wrapper_class=structlog.stdlib.BoundLogger,
-    cache_logger_on_first_use=True,
-)
-
+from .versions import __version__
 from .core.init import connect
 from .features.utilities import GroupValues, feature_collection
+from flowmachine.core.logging import init_logging
 import flowmachine.models
 import flowmachine.features
 import flowmachine.utils
 import flowmachine.core
 
 methods = ["GroupValues", "feature_collection", "connect"]
-
 sub_modules = ["core", "features", "utils", "models"]
-
-
 __all__ = methods + sub_modules
+
+# Initialise loggers when flowmachine is imported
+init_logging()
