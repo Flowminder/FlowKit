@@ -10,8 +10,7 @@ import tabulate as tabulate
 import pprint
 import warnings
 import os
-import sys
-from dotenv import find_dotenv
+from flowkit_jwt_generator.jwt import generate_token, get_all_claims_from_flowapi
 from datetime import timedelta
 
 
