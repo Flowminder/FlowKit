@@ -99,6 +99,7 @@ executors:
         FLOWMACHINE_FLOWDB_USER: flowmachine
         LOG_DIRECTORY: "."
         FLOWMACHINE_HOST: localhost
+        FLOWMACHINE_PORT: 5555
         FLOWDB_HOST: localhost
         JWT_SECRET_KEY: secret
     docker:
