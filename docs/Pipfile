@@ -18,9 +18,9 @@ geopandas = "*"
 numpydoc = "*"
 black = "==19.3b0"
 click = "*"
-flowmachine = {editable = true, path = "./../flowmachine"}
-marshmallow = {editable = true, ref = "3.0.0rc5", git = "https://github.com/marshmallow-code/marshmallow.git"} # Temporarily required while there's a marshmallow versions conflict
-marshmallow-oneofschema = {editable = true, ref = "8195dc3e595fa33a5f007f10ba7cfc08f2177515", git = "https://github.com/marshmallow-code/marshmallow-oneofschema.git"} # Temporarily required while there's a marshmallow versions conflict
+flowmachine = {editable = true,path = "./../flowmachine"}
+marshmallow = {editable = true,ref = "3.0.0rc5",git = "https://github.com/marshmallow-code/marshmallow.git"} # Temporarily required while there's a marshmallow versions conflict
+marshmallow-oneofschema = {editable = true,ref = "8195dc3e595fa33a5f007f10ba7cfc08f2177515",git = "https://github.com/marshmallow-code/marshmallow-oneofschema.git"} # Temporarily required while there's a marshmallow versions conflict
 descartes = "*"
 seaborn = "*"
 flowclient = {editable = true,path = "./../flowclient"}
@@ -35,6 +35,7 @@ folium = "*"
 
 [dev-packages]
 jupyterlab = "*"
+flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 
 [requires]
 python_version = "3.7"

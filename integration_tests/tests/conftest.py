@@ -5,7 +5,6 @@
 from approvaltests.reporters.generic_diff_reporter_factory import (
     GenericDiffReporterFactory,
 )
-from datetime import timedelta
 from multiprocessing import Process
 from time import sleep
 
@@ -119,52 +118,6 @@ def flowapi_url(flowapi_host, flowapi_port):
     `FLOWAPI_HOST` and `FLOWAPI_PORT`, respectively).
     """
     return f"http://{flowapi_host}:{flowapi_port}"
-
-
-@pytest.fixture
-def access_token_builder():
-    """
-    Fixture which builds short-life access tokens.
-
-    Returns
-    -------
-    function
-        Function which returns a token encoding the specified claims.
-    """
-    from .utils import make_token
-
-    secret = os.getenv("JWT_SECRET_KEY")
-    if secret is None:
-        raise EnvironmentError("JWT_SECRET_KEY environment variable not set.")
-
-    def token_maker(claims):
-        return make_token("test", secret, timedelta(seconds=90), claims)
-
-    return token_maker
-
-
-from .utils import query_kinds, permissions_types, aggregation_types
-
-
-@pytest.fixture
-def universal_access_token(access_token_builder):
-    all_claims = {
-        query_kind: {
-            "permissions": permissions_types,
-            "spatial_aggregation": aggregation_types,
-        }
-        for query_kind in query_kinds
-    }
-    all_claims.update(
-        {
-            "geography": {
-                "permissions": permissions_types,
-                "spatial_aggregation": aggregation_types,
-            },
-            "available_dates": {"permissions": {"get_result": True}},
-        }
-    )
-    return access_token_builder(all_claims)
 
 
 @pytest.fixture(scope="session")

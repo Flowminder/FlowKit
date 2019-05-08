@@ -11,9 +11,7 @@ from _pytest.capture import CaptureResult
 
 from flowapi.main import create_app
 from asynctest import MagicMock, Mock, CoroutineMock
-from datetime import timedelta
 from zmq.asyncio import Context
-from .utils import make_token
 from asyncio import Future
 
 
@@ -99,35 +97,6 @@ def dummy_db_pool(monkeypatch):
 
     monkeypatch.setattr(asyncpg, "create_pool", f)
     yield dummy
-
-
-@pytest.fixture
-def access_token_builder():
-    """
-    Fixture which builds short-life access tokens.
-
-    Returns
-    -------
-    function
-        Functions which returns a token encoding the specified claims.
-    """
-
-    def token_maker(claims):
-        return make_token("test", "secret", timedelta(seconds=10), claims)
-        # return encode_access_token(
-        #     identity="test",
-        #     secret="secret",
-        #     algorithm="HS256",
-        #     expires_delta=timedelta(seconds=10),
-        #     fresh=True,
-        #     user_claims=claims,
-        #     csrf=False,
-        #     identity_claim_key="identity",
-        #     user_claims_key="user_claims",
-        #     json_encoder=JSONEncoder,
-        # )
-
-    return token_maker
 
 
 @pytest.fixture
