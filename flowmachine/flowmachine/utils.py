@@ -18,6 +18,7 @@ from time import sleep
 from typing import List, Union
 
 from flowmachine.core.errors import BadLevelError
+from flowmachine.core.subscriber_subsetter import SubscriberSubsetterBase
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -404,7 +405,7 @@ def print_dependency_tree(query_obj, stream=None, indent_level=0):
         print_dependency_tree(dep, indent_level=indent_level + 1, stream=stream)
 
 
-def _get_query_attrs_for_dependency_graph(query_obj, analyse):
+def _get_query_attrs_for_dependency_graph(query_obj, analyse=False):
     """
     Helper method which returns information about this query for use in a dependency graph.
 
@@ -413,7 +414,7 @@ def _get_query_attrs_for_dependency_graph(query_obj, analyse):
     query_obj : Query
         Query object to return information for.
     analyse : bool
-        Set to True to get actual runtimes for queries, note that this will actually run the query!
+        Set to True to get actual runtimes for queries. Note that this will actually run the query!
 
     Returns
     -------
@@ -422,6 +423,21 @@ def _get_query_attrs_for_dependency_graph(query_obj, analyse):
         present if `analyse=True`.
         Example return value: `{"name": "DailyLocation", "stored": False, "cost": 334.53, "runtime": 161.6}`
     """
+
+    if isinstance(query_obj, SubscriberSubsetterBase):
+        # This special case is only needed because SubscriberSubsetterBase
+        # currently inherits from flowmachine.Query. However, since this
+        # class doesn't really represent a full flowmachine.Query
+        # (and this inheritance will be removed in the long run)
+        # we can't return meaningful values here, so we just return
+        # a dictionary with the correct keys but no actual values.
+        attrs = {}
+        attrs["name"] = query_obj.__class__.__name__
+        attrs["stored"] = "N/A"
+        attrs["cost"] = "N/A"
+        attrs["runtime"] = "N/A"
+        return attrs
+
     expl = query_obj.explain(format="json", analyse=analyse)[0]
     attrs = {}
     attrs["name"] = query_obj.__class__.__name__
