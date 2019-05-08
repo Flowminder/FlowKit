@@ -404,6 +404,34 @@ def print_dependency_tree(query_obj, stream=None, indent_level=0):
         print_dependency_tree(dep, indent_level=indent_level + 1, stream=stream)
 
 
+def _get_query_attrs_for_dependency_graph(query_obj, analyse):
+    """
+    Helper method which returns information about this query for use in a dependency graph.
+
+    Parameters
+    ----------
+    query_obj : Query
+        Query object to return information for.
+    analyse : bool
+        Set to True to get actual runtimes for queries, note that this will actually run the query!
+
+    Returns
+    -------
+    dict
+        Dictionary containing the keys "name", "stored", "cost" and "runtime" (the latter is only
+        present if `analyse=True`.
+        Example return value: `{"name": "DailyLocation", "stored": False, "cost": 334.53, "runtime": 161.6}`
+    """
+    expl = query_obj.explain(format="json", analyse=analyse)[0]
+    attrs = {}
+    attrs["name"] = query_obj.__class__.__name__
+    attrs["stored"] = query_obj.is_stored
+    attrs["cost"] = expl["Plan"]["Total Cost"]
+    if analyse:
+        attrs["runtime"] = expl["Execution Time"]
+    return attrs
+
+
 def calculate_dependency_graph(query_obj, analyse=False):
     """
     Produce a graph of all the queries that go into producing this
@@ -452,7 +480,7 @@ def calculate_dependency_graph(query_obj, analyse=False):
 
     _, y = zip(*deps)
     for n in set(y):
-        attrs = n._get_query_attrs_for_dependency_graph(analyse=analyse)
+        attrs = _get_query_attrs_for_dependency_graph(n, analyse=analyse)
         attrs["shape"] = "rect"
         attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
         if analyse:
