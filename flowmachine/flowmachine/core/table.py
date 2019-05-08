@@ -99,6 +99,9 @@ class Table(Query):
         ):  # No columns specified, setting them from the database
             columns = db_columns
         else:
+            self.parent_table = Table(
+                schema=self.schema, name=self.name
+            )  # Point to the full table
             if isinstance(columns, str):  # Wrap strings in a list
                 columns = [columns]
             logger.debug(
