@@ -519,8 +519,9 @@ jobs:
               # this will be tested via a pytest integration test eventually 
               docker run --name flowetl -d flowminder/flowetl:$CIRCLE_SHA1
               sleep 5
-              dag=x=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
-              if [ $x -ne "tutorial" ]; then
+              expecteddag=tutorial
+              gotdag=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
+              if [ $gotdag -ne $expecteddag ]; then
                 exit 1
               else
                 echo "expected DAG present"
