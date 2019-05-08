@@ -315,9 +315,14 @@ def add_group():
     """
     json = request.get_json()
     group = Group(**json)
-    db.session.add(group)
-    db.session.commit()
-    return jsonify({"id": group.id, "name": group.name})
+    if Group.query.filter(Group.name == json["name"]).first() is not None:
+        raise InvalidUsage(
+            "Group name already exists.", payload={"bad_field": "groupname"}
+        )
+    else:
+        db.session.add(group)
+        db.session.commit()
+        return jsonify({"id": group.id, "name": group.name})
 
 
 @blueprint.route("/groups/<group_id>", methods=["PATCH"])

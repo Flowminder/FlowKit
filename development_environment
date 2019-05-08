@@ -116,3 +116,7 @@ OUTPUT_ROOT_DIR=/docker-entrypoint-initdb.d
 # Integration tests
 
 FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=FALSE
+
+# Worked examples
+
+WORKED_EXAMPLES_PORT=8888
