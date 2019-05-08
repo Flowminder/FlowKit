@@ -5,7 +5,7 @@
 # DOCKER COMPOSE BUILDER FOR FLOWKIT
 #
 
-version: '3.7'
+version: '3.5'
 
 services:
 
@@ -31,6 +31,13 @@ services:
     image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
     build:
       context: ./flowmachine
+      dockerfile: Dockerfile
+
+  worked_examples:
+    container_name: worked_examples
+    image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
+    build:
+      context: .
       dockerfile: Dockerfile
 
   flowapi:

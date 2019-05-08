@@ -129,18 +129,6 @@ executors:
           REDIS_PASSWORD: "fm_redis"
 
 jobs:
-  set_docker_tag_for_ci_images:
-    docker: *base_docker
-    steps:
-      - run:
-          name: Set a common docker tag
-          command: |
-            echo "export SAFE_TAG=${CIRCLE_TAG:-$(echo -n $CIRCLE_BRANCH | md5sum | cut -d" " -f1)}"| tee -a $BASH_ENV /home/circleci/.env
-      - persist_to_workspace:
-          root: /home/circleci/
-          paths:
-            - .env
-
   build_flowdb:
     machine:
       image: circleci/classic:201808-01
@@ -148,6 +136,10 @@ jobs:
     environment: *flowdb_env
     steps:
       - checkout
+      - run:
+          name: Set a common docker tag
+          command: |
+            echo "export SAFE_TAG=${CIRCLE_TAG:-$(echo -n $CIRCLE_BRANCH | md5sum | cut -d" " -f1)}"| tee -a $BASH_ENV /home/circleci/.env
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
@@ -462,7 +454,9 @@ jobs:
     parameters:
       component:
         type: enum
-        enum: ["flowmachine", "flowauth", "flowapi"]
+        enum: ["flowmachine", "flowauth", "flowapi", "flowkit-examples"]
+      component_path:
+        type: string
     docker:
       - image: circleci/python:3.7
     working_directory: /home/circleci/project/
@@ -479,7 +473,7 @@ jobs:
           name: Build <<parameters.component>> image
           command: |
             echo "Tagging as $CIRCLE_SHA1"
-            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 ./<<parameters.component>>
+            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 <<parameters.component_path>>
       - run:
           name: Push images to Docker cloud
           command: |
@@ -518,6 +512,18 @@ jobs:
           path: /home/circleci/project/
       - run: ./quick_start.sh
       - run: ./quick_start.sh stop
+      - run: ./quick_start.sh examples smaller_data
+      - run: ./quick_start.sh stop
+      #- run: ./quick_start.sh larger_data # Synth data spinup with this data volume is very slow so not testing it right now on CI
+      #- run: ./quick_start.sh stop
+      - run:
+          name: Check all containers are down
+          command: |
+            RUNNING=`docker ps -q`
+            if [[ "$RUNNING" != "" ]]
+            then
+              exit 1
+            fi
 
   build_docs:
     parameters:
@@ -631,7 +637,7 @@ jobs:
           command: |
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
-            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth; do
+            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples; do
               docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
@@ -642,11 +648,7 @@ jobs:
 workflows:
   run_build_pipeline:
     jobs:
-      - set_docker_tag_for_ci_images:
-          <<: *run_always_org_context
       - build_flowdb:
-          requires:
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - install_flowmachine_deps:
           <<: *run_always_org_context
@@ -680,10 +682,14 @@ workflows:
             - build_flowdb
           <<: *run_always_org_context
       - build_docker_image:
+          name: build_examples
+          component: flowkit-examples
+          component_path: .
+          <<: *run_always_org_context
+      - build_docker_image:
           name: build_flowmachine
           component: flowmachine
-          requires:
-            - run_flowmachine_tests
+          component_path: flowmachine
           <<: *run_always_org_context
       - build_docs:
           name: build_docs
@@ -694,29 +700,24 @@ workflows:
       - build_docker_image:
           name: build_flowauth
           component: flowauth
-          requires:
-            - run_flowauth_backend_tests
-            - run_flowauth_frontend_tests
+          component_path: flowauth
           <<: *run_always_org_context
       - build_docker_image:
           name: build_flowapi
           component: flowapi
-          requires:
-            - run_flowkit_api_tests
+          component_path: flowapi
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
           project_name: flowclient
           requires:
-            - run_flowclient_tests
-            - integration_tests
+            - install_flowmachine_deps
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowmachine_wheel
           project_name: flowmachine
           requires:
-            - run_flowmachine_tests
-            - integration_tests
+            - install_flowmachine_deps
           <<: *run_always_org_context
       - test_quickstart:
           requires:
@@ -724,6 +725,7 @@ workflows:
             - build_flowapi
             - build_flowmachine
             - build_flowauth
+            - build_examples
           <<: *run_always_org_context
       - integration_tests:
           requires:
@@ -734,32 +736,40 @@ workflows:
           name: retag_master_branch
           requires:
             - test_quickstart
+            - integration_tests
             - build_docs
+            - run_flowkit_api_tests
+            - run_flowauth_backend_tests
+            - run_flowauth_frontend_tests
+            - run_flowclient_tests
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
           requires:
             - test_quickstart
+            - integration_tests
             - build_docs
+            - run_flowkit_api_tests
+            - run_flowauth_backend_tests
+            - run_flowauth_frontend_tests
+            - run_flowclient_tests
           tag: CIRCLE_TAG
           <<: *tag_only_org_context
       - push_wheel:
           name: push_flowclient_wheel
           project_name: flowclient
           requires:
-            - build_flowclient_wheel
+            - retag_tagged_build
           <<: *tag_only_org_context
       - push_wheel:
           name: push_flowmachine_wheel
           project_name: flowmachine
           requires:
-            - build_flowmachine_wheel
+            - retag_tagged_build
           <<: *tag_only_org_context
       - build_docs:
           name: Deploy docs
           deploy: true
           requires:
-            - build_docs
             - retag_tagged_build
-            - push_flowclient_wheel
           <<: *tag_only_org_context

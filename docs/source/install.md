@@ -1,6 +1,6 @@
 Title: Installation
 
-#How to Install FlowKit
+# How to Install FlowKit
 
 There are three main ways to install FlowKit.
 
@@ -18,10 +18,7 @@ The bulk of the installation process consists of downloading [Docker](https://do
 
 These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pipenv](https://github.com/pypa/pipenv). [Anaconda](https://www.anaconda.com/what-is-anaconda/) stack based installation commands may be different. 
 
-
-### Server and Authentication Installation
-
-Docker containers for FlowAPI, FlowMachine and FlowDB are provided in the [DockerCloud](https://cloud.docker.com/) repositories `flowminder/flowapi`, `flowminder/flowmachine` and `flowminder/flowdb`, respectively. You will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+Docker containers for [FlowAPI](http://https://hub.docker.com/r/flowminder/flowapi), [FlowMachine](http://https://hub.docker.com/r/flowminder/flowmachine), [FlowDB](http://https://hub.docker.com/r/flowminder/flowdb), [FlowAuth](http://https://hub.docker.com/r/flowminder/flowauth) and the [worked examples](http://https://hub.docker.com/r/flowminder/flowkit-examples) are provided in the [DockerCloud](https://hub.docker.com/) repositories `flowminder/flowapi`, `flowminder/flowmachine`, `flowminder/flowdb`, `flowminder/flowauth`, and `flowminder/flowkit-examples` respectively. You will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 Start the FlowKit test system by running 
 
@@ -34,8 +31,31 @@ This will pull any necessary docker containers, and start the system in the back
 The default system includes a small amount of test data. For a test system with considerably more data you can run
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) synth
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) larger_data
 ```  
+
+!!! warning
+    The larger data container will take considerably longer to start up, as it generates data when first run.
+
+The [worked examples](worked_examples) are also available as part of the demo system. To install these run 
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples smaller_data
+```  
+
+for the examples with a small dataset, or 
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples
+```  
+
+to get the examples with the larger dataset (the one used when producing this documentation).
+
+To shut down the system, you can either stop all the docker containers directly, or run
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) stop
+```
 
 In order to use the test system, now install FlowClient, and generate a token using FlowAuth.
 
