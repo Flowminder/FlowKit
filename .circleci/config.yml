@@ -543,10 +543,6 @@ jobs:
               echo "expected DAG present"
             fi
             docker stop flowetl
-      - run:
-          name: Push images to Docker cloud
-          command: |
-            docker push flowminder/flowetl:$CIRCLE_SHA1
 
   integration_tests:
     executor:
