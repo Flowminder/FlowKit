@@ -801,6 +801,7 @@ workflows:
             - build_flowapi
             - build_flowmachine
             - build_flowauth
+            - build_flowetl
             - build_examples
           <<: *run_always_org_context
       - integration_tests:
