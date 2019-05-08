@@ -515,6 +515,14 @@ jobs:
               else
                 echo "running as correct user and group"
               fi
+
+              dag=x=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
+              if [ $x -ne "tutorial" ]; then
+                exit 1
+              else
+                echo "expected DAG present"
+              fi
+              
             else
               echo "Not flowetl skipping"
             fi
