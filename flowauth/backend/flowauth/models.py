@@ -502,7 +502,7 @@ def make_demodata():  # pragma: no cover
     groups = [
         Group(name="TEST_USER", user_group=True),
         Group(name="TEST_ADMIN", user_group=True),
-        Group(name="Test Group"),
+        Group(name="Test_Group"),
     ]
     groups[0].members.append(users[0])
     groups[1].members.append(users[1])
