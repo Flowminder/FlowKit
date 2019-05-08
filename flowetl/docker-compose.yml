@@ -32,16 +32,6 @@ services:
       POSTGRES_PASSWORD: flowetl
       POSTGRES_HOST: flowetl_db
       POSTGRES_DB: flowetl
-      MOUNT_HOME: /usr/local/mounts
-
-    # volumes:
-    #   - ${HOST_DAGS_FOLDER}:${AIRFLOW_HOME}/src:rw
-    #   - ${HOST_ARCHIVE_DIR}:${MOUNT_HOME}/archive:rw
-    #   - ${HOST_CONFIG_DIR}:${MOUNT_HOME}/config:ro
-    #   - ${HOST_DUMP_DIR}:${MOUNT_HOME}/dump:rw
-    #   - ${HOST_INGEST_DIR}:${MOUNT_HOME}/ingest:rw
-    #   - ${HOST_QUARANTINE_DIR}:${MOUNT_HOME}/quarantine:rw
-    #   - ${HOST_REPORTS_DIR}:${MOUNT_HOME}/reports:rw
 
     networks:
       - flowkit_db
