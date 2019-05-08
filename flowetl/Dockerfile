@@ -1,3 +1,11 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+#
+#  FLOWETL
+#  -----
+
 FROM puckel/docker-airflow
 
 ARG AIRFLOW_HOME=/usr/local/airflow
@@ -18,6 +26,7 @@ RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY entrypoint.sh /entrypoint.sh
 
 USER airflow
+COPY --chown=airflow:airflow dags/* ${AIRFLOW_HOME}/src/
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["webserver"] # set default arg for entrypoint
