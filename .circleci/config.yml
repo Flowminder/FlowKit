@@ -510,22 +510,15 @@ jobs:
           command: |
             docker push flowminder/<<parameters.component>>:$CIRCLE_SHA1
 
-  flowetl_build_and_test:
+  run_flowetl_tests:
     docker:
       - image: circleci/python:3.7
+      - image: flowminder/flowetl:$CIRCLE_SHA1
     working_directory: /home/circleci/project/
     steps:
       - checkout:
           path: /home/circleci/project/
       - setup_remote_docker
-      - run:
-          name: Log in to docker cloud
-          command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
-      - run:
-          name: Build flowetl image
-          command: |
-            echo "Tagging as $CIRCLE_SHA1"
-            docker build -t flowminder/flowetl:$CIRCLE_SHA1 flowetl
       - run:
           name: test running with specified UID/GID for flowetl
           command: |
@@ -765,6 +758,11 @@ workflows:
           component_path: .
           <<: *run_always_org_context
       - build_docker_image:
+          name: build_flowetl
+          component: flowetl
+          component_path: flowetl
+          <<: *run_always_org_context
+      - build_docker_image:
           name: build_flowmachine
           component: flowmachine
           component_path: flowmachine
@@ -785,7 +783,9 @@ workflows:
           component: flowapi
           component_path: flowapi
           <<: *run_always_org_context
-      - flowetl_build_and_test:
+      - run_flowetl_tests:
+          requires:
+            - build_flowetl
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
@@ -823,12 +823,12 @@ workflows:
             - run_flowauth_backend_tests
             - run_flowauth_frontend_tests
             - run_flowclient_tests
+            - run_flowetl_tests
             - synth_data_python_generator_tests
             - synth_data_sql_generator_tests
             - build_flowmachine_wheel
             - build_flowclient_wheel
             - run_flowmachine_tests
-            - flowetl_build_and_test
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
