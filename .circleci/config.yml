@@ -357,6 +357,34 @@ jobs:
       - store_test_results:
           path: test_results
 
+  run_token_generator_tests:
+    docker:
+      - image: circleci/python:3.7
+    environment:
+      JWT_SECRET_KEY: secret
+    working_directory: /home/circleci/project/flowkit_jwt_generator
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run: pipenv install --deploy --dev
+      - run:
+          name: Run token generator unit tests
+          command: |
+            # Run tests twice in order to pick up coverage of pytest plugin
+            pipenv run pytest --junitxml=test_results/pytest/results.xml \
+                                    --cov=flowkit_jwt_generator/ \
+                                    --cov-report term --cov-report xml --durations=10
+            pipenv run pytest --junitxml=test_results/pytest/results.xml \
+                        --cov=flowkit_jwt_generator/ \
+                        --cov-report term --cov-report xml --durations=10 --cov-append
+          environment:
+            COV_CORE_SOURCE:  flowkit_jwt_generator/
+            COV_CORE_CONFIG: .coveragerc
+            COV_CORE_DATAFILE: .coverage.eager
+      - store_test_results:
+          path: test_results
+      - run: bash <(curl -s https://codecov.io/bash)
+
   run_flowkit_api_tests:
     docker:
       - image: circleci/python:3.7
@@ -648,6 +676,8 @@ jobs:
 workflows:
   run_build_pipeline:
     jobs:
+      - run_token_generator_tests:
+          <<: *run_always_org_context
       - build_flowdb:
           <<: *run_always_org_context
       - install_flowmachine_deps:
@@ -670,13 +700,13 @@ workflows:
             - install_flowmachine_deps
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
-          name: Synth data python generator
+          name: synth_data_python_generator_tests
           synthetic_data_generator: python
           requires:
             - build_flowdb
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
-          name: Synth data sql generator
+          name: synth_data_sql_generator_tests
           synthetic_data_generator: sql
           requires:
             - build_flowdb
@@ -735,6 +765,7 @@ workflows:
       - retag_images:
           name: retag_master_branch
           requires:
+            &retag_requirements
             - test_quickstart
             - integration_tests
             - build_docs
@@ -742,17 +773,16 @@ workflows:
             - run_flowauth_backend_tests
             - run_flowauth_frontend_tests
             - run_flowclient_tests
+            - synth_data_python_generator_tests
+            - synth_data_sql_generator_tests
+            - build_flowmachine_wheel
+            - build_flowclient_wheel
+            - run_flowmachine_tests
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
           requires:
-            - test_quickstart
-            - integration_tests
-            - build_docs
-            - run_flowkit_api_tests
-            - run_flowauth_backend_tests
-            - run_flowauth_frontend_tests
-            - run_flowclient_tests
+            *retag_requirements
           tag: CIRCLE_TAG
           <<: *tag_only_org_context
       - push_wheel:
