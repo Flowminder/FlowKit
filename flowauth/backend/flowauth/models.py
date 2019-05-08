@@ -502,7 +502,7 @@ def make_demodata():  # pragma: no cover
     groups = [
         Group(name="TEST_USER", user_group=True),
         Group(name="TEST_ADMIN", user_group=True),
-        Group(name="Test Group"),
+        Group(name="Test_Group"),
     ]
     groups[0].members.append(users[0])
     groups[1].members.append(users[1])
@@ -531,10 +531,10 @@ def make_demodata():  # pragma: no cover
         caps.append(c)
     # Add some servers
     test_server = Server(
-        name="Aruba",
+        name="TEST_SERVER",
         longest_token_life=2880,
         latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
-        secret_key="a_very_secret_key",
+        secret_key="secret",
     )
 
     db.session.add(test_server)
@@ -556,9 +556,9 @@ def make_demodata():  # pragma: no cover
         gsp = GroupServerPermission(
             group=groups[0], server_capability=sc, get_result=True, run=True, poll=True
         )
-        gsp.spatial_aggregation.append(
-            agg_units[0]
-        )  # Give Bob access to admin0 agg units
+        for agg_unit in agg_units[:4]:  # Give Bob access to adminX agg units
+            gsp.spatial_aggregation.append(agg_unit)
+
         db.session.add(gsp)
     db.session.add(
         GroupServerTokenLimits(

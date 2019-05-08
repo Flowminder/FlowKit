@@ -142,6 +142,36 @@ def test_create_user_fail_with_short_password(client, auth, test_admin):
     assert 404 == response.status_code
 
 
+def test_create_user_fail_with_same_username(client, auth, test_admin):
+    uid, username, password = test_admin
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/users",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "username": "TEST_USER",
+            "password": "A_VERY_STRONG_DUMMY_PASSWORD_THAT_IS_VERY_LONG",
+        },
+    )  # Make a user first
+
+    assert 200 == response.status_code  # Should get an OK
+    response = client.post(
+        "/admin/users",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "username": "TEST_USER",
+            "password": "A_DIFFERENT_STRONG_DUMMY_PASSWORD_THAT_IS_VERY_LONG",
+        },
+    )  # Try to make the user again
+    assert 400 == response.status_code
+    assert {
+        "code": 400,
+        "message": "Username already exists.",
+        "bad_field": "username",
+    } == response.get_json()
+
+
 def test_cannot_delete_only_admin(client, auth, test_admin):
     uid, username, password = test_admin
     # Log in first
@@ -219,6 +249,31 @@ def test_create_group(client, auth, test_admin):
         "name": "TEST_GROUP",
         "members": [],
         "servers": [],
+    } == response.get_json()
+
+
+def test_create_group_fail_with_same_name(client, auth, test_admin):
+    uid, username, password = test_admin
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/groups",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={"name": "TEST_GROUP"},
+    )
+    assert 200 == response.status_code  # Should get an OK
+    response = client.get("/admin/groups/2", headers={"X-CSRF-Token": csrf_cookie})
+
+    response = client.post(
+        "/admin/groups",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={"name": "TEST_GROUP"},
+    )
+    assert 400 == response.status_code
+    assert {
+        "code": 400,
+        "message": "Group name already exists.",
+        "bad_field": "groupname",
     } == response.get_json()
 
 

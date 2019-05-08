@@ -10,8 +10,9 @@ and associated code.
 from .connection import Connection
 from .query import Query
 from .table import Table
-from flowmachine.core.geotable import GeoTable
+from .geotable import GeoTable
 from .init import connect
+from .logging import init_logging, set_log_level
 from .join_to_location import JoinToLocation
 from .custom_query import CustomQuery
 

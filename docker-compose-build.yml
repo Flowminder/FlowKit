@@ -1,0 +1,53 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# DOCKER COMPOSE BUILDER FOR FLOWKIT
+#
+
+version: '3.5'
+
+services:
+
+  flowdb:
+    image: flowminder/flowdb:${CONTAINER_TAG:-latest}
+    build:
+      context: ./flowdb/
+      dockerfile: Dockerfile
+
+  flowdb_testdata:
+    image: flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}
+    build:
+      context: ./flowdb/testdata/
+      dockerfile: Dockerfile
+
+  flowdb_synthetic_data:
+    image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
+    build:
+      context: ./flowdb/testdata/
+      dockerfile: Dockerfile.synthetic_data
+
+  flowmachine:
+    image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
+    build:
+      context: ./flowmachine
+      dockerfile: Dockerfile
+
+  worked_examples:
+    container_name: worked_examples
+    image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  flowapi:
+    image: flowminder/flowapi:${CONTAINER_TAG:-latest}
+    build:
+      context: ./flowapi
+      dockerfile: Dockerfile
+
+  flowauth:
+    image: flowminder/flowauth:${CONTAINER_TAG:-latest}
+    build:
+      context: ./flowauth
+      dockerfile: Dockerfile

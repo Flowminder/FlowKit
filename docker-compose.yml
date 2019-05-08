@@ -1,8 +1,11 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # DOCKER COMPOSE FOR FLOWKIT
 #
 
-version: '3.7'
+version: '3.5'
 
 networks:
   db:
@@ -15,10 +18,7 @@ services:
 
   flowdb:
     container_name: flowdb
-    image: flowminder/flowdb:latest
-    build:
-      context: ./flowdb/
-      dockerfile: Dockerfile
+    image: flowminder/flowdb:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
 
@@ -43,10 +43,7 @@ services:
 
   flowdb_testdata:
     container_name: flowdb_testdata
-    image: flowminder/flowdb-testdata:latest
-    build:
-      context: ./flowdb/testdata/
-      dockerfile: Dockerfile
+    image: flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
@@ -62,10 +59,7 @@ services:
 
   flowdb_synthetic_data:
     container_name: flowdb_synthetic_data
-    image: flowminder/flowdb-synthetic-data:latest
-    build:
-      context: ./flowdb/testdata/
-      dockerfile: Dockerfile.synthetic_data
+    image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
@@ -95,14 +89,11 @@ services:
 
   flowmachine:
     container_name: flowmachine
-    image: flowminder/flowmachine:latest
-    build:
-      context: ./flowmachine
-      dockerfile: Dockerfile
+    image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWMACHINE_PORT:?Must set FLOWMACHINE_PORT env var}:5555
     depends_on:
-      - query_locker
+      - flowmachine_query_locker
     tty: true
     stdin_open: true
     environment:
@@ -113,7 +104,7 @@ services:
       - FLOWDB_HOST=${DOCKER_FLOWDB_HOST:?Must set DOCKER_FLOWDB_HOST env var}
       - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
       - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
-      - REDIS_HOST=query_locker
+      - REDIS_HOST=flowmachine_query_locker
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
     restart: always
@@ -122,12 +113,32 @@ services:
       - db
       - redis
 
+  worked_examples:
+    container_name: worked_examples
+    image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
+    ports:
+      - ${WORKED_EXAMPLES_PORT:?Must set WORKED_EXAMPLES_PORT env var}:8888
+    tty: true
+    stdin_open: true
+    environment:
+      - FLOWDB_PORT=5432
+      - FLOWDB_HOST=${DOCKER_FLOWDB_HOST:?Must set DOCKER_FLOWDB_HOST env var}
+      - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
+      - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
+      - REDIS_HOST=query_locker
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+      - FLOWAPI_URL=http://flowapi:9090
+    restart: always
+    networks:
+      - db
+      - redis
+    command:
+      ["start.sh", "jupyter", "lab", "--LabApp.token=''"]
+
   flowapi:
     container_name: flowapi
-    image: flowminder/flowapi:latest
-    build:
-      context: ./flowapi
-      dockerfile: Dockerfile
+    image: flowminder/flowapi:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}:9090
     environment:
@@ -148,17 +159,14 @@ services:
 
   flowauth:
     container_name: flowauth
-    image: flowminder/flowauth:latest
-    build:
-      context: ./flowauth
-      dockerfile: Dockerfile
+    image: flowminder/flowauth:${CONTAINER_TAG:-latest}
     ports:
       - ${FLOWAUTH_PORT:?Must set FLOWAUTH_PORT env var}:80
     environment:
       DEMO_MODE: ${DEMO_MODE:?Must set DEMO_MODE env var}
 
-  query_locker:
-    container_name: redis_flowkit
+  flowmachine_query_locker:
+    container_name: flowmachine_query_locker
     image: bitnami/redis
     ports:
       - ${REDIS_PORT:?Must set REDIS_PORT env var}:6379
