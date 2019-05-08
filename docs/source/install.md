@@ -4,21 +4,36 @@ Title: Installation
 
 There are three main ways to install FlowKit.
 
-* [Quick install](#quickinstall); suitable for a try-out on a local PC, includes basic example using FlowClient.
-* [Developer install](#developers); for those wishing to contribute code
-* [Production install](#prodinstall); for deployment, e.g. inside an MNO firewall 
+* [Quick Install](#quickinstall); suitable for a try-out on a local PC, includes basic example using FlowClient.
+* [Developer Install](#developers); for those wishing to contribute code
+* [Production Install](#prodinstall); for deployment, e.g. inside an MNO firewall
 
- <a name="quickinstall">
+
+<a name="installationrequirements">
+
+## Installation Requirements
+
+Most FlowKit components (FlowDB, FlowMachine, FlowAPI, FlowAuth) are distributed as docker containers. To install these, you need:
+- `docker >= 17.12.0`
+- `docker-compose >= 1.21.0`
+
+In addition, running FlowClient requires:
+- `Python >= 3.6`
+
+There are additional requirements for a development setup. See the [Developer install](#developers) section below for details.
+
+
+<a name="quickinstall">
 
 ## Quick Install
 
 This quick install guide will install the major components of FlowKit together with an intial setup and example analysis query.
 
-The bulk of the installation process consists of downloading [Docker](https://docs.docker.com/install/) containers from [DockerCloud](https://cloud.docker.com/), using [Docker Compose](https://docs.docker.com/compose/). Followed by a pip install of FlowClient.
+The bulk of the installation process consists of using [Docker Compose](https://docs.docker.com/compose/) to download [Docker](https://docs.docker.com/install/) containers from [DockerCloud](https://cloud.docker.com/), followed by a `pip install` of FlowClient.
 
-These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pipenv](https://github.com/pypa/pipenv). [Anaconda](https://www.anaconda.com/what-is-anaconda/) stack based installation commands may be different. 
+These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pipenv](https://github.com/pypa/pipenv). If you are using [Anaconda](https://www.anaconda.com/what-is-anaconda/)-based installation commands may be different.
 
-Docker containers for [FlowAPI](http://https://hub.docker.com/r/flowminder/flowapi), [FlowMachine](http://https://hub.docker.com/r/flowminder/flowmachine), [FlowDB](http://https://hub.docker.com/r/flowminder/flowdb), [FlowAuth](http://https://hub.docker.com/r/flowminder/flowauth) and the [worked examples](http://https://hub.docker.com/r/flowminder/flowkit-examples) are provided in the [DockerCloud](https://hub.docker.com/) repositories `flowminder/flowapi`, `flowminder/flowmachine`, `flowminder/flowdb`, `flowminder/flowauth`, and `flowminder/flowkit-examples` respectively. You will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the DockerCloud repositories [flowminder/flowapi](http://https://hub.docker.com/r/flowminder/flowapi), [flowminder/flowmachine](http://https://hub.docker.com/r/flowminder/flowmachine), [flowminder/flowdb](http://https://hub.docker.com/r/flowminder/flowdb), [flowminder/flowauth](http://https://hub.docker.com/r/flowminder/flowauth), and [flowminder/flowkit-examples](http://https://hub.docker.com/r/flowminder/flowkit-examples) respectively. To install them, you will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 Start the FlowKit test system by running 
 
@@ -108,7 +123,19 @@ Quick install is continued with an example of FlowClient usage [here](analyst.md
 
 ## Developer Install</a>
 
-After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `make up` in the root directory. This requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose.yml` file.
+### Installation Requirements for Developers
+
+Just as for a regular installation, you will need `docker` and `docker-compose` (see [Installation requirements](#installationrequirements) above).
+
+During development, you will typically also want to run FlowMachine, FlowAPI and FlowAuth outside docker containers. This requires additional prerequisites to be available.
+
+- [Pipenv](https://pipenv.readthedocs.io/en/latest/) (to manage separate pipenv environment for each FlowKit component)
+- FlowMachine server: `Python >= 3.7`
+- FlowAuth: `npm` (we recommend installing it via [nvm](https://github.com/nvm-sh/nvm)); [Cypress](https://www.cypress.io/) for testing
+
+### Setting up FlowKit for development
+
+After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `make up` in the root directory. This requires Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose.yml` file.
 
 FlowKit uses [pipenv](https://pipenv.readthedocs.io/) to manage Python environments. To start a Python session in which you can use FlowClient:
 
@@ -126,6 +153,8 @@ cd <directory>
 pipenv install --dev
 pipenv run pytest
 ```
+
+Also see [Setting up a development environment](dev_environment_setup.md) for further details on setting up FlowKit for code development.
 
 
  <a name="prodinstall">

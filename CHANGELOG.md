@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Various make targets for `flowetl`
 - A compose file that spins up the `flowetl` container with a vanilla pg - airflow needs a backing DB so doesn't make sense without. This compose file can be used in conjunction with the main compose by passing two files - see make targets. 
 - Adds 2 integration tests for `flowetl`
+- The docs now contain information about required versions of installation prerequisites [#703](https://github.com/Flowminder/FlowKit/issues/703)
 
 ### Changed
 
