@@ -531,6 +531,9 @@ jobs:
             else
               echo "running as correct user and group"
             fi
+      - run: 
+          name: test that airflow picks up dag
+          command: |
             # temporary test to make sure dags getting picked up by airflow
             # this will be tested via a pytest integration test eventually 
             docker run --name flowetl -d flowminder/flowetl:$CIRCLE_SHA1
