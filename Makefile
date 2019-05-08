@@ -21,7 +21,7 @@
 DOCKER_COMPOSE_FILE ?= docker-compose.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
 FLOWDB_SERVICES ?= flowdb_testdata
-DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth flowmachine_query_locker
+DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth flowmachine_query_locker worked_examples
 export DOCKER_FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
 
 
@@ -106,6 +106,16 @@ flowauth-down:
 
 flowauth-build:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowauth
+
+
+worked_examples-up: worked_examples-build
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build worked_examples
+
+worked_examples-down:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v worked_examples
+
+worked_examples-build:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build worked_examples
 
 
 flowmachine_query_locker-up:
