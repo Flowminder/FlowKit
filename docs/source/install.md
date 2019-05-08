@@ -8,7 +8,18 @@ There are three main ways to install FlowKit.
 * [Developer install](#developers); for those wishing to contribute code
 * [Production install](#prodinstall); for deployment, e.g. inside an MNO firewall 
 
- <a name="quickinstall">
+
+## Installation requirements
+
+Most FlowKit components (FlowDB, FlowMachine, FlowAPI, FlowAuth) are distributed as docker containers. To install these, you need:
+- `docker >= 17.12.0`
+- `docker-compose >= 1.21.0`
+
+In addition, FlowClient requires:
+- `Python >= 3.6`
+
+
+<a name="quickinstall">
 
 ## Quick Install
 
