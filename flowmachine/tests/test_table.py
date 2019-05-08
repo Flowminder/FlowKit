@@ -71,14 +71,18 @@ def test_get_table_is_self():
     assert t.get_table() is t
 
 
-def test_no_dependencies():
+def test_dependencies():
     """
-    Check that a table (with or without explicit columns) has no other queries as a dependency.
+    Check that a table without explicit columns has no other queries as a dependency,
+    and a table with explicit columns has its parent table as a dependency.
     """
     t1 = Table("events.calls")
-    t2 = Table("events.calls", columns=["id"])
     assert t1.dependencies == set()
-    assert t2.dependencies == set()
+
+    t2 = Table("events.calls", columns=["id"])
+    assert len(t2.dependencies) == 1
+    t2_parent = t2.dependencies.pop()
+    assert "057addedac04dbeb1dcbbb6b524b43f0" == t2_parent.md5
 
 
 def test_subset():
