@@ -5,7 +5,7 @@
 # DOCKER COMPOSE FOR FLOWKIT
 #
 
-version: '3.7'
+version: '3.5'
 
 networks:
   db:
@@ -112,6 +112,29 @@ services:
       - zero
       - db
       - redis
+
+  worked_examples:
+    container_name: worked_examples
+    image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
+    ports:
+      - ${WORKED_EXAMPLES_PORT:?Must set WORKED_EXAMPLES_PORT env var}:8888
+    tty: true
+    stdin_open: true
+    environment:
+      - FLOWDB_PORT=5432
+      - FLOWDB_HOST=${DOCKER_FLOWDB_HOST:?Must set DOCKER_FLOWDB_HOST env var}
+      - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
+      - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
+      - REDIS_HOST=query_locker
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+      - FLOWAPI_URL=http://flowapi:9090
+    restart: always
+    networks:
+      - db
+      - redis
+    command:
+      ["start.sh", "jupyter", "lab", "--LabApp.token=''"]
 
   flowapi:
     container_name: flowapi

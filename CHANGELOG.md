@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Error is displayed in the add group form of Flowauth if group name already exists. [#709](https://github.com/Flowminder/FlowKit/issues/709)
 
 ### Added
+- FlowKit's worked examples are now Dockerized, and available as part of the quick setup script [#614](https://github.com/Flowminder/FlowKit/issues/614)
 
 ### Changed
 
