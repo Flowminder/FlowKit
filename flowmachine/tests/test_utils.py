@@ -24,6 +24,7 @@ from flowmachine.utils import (
     pretty_sql,
     _makesafe,
     print_dependency_tree,
+    calculate_dependency_graph,
     convert_dict_keys_to_strings,
     sort_recursively,
     time_period_add,
@@ -85,19 +86,6 @@ def test_parse(datestring):
     Test that several variations on a datestring give the same date
     """
     assert parse_datestring(datestring).date() == datetime.date(2016, 1, 1)
-
-
-def test_dependency_graph():
-    """
-    Test that dependency graph util runs and has some correct entries.
-    """
-    g = daily_location("2016-01-01").dependency_graph(analyse=True)
-    sd = EventTableSubset(
-        start="2016-01-01",
-        stop="2016-01-02",
-        columns=["msisdn", "datetime", "location_id"],
-    )
-    assert "x{}".format(sd.md5) in g.nodes()
 
 
 def test_convert_number_to_str():
@@ -249,3 +237,17 @@ def test_print_dependency_tree():
     output_with_query_ids_replaced = re.sub(r"\b[0-9a-f]+\b", "xxxxx", output)
 
     assert expected_output == output_with_query_ids_replaced
+
+
+def test_dependency_graph():
+    """
+    Test that dependency graph util runs and has some correct entries.
+    """
+    query = daily_location("2016-01-01")
+    G = calculate_dependency_graph(query, analyse=True)
+    sd = EventTableSubset(
+        start="2016-01-01",
+        stop="2016-01-02",
+        columns=["msisdn", "datetime", "location_id"],
+    )
+    assert "x{}".format(sd.md5) in G.nodes()

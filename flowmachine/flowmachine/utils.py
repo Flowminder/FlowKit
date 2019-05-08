@@ -8,6 +8,7 @@ Various simple utilities.
 """
 
 import datetime
+import networkx as nx
 import structlog
 import sys
 from pathlib import Path
@@ -401,3 +402,68 @@ def print_dependency_tree(query_obj, stream=None, indent_level=0):
     deps_sorted_by_query_id = sorted(query_obj.dependencies, key=lambda q: q.md5)
     for dep in deps_sorted_by_query_id:
         print_dependency_tree(dep, indent_level=indent_level + 1, stream=stream)
+
+
+def calculate_dependency_graph(query_obj, analyse=False):
+    """
+    Produce a graph of all the queries that go into producing this
+    one, with their estimated run costs, and whether they are stored
+    as node attributes.
+
+    The resulting networkx object can then be visualised, or analysed.
+
+    Parameters
+    ----------
+    query_obj : Query
+        Query object to produce a dependency graph for.
+    analyse : bool
+        Set to True to get actual runtimes for queries. Note that this will actually run the query!
+
+    Returns
+    -------
+    networkx.DiGraph
+
+    Examples
+    --------
+    >>> import flowmachine
+    >>> flowmachine.connect()
+    >>> from flowmachine.features import daily_location
+    >>> g = daily_location("2016-01-01").dependency_graph()
+    >>> from networkx.drawing.nx_agraph import write_dot
+    >>> write_dot(g, "daily_location_dependencies.dot")
+    >>> g = daily_location("2016-01-01").dependency_graph(True)
+    >>> from networkx.drawing.nx_agraph import write_dot
+    >>> write_dot(g, "daily_location_dependencies_runtimes.dot")
+
+    Notes
+    -----
+    The queries listed as dependencies are not _guaranteed_ to be
+    used in the actual running of a query, only to be referenced by it.
+    """
+    g = nx.DiGraph()
+    openlist = [(0, query_obj)]
+    deps = []
+
+    while openlist:
+        y, x = openlist.pop()
+        deps.append((y, x))
+
+        openlist += list(zip([x] * len(x.dependencies), x.dependencies))
+
+    _, y = zip(*deps)
+    for n in set(y):
+        attrs = n._get_query_attrs_for_dependency_graph(analyse=analyse)
+        attrs["shape"] = "rect"
+        attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
+        if analyse:
+            attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
+        if attrs["stored"]:
+            attrs["fillcolor"] = "green"
+            attrs["style"] = "filled"
+        g.add_node("x{}".format(n.md5), **attrs)
+
+    for x, y in deps:
+        if x != 0:
+            g.add_edge(*["x{}".format(z.md5) for z in (x, y)])
+
+    return g
