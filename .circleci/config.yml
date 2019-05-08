@@ -482,13 +482,9 @@ jobs:
     parameters:
       component:
         type: enum
-<<<<<<< HEAD
-        enum: ["flowmachine", "flowauth", "flowapi", "flowetl"]
-=======
-        enum: ["flowmachine", "flowauth", "flowapi", "flowkit-examples"]
+        enum: ["flowmachine", "flowauth", "flowapi", "flowkit-examples", "flowetl"]
       component_path:
         type: string
->>>>>>> master
     docker:
       - image: circleci/python:3.7
     working_directory: /home/circleci/project/
@@ -685,11 +681,7 @@ jobs:
           command: |
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
-<<<<<<< HEAD
-            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowetl; do
-=======
-            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples; do
->>>>>>> master
+            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl; do
               docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
