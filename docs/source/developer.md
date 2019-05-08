@@ -158,9 +158,8 @@ JWTs allow these access permissions to be granted independently for each query k
 FlowKit includes the `flowkit-jwt-generator` package, which can be used to generate tokens for testing purposes. This package supplies: 
 
 - Two commandline tools
-    - `generate-jwt`, which allows you to specify the claims
-    - `all-access-jwt`, which generates a token which grants access to all query types on a specific running instance of FlowAPI
-- Two pytest plugins with analogous functionality to the CLI tools
+    - `generate-jwt`, which allows you to generate tokens which grant specific kinds of access to a subset of queries, or to generate an all access token for a specific instance of FlowAPI
+- Two pytest plugins
     - `access_token_builder`
     - `universal_access_token`
 
