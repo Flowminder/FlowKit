@@ -68,3 +68,15 @@ def test_token_builder():
         "permissions": {},
         "spatial_aggregation": ["admin3", "admin0"],
     }
+
+
+def test_token_builder_prompts_with_no_perms():
+    """
+    Test the arbitrary token builder cli prompts for confirmation if a claimset will be empty.
+    """
+    runner = CliRunner()
+    result = runner.invoke(
+        print_token,
+        ["DUMMY_USER", os.environ["JWT_SECRET_KEY"], 1, "--query", "DUMMY_QUERY"],
+    )
+    assert result.exit_code == 1

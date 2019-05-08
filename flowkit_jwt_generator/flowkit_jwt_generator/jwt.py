@@ -210,6 +210,11 @@ def output_token(claims, username, secret_key, lifetime):
     help="Spatial aggregation level of access allowed.",
 )
 def named_query(query_name, permission, aggregation):
+    if len(permission) == 0 and len(aggregation) == 0:
+        click.confirm(
+            f"This will grant _no_ permissions for '{query_name}'. Are you sure?",
+            abort=True,
+        )
     return {
         query_name: {
             "permissions": {p: True for p in permission},
