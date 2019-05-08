@@ -700,13 +700,13 @@ workflows:
             - install_flowmachine_deps
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
-          name: Synth data python generator
+          name: synth_data_python_generator_tests
           synthetic_data_generator: python
           requires:
             - build_flowdb
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
-          name: Synth data sql generator
+          name: synth_data_sql_generator_tests
           synthetic_data_generator: sql
           requires:
             - build_flowdb
@@ -765,6 +765,7 @@ workflows:
       - retag_images:
           name: retag_master_branch
           requires:
+            &retag_requirements
             - test_quickstart
             - integration_tests
             - build_docs
@@ -772,17 +773,16 @@ workflows:
             - run_flowauth_backend_tests
             - run_flowauth_frontend_tests
             - run_flowclient_tests
+            - synth_data_python_generator_tests
+            - synth_data_sql_generator_tests
+            - build_flowmachine_wheel
+            - build_flowclient_wheel
+            - run_flowmachine_tests
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
           requires:
-            - test_quickstart
-            - integration_tests
-            - build_docs
-            - run_flowkit_api_tests
-            - run_flowauth_backend_tests
-            - run_flowauth_frontend_tests
-            - run_flowclient_tests
+            *retag_requirements
           tag: CIRCLE_TAG
           <<: *tag_only_org_context
       - push_wheel:
