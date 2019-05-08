@@ -14,13 +14,14 @@ import requests
 
 
 permissions_types = {"run": True, "poll": True, "get_result": True}
+aggregation_types = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 
 
 def generate_token(
     username: str,
     secret: str,
     lifetime: datetime.timedelta,
-    claims: Dict[str, Union[Dict[str, bool], List[str]]],
+    claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
 ) -> str:
     """
 
@@ -35,12 +36,19 @@ def generate_token(
     claims : dict
         Dictionary of claims the token will grant
 
+    Examples
+    --------
+    >>> generate_token("TEST_USER", "SECRET", datetime.timedelta(5), {"daily_location":{"permissions": {"run":True},
+            "spatial_aggregation": ["admin3"}})
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTczMDMyOTMsIm5iZiI6MTU1NzMwMzI5MywianRpIjoiOTRjZWMxODQtZTc4Mi00ZDk3LTkxNDYtNTczZjlkMTBlNDI2IiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzczNTI5M30.CG7xlsyaKywK4lHpnlpI-DlNk4wdMNufrguz4Y6qDi4'
+
     Returns
     -------
     str
         Encoded token
 
     """
+
     now = datetime.datetime.utcnow()
     token_data = dict(
         iat=now,
@@ -70,7 +78,9 @@ def access_token_builder() -> Callable:
     if secret is None:
         raise EnvironmentError("JWT_SECRET_KEY environment variable not set.")
 
-    def token_maker(claims):
+    def token_maker(
+        claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]]
+    ) -> str:
         return generate_token(
             username="test",
             secret=secret,
@@ -83,7 +93,7 @@ def access_token_builder() -> Callable:
 
 def get_all_claims_from_flowapi(
     flowapi_url: str
-) -> Dict[str, Union[Dict[str, bool], List[str]]]:
+) -> Dict[str, Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]]]:
     """
     Retrieve all the query types available on an instance of flowapi and
     generate a claims dictionary which grants total access to them.
@@ -156,14 +166,14 @@ def universal_access_token(flowapi_url: str, access_token_builder: Callable) -> 
     "-p",
     type=(str, click.Choice(permissions_types.keys())),
     multiple=True,
-    help="Query kinds this token will allow access to, and type of access allowed.",
+    help="Query kinds this token will allow access to, and type of access allowed, e.g. -p daily_location run",
 )
 @click.option(
     "--aggregation",
     "-a",
-    type=(str, str),
+    type=(str, click.Choice(aggregation_types)),
     multiple=True,
-    help="Query kinds this token will allow access to, and spatial aggregation level of access allowed.",
+    help="Query kinds this token will allow access to, and spatial aggregation level of access allowed, e.g. -a daily_location admin3",
 )
 def print_token(username, secret_key, lifetime, permission, aggregation):
     claims = {}
