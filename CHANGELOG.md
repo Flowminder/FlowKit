@@ -6,8 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 - Error is displayed in the add user form of Flowauth if username is alredy exists. [#690](https://github.com/Flowminder/FlowKit/issues/690)
+- Error is displayed in the add group form of Flowauth if group name already exists. [#709](https://github.com/Flowminder/FlowKit/issues/709)
 
 ### Added
+- FlowKit's worked examples are now Dockerized, and available as part of the quick setup script [#614](https://github.com/Flowminder/FlowKit/issues/614)
 
 ### Changed
 
@@ -20,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.6.2]
 
 ### Added
+- Added a new module, `flowkit-jwt-generator`, which generates test JWT tokens for use with FlowAPI [#564](https://github.com/Flowminder/FlowKit/issues/564)
 - A new Ansible playbook was added in `deployment/provision-dev.yml`. In addition to the standard provisioning
   this installs pyenv, Python 3.7, pipenv and clones the FlowKit repository, which is useful for development purposes.
 - Added a 'quick start' setup script for trying out a complete FlowKit system [#688](https://github.com/Flowminder/FlowKit/issues/688).

@@ -117,6 +117,12 @@ OUTPUT_ROOT_DIR=/docker-entrypoint-initdb.d
 
 FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=FALSE
 
+<<<<<<< HEAD
 # FlowETL
 MOUNT_HOME=/usr/local/mounts
 HOST_CONFIG_DIR=./mounts/config
+=======
+# Worked examples
+
+WORKED_EXAMPLES_PORT=8888
+>>>>>>> master
