@@ -26,7 +26,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
         },
         "request_id": "DUMMY_ID",
     }
-    expected_query_id = "d4faabf59b3e108c0dd98ca75ce1c0cd"
+    expected_query_id = "eba30a3dc94ea6e53502493d4ea3b927"
 
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
