@@ -459,7 +459,10 @@ jobs:
           command: pipenv run test-frontend-with-record --reporter junit --reporter-options "mochaFile=../results/flowauth-frontend.xml"
       - store_test_results:
           path: results
-
+      - store_artifacts:
+          path: frontend/cypress/videos
+      - store_artifacts:
+          path: frontend/cypress/screenshots
 
   run_flowclient_tests:
     docker:
