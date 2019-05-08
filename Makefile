@@ -21,7 +21,7 @@
 DOCKER_COMPOSE_FILE ?= docker-compose.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
 FLOWDB_SERVICES ?= flowdb_testdata
-DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth flowmachine_query_locker worked_examples
+DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetldb worked_examples
 export DOCKER_FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
 
 
@@ -124,19 +124,17 @@ flowmachine_query_locker-up:
 flowmachine_query_locker-down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowmachine_query_locker
 
-
-
-flowdb_with_flowetl-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f flowetl/docker-compose.yml up -d flowdb flowmachine_query_locker flowetl flowetl_db
-
-flowdb_with_flowetl-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f flowetl/docker-compose.yml rm -f -s -v flowdb flowmachine_query_locker flowetl flowetl_db
-
 flowetl-up:
-	docker-compose -f flowetl/docker-compose.yml up -d flowetl flowetl_db
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowetl
 
 flowetl-down:
-	docker-compose -f flowetl/docker-compose.yml rm -f -s -v flowetl flowetl_db
+	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowetl
 
 flowetl-build:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowetl
+
+flowetl_db-up:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowetl_db
+
+flowetl_db-down:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowetl_db
