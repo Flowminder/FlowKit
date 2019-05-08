@@ -14,11 +14,11 @@ There are three main ways to install FlowKit.
 
 This quick install guide will install the major components of FlowKit together with an intial setup and example analysis query.
 
-The bulk of the installation process consists of downloading [Docker](https://docs.docker.com/install/) containers from [DockerCloud](https://cloud.docker.com/), using [Docker Compose](https://docs.docker.com/compose/). Followed by a pip install of FlowClient.
+The bulk of the installation process consists of using [Docker Compose](https://docs.docker.com/compose/) to download [Docker](https://docs.docker.com/install/) containers from [DockerCloud](https://cloud.docker.com/), followed by a `pip install` of FlowClient.
 
-These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pipenv](https://github.com/pypa/pipenv). [Anaconda](https://www.anaconda.com/what-is-anaconda/) stack based installation commands may be different. 
+These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pipenv](https://github.com/pypa/pipenv). If you are using [Anaconda](https://www.anaconda.com/what-is-anaconda/)-based installation commands may be different.
 
-Docker containers for [FlowAPI](http://https://hub.docker.com/r/flowminder/flowapi), [FlowMachine](http://https://hub.docker.com/r/flowminder/flowmachine), [FlowDB](http://https://hub.docker.com/r/flowminder/flowdb), [FlowAuth](http://https://hub.docker.com/r/flowminder/flowauth) and the [worked examples](http://https://hub.docker.com/r/flowminder/flowkit-examples) are provided in the [DockerCloud](https://hub.docker.com/) repositories `flowminder/flowapi`, `flowminder/flowmachine`, `flowminder/flowdb`, `flowminder/flowauth`, and `flowminder/flowkit-examples` respectively. You will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the DockerCloud repositories [flowminder/flowapi](http://https://hub.docker.com/r/flowminder/flowapi), [flowminder/flowmachine](http://https://hub.docker.com/r/flowminder/flowmachine), [flowminder/flowdb](http://https://hub.docker.com/r/flowminder/flowdb), [flowminder/flowauth](http://https://hub.docker.com/r/flowminder/flowauth), and [flowminder/flowkit-examples](http://https://hub.docker.com/r/flowminder/flowkit-examples) respectively. To install them, you will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 Start the FlowKit test system by running 
 
