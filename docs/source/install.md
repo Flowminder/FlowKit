@@ -4,19 +4,23 @@ Title: Installation
 
 There are three main ways to install FlowKit.
 
-* [Quick install](#quickinstall); suitable for a try-out on a local PC, includes basic example using FlowClient.
-* [Developer install](#developers); for those wishing to contribute code
-* [Production install](#prodinstall); for deployment, e.g. inside an MNO firewall 
+* [Quick Install](#quickinstall); suitable for a try-out on a local PC, includes basic example using FlowClient.
+* [Developer Install](#developers); for those wishing to contribute code
+* [Production Install](#prodinstall); for deployment, e.g. inside an MNO firewall
 
 
-## Installation requirements
+<a name="installationrequirements">
+
+## Installation Requirements
 
 Most FlowKit components (FlowDB, FlowMachine, FlowAPI, FlowAuth) are distributed as docker containers. To install these, you need:
 - `docker >= 17.12.0`
 - `docker-compose >= 1.21.0`
 
-In addition, FlowClient requires:
+In addition, running FlowClient requires:
 - `Python >= 3.6`
+
+There are additional requirements for a development setup. See the [Developer install](#developers) section below for details.
 
 
 <a name="quickinstall">
@@ -119,7 +123,19 @@ Quick install is continued with an example of FlowClient usage [here](analyst.md
 
 ## Developer Install</a>
 
-After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `make up` in the root directory. This requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose.yml` file.
+### Installation Requirements for Developers
+
+Just as for a regular installation, you will need `docker` and `docker-compose` (see [Installation requirements](#installationrequirements) above).
+
+During development, you will typically also want to run FlowMachine, FlowAPI and FlowAuth outside docker containers. This requires additional prerequisites to be available.
+
+- [Pipenv](https://pipenv.readthedocs.io/en/latest/) (to manage separate pipenv environment for each FlowKit component)
+- FlowMachine server: `Python >= 3.7`
+- FlowAuth: `npm` (we recommend installing it via [nvm](https://github.com/nvm-sh/nvm)); [Cypress](https://www.cypress.io/) for testing
+
+### Setting up FlowKit for development
+
+After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `make up` in the root directory. This requires Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose.yml` file.
 
 FlowKit uses [pipenv](https://pipenv.readthedocs.io/) to manage Python environments. To start a Python session in which you can use FlowClient:
 
@@ -137,6 +153,8 @@ cd <directory>
 pipenv install --dev
 pipenv run pytest
 ```
+
+Also see [Setting up a development environment](dev_environment_setup.md) for further details on setting up FlowKit for code development.
 
 
  <a name="prodinstall">
