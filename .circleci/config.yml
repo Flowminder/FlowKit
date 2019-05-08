@@ -515,14 +515,18 @@ jobs:
               else
                 echo "running as correct user and group"
               fi
-
+              # temporary test to make sure dags getting picked up by airflow
+              # this will be tested via a pytest integration test eventually 
+              docker run --name flowetl -d flowminder/flowetl:latest:${CIRCLE_SHA1}
+              sleep 5
               dag=x=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
               if [ $x -ne "tutorial" ]; then
                 exit 1
               else
                 echo "expected DAG present"
               fi
-              
+              docker stop flowetl
+
             else
               echo "Not flowetl skipping"
             fi
