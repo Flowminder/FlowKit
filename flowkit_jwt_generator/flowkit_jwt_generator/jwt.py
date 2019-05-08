@@ -6,6 +6,7 @@ import os
 import uuid
 from json import JSONEncoder
 from typing import Dict, List, Union, Callable
+from collections import ChainMap
 from datetime import timedelta
 import click
 import jwt
@@ -157,67 +158,67 @@ def universal_access_token(flowapi_url: str, access_token_builder: Callable) -> 
     return access_token_builder(get_all_claims_from_flowapi(flowapi_url=flowapi_url))
 
 
-@click.command()
-@click.option("--username", default="test", help="Name of user to issue token for.")
-@click.option("--secret-key", default="secret", help="Shared secret.")
-@click.option("--lifetime", default=1, help="Days the token is valid for.")
+@click.group(chain=True)
+@click.argument("username", type=str)
+@click.argument("secret-key", type=str)
+@click.argument("lifetime", type=int)
+def print_token(username, secret_key, lifetime):
+    """
+    Generate a JWT token for access to FlowAPI.
+
+    Use the --all-access option to generate a token which allows full access to a
+    specific FlowAPI server, or specify the queries you want the token to grant
+    access to by providing multiple --query options.
+
+    For example:
+
+    generate-jwt TEST_USER SECRET 1 --all-access http://localhost:9090
+
+    Or,
+
+    generate-jwt TEST_USER SECRET 1 --query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
+    """
+    pass
+
+
+@print_token.resultcallback()
+def output_token(claims, username, secret_key, lifetime):
+    click.echo(
+        generate_token(
+            username=username,
+            secret=secret_key,
+            lifetime=datetime.timedelta(days=lifetime),
+            claims=dict(ChainMap(*claims)),
+        )
+    )
+
+
+@print_token.command("--query")
+@click.argument("query_name", type=str)
 @click.option(
     "--permission",
     "-p",
-    type=(str, click.Choice(permissions_types.keys())),
+    type=click.Choice(permissions_types.keys()),
     multiple=True,
-    help="Query kinds this token will allow access to, and type of access allowed, e.g. -p daily_location run",
+    help="Types of access allowed.",
 )
 @click.option(
     "--aggregation",
     "-a",
-    type=(str, click.Choice(aggregation_types)),
+    type=click.Choice(aggregation_types),
     multiple=True,
-    help="Query kinds this token will allow access to, and spatial aggregation level of access allowed, e.g. -a daily_location admin3",
+    help="Spatial aggregation level of access allowed.",
 )
-def print_token(username, secret_key, lifetime, permission, aggregation):
-    claims = {}
-    for query_kind, permission_type in permission:
-        if query_kind in claims.keys():
-            claims[query_kind]["permissions"][permission_type] = True
-        else:
-            claims[query_kind] = {
-                "permissions": {permission_type: True},
-                "spatial_aggregation": [],
-            }
-    for query_kind, aggregation_type in aggregation:
-        if query_kind in claims.keys():
-            claims[query_kind]["spatial_aggregation"].append(aggregation_type)
-        else:
-            claims[query_kind] = {
-                "permissions": {},
-                "spatial_aggregation": [aggregation_type],
-            }
-    print(
-        generate_token(
-            username=username,
-            secret=secret_key,
-            lifetime=timedelta(days=lifetime),
-            claims=claims,
-        )
-    )
+def named_query(query_name, permission, aggregation):
+    return {
+        query_name: {
+            "permissions": {p: True for p in permission},
+            "spatial_aggregation": aggregation,
+        }
+    }
 
 
-@click.command()
-@click.option("--username", default="test", help="Name of user to issue token for.")
-@click.option("--secret-key", default="secret", help="Shared secret.")
-@click.option("--lifetime", default=1, help="Days the token is valid for.")
-@click.option(
-    "--flowapi-url",
-    default="http://localhost:9090",
-    help="FlowAPI instance to generate an all access token for.",
-)
-def print_all_access_token(username, secret_key, lifetime, flowapi_url):
-    print(
-        generate_token(
-            username=username,
-            secret=secret_key,
-            lifetime=timedelta(days=lifetime),
-            claims=get_all_claims_from_flowapi(flowapi_url=flowapi_url),
-        )
-    )
+@print_token.command("--all-access")
+@click.argument("flowapi_url", type=str)
+def print_all_access_token(flowapi_url):
+    return get_all_claims_from_flowapi(flowapi_url=flowapi_url)

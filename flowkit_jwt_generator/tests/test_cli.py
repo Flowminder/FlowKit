@@ -14,8 +14,8 @@ def test_universal_token_builder(dummy_flowapi):
     """
     runner = CliRunner()
     result = runner.invoke(
-        print_all_access_token,
-        ["--username", "DUMMY_USER", "--secret-key", os.environ["JWT_SECRET_KEY"]],
+        print_token,
+        ["DUMMY_USER", os.environ["JWT_SECRET_KEY"], 1, "--all-access", "DUMMY_URL"],
     )
     decoded = jwt.decode(
         jwt=result.output.strip(),
@@ -35,21 +35,21 @@ def test_token_builder():
     result = runner.invoke(
         print_token,
         [
-            "--username",
             "DUMMY_USER",
-            "--secret-key",
             os.environ["JWT_SECRET_KEY"],
+            1,
+            "--query",
             "-p",
-            "DUMMY_QUERY",
             "run",
-            "-p" "DUMMY_QUERY",
+            "-p",
             "poll",
+            "DUMMY_QUERY",
+            "--query",
             "-a",
-            "DUMMY_QUERY_B",
-            "DUMMY_AGGREGATION",
+            "admin3",
             "-a",
+            "admin0",
             "DUMMY_QUERY_B",
-            "DUMMY_AGGREGATION_B",
         ],
     )
     decoded = jwt.decode(
@@ -66,5 +66,5 @@ def test_token_builder():
     }
     assert decoded["user_claims"]["DUMMY_QUERY_B"] == {
         "permissions": {},
-        "spatial_aggregation": ["DUMMY_AGGREGATION", "DUMMY_AGGREGATION_B"],
+        "spatial_aggregation": ["admin3", "admin0"],
     }

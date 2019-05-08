@@ -31,10 +31,7 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     description="Common test JWT generator for FlowKit.",
     entry_points={
-        "console_scripts": [
-            "generate-jwt = flowkit_jwt_generator.jwt:print_token",
-            "all-access-jwt = flowkit_jwt_generator.jwt:print_all_access_token",
-        ],
+        "console_scripts": ["generate-jwt = flowkit_jwt_generator.jwt:print_token"],
         "pytest11": ["flowkit_jwt_generator = flowkit_jwt_generator.jwt"],
     },
     author=__author__,
