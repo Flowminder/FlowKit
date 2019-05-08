@@ -5,7 +5,7 @@
 # DOCKER COMPOSE FOR FLOWETL COMPONENT OF FLOWKIT
 #
 
-version: '3.7'
+version: '3.5'
 
 networks:
   db:
