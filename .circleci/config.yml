@@ -768,8 +768,6 @@ workflows:
       - build_docker_image:
           name: build_flowetl
           component: flowetl
-          requires:
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
