@@ -120,6 +120,6 @@ FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=FALSE
 # FlowETL
 MOUNT_HOME=/usr/local/mounts
 HOST_CONFIG_DIR=./mounts/config
-# Worked examples
 
+# Worked examples
 WORKED_EXAMPLES_PORT=8888
