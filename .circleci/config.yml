@@ -521,7 +521,7 @@ jobs:
               sleep 5
               expecteddag=tutorial
               gotdag=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
-              if [ $gotdag -ne $expecteddag ]; then
+              if [ $gotdag != $expecteddag ]; then
                 exit 1
               else
                 echo "expected DAG present"
