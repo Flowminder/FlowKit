@@ -113,3 +113,9 @@ flowmachine_query_locker-up:
 
 flowmachine_query_locker-down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowmachine_query_locker
+
+flowdb_with_flowetl_up:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f flowetl/docker-compose.yml up -d flowdb flowmachine_query_locker flowetl flowetl_db
+
+flowdb_with_flowetl_down:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f flowetl/docker-compose.yml rm -f -s -v flowdb flowmachine_query_locker flowetl flowetl_db
