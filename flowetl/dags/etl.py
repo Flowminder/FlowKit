@@ -70,6 +70,7 @@ with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag
         task_id="fail", python_callable=dummy_failing_callable, provide_context=True
     )
 
-    init >> extract >> transform >> success_branch
-    success_branch >> load >> archive >> clean
+    init >> extract >> transform >> load >> success_branch
+    success_branch >> archive >> clean
+    quarantine >> clean
     success_branch >> quarantine >> fail
