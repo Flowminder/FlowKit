@@ -153,7 +153,7 @@ def connect(
 
     if flowdb_password is None:
         raise ValueError(
-            "You must provide a secret named FLOWMACHINE_FLOWDB_PASSWORD, set an environment variable named FLOWMACHINE_FLOWDB_PASSWORD, or provide a db_pass argument."
+            "You must provide a secret named FLOWMACHINE_FLOWDB_PASSWORD, set an environment variable named FLOWMACHINE_FLOWDB_PASSWORD, or provide a flowdb_pass argument."
         )
 
     if redis_password is None:
