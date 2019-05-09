@@ -64,7 +64,7 @@ def get_fernet() -> Fernet:
     -------
     crypography.fernet.Fernet
     """
-    return Fernet(current_app.config["FERNET_KEY"])
+    return Fernet(current_app.config["FLOWAUTH_FERNET_KEY"])
 
 
 class User(db.Model):

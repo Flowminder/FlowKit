@@ -9,24 +9,24 @@ export FLASK_APP=flowauth
 if [ -n "$DEMO_MODE" ]
 then
     echo "Creating demodata"
-    if [ -z "$FERNET_KEY" ]
+    if [ -z "$FLOWAUTH_FERNET_KEY" ]
     then
-        echo "No FERNET_KEY env var set, checking for a secret."
-        if [ ! -e /run/secrets/FERNET_KEY ]
+        echo "No FLOWAUTH_FERNET_KEY env var set, checking for a secret."
+        if [ ! -e /run/secrets/FLOWAUTH_FERNET_KEY ]
         then
-            echo "NO FERNET_KEY PROVIDED. USING DEMO KEY."
+            echo "NO FLOWAUTH_FERNET_KEY PROVIDED. USING DEMO KEY."
             mkdir -p /run/secrets | true
-            echo "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg=" > /run/secrets/FERNET_KEY
+            echo "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg=" > /run/secrets/FLOWAUTH_FERNET_KEY
         fi
     fi
     flask demodata
 else
-    if [ -z "$FERNET_KEY" ]
+    if [ -z "$FLOWAUTH_FERNET_KEY" ]
     then
-        echo "No FERNET_KEY env var set, checking for a secret."
-        if [ ! -e /run/secrets/FERNET_KEY ]
+        echo "No FLOWAUTH_FERNET_KEY env var set, checking for a secret."
+        if [ ! -e /run/secrets/FLOWAUTH_FERNET_KEY ]
         then
-            echo "NO FERNET_KEY PROVIDED!"
+            echo "NO FLOWAUTH_FERNET_KEY PROVIDED!"
             exit 1
         fi
     fi
