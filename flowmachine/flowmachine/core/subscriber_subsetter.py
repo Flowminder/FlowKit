@@ -54,22 +54,6 @@ class SubscriberSubsetterBase(Query):
             f"Class {self.__class__.__name__} does not implement 'apply_subset'"
         )
 
-    def _get_query_attrs_for_dependency_graph(self, analyse=False):
-        # This is a stub implementation of this internal method.
-        # It is only needed because SubscriberSubsetterBase currently
-        # inherits from flowmachine.Query and this helper method is
-        # called from Query.dependency_graph(). However, since this
-        # class doesn't really represent a full flowmachine.Query
-        # (and this inheritance will be removed in the long run)
-        # we can't return meaningful values here, so we just return
-        # a dictionary with the correct keys but no actual values.
-        attrs = {}
-        attrs["name"] = self.__class__.__name__
-        attrs["stored"] = "N/A"
-        attrs["cost"] = "N/A"
-        attrs["runtime"] = "N/A"
-        return attrs
-
 
 class SubscriberSubsetterForAllSubscribers(SubscriberSubsetterBase):
     """
