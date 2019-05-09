@@ -23,14 +23,6 @@ here = os.path.dirname(os.path.abspath(__file__))
 flowkit_toplevel_dir = os.path.join(here, "..", "..")
 
 
-@pytest.fixture
-def audience():
-    """
-    Fixture to set the audience for generated tokens to the test server.
-    """
-    return os.environ["FLOWAPI_IDENTIFIER"]
-
-
 @pytest.fixture(scope="session")
 def logging_config():
     """

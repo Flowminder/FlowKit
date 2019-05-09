@@ -6,6 +6,8 @@ import datetime
 
 import jwt
 import pytest
+from flowauth.token_management import generate_token as flowauth_generate_token
+from flowkit_jwt_generator import generate_token as jwt_generator_generate_token
 
 from pytest import approx
 
@@ -124,4 +126,31 @@ def test_token_rejected_for_bad_right_claim(client, auth, app):
     assert (
         b"You do not have access to DUMMY_ROUTE_A:poll on DUMMY_SERVER_A"
         in response.get_data()
+    )
+
+
+def test_against_general_generator():
+    """Test that the token generator in FlowAuth and the one in flowkit-jwt-generator produce same results."""
+    assert flowauth_generate_token(
+        username="TEST_USER",
+        secret="SECRET",
+        lifetime=datetime.timedelta(5),
+        audience="TEST_SERVER",
+        claims={
+            "daily_location": {
+                "permissions": {"run": True},
+                "spatial_aggregation": ["admin3"],
+            }
+        },
+    ) == jwt_generator_generate_token(
+        username="TEST_USER",
+        secret="SECRET",
+        lifetime=datetime.timedelta(5),
+        audience="TEST_SERVER",
+        claims={
+            "daily_location": {
+                "permissions": {"run": True},
+                "spatial_aggregation": ["admin3"],
+            }
+        },
     )

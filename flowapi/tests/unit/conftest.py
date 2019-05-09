@@ -26,14 +26,6 @@ def async_return(result):
 
 
 @pytest.fixture
-def audience():
-    """
-    Fixture to set the audience for generated tokens to this server.
-    """
-    return os.environ["FLOWAPI_IDENTIFIER"]
-
-
-@pytest.fixture
 def json_log(capsys):
     def parse_json():
         log_output = capsys.readouterr()
