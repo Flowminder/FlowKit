@@ -8,7 +8,7 @@ def test_uid(flowetl_run_command):
 
     user = "1002:1003"
     out = flowetl_run_command("bash -c 'id -u'", user=user)
-    assert out.strip() == b"1002"
+    assert out.strip() == "1002"
 
 
 def test_gid(flowetl_run_command):
@@ -18,4 +18,4 @@ def test_gid(flowetl_run_command):
 
     user = "1002:1003"
     out = flowetl_run_command("bash -c 'id -g'", user=user)
-    assert out.strip() == b"1003"
+    assert out.strip() == "1003"
