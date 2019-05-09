@@ -36,6 +36,7 @@ if [ "$CI" != "true" ]; then
 fi
 
 pipenv install
+pipenv run python cache_queries.py
 pipenv run flowmachine &
 echo "Started FlowMachine."
 pipenv run quart run --port 9090 &
