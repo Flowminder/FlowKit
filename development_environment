@@ -8,7 +8,7 @@
 # Flask secret key for CSRF protection
 SECRET_KEY=secret 
 # At rest encryption of server secret keys
-FERNET_KEY="XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg=" 
+FLOWAUTH_FERNET_KEY="XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg=" 
 # Creates demo data when running
 DEMO_MODE=true
 # Required by flask
@@ -117,6 +117,15 @@ OUTPUT_ROOT_DIR=/docker-entrypoint-initdb.d
 
 FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=FALSE
 
-# Worked examples
+# FlowETL
+DAGS_FOLDER=/usr/local/airflow/src
+SQL_ALCHEMY_CONN=postgres://flowetl:flowetl@flowetl_db:5432/flowetl
+FLOWETL_FERNET_KEY=ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=
+FLOWETL_PORT=8080
+FLOWETL_POSTGRES_PASSWORD=flowetl
+FLOWETL_POSTGRES_USER=flowetl
+FLOWETL_POSTGRES_HOST=flowetl_db
+FLOWETL_POSTGRES_DB=flowetl
 
+# Worked examples
 WORKED_EXAMPLES_PORT=8888

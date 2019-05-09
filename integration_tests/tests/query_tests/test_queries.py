@@ -8,7 +8,7 @@ from flowclient.client import get_result
 
 import flowclient
 
-from tests.utils import permissions_types, aggregation_types
+from flowkit_jwt_generator import permissions_types, aggregation_types
 
 
 @pytest.mark.parametrize(
