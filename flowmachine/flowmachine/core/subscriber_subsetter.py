@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import List
-
 import numpy as np
 import pandas as pd
+from hashlib import md5
+from typing import List
 
 from abc import abstractmethod
 from sqlalchemy.sql import ClauseElement, select, text, column
@@ -32,12 +32,24 @@ class SubscriberSubsetterBase(Query):
     stub implementations too.
     """
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} (md5='{self.md5}')>"
+
     @property
     @abstractmethod
     def is_proper_subset(self):
         raise NotImplementedError(
             f"Class {self.__class__.__name__} does not implement 'is_proper_subset'"
         )
+
+    @property
+    def md5(self):
+        try:
+            return self._md5
+        except AttributeError:
+            raise NotImplementedError(
+                f"Class {self.__class__.__name__} does not implement 'md5'"
+            )
 
     def column_names(self) -> List[str]:
         return []
@@ -73,6 +85,10 @@ class SubscriberSubsetterForAllSubscribers(SubscriberSubsetterBase):
     """
 
     is_proper_subset = False
+
+    def __init__(self):
+        self._md5 = md5(self.__class__.__name__.encode()).hexdigest()
+        super().__init__()
 
     def _make_query(self):
         # Return a dummy string representing this subset. This is only needed
@@ -115,6 +131,7 @@ class SubscriberSubsetterForFlowmachineQuery(SubscriberSubsetterBase):
 
         self._verify_that_subscriber_column_is_present(flowmachine_query)
         self.flowmachine_query = flowmachine_query
+        self._md5 = self.flowmachine_query.md5
         super().__init__()
 
     def _verify_that_subscriber_column_is_present(self, flowmachine_query):
@@ -196,6 +213,7 @@ class SubscriberSubsetterForExplicitSubset(SubscriberSubsetterBase):
             )
 
         self.subscribers = subscribers
+        self._md5 = md5(str(self.subscribers).encode()).hexdigest()
         super().__init__()
 
     def _make_query(self):
