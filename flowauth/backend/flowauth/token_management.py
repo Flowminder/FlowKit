@@ -209,7 +209,7 @@ def add_token(server):
     token_string = generate_token(
         username=current_user.username,
         secret=server.secret_key,
-        audience=server.name,
+        flowapi_identifier=server.name,
         lifetime=lifetime,
         claims=json["claims"],
     )
