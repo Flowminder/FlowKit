@@ -257,7 +257,8 @@ def universal_access_token(flowapi_url: str, access_token_builder: Callable) -> 
 @click.argument("username", type=str)
 @click.argument("secret-key", type=str)
 @click.argument("lifetime", type=int)
-def print_token(username, secret_key, lifetime):
+@click.argument("audience", type=str)
+def print_token(username, secret_key, lifetime, audience):
     """
     Generate a JWT token for access to FlowAPI.
 
@@ -267,23 +268,24 @@ def print_token(username, secret_key, lifetime):
 
     For example:
 
-    generate-jwt TEST_USER SECRET 1 --all-access http://localhost:9090
+    generate-jwt TEST_USER SECRET 1 TEST_SERVER --all-access http://localhost:9090
 
     Or,
 
-    generate-jwt TEST_USER SECRET 1 --query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
+    generate-jwt TEST_USER SECRET 1 TEST_SERVER --query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
     """
     pass
 
 
 @print_token.resultcallback()
-def output_token(claims, username, secret_key, lifetime):
+def output_token(claims, username, secret_key, lifetime, audience):
     click.echo(
         generate_token(
             username=username,
             secret=secret_key,
             lifetime=datetime.timedelta(days=lifetime),
             claims=dict(ChainMap(*claims)),
+            audience=audience,
         )
     )
 
