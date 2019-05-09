@@ -137,7 +137,7 @@ def test_against_general_generator():
             username="TEST_USER",
             secret="SECRET",
             lifetime=datetime.timedelta(5),
-            audience="TEST_SERVER",
+            flowapi_identifier="TEST_SERVER",
             claims={
                 "daily_location": {
                     "permissions": {"run": True},
@@ -153,7 +153,7 @@ def test_against_general_generator():
             username="TEST_USER",
             secret="SECRET",
             lifetime=datetime.timedelta(5),
-            audience="TEST_SERVER",
+            flowapi_identifier="TEST_SERVER",
             claims={
                 "daily_location": {
                     "permissions": {"run": True},

@@ -228,7 +228,7 @@ def add_token(server):
 # Duplicated in flowkit_jwt_generator
 def generate_token(
     *,
-    audience: Optional[str] = None,
+    flowapi_identifier: Optional[str] = None,
     username: str,
     secret: str,
     lifetime: datetime.timedelta,
@@ -246,14 +246,14 @@ def generate_token(
         Lifetime from now of the token
     claims : dict
         Dictionary of claims the token will grant
-    audience : str, optional
+    flowapi_identifier : str, optional
         Optionally provide a string to identify the audience of the token
 
     Examples
     --------
-    >>> generate_token("TEST_USER", "SECRET", datetime.timedelta(5), {"daily_location":{"permissions": {"run":True},
-            "spatial_aggregation": ["admin3"}})
-    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTczMDMyOTMsIm5iZiI6MTU1NzMwMzI5MywianRpIjoiOTRjZWMxODQtZTc4Mi00ZDk3LTkxNDYtNTczZjlkMTBlNDI2IiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzczNTI5M30.CG7xlsyaKywK4lHpnlpI-DlNk4wdMNufrguz4Y6qDi4'
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",secret="SECRET",lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
+            "spatial_aggregation": ["admin3"]}})
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
 
     Returns
     -------
@@ -271,8 +271,8 @@ def generate_token(
         identity=username,
         exp=now + lifetime,
     )
-    if audience is not None:
-        token_data["aud"] = audience
+    if flowapi_identifier is not None:
+        token_data["aud"] = flowapi_identifier
     return jwt.encode(
         payload=token_data, key=secret, algorithm="HS256", json_encoder=JSONEncoder
     ).decode("utf-8")

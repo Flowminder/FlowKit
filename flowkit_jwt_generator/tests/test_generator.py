@@ -26,8 +26,8 @@ def test_token_generator():
 def test_token_generator_with_audience():
     """Test that the baseline token generator behaves as expected when given an audience"""
     token = generate_token(
+        flowapi_identifier="test_audience",
         username="test",
-        audience="test_audience",
         secret="secret",
         lifetime=timedelta(seconds=90),
         claims={"A_CLAIM": "A_VALUE"},
