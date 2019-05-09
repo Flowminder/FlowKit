@@ -33,6 +33,7 @@ docker secret rm POSTGRES_PASSWORD
 docker secret rm cert-flowkit.pem
 docker secret rm JWT_SECRET_KEY
 docker secret rm REDIS_PASSWORD
+docker secret rm FLOWAPI_IDENTIFIER
 echo "Adding secrets"
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
@@ -40,6 +41,7 @@ echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAPI_FLOWDB_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create POSTGRES_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create REDIS_PASSWORD -
+echo "flowapi_server" | docker secret create FLOWAPI_IDENTIFIER -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
     -extensions SAN \
     -config <( cat $( [[ "Darwin" -eq "$(uname -s)" ]]  && echo /System/Library/OpenSSL/openssl.cnf || echo /etc/ssl/openssl.cnf  ) \
