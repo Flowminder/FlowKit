@@ -101,7 +101,8 @@ def generate_keypair() -> Tuple[bytes, bytes]:
     return private_key_bytes, public_key_bytes
 
 
-# Duplicated in FlowAuth
+# Duplicated in FlowAuth (cannot use this implementation there because
+# this module is outside the docker build context for FlowAuth).
 def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
