@@ -169,6 +169,9 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
         Function which returns a token encoding the specified claims.
     """
 
+    if audience is None and "audience" in os.environ:
+        audience = os.environ["FLOWAPI_IDENTIFIER"]
+
     secret = os.getenv("JWT_SECRET_KEY")
     if secret is None:
         raise EnvironmentError("JWT_SECRET_KEY environment variable not set.")
