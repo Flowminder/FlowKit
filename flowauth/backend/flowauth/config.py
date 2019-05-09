@@ -85,13 +85,6 @@ def get_config():
         SQLALCHEMY_TRACK_MODIFICATIONS=SQLALCHEMY_TRACK_MODIFICATIONS,
         FERNET_KEY=FERNET_KEY,
         DEMO_MODE=DEMO_MODE,
-        PRIVATE_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption(),
-        ),
-        PUBLIC_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY.public_key().public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo,
-        ),
+        PRIVATE_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY,
+        PUBLIC_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY.public_key(),
     )
