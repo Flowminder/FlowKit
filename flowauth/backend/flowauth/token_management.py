@@ -225,7 +225,8 @@ def add_token(server):
     return jsonify({"token": token_string, "id": token.id})
 
 
-# Duplicated in flowkit_jwt_generator
+# Duplicated in flowkit_jwt_generator (cannot re-use the implementation
+# there because the module is outside the docker build context for flowauth).
 def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
