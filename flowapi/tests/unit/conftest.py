@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
+import os
 from json import JSONDecodeError
 
 import asyncpg
@@ -22,6 +23,14 @@ def async_return(result):
     f = Future()
     f.set_result(result)
     return f
+
+
+@pytest.fixture
+def audience():
+    """
+    Fixture to set the audience for generated tokens to this server.
+    """
+    return os.environ["FLOWAPI_IDENTIFIER"]
 
 
 @pytest.fixture

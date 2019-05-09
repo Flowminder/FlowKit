@@ -154,9 +154,14 @@ def generate_token(
 
 
 @pytest.fixture
-def access_token_builder() -> Callable:
+def access_token_builder(audience: Optional[str] = None) -> Callable:
     """
     Fixture which builds short-life access tokens.
+
+    Parameters
+    ----------
+    audience : str, default None
+        Optionally specify an audience for the token
 
     Returns
     -------
@@ -173,6 +178,7 @@ def access_token_builder() -> Callable:
     ) -> str:
         return generate_token(
             username="test",
+            audience=audience,
             secret=secret,
             lifetime=timedelta(seconds=90),
             claims=claims,
