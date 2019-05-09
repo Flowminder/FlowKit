@@ -38,4 +38,3 @@ def test_bar(airflow_local_setup_fnc_scope):
         sleep(1)
 
     assert True
-

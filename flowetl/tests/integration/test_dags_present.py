@@ -33,6 +33,8 @@ def test_dags_present(airflow_local_setup_mdl_scope):
     ],
 )
 def test_correct_tasks(airflow_local_setup_mdl_scope, dag_name, expected_task_list):
-
+    """
+    Test that each dag has the tasks expected
+    """
     dag = DagBag(dag_folder="./dags", include_examples=False).dags[dag_name]
     assert set(dag.task_ids) == set(expected_task_list)
