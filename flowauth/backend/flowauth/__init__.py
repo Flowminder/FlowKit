@@ -107,12 +107,12 @@ def create_app(test_config=None):
             pass  # Definitely not an admin
 
     @app.cli.command("get-fernet")
-    def make_fernet_key():
+    def make_flowauth_fernet_key():
         """
         Generate a new Fernet key for symmetric encryption of data at
         rest.
         """
-        print(f'FERNET_KEY="{Fernet.generate_key().decode()}"')
+        print(f'FLOWAUTH_FERNET_KEY="{Fernet.generate_key().decode()}"')
 
     # Add flask <command> CLI commands
     app.cli.add_command(demodata)

@@ -10,15 +10,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - FlowKit's worked examples are now Dockerized, and available as part of the quick setup script [#614](https://github.com/Flowminder/FlowKit/issues/614)
+- Skeleton for Airflow powered ETL system added
 - The docs now contain information about required versions of installation prerequisites [#703](https://github.com/Flowminder/FlowKit/issues/703)
 
 ### Changed
+- Parameter names in `flowmachine.connect()` have been renamed as follows to be consistent with the associated environment variables [#728](https://github.com/Flowminder/FlowKit/issues/728):
+    - `db_port -> flowdb_port`
+    - `db_user -> flowdb_user`
+    - `db_pass -> flowdb_password`
+    - `db_host -> flowdb_host`
+    - `db_connection_pool_size -> flowdb_connection_pool_size`
+    - `db_connection_pool_overflow -> flowdb_connection_pool_overflow`
 
 - Dependent queries are now only included once in the md5 calculation of a given query (in particular, it changes the query ids compared to previous FlowKit versions).
 
 ### Fixed
 - FlowClient docs rendered to website now show the options available for arguments that require a string from some set of possibilities [#695](https://github.com/Flowminder/FlowKit/issues/695).
 - The Flowmachine loggers are now initialised only once when flowmachine is imported, with a call to `connect()` only changing the log level [#691](https://github.com/Flowminder/FlowKit/issues/691)
+- The FERNET_KEY environment variable for FlowAuth is now named FLOWAUTH_FERNET_KEY
 
 ### Removed
 

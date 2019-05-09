@@ -406,7 +406,7 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
-      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
+      FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
     working_directory: /home/circleci/project/flowauth
     steps:
@@ -426,7 +426,7 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
-      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
+      FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
     working_directory: /home/circleci/project/flowauth
     steps:
@@ -485,7 +485,7 @@ jobs:
     parameters:
       component:
         type: enum
-        enum: ["flowmachine", "flowauth", "flowapi", "flowkit-examples"]
+        enum: ["flowmachine", "flowauth", "flowapi", "flowkit-examples", "flowetl"]
       component_path:
         type: string
     docker:
@@ -509,6 +509,42 @@ jobs:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/<<parameters.component>>:$CIRCLE_SHA1
+
+  run_flowetl_tests:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - setup_remote_docker
+      - run:
+          name: test running with specified UID/GID for flowetl
+          command: |
+            expecteduser=1003
+            expectedgroup=1002
+            gotuser=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -u'`
+            gotgroup=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -g'`
+            if [ $gotuser -ne $expecteduser -a  $gotgroup -ne $expectedgroup ]; then
+              exit 1
+            else
+              echo "running as correct user and group"
+            fi
+      - run: 
+          name: test that airflow picks up dag
+          command: |
+            # temporary test to make sure dags getting picked up by airflow
+            # this will be tested via a pytest integration test eventually 
+            docker run --name flowetl -d flowminder/flowetl:$CIRCLE_SHA1
+            sleep 5
+            expecteddag=tutorial
+            gotdag=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
+            if [ $gotdag != $expecteddag ]; then
+              exit 1
+            else
+              echo "expected DAG present"
+            fi
+            docker stop flowetl
 
   integration_tests:
     executor:
@@ -668,7 +704,7 @@ jobs:
           command: |
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
-            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples; do
+            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl; do
               docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
@@ -720,6 +756,11 @@ workflows:
           component_path: .
           <<: *run_always_org_context
       - build_docker_image:
+          name: build_flowetl
+          component: flowetl
+          component_path: flowetl
+          <<: *run_always_org_context
+      - build_docker_image:
           name: build_flowmachine
           component: flowmachine
           component_path: flowmachine
@@ -740,6 +781,10 @@ workflows:
           component: flowapi
           component_path: flowapi
           <<: *run_always_org_context
+      - run_flowetl_tests:
+          requires:
+            - build_flowetl
+          <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
           project_name: flowclient
@@ -758,6 +803,7 @@ workflows:
             - build_flowapi
             - build_flowmachine
             - build_flowauth
+            - build_flowetl
             - build_examples
           <<: *run_always_org_context
       - integration_tests:
@@ -776,6 +822,7 @@ workflows:
             - run_flowauth_backend_tests
             - run_flowauth_frontend_tests
             - run_flowclient_tests
+            - run_flowetl_tests
             - synth_data_python_generator_tests
             - synth_data_sql_generator_tests
             - build_flowmachine_wheel
