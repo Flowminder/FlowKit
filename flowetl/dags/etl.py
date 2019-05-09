@@ -19,6 +19,14 @@ def dummy_callable(*, dag_run: DagRun, **kwargs):
     logging.info(dag_run)
 
 
+def dummy_failing_callable(*, dag_run: DagRun, **kwargs):
+    """
+    Dummy python callable
+    """
+    logging.info(dag_run)
+    raise Exception
+
+
 def dummy_branch_callable(*, dag_run: DagRun, **kwargs):
     """
     Dummy branch callable
@@ -59,7 +67,7 @@ with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag
         trigger_rule="all_done",
     )
     fail = PythonOperator(
-        task_id="fail", python_callable=dummy_callable, provide_context=True
+        task_id="fail", python_callable=dummy_failing_callable, provide_context=True
     )
 
     init >> extract >> transform >> success_branch
