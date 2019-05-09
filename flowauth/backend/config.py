@@ -37,6 +37,8 @@ SQLALCHEMY_DATABASE_URI = getsecret(
 SECRET_KEY = getsecret("SECRET_KEY", os.getenv("SECRET_KEY", "secret"))
 SESSION_PROTECTION = "strong"
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-FERNET_KEY = getsecret("FERNET_KEY", os.getenv("FERNET_KEY", "")).encode()
-Fernet(FERNET_KEY)  # Error if fernet key is bad
+FLOWAUTH_FERNET_KEY = getsecret(
+    "FLOWAUTH_FERNET_KEY", os.getenv("FLOWAUTH_FERNET_KEY", "")
+).encode()
+Fernet(FLOWAUTH_FERNET_KEY)  # Error if fernet key is bad
 DEMO_MODE = True if os.getenv("DEMO_MODE") is not None else False
