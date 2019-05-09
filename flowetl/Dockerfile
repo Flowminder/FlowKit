@@ -9,6 +9,8 @@
 FROM puckel/docker-airflow
 
 ARG AIRFLOW_HOME=/usr/local/airflow
+ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/src
+ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 USER root
 WORKDIR /usr/src/deps
 

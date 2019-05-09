@@ -406,7 +406,7 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
-      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
+      FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
     working_directory: /home/circleci/project/flowauth
     steps:
@@ -426,7 +426,7 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
-      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
+      FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
     working_directory: /home/circleci/project/flowauth
     steps:
@@ -537,7 +537,7 @@ jobs:
             # this will be tested via a pytest integration test eventually 
             docker run --name flowetl -d flowminder/flowetl:$CIRCLE_SHA1
             sleep 5
-            expecteddag=tutorial
+            expecteddag=sampledag
             gotdag=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
             if [ $gotdag != $expecteddag ]; then
               exit 1
