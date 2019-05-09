@@ -6,7 +6,7 @@ from subprocess import DEVNULL, STDOUT, Popen
 from airflow.models import DagRun
 
 
-def test_foo(airflow_local_setup):
+def test_foo(airflow_local_setup_fnc_scope):
 
     p = airflow_local_setup("airflow unpause etl_sensor", shell=False)
     p.wait()
@@ -21,7 +21,7 @@ def test_foo(airflow_local_setup):
     assert True
 
 
-def test_bar(airflow_local_setup):
+def test_bar(airflow_local_setup_fnc_scope):
 
     p = airflow_local_setup("airflow unpause etl_sensor", shell=False)
     p.wait()
