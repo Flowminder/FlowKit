@@ -9,6 +9,7 @@ apache-airflow = "==1.10.3"
 pylint = "*"
 pytest = "*"
 docker = "*"
+ipython = "*"
 
 [packages]
 
