@@ -542,7 +542,7 @@ jobs:
             # this will be tested via a pytest integration test eventually 
             docker run --name flowetl -d flowminder/flowetl:$CIRCLE_SHA1
             sleep 5
-            expecteddag=tutorial
+            expecteddag=sampledag
             gotdag=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
             if [ $gotdag != $expecteddag ]; then
               exit 1
