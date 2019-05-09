@@ -518,18 +518,20 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - setup_remote_docker
+      - restore_cache:
+          key: flowetl-deps-1-{{ checksum "flowetl/Pipfile.lock"}}
       - run:
-          name: test running with specified UID/GID for flowetl
+          name: Install pipenv
+          command: pip install --upgrade pip pipenv
+      - run:
+          name: Install python dependencies
           command: |
-            expecteduser=1003
-            expectedgroup=1002
-            gotuser=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -u'`
-            gotgroup=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -g'`
-            if [ $gotuser -ne $expecteduser -a  $gotgroup -ne $expectedgroup ]; then
-              exit 1
-            else
-              echo "running as correct user and group"
-            fi
+            PIPENV_PIPFILE=flowetl/Pipfile pipenv install --deploy --dev
+      - run:
+          name: run flowetl tests
+          command: |
+            export FLOWETL_TAG=$CIRCLE_SHA1
+            cd flowetl && pipenv run pytest ./tests
       - run: 
           name: test that airflow picks up dag
           command: |
