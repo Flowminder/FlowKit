@@ -8,6 +8,7 @@ import pytest
 
 from flowmachine.core import CustomQuery
 from flowmachine.core.subscriber_subsetter import *
+from flowmachine.features import daily_location
 
 
 flowmachine.connect()
@@ -65,3 +66,36 @@ def test_raises_error_if_flowmachine_query_does_not_contain_subscriber_column():
     )
     with pytest.raises(ValueError):
         _ = make_subscriber_subsetter(flowmachine_query)
+
+
+def test_subsetting_of_query(get_dataframe):
+    """
+    Check that query ids and length of results of some subsetted queries are as expected.
+    """
+    selected_subscriber_ids = [
+        "1jwYL3Nl1Y46lNeQ",
+        "nLvm2gVnEdg7lzqX",
+        "jwKJorl0yBrZX5N8",
+    ]
+    custom_query = CustomQuery(
+        "SELECT duration, msisdn as subscriber FROM events.calls WHERE duration < 10",
+        ["duration", "subscriber"],
+    )
+    subsetter_1 = SubscriberSubsetterForAllSubscribers()
+    subsetter_2 = SubscriberSubsetterForExplicitSubset(selected_subscriber_ids)
+    subsetter_3 = SubscriberSubsetterForFlowmachineQuery(custom_query)
+
+    dl_0 = daily_location(date="2016-01-01")
+    dl_1 = daily_location(date="2016-01-01", subscriber_subset=subsetter_1)
+    dl_2 = daily_location(date="2016-01-01", subscriber_subset=subsetter_2)
+    dl_3 = daily_location(date="2016-01-01", subscriber_subset=subsetter_3)
+
+    assert "d9537c9bc11580f868e3fc372dafdb94" == dl_0.md5
+    assert "930cdfea422dcfded53634ebf66151cc" == dl_1.md5
+    assert "8fac52110be28f4b9b673e6a47997cb4" == dl_2.md5
+    assert "96205ab5c3c5632030253db7062852ea" == dl_3.md5
+
+    assert 499 == len(get_dataframe(dl_0))
+    assert 499 == len(get_dataframe(dl_1))
+    assert 3 == len(get_dataframe(dl_2))
+    assert 26 == len(get_dataframe(dl_3))
