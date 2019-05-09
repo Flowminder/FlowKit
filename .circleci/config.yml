@@ -102,6 +102,7 @@ executors:
         FLOWMACHINE_PORT: 5555
         FLOWDB_HOST: localhost
         JWT_SECRET_KEY: secret
+        FLOWAPI_IDENTIFIER: TEST_SERVER
     docker:
       - image: circleci/python:3.7
       - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_SHA1
@@ -362,6 +363,7 @@ jobs:
       - image: circleci/python:3.7
     environment:
       JWT_SECRET_KEY: secret
+      FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowkit_jwt_generator
     steps:
       - checkout:
@@ -388,6 +390,8 @@ jobs:
   run_flowkit_api_tests:
     docker:
       - image: circleci/python:3.7
+        environment:
+          FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowapi
     steps:
       - checkout:
@@ -406,8 +410,10 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
+      &flowauth_env
       FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
+      FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
@@ -426,8 +432,7 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
-      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
-      FLASK_APP: flowauth
+      *flowauth_env
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
