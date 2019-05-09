@@ -28,6 +28,7 @@ logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 def connect(
+    *,
     log_level: Union[str, None] = None,
     flowdb_port: Union[int, None] = None,
     flowdb_user: Union[str, None] = None,
