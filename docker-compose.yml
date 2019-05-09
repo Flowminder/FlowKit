@@ -165,6 +165,7 @@ services:
       - ${FLOWAUTH_PORT:?Must set FLOWAUTH_PORT env var}:80
     environment:
       DEMO_MODE: ${DEMO_MODE:?Must set DEMO_MODE env var}
+      FLOWAUTH_FERNET_KEY: ${FLOWAUTH_FERNET_KEY:?Must set FLOWAUTH_FERNET_KEY env var}
 
   flowmachine_query_locker:
     container_name: flowmachine_query_locker

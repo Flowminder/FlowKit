@@ -411,7 +411,7 @@ jobs:
       - image: circleci/python:3.6
     environment:
       &flowauth_env
-      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
+      FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
       FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowauth

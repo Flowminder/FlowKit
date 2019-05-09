@@ -176,11 +176,11 @@ To initialise the tables, you can either set the `INIT_DB` environment variable 
 
 To create an initial administrator, use the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables or set them as secrets. Alternatively, you may run `flask add-admin <username> <password>` from inside the container. You can combine these environment variables with the `INIT_DB` environment variable.
 
-You _must_ also provide two additional environment variables or secrets: `FERNET_KEY`, and `SECRET_KEY`. `FERNET_KEY` is used to encrypt server secret keys, and tokens while 'at rest' in the database, and decrypt them for use. `SECRET_KEY` is used to secure session, and CSRF protection cookies.
+You _must_ also provide two additional environment variables or secrets: `FLOWAUTH_FERNET_KEY`, and `SECRET_KEY`. `FLOWAUTH_FERNET_KEY` is used to encrypt server secret keys, and tokens while 'at rest' in the database, and decrypt them for use. `SECRET_KEY` is used to secure session, and CSRF protection cookies.
 
 By default, `SECRET_KEY` will be set to `secret`. You should supply this to ensure a secure system.
 
-While `SECRET_KEY` can be any arbitrary string, `FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.  
+While `SECRET_KEY` can be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.  
 
 
 #### Running with Secrets
