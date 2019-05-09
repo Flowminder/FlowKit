@@ -58,7 +58,7 @@ def flowetl_run_command(docker_client, flowetl_tag):
     return run_commmand
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def airflow_dagbag():
     from airflow.models import DagBag
 
