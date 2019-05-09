@@ -6,7 +6,7 @@
 #  FLOWETL
 #  -----
 
-FROM puckel/docker-airflow
+FROM greenape/docker-airflow
 
 ARG AIRFLOW_HOME=/usr/local/airflow
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/src
