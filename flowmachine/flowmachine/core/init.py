@@ -145,7 +145,7 @@ def connect(
         if redis_port is None
         else redis_port
     )
-    redis_pw = (
+    redis_password = (
         getsecret("REDIS_PASSWORD", os.getenv("REDIS_PASSWORD"))
         if redis_password is None
         else redis_password
@@ -156,7 +156,7 @@ def connect(
             "You must provide a secret named FLOWMACHINE_FLOWDB_PASSWORD, set an environment variable named FLOWMACHINE_FLOWDB_PASSWORD, or provide a db_pass argument."
         )
 
-    if redis_pw is None:
+    if redis_password is None:
         raise ValueError(
             "You must provide a secret named REDIS_PASSWORD, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
         )
@@ -179,7 +179,7 @@ def connect(
         Query.connection = conn
 
         Query.redis = redis.StrictRedis(
-            host=redis_host, port=redis_port, password=redis_pw
+            host=redis_host, port=redis_port, password=redis_password
         )
         _start_threadpool(thread_pool_size=flowdb_connection_pool_size)
 
