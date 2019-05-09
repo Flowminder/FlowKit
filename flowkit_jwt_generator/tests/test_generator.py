@@ -13,7 +13,7 @@ def test_token_generator():
     """Test that the baseline token generator behaves as expected"""
     token = generate_token(
         username="test",
-        secret="secret",
+        audience="secret",
         lifetime=timedelta(seconds=90),
         claims={"A_CLAIM": "A_VALUE"},
     )

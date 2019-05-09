@@ -32,7 +32,6 @@ class ServerAdminDetails extends React.Component {
     name: "",
     rights: {},
     max_life: 1440,
-    secret_key: "",
     latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
     edit_mode: false
   };
@@ -44,7 +43,6 @@ class ServerAdminDetails extends React.Component {
       latest_expiry,
       max_life,
       rights,
-      secret_key
     } = this.state;
     const { item_id, onClick } = this.props;
     var task;
@@ -52,14 +50,12 @@ class ServerAdminDetails extends React.Component {
       task = editServer(
         item_id,
         name,
-        secret_key,
         new Date(latest_expiry).toISOString(),
         max_life
       );
     } else {
       task = createServer(
         name,
-        secret_key,
         new Date(latest_expiry).toISOString(),
         max_life
       );
@@ -84,11 +80,6 @@ class ServerAdminDetails extends React.Component {
     }
   };
 
-  generatePassword = event => {
-    this.setState({
-      secret_key: generate({ length: 16, numbers: true, symbols: true })
-    });
-  };
 
   handleDateChange = date => {
     this.setState({ latest_expiry: date });
@@ -125,7 +116,6 @@ class ServerAdminDetails extends React.Component {
       getServer(item_id)
         .then(json => {
           name = json.name;
-          secret_key = json.secret_key;
           return getCapabilities(item_id);
         })
         .then(json => {
@@ -136,7 +126,6 @@ class ServerAdminDetails extends React.Component {
           this.setState({
             name: name,
             rights: rights,
-            secret_key: secret_key,
             latest_expiry: json.latest_token_expiry,
             max_life: json.longest_token_life,
             edit_mode: true
@@ -150,7 +139,6 @@ class ServerAdminDetails extends React.Component {
         .then(json => {
           this.setState({
             rights: json,
-            secret_key: generate({ length: 16, numbers: true, symbols: true })
           });
         })
         .catch(err => {
@@ -184,30 +172,7 @@ class ServerAdminDetails extends React.Component {
             margin="normal"
           />
         </Grid>
-        <Grid item xs={6}>
-          <TextField
-            id="standard-name"
-            className={classes.textField}
-            label="Secret Key"
-            value={secret_key}
-            onChange={this.handleTextChange("secret_key")}
-            margin="normal"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    color="inherit"
-                    className={classes.button}
-                    aria-label="New password"
-                    onClick={this.generatePassword}
-                  >
-                    <RefreshIcon />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Grid>
+        <Grid item xs={6} />
         <Divider />
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">

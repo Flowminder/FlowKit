@@ -209,7 +209,7 @@ def add_token(server):
         nbf=now,
         jti=str(uuid.uuid4()),
         user_claims=json["claims"],
-        aud=server.secret_key,
+        aud=server.name,
         identity=current_user.username,
         exp=now + lifetime,
     )

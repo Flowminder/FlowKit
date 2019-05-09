@@ -3,10 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+import base64
 from pathlib import Path
+from binascii import Error
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey
 from cryptography.hazmat.primitives import serialization
 
 
@@ -34,6 +36,31 @@ def getsecret(key: str, default: str) -> str:
         return default
 
 
+def load_private_key(key_string: str) -> _RSAPrivateKey:
+    """
+    Load a private key from a string, which may be base64 encoded.
+
+    Parameters
+    ----------
+    key_string : str
+        String containing the key, optionally base64 encoded
+
+    Returns
+    -------
+    _RSAPrivateKey
+        The private key
+    """
+    try:
+        return serialization.load_pem_private_key(
+            key_string.encode(), password=None, backend=default_backend()
+        )
+    except ValueError:
+        try:
+            return load_private_key(base64.b64decode(key_string).decode())
+        except (Error, ValueError):
+            raise ValueError("Failed to load key.")
+
+
 def get_config():
     SQLALCHEMY_DATABASE_URI = getsecret(
         "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
@@ -44,25 +71,12 @@ def get_config():
     FERNET_KEY = getsecret("FERNET_KEY", os.getenv("FERNET_KEY", "")).encode()
     Fernet(FERNET_KEY)  # Error if fernet key is bad
     DEMO_MODE = True if os.getenv("DEMO_MODE") is not None else False
-    PRIVATE_JWT_SIGNING_KEY = getsecret(
-        "PRIVATE_JWT_SIGNING_KEY", os.getenv("PRIVATE_JWT_SIGNING_KEY")
-    )
-    PUBLIC_JWT_SIGNING_KEY = getsecret(
-        "PUBLIC_JWT_SIGNING_KEY", os.getenv("PUBLIC_JWT_SIGNING_KEY")
-    )
-    if PRIVATE_JWT_SIGNING_KEY is None:
-        private_key = rsa.generate_private_key(
-            public_exponent=65537, key_size=2048, backend=default_backend()
+    try:
+        PRIVATE_JWT_SIGNING_KEY = load_private_key(
+            getsecret("PRIVATE_JWT_SIGNING_KEY", os.environ["PRIVATE_JWT_SIGNING_KEY"])
         )
-        PRIVATE_JWT_SIGNING_KEY = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-        PUBLIC_JWT_SIGNING_KEY = private_key.public_key().public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo,
-        )
+    except (ValueError, KeyError):
+        raise EnvironmentError("Could not load private key.")
 
     return dict(
         SQLALCHEMY_DATABASE_URI=SQLALCHEMY_DATABASE_URI,
@@ -71,6 +85,13 @@ def get_config():
         SQLALCHEMY_TRACK_MODIFICATIONS=SQLALCHEMY_TRACK_MODIFICATIONS,
         FERNET_KEY=FERNET_KEY,
         DEMO_MODE=DEMO_MODE,
-        PRIVATE_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY,
-        PUBLIC_JWT_SIGNING_KEY=PUBLIC_JWT_SIGNING_KEY,
+        PRIVATE_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
+        ),
+        PUBLIC_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY.public_key().public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        ),
     )

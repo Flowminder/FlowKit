@@ -114,13 +114,11 @@ def test_data(app):
             name="DUMMY_SERVER_A",
             longest_token_life=2,
             latest_token_expiry=datetime.datetime(2020, 1, 1),
-            secret_key="DUMMY_SERVER_A_KEY",
         )
         dummy_server_b = Server(
             name="DUMMY_SERVER_B",
             longest_token_life=2,
             latest_token_expiry=datetime.datetime(2021, 1, 1),
-            secret_key="DUMMY_SERVER_B_KEY",
         )
         db.session.add(dummy_server_a)
         db.session.add(dummy_server_b)

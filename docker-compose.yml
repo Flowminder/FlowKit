@@ -148,7 +148,7 @@ services:
       - FLOWAPI_FLOWDB_PASSWORD=${FLOWAPI_FLOWDB_PASSWORD:?Must set FLOWAPI_FLOWDB_PASSWORD env var}
       - FLOWDB_HOST=${DOCKER_FLOWDB_HOST:?Must set DOCKER_FLOWDB_HOST env var}
       - FLOWDB_PORT=5432
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY:?Must set JWT_SECRET_KEY env var}
+      - PUBLIC_JWT_SIGNING_KEY=${PUBLIC_JWT_SIGNING_KEY:?Must set PUBLIC_JWT_SIGNING_KEY env var}
       - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:?Must set FLOWAPI_LOG_LEVEL env var}
     tty: true
     stdin_open: true
@@ -164,6 +164,7 @@ services:
       - ${FLOWAUTH_PORT:?Must set FLOWAUTH_PORT env var}:80
     environment:
       DEMO_MODE: ${DEMO_MODE:?Must set DEMO_MODE env var}
+      PRIVATE_JWT_SIGNING_KEY: ${PRIVATE_JWT_SIGNING_KEY:?Must set PRIVATE_JWT_SIGNING_KEY env var}
 
   flowmachine_query_locker:
     container_name: flowmachine_query_locker

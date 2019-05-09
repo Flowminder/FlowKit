@@ -36,6 +36,7 @@ setup(
         "flask-wtf",
         "zxcvbn",
         "cryptography",
+        "flowkit-jwt-generator",
     ],
     extras_require={"test": ["pytest", "coverage"], "postgres": ["psycopg2-binary"]},
 )
