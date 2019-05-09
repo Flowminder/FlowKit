@@ -18,7 +18,6 @@ from time import sleep
 from typing import List, Union
 
 from flowmachine.core.errors import BadLevelError
-from flowmachine.core.subscriber_subsetter import SubscriberSubsetterBase
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -423,6 +422,8 @@ def _get_query_attrs_for_dependency_graph(query_obj, analyse=False):
         present if `analyse=True`.
         Example return value: `{"name": "DailyLocation", "stored": False, "cost": 334.53, "runtime": 161.6}`
     """
+
+    from flowmachine.core.subscriber_subsetter import SubscriberSubsetterBase
 
     if isinstance(query_obj, SubscriberSubsetterBase):
         # This special case is only needed because SubscriberSubsetterBase
