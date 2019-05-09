@@ -5,7 +5,7 @@ import base64
 import datetime
 import os
 import uuid
-from binascii import Error
+import binascii
 from json import JSONEncoder
 from typing import Dict, List, Union, Callable, Tuple, Optional
 from collections import ChainMap
@@ -44,7 +44,7 @@ def load_private_key(key_string: str) -> _RSAPrivateKey:
     except ValueError:
         try:
             return load_private_key(base64.b64decode(key_string).decode())
-        except (Error, ValueError):
+        except (binascii.Error, ValueError):
             raise ValueError("Failed to load key.")
 
 
