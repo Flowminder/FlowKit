@@ -107,7 +107,7 @@ def create_app(test_config=None):
             pass  # Definitely not an admin
 
     @app.cli.command("get-fernet")
-    def make_FLOWAUTH_FERNET_KEY():
+    def make_flowauth_fernet_key():
         """
         Generate a new Fernet key for symmetric encryption of data at
         rest.
