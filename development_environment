@@ -118,7 +118,6 @@ OUTPUT_ROOT_DIR=/docker-entrypoint-initdb.d
 FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=FALSE
 
 # FlowETL
-DAGS_FOLDER=/usr/local/airflow/src
 SQL_ALCHEMY_CONN=postgres://flowetl:flowetl@flowetl_db:5432/flowetl
 FLOWETL_FERNET_KEY=ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=
 FLOWETL_PORT=8080
@@ -126,6 +125,9 @@ FLOWETL_POSTGRES_PASSWORD=flowetl
 FLOWETL_POSTGRES_USER=flowetl
 FLOWETL_POSTGRES_HOST=flowetl_db
 FLOWETL_POSTGRES_DB=flowetl
+
+# Need this to install airflow locally
+SLUGIFY_USES_TEXT_UNIDECODE=yes
 
 # Worked examples
 WORKED_EXAMPLES_PORT=8888
