@@ -47,4 +47,5 @@ TOKEN = generate_token(
     secret_key=os.environ["JWT_SECRET_KEY"],
     lifetime=timedelta(days=1),
     claims=get_all_claims_from_flowapi(flowapi_url="http://localhost:9090"),
+    audience=os.environ["FLOWAPI_IDENTIFIER"],
 )
