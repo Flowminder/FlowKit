@@ -89,7 +89,9 @@ def airflow_local_setup_fnc_scope():
     sleep(2)
 
     # yeilding a lambda that allows for subprocess calls with the correct env
-    yield lambda cmd, **kwargs: Popen(cmd.split(), env=env, **kwargs)
+    yield {
+        "airflow_run_cmd": lambda cmd, **kwargs: Popen(cmd.split(), env=env, **kwargs)
+    }
     scheduler.terminate()
 
     shutil.rmtree(env["AIRFLOW_HOME"])
@@ -117,7 +119,9 @@ def airflow_local_setup_mdl_scope():
     sleep(2)
 
     # yeilding a lambda that allows for subprocess calls with the correct env
-    yield lambda cmd, **kwargs: Popen(cmd.split(), env=env, **kwargs)
+    yield {
+        "airflow_run_cmd": lambda cmd, **kwargs: Popen(cmd.split(), env=env, **kwargs)
+    }
     scheduler.terminate()
 
     shutil.rmtree(env["AIRFLOW_HOME"])
