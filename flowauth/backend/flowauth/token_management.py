@@ -225,6 +225,7 @@ def add_token(server):
     return jsonify({"token": token_string, "id": token.id})
 
 
+# Duplicated in flowkit_jwt_generator
 def generate_token(
     *,
     audience: Optional[str] = None,

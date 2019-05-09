@@ -39,6 +39,7 @@ def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi):
         def test_all_access_plugin(universal_access_token):
             decoded = jwt.decode(
                 jwt=universal_access_token,
+                audience=os.environ["FLOWAPI_IDENTIFIER"],
                 key=os.environ["JWT_SECRET_KEY"],
                 verify=True,
                 algorithms=["HS256"],

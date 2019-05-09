@@ -101,6 +101,7 @@ def generate_keypair() -> Tuple[bytes, bytes]:
     return private_key_bytes, public_key_bytes
 
 
+# Duplicated in FlowAuth
 def generate_token(
     *,
     audience: Optional[str] = None,
