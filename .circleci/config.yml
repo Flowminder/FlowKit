@@ -531,22 +531,7 @@ jobs:
           name: run flowetl tests
           command: |
             export FLOWETL_TAG=$CIRCLE_SHA1
-            cd flowetl && pipenv run pytest ./tests
-      - run: 
-          name: test that airflow picks up dag
-          command: |
-            # temporary test to make sure dags getting picked up by airflow
-            # this will be tested via a pytest integration test eventually 
-            docker run --name flowetl -d flowminder/flowetl:$CIRCLE_SHA1
-            sleep 5
-            expecteddag=sampledag
-            gotdag=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
-            if [ $gotdag != $expecteddag ]; then
-              exit 1
-            else
-              echo "expected DAG present"
-            fi
-            docker stop flowetl
+            cd flowetl && AIRFLOW_HOME=./test_airflow_home pipenv run pytest ./tests
 
   integration_tests:
     executor:
