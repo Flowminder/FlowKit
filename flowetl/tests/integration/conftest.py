@@ -2,6 +2,9 @@
 Conftest for flowetl integration tests
 """
 import os
+import shutil
+
+from time import sleep
 
 import pytest
 import docker
@@ -32,6 +35,8 @@ def flowetl_solo_longrunning(docker_client, flowetl_tag):
     container = docker_client.containers.run(
         f"flowminder/flowetl:{flowetl_tag}", detach=True
     )
+    # breif sleep to wait for backing DB to be ready
+    sleep(2)
     yield container
     container.kill()
     container.remove()
@@ -48,6 +53,14 @@ def flowetl_run_command(docker_client, flowetl_tag):
         out = docker_client.containers.run(
             f"flowminder/flowetl:{flowetl_tag}", command, **kwargs
         )
-        return out
+        return out.decode("utf-8")
 
     return run_commmand
+
+
+@pytest.fixture(scope="function")
+def airflow_dagbag():
+    from airflow.models import DagBag
+
+    yield DagBag("./dags", include_examples=False)
+    shutil.rmtree(os.environ["AIRFLOW_HOME"])
