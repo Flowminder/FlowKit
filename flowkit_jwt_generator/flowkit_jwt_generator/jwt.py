@@ -69,7 +69,7 @@ def load_public_key(key_string: str) -> _RSAPublicKey:
     except ValueError:
         try:
             return load_public_key(base64.b64decode(key_string).decode())
-        except (Error, ValueError):
+        except (binascii.Error, ValueError):
             raise ValueError("Failed to load key.")
 
 
