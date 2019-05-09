@@ -23,10 +23,10 @@ RUN USER=airflow && \
         printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
 
 RUN mv /entrypoint.sh /defaultentrypoint.sh
-COPY entrypoint.sh /entrypoint.sh
+COPY ./entrypoint.sh /entrypoint.sh
 
 USER airflow
-COPY --chown=airflow:airflow dags/* ${AIRFLOW_HOME}/src/
+COPY --chown=airflow:airflow ./dags/* ${AIRFLOW_HOME}/src/
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["webserver"] # set default arg for entrypoint
