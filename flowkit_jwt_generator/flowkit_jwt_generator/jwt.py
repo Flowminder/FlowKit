@@ -1,21 +1,104 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import base64
 import datetime
 import os
 import uuid
+from binascii import Error
 from json import JSONEncoder
-from typing import Dict, List, Union, Callable
+from typing import Dict, List, Union, Callable, Tuple
 from collections import ChainMap
 from datetime import timedelta
 import click
 import jwt
 import pytest
 import requests
-
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey, _RSAPublicKey
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 permissions_types = {"run": True, "poll": True, "get_result": True}
 aggregation_types = ["admin0", "admin1", "admin2", "admin3", "admin4"]
+
+
+def load_private_key(key_string: str) -> _RSAPrivateKey:
+    """
+    Load a private key from a string, which may be base64 encoded.
+
+    Parameters
+    ----------
+    key_string : str
+        String containing the key, optionally base64 encoded
+
+    Returns
+    -------
+    _RSAPrivateKey
+        The private key
+    """
+    try:
+        return serialization.load_pem_private_key(
+            key_string.encode(), password=None, backend=default_backend()
+        )
+    except ValueError:
+        try:
+            return load_private_key(base64.b64decode(key_string).decode())
+        except (Error, ValueError):
+            raise ValueError("Failed to load key.")
+
+
+def load_public_key(key_string: str) -> _RSAPublicKey:
+    """
+    Load a public key from a string, which may be base64 encoded.
+
+    Parameters
+    ----------
+    key_string : str
+        String containing the key, optionally base64 encoded
+
+    Returns
+    -------
+    _RSAPubliceKey
+        The public key
+    """
+    try:
+        return serialization.load_pem_public_key(
+            key_string.encode(), backend=default_backend()
+        )
+    except ValueError:
+        try:
+            return load_public_key(base64.b64decode(key_string).decode())
+        except (Error, ValueError):
+            raise ValueError("Failed to load key.")
+
+
+def generate_keypair() -> Tuple[bytes, bytes]:
+    """
+    Generate an RSA key pair.
+
+    Returns
+    -------
+    tuple of bytes, bytes
+        Private key, public key
+
+    Notes
+    -----
+    You will typically want to base64 encode the keys if planning to use them as environment variables.
+    """
+    private_key = rsa.generate_private_key(
+        public_exponent=65537, key_size=4096, backend=default_backend()
+    )
+    public_key_bytes = private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    private_key_bytes = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    return private_key_bytes, public_key_bytes
 
 
 def generate_token(

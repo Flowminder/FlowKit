@@ -7,11 +7,17 @@ from .jwt import (
     get_all_claims_from_flowapi,
     aggregation_types,
     permissions_types,
+    generate_keypair,
+    load_private_key,
+    load_public_key,
 )
 
 __all__ = [
     "generate_token",
+    "generate_keypair",
     "get_all_claims_from_flowapi",
     "aggregation_types",
     "permissions_types",
+    "load_private_key",
+    "load_public_key",
 ]
