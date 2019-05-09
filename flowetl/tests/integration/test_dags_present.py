@@ -1,12 +1,15 @@
 import pytest
 
+from airflow.models import DagBag
 
-def test_dags_present(airflow_dagbag):
+
+def test_dags_present(airflow_local_setup_mdl_scope):
     """
     Test that the correct dags are parsed
     """
-    dags = airflow_dagbag.dags
-    assert set(airflow_dagbag.dag_ids) == set(["etl", "etl_sensor"])
+    assert set(DagBag(dag_folder="./dags", include_examples=False).dag_ids) == set(
+        ["etl", "etl_sensor"]
+    )
 
 
 @pytest.mark.parametrize(
@@ -29,7 +32,7 @@ def test_dags_present(airflow_dagbag):
         ("etl_sensor", ["sense"]),
     ],
 )
-def test_correct_tasks(airflow_dagbag, dag_name, expected_task_list):
+def test_correct_tasks(airflow_local_setup_mdl_scope, dag_name, expected_task_list):
 
-    dag = airflow_dagbag.dags[dag_name]
+    dag = DagBag(dag_folder="./dags", include_examples=False).dags[dag_name]
     assert set(dag.task_ids) == set(expected_task_list)
