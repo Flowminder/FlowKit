@@ -57,7 +57,7 @@ def test_load_base64_encoded_public_key():
     )
 
 
-@pytest.mark.parametrize("func", [load_public_key, load_public_key])
+@pytest.mark.parametrize("func", [load_public_key, load_private_key])
 def test_bad_key_error(func):
     """
     Strings which aren't a key, or a base64 encoded key raise a valueerror.
