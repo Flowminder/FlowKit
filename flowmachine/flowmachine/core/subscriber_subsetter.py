@@ -19,17 +19,9 @@ __all__ = [
 ]
 
 
-class SubscriberSubsetterBase(Query):
+class SubscriberSubsetterBase:
     """
     Base class for the different types of subscriber subsets.
-
-    TODO: this class currently inherits from flowmachine.Query, mainly for
-    practical reasons (to avoid changes to the subsetting logic ripple
-    through the entire codebase because of the way the caching logic works).
-    Unfortunately, this requires us to implement `_make_query()` and
-    `_get_query_attrs_for_dependency_graph`. In the long run we should
-    remove the inheritance from Query, which will allow us to remove these
-    stub implementations too.
     """
 
     def __repr__(self):
@@ -53,12 +45,6 @@ class SubscriberSubsetterBase(Query):
 
     def column_names(self) -> List[str]:
         return []
-
-    @abstractmethod
-    def _make_query(self):
-        raise NotImplementedError(
-            f"Class {self.__class__.__name__} does not implement '_make_query'"
-        )
 
     @abstractmethod
     def apply_subset_if_needed(self, sql, *, subscriber_identifier):
@@ -89,12 +75,6 @@ class SubscriberSubsetterForAllSubscribers(SubscriberSubsetterBase):
     def __init__(self):
         self._md5 = md5(self.__class__.__name__.encode()).hexdigest()
         super().__init__()
-
-    def _make_query(self):
-        # Return a dummy string representing this subset. This is only needed
-        # because SubscriberSubsetterBase currently inherits from Query, but will
-        # eventually be removed.
-        return "<SubscriberSubsetterForAllSubscribers>"
 
     def apply_subset_if_needed(self, sql, *, subscriber_identifier=None):
         """
@@ -144,12 +124,6 @@ class SubscriberSubsetterForFlowmachineQuery(SubscriberSubsetterBase):
                 f"Flowmachine query used for subsetting must contain a 'subscriber' column. "
                 f"Columns present are: {flowmachine_query.column_names}"
             )
-
-    def _make_query(self):
-        # Return a dummy string representing this subset. This is only needed
-        # because SubscriberSubsetterBase currently inherits from Query, but will
-        # eventually be removed.
-        return "<SubscriberSubsetterForFlowmachineQuery>"
 
     def apply_subset_if_needed(self, sql, *, subscriber_identifier=None):
         """
@@ -215,12 +189,6 @@ class SubscriberSubsetterForExplicitSubset(SubscriberSubsetterBase):
         self.subscribers = subscribers
         self._md5 = md5(str(self.subscribers).encode()).hexdigest()
         super().__init__()
-
-    def _make_query(self):
-        # Return a dummy string representing this subset. This is only needed
-        # because SubscriberSubsetterBase currently inherits from Query, but will
-        # eventually be removed.
-        return "<SubscriberSubsetterForExplicitSubset>"
 
     def apply_subset_if_needed(self, sql, *, subscriber_identifier):
         """
