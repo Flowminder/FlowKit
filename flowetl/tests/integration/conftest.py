@@ -51,4 +51,3 @@ def flowetl_run_command(docker_client, flowetl_tag):
         return out
 
     return run_commmand
-
