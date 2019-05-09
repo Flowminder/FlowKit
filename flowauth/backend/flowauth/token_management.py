@@ -2,10 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import jwt
+import uuid
 from flask import jsonify, Blueprint, request
 from flask.json import JSONEncoder
-from flask_jwt_extended.tokens import encode_access_token
 from flask_login import login_required, current_user
+from typing import Dict, List, Union, Optional
 
 from .models import *
 from .invalid_usage import InvalidUsage, Unauthorized
@@ -204,17 +206,12 @@ def add_token(server):
                 raise Unauthorized(
                     f"You do not have access to {claim} at {agg_unit} on {server.name}"
                 )
-    token_string = encode_access_token(
-        identity=current_user.username,
+    token_string = generate_token(
+        username=current_user.username,
         secret=server.secret_key,
-        algorithm="HS256",
-        expires_delta=lifetime,
-        fresh=True,
-        user_claims=json["claims"],
-        csrf=False,
-        identity_claim_key="identity",
-        user_claims_key="user_claims",
-        json_encoder=JSONEncoder,
+        audience=server.name,
+        lifetime=lifetime,
+        claims=json["claims"],
     )
     token = Token(
         name=json["name"],
@@ -226,3 +223,55 @@ def add_token(server):
     db.session.add(token)
     db.session.commit()
     return jsonify({"token": token_string, "id": token.id})
+
+
+def generate_token(
+    *,
+    audience: Optional[str] = None,
+    username: str,
+    secret: str,
+    lifetime: datetime.timedelta,
+    claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
+) -> str:
+    """
+
+    Parameters
+    ----------
+    username : str
+        Username for the token
+    secret : str
+        Shared secret to sign the token with
+    lifetime : datetime.timedelta
+        Lifetime from now of the token
+    claims : dict
+        Dictionary of claims the token will grant
+    audience : str, optional
+        Optionally provide a string to identify the audience of the token
+
+    Examples
+    --------
+    >>> generate_token("TEST_USER", "SECRET", datetime.timedelta(5), {"daily_location":{"permissions": {"run":True},
+            "spatial_aggregation": ["admin3"}})
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTczMDMyOTMsIm5iZiI6MTU1NzMwMzI5MywianRpIjoiOTRjZWMxODQtZTc4Mi00ZDk3LTkxNDYtNTczZjlkMTBlNDI2IiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzczNTI5M30.CG7xlsyaKywK4lHpnlpI-DlNk4wdMNufrguz4Y6qDi4'
+
+    Returns
+    -------
+    str
+        Encoded token
+
+    """
+
+    now = datetime.datetime.utcnow()
+    token_data = dict(
+        iat=now,
+        nbf=now,
+        jti=str(uuid.uuid4()),
+        user_claims=claims,
+        identity=username,
+        exp=now + lifetime,
+    )
+    if audience is not None:
+        token_data["aud"] = audience
+    return jwt.encode(
+        payload=token_data, key=secret, algorithm="HS256", json_encoder=JSONEncoder
+    ).decode("utf-8")
