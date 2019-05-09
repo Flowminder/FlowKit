@@ -7,7 +7,7 @@ import os
 import uuid
 from binascii import Error
 from json import JSONEncoder
-from typing import Dict, List, Union, Callable, Tuple
+from typing import Dict, List, Union, Callable, Tuple, Optional
 from collections import ChainMap
 from datetime import timedelta
 import click
@@ -102,6 +102,8 @@ def generate_keypair() -> Tuple[bytes, bytes]:
 
 
 def generate_token(
+    *,
+    audience: Optional[str] = None,
     username: str,
     secret: str,
     lifetime: datetime.timedelta,
@@ -119,6 +121,8 @@ def generate_token(
         Lifetime from now of the token
     claims : dict
         Dictionary of claims the token will grant
+    audience : str, optional
+        Optionally provide a string to identify the audience of the token
 
     Examples
     --------
@@ -142,6 +146,8 @@ def generate_token(
         identity=username,
         exp=now + lifetime,
     )
+    if audience is not None:
+        token_data["aud"] = audience
     return jwt.encode(
         payload=token_data, key=secret, algorithm="HS256", json_encoder=JSONEncoder
     ).decode("utf-8")
