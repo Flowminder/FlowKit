@@ -29,12 +29,12 @@ logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 def connect(
     log_level: Union[str, None] = None,
-    db_port: Union[int, None] = None,
-    db_user: Union[str, None] = None,
-    db_pass: Union[str, None] = None,
-    db_host: Union[str, None] = None,
-    db_connection_pool_size: Union[int, None] = None,
-    db_connection_pool_overflow: Union[int, None] = None,
+    flowdb_port: Union[int, None] = None,
+    flowdb_user: Union[str, None] = None,
+    flowdb_password: Union[str, None] = None,
+    flowdb_host: Union[str, None] = None,
+    flowdb_connection_pool_size: Union[int, None] = None,
+    flowdb_connection_pool_overflow: Union[int, None] = None,
     redis_host: Union[str, None] = None,
     redis_port: Union[int, None] = None,
     redis_password: Union[str, None] = None,
@@ -49,17 +49,17 @@ def connect(
     ----------
     log_level : str, default "error"
         Level to log at
-    db_port : int, default 9000
+    flowdb_port : int, default 9000
         Port number to connect to flowdb
-    db_user : str, default "flowmachine"
+    flowdb_user : str, default "flowmachine"
         Name of user to connect to flowdb as
-    db_pass : str, default "foo"
+    flowdb_password : str, default "foo"
         Password to connect to flowdb
-    db_host : str, default "localhost"
+    flowdb_host : str, default "localhost"
         Hostname of flowdb server
-    db_connection_pool_size : int, default 5
+    flowdb_connection_pool_size : int, default 5
         Default number of database connections to use
-    db_connection_pool_overflow : int, default 1
+    flowdb_connection_pool_overflow : int, default 1
         Number of extra database connections to allow
     redis_host : str, default "localhost"
         Hostname for redis server.
@@ -92,46 +92,46 @@ def connect(
         if log_level is None
         else log_level
     )
-    db_port = int(
+    flowdb_port = int(
         getsecret("FLOWDB_PORT", os.getenv("FLOWDB_PORT", 9000))
-        if db_port is None
-        else db_port
+        if flowdb_port is None
+        else flowdb_port
     )
-    db_user = (
+    flowdb_user = (
         getsecret(
             "FLOWMACHINE_FLOWDB_USER",
             os.getenv("FLOWMACHINE_FLOWDB_USER", "flowmachine"),
         )
-        if db_user is None
-        else db_user
+        if flowdb_user is None
+        else flowdb_user
     )
-    db_pass = (
+    flowdb_password = (
         getsecret(
             "FLOWMACHINE_FLOWDB_PASSWORD", os.getenv("FLOWMACHINE_FLOWDB_PASSWORD")
         )
-        if db_pass is None
-        else db_pass
+        if flowdb_password is None
+        else flowdb_password
     )
-    db_host = (
+    flowdb_host = (
         getsecret("FLOWDB_HOST", os.getenv("FLOWDB_HOST", "localhost"))
-        if db_host is None
-        else db_host
+        if flowdb_host is None
+        else flowdb_host
     )
-    db_connection_pool_size = (
+    flowdb_connection_pool_size = (
         int(
             getsecret(
                 "DB_CONNECTION_POOL_SIZE", os.getenv("DB_CONNECTION_POOL_SIZE", 5)
             )
         )
-        if db_connection_pool_size is None
-        else db_connection_pool_size
+        if flowdb_connection_pool_size is None
+        else flowdb_connection_pool_size
     )
-    db_connection_pool_overflow = int(
+    flowdb_connection_pool_overflow = int(
         getsecret(
             "DB_CONNECTION_POOL_OVERFLOW", os.getenv("DB_CONNECTION_POOL_OVERFLOW", 1)
         )
-        if db_connection_pool_overflow is None
-        else db_connection_pool_overflow
+        if flowdb_connection_pool_overflow is None
+        else flowdb_connection_pool_overflow
     )
 
     redis_host = (
@@ -150,7 +150,7 @@ def connect(
         else redis_password
     )
 
-    if db_pass is None:
+    if flowdb_password is None:
         raise ValueError(
             "You must provide a secret named FLOWMACHINE_FLOWDB_PASSWORD, set an environment variable named FLOWMACHINE_FLOWDB_PASSWORD, or provide a db_pass argument."
         )
@@ -167,25 +167,25 @@ def connect(
         set_log_level("flowmachine.debug", log_level)
         if conn is None:
             conn = Connection(
-                host=db_host,
-                port=db_port,
-                user=db_user,
-                password=db_pass,
+                host=flowdb_host,
+                port=flowdb_port,
+                user=flowdb_user,
+                password=flowdb_password,
                 database="flowdb",
-                pool_size=db_connection_pool_size,
-                overflow=db_connection_pool_overflow,
+                pool_size=flowdb_connection_pool_size,
+                overflow=flowdb_connection_pool_overflow,
             )
         Query.connection = conn
 
         Query.redis = redis.StrictRedis(
             host=redis_host, port=redis_port, password=redis_pw
         )
-        _start_threadpool(thread_pool_size=db_connection_pool_size)
+        _start_threadpool(thread_pool_size=flowdb_connection_pool_size)
 
         print(f"FlowMachine version: {flowmachine.__version__}")
 
         print(
-            f"Flowdb running on: {db_host}:{db_port}/flowdb (connecting user: {db_user})"
+            f"Flowdb running on: {flowdb_host}:{flowdb_port}/flowdb (connecting user: {flowdb_user})"
         )
     return Query.connection
 
