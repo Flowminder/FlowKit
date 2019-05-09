@@ -588,6 +588,25 @@ jobs:
           path: /home/circleci/project/
       - run: ./quick_start.sh
       - run: ./quick_start.sh stop
+      - run:
+          name: Check all containers are down
+          command: |
+            RUNNING=`docker ps -q`
+            if [[ "$RUNNING" != "" ]]
+            then
+              echo "Error: all containers should be down, but some are still running."
+              exit 1
+            fi
+
+  test_quickstart_examples_with_smaller_data:
+    machine:
+      image: circleci/classic:201808-01
+    working_directory: /home/circleci/project
+    environment:
+      BRANCH: $CIRCLE_BRANCH
+    steps:
+      - checkout:
+          path: /home/circleci/project/
       - run: ./quick_start.sh examples smaller_data
       - run: ./quick_start.sh stop
       #- run: ./quick_start.sh larger_data # Synth data spinup with this data volume is very slow so not testing it right now on CI
@@ -816,6 +835,15 @@ workflows:
             - build_flowetl
             - build_examples
           <<: *run_always_org_context
+      - test_quickstart_examples_with_smaller_data:
+          requires:
+            - build_flowdb
+            - build_flowapi
+            - build_flowmachine
+            - build_flowauth
+            - build_flowetl
+            - build_examples
+          <<: *run_always_org_context
       - integration_tests:
           requires:
             - install_flowmachine_deps
@@ -826,6 +854,7 @@ workflows:
           requires:
             &retag_requirements
             - test_quickstart
+            - test_quickstart_examples_with_smaller_data
             - integration_tests
             - build_docs
             - run_flowkit_api_tests
