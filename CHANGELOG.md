@@ -14,6 +14,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The docs now contain information about required versions of installation prerequisites [#703](https://github.com/Flowminder/FlowKit/issues/703)
 
 ### Changed
+- Parameter names in `flowmachine.connect()` have been renamed as follows to be consistent with the associated environment variables [#728](https://github.com/Flowminder/FlowKit/issues/728):
+    - `db_port -> flowdb_port`
+    - `db_user -> flowdb_user`
+    - `db_pass -> flowdb_password`
+    - `db_host -> flowdb_host`
+    - `db_connection_pool_size -> flowdb_connection_pool_size`
+    - `db_connection_pool_overflow -> flowdb_connection_pool_overflow`
 
 ### Fixed
 - FlowClient docs rendered to website now show the options available for arguments that require a string from some set of possibilities [#695](https://github.com/Flowminder/FlowKit/issues/695).
