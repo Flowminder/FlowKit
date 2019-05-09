@@ -34,6 +34,6 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
     reply = send_zmq_message_and_receive_reply(
         FM_EXAMPLE_MESSAGE, host=zmq_host, port=zmq_port
     )
-    assert "eba30a3dc94ea6e53502493d4ea3b927" == reply["payload"]["query_id"]
+    assert "dc1dabaa431b4b9a0f7a72e9d98630b7" == reply["payload"]["query_id"]
     # assert reply["status"] in ("executing", "queued", "completed")
     assert reply["status"] in ("success")
