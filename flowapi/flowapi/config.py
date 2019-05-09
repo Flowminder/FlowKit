@@ -43,7 +43,7 @@ def get_config():
     )
     flowdb_host = os.environ["FLOWDB_HOST"]
     flowdb_port = os.environ["FLOWDB_PORT"]
-    server_id = os.environ["FLOWAPI_IDENTIFIER"]
+    server_id = getsecret("FLOWAPI_IDENTIFIER", os.environ["FLOWAPI_IDENTIFIER"])
 
     return dict(
         JWT_SECRET_KEY=jwt_secret_key,

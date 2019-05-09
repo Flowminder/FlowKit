@@ -222,6 +222,10 @@ The stack expects you to provide eight secrets:
  - JWT_SECRET_KEY
  
     The secret key used to sign API access tokens
+ 
+ - FLOWAPI_IDENTIFIER
+ 
+    The unique name of the FlowAPI server. Used to verify that a decoded token is intended for _this_ server.
     
 
 To make use of secrets you will need to use docker swarm. For testing purposes, you can set up a single node swarm by running `docker swarm init`.
@@ -240,7 +244,7 @@ docker secret create cert-flowkit.pem integration_tests/cert.pem
 
 (Note that unlike the other examples, we are supplying a _file_ rather than piping to stdin.)
 
-Once you have added all five required secrets, you can use `docker stack` to spin up FlowKit, much as you would `docker-compose`:
+Once you have added all the required secrets, you can use `docker stack` to spin up FlowKit, much as you would `docker-compose`:
 
 ```bash
 cd secrets_quickstart
@@ -257,15 +261,43 @@ conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certifi
 #### Secrets Quickstart
 
 ```bash
-cd secrets_quickstart
 docker login
 docker swarm init
+# Remove existing stack deployment
+echo "Removing existing secrets_test_stack"
+docker stack rm secrets_test
+# Wait for 'docker stack rm' to finish (see https://github.com/moby/moby/issues/30942)
+limit=15
+until [ -z "$(docker service ls --filter label=com.docker.stack.namespace=secrets_test -q)" ] || [ "$limit" -lt 0 ]; do
+  sleep 2
+  limit="$((limit-1))"
+done
+
+limit=15
+until [ -z "$(docker network ls --filter label=com.docker.stack.namespace=secrets_test -q)" ] || [ "$limit" -lt 0 ]; do
+  sleep 2
+  limit="$((limit-1))"
+done
+
+# Remove existing secrets
+echo "Removing existing secrets"
+docker secret rm FLOWMACHINE_FLOWDB_PASSWORD
+docker secret rm FLOWMACHINE_FLOWDB_USER
+docker secret rm FLOWAPI_FLOWDB_PASSWORD
+docker secret rm FLOWAPI_FLOWDB_USER
+docker secret rm POSTGRES_PASSWORD
+docker secret rm cert-flowkit.pem
+docker secret rm JWT_SECRET_KEY
+docker secret rm REDIS_PASSWORD
+docker secret rm FLOWAPI_IDENTIFIER
+echo "Adding secrets"
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
 echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAPI_FLOWDB_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create POSTGRES_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create REDIS_PASSWORD -
+echo "flowapi_server" | docker secret create FLOWAPI_IDENTIFIER -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
     -extensions SAN \
     -config <( cat $( [[ "Darwin" -eq "$(uname -s)" ]]  && echo /System/Library/OpenSSL/openssl.cnf || echo /etc/ssl/openssl.cnf  ) \
@@ -274,6 +306,7 @@ openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
 cat cert.key cert.pem > cert-flowkit.pem
 docker secret create cert-flowkit.pem cert-flowkit.pem
 echo "secret" | docker secret create JWT_SECRET_KEY -
+echo "Deploying stack"
 docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
 ```
 
