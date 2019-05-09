@@ -22,8 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - `db_connection_pool_size -> flowdb_connection_pool_size`
     - `db_connection_pool_overflow -> flowdb_connection_pool_overflow`
 - FlowAPI and FlowAuth now expect an audience key to be present in tokens [#727](https://github.com/Flowminder/FlowKit/issues/727)
-
 - Dependent queries are now only included once in the md5 calculation of a given query (in particular, it changes the query ids compared to previous FlowKit versions).
+- The class `SubscriberSubsetterBase` in FlowMachine no longer inherits from `Query` [#740](https://github.com/Flowminder/FlowKit/issues/740) (this changes the query ids compared to previous FlowKit versions).
 
 ### Fixed
 - FlowClient docs rendered to website now show the options available for arguments that require a string from some set of possibilities [#695](https://github.com/Flowminder/FlowKit/issues/695).
