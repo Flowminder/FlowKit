@@ -212,9 +212,10 @@ jobs:
          name: Test that not providing a superuser password causes the container to exit
          command: |
            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo flowminder/flowdb:$SAFE_TAG; then
+               echo "Error: could run flowdb without superuser password."
                exit 1
            else
-               echo "Correctly failed with no superuser password"
+               echo "Correctly failed with no superuser password."
            fi
       - run:
           name: Create data dir
@@ -230,6 +231,7 @@ jobs:
           name: Test that a data generator must be set for synth data
           command: |
             if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD flowminder/flowdb-synthetic-data:$SAFE_TAG; then
+                echo "Error: could run flowdb-synthetic-data with no data generator selected."
                 exit 1
             else
                 echo "Correctly failed with no data generator selected"
@@ -531,9 +533,10 @@ jobs:
             gotuser=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -u'`
             gotgroup=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -g'`
             if [ $gotuser -ne $expecteduser -a  $gotgroup -ne $expectedgroup ]; then
+              echo "Error: not running as correct user and group."
               exit 1
             else
-              echo "running as correct user and group"
+              echo "Running as correct user and group."
             fi
       - run: 
           name: test that airflow picks up dag
@@ -545,9 +548,10 @@ jobs:
             expecteddag=sampledag
             gotdag=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
             if [ $gotdag != $expecteddag ]; then
+              echo "Error: expected DAG not present."
               exit 1
             else
-              echo "expected DAG present"
+              echo "Expected DAG present."
             fi
             docker stop flowetl
 
@@ -594,6 +598,7 @@ jobs:
             RUNNING=`docker ps -q`
             if [[ "$RUNNING" != "" ]]
             then
+              echo "Error: all containers should be down, but some are still running."
               exit 1
             fi
 
