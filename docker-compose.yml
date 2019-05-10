@@ -151,6 +151,7 @@ services:
       - FLOWDB_PORT=5432
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:?Must set JWT_SECRET_KEY env var}
       - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:?Must set FLOWAPI_LOG_LEVEL env var}
+      - FLOWAPI_IDENTIFIER=${FLOWAPI_IDENTIFIER:?Must set FLOWAPI_IDENTIFIER env var}
     tty: true
     stdin_open: true
     restart: always
