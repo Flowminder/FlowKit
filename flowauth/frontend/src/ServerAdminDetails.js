@@ -15,6 +15,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import TextField from "@material-ui/core/TextField";
 import SubmitButtons from "./SubmitButtons";
 import ServerAggregationUnits from "./ServerAggregationUnits";
+import ErrorDialog from "./ErrorDialog";
 import { generate } from "generate-password";
 import {
   getAllAggregationUnits,
@@ -34,7 +35,12 @@ class ServerAdminDetails extends React.Component {
     max_life: 1440,
     secret_key: "",
     latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-    edit_mode: false
+    edit_mode: false,
+    name_helper_text: "",
+    key_helper_text: "",
+    maxlife_helper_text: "",
+    pageError: false,
+    errors: { message: "" }
   };
 
   handleSubmit = () => {
@@ -44,36 +50,45 @@ class ServerAdminDetails extends React.Component {
       latest_expiry,
       max_life,
       rights,
-      secret_key
+      secret_key,
+      name_helper_text,
+      key_helper_text,
+      maxlife_helper_text
     } = this.state;
     const { item_id, onClick } = this.props;
-    var task;
-    if (edit_mode) {
-      task = editServer(
-        item_id,
-        name,
-        secret_key,
-        new Date(latest_expiry).toISOString(),
-        max_life
-      );
-    } else {
-      task = createServer(
-        name,
-        secret_key,
-        new Date(latest_expiry).toISOString(),
-        max_life
-      );
+    if (name && name_helper_text === "" && secret_key && key_helper_text === "" && max_life && maxlife_helper_text === "") {
+      var task;
+      if (edit_mode) {
+        task = editServer(
+          item_id,
+          name,
+          secret_key,
+          new Date(latest_expiry).toISOString(),
+          max_life
+        );
+      } else {
+        task = createServer(
+          name,
+          secret_key,
+          new Date(latest_expiry).toISOString(),
+          max_life
+        );
+      }
+      task
+        .then(json => {
+          return editServerCapabilities(json.id, rights);
+        })
+        .then(json => {
+          onClick();
+        })
+        .catch(err => {
+          if (err.code === 400) {
+            this.setState({ pageError: true, errors: err });
+          } else {
+            this.setState({ hasError: true, error: err })
+          }
+        });
     }
-    task
-      .then(json => {
-        return editServerCapabilities(json.id, rights);
-      })
-      .then(json => {
-        onClick();
-      })
-      .catch(err => {
-        this.setState({ hasError: true, error: err });
-      });
   };
 
   fieldHasError = field => {
@@ -86,7 +101,8 @@ class ServerAdminDetails extends React.Component {
 
   generatePassword = event => {
     this.setState({
-      secret_key: generate({ length: 16, numbers: true, symbols: true })
+      secret_key: generate({ length: 16, numbers: true, symbols: true }),
+      key_helper_text: ""
     });
   };
 
@@ -114,9 +130,61 @@ class ServerAdminDetails extends React.Component {
 
   handleTextChange = name => event => {
     this.setState({
-      [name]: event.target.value
+      pageError: false,
+      errors: ""
     });
-  };
+    var state = {
+      [name]: event.target.value
+    };
+    if (name === "name") {
+      var letters = /^[A-Za-z0-9_]+$/;
+      let servername = event.target.value;
+      if (servername.match(letters)) {
+        state = Object.assign(state, {
+          name_helper_text: ""
+        });
+      } else if (servername.length == 0) {
+        state = Object.assign(state, {
+          name_helper_text: "Server name can not be blank."
+        });
+      } else {
+        state = Object.assign(state, {
+          name_helper_text: "Server name may only contain letters, numbers and underscores."
+        });
+      }
+    }
+    if (name === "secret_key") {
+      var spaces = /^[a-zA-Z0-9.,#-\S]+$/;
+      let secret_key = event.target.value;
+      if (secret_key.match(spaces)) {
+        state = Object.assign(state, {
+          key_helper_text: ""
+        });
+      } else if (secret_key.length == 0) {
+        state = Object.assign(state, {
+          key_helper_text: "Secret key can not be blank."
+        });
+      }
+      else {
+        state = Object.assign(state, {
+          key_helper_text: "Secret key can not contain space."
+        });
+      }
+    }
+    if (name === "max_life") {
+      let maxlife = event.target.value;
+      if (maxlife.length == 0) {
+        state = Object.assign(state, {
+          maxlife_helper_text: "Maximum lifetime minutes can not be blank."
+        });
+      } else {
+        state = Object.assign(state, {
+          maxlife_helper_text: ""
+        });
+      }
+    }
+    this.setState(state);
+  }
 
   componentDidMount() {
     const { item_id } = this.props;
@@ -176,22 +244,28 @@ class ServerAdminDetails extends React.Component {
         <Grid item xs={6}>
           <TextField
             error={this.fieldHasError("name")}
-            id="standard-name"
+            id="name"
             label="Name"
             className={classes.textField}
             value={name}
             onChange={this.handleTextChange("name")}
             margin="normal"
+            required={true}
+            error={this.state.name_helper_text}
+            helperText={this.state.name_helper_text}
           />
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="standard-name"
+            id="secret-key"
             className={classes.textField}
             label="Secret Key"
             value={secret_key}
             onChange={this.handleTextChange("secret_key")}
             margin="normal"
+            required={true}
+            error={this.state.key_helper_text}
+            helperText={this.state.key_helper_text}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -228,13 +302,16 @@ class ServerAdminDetails extends React.Component {
         </Grid>
         <Grid item xs={6}>
           <TextField
-            id="standard-name"
+            id="max-life"
             label="Maximum lifetime (minutes)"
             className={classes.textField}
             type="number"
             value={max_life}
             onChange={this.handleTextChange("max_life")}
             margin="normal"
+            required={true}
+            error={this.state.maxlife_helper_text}
+            helperText={this.state.maxlife_helper_text}
           />
         </Grid>
         <Grid item xs={12}>
@@ -271,6 +348,10 @@ class ServerAdminDetails extends React.Component {
             }}
           />
         ))}
+        <ErrorDialog
+          open={this.state.pageError}
+          message={this.state.errors.message}
+        />
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>
     );
