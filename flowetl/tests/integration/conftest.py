@@ -34,7 +34,6 @@ def flowetl_tag():
     return os.environ.get("FLOWETL_TAG", "latest")
 
 
-# pylint: disable=redefined-outer-name
 @pytest.fixture(scope="module")
 def flowetl_container(docker_client, flowetl_tag):
     """
@@ -44,7 +43,7 @@ def flowetl_container(docker_client, flowetl_tag):
     container = docker_client.containers.run(
         f"flowminder/flowetl:{flowetl_tag}", detach=True
     )
-	    # brief sleep to wait for backing DB to be ready
+    # brief sleep to wait for backing DB to be ready
     sleep(2)
     yield container
     container.kill()
@@ -52,7 +51,7 @@ def flowetl_container(docker_client, flowetl_tag):
 
 
 @pytest.fixture(scope="module")
-def airflow_local_setup_mdl_scope():
+def airflow_local_setup():
     """
     Init the airflow sqlitedb and start the scheduler with minimal env.
     Clean up aftwards by removing the AIRFLOW_HOME and stopping the

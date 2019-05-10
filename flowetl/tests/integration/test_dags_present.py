@@ -12,7 +12,7 @@ import pytest
 from airflow.models import DagBag
 
 # pylint: disable=unused-argument
-def test_dags_present(airflow_local_setup_mdl_scope):
+def test_dags_present(airflow_local_setup):
     """
     Test that the correct dags are parsed
     """
@@ -41,7 +41,7 @@ def test_dags_present(airflow_local_setup_mdl_scope):
         ("etl_sensor", ["sense"]),
     ],
 )
-def test_correct_tasks(airflow_local_setup_mdl_scope, dag_name, expected_task_list):
+def test_correct_tasks(airflow_local_setup, dag_name, expected_task_list):
     """
     Test that each dag has the tasks expected
     """
