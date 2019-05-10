@@ -127,8 +127,5 @@ FLOWETL_POSTGRES_USER=flowetl
 FLOWETL_POSTGRES_HOST=flowetl_db
 FLOWETL_POSTGRES_DB=flowetl
 
-# Need this to install airflow locally
-SLUGIFY_USES_TEXT_UNIDECODE=yes
-
 # Worked examples
 WORKED_EXAMPLES_PORT=8888
