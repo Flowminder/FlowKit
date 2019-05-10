@@ -1,40 +1,112 @@
 import os
-from time import sleep
 
-from subprocess import DEVNULL, STDOUT, Popen
+import pytest
 
 from airflow.models import DagRun
 
 
-def test_foo(airflow_local_setup_fnc_scope):
+def test_archive_branch(airflow_local_pipeline_run, wait_for_completion):
+    """
+    Tests that correct tasks run when ETL is succesful
+    """
+    end_state = "success"
 
-    airflow_run_cmd = airflow_local_setup_fnc_scope["airflow_run_cmd"]
+    # passing empty TASK_FAIL to signal no task should fail
+    airflow_local_pipeline_run({"TASK_FAIL": ""})
+    final_etl_state = wait_for_completion(end_state)
+    assert final_etl_state == end_state
 
-    p = airflow_run_cmd("airflow unpause etl_sensor", shell=False)
-    p.wait()
-    p = airflow_run_cmd("airflow unpause etl", shell=False)
-    p.wait()
-    p = airflow_run_cmd("airflow trigger_dag etl_sensor", shell=False)
-    p.wait()
+    etl_dag = DagRun.find("etl", state=end_state)[0]
 
-    while not DagRun.find("etl", state="success"):
-        sleep(1)
+    task_states = {task.task_id: task.state for task in etl_dag.get_task_instances()}
+    assert task_states == {
+        "init": "success",
+        "extract": "success",
+        "transform": "success",
+        "success_branch": "success",
+        "load": "success",
+        "archive": "success",
+        "quarantine": "skipped",
+        "clean": "success",
+        "fail": "skipped",
+    }
 
-    assert True
 
+@pytest.mark.parametrize(
+    "task_to_fail,expected_task_states",
+    [
+        (
+            "init",
+            {
+                "init": "failed",
+                "extract": "upstream_failed",
+                "transform": "upstream_failed",
+                "success_branch": "success",
+                "load": "upstream_failed",
+                "archive": "skipped",
+                "quarantine": "success",
+                "clean": "success",
+                "fail": "failed",
+            },
+        ),
+        (
+            "extract",
+            {
+                "init": "success",
+                "extract": "failed",
+                "transform": "upstream_failed",
+                "success_branch": "success",
+                "load": "upstream_failed",
+                "archive": "skipped",
+                "quarantine": "success",
+                "clean": "success",
+                "fail": "failed",
+            },
+        ),
+        (
+            "transform",
+            {
+                "init": "success",
+                "extract": "success",
+                "transform": "failed",
+                "success_branch": "success",
+                "load": "upstream_failed",
+                "archive": "skipped",
+                "quarantine": "success",
+                "clean": "success",
+                "fail": "failed",
+            },
+        ),
+        (
+            "load",
+            {
+                "init": "success",
+                "extract": "success",
+                "transform": "success",
+                "success_branch": "success",
+                "load": "failed",
+                "archive": "skipped",
+                "quarantine": "success",
+                "clean": "success",
+                "fail": "failed",
+            },
+        ),
+    ],
+)
+def test_quarantine_branch(
+    airflow_local_pipeline_run, wait_for_completion, task_to_fail, expected_task_states
+):
+    """
+    Tests that correct tasks run, with correct end state, when ETL is not succesful. We fail each of the 
+    tasks init, extract, transform and load.
+    """
+    end_state = "failed"
+    airflow_local_pipeline_run({"TASK_FAIL": task_to_fail})
+    final_etl_state = wait_for_completion(end_state)
+    assert final_etl_state == end_state
 
-def test_bar(airflow_local_setup_fnc_scope):
+    etl_dag = DagRun.find("etl", state=end_state)[0]
 
-    airflow_run_cmd = airflow_local_setup_fnc_scope["airflow_run_cmd"]
+    task_states = {task.task_id: task.state for task in etl_dag.get_task_instances()}
+    assert task_states == expected_task_states
 
-    p = airflow_run_cmd("airflow unpause etl_sensor", shell=False)
-    p.wait()
-    p = airflow_run_cmd("airflow unpause etl", shell=False)
-    p.wait()
-    p = airflow_run_cmd("airflow trigger_dag etl_sensor", shell=False)
-    p.wait()
-
-    while not DagRun.find("etl", state="success"):
-        sleep(1)
-
-    assert True
