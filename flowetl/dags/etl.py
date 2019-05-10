@@ -89,6 +89,7 @@ with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag
         task_id="fail", python_callable=dummy_failing_callable, provide_context=True
     )
 
+    # Define upstream/downstream relationships between airflow tasks
     init >> extract >> transform >> load >> success_branch  # pylint: disable=pointless-statement
     success_branch >> archive >> clean  # pylint: disable=pointless-statement
     quarantine >> clean  # pylint: disable=pointless-statement
