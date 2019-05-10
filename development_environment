@@ -29,6 +29,7 @@ FLOWAPI_LOG_LEVEL=debug
 # Flowmachine ZMQ host
 FLOWMACHINE_HOST=localhost
 FLOWAPI_PORT=9090
+FLOWAPI_IDENTIFIER=TEST_SERVER
 
 
 # Hostname to connect to flowdb
@@ -118,7 +119,6 @@ OUTPUT_ROOT_DIR=/docker-entrypoint-initdb.d
 FLOWKIT_INTEGRATION_TESTS_DISABLE_AUTOSTART_SERVERS=FALSE
 
 # FlowETL
-DAGS_FOLDER=/usr/local/airflow/src
 SQL_ALCHEMY_CONN=postgres://flowetl:flowetl@flowetl_db:5432/flowetl
 FLOWETL_FERNET_KEY=ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=
 FLOWETL_PORT=8080

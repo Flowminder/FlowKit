@@ -6,13 +6,16 @@
 Tests for flowmachine small helper functions
 """
 import datetime
-import unittest.mock
-from pathlib import Path
-
 import pytest
 import pglast
+import re
+import textwrap
+import unittest.mock
+from io import StringIO
+from pathlib import Path
 
 from flowmachine.core.errors import BadLevelError
+from flowmachine.features import daily_location, EventTableSubset
 from flowmachine.utils import (
     parse_datestring,
     proj4string,
@@ -20,10 +23,12 @@ from flowmachine.utils import (
     getsecret,
     pretty_sql,
     _makesafe,
+    print_dependency_tree,
+    calculate_dependency_graph,
+    convert_dict_keys_to_strings,
     sort_recursively,
     time_period_add,
 )
-from flowmachine.features import daily_location, EventTableSubset
 
 
 @pytest.mark.parametrize("crs", (None, 4326, "+proj=longlat +datum=WGS84 +no_defs"))
@@ -81,19 +86,6 @@ def test_parse(datestring):
     Test that several variations on a datestring give the same date
     """
     assert parse_datestring(datestring).date() == datetime.date(2016, 1, 1)
-
-
-def test_dependency_graph():
-    """
-    Test that dependency graph util runs and has some correct entries.
-    """
-    g = daily_location("2016-01-01").dependency_graph(analyse=True)
-    sd = EventTableSubset(
-        start="2016-01-01",
-        stop="2016-01-02",
-        columns=["msisdn", "datetime", "location_id"],
-    )
-    assert "x{}".format(sd.md5) in g.nodes()
 
 
 def test_convert_number_to_str():
@@ -186,6 +178,16 @@ def test_get_secrets_default(monkeypatch):
     assert the_secret == secret
 
 
+def test_convert_dict_keys_to_strings():
+    """
+    Test that any dict keys that are numbers are converted to strings.
+    """
+    d = {0: {0: "foo", 1: "bar"}, 1: {"A": "baz", 2: "quux"}}
+    d_out_expected = {"0": {"0": "foo", "1": "bar"}, "1": {"A": "baz", "2": "quux"}}
+    d_out = convert_dict_keys_to_strings(d)
+    assert d_out_expected == d_out
+
+
 def test_sort_recursively():
     """
     Test that `sort_recursively` recursively sorts all components of the input dictionary.
@@ -202,3 +204,50 @@ def test_sort_recursively():
     }
 
     assert d_sorted_expected == sort_recursively(d)
+
+
+def test_print_dependency_tree():
+    """
+    Test that `print_dependency_tree` displays the expected dependency tree for a daily location query.
+    """
+    q = daily_location(date="2016-01-02", level="admin2", method="most-common")
+
+    expected_output = textwrap.dedent(
+        """\
+        <Query of type: MostFrequentLocation, query_id: 'xxxxx'>
+          - <Query of type: JoinToLocation, query_id: 'xxxxx'>
+             - <Query of type: _SubscriberCells, query_id: 'xxxxx'>
+                - <Query of type: EventsTablesUnion, query_id: 'xxxxx'>
+                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
+                      - <Table: 'events.calls', query_id: 'xxxxx'>
+                         - <Table: 'events.calls', query_id: 'xxxxx'>
+                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'xxxxx'>
+                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
+                      - <Table: 'events.sms', query_id: 'xxxxx'>
+                         - <Table: 'events.sms', query_id: 'xxxxx'>
+                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'xxxxx'>
+             - <Query of type: CellToAdmin, query_id: 'xxxxx'>
+                - <Query of type: CellToPolygon, query_id: 'xxxxx'>
+        """
+    )
+
+    s = StringIO()
+    print_dependency_tree(q, stream=s)
+    output = s.getvalue()
+    output_with_query_ids_replaced = re.sub(r"\b[0-9a-f]+\b", "xxxxx", output)
+
+    assert expected_output == output_with_query_ids_replaced
+
+
+def test_dependency_graph():
+    """
+    Test that dependency graph util runs and has some correct entries.
+    """
+    query = daily_location("2016-01-01")
+    G = calculate_dependency_graph(query, analyse=True)
+    sd = EventTableSubset(
+        start="2016-01-01",
+        stop="2016-01-02",
+        columns=["msisdn", "datetime", "location_id"],
+    )
+    assert "x{}".format(sd.md5) in G.nodes()

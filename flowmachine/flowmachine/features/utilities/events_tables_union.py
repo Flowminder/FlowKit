@@ -10,7 +10,7 @@ from ...core import Query
 from ...core.errors import MissingDateError
 from .event_table_subset import EventTableSubset
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class EventsTablesUnion(Query):

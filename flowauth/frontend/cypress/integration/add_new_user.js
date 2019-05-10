@@ -61,6 +61,7 @@ describe("Login screen", function () {
     cy.get("#password").type("C>K,7|~44]44:ibK");
     cy.contains("Save").click();
     cy.contains("#error-dialog").should("not.exist");
+    cy.contains("USER_TEST02").should("be.visible");
   });
   it("Add blank Password", function () {
     cy.get("#new").click();

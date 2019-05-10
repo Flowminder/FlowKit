@@ -9,6 +9,8 @@ import sys
 
 __all__ = ["init_logging", "set_log_level"]
 
+FLOWKIT_LOGGERS_HAVE_BEEN_INITIALISED = False
+
 
 def init_logging():
     """
@@ -16,6 +18,12 @@ def init_logging():
     and configure structlog so that it passes any messages on to the standard
     library loggers.
     """
+    global FLOWKIT_LOGGERS_HAVE_BEEN_INITIALISED
+    if FLOWKIT_LOGGERS_HAVE_BEEN_INITIALISED:
+        # Only initialise loggers once, to avoid adding multiple
+        # handlers and accidentally re-setting the log level.
+        return
+
     root_logger = logging.getLogger("flowmachine")
     root_logger.setLevel(logging.DEBUG)
 
@@ -47,6 +55,8 @@ def init_logging():
         wrapper_class=structlog.stdlib.BoundLogger,
         cache_logger_on_first_use=True,
     )
+
+    FLOWKIT_LOGGERS_HAVE_BEEN_INITIALISED = True
 
 
 def set_log_level(logger_name: str, log_level: str) -> None:

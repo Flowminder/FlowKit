@@ -20,6 +20,8 @@ secrets:
     external: true
   REDIS_PASSWORD: # Redis password
     external: true
+  FLOWAPI_IDENTIFIER: # Secret used in combination with secret key for decoding JWTs, should be unique per FlowAPI server
+    external: true
 networks:
   db:
   redis:
@@ -78,6 +80,7 @@ services:
           - JWT_SECRET_KEY
           - FLOWAPI_FLOWDB_USER
           - FLOWAPI_FLOWDB_PASSWORD
+          - FLOWAPI_IDENTIFIER
         networks:
           - zero
           - db
