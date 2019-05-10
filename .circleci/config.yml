@@ -577,7 +577,12 @@ jobs:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash)
 
-  test_quickstart:
+  run_quickstart_tests:
+    parameters:
+      start_arguments:
+        type: enum
+        enum: ["", "examples smaller_data"]
+        default: ""
     machine:
       image: circleci/classic:201808-01
     working_directory: /home/circleci/project
@@ -586,12 +591,8 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - run: ./quick_start.sh
+      - run: ./quick_start.sh <<parameters.start_arguments>>
       - run: ./quick_start.sh stop
-      - run: ./quick_start.sh examples smaller_data
-      - run: ./quick_start.sh stop
-      #- run: ./quick_start.sh larger_data # Synth data spinup with this data volume is very slow so not testing it right now on CI
-      #- run: ./quick_start.sh stop
       - run:
           name: Check all containers are down
           command: |
@@ -807,8 +808,10 @@ workflows:
           requires:
             - install_flowmachine_deps
           <<: *run_always_org_context
-      - test_quickstart:
+      - run_quickstart_tests:
+          name: test_quickstart
           requires:
+            &quickstart_requirements
             - build_flowdb
             - build_flowapi
             - build_flowmachine
@@ -816,6 +819,19 @@ workflows:
             - build_flowetl
             - build_examples
           <<: *run_always_org_context
+      - run_quickstart_tests:
+          name: test_quickstart_examples_with_smaller_data
+          start_arguments: "examples smaller_data"
+          requires:
+            *quickstart_requirements
+          <<: *run_always_org_context
+#      # Synth data spinup with the 'large' data volume is very slow so not testing it right now on CI
+#      - run_quickstart_tests:
+#          name: test_quickstart_with_larger_data
+#          start_arguments: "larger_data"
+#          requires:
+#            *quickstart_requirements
+#          <<: *run_always_org_context
       - integration_tests:
           requires:
             - install_flowmachine_deps
@@ -826,6 +842,8 @@ workflows:
           requires:
             &retag_requirements
             - test_quickstart
+            - test_quickstart_examples_with_smaller_data
+#            - test_quickstart_with_larger_data
             - integration_tests
             - build_docs
             - run_flowkit_api_tests
