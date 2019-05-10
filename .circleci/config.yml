@@ -533,7 +533,7 @@ jobs:
             export FLOWETL_TAG=$CIRCLE_SHA1
             cd flowetl && AIRFLOW_HOME=./test_airflow_home pipenv run pytest --junit-xml=test_results/pytest/results.xml ./tests
       - store_test_results:
-          path: test_results
+          path: flowetl/test_results
 
   integration_tests:
     executor:
