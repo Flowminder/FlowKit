@@ -12,8 +12,18 @@ import pandas as pd
 flowmachine.connect()
 
 daily_location_queries = [
-    flowmachine.features.daily_location(date=date, level="admin3", method="last")
-    for date in ["2016-01-01", "2016-01-02", "2016-01-07"]
+    flowmachine.features.daily_location(
+        date="2016-01-01", level="admin3", method="last"
+    ),
+    flowmachine.features.daily_location(
+        date="2016-01-02", level="admin3", method="last"
+    ),
+    flowmachine.features.daily_location(
+        date="2016-01-01", level="admin1", method="last"
+    ),
+    flowmachine.features.daily_location(
+        date="2016-01-07", level="admin1", method="last"
+    ),
 ]
 
 modal_location_queries = [
