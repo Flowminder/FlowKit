@@ -10,8 +10,8 @@ import os
 import shutil
 
 from time import sleep
-from pendulum import now, Interval
 from subprocess import DEVNULL, Popen
+from pendulum import now, Interval
 from airflow.models import DagRun
 
 import pytest
@@ -34,6 +34,7 @@ def flowetl_tag():
     return os.environ.get("FLOWETL_TAG", "latest")
 
 
+# pylint: disable=redefined-outer-name
 @pytest.fixture(scope="module")
 def flowetl_container(docker_client, flowetl_tag):
     """
@@ -87,7 +88,7 @@ def airflow_local_setup_mdl_scope():
 def airflow_local_pipeline_run():
     """
     Similar to airflow_local_setup_mdl_scope but for starting the scheduler
-    with some extra env determined in the test. Also triggers the etl_sensor 
+    with some extra env determined in the test. Also triggers the etl_sensor
     dag causing a subsequent trigger of the etl dag.
     """
     scheduler_to_clean_up = None
