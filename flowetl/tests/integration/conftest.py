@@ -39,12 +39,12 @@ def flowetl_tag():
 def flowetl_container(docker_client, flowetl_tag):
     """
     Fixture that starts a running flowetl container and
-    yeilds the container object.
+    yields the container object.
     """
     container = docker_client.containers.run(
         f"flowminder/flowetl:{flowetl_tag}", detach=True
     )
-    # breif sleep to wait for backing DB to be ready
+	    # brief sleep to wait for backing DB to be ready
     sleep(2)
     yield container
     container.kill()

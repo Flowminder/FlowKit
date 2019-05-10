@@ -19,7 +19,7 @@ default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 # pylint: disable=unused-argument
 def dummy_callable(*, dag_run: DagRun, task_instance: TaskInstance, **kwargs):
     """
-    Dummy python callable - possibly raising an exception
+    Dummy python callable - raises an exception if the environment variable TASK_FAIL is defined, otherwise succeeds silently.
     """
     logging.info(dag_run)
     if os.environ["TASK_FAIL"] == task_instance.task_id:
@@ -45,7 +45,7 @@ def success_branch_callable(*, dag_run: DagRun, **kwargs):
 
     logging.info(dag_run)
 
-    if sum(previous_task_failures) > 0:
+    if any(previous_task_failures):
         branch = "quarantine"
     else:
         branch = "archive"
@@ -89,6 +89,7 @@ with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag
         task_id="fail", python_callable=dummy_failing_callable, provide_context=True
     )
 
+    # Define upstream/downstream relationships between airflow tasks
     init >> extract >> transform >> load >> success_branch  # pylint: disable=pointless-statement
     success_branch >> archive >> clean  # pylint: disable=pointless-statement
     quarantine >> clean  # pylint: disable=pointless-statement
