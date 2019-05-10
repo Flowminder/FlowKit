@@ -2,10 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import jwt
+import uuid
 from flask import jsonify, Blueprint, request
 from flask.json import JSONEncoder
-from flask_jwt_extended.tokens import encode_access_token
 from flask_login import login_required, current_user
+from typing import Dict, List, Union, Optional
 
 from .models import *
 from .invalid_usage import InvalidUsage, Unauthorized
@@ -204,17 +206,12 @@ def add_token(server):
                 raise Unauthorized(
                     f"You do not have access to {claim} at {agg_unit} on {server.name}"
                 )
-    token_string = encode_access_token(
-        identity=current_user.username,
+    token_string = generate_token(
+        username=current_user.username,
         secret=server.secret_key,
-        algorithm="HS256",
-        expires_delta=lifetime,
-        fresh=True,
-        user_claims=json["claims"],
-        csrf=False,
-        identity_claim_key="identity",
-        user_claims_key="user_claims",
-        json_encoder=JSONEncoder,
+        flowapi_identifier=server.name,
+        lifetime=lifetime,
+        claims=json["claims"],
     )
     token = Token(
         name=json["name"],
@@ -226,3 +223,57 @@ def add_token(server):
     db.session.add(token)
     db.session.commit()
     return jsonify({"token": token_string, "id": token.id})
+
+
+# Duplicated in flowkit_jwt_generator (cannot re-use the implementation
+# there because the module is outside the docker build context for flowauth).
+def generate_token(
+    *,
+    flowapi_identifier: Optional[str] = None,
+    username: str,
+    secret: str,
+    lifetime: datetime.timedelta,
+    claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
+) -> str:
+    """
+
+    Parameters
+    ----------
+    username : str
+        Username for the token
+    secret : str
+        Shared secret to sign the token with
+    lifetime : datetime.timedelta
+        Lifetime from now of the token
+    claims : dict
+        Dictionary of claims the token will grant
+    flowapi_identifier : str, optional
+        Optionally provide a string to identify the audience of the token
+
+    Examples
+    --------
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",secret="SECRET",lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
+            "spatial_aggregation": ["admin3"]}})
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
+
+    Returns
+    -------
+    str
+        Encoded token
+
+    """
+
+    now = datetime.datetime.utcnow()
+    token_data = dict(
+        iat=now,
+        nbf=now,
+        jti=str(uuid.uuid4()),
+        user_claims=claims,
+        identity=username,
+        exp=now + lifetime,
+    )
+    if flowapi_identifier is not None:
+        token_data["aud"] = flowapi_identifier
+    return jwt.encode(
+        payload=token_data, key=secret, algorithm="HS256", json_encoder=JSONEncoder
+    ).decode("utf-8")

@@ -102,6 +102,7 @@ executors:
         FLOWMACHINE_PORT: 5555
         FLOWDB_HOST: localhost
         JWT_SECRET_KEY: secret
+        FLOWAPI_IDENTIFIER: TEST_SERVER
     docker:
       - image: circleci/python:3.7
       - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_SHA1
@@ -211,9 +212,10 @@ jobs:
          name: Test that not providing a superuser password causes the container to exit
          command: |
            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo flowminder/flowdb:$SAFE_TAG; then
+               echo "Error: could run flowdb without superuser password."
                exit 1
            else
-               echo "Correctly failed with no superuser password"
+               echo "Correctly failed with no superuser password."
            fi
       - run:
           name: Create data dir
@@ -229,6 +231,7 @@ jobs:
           name: Test that a data generator must be set for synth data
           command: |
             if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD flowminder/flowdb-synthetic-data:$SAFE_TAG; then
+                echo "Error: could run flowdb-synthetic-data with no data generator selected."
                 exit 1
             else
                 echo "Correctly failed with no data generator selected"
@@ -362,6 +365,7 @@ jobs:
       - image: circleci/python:3.7
     environment:
       JWT_SECRET_KEY: secret
+      FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowkit_jwt_generator
     steps:
       - checkout:
@@ -388,6 +392,8 @@ jobs:
   run_flowkit_api_tests:
     docker:
       - image: circleci/python:3.7
+        environment:
+          FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowapi
     steps:
       - checkout:
@@ -406,8 +412,10 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
+      &flowauth_env
       FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
+      FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
@@ -426,8 +434,7 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
-      FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
-      FLASK_APP: flowauth
+      *flowauth_env
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
@@ -578,6 +585,7 @@ jobs:
             RUNNING=`docker ps -q`
             if [[ "$RUNNING" != "" ]]
             then
+              echo "Error: all containers should be down, but some are still running."
               exit 1
             fi
 

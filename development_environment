@@ -29,6 +29,7 @@ FLOWAPI_LOG_LEVEL=debug
 # Flowmachine ZMQ host
 FLOWMACHINE_HOST=localhost
 FLOWAPI_PORT=9090
+FLOWAPI_IDENTIFIER=TEST_SERVER
 
 
 # Hostname to connect to flowdb
