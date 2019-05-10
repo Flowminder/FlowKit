@@ -808,15 +808,8 @@ workflows:
           requires:
             - install_flowmachine_deps
           <<: *run_always_org_context
-          run_quickstart_tests:
-            parameters:
-              start_arguments:
-                type: enum
-                enum: ["", "examples smaller_data"]
-
       - run_quickstart_tests:
           name: test_quickstart
-          start_arguments: ""
           requires:
             &quickstart_requirements
             - build_flowdb
@@ -850,6 +843,7 @@ workflows:
             &retag_requirements
             - test_quickstart
             - test_quickstart_examples_with_smaller_data
+#            - test_quickstart_with_larger_data
             - integration_tests
             - build_docs
             - run_flowkit_api_tests
