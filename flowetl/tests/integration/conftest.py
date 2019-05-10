@@ -55,7 +55,7 @@ def airflow_local_setup():
     """
     Init the airflow sqlitedb and start the scheduler with minimal env.
     Clean up aftwards by removing the AIRFLOW_HOME and stopping the
-    scheduler. It is neccesery to set the AIRFLOW_HOME env variable on
+    scheduler. It is necessary to set the AIRFLOW_HOME env variable on
     test invocation otherwise it gets created somewhere else...
     """
     extra_env = {
