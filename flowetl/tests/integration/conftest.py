@@ -5,7 +5,10 @@ import os
 import shutil
 
 from time import sleep
+from pendulum import now, Interval
 from subprocess import DEVNULL, Popen
+from airflow.models import DagRun
+
 import pytest
 import docker
 
@@ -27,7 +30,7 @@ def flowetl_tag():
 
 
 @pytest.fixture(scope="module")
-def flowetl_solo_longrunning(docker_client, flowetl_tag):
+def flowetl_container(docker_client, flowetl_tag):
     """
     Fixture that starts a running flowetl container and
     yeilds the container object.
@@ -42,65 +45,14 @@ def flowetl_solo_longrunning(docker_client, flowetl_tag):
     container.remove()
 
 
-@pytest.fixture(scope="function")
-def flowetl_run_command(docker_client, flowetl_tag):
-    """
-    Fixture that returns a function for running arbitrary
-    command on flowetl container.
-    """
-
-    def run_commmand(command, **kwargs):
-        out = docker_client.containers.run(
-            f"flowminder/flowetl:{flowetl_tag}", command, **kwargs
-        )
-        return out.decode("utf-8")
-
-    return run_commmand
-
-
-# @pytest.fixture(scope="module")
-# def airflow_dagbag():
-#     from airflow.models import DagBag
-
-#     yield DagBag("./dags", include_examples=False)
-#     shutil.rmtree(os.environ["AIRFLOW_HOME"])
-
-# TODO: repitition for different scopes!?
-
-
-@pytest.fixture(scope="function")
-def airflow_local_setup_fnc_scope():
-    # TODO: is this needed?
-    extra_env = {
-        "AIRFLOW__CORE__DAGS_FOLDER": "./dags",
-        "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
-    }
-    env = {**os.environ, **extra_env}
-    initdb = Popen(
-        ["airflow", "initdb"], shell=False, stdout=DEVNULL, stderr=DEVNULL, env=env
-    )
-    initdb.wait()
-
-    with open("scheduler.log", "w") as f:
-        scheduler = Popen(
-            ["airflow", "scheduler"], shell=False, stdout=f, stderr=f, env=env
-        )
-
-    sleep(2)
-
-    # yeilding a lambda that allows for subprocess calls with the correct env
-    yield {
-        "airflow_run_cmd": lambda cmd, **kwargs: Popen(cmd.split(), env=env, **kwargs)
-    }
-    scheduler.terminate()
-
-    shutil.rmtree(env["AIRFLOW_HOME"])
-    os.unlink("./scheduler.log")
-
-
 @pytest.fixture(scope="module")
 def airflow_local_setup_mdl_scope():
-    # TODO: is this needed?
+    """
+    Init the airflow sqlitedb and start the scheduler with minimal env.
+    Clean up aftwards by removing the AIRFLOW_HOME and stopping the
+    scheduler. It is neccesery to set the AIRFLOW_HOME env variable on
+    test invocation otherwise it gets created somewhere else...
+    """
     extra_env = {
         "AIRFLOW__CORE__DAGS_FOLDER": "./dags",
         "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
@@ -118,11 +70,94 @@ def airflow_local_setup_mdl_scope():
 
     sleep(2)
 
-    # yeilding a lambda that allows for subprocess calls with the correct env
-    yield {
-        "airflow_run_cmd": lambda cmd, **kwargs: Popen(cmd.split(), env=env, **kwargs)
-    }
+    yield
+
     scheduler.terminate()
 
     shutil.rmtree(env["AIRFLOW_HOME"])
     os.unlink("./scheduler.log")
+
+
+@pytest.fixture(scope="function")
+def airflow_local_pipeline_run():
+    """
+    Similar to airflow_local_setup_mdl_scope but for starting the scheduler
+    with some extra env determined in the test. Also triggers the etl_sensor 
+    dag causing a subsequent trigger of the etl dag.
+    """
+    scheduler_to_clean_up = None
+
+    def run_func(extra_env):
+        nonlocal scheduler_to_clean_up
+        default_env = {
+            "AIRFLOW__CORE__DAGS_FOLDER": "./dags",
+            "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
+        }
+        env = {**os.environ, **default_env, **extra_env}
+        initdb = Popen(
+            ["airflow", "initdb"], shell=False, stdout=DEVNULL, stderr=DEVNULL, env=env
+        )
+        initdb.wait()
+
+        with open("scheduler.log", "w") as f:
+            scheduler = Popen(
+                ["airflow", "scheduler"], shell=False, stdout=f, stderr=f, env=env
+            )
+            scheduler_to_clean_up = scheduler
+
+        sleep(2)
+
+        p = Popen(
+            "airflow unpause etl_sensor".split(),
+            shell=False,
+            stdout=DEVNULL,
+            stderr=DEVNULL,
+            env=env,
+        )
+        p.wait()
+
+        p = Popen(
+            "airflow unpause etl".split(),
+            shell=False,
+            stdout=DEVNULL,
+            stderr=DEVNULL,
+            env=env,
+        )
+        p.wait()
+
+        p = Popen(
+            "airflow trigger_dag etl_sensor".split(),
+            shell=False,
+            stdout=DEVNULL,
+            stderr=DEVNULL,
+            env=env,
+        )
+
+    yield run_func
+
+    scheduler_to_clean_up.terminate()
+
+    shutil.rmtree(os.environ["AIRFLOW_HOME"])
+    os.unlink("./scheduler.log")
+
+
+@pytest.fixture(scope="function")
+def wait_for_completion():
+    """
+    Return a function that waits for the etl dag to be in a specific
+    end state. If dag does not reach this state within (arbitarily but
+    seems OK...) three minutes raises a TimeoutError.
+    """
+
+    def wait_func(end_state):
+        time_out = Interval(minutes=3)
+        t0 = now()
+        while not DagRun.find("etl", state=end_state):
+            sleep(1)
+            t1 = now()
+            if (t1 - t0) > time_out:
+                raise TimeoutError
+        return end_state
+
+    return wait_func
+
