@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 """
-TODO
+Make sure that airflow is able to pick up the correct DAGs
 """
 
 import pytest
