@@ -5,34 +5,44 @@ import logging
 import os
 
 from airflow import DAG
-from airflow.models import DagRun
+from airflow.models import DagRun, TaskInstance
 from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
 from pendulum import parse
 
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
 
-def dummy_callable(*, dag_run: DagRun, **kwargs):
+def dummy_callable(*, dag_run: DagRun, task_instance: TaskInstance, **kwargs):
     """
-    Dummy python callable
+    Dummy python callable - possibly raising an exception
     """
-    logging.info(dag_run)
+    logging.info(kwargs)
+    if os.environ["TASK_FAIL"] == task_instance.task_id:
+        raise Exception
 
 
 def dummy_failing_callable(*, dag_run: DagRun, **kwargs):
     """
-    Dummy python callable
+    Dummy python callable raising an exception
     """
     logging.info(dag_run)
     raise Exception
 
 
-def dummy_branch_callable(*, dag_run: DagRun, **kwargs):
+def success_branch_callable(*, dag_run: DagRun, **kwargs):
     """
     Dummy branch callable
     """
+    previous_task_failures = [
+        dag_run.get_task_instance(task_id).state == "failed"
+        for task_id in ["init", "extract", "transform", "load"]
+    ]
+
     logging.info(dag_run)
-    return os.environ.get("BRANCH", "quarantine")
+    if sum(previous_task_failures) > 0:
+        return "quarantine"
+    else:
+        return "archive"
 
 
 with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag:
@@ -48,8 +58,9 @@ with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag
     )
     success_branch = BranchPythonOperator(
         task_id="success_branch",
-        python_callable=dummy_branch_callable,
+        python_callable=success_branch_callable,
         provide_context=True,
+        trigger_rule="all_done",
     )
     load = PythonOperator(
         task_id="load", python_callable=dummy_callable, provide_context=True
