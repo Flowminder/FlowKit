@@ -4,10 +4,8 @@
 
 # -*- coding: utf-8 -*-
 """
-TODO
+Tests that fixuid works as expected
 """
-
-import pytest
 
 
 def test_uid(flowetl_container):

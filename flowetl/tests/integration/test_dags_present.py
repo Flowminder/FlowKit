@@ -11,7 +11,7 @@ import pytest
 
 from airflow.models import DagBag
 
-
+# pylint: disable=unused-argument
 def test_dags_present(airflow_local_setup_mdl_scope):
     """
     Test that the correct dags are parsed
