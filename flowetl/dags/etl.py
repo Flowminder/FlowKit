@@ -45,7 +45,7 @@ def success_branch_callable(*, dag_run: DagRun, **kwargs):
 
     logging.info(dag_run)
 
-    if sum(previous_task_failures) > 0:
+    if any(previous_task_failures):
         branch = "quarantine"
     else:
         branch = "archive"
