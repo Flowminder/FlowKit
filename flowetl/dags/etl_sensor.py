@@ -18,7 +18,7 @@ from pendulum import now, parse
 
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
-
+# pylint: disable=unused-argument
 def dummy_trigger_callable(*, dag_run: DagRun, **kwargs):
     """
     Dummy callable that triggers ETL dag

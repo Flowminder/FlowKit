@@ -16,12 +16,12 @@ from pendulum import parse
 
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
-
+# pylint: disable=unused-argument
 def dummy_callable(*, dag_run: DagRun, task_instance: TaskInstance, **kwargs):
     """
     Dummy python callable - possibly raising an exception
     """
-    logging.info(kwargs)
+    logging.info(dag_run)
     if os.environ["TASK_FAIL"] == task_instance.task_id:
         raise Exception
 
@@ -44,10 +44,13 @@ def success_branch_callable(*, dag_run: DagRun, **kwargs):
     ]
 
     logging.info(dag_run)
+
     if sum(previous_task_failures) > 0:
-        return "quarantine"
+        branch = "quarantine"
     else:
-        return "archive"
+        branch = "archive"
+
+    return branch
 
 
 with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag:
@@ -86,7 +89,7 @@ with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag
         task_id="fail", python_callable=dummy_failing_callable, provide_context=True
     )
 
-    init >> extract >> transform >> load >> success_branch
-    success_branch >> archive >> clean
-    quarantine >> clean
-    success_branch >> quarantine >> fail
+    init >> extract >> transform >> load >> success_branch  # pylint: disable=pointless-statement
+    success_branch >> archive >> clean  # pylint: disable=pointless-statement
+    quarantine >> clean  # pylint: disable=pointless-statement
+    success_branch >> quarantine >> fail  # pylint: disable=pointless-statement
