@@ -109,4 +109,3 @@ def test_quarantine_branch(
 
     task_states = {task.task_id: task.state for task in etl_dag.get_task_instances()}
     assert task_states == expected_task_states
-

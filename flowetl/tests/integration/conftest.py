@@ -160,4 +160,3 @@ def wait_for_completion():
         return end_state
 
     return wait_func
-
