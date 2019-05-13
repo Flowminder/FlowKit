@@ -57,9 +57,9 @@ def airflow_local_setup():
     )
     initdb.wait()
 
-    with open("scheduler.log", "w") as f:
+    with open("scheduler.log", "w") as fout:
         scheduler = Popen(
-            ["airflow", "scheduler"], shell=False, stdout=f, stderr=f, env=env
+            ["airflow", "scheduler"], shell=False, stdout=fout, stderr=fout, env=env
         )
 
     sleep(2)
@@ -101,9 +101,9 @@ def airflow_local_pipeline_run():
         )
         initdb.wait()
 
-        with open("scheduler.log", "w") as f:
+        with open("scheduler.log", "w") as fout:
             scheduler = Popen(
-                ["airflow", "scheduler"], shell=False, stdout=f, stderr=f, env=env
+                ["airflow", "scheduler"], shell=False, stdout=fout, stderr=fout, env=env
             )
             scheduler_to_clean_up = scheduler
 
