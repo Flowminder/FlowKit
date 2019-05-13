@@ -99,8 +99,10 @@ executors:
         FLOWMACHINE_FLOWDB_USER: flowmachine
         LOG_DIRECTORY: "."
         FLOWMACHINE_HOST: localhost
+        FLOWMACHINE_PORT: 5555
         FLOWDB_HOST: localhost
         JWT_SECRET_KEY: secret
+        FLOWAPI_IDENTIFIER: TEST_SERVER
     docker:
       - image: circleci/python:3.7
       - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_SHA1
@@ -128,18 +130,6 @@ executors:
           REDIS_PASSWORD: "fm_redis"
 
 jobs:
-  set_docker_tag_for_ci_images:
-    docker: *base_docker
-    steps:
-      - run:
-          name: Set a common docker tag
-          command: |
-            echo "export SAFE_TAG=${CIRCLE_TAG:-$(echo -n $CIRCLE_BRANCH | md5sum | cut -d" " -f1)}"| tee -a $BASH_ENV /home/circleci/.env
-      - persist_to_workspace:
-          root: /home/circleci/
-          paths:
-            - .env
-
   build_flowdb:
     machine:
       image: circleci/classic:201808-01
@@ -147,6 +137,10 @@ jobs:
     environment: *flowdb_env
     steps:
       - checkout
+      - run:
+          name: Set a common docker tag
+          command: |
+            echo "export SAFE_TAG=${CIRCLE_TAG:-$(echo -n $CIRCLE_BRANCH | md5sum | cut -d" " -f1)}"| tee -a $BASH_ENV /home/circleci/.env
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
@@ -218,9 +212,10 @@ jobs:
          name: Test that not providing a superuser password causes the container to exit
          command: |
            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo flowminder/flowdb:$SAFE_TAG; then
+               echo "Error: could run flowdb without superuser password."
                exit 1
            else
-               echo "Correctly failed with no superuser password"
+               echo "Correctly failed with no superuser password."
            fi
       - run:
           name: Create data dir
@@ -236,6 +231,7 @@ jobs:
           name: Test that a data generator must be set for synth data
           command: |
             if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD flowminder/flowdb-synthetic-data:$SAFE_TAG; then
+                echo "Error: could run flowdb-synthetic-data with no data generator selected."
                 exit 1
             else
                 echo "Correctly failed with no data generator selected"
@@ -364,9 +360,40 @@ jobs:
       - store_test_results:
           path: test_results
 
+  run_token_generator_tests:
+    docker:
+      - image: circleci/python:3.7
+    environment:
+      JWT_SECRET_KEY: secret
+      FLOWAPI_IDENTIFIER: TEST_SERVER
+    working_directory: /home/circleci/project/flowkit_jwt_generator
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run: pipenv install --deploy --dev
+      - run:
+          name: Run token generator unit tests
+          command: |
+            # Run tests twice in order to pick up coverage of pytest plugin
+            pipenv run pytest --junitxml=test_results/pytest/results.xml \
+                                    --cov=flowkit_jwt_generator/ \
+                                    --cov-report term --cov-report xml --durations=10
+            pipenv run pytest --junitxml=test_results/pytest/results.xml \
+                        --cov=flowkit_jwt_generator/ \
+                        --cov-report term --cov-report xml --durations=10 --cov-append
+          environment:
+            COV_CORE_SOURCE:  flowkit_jwt_generator/
+            COV_CORE_CONFIG: .coveragerc
+            COV_CORE_DATAFILE: .coverage.eager
+      - store_test_results:
+          path: test_results
+      - run: bash <(curl -s https://codecov.io/bash)
+
   run_flowkit_api_tests:
     docker:
       - image: circleci/python:3.7
+        environment:
+          FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowapi
     steps:
       - checkout:
@@ -385,8 +412,10 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
-      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
+      &flowauth_env
+      FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
+      FLOWAPI_IDENTIFIER: TEST_SERVER
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
@@ -405,8 +434,7 @@ jobs:
     docker:
       - image: circleci/python:3.6
     environment:
-      FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
-      FLASK_APP: flowauth
+      *flowauth_env
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
@@ -435,10 +463,13 @@ jobs:
             - /home/circleci/project/flowauth/frontend/node_modules
       - run:
           name: Run Cypress end-to-end tests
-          command: pipenv run test-frontend --reporter junit --reporter-options "mochaFile=../results/flowauth-frontend.xml"
+          command: pipenv run test-frontend-with-record --reporter junit --reporter-options "mochaFile=../results/flowauth-frontend.[hash].xml"
       - store_test_results:
           path: results
-
+      - store_artifacts:
+          path: frontend/cypress/videos
+      - store_artifacts:
+          path: frontend/cypress/screenshots
 
   run_flowclient_tests:
     docker:
@@ -461,7 +492,9 @@ jobs:
     parameters:
       component:
         type: enum
-        enum: ["flowmachine", "flowauth", "flowapi"]
+        enum: ["flowmachine", "flowauth", "flowapi", "flowkit-examples", "flowetl"]
+      component_path:
+        type: string
     docker:
       - image: circleci/python:3.7
     working_directory: /home/circleci/project/
@@ -478,11 +511,38 @@ jobs:
           name: Build <<parameters.component>> image
           command: |
             echo "Tagging as $CIRCLE_SHA1"
-            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 ./<<parameters.component>>
+            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 <<parameters.component_path>>
       - run:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/<<parameters.component>>:$CIRCLE_SHA1
+
+  run_flowetl_tests:
+    docker:
+      - image: circleci/python:3.7
+    environment:
+      AIRFLOW_HOME: ./test_airflow_home
+    working_directory: /home/circleci/project/
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - setup_remote_docker
+      - restore_cache:
+          key: flowetl-deps-1-{{ checksum "flowetl/Pipfile.lock"}}
+      - run:
+          name: Install pipenv
+          command: pip install --upgrade pip pipenv
+      - run:
+          name: Install python dependencies
+          command: |
+            PIPENV_PIPFILE=flowetl/Pipfile pipenv install --deploy --dev
+      - run:
+          name: run flowetl tests
+          command: |
+            cd flowetl
+            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results.xml ./tests
+      - store_test_results:
+          path: flowetl/test_results
 
   integration_tests:
     executor:
@@ -506,7 +566,12 @@ jobs:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash)
 
-  test_quickstart:
+  run_quickstart_tests:
+    parameters:
+      start_arguments:
+        type: enum
+        enum: ["", "examples smaller_data"]
+        default: ""
     machine:
       image: circleci/classic:201808-01
     working_directory: /home/circleci/project
@@ -515,8 +580,17 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - run: ./quick_start.sh
+      - run: ./quick_start.sh <<parameters.start_arguments>>
       - run: ./quick_start.sh stop
+      - run:
+          name: Check all containers are down
+          command: |
+            RUNNING=`docker ps -q`
+            if [[ "$RUNNING" != "" ]]
+            then
+              echo "Error: all containers should be down, but some are still running."
+              exit 1
+            fi
 
   build_docs:
     parameters:
@@ -630,7 +704,7 @@ jobs:
           command: |
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
-            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth; do
+            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl; do
               docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
@@ -641,11 +715,9 @@ jobs:
 workflows:
   run_build_pipeline:
     jobs:
-      - set_docker_tag_for_ci_images:
+      - run_token_generator_tests:
           <<: *run_always_org_context
       - build_flowdb:
-          requires:
-            - set_docker_tag_for_ci_images
           <<: *run_always_org_context
       - install_flowmachine_deps:
           <<: *run_always_org_context
@@ -667,22 +739,31 @@ workflows:
             - install_flowmachine_deps
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
-          name: Synth data python generator
+          name: synth_data_python_generator_tests
           synthetic_data_generator: python
           requires:
             - build_flowdb
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
-          name: Synth data sql generator
+          name: synth_data_sql_generator_tests
           synthetic_data_generator: sql
           requires:
             - build_flowdb
           <<: *run_always_org_context
       - build_docker_image:
+          name: build_examples
+          component: flowkit-examples
+          component_path: .
+          <<: *run_always_org_context
+      - build_docker_image:
+          name: build_flowetl
+          component: flowetl
+          component_path: flowetl
+          <<: *run_always_org_context
+      - build_docker_image:
           name: build_flowmachine
           component: flowmachine
-          requires:
-            - run_flowmachine_tests
+          component_path: flowmachine
           <<: *run_always_org_context
       - build_docs:
           name: build_docs
@@ -693,37 +774,53 @@ workflows:
       - build_docker_image:
           name: build_flowauth
           component: flowauth
-          requires:
-            - run_flowauth_backend_tests
-            - run_flowauth_frontend_tests
+          component_path: flowauth
           <<: *run_always_org_context
       - build_docker_image:
           name: build_flowapi
           component: flowapi
+          component_path: flowapi
+          <<: *run_always_org_context
+      - run_flowetl_tests:
           requires:
-            - run_flowkit_api_tests
+            - build_flowetl
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
           project_name: flowclient
           requires:
-            - run_flowclient_tests
-            - integration_tests
+            - install_flowmachine_deps
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowmachine_wheel
           project_name: flowmachine
           requires:
-            - run_flowmachine_tests
-            - integration_tests
+            - install_flowmachine_deps
           <<: *run_always_org_context
-      - test_quickstart:
+      - run_quickstart_tests:
+          name: test_quickstart
           requires:
+            &quickstart_requirements
             - build_flowdb
             - build_flowapi
             - build_flowmachine
             - build_flowauth
+            - build_flowetl
+            - build_examples
           <<: *run_always_org_context
+      - run_quickstart_tests:
+          name: test_quickstart_examples_with_smaller_data
+          start_arguments: "examples smaller_data"
+          requires:
+            *quickstart_requirements
+          <<: *run_always_org_context
+#      # Synth data spinup with the 'large' data volume is very slow so not testing it right now on CI
+#      - run_quickstart_tests:
+#          name: test_quickstart_with_larger_data
+#          start_arguments: "larger_data"
+#          requires:
+#            *quickstart_requirements
+#          <<: *run_always_org_context
       - integration_tests:
           requires:
             - install_flowmachine_deps
@@ -732,33 +829,44 @@ workflows:
       - retag_images:
           name: retag_master_branch
           requires:
+            &retag_requirements
             - test_quickstart
+            - test_quickstart_examples_with_smaller_data
+#            - test_quickstart_with_larger_data
+            - integration_tests
             - build_docs
+            - run_flowkit_api_tests
+            - run_flowauth_backend_tests
+            - run_flowauth_frontend_tests
+            - run_flowclient_tests
+            - run_flowetl_tests
+            - synth_data_python_generator_tests
+            - synth_data_sql_generator_tests
+            - build_flowmachine_wheel
+            - build_flowclient_wheel
+            - run_flowmachine_tests
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
           requires:
-            - test_quickstart
-            - build_docs
+            *retag_requirements
           tag: CIRCLE_TAG
           <<: *tag_only_org_context
       - push_wheel:
           name: push_flowclient_wheel
           project_name: flowclient
           requires:
-            - build_flowclient_wheel
+            - retag_tagged_build
           <<: *tag_only_org_context
       - push_wheel:
           name: push_flowmachine_wheel
           project_name: flowmachine
           requires:
-            - build_flowmachine_wheel
+            - retag_tagged_build
           <<: *tag_only_org_context
       - build_docs:
           name: Deploy docs
           deploy: true
           requires:
-            - build_docs
             - retag_tagged_build
-            - push_flowclient_wheel
           <<: *tag_only_org_context

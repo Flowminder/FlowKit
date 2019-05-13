@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
+import os
 from json import JSONDecodeError
 
 import asyncpg
@@ -11,9 +12,7 @@ from _pytest.capture import CaptureResult
 
 from flowapi.main import create_app
 from asynctest import MagicMock, Mock, CoroutineMock
-from datetime import timedelta
 from zmq.asyncio import Context
-from .utils import make_token
 from asyncio import Future
 
 
@@ -102,40 +101,13 @@ def dummy_db_pool(monkeypatch):
 
 
 @pytest.fixture
-def access_token_builder():
-    """
-    Fixture which builds short-life access tokens.
-
-    Returns
-    -------
-    function
-        Functions which returns a token encoding the specified claims.
-    """
-
-    def token_maker(claims):
-        return make_token("test", "secret", timedelta(seconds=10), claims)
-        # return encode_access_token(
-        #     identity="test",
-        #     secret="secret",
-        #     algorithm="HS256",
-        #     expires_delta=timedelta(seconds=10),
-        #     fresh=True,
-        #     user_claims=claims,
-        #     csrf=False,
-        #     identity_claim_key="identity",
-        #     user_claims_key="user_claims",
-        #     json_encoder=JSONEncoder,
-        # )
-
-    return token_maker
-
-
-@pytest.fixture
 def app(monkeypatch, tmpdir, dummy_db_pool):
     monkeypatch.setenv("FLOWAPI_LOG_LEVEL", "DEBUG")
     monkeypatch.setenv("FLOWMACHINE_HOST", "localhost")
+    monkeypatch.setenv("FLOWMACHINE_PORT", "5555")
     monkeypatch.setenv("FLOWAPI_FLOWDB_USER", "flowapi")
     monkeypatch.setenv("FLOWDB_HOST", "localhost")
+    monkeypatch.setenv("FLOWDB_PORT", "5432")
     monkeypatch.setenv("FLOWAPI_FLOWDB_PASSWORD", "foo")
     monkeypatch.setenv("JWT_SECRET_KEY", "secret")
     current_app = create_app()

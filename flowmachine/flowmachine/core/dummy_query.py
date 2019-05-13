@@ -2,7 +2,7 @@ import structlog
 from .query import Query
 from .query_state import QueryStateMachine
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class DummyQuery(Query):

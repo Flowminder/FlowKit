@@ -31,18 +31,21 @@ def getsecret(key: str, default: str) -> str:
 
 
 def get_config():
-    jwt_secret_key = getsecret("JWT_SECRET_KEY", os.getenv("JWT_SECRET_KEY"))
+    jwt_secret_key = getsecret("JWT_SECRET_KEY", os.environ["JWT_SECRET_KEY"])
     log_level = logging.getLevelName(os.getenv("FLOWAPI_LOG_LEVEL", "error").upper())
 
-    flowmachine_host = os.getenv("FLOWMACHINE_HOST", "localhost")
-    flowmachine_port = os.getenv("FLOWMACHINE_PORT", "5555")
+    flowmachine_host = os.environ["FLOWMACHINE_HOST"]
+    flowmachine_port = os.environ["FLOWMACHINE_PORT"]
 
-    flowdb_user = getsecret("FLOWAPI_FLOWDB_USER", os.getenv("FLOWAPI_FLOWDB_USER"))
+    flowdb_user = getsecret("FLOWAPI_FLOWDB_USER", os.environ["FLOWAPI_FLOWDB_USER"])
     flowdb_password = getsecret(
-        "FLOWAPI_FLOWDB_PASSWORD", os.getenv("FLOWAPI_FLOWDB_PASSWORD")
+        "FLOWAPI_FLOWDB_PASSWORD", os.environ["FLOWAPI_FLOWDB_PASSWORD"]
     )
-    flowdb_host = os.getenv("FLOWDB_HOST")
-    flowdb_port = os.getenv("FLOWDB_PORT", 5432)
+    flowdb_host = os.environ["FLOWDB_HOST"]
+    flowdb_port = os.environ["FLOWDB_PORT"]
+    flowapi_server_id = getsecret(
+        "FLOWAPI_IDENTIFIER", os.environ["FLOWAPI_IDENTIFIER"]
+    )
 
     return dict(
         JWT_SECRET_KEY=jwt_secret_key,
@@ -50,4 +53,5 @@ def get_config():
         FLOWMACHINE_HOST=flowmachine_host,
         FLOWMACHINE_PORT=flowmachine_port,
         FLOWDB_DSN=f"postgres://{flowdb_user}:{flowdb_password}@{flowdb_host}:{flowdb_port}/flowdb",
+        JWT_DECODE_AUDIENCE=flowapi_server_id,
     )

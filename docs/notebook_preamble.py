@@ -10,18 +10,9 @@ import tabulate as tabulate
 import pprint
 import warnings
 import os
-import sys
-import git
+from flowkit_jwt_generator.jwt import generate_token, get_all_claims_from_flowapi
 from datetime import timedelta
 
-path_to_utils_module = os.path.join(
-    git.Repo(".", search_parent_directories=True).working_tree_dir,
-    "integration_tests",
-    "tests",
-)
-sys.path.insert(0, path_to_utils_module)
-
-from utils import make_token, all_access_claims
 
 # Ignore warnings in notebook output
 
@@ -50,9 +41,11 @@ get_ipython().display_formatter.formatters["text/markdown"].for_type(
 
 # Create an API access token
 
-TOKEN = make_token(
+
+TOKEN = generate_token(
     username="docsuser",
-    secret_key="secret",
+    secret_key=os.environ["JWT_SECRET_KEY"],
     lifetime=timedelta(days=1),
-    claims=all_access_claims,
+    claims=get_all_claims_from_flowapi(flowapi_url="http://localhost:9090"),
+    audience=os.environ["FLOWAPI_IDENTIFIER"],
 )

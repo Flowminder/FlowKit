@@ -114,7 +114,7 @@ class Table(Query):
                     )
                 )
 
-        # Recorded provided columns to ensure that md5 differs with different columns
+        # Record provided columns to ensure that md5 differs with different columns
         self.columns = columns
         super().__init__()
         # Table is immediately in a 'finished executing' state
@@ -123,6 +123,9 @@ class Table(Query):
         q_state_machine.execute()
         self._db_store_cache_metadata(compute_time=0)
         q_state_machine.finish()
+
+    def __repr__(self):
+        return f"<Table: '{self.schema}.{self.name}', query_id: '{self.md5}'>"
 
     @property
     def column_names(self) -> List[str]:

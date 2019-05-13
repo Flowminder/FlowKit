@@ -133,7 +133,7 @@ def test_invalidate_cache_multi(flowmachine_connect):
     assert not cache_table_exists(flowmachine_connect, dl1.md5)
     assert not cache_table_exists(flowmachine_connect, hl1.md5)
     has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
-    assert not has_deps
+    assert has_deps  # the remaining dependencies are due to underlying Table objects
 
 
 def test_invalidate_cache_midchain(flowmachine_connect):
@@ -161,28 +161,6 @@ def test_invalidate_cache_midchain(flowmachine_connect):
     assert not cache_table_exists(flowmachine_connect, flow.md5)
     has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
     assert has_deps  # Daily location deps should remain
-
-
-def test_invalidate_cache_multi(flowmachine_connect):
-    """
-    Test that invalidating a simple query that is part of
-    a bigger one drops both tables, cleans up dependencies
-    and removes both from cache.
-
-    """
-    dl1 = daily_location("2016-01-01")
-    dl1.store().result()
-    hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
-    hl1.store().result()
-    assert dl1.is_stored
-    assert hl1.is_stored
-    dl1.invalidate_db_cache()
-    assert not dl1.is_stored
-    assert not hl1.is_stored
-    assert not cache_table_exists(flowmachine_connect, dl1.md5)
-    assert not cache_table_exists(flowmachine_connect, hl1.md5)
-    has_deps = bool(flowmachine_connect.fetch("SELECT * FROM cache.dependencies"))
-    assert has_deps
 
 
 def test_invalidate_cascade(flowmachine_connect):
@@ -219,8 +197,8 @@ def test_deps_cache_multi():
     dl1.store().result()
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     dep = dl1.md5
-    assert 3 == len(hl1._get_deps())
-    assert dep in [x.md5 for x in hl1._get_deps()]
+    assert 3 == len(hl1._get_stored_dependencies())
+    assert dep in [x.md5 for x in hl1._get_stored_dependencies()]
 
 
 def test_deps_cache_chain():
@@ -236,9 +214,9 @@ def test_deps_cache_chain():
     flow = Flows(hl1, hl2)
     bad_dep = dl1.md5
     good_dep = hl1.md5
-    assert 5 == len(flow._get_deps())
-    assert good_dep in [x.md5 for x in flow._get_deps()]
-    assert bad_dep not in [x.md5 for x in flow._get_deps()]
+    assert 5 == len(flow._get_stored_dependencies())
+    assert good_dep in [x.md5 for x in flow._get_stored_dependencies()]
+    assert bad_dep not in [x.md5 for x in flow._get_stored_dependencies()]
 
 
 def test_deps_cache_broken_chain():
@@ -253,8 +231,8 @@ def test_deps_cache_broken_chain():
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
     dep = dl1.md5
-    assert 7 == len(flow._get_deps())
-    assert dep in [x.md5 for x in flow._get_deps()]
+    assert 7 == len(flow._get_stored_dependencies())
+    assert dep in [x.md5 for x in flow._get_stored_dependencies()]
 
 
 def test_retrieve(get_dataframe):

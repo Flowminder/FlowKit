@@ -18,7 +18,6 @@ import structlog
 from typing import List, Union
 
 import psycopg2
-import networkx as nx
 import pandas as pd
 
 from hashlib import md5
@@ -90,21 +89,24 @@ class Query(metaclass=ABCMeta):
         try:
             return self._md5
         except:
+            dependencies = self.dependencies
             state = self.__getstate__()
-            hashes = sorted([x.md5 for x in self.dependencies])
+            hashes = sorted([x.md5 for x in dependencies])
             for key, item in sorted(state.items()):
-                try:
-                    if isinstance(item, list) or isinstance(item, tuple):
-                        item = sorted(item)
-                    elif isinstance(item, dict):
-                        item = json.dumps(item, sort_keys=True, default=str)
-
-                    try:
-                        hashes.append(str(item))
-                    except TypeError:
-                        pass
-                except:
+                if isinstance(item, Query) and item in dependencies:
+                    # this item is already included in `hashes`
+                    continue
+                elif isinstance(item, list) or isinstance(item, tuple):
+                    item = sorted(
+                        item, key=lambda x: x.md5 if isinstance(x, Query) else x
+                    )
+                elif isinstance(item, dict):
+                    item = json.dumps(item, sort_keys=True, default=str)
+                else:
+                    # if it's not a list or a dict we leave the item as it is
                     pass
+
+                hashes.append(str(item))
             hashes.append(self.__class__.__name__)
             hashes.sort()
             self._md5 = md5(str(hashes).encode()).hexdigest()
@@ -119,7 +121,7 @@ class Query(metaclass=ABCMeta):
 
         # Default representation, derived classes might want to
         # add something more specific
-        return "Query object of type : " + self.__class__.__name__
+        return f"<Query of type: {self.__class__.__name__}, query_id: '{self.md5}'>"
 
     def __iter__(self):
         con = self.connection.engine
@@ -606,31 +608,6 @@ class Query(metaclass=ABCMeta):
             )  # TEXT comes back as multiple rows, i.e. a list of tuple(str, )
         return exp[0][0]  # Everything else comes as one
 
-    def _get_query_attrs_for_dependency_graph(self, analyse):
-        """
-        Helper method which returns information about this query for use in a dependency graph.
-
-        Parameters
-        ----------
-        analyse : bool
-            Set to True to get actual runtimes for queries, note that this will actually run the query!
-
-        Returns
-        -------
-        dict
-            Dictionary containing the keys "name", "stored", "cost" and "runtime" (the latter is only
-            present if `analyse=True`.
-            Example return value: `{"name": "DailyLocation", "stored": False, "cost": 334.53, "runtime": 161.6}`
-        """
-        expl = self.explain(format="json", analyse=analyse)[0]
-        attrs = {}
-        attrs["name"] = self.__class__.__name__
-        attrs["stored"] = self.is_stored
-        attrs["cost"] = expl["Plan"]["Total Cost"]
-        if analyse:
-            attrs["runtime"] = expl["Execution Time"]
-        return attrs
-
     @property
     def fully_qualified_table_name(self):
         """
@@ -743,7 +720,7 @@ class Query(metaclass=ABCMeta):
                     "{} added to cache.".format(self.fully_qualified_table_name)
                 )
                 if not in_cache:
-                    for dep in self._get_deps(root=True):
+                    for dep in self._get_stored_dependencies(exclude_self=True):
                         con.execute(
                             "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
                             (self.md5, dep.md5),
@@ -758,16 +735,7 @@ class Query(metaclass=ABCMeta):
         Returns
         -------
         set
-            Query's this one is directly dependent on
-        """
-        return self._adjacent()
-
-    def _adjacent(self):
-        """
-        Returns
-        -------
-        set
-            Query's this one is directly dependent on
+            The set of queries which this one is directly dependent on.
         """
         dependencies = set()
         for x in self.__dict__.values():
@@ -785,15 +753,17 @@ class Query(metaclass=ABCMeta):
 
         return dependencies
 
-    def _get_deps(self, root=False, stored_dependencies=None):
+    def _get_stored_dependencies(
+        self, exclude_self=False, discovered_dependencies=None
+    ):
         """
 
         Parameters
         ----------
-        root : bool
-            Set to true to exclude this query from the resulting set
-        stored_dependencies : set
-            Keeps track of dependencies already discovered
+        exclude_self : bool
+            Set to true to exclude this query from the resulting set.
+        discovered_dependencies : set
+            Keeps track of dependencies already discovered (during recursive calls).
 
         Returns
         -------
@@ -801,14 +771,16 @@ class Query(metaclass=ABCMeta):
             The set of all stored queries this one depends on
 
         """
-        if stored_dependencies is None:
-            stored_dependencies = set()
-        if not root and self.is_stored:
-            stored_dependencies.add(self)
+        if discovered_dependencies is None:
+            discovered_dependencies = set()
+        if not exclude_self and self.is_stored:
+            discovered_dependencies.add(self)
         else:
-            for d in self.dependencies - stored_dependencies:
-                d._get_deps(stored_dependencies=stored_dependencies)
-        return stored_dependencies.difference([self])
+            for d in self.dependencies - discovered_dependencies:
+                d._get_stored_dependencies(
+                    discovered_dependencies=discovered_dependencies
+                )
+        return discovered_dependencies.difference([self])
 
     def invalidate_db_cache(self, name=None, schema=None, cascade=True, drop=True):
         """
@@ -1097,69 +1069,3 @@ class Query(metaclass=ABCMeta):
             estimate_count=estimate_count,
             seed=seed,
         )
-
-    def dependency_graph(self, analyse=False):
-        """
-        Produce a graph of all the queries that go into producing this
-        one, with their estimated run costs, and whether they are stored
-        as node attributes.
-
-        The resulting networkx object can then be visualised, or analysed.
-
-        Parameters
-        ----------
-        query : Query
-            Query object to produce a dependency graph fot
-        analyse : bool
-            Set to True to get actual runtimes for queries, note that this will actually
-            run the query!
-
-        Returns
-        -------
-        networkx.DiGraph
-
-        Examples
-        --------
-        >>> import flowmachine
-        >>> flowmachine.connect()
-        >>> from flowmachine.features import daily_location
-        >>> g = daily_location("2016-01-01").dependency_graph()
-        >>> from networkx.drawing.nx_agraph import write_dot
-        >>> write_dot(g, "daily_location_dependencies.dot")
-        >>> g = daily_location("2016-01-01").dependency_graph(True)
-        >>> from networkx.drawing.nx_agraph import write_dot
-        >>> write_dot(g, "daily_location_dependencies_runtimes.dot")
-
-        Notes
-        -----
-        The queries listed as dependencies are not _guaranteed_ to be
-        used in the actual running of a query, only to be referenced by it.
-
-        """
-        g = nx.DiGraph()
-        openlist = [(0, self)]
-        deps = []
-
-        while openlist:
-            y, x = openlist.pop()
-            deps.append((y, x))
-
-            openlist += list(zip([x] * len(x.dependencies), x.dependencies))
-
-        _, y = zip(*deps)
-        for n in set(y):
-            attrs = n._get_query_attrs_for_dependency_graph(analyse=analyse)
-            attrs["shape"] = "rect"
-            attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
-            if analyse:
-                attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
-            if attrs["stored"]:
-                attrs["fillcolor"] = "green"
-                attrs["style"] = "filled"
-            g.add_node("x{}".format(n.md5), **attrs)
-
-        for x, y in deps:
-            if x != 0:
-                g.add_edge(*["x{}".format(z.md5) for z in (x, y)])
-
-        return g

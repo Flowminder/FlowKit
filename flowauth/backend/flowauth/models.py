@@ -64,7 +64,7 @@ def get_fernet() -> Fernet:
     -------
     crypography.fernet.Fernet
     """
-    return Fernet(current_app.config["FERNET_KEY"])
+    return Fernet(current_app.config["FLOWAUTH_FERNET_KEY"])
 
 
 class User(db.Model):
@@ -502,7 +502,7 @@ def make_demodata():  # pragma: no cover
     groups = [
         Group(name="TEST_USER", user_group=True),
         Group(name="TEST_ADMIN", user_group=True),
-        Group(name="Test Group"),
+        Group(name="Test_Group"),
     ]
     groups[0].members.append(users[0])
     groups[1].members.append(users[1])
@@ -556,12 +556,9 @@ def make_demodata():  # pragma: no cover
         gsp = GroupServerPermission(
             group=groups[0], server_capability=sc, get_result=True, run=True, poll=True
         )
-        gsp.spatial_aggregation.append(
-            agg_units[0]
-        )  # Give Bob access to admin0 agg units
-        gsp.spatial_aggregation.append(
-            agg_units[1]
-        )  # Give Bob access to admin1 agg units
+        for agg_unit in agg_units[:4]:  # Give Bob access to adminX agg units
+            gsp.spatial_aggregation.append(agg_unit)
+
         db.session.add(gsp)
     db.session.add(
         GroupServerTokenLimits(
