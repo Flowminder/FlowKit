@@ -24,17 +24,16 @@ marshmallow-oneofschema = {editable = true,ref = "8195dc3e595fa33a5f007f10ba7cfc
 descartes = "*"
 flowclient = {editable = true,path = "./../flowclient"}
 flowapi = {editable = true,path = "./../flowapi"}
+flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
 quart = "*"
 structlog = "*"
-gitpython = "*"
 mapboxgl = "*"
 
 [dev-packages]
 jupyterlab = "*"
-flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 
 [requires]
 python_version = "3.7"
