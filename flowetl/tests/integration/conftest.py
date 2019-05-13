@@ -63,6 +63,11 @@ def airflow_local_setup():
         "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
     }
     env = {**os.environ, **extra_env}
+    # make test Airflow home dir
+    test_airflow_home_dir = os.environ["AIRFLOW_HOME"]
+    if not os.path.exists(test_airflow_home_dir):
+        os.makedirs(test_airflow_home_dir)
+
     initdb = Popen(
         ["airflow", "initdb"], shell=False, stdout=DEVNULL, stderr=DEVNULL, env=env
     )
@@ -79,26 +84,34 @@ def airflow_local_setup():
 
     scheduler.terminate()
 
-    shutil.rmtree(env["AIRFLOW_HOME"])
+    shutil.rmtree(test_airflow_home_dir)
     os.unlink("./scheduler.log")
 
 
 @pytest.fixture(scope="function")
 def airflow_local_pipeline_run():
     """
-    Similar to airflow_local_setup_mdl_scope but for starting the scheduler
-    with some extra env determined in the test. Also triggers the etl_sensor
-    dag causing a subsequent trigger of the etl dag.
+    As in `airflow_local_setup` but starts the scheduler with some extra env
+    determined in the test. Also triggers the etl_sensor dag causing a
+    subsequent trigger of the etl dag.
     """
     scheduler_to_clean_up = None
+    test_airflow_home_dir = None
 
     def run_func(extra_env):
         nonlocal scheduler_to_clean_up
+        nonlocal test_airflow_home_dir
         default_env = {
             "AIRFLOW__CORE__DAGS_FOLDER": "./dags",
             "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
         }
         env = {**os.environ, **default_env, **extra_env}
+
+        # make test Airflow home dir
+        test_airflow_home_dir = os.environ["AIRFLOW_HOME"]
+        if not os.path.exists(test_airflow_home_dir):
+            os.makedirs(test_airflow_home_dir)
+
         initdb = Popen(
             ["airflow", "initdb"], shell=False, stdout=DEVNULL, stderr=DEVNULL, env=env
         )
@@ -142,7 +155,7 @@ def airflow_local_pipeline_run():
 
     scheduler_to_clean_up.terminate()
 
-    shutil.rmtree(os.environ["AIRFLOW_HOME"])
+    shutil.rmtree(test_airflow_home_dir)
     os.unlink("./scheduler.log")
 
 

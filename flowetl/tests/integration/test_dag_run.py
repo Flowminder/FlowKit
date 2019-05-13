@@ -18,8 +18,8 @@ def test_archive_branch(airflow_local_pipeline_run, wait_for_completion):
     """
     end_state = "success"
 
-    # passing empty TASK_FAIL to signal no task should fail
-    airflow_local_pipeline_run({"TASK_FAIL": ""})
+    # passing empty TASK_TO_FAIL to signal no task should fail
+    airflow_local_pipeline_run({"TASK_TO_FAIL": ""})
     final_etl_state = wait_for_completion(end_state)
     assert final_etl_state == end_state
 
@@ -108,7 +108,7 @@ def test_quarantine_branch(
     not successful. We fail each of the tasks init, extract, transform and load.
     """
     end_state = "failed"
-    airflow_local_pipeline_run({"TASK_FAIL": task_to_fail})
+    airflow_local_pipeline_run({"TASK_TO_FAIL": task_to_fail})
     final_etl_state = wait_for_completion(end_state)
     assert final_etl_state == end_state
 
