@@ -522,6 +522,7 @@ jobs:
       - image: circleci/python:3.7
     environment:
       AIRFLOW_HOME: ./test_airflow_home
+      TESTING: "true"
     working_directory: /home/circleci/project/
     steps:
       - checkout:
