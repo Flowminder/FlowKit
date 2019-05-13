@@ -290,7 +290,7 @@ class HartiganCluster(BaseCluster):
 
         >>> har = HartiganCluster(cd, 50, call_threshold=1)
 
-        >>> har.join(es).head(geom=['cluster'])
+        >>> har.join_to_cluster_components(es).head(geom=['cluster'])
                     subscriber                                      cluster  rank
         038OVABN11Ak4W5P              POINT (87.26522455 27.58509554)     4
         038OVABN11Ak4W5P               POINT (86.00007467 27.2713931)     7
