@@ -11,6 +11,7 @@ import os
 
 # need to import and not use so that airflow looks here for a DAG
 from airflow import DAG  # pylint: disable=unused-import
+
 from pendulum import parse
 from etl.dag_task_callable_mappings import (
     TEST_TASK_CALLABLES,
