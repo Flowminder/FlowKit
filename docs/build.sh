@@ -46,4 +46,4 @@ curl http://localhost:9090/api/0/spec/openapi-redoc.json -o source/_static/opena
 echo "Started FlowAPI."
 echo "Starting build."
 
-BRANCH=${CIRCLE_BRANCH:="master"} pipenv run mkdocs "${@:-build}"
+BRANCH=${CIRCLE_BRANCH:="master"} FLOWMACHINE_LOG_LEVEL=error pipenv run mkdocs "${@:-build}"
