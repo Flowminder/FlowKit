@@ -41,7 +41,7 @@ Start the FlowKit test system by running
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh)
 ``` 
 
-This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default, and the FlowAuth authentication system accessible by visiting <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a> using your web browser.
+This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default, and the FlowAuth authentication system accessible by visiting <a href="http://localhost:9091/" target="_blank">http://localhost:9091</a> using your web browser.
 
 The default system includes a small amount of test data. For a test system with considerably more data you can run
 
@@ -66,6 +66,9 @@ bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick
 
 to get the examples with the larger dataset (the one used when producing this documentation).
 
+!!! info
+    The worked examples make use of the [Mapbox GL](https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/) for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions [here](https://account.mapbox.com/)), and set this as the value of the `MAPBOX_ACCESS_TOKEN` environment variable before running the above commands.
+
 To shut down the system, you can either stop all the docker containers directly, or run
 
 ```bash
@@ -76,7 +79,7 @@ In order to use the test system, now install FlowClient, and generate a token us
 
 #### FlowAuth Quickstart
 
-Visit <a href="http://localhost:8000/" target="_blank">http://localhost:8000</a> and log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`. `TEST_USER` is already set up to generate tokens for the FlowAPI instance started by the quick start script.
+Visit <a href="http://localhost:9091/" target="_blank">http://localhost:9091</a> and log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`. `TEST_USER` is already set up to generate tokens for the FlowAPI instance started by the quick start script.
 
 #### Granting user permissions in FlowAuth
 
