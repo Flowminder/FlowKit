@@ -150,7 +150,7 @@ def airflow_local_pipeline_run():
 def wait_for_completion():
     """
     Return a function that waits for the etl dag to be in a specific
-    end state. If dag does not reach this state within (arbitarily but
+    end state. If dag does not reach this state within (arbitrarily but
     seems OK...) three minutes raises a TimeoutError.
     """
 
