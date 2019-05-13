@@ -20,7 +20,7 @@ def dummy_callable(*, dag_run: DagRun, task_instance: TaskInstance, **kwargs):
     silently.
     """
     logging.info(dag_run)
-    if os.environ["TASK_TO_FAIL"] == task_instance.task_id:
+    if os.environ.get("TASK_TO_FAIL", "") == task_instance.task_id:
         raise Exception
 
 
