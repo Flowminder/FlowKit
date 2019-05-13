@@ -35,22 +35,6 @@ def flowetl_tag():
 
 
 @pytest.fixture(scope="module")
-def run_command_in_flowetl_container(docker_client, flowetl_tag):
-    """
-    Fixture that allows us to run a command against flowetl container with
-    a specified UID/GID
-    """
-
-    def run_command_on_container(command, user):
-        out = docker_client.containers.run(
-            f"flowminder/flowetl:{flowetl_tag}", command, user=user
-        )
-        return out.decode("utf-8").strip()
-
-    return run_command_on_container
-
-
-@pytest.fixture(scope="module")
 def airflow_local_setup():
     """
     Init the airflow sqlitedb and start the scheduler with minimal env.
