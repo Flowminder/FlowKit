@@ -11,7 +11,10 @@ import os
 
 from airflow import DAG  # pylint: disable=unused-import
 from pendulum import parse
-from etl.dag_task_callable_mapings import TEST_TASK_CALLABLES, PRODUCTION_TASK_CALLABLES
+from etl.dag_task_callable_mappings import (
+    TEST_TASK_CALLABLES,
+    PRODUCTION_TASK_CALLABLES,
+)
 from etl.etl_utils import construct_etl_dag
 
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
