@@ -537,10 +537,15 @@ jobs:
           command: |
             PIPENV_PIPFILE=flowetl/Pipfile pipenv install --deploy --dev
       - run:
-          name: run flowetl tests
+          name: run flowetl integration tests
           command: |
             cd flowetl
-            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results.xml ./tests
+            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
+      - run:
+          name: run etl module unit tests
+          command: |
+            cd flowetl
+            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml ./etl/tests
       - store_test_results:
           path: flowetl/test_results
 
