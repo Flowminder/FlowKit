@@ -35,19 +35,19 @@ def flowetl_tag():
 
 
 @pytest.fixture(scope="module")
-def flowetl_container(docker_client, flowetl_tag):
+def run_command_in_flowetl_container(docker_client, flowetl_tag):
     """
-    Fixture that starts a running flowetl container and
-    yields the container object.
+    Fixture that allows us to run a command against flowetl container with
+    a specified UID/GID
     """
-    container = docker_client.containers.run(
-        f"flowminder/flowetl:{flowetl_tag}", detach=True
-    )
-    # brief sleep to wait for backing DB to be ready
-    sleep(2)
-    yield container
-    container.kill()
-    container.remove()
+
+    def run_command_on_container(command, user):
+        out = docker_client.containers.run(
+            f"flowminder/flowetl:{flowetl_tag}", command, user=user
+        )
+        return out.decode("utf-8").strip()
+
+    return run_command_on_container
 
 
 @pytest.fixture(scope="module")
