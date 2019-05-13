@@ -41,6 +41,24 @@ def construct_etl_dag(*, task_callable_mapping: dict, default_args: dict) -> DAG
     Returns:
         DAG -- Specification of Airflow DAG for ETL
     """
+
+    # make sure we have the correct keys
+    expected_keys = set(
+        [
+            "init",
+            "extract",
+            "transform",
+            "load",
+            "success_branch",
+            "archive",
+            "quarantine",
+            "clean",
+            "fail",
+        ]
+    )
+    if set(task_callable_mapping.keys()) != expected_keys:
+        raise TypeError("task_callable_mapping argument does not contain correct keys")
+
     with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag:
 
         init = PythonOperator(
