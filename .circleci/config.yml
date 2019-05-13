@@ -521,7 +521,6 @@ jobs:
     docker:
       - image: circleci/python:3.7
     environment:
-      FLOWETL_TAG: ${CIRCLE_SHA1}
       AIRFLOW_HOME: ./test_airflow_home
     working_directory: /home/circleci/project/
     steps:
@@ -541,7 +540,7 @@ jobs:
           name: run flowetl tests
           command: |
             cd flowetl
-            pipenv run pytest --junit-xml=test_results/pytest/results.xml ./tests
+            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results.xml ./tests
       - store_test_results:
           path: flowetl/test_results
 
