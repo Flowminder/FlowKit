@@ -8,25 +8,31 @@ Tests that fixuid works as expected
 """
 
 
-def test_uid(flowetl_container):
+def test_uid(run_command_in_flowetl_container):
     """
     test that we can run the flowetl container with a specific user
     """
 
     user = "1002:1003"
-    out = flowetl_container.exec_run("bash -c 'id -u'", user=user).output.decode(
-        "utf-8"
-    )
-    assert out.strip() == "1002"
+    out = run_command_in_flowetl_container("bash -c 'id -u'", user=user)
+    assert out == "1002"
 
 
-def test_gid(flowetl_container):
+def test_gid(run_command_in_flowetl_container):
     """
     test that we can run the flowetl container with a specific user
     """
 
     user = "1002:1003"
-    out = flowetl_container.exec_run("bash -c 'id -g'", user=user).output.decode(
-        "utf-8"
-    )
-    assert out.strip() == "1003"
+    out = run_command_in_flowetl_container("bash -c 'id -g'", user=user)
+    assert out == "1003"
+
+
+def test_uid_is_airflow(run_command_in_flowetl_container):
+    """
+    test that we can run the flowetl container with a specific user
+    """
+
+    user = "1002:1003"
+    out = run_command_in_flowetl_container("bash -c 'id -u | id -nu'", user=user)
+    assert out == "airflow"
