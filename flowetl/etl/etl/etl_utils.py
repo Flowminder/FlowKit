@@ -10,10 +10,7 @@ Contains utility functions for use in the ETL dag and it's callables
 from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
 
-
-def construct_etl_dag(*, task_callable_mapping: dict, default_args: dict) -> DAG:
-    """
-    This function returns an Airflow DAG object of the structure
+"""    This function returns an Airflow DAG object of the structure
     required for ETL. By passing a dictionary mapping task ID to
     a python callable we can change the functionality of the
     individual tasks whilst maintaining the desired structure
@@ -40,6 +37,47 @@ def construct_etl_dag(*, task_callable_mapping: dict, default_args: dict) -> DAG
 
     Returns:
         DAG -- Specification of Airflow DAG for ETL
+"""
+
+
+def construct_etl_dag(*, task_callable_mapping: dict, default_args: dict) -> DAG:
+    """
+    This function returns an Airflow DAG object of the structure
+    required for ETL. By passing a dictionary mapping task ID to
+    a python callable we can change the functionality of the
+    individual tasks whilst maintaining the desired structure
+    of the DAG.
+
+    Parameters
+    ----------
+    task_callable_mapping : dict
+         Must contain the following keys;
+            "init"
+            "extract"
+            "transform"
+            "load"
+            "success_branch"
+            "archive"
+            "quarantine"
+            "clean"
+            "fail"
+        The value for each key should be a python callable with at a minimum
+        the following signature foo(*,**kwargs).
+    default_args : dict
+        A set of default args to pass to all callables.
+        Must containt at least "owner" key and "start" key (which must be a
+        pendulum date object)
+
+    Returns
+    -------
+    DAG
+        Specification of Airflow DAG for ETL
+
+    Raises
+    ------
+    TypeError
+        Exception raised if required keys in task_callable_mapping are not
+        present.
     """
 
     # make sure we have the correct keys
