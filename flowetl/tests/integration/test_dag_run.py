@@ -105,7 +105,7 @@ def test_quarantine_branch(
 ):
     """
     Tests that correct tasks run, with correct end state, when ETL is
-    not succesful. We fail each of the tasks init, extract, transform and load.
+    not successful. We fail each of the tasks init, extract, transform and load.
     """
     end_state = "failed"
     airflow_local_pipeline_run({"TASK_FAIL": task_to_fail})
