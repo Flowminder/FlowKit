@@ -20,7 +20,7 @@ default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 def dummy_callable(*, dag_run: DagRun, task_instance: TaskInstance, **kwargs):
     """
     Dummy python callable - raises an exception if the environment variable
-    TASK_TO_FAIL is set to the name of the current task, otherwise succeeds 
+    TASK_TO_FAIL is set to the name of the current task, otherwise succeeds
     silently.
     """
     logging.info(dag_run)

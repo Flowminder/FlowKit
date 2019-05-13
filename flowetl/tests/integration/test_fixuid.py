@@ -10,8 +10,8 @@ Tests that fixuid works as expected
 
 def test_uid(docker_client, flowetl_tag):
     """
-    test that we can run the flowetl container with a specific user. Check 
-    UID is correct.
+    test that we can run the flowetl container with a specific user.
+    Check UID is correct.
     """
 
     user = "1002:1003"
@@ -23,8 +23,8 @@ def test_uid(docker_client, flowetl_tag):
 
 def test_gid(docker_client, flowetl_tag):
     """
-    test that we can run the flowetl container with a specific user. Check 
-    GID is correct.
+    test that we can run the flowetl container with a specific user.
+    Check GID is correct.
     """
 
     user = "1002:1003"
