@@ -500,15 +500,16 @@ def calculate_dependency_graph(query_obj, analyse=False):
         attrs = _get_query_attrs_for_dependency_graph(n, analyse=analyse)
         attrs["shape"] = "rect"
         attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
+        attrs["query_object"] = n
         if analyse:
             attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
         if attrs["stored"]:
             attrs["fillcolor"] = "green"
             attrs["style"] = "filled"
-        g.add_node("x{}".format(n.md5), **attrs)
+        g.add_node(f"x{n.md5}", **attrs)
 
     for x, y in deps:
         if x != 0:
-            g.add_edge(*["x{}".format(z.md5) for z in (x, y)])
+            g.add_edge(*[f"x{z.md5}" for z in (x, y)])
 
     return g
