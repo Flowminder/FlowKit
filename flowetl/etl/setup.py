@@ -12,5 +12,6 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
+    # pinning airflow version so that it is the same as in the Dockerfile
     install_requires=["apache-airflow==1.10.3"],
 )
