@@ -9,6 +9,7 @@ import pandas as pd
 import tabulate as tabulate
 import pprint
 import warnings
+import logging
 import os
 from flowkit_jwt_generator.jwt import generate_token, get_all_claims_from_flowapi
 from datetime import timedelta
@@ -17,6 +18,10 @@ from datetime import timedelta
 # Ignore warnings in notebook output
 
 warnings.filterwarnings("ignore")
+
+
+# Suppress flowmachine log messages
+logging.getLogger().setLevel(logging.ERROR)
 
 
 # Format pandas tables nicely
