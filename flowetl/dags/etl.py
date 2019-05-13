@@ -19,10 +19,12 @@ default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 # pylint: disable=unused-argument
 def dummy_callable(*, dag_run: DagRun, task_instance: TaskInstance, **kwargs):
     """
-    Dummy python callable - raises an exception if the environment variable TASK_FAIL is defined, otherwise succeeds silently.
+    Dummy python callable - raises an exception if the environment variable
+    TASK_TO_FAIL is set to the name of the current task, otherwise succeeds 
+    silently.
     """
     logging.info(dag_run)
-    if os.environ["TASK_FAIL"] == task_instance.task_id:
+    if os.environ["TASK_TO_FAIL"] == task_instance.task_id:
         raise Exception
 
 
