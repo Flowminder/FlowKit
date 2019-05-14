@@ -46,6 +46,9 @@ def test_render_and_run_sql_callable(tmpdir):
     conf = {"number": 23, "template_path": Path("etl/voice")}
     fake_dag_run = FakeDagRun(conf=conf)
 
+    # make sure the mock has not been called some other way
+    assert mock_pghook.mock_calls == []
+
     render_and_run_sql__callable(
         dag_run=fake_dag_run,
         db_hook=mock_pghook,
