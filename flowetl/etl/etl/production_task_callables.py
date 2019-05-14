@@ -51,7 +51,7 @@ def render_and_run_sql__callable(
     template_path = config_path / dag_run.conf["template_path"]
 
     # template name matches the task_id this is being used
-	    # in. If this is the transform task then it will be 'transform'
+    # in. If this is the transform task then it will be 'transform'
     # and thus the template we use will be 'etl/voice/transform.sql'
     template_path = template_path / f"{template_name}.sql"
     template = open(template_path).read()
