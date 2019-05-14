@@ -34,7 +34,7 @@ up-no_build:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) up -d $(DOCKER_SERVICES)
 
 down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) down
+	docker-compose -f $(DOCKER_COMPOSE_FILE) down -v
 
 
 # Note: the targets below are repetitive and could be simplified by using
