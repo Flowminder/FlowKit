@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, Mock
 from pathlib import Path
 
 from airflow import DAG
@@ -40,7 +40,7 @@ def test_render_and_run_sql__callable(tmpdir, create_fake_dag_run):
     # callable runs in and a mock of the db_hook which will run the sql
     fake_dag = DAG(dag_id="testing", default_args={"start_date": "2016-01-01"})
     fake_task_op = BaseOperator(task_id="testing", dag=fake_dag)
-    mock_pghook = MagicMock()
+    mock_pghook = Mock()
 
     # Mock of the config passed to the dag_run
     conf = {"number": 23, "template_path": Path("etl/voice")}

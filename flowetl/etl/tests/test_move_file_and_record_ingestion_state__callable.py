@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, Mock
 from pathlib import Path
 
 from etl.production_task_callables import move_file_and_record_ingestion_state__callable
@@ -26,7 +26,7 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_
     fake_dag_run = create_fake_dag_run(conf={"file_name": file_name})
 
     mount_paths = {"ingest": Path(from_dir), "archive": Path(to_dir)}
-    mock_record_etl_state = MagicMock()
+    mock_record_etl_state = Mock()
 
     assert len(mock_record_etl_state.mock_calls) == 0
     with patch("etl.production_task_callables.record_etl_state", mock_record_etl_state):
