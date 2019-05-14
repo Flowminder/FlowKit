@@ -20,7 +20,7 @@ def test_move_and_record_state__callable(tmpdir):
     """
     file.write(file_contents)
 
-    fake_dag_run = FakeDagRun(conf={})
+    fake_dag_run = FakeDagRun(conf={"file_name": "file_to_move"})
 
     mount_paths = {"ingest": Path(from_dir), "archive": Path(to_dir)}
 
