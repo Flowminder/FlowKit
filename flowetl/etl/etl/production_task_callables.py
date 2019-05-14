@@ -8,7 +8,30 @@ Contains the definition of callables to be used in the production ETL dag.
 """
 import logging
 
-from airflow.models import DagRun
+from pathlib import Path
+
+from airflow.models import DagRun, BaseOperator
+from airflow.hooks.dbapi_hook import DbApiHook
+
+
+def render_sql_callable(
+    *,
+    dag_run: DagRun,
+    task: BaseOperator,
+    db_hook: DbApiHook,
+    config_path: Path,
+    template_name: str,
+    **kwargs,
+):
+    template_path = config_path / dag_run.conf["template_path"]
+
+    template_path = template_path / f"{template_name}.sql"
+    template = open(template_path).read()
+
+    sql = task.render_template("", template, dag_run.conf)
+
+    db_hook.run(sql=sql)
+
 
 # pylint: disable=unused-argument
 def success_branch_callable(*, dag_run: DagRun, **kwargs):
