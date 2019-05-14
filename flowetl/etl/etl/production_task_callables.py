@@ -78,7 +78,8 @@ def move_file_and_record_ingestion_state__callable(
     Function to deal with moving files between various mount directories along
     with recording the state of the ingestion. Since the directory structure
     reflects the state of ingestion we make use of the to_dir location to specify
-    the next state of the file being ingested.
+    the next state of the file being ingested. The actual change to the DB to record
+    new state is accomplished in the record_etl_state function.
 
     Parameters
     ----------
