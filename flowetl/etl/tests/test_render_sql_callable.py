@@ -12,7 +12,7 @@ from airflow.operators import BaseOperator
 from etl.production_task_callables import render_and_run_sql__callable
 
 
-class MockDagRun:
+class FakeDagRun:
     def __init__(self, conf):
         self.conf = conf
 
@@ -38,23 +38,24 @@ def test_render_and_run_sql_callable(tmpdir):
 
     # Mocks so we can use the templating feature of the operator this
     # callable runs in and a mock of the db_hook which will run the sql
-    mock_dag = DAG(dag_id="testing", default_args={"start_date": "2016-01-01"})
-    mock_task_op = BaseOperator(task_id="testing", dag=mock_dag)
+    fake_dag = DAG(dag_id="testing", default_args={"start_date": "2016-01-01"})
+    fake_task_op = BaseOperator(task_id="testing", dag=fake_dag)
     mock_pghook = MagicMock()
 
     # Mock of the config passed to the dag_run
     conf = {"number": 23, "template_path": Path("etl/voice")}
-    mock_dag_run = MockDagRun(conf=conf)
+    fake_dag_run = FakeDagRun(conf=conf)
 
     render_and_run_sql__callable(
-        dag_run=mock_dag_run,
+        dag_run=fake_dag_run,
         db_hook=mock_pghook,
-        task=mock_task_op,
+        task=fake_task_op,
         config_path=Path(config_dir),
         template_name=template_name,
     )
 
-    _, _, kwargs = mock_pghook.mock_calls[0]
+    assert len(mock_pghook.mock_calls) == 1
 
     # assert that the db_hook was called with correct sql
+    _, _, kwargs = mock_pghook.mock_calls[0]
     assert kwargs == {"sql": f"select {conf['number']}"}
