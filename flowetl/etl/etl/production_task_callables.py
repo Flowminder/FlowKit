@@ -45,7 +45,7 @@ def render_and_run_sql_callable(
         same as the task_id.
     """
     # dag_run.conf["template_path"] -> where the sql templates
-    # for this dag run live. Determined nby the type of the CDR
+    # for this dag run live. Determined by the type of the CDR
     # this dag is ingesting. If this is voice then template_path
     # will be 'etl/voice'...
     template_path = config_path / dag_run.conf["template_path"]
