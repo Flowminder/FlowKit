@@ -23,13 +23,22 @@ def render_sql_callable(
     template_name: str,
     **kwargs,
 ):
+    # dag_run.conf["template_path"] -> where the sql templates
+    # for this dag run live. Determined nby the type of the CDR
+    # this dag is ingesting. If this is voice then template_path
+    # will be 'etl/voice'...
     template_path = config_path / dag_run.conf["template_path"]
 
+    # template name matches the task_id this is being used
+    # in .If this is the transform task then will be transform'
+    # and thus the template we use will be 'etl/voice/transform.sql'
     template_path = template_path / f"{template_name}.sql"
     template = open(template_path).read()
 
+    # make use of the Operators templating functionality
     sql = task.render_template("", template, dag_run.conf)
 
+    # run the templated sql against DB
     db_hook.run(sql=sql)
 
 
