@@ -14,7 +14,7 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 USER root
 WORKDIR /usr/src/deps
 
-# This allows us to start airflow as a specified UID/GID - shouldn't really use in 
+# This allows us to start airflow as a specified UID/GID - shouldn't really use in
 # production so should perhaps rebuild for specific server when used in production
 RUN USER=airflow && \
         GROUP=airflow && \
@@ -26,6 +26,10 @@ RUN USER=airflow && \
 
 RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY ./entrypoint.sh /entrypoint.sh
+
+WORKDIR /libs
+COPY ./etl /libs/etl
+RUN pip install /libs/etl
 
 USER airflow
 COPY --chown=airflow:airflow ./dags/* ${AIRFLOW_HOME}/src/
