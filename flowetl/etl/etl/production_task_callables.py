@@ -39,7 +39,7 @@ def render_sql_callable(
         A hook to a DB - will most likely be the PostgresHook but could
         be other types of Airflow DB hooks.
     config_path : Path
-        Location of tools global config
+        Location of global config - where templates are stored.
     template_name : str
         The file name sans .sql that we wish to template. Most likely the
         same as the task_id.
