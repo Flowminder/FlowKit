@@ -13,6 +13,11 @@ class MockDagRun:
 
 
 def test_render_sql_callable(tmpdir):
+    """
+    Test that the render sql callable is able to construct the
+    correct sql from a template in the correct location and issues
+    this sql to the db_hook run command.
+    """
 
     # Make temp sql template in "config/etl/voice/init.sql" where
     # config is a temp dir
