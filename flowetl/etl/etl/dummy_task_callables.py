@@ -13,18 +13,19 @@ import logging
 from airflow.models import DagRun, TaskInstance
 
 # pylint: disable=unused-argument
-def dummy_callable(*, dag_run: DagRun, task_instance: TaskInstance, **kwargs):
+def dummy__callable(*, dag_run: DagRun, task_instance: TaskInstance, **kwargs):
     """
     Dummy python callable - raises an exception if the environment variable
     TASK_TO_FAIL is set to the name of the current task, otherwise succeeds
     silently.
     """
     logging.info(dag_run)
+    logging.info(kwargs)
     if os.environ.get("TASK_TO_FAIL", "") == task_instance.task_id:
         raise Exception
 
 
-def dummy_failing_callable(*, dag_run: DagRun, **kwargs):
+def dummy_failing__callable(*, dag_run: DagRun, **kwargs):
     """
     Dummy python callable raising an exception
     """

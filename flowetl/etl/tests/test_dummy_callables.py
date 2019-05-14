@@ -6,7 +6,7 @@
 import pytest
 
 from unittest.mock import patch, MagicMock, PropertyMock
-from etl.dummy_task_callables import dummy_callable, dummy_failing_callable
+from etl.dummy_task_callables import dummy__callable, dummy_failing__callable
 
 
 class DummyTaskInstance:
@@ -23,7 +23,7 @@ def test_dummy_callable_succeeds_with_no_TASK_TO_FAIL_env_var_set():
     task_id = "init"
     task_instance = DummyTaskInstance(task_id=task_id)
 
-    dummy_callable(dag_run=dag_run, task_instance=task_instance)
+    dummy__callable(dag_run=dag_run, task_instance=task_instance)
 
 
 def test_dummy_callable_succeeds_when_TASK_TO_FAIL_env_var_is_not_same_as_task_id():
@@ -37,7 +37,7 @@ def test_dummy_callable_succeeds_when_TASK_TO_FAIL_env_var_is_not_same_as_task_i
     task_instance = DummyTaskInstance(task_id=task_id)
 
     with patch("os.environ", {"TASK_TO_FAIL": TASK_TO_FAIL}):
-        dummy_callable(dag_run=dag_run, task_instance=task_instance)
+        dummy__callable(dag_run=dag_run, task_instance=task_instance)
 
 
 def test_dummy_callable_fails_when_TASK_TO_FAIL_env_var_is_same_as_task_id():
@@ -52,7 +52,7 @@ def test_dummy_callable_fails_when_TASK_TO_FAIL_env_var_is_same_as_task_id():
 
     with patch("os.environ", {"TASK_TO_FAIL": TASK_TO_FAIL}):
         with pytest.raises(Exception):
-            dummy_callable(dag_run=dag_run, task_instance=task_instance)
+            dummy__callable(dag_run=dag_run, task_instance=task_instance)
 
 
 def test_dummy_failing_callable():
@@ -60,4 +60,4 @@ def test_dummy_failing_callable():
     Test that the dummy_failing_callable raises an Exception
     """
     with pytest.raises(Exception):
-        dummy_failing_callable(dag_run={})
+        dummy_failing__callable(dag_run={})
