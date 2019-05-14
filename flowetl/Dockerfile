@@ -27,9 +27,8 @@ RUN USER=airflow && \
 RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY ./entrypoint.sh /entrypoint.sh
 
-WORKDIR /libs
-COPY ./etl /libs/etl
-RUN pip install /libs/etl
+COPY ./etl /opt/etl
+RUN pip install /opt/etl
 
 USER airflow
 COPY --chown=airflow:airflow ./dags/* ${AIRFLOW_HOME}/src/
