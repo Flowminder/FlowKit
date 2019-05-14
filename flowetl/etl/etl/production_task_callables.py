@@ -7,6 +7,7 @@
 Contains the definition of callables to be used in the production ETL dag.
 """
 import logging
+import shutil
 
 from pathlib import Path
 
@@ -66,7 +67,14 @@ def render_and_run_sql__callable(
 def move_and_record_state__callable(
     *, dag_run: DagRun, mount_paths: dict, from_dir: str, to_dir: str, **kwargs
 ):
-    pass
+    from_path = mount_paths[from_dir]
+    to_path = mount_paths[to_dir]
+
+    file_name = dag_run.conf["file_name"]
+
+    file_to_move = from_path / file_name
+    shutil.copy(str(file_to_move), str(to_path))
+    file_to_move.unlink()
 
 
 # pylint: disable=unused-argument
