@@ -40,6 +40,22 @@ describe("Login screen", function () {
         cy.get("#name").type("SERVER_TEST01");
         cy.contains("#name-helper-text").should("not.exist");
     });
+    it("Add server name more than 120 characters", function () {
+        cy.get("#new").click();
+        //adding username
+        cy.get("#name")
+            .type("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        //checking validation text
+        cy.get("#name-helper-text").should(
+            "have.text",
+            "Server name must be 120 characters or less."
+        );
+        cy.get("#name")
+            .type(" ")
+            .clear();
+        cy.get("#name").type("SERVER_TEST01");
+        cy.contains("#name-helper-text").should("not.exist");
+    });
     it("Add blank secret key", function () {
         cy.get("#new").click();
         //Add blank secret key
