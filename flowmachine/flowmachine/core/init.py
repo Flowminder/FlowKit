@@ -54,7 +54,7 @@ def connect(
         Port number to connect to flowdb
     flowdb_user : str, default "flowmachine"
         Name of user to connect to flowdb as
-    flowdb_password : str, default "foo"
+    flowdb_password : str
         Password to connect to flowdb
     flowdb_host : str, default "localhost"
         Hostname of flowdb server
@@ -66,7 +66,7 @@ def connect(
         Hostname for redis server.
     redis_port : int, default 6379
         Port the redis server is available on
-    redis_password : str, default "fm_redis"
+    redis_password : str
         Password for the redis instance
     conn : flowmachine.core.Connection
         Optionally provide an existing Connection object to use, overriding any the db options specified here.
@@ -153,7 +153,7 @@ def connect(
 
     if flowdb_password is None:
         raise ValueError(
-            "You must provide a secret named FLOWMACHINE_FLOWDB_PASSWORD, set an environment variable named FLOWMACHINE_FLOWDB_PASSWORD, or provide a flowdb_pass argument."
+            "You must provide a secret named FLOWMACHINE_FLOWDB_PASSWORD, set an environment variable named FLOWMACHINE_FLOWDB_PASSWORD, or provide a flowdb_password argument."
         )
 
     if redis_password is None:
