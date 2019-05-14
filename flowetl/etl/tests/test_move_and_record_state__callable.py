@@ -1,4 +1,5 @@
 from etl.production_task_callables import move_and_record_state__callable
+from pathlib import Path
 
 
 class FakeDagRun:
@@ -21,7 +22,14 @@ def test_move_and_record_state__callable(tmpdir):
 
     fake_dag_run = FakeDagRun(conf={})
 
-    move_and_record_state__callable(dag_run=fake_dag_run)
+    mount_paths = {"ingest": Path(from_dir), "archive": Path(to_dir)}
+
+    move_and_record_state__callable(
+        dag_run=fake_dag_run,
+        mount_paths=mount_paths,
+        from_dir="ingest",
+        to_dir="archive",
+    )
 
     assert len(from_dir.listdir()) == 0
     assert len(to_dir.listdir()) == 1

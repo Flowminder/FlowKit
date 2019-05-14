@@ -63,7 +63,9 @@ def render_and_run_sql__callable(
     db_hook.run(sql=sql)
 
 
-def move_and_record_state__callable(*, dag_run: DagRun, **kwargs):
+def move_and_record_state__callable(
+    *, dag_run: DagRun, mount_paths: dict, from_dir: str, to_dir: str, **kwargs
+):
     pass
 
 
