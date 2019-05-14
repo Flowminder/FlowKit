@@ -41,7 +41,7 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_
     _, _, kwargs = mock_record_etl_state.mock_calls[0]
 
     assert kwargs == {"file_name": file_name, "state": Path(to_dir).name}
-    assert not from_dir.listdir()
+    assert from_dir.listdir() == []
     assert len(to_dir.listdir()) == 1
 
     moved_file = to_dir.listdir()[0]
