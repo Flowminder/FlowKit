@@ -63,6 +63,10 @@ def render_and_run_sql__callable(
     db_hook.run(sql=sql)
 
 
+def move_and_record_state__callable(*, dag_run: DagRun, **kwargs):
+    pass
+
+
 # pylint: disable=unused-argument
 def success_branch__callable(*, dag_run: DagRun, **kwargs):
     """
