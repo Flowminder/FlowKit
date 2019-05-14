@@ -4,7 +4,8 @@
 
 # This file is executed in build.sh before building the docs.
 # The purpose is to speed up execution of the example notebooks,
-# by caching some of the queries beforehand.
+# by caching some of the queries beforehand (which is currently
+# not possible using flowclient directly).
 
 import flowmachine
 import pandas as pd
