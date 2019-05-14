@@ -23,6 +23,27 @@ def render_sql_callable(
     template_name: str,
     **kwargs,
 ):
+    """
+    This function takes information from the DagRun conf to locate
+    the correct sql template file, uses the DagRun conf to populate the
+    template and runs it against the DB.
+
+    Parameters
+    ----------
+    dag_run : DagRun
+        Passed as part of the Dag context - contains the config.
+    task : BaseOperator
+        Passed as part of the Dag context - access to the instantiated
+        operator this callable is running in.
+    db_hook : DbApiHook
+        A hook to a DB - will most likely be the PostgresHook but could
+        be other types of Airflow DB hooks.
+    config_path : Path
+        Location of tools global config
+    template_name : str
+        The file name sans .sql that we wish to template. Most likely the
+        same as the task_id.
+    """
     # dag_run.conf["template_path"] -> where the sql templates
     # for this dag run live. Determined nby the type of the CDR
     # this dag is ingesting. If this is voice then template_path
