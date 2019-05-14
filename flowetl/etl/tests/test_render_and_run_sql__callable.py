@@ -17,7 +17,7 @@ class FakeDagRun:
         self.conf = conf
 
 
-def test_render_and_run_sql__callable(tmpdir):
+def test_render_and_run_sql__callable(tmpdir, create_fake_dag_run):
     """
     Test that the render sql callable is able to construct the
     correct sql from a template in the correct location and issues
@@ -44,7 +44,7 @@ def test_render_and_run_sql__callable(tmpdir):
 
     # Mock of the config passed to the dag_run
     conf = {"number": 23, "template_path": Path("etl/voice")}
-    fake_dag_run = FakeDagRun(conf=conf)
+    fake_dag_run = create_fake_dag_run(conf=conf)
 
     # make sure the mock has not been called some other way
     assert mock_pghook.mock_calls == []

@@ -1,15 +1,15 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# -*- coding: utf-8 -*-
 from unittest.mock import patch, MagicMock
 from pathlib import Path
 
 from etl.production_task_callables import move_file_and_record_ingestion_state__callable
 
 
-class FakeDagRun:
-    def __init__(self, conf):
-        self.conf = conf
-
-
-def test_move_file_and_record_ingestion_state__callable(tmpdir):
+def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_run):
 
     from_dir = tmpdir.mkdir("from_dir")
     to_dir = tmpdir.mkdir("to_dir")
@@ -23,7 +23,7 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir):
     """
     file.write(file_contents)
 
-    fake_dag_run = FakeDagRun(conf={"file_name": file_name})
+    fake_dag_run = create_fake_dag_run(conf={"file_name": file_name})
 
     mount_paths = {"ingest": Path(from_dir), "archive": Path(to_dir)}
     mock_record_etl_state = MagicMock()
