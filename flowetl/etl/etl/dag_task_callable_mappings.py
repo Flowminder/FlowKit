@@ -7,32 +7,33 @@
 Mapping task id to a python callable. Allows for the specification of a set of
 dummy callables to be used for testing.
 """
+from functools import partial
 
-from etl.dummy_task_callables import dummy_callable, dummy_failing_callable
-from etl.production_task_callables import success_branch_callable
+from etl.dummy_task_callables import dummy__callable, dummy_failing__callable
+from etl.production_task_callables import success_branch__callable
 
 # callables to be used when testing the structure of the ETL DAG
 TEST_TASK_CALLABLES = {
-    "init": dummy_callable,
-    "extract": dummy_callable,
-    "transform": dummy_callable,
-    "load": dummy_callable,
-    "success_branch": success_branch_callable,
-    "archive": dummy_callable,
-    "quarantine": dummy_callable,
-    "clean": dummy_callable,
-    "fail": dummy_failing_callable,
+    "init": dummy__callable,
+    "extract": dummy__callable,
+    "transform": dummy__callable,
+    "load": dummy__callable,
+    "success_branch": success_branch__callable,
+    "archive": dummy__callable,
+    "quarantine": dummy__callable,
+    "clean": dummy__callable,
+    "fail": dummy_failing__callable,
 }
 
 # callables to be used in production
 PRODUCTION_TASK_CALLABLES = {
-    "init": dummy_callable,
-    "extract": dummy_callable,
-    "transform": dummy_callable,
-    "load": dummy_callable,
-    "success_branch": success_branch_callable,
-    "archive": dummy_callable,
-    "quarantine": dummy_callable,
-    "clean": dummy_callable,
-    "fail": dummy_failing_callable,
+    "init": dummy__callable,
+    "extract": dummy__callable,
+    "transform": dummy__callable,
+    "load": dummy__callable,
+    "success_branch": success_branch__callable,
+    "archive": dummy__callable,
+    "quarantine": dummy__callable,
+    "clean": dummy__callable,
+    "fail": dummy_failing__callable,
 }
