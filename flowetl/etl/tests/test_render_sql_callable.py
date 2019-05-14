@@ -9,7 +9,7 @@ from pathlib import Path
 from airflow import DAG
 from airflow.operators import BaseOperator
 
-from etl.production_task_callables import render_and_run_sql_callable
+from etl.production_task_callables import render_and_run_sql__callable
 
 
 class MockDagRun:
@@ -46,7 +46,7 @@ def test_render_and_run_sql_callable(tmpdir):
     conf = {"number": 23, "template_path": Path("etl/voice")}
     mock_dag_run = MockDagRun(conf=conf)
 
-    render_and_run_sql_callable(
+    render_and_run_sql__callable(
         dag_run=mock_dag_run,
         db_hook=mock_pghook,
         task=mock_task_op,

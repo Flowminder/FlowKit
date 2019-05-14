@@ -14,7 +14,7 @@ from airflow.models import DagRun, BaseOperator
 from airflow.hooks.dbapi_hook import DbApiHook
 
 # pylint: disable=unused-argument
-def render_and_run_sql_callable(
+def render_and_run_sql__callable(
     *,
     dag_run: DagRun,
     task: BaseOperator,
@@ -64,7 +64,7 @@ def render_and_run_sql_callable(
 
 
 # pylint: disable=unused-argument
-def success_branch_callable(*, dag_run: DagRun, **kwargs):
+def success_branch__callable(*, dag_run: DagRun, **kwargs):
     """
     Function to determine if we should follow the quarantine or
     the archive branch. If no downstream tasks have failed we follow
