@@ -7,6 +7,7 @@
 Contains the definition of callables to be used in the production ETL dag.
 """
 import logging
+import shutil
 
 from pathlib import Path
 
@@ -61,6 +62,49 @@ def render_and_run_sql__callable(
 
     # run the templated sql against DB
     db_hook.run(sql=sql)
+
+
+def record_etl_state(*, file_name: str, state: str):
+    # here we will record the state of the file ingestion in flowdb
+    # for now just does nothing...
+    pass
+
+
+# pylint: disable=unused-argument
+def move_file_and_record_ingestion_state__callable(
+    *, dag_run: DagRun, mount_paths: dict, from_dir: str, to_dir: str, **kwargs
+):
+    """
+    Function to deal with moving files between various mount directories along
+    with recording the state of the ingestion. Since the directory structure
+    reflects the state of ingestion we make use of the to_dir location to specify
+    the next state of the file being ingested. The actual change to the DB to record
+    new state is accomplished in the record_etl_state function.
+
+    Parameters
+    ----------
+    dag_run : DagRun
+        Passed as part of the Dag context - contains the config.
+    mount_paths : dict
+        A dictionary that stores the locations of each of the various
+        mount directories
+    from_dir : str
+        The location from which the file should be moved
+    to_dir : str
+        The location to which the file is being moved and the resulting state
+        of the file
+    """
+    from_path = mount_paths[from_dir]
+    to_path = mount_paths[to_dir]
+
+    file_name = dag_run.conf["file_name"]
+
+    file_to_move = from_path / file_name
+    shutil.copy(str(file_to_move), str(to_path))
+    file_to_move.unlink()
+
+    to_state = to_path.name
+    record_etl_state(file_name=file_name, state=to_state)
 
 
 # pylint: disable=unused-argument
