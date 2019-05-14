@@ -56,7 +56,7 @@ def render_and_run_sql_callable(
     template_path = template_path / f"{template_name}.sql"
     template = open(template_path).read()
 
-    # make use of the Operators templating functionality
+    # make use of the operator's templating functionality
     sql = task.render_template("", template, dag_run.conf)
 
     # run the templated sql against DB
