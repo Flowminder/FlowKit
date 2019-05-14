@@ -17,7 +17,7 @@ class FakeDagRun:
         self.conf = conf
 
 
-def test_render_and_run_sql_callable(tmpdir):
+def test_render_and_run_sql__callable(tmpdir):
     """
     Test that the render sql callable is able to construct the
     correct sql from a template in the correct location and issues
