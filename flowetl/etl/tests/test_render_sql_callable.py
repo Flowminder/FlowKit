@@ -1,10 +1,15 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# -*- coding: utf-8 -*-
 from unittest.mock import patch, MagicMock
 from pathlib import Path
 
 from airflow import DAG
 from airflow.operators import BaseOperator
 
-from etl.production_task_callables import render_sql_callable
+from etl.production_task_callables import render_and_run_sql_callable
 
 
 class MockDagRun:
@@ -12,7 +17,7 @@ class MockDagRun:
         self.conf = conf
 
 
-def test_render_sql_callable(tmpdir):
+def test_render_and_run_sql_callable(tmpdir):
     """
     Test that the render sql callable is able to construct the
     correct sql from a template in the correct location and issues
@@ -41,7 +46,7 @@ def test_render_sql_callable(tmpdir):
     conf = {"number": 23, "template_path": Path("etl/voice")}
     mock_dag_run = MockDagRun(conf=conf)
 
-    render_sql_callable(
+    render_and_run_sql_callable(
         dag_run=mock_dag_run,
         db_hook=mock_pghook,
         task=mock_task_op,

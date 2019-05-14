@@ -13,8 +13,8 @@ from pathlib import Path
 from airflow.models import DagRun, BaseOperator
 from airflow.hooks.dbapi_hook import DbApiHook
 
-
-def render_sql_callable(
+# pylint: disable=unused-argument
+def render_and_run_sql_callable(
     *,
     dag_run: DagRun,
     task: BaseOperator,
