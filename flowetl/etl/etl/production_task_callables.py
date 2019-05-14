@@ -33,7 +33,7 @@ def render_and_run_sql_callable(
     dag_run : DagRun
         Passed as part of the Dag context - contains the config.
     task : BaseOperator
-        Passed as part of the Dag context - access to the instantiated
+        Passed as part of the Dag context - provides access to the instantiated
         operator this callable is running in.
     db_hook : DbApiHook
         A hook to a DB - will most likely be the PostgresHook but could
