@@ -36,6 +36,9 @@ up-no_build:
 down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) down
 
+rm:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v
+
 
 # Note: the targets below are repetitive and could be simplified by using
 # a pattern rule as follows:
