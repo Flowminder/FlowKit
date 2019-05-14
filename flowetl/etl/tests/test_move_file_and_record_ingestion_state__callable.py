@@ -19,7 +19,7 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_
 
     file_contents = """
     Some contents in
-    a file..
+    a file...
     """
     file.write(file_contents)
 
