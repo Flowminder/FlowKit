@@ -124,7 +124,6 @@ class EventTableSubset(Query):
         self.start = start
         self.stop = stop
         self.hours = hours
-        self.subscriber_subset_ORIG = subscriber_subset
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
         if columns == ["*"]:
