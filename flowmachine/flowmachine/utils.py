@@ -457,6 +457,10 @@ def calculate_dependency_graph(query_obj, analyse=False):
 
     The resulting networkx object can then be visualised, or analysed.
 
+    The dependency graph includes the estimated cost of the query in the 'cost' attribute,
+    the query object the node represents in the 'query_object' attribute, and with the analyse
+    parameter set to true, the actual running time of the query in the `runtime` attribute.
+
     Parameters
     ----------
     query_obj : Query
