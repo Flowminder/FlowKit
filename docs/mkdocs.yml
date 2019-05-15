@@ -22,10 +22,19 @@ nav:
   - index.md
   - install.md
   - analyst.md
-  - developer.md
+  - Developer
+    - developer/developer.md
+    - developer/dev_environment_setup.md
+    - Architectural Decision Records (ADR):
+       - README.md
+       - 0001-pipenv-for-package-and-dependency-management.md
+       - 0002-pytest-for-testing.md
+       - 0003-http-api.md
+       - 0004-http-framework.md
+       - 0005-IPC-methods.md
+       - 0006-JWTs.md
   - administrator.md
   - license.md
-  - dev_environment_setup.md
   - Worked examples:
       - worked_examples/index.md
       - worked_examples/Flows.ipynb
