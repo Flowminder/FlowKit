@@ -29,17 +29,21 @@ class TokenDetails extends React.Component {
     nickName: {},
     rights: {},
     expiry: new Date(),
-    latest_expiry: new Date()
+    latest_expiry: new Date(),
+    username_helper_text: ""
   };
 
   handleSubmit = () => {
-    const { name, expiry, rights } = this.state;
+    const { name, expiry, rights, name_helper_text } = this.state;
     const { serverID, cancel } = this.props;
-    createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
-      json => {
-        cancel();
-      }
-    );
+    if (name && name_helper_text === "") {
+      createToken(name, serverID, new Date(expiry).toISOString(), rights)
+        .then(
+          json => {
+            cancel();
+          }
+        );
+    }
   };
 
   handleDateChange = date => {
@@ -67,9 +71,22 @@ class TokenDetails extends React.Component {
   };
 
   handleNameChange = event => {
-    this.setState({
-      name: event.target.value
-    });
+    var letters = /^[A-Za-z0-9_]+$/;
+    let name = event.target.value;
+    if (name.match(letters)) {
+      this.setState(Object.assign(this.state, {
+        name_helper_text: ""
+      }));
+    } else if (name.length == 0) {
+      this.setState(Object.assign(this.state, {
+        name_helper_text: "Token name can not be blank."
+      }));
+    } else {
+      this.setState(Object.assign(this.state, {
+        name_helper_text:
+          "Token name may only contain letters, numbers and underscores."
+      }));
+    }
   };
 
   isAggUnitPermitted = (claim, key) => {
@@ -162,12 +179,14 @@ class TokenDetails extends React.Component {
         <Divider />
         <Grid item xs={12}>
           <TextField
-            id="standard-name"
+            id="tokenname"
             label="Name"
             className={classes.textField}
             value={name}
             onChange={this.handleNameChange}
             margin="normal"
+            error={this.state.name_helper_text}
+            helperText={this.state.name_helper_text}
           />
         </Grid>
         <Grid item xs={12}>
