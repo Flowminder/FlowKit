@@ -328,10 +328,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:0a73e8bb2ff2feecfc5d56e6f458f5b99290ef34f565ffb2665801ff7de6af7a",
-                "sha256:7fad9770a8778f9576693f0cc29c7dcc36964df916b83734f4431c0e612a7fbc"
+                "sha256:865856ebb55c4dcd0630cdd8f3331a1847a819dda7e8c750d3db6f2aa6c0209c",
+                "sha256:a0b915f0815982fb2a09161cb8f31708052d0951c3ba433ccc5e1aa276507ca6"
             ],
-            "version": "==0.15.2"
+            "version": "==0.15.4"
         },
         "wsproto": {
             "hashes": [
@@ -358,11 +358,11 @@
         },
         "asynctest": {
             "hashes": [
-                "sha256:ade427a711d18016f35fb0c5d412f0ed63fb074a6084b67ff2dad48f50b0d6ca",
-                "sha256:b29ee07019088f6f33fd7ab6826308bbd7ea8bc16ba2f0aa0f70551e70054935"
+                "sha256:5da6118a7e6d6b54d83a8f7197769d046922a44d2a99c21382f0a6e4fadae676",
+                "sha256:c27862842d15d83e6a34eb0b2866c323880eb3a75e4485b079ea11748fd77fac"
             ],
             "index": "pypi",
-            "version": "==0.12.4"
+            "version": "==0.13.0"
         },
         "atomicwrites": {
             "hashes": [
