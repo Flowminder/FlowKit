@@ -83,7 +83,7 @@ executors:
         default: "2015-01-01"
       disaster_end_date:
         type: string
-        default: "2015-01-01"
+        default: "2015-01-01" 
     environment:
         POSTGRES_PASSWORD: flowflow
         MPLBACKEND: "agg"
@@ -108,8 +108,8 @@ executors:
       - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_SHA1
         environment:
           N_DAYS: <<parameters.num_days>>
-          DISASTER_START_DATE: <<parameters.disaster_start_date>>
-          DISASTER_END_DATE: <<parameters.disaster_end_date>>
+          DISASTER_START: <<parameters.disaster_start_date>>
+          DISASTER_END: <<parameters.disaster_end_date>>
           N_SUBSCRIBERS: <<parameters.num_subscribers>>
           N_CELLS: <<parameters.num_cells>>
           N_SITES: <<parameters.num_sites>>
@@ -520,40 +520,35 @@ jobs:
   run_flowetl_tests:
     docker:
       - image: circleci/python:3.7
+    environment:
+      AIRFLOW_HOME: ./test_airflow_home
+      TESTING: "true"
     working_directory: /home/circleci/project/
     steps:
       - checkout:
           path: /home/circleci/project/
       - setup_remote_docker
+      - restore_cache:
+          key: flowetl-deps-1-{{ checksum "flowetl/Pipfile.lock"}}
       - run:
-          name: test running with specified UID/GID for flowetl
+          name: Install pipenv
+          command: pip install --upgrade pip pipenv
+      - run:
+          name: Install python dependencies
           command: |
-            expecteduser=1003
-            expectedgroup=1002
-            gotuser=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -u'`
-            gotgroup=`docker run --user ${expecteduser}:${expectedgroup} flowminder/flowetl:${CIRCLE_SHA1} bash -c 'id -g'`
-            if [ $gotuser -ne $expecteduser -a  $gotgroup -ne $expectedgroup ]; then
-              echo "Error: not running as correct user and group."
-              exit 1
-            else
-              echo "Running as correct user and group."
-            fi
-      - run: 
-          name: test that airflow picks up dag
+            PIPENV_PIPFILE=flowetl/Pipfile pipenv install --deploy --dev
+      - run:
+          name: run flowetl integration tests
           command: |
-            # temporary test to make sure dags getting picked up by airflow
-            # this will be tested via a pytest integration test eventually 
-            docker run --name flowetl -d flowminder/flowetl:$CIRCLE_SHA1
-            sleep 5
-            expecteddag=sampledag
-            gotdag=`docker exec -it flowetl airflow list_dags | tail -2 | head -1 | tr -d '[:space:]'`
-            if [ $gotdag != $expecteddag ]; then
-              echo "Error: expected DAG not present."
-              exit 1
-            else
-              echo "Expected DAG present."
-            fi
-            docker stop flowetl
+            cd flowetl
+            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
+      - run:
+          name: run etl module unit tests
+          command: |
+            cd flowetl
+            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml ./etl/tests
+      - store_test_results:
+          path: flowetl/test_results
 
   integration_tests:
     executor:

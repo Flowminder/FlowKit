@@ -6,7 +6,7 @@
 #  FLOWETL
 #  -----
 
-FROM puckel/docker-airflow
+FROM greenape/docker-airflow
 
 ARG AIRFLOW_HOME=/usr/local/airflow
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/src
@@ -14,7 +14,7 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 USER root
 WORKDIR /usr/src/deps
 
-# This allows us to start airflow as a specified UID/GID - shouldn't really use in 
+# This allows us to start airflow as a specified UID/GID - shouldn't really use in
 # production so should perhaps rebuild for specific server when used in production
 RUN USER=airflow && \
         GROUP=airflow && \
@@ -25,10 +25,13 @@ RUN USER=airflow && \
         printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
 
 RUN mv /entrypoint.sh /defaultentrypoint.sh
-COPY entrypoint.sh /entrypoint.sh
+COPY ./entrypoint.sh /entrypoint.sh
+
+COPY ./etl /opt/etl
+RUN pip install /opt/etl
 
 USER airflow
-COPY --chown=airflow:airflow dags/* ${AIRFLOW_HOME}/src/
+COPY --chown=airflow:airflow ./dags/* ${AIRFLOW_HOME}/src/
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["webserver"] # set default arg for entrypoint
