@@ -125,3 +125,7 @@ def construct_etl_dag(*, task_callable_mapping: dict, default_args: dict) -> DAG
         success_branch >> quarantine >> fail  # pylint: disable=pointless-statement
 
     return dag
+
+
+def get_session():
+    pass
