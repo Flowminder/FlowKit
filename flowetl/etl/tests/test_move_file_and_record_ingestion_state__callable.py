@@ -10,7 +10,10 @@ from etl.production_task_callables import move_file_and_record_ingestion_state__
 
 
 def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_run):
-
+    """
+    Tests that we are able to move a file from `from_dir` to `to_dir` and that we
+    issue the command to set new state of the file within the ingestion process.
+    """
     from_dir = tmpdir.mkdir("from_dir")
     to_dir = tmpdir.mkdir("to_dir")
 
