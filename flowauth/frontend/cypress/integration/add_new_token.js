@@ -11,33 +11,59 @@ describe("Login screen", function () {
         cy.visit("/");
         cy.get("#servers").click();
     });
-    it("Add server name with space", function () {
+    it("Add token name with space", function () {
         cy.get("#new").click();
         // adding username with space
-        cy.get("#tokenname").type("Token ");
+        cy.get("#name").type("Token ", {
+            force: true
+        });
         //checking validation text
         cy.get("#name-helper-text").should(
             "have.text",
             "Token name may only contain letters, numbers and underscores."
         );
-        // cy.get("#tokenname")
-        //     .type(" ")
-        //     .clear();
-        cy.get("#tokenname").type("TOKEN_TEST01");
+        cy.get("#name")
+            .clear({
+                force: true
+            });
+
+        cy.get("#name").type("TOKEN_TEST01", {
+            force: true
+        });
         cy.contains("#name-helper-text").should("not.exist");
     });
     it("Add blank token name", function () {
         cy.get("#new").click();
         //adding blank token name
-        cy.get("#tokenname")
-            .type(" ")
-            .clear();
+        cy.get("#name").type(" ", {
+            force: true
+        });
+        cy.get("#name")
+            .clear({
+                force: true
+            });
         //checking validation text
         cy.get("#name-helper-text").should(
             "have.text",
             "Token name can not be blank."
         );
-        cy.get("#tokenname").type("TOKEN_TEST01");
+        cy.get("#name")
+            .clear({
+                force: true
+            });
+        cy.get("#name").type("TOKEN_TEST01", {
+            force: true
+        });
         cy.contains("#name-helper-text").should("not.exist");
+    });
+    it("Add new token", function () {
+        cy.get("#new").click();
+        //Add new token 
+        cy.get("#name").type("TOKEN_TEST01", {
+            force: true
+        });
+        cy.contains("Save").click();
+        cy.wait(500);
+        cy.contains("TOKEN_TEST01").should("be.visible");
     });
 });
