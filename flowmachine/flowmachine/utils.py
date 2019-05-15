@@ -470,15 +470,40 @@ def calculate_dependency_graph(query_obj, analyse=False):
 
     Examples
     --------
-    >>> import flowmachine
-    >>> flowmachine.connect()
-    >>> from flowmachine.features import daily_location
-    >>> g = daily_location("2016-01-01").dependency_graph()
-    >>> from networkx.drawing.nx_agraph import write_dot
-    >>> write_dot(g, "daily_location_dependencies.dot")
-    >>> g = daily_location("2016-01-01").dependency_graph(True)
-    >>> from networkx.drawing.nx_agraph import write_dot
-    >>> write_dot(g, "daily_location_dependencies_runtimes.dot")
+
+    A useful way to visualise the dependency graph in a Jupyter notebook is to
+    export it to an SVG string and display it directly in the notebook:
+
+        >>> import flowmachine
+        >>> from flowmachine.features import daily_location
+        >>> from flowmachine.utils import calculate_dependency_graph
+        >>> from io import BytesIO
+        >>> flowmachine.connect(flowdb_user="flowdb", flowdb_password="flowflow", redis_password="fm_redis")
+        >>> dl = daily_location(date="2016-01-01")
+        >>> G = calculate_dependency_graph(dl, analyse=True)
+        >>> A = nx.nx_agraph.to_agraph(G)
+        >>> svg_str = BytesIO()
+        >>> A.draw(svg_str, format="svg", prog="dot")
+        >>> svg_str = svg_str.getvalue().decode("utf8")
+        >>> SVG(svg_str)  # within a Jupyter notebook this will be displayed as a graph
+
+    Alternatively, you can export the dependency graph to a .dot file as follows:
+
+        >>> import flowmachine
+        >>> from flowmachine.features import daily_location
+        >>> from networkx.drawing.nx_agraph import write_dot
+        >>> flowmachine.connect()
+        >>> G = daily_location("2016-01-01").dependency_graph()
+        >>> write_dot(G, "daily_location_dependencies.dot")
+        >>> G = daily_location("2016-01-01").dependency_graph(True)
+        >>> write_dot(G, "daily_location_dependencies_runtimes.dot")
+
+    The resulting .dot file then be converted to a .pdf file using the external
+    tool `dot` which comes as part of the GraphViz [1] package:
+
+        dot -Tpdf daily_location_dependencies.dot -o daily_location_dependencies.pdf
+
+    [1] https://www.graphviz.org/
 
     Notes
     -----
