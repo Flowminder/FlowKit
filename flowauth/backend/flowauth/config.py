@@ -36,6 +36,8 @@ def getsecret(key: str, default: str) -> str:
         return default
 
 
+# Duplicated in flowkit_jwt_generator (cannot re-use the implementation
+# there because the module is outside the docker build context for flowauth).
 def load_private_key(key_string: str) -> _RSAPrivateKey:
     """
     Load a private key from a string, which may be base64 encoded.

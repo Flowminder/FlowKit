@@ -23,6 +23,8 @@ permissions_types = {"run": True, "poll": True, "get_result": True}
 aggregation_types = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 
 
+# Duplicated in FlowAuth (cannot use this implementation there because
+# this module is outside the docker build context for FlowAuth).
 def load_private_key(key_string: str) -> _RSAPrivateKey:
     """
     Load a private key from a string, which may be base64 encoded.
@@ -48,6 +50,8 @@ def load_private_key(key_string: str) -> _RSAPrivateKey:
             raise ValueError("Failed to load key.")
 
 
+# Duplicated in FlowAPI (cannot use this implementation there because
+# this module is outside the docker build context for FlowAuth).
 def load_public_key(key_string: str) -> _RSAPublicKey:
     """
     Load a public key from a string, which may be base64 encoded.
@@ -178,10 +182,7 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
     if audience is None and "FLOWAPI_IDENTIFIER" in os.environ:
         audience = os.environ["FLOWAPI_IDENTIFIER"]
 
-    secret = os.getenv("JWT_SECRET_KEY")
-    if secret is None:
-        raise EnvironmentError("JWT_SECRET_KEY environment variable not set.")
-    private_key = os.getenv("PRIVATE_JWT_SIGNING_KEY")
+    private_key = load_private_key(os.getenv("PRIVATE_JWT_SIGNING_KEY"))
     if private_key is None:
         raise EnvironmentError(
             "PRIVATE_JWT_SIGNING_KEY environment variable must be set."
@@ -193,7 +194,7 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
         return generate_token(
             flowapi_identifier=audience,
             username="test",
-            audience=secret,
+            audience=audience,
             private_key=private_key,
             lifetime=timedelta(seconds=90),
             claims=claims,
