@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
+import pendulum
+
 from unittest.mock import patch, Mock
 from pathlib import Path
 
@@ -18,6 +20,8 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_
     to_dir = tmpdir.mkdir("to_dir")
 
     file_name = "file_to_move"
+    cdr_type = "calls"
+    cdr_date = pendulum.parse("2016-01-01").date()
     file = from_dir.join(file_name)
 
     file_contents = """
@@ -26,24 +30,42 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_
     """
     file.write(file_contents)
 
-    fake_dag_run = create_fake_dag_run(conf={"file_name": file_name})
+    fake_dag_run = create_fake_dag_run(
+        conf={"file_name": file_name, "cdr_type": cdr_type, "cdr_date": cdr_date}
+    )
 
     mount_paths = {"ingest": Path(from_dir), "archive": Path(to_dir)}
-    mock_record_etl_state = Mock()
+    mock_ETLRecord__set_state = Mock()
 
-    assert len(mock_record_etl_state.mock_calls) == 0
-    with patch("etl.production_task_callables.record_etl_state", mock_record_etl_state):
-        move_file_and_record_ingestion_state__callable(
-            dag_run=fake_dag_run,
-            mount_paths=mount_paths,
-            from_dir="ingest",
-            to_dir="archive",
-        )
+    # don't actually need a real session
+    mock_get_session = Mock()
+    mock_get_session.return_value = "session"
 
-    assert len(mock_record_etl_state.mock_calls) == 1
-    _, _, kwargs = mock_record_etl_state.mock_calls[0]
+    assert len(mock_ETLRecord__set_state.mock_calls) == 0
+    assert len(mock_get_session.mock_calls) == 0
 
-    assert kwargs == {"file_name": file_name, "state": Path(to_dir).name}
+    with patch(
+        "etl.production_task_callables.ETLRecord.set_state", mock_ETLRecord__set_state
+    ):
+        with patch("etl.production_task_callables.get_session", mock_get_session):
+            move_file_and_record_ingestion_state__callable(
+                dag_run=fake_dag_run,
+                mount_paths=mount_paths,
+                from_dir="ingest",
+                to_dir="archive",
+            )
+
+    assert len(mock_ETLRecord__set_state.mock_calls) == 1
+    assert len(mock_get_session.mock_calls) == 1
+    _, _, kwargs = mock_ETLRecord__set_state.mock_calls[0]
+
+    assert kwargs == {
+        "file_name": file_name,
+        "cdr_type": cdr_type,
+        "cdr_date": cdr_date,
+        "state": Path(to_dir).name,
+        "session": "session",
+    }
     assert from_dir.listdir() == []
     assert len(to_dir.listdir()) == 1
 
