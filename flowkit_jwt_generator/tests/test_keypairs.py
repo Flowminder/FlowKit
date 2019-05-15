@@ -1,7 +1,10 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import base64
 
 import pytest
-from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 from flowkit_jwt_generator import generate_keypair
@@ -53,7 +56,7 @@ def test_load_base64_encoded_public_key():
     )
 
 
-@pytest.mark.parametrize("func", [load_public_key, load_public_key])
+@pytest.mark.parametrize("func", [load_public_key, load_private_key])
 def test_bad_key_error(func):
     """
     Strings which aren't a key, or a base64 encoded key raise a valueerror.

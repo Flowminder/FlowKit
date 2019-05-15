@@ -36,6 +36,7 @@ if [ "$CI" != "true" ]; then
 fi
 
 pipenv install
+pipenv run python cache_queries.py
 pipenv run flowmachine &
 echo "Started FlowMachine."
 pipenv run quart run --port 9090 &
@@ -45,4 +46,4 @@ curl http://localhost:9090/api/0/spec/openapi-redoc.json -o source/_static/opena
 echo "Started FlowAPI."
 echo "Starting build."
 
-BRANCH=${CIRCLE_BRANCH:="master"} pipenv run mkdocs "${@:-build}"
+BRANCH=${CIRCLE_BRANCH:="master"} FLOWMACHINE_LOG_LEVEL=error pipenv run mkdocs "${@:-build}"

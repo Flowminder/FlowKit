@@ -5,9 +5,9 @@ import base64
 import datetime
 import os
 import uuid
-from binascii import Error
+import binascii
 from json import JSONEncoder
-from typing import Dict, List, Union, Callable, Tuple
+from typing import Dict, List, Union, Callable, Tuple, Optional
 from collections import ChainMap
 from datetime import timedelta
 import click
@@ -44,7 +44,7 @@ def load_private_key(key_string: str) -> _RSAPrivateKey:
     except ValueError:
         try:
             return load_private_key(base64.b64decode(key_string).decode())
-        except (Error, ValueError):
+        except (binascii.Error, ValueError):
             raise ValueError("Failed to load key.")
 
 
@@ -69,7 +69,7 @@ def load_public_key(key_string: str) -> _RSAPublicKey:
     except ValueError:
         try:
             return load_public_key(base64.b64decode(key_string).decode())
-        except (Error, ValueError):
+        except (binascii.Error, ValueError):
             raise ValueError("Failed to load key.")
 
 
@@ -101,7 +101,11 @@ def generate_keypair() -> Tuple[bytes, bytes]:
     return private_key_bytes, public_key_bytes
 
 
+# Duplicated in FlowAuth (cannot use this implementation there because
+# this module is outside the docker build context for FlowAuth).
 def generate_token(
+    *,
+    flowapi_identifier: Optional[str] = None,
     username: str,
     audience: str,
     private_key: str,
@@ -122,12 +126,14 @@ def generate_token(
         Lifetime from now of the token
     claims : dict
         Dictionary of claims the token will grant
+    flowapi_identifier : str, optional
+        Optionally provide a string to identify the audience of the token
 
     Examples
     --------
-    >>> generate_token("TEST_USER","SECRET",datetime.timedelta(5),{"daily_location":{"permissions": {"run":True},)
-            "spatial_aggregation": ["admin3"}})
-    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTczMDMyOTMsIm5iZiI6MTU1NzMwMzI5MywianRpIjoiOTRjZWMxODQtZTc4Mi00ZDk3LTkxNDYtNTczZjlkMTBlNDI2IiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzczNTI5M30.CG7xlsyaKywK4lHpnlpI-DlNk4wdMNufrguz4Y6qDi4'
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key="SECRET",lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
+            "spatial_aggregation": ["admin3"]}})
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
 
     Returns
     -------
@@ -146,21 +152,31 @@ def generate_token(
         identity=username,
         exp=now + lifetime,
     )
+    if flowapi_identifier is not None:
+        token_data["aud"] = flowapi_identifier
     return jwt.encode(
         payload=token_data, key=private_key, algorithm="RS256", json_encoder=JSONEncoder
     ).decode("utf-8")
 
 
 @pytest.fixture
-def access_token_builder() -> Callable:
+def access_token_builder(audience: Optional[str] = None) -> Callable:
     """
     Fixture which builds short-life access tokens.
+
+    Parameters
+    ----------
+    audience : str, default None
+        Optionally specify an audience for the token
 
     Returns
     -------
     function
         Function which returns a token encoding the specified claims.
     """
+
+    if audience is None and "FLOWAPI_IDENTIFIER" in os.environ:
+        audience = os.environ["FLOWAPI_IDENTIFIER"]
 
     secret = os.getenv("JWT_SECRET_KEY")
     if secret is None:
@@ -175,6 +191,7 @@ def access_token_builder() -> Callable:
         claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]]
     ) -> str:
         return generate_token(
+            flowapi_identifier=audience,
             username="test",
             audience=secret,
             private_key=private_key,
@@ -253,10 +270,10 @@ def universal_access_token(flowapi_url: str, access_token_builder: Callable) -> 
 
 @click.group(chain=True)
 @click.argument("username", type=str)
-@click.argument("audience", type=str)
 @click.argument("private-key", type=str, envvar="PRIVATE_JWT_SIGNING_KEY")
 @click.argument("lifetime", type=int)
-def print_token(username, audience, private_key, lifetime):
+@click.argument("audience", type=str)
+def print_token(username, private_key, lifetime, audience):
     """
     Generate a JWT token for access to FlowAPI.
 
@@ -266,19 +283,29 @@ def print_token(username, audience, private_key, lifetime):
 
     For example:
 
+
     generate-jwt TEST_USER TEST_SERVER 1 --all-access http://localhost:9090
 
     Or,
 
     generate-jwt TEST_USER TEST_SERVER 1 --query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
+
+    \b
+    generate-jwt TEST_USER SECRET 1 TEST_SERVER --all-access http://localhost:9090
+
+    Or,
+
+    \b
+    generate-jwt TEST_USER SECRET 1 TEST_SERVER --query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
     """
     pass
 
 
 @print_token.resultcallback()
-def output_token(claims, username, audience, private_key, lifetime):
+def output_token(claims, username, private_key, lifetime, audience):
     click.echo(
         generate_token(
+            flowapi_identifier=audience,
             username=username,
             audience=audience,
             private_key=private_key,

@@ -8,7 +8,7 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-login = "*"
 flask-principal = "*"
-flask-jwt-extended = "*"
+pyjwt = "*"
 flask-wtf =  "*"
 zxcvbn = "*"
 versioneer = "*"
@@ -22,6 +22,7 @@ cryptography = "*"
 pytest = "*"
 pytest-cov = "*"
 "flowauth" = {editable = true, path = "./backend"}
+flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 
 [requires]
 python_version = "3.6"

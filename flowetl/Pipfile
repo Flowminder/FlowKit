@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = "==19.3b0"
+apache-airflow = "==1.10.3"
+pylint = "*"
+pytest = "*"
+docker = "*"
+ipython = "*"
+etl = {editable = true,path = "./etl"}
+
+[packages]
+
+[requires]
+python_version = "3.7"

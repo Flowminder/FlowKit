@@ -61,12 +61,12 @@ def test_param_priority(mocked_connections, monkeypatch):
     )
     connect(
         log_level="dummy_log_level",
-        db_port=1234,
-        db_user="dummy_db_user",
-        db_pass="dummy_db_pass",
-        db_host="dummy_db_host",
-        db_connection_pool_size=6789,
-        db_connection_pool_overflow=1011,
+        flowdb_port=1234,
+        flowdb_user="dummy_db_user",
+        flowdb_password="dummy_db_pass",
+        flowdb_host="dummy_db_host",
+        flowdb_connection_pool_size=6789,
+        flowdb_connection_pool_overflow=1011,
         redis_host="dummy_redis_host",
         redis_port=1213,
         redis_password="dummy_redis_password",
@@ -132,7 +132,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
     core_set_log_level_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
         mocked_connections
     )
-    connect(db_pass="foo", redis_password="fm_redis")
+    connect(flowdb_password="foo", redis_password="fm_redis")
     core_set_log_level_mock.assert_called_with("flowmachine.debug", "error")
     core_init_Connection_mock.assert_called_with(
         port=9000,
@@ -153,7 +153,7 @@ def test_connect_defaults(mocked_connections, monkeypatch):
 
 @pytest.mark.usefixtures("clean_env")
 @pytest.mark.parametrize(
-    "args", [{}, {"db_pass": "foo"}, {"redis_password": "fm_redis"}]
+    "args", [{}, {"flowdb_password": "foo"}, {"redis_password": "fm_redis"}]
 )
 def test_connect_passwords_required(args):
     """Test connect raises a valueerror if no password is set for db or redis"""

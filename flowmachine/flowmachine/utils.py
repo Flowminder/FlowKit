@@ -6,21 +6,18 @@
 """
 Various simple utilities.
 """
-from time import sleep
 
 import datetime
-
-
+import networkx as nx
+import structlog
+import sys
 from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
-
-
+from time import sleep
 from typing import List, Union
 
 from flowmachine.core.errors import BadLevelError
-
-import structlog
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -377,9 +374,141 @@ def sort_recursively(d):
             d_new[key] = sort_recursively(d[key])
         return d_new
     elif isinstance(d, list):
-        try:
-            return sorted(d, key=to_nested_list)
-        except:
-            breakpoint()
+        return sorted(d, key=to_nested_list)
     else:
         return d
+
+
+def print_dependency_tree(query_obj, stream=None, indent_level=0):
+    """
+    Print the dependencies of a flowmachine query in a tree-like structure.
+
+    Parameters
+    ----------
+    query_obj : Query
+        An instance of a query object.
+    stream : io.IOBase, optional
+        The stream to which the output should be written (default: stdout).
+    indent_level : int
+        The current level of indentation.
+    """
+    stream = stream or sys.stdout
+    indent_level = indent_level or 0
+
+    indent_per_level = 3
+    indent = " " * (indent_per_level * indent_level - 1)
+    prefix = "" if indent_level == 0 else "- "
+    stream.write(f"{indent}{prefix}{query_obj}\n")
+    deps_sorted_by_query_id = sorted(query_obj.dependencies, key=lambda q: q.md5)
+    for dep in deps_sorted_by_query_id:
+        print_dependency_tree(dep, indent_level=indent_level + 1, stream=stream)
+
+
+def _get_query_attrs_for_dependency_graph(query_obj, analyse=False):
+    """
+    Helper method which returns information about this query for use in a dependency graph.
+
+    Parameters
+    ----------
+    query_obj : Query
+        Query object to return information for.
+    analyse : bool
+        Set to True to get actual runtimes for queries. Note that this will actually run the query!
+
+    Returns
+    -------
+    dict
+        Dictionary containing the keys "name", "stored", "cost" and "runtime" (the latter is only
+        present if `analyse=True`.
+        Example return value: `{"name": "DailyLocation", "stored": False, "cost": 334.53, "runtime": 161.6}`
+    """
+
+    from flowmachine.core.subscriber_subsetter import SubscriberSubsetterBase
+
+    if isinstance(query_obj, SubscriberSubsetterBase):
+        # This special case is only needed because SubscriberSubsetterBase
+        # currently inherits from flowmachine.Query. However, since this
+        # class doesn't really represent a full flowmachine.Query
+        # (and this inheritance will be removed in the long run)
+        # we can't return meaningful values here, so we just return
+        # a dictionary with the correct keys but no actual values.
+        attrs = {}
+        attrs["name"] = query_obj.__class__.__name__
+        attrs["stored"] = "N/A"
+        attrs["cost"] = "N/A"
+        attrs["runtime"] = "N/A"
+        return attrs
+
+    expl = query_obj.explain(format="json", analyse=analyse)[0]
+    attrs = {}
+    attrs["name"] = query_obj.__class__.__name__
+    attrs["stored"] = query_obj.is_stored
+    attrs["cost"] = expl["Plan"]["Total Cost"]
+    if analyse:
+        attrs["runtime"] = expl["Execution Time"]
+    return attrs
+
+
+def calculate_dependency_graph(query_obj, analyse=False):
+    """
+    Produce a graph of all the queries that go into producing this
+    one, with their estimated run costs, and whether they are stored
+    as node attributes.
+
+    The resulting networkx object can then be visualised, or analysed.
+
+    Parameters
+    ----------
+    query_obj : Query
+        Query object to produce a dependency graph for.
+    analyse : bool
+        Set to True to get actual runtimes for queries. Note that this will actually run the query!
+
+    Returns
+    -------
+    networkx.DiGraph
+
+    Examples
+    --------
+    >>> import flowmachine
+    >>> flowmachine.connect()
+    >>> from flowmachine.features import daily_location
+    >>> g = daily_location("2016-01-01").dependency_graph()
+    >>> from networkx.drawing.nx_agraph import write_dot
+    >>> write_dot(g, "daily_location_dependencies.dot")
+    >>> g = daily_location("2016-01-01").dependency_graph(True)
+    >>> from networkx.drawing.nx_agraph import write_dot
+    >>> write_dot(g, "daily_location_dependencies_runtimes.dot")
+
+    Notes
+    -----
+    The queries listed as dependencies are not _guaranteed_ to be
+    used in the actual running of a query, only to be referenced by it.
+    """
+    g = nx.DiGraph()
+    openlist = [(0, query_obj)]
+    deps = []
+
+    while openlist:
+        y, x = openlist.pop()
+        deps.append((y, x))
+
+        openlist += list(zip([x] * len(x.dependencies), x.dependencies))
+
+    _, y = zip(*deps)
+    for n in set(y):
+        attrs = _get_query_attrs_for_dependency_graph(n, analyse=analyse)
+        attrs["shape"] = "rect"
+        attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
+        if analyse:
+            attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
+        if attrs["stored"]:
+            attrs["fillcolor"] = "green"
+            attrs["style"] = "filled"
+        g.add_node("x{}".format(n.md5), **attrs)
+
+    for x, y in deps:
+        if x != 0:
+            g.add_edge(*["x{}".format(z.md5) for z in (x, y)])
+
+    return g

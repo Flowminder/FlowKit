@@ -15,13 +15,21 @@ def test_universal_token_builder(dummy_flowapi):
     runner = CliRunner()
     result = runner.invoke(
         print_token,
-        ["DUMMY_USER", os.environ["JWT_SECRET_KEY"], 1, "--all-access", "DUMMY_URL"],
+        [
+            "DUMMY_USER",
+            os.environ["JWT_SECRET_KEY"],
+            1,
+            os.environ["FLOWAPI_IDENTIFIER"],
+            "--all-access",
+            "DUMMY_URL",
+        ],
     )
     decoded = jwt.decode(
         jwt=result.output.strip(),
         key=os.environ["JWT_SECRET_KEY"],
         verify=True,
         algorithms=["HS256"],
+        audience=os.environ["FLOWAPI_IDENTIFIER"],
     )
     assert result.exit_code == 0
     assert decoded["user_claims"] == dummy_flowapi
@@ -38,6 +46,7 @@ def test_token_builder():
             "DUMMY_USER",
             os.environ["JWT_SECRET_KEY"],
             1,
+            os.environ["FLOWAPI_IDENTIFIER"],
             "--query",
             "-p",
             "run",
@@ -57,6 +66,7 @@ def test_token_builder():
         key=os.environ["JWT_SECRET_KEY"],
         verify=True,
         algorithms=["HS256"],
+        audience=os.environ["FLOWAPI_IDENTIFIER"],
     )
     assert result.exit_code == 0
     assert decoded["identity"] == "DUMMY_USER"
@@ -77,6 +87,13 @@ def test_token_builder_prompts_with_no_perms():
     runner = CliRunner()
     result = runner.invoke(
         print_token,
-        ["DUMMY_USER", os.environ["JWT_SECRET_KEY"], 1, "--query", "DUMMY_QUERY"],
+        [
+            "DUMMY_USER",
+            os.environ["JWT_SECRET_KEY"],
+            1,
+            os.environ["FLOWAPI_IDENTIFIER"],
+            "--query",
+            "DUMMY_QUERY",
+        ],
     )
     assert result.exit_code == 1

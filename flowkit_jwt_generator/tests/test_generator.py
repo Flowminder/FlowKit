@@ -20,3 +20,24 @@ def test_token_generator():
     decoded = jwt.decode(jwt=token, key="secret", verify=True, algorithms=["HS256"])
     assert decoded["identity"] == "test"
     assert decoded["user_claims"] == {"A_CLAIM": "A_VALUE"}
+    assert "aud" not in decoded
+
+
+def test_token_generator_with_audience():
+    """Test that the baseline token generator behaves as expected when given an audience"""
+    token = generate_token(
+        flowapi_identifier="test_audience",
+        username="test",
+        secret="secret",
+        lifetime=timedelta(seconds=90),
+        claims={"A_CLAIM": "A_VALUE"},
+    )
+    decoded = jwt.decode(
+        jwt=token,
+        key="secret",
+        verify=True,
+        algorithms=["HS256"],
+        audience="test_audience",
+    )
+    assert decoded["identity"] == "test"
+    assert decoded["user_claims"] == {"A_CLAIM": "A_VALUE"}

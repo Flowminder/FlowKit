@@ -65,7 +65,7 @@ then
     then
         export DOCKER_FLOWDB_HOST=flowdb_testdata
     else
-        export DOCKER_FLOWDB_HOST=flowdb_testdata
+        export DOCKER_FLOWDB_HOST=flowdb_synthetic_data
     fi
 else
     export WORKED_EXAMPLES=
@@ -92,7 +92,7 @@ then
     export DOCKER_FLOWDB_HOST=flowdb_testdata
     echo "Stopping containers"
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - down
+    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - down -v
 else
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
      echo "Starting containers (this may take a few minutes)"
@@ -103,17 +103,17 @@ else
     curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - pull
     curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - up -d $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES
     echo "Waiting for containers to be ready.."
-    docker exec ${DOCKER_FLOWDB_HOST} bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
+    docker exec ${DOCKER_FLOWDB_HOST} bash -c 'i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
     echo "FlowDB ready."
-    i=0; until [ $i -ge 24 ] || (netstat -an | grep -q $FLOWMACHINE_PORT) ; do let i=i+1; echo Waiting 10s; sleep 10; done || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including the output of running 'docker logs flowmachine'" && exit 1)
+    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (netstat -an | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including the output of running 'docker logs flowmachine'" && exit 1)
     echo "FlowMachine ready"
-    i=0; until [ $i -ge 24 ] || (curl -s http://localhost:$FLOWAPI_PORT/api/0/spec/openapi.json > /dev/null) ; do let i=i+1; echo Waiting 10s; sleep 10; done || (>&2 echo "FlowAPI failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAPI,bug including the output of running 'docker logs flowapi'" && exit 1)
+    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$FLOWAPI_PORT/api/0/spec/openapi.json > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowAPI failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAPI,bug including the output of running 'docker logs flowapi'" && exit 1)
     echo "FlowAPI ready."
-    i=0; until [ $i -ge 24 ] || (curl -s http://localhost:$FLOWAUTH_PORT > /dev/null) ; do let i=i+1; echo Waiting 10s; sleep 10; done || (>&2 echo "FlowAuth failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAuth,bug including the output of running 'docker logs flowauth'" && exit 1)
+    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$FLOWAUTH_PORT > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowAuth failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowAuth,bug including the output of running 'docker logs flowauth'" && exit 1)
     echo "FlowAuth ready."
     if [[ "$WORKED_EXAMPLES" = "worked_examples" ]]
     then
-        i=0; until [ $i -ge 24 ] || (curl -s http://localhost:$WORKED_EXAMPLES_PORT > /dev/null) ; do let i=i+1; echo Waiting 10s; sleep 10; done || (>&2 echo "Worked examples failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=docs,bug including the output of running 'docker logs worked_examples'" && exit 1)
+        (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$WORKED_EXAMPLES_PORT > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "Worked examples failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=docs,bug including the output of running 'docker logs worked_examples'" && exit 1)
     fi
     echo "Worked examples ready."
     echo "All containers ready!"

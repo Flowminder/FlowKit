@@ -64,7 +64,7 @@ def get_fernet() -> Fernet:
     -------
     crypography.fernet.Fernet
     """
-    return Fernet(current_app.config["FERNET_KEY"])
+    return Fernet(current_app.config["FLOWAUTH_FERNET_KEY"])
 
 
 class User(db.Model):
@@ -486,7 +486,8 @@ def make_demodata():  # pragma: no cover
         "modal_location",
         "location_event_counts",
         "meaningful_locations_aggregate",
-        "meaningful_locations_od_matrix",
+        "meaningful_locations_between_label_od_matrix",
+        "meaningful_locations_between_dates_od_matrix",
         "geography",
         "unique_subscriber_counts",
         "location_introversion",
