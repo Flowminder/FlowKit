@@ -20,7 +20,10 @@ def session():
 
 
 def test_can_set_state(session):
-
+    """
+    Make sure we can add a row to the DB and the content
+    we expect is in the DB afterwards.
+    """
     file_data = {
         "file_name": "bob.csv",
         "cdr_type": "calls",
@@ -50,6 +53,10 @@ def test_can_set_state(session):
 
 
 def test_exception_raised_with_invalid_state(session):
+    """
+    Test that we get an exception raised when we try
+    to add a new row with an invalid state.
+    """
     file_data = {
         "file_name": "bob.csv",
         "cdr_type": "calls",
@@ -67,6 +74,10 @@ def test_exception_raised_with_invalid_state(session):
 
 
 def test_exception_raised_with_invalid_cdr_type(session):
+    """
+    Test that we get an exception raised when we try
+    to add a new row with an invalid cdr_type.
+    """
     file_data = {
         "file_name": "bob.csv",
         "cdr_type": "spaghetti",
