@@ -26,9 +26,15 @@ class ETLRecord(Base):
 
     def __init__(self, *, file_name: str, cdr_type: str, cdr_date: Date, state: str):
 
+        # This should be set more globally - not using enums
+        # because don't have a migration strategy in place
         allowed_states = ["ingest", "archive", "quarantine"]
-        if state not in allowed_states:
-            raise Exception(f"State should be one of {allowed_states}")
+        allowed_cdr_types = ["calls", "sms", "mds", "topups"]
+
+        if state not in allowed_states or cdr_type not in allowed_cdr_types:
+            raise Exception(
+                f"state should be one of {allowed_states} and cdr_type one of {allowed_cdr_types}"
+            )
         else:
             self.file_name = file_name
             self.cdr_type = cdr_type

@@ -23,7 +23,7 @@ def test_can_set_state(session):
 
     file_data = {
         "file_name": "bob.csv",
-        "cdr_type": "voice",
+        "cdr_type": "calls",
         "cdr_date": pendulum.parse("2016-01-01").date(),
         "state": "ingest",
     }
@@ -52,9 +52,26 @@ def test_can_set_state(session):
 def test_exception_raised_with_invalid_state(session):
     file_data = {
         "file_name": "bob.csv",
-        "cdr_type": "voice",
+        "cdr_type": "calls",
         "cdr_date": pendulum.parse("2016-01-01").date(),
         "state": "hammer_time",
+    }
+    with pytest.raises(Exception):
+        ETLRecord.set_state(
+            file_name=file_data["file_name"],
+            cdr_type=file_data["cdr_type"],
+            cdr_date=file_data["cdr_date"],
+            state=file_data["state"],
+            session=session,
+        )
+
+
+def test_exception_raised_with_invalid_cdr_type(session):
+    file_data = {
+        "file_name": "bob.csv",
+        "cdr_type": "spaghetti",
+        "cdr_date": pendulum.parse("2016-01-01").date(),
+        "state": "ingest",
     }
     with pytest.raises(Exception):
         ETLRecord.set_state(
