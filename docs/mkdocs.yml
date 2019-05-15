@@ -22,7 +22,7 @@ nav:
   - index.md
   - install.md
   - analyst.md
-  - Developer
+  - Developer:
     - developer/developer.md
     - developer/dev_environment_setup.md
     - Architectural Decision Records (ADR):
