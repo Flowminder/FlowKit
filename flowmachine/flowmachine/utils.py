@@ -501,7 +501,9 @@ def calculate_dependency_graph(query_obj, analyse=False):
     The resulting .dot file then be converted to a .pdf file using the external
     tool `dot` which comes as part of the [GraphViz] package:
 
-        dot -Tpdf daily_location_dependencies.dot -o daily_location_dependencies.pdf
+    ```
+    $ dot -Tpdf daily_location_dependencies.dot -o daily_location_dependencies.pdf
+    ```
 
     [Graphviz]: https://www.graphviz.org/
 
