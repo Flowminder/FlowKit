@@ -52,6 +52,23 @@ class ETLRecord(Base):
         state: str,
         session: Session,
     ) -> None:
+        """
+        Add new row to the etl book-keeping table.
+
+        Parameters
+        ----------
+        file_name : str
+            Name of file being processed
+        cdr_type : str
+            CDR type of file being processed ("calls", "sms", "mds" or "topups")
+        cdr_date : Date
+            The date with which the files data is associated
+        state : str
+            The state in the ingestion process the file currently
+            is ("ingest", "quarantine" or "archive")
+        session : Session
+            A sqlalchmy session for a DB in which this model exists.
+        """
         row = cls(
             file_name=file_name, cdr_type=cdr_type, cdr_date=cdr_date, state=state
         )
