@@ -9,6 +9,7 @@
 
 import flowmachine
 import pandas as pd
+import concurrent.futures
 
 flowmachine.connect()
 
@@ -172,18 +173,15 @@ meaningful_locations_queries = [
     for label in ["home", "work"]
 ]
 
-for query in (
-    admin1_daily_location_queries
-    + admin3_daily_location_queries
-    + modal_location_queries
-    + meaningful_locations_subqueries
-    + meaningful_locations_queries
-):
+qs = [
     query.store()
+    for query in (
+        admin1_daily_location_queries
+        + admin3_daily_location_queries
+        + modal_location_queries
+        + meaningful_locations_subqueries
+        + meaningful_locations_queries
+    )
+]
 
-for query in (
-    admin1_daily_location_queries
-    + modal_location_queries
-    + meaningful_locations_queries
-):
-    query.result()
+concurrent.futures.wait(qs)
