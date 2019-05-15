@@ -70,8 +70,10 @@ def get_config():
     SECRET_KEY = getsecret("SECRET_KEY", os.getenv("SECRET_KEY", "secret"))
     SESSION_PROTECTION = "strong"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    FERNET_KEY = getsecret("FERNET_KEY", os.getenv("FERNET_KEY", "")).encode()
-    Fernet(FERNET_KEY)  # Error if fernet key is bad
+    FLOWAUTH_FERNET_KEY = getsecret(
+        "FLOWAUTH_FERNET_KEY", os.getenv("FLOWAUTH_FERNET_KEY", "")
+    ).encode()
+    Fernet(FLOWAUTH_FERNET_KEY)  # Error if fernet key is bad
     DEMO_MODE = True if os.getenv("DEMO_MODE") is not None else False
     try:
         PRIVATE_JWT_SIGNING_KEY = load_private_key(
@@ -85,8 +87,11 @@ def get_config():
         SECRET_KEY=SECRET_KEY,
         SESSION_PROTECTION=SESSION_PROTECTION,
         SQLALCHEMY_TRACK_MODIFICATIONS=SQLALCHEMY_TRACK_MODIFICATIONS,
-        FERNET_KEY=FERNET_KEY,
+        FLOWAUTH_FERNET_KEY=FLOWAUTH_FERNET_KEY,
         DEMO_MODE=DEMO_MODE,
         PRIVATE_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY,
-        PUBLIC_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY.public_key(),
+        PUBLIC_JWT_SIGNING_KEY=PRIVATE_JWT_SIGNING_KEY.public_key().public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        ),
     )

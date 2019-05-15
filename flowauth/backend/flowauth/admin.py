@@ -36,9 +36,7 @@ def get_server(server_id):
     Responds with {"id":<server_id>, "name":<server_name>, "secret_key":<secret_key>}
     """
     server = Server.query.filter(Server.id == server_id).first_or_404()
-    return jsonify(
-        {"id": server.id, "name": server.name, "secret_key": server.secret_key}
-    )
+    return jsonify({"id": server.id, "name": server.name})
 
 
 @blueprint.route("/capabilities")

@@ -129,12 +129,12 @@ def test_token_rejected_for_bad_right_claim(client, auth, app):
     )
 
 
-def test_against_general_generator():
+def test_against_general_generator(app):
     """Test that the token generator in FlowAuth and the one in flowkit-jwt-generator produce same results."""
     flowauth_token = jwt.decode(
         flowauth_generate_token(
             username="TEST_USER",
-            secret="SECRET",
+            private_key=app.config["PRIVATE_JWT_SIGNING_KEY"],
             lifetime=datetime.timedelta(5),
             flowapi_identifier="TEST_SERVER",
             claims={
@@ -144,13 +144,13 @@ def test_against_general_generator():
                 }
             },
         ),
-        key="SECRET",
+        key=app.config["PUBLIC_JWT_SIGNING_KEY"],
         audience="TEST_SERVER",
     )
     generator_token = jwt.decode(
         jwt_generator_generate_token(
             username="TEST_USER",
-            secret="SECRET",
+            private_key=app.config["PRIVATE_JWT_SIGNING_KEY"],
             lifetime=datetime.timedelta(5),
             flowapi_identifier="TEST_SERVER",
             claims={
@@ -160,7 +160,7 @@ def test_against_general_generator():
                 }
             },
         ),
-        key="SECRET",
+        key=app.config["PUBLIC_JWT_SIGNING_KEY"],
         audience="TEST_SERVER",
     )
     assert generator_token["aud"] == flowauth_token["aud"]

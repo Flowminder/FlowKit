@@ -111,7 +111,6 @@ def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
     username: str,
-    audience: str,
     private_key: str,
     lifetime: datetime.timedelta,
     claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
@@ -122,8 +121,6 @@ def generate_token(
     ----------
     username : str
         Username for the token
-    audience : str
-        Identifier of the audience for this token
     private_key : str
         Private key to use to sign the token
     lifetime : datetime.timedelta
@@ -151,7 +148,6 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        aud=audience,
         user_claims=claims,
         identity=username,
         exp=now + lifetime,
@@ -194,7 +190,6 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
         return generate_token(
             flowapi_identifier=audience,
             username="test",
-            audience=audience,
             private_key=private_key,
             lifetime=timedelta(seconds=90),
             claims=claims,

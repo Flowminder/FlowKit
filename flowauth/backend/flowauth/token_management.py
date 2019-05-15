@@ -209,10 +209,10 @@ def add_token(server):
 
     token_string = generate_token(
         username=current_user.username,
-        secret=server.secret_key,
         flowapi_identifier=server.name,
         lifetime=lifetime,
         claims=json["claims"],
+        private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
     )
 
     token = Token(
@@ -229,11 +229,13 @@ def add_token(server):
 
 # Duplicated in flowkit_jwt_generator (cannot re-use the implementation
 # there because the module is outside the docker build context for flowauth).
+# Duplicated in FlowAuth (cannot use this implementation there because
+# this module is outside the docker build context for FlowAuth).
 def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
     username: str,
-    secret: str,
+    private_key: str,
     lifetime: datetime.timedelta,
     claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
 ) -> str:
@@ -243,8 +245,8 @@ def generate_token(
     ----------
     username : str
         Username for the token
-    secret : str
-        Shared secret to sign the token with
+    private_key : str
+        Private key to use to sign the token
     lifetime : datetime.timedelta
         Lifetime from now of the token
     claims : dict
@@ -254,7 +256,7 @@ def generate_token(
 
     Examples
     --------
-    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",secret="SECRET",lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key="SECRET",lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
             "spatial_aggregation": ["admin3"]}})
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
 
@@ -277,5 +279,5 @@ def generate_token(
     if flowapi_identifier is not None:
         token_data["aud"] = flowapi_identifier
     return jwt.encode(
-        payload=token_data, key=secret, algorithm="HS256", json_encoder=JSONEncoder
+        payload=token_data, key=private_key, algorithm="RS256", json_encoder=JSONEncoder
     ).decode("utf-8")
