@@ -14,6 +14,9 @@ from pathlib import Path
 from airflow.models import DagRun, BaseOperator
 from airflow.hooks.dbapi_hook import DbApiHook
 
+from etl.model import ETLRecord
+from etl.etl_utils import get_session
+
 # pylint: disable=unused-argument
 def render_and_run_sql__callable(
     *,
@@ -64,12 +67,6 @@ def render_and_run_sql__callable(
     db_hook.run(sql=sql)
 
 
-def record_etl_state(*, file_name: str, state: str):
-    # here we will record the state of the file ingestion in flowdb
-    # for now just does nothing...
-    pass
-
-
 # pylint: disable=unused-argument
 def move_file_and_record_ingestion_state__callable(
     *, dag_run: DagRun, mount_paths: dict, from_dir: str, to_dir: str, **kwargs
@@ -98,13 +95,23 @@ def move_file_and_record_ingestion_state__callable(
     to_path = mount_paths[to_dir]
 
     file_name = dag_run.conf["file_name"]
+    cdr_type = dag_run.conf["cdr_type"]
+    cdr_date = dag_run.conf["cdr_date"]
 
     file_to_move = from_path / file_name
     shutil.copy(str(file_to_move), str(to_path))
     file_to_move.unlink()
 
     to_state = to_path.name
-    record_etl_state(file_name=file_name, state=to_state)
+
+    session = get_session()
+    ETLRecord.set_state(
+        file_name=file_name,
+        cdr_type=cdr_type,
+        cdr_date=cdr_date,
+        state=to_state,
+        session=session,
+    )
 
 
 # pylint: disable=unused-argument
