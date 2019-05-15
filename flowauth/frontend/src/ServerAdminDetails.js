@@ -168,7 +168,7 @@ class ServerAdminDetails extends React.Component {
   componentDidMount() {
     const { item_id } = this.props;
     var name, rights;
-    if (item_id && true) {
+    if (item_id !== -1) {
       getServer(item_id)
         .then(json => {
           name = json.name;
