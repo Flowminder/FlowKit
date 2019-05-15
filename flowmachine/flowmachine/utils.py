@@ -499,11 +499,11 @@ def calculate_dependency_graph(query_obj, analyse=False):
     >>> write_dot(G, "daily_location_dependencies_runtimes.dot")
 
     The resulting .dot file then be converted to a .pdf file using the external
-    tool `dot` which comes as part of the GraphViz [1] package:
+    tool `dot` which comes as part of the [GraphViz] package:
 
         dot -Tpdf daily_location_dependencies.dot -o daily_location_dependencies.pdf
 
-    [1] https://www.graphviz.org/
+    [Graphviz]: https://www.graphviz.org/
 
     Notes
     -----
