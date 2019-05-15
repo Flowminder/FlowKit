@@ -83,7 +83,7 @@ executors:
         default: "2015-01-01"
       disaster_end_date:
         type: string
-        default: "2015-01-01"
+        default: "2015-01-01" 
     environment:
         POSTGRES_PASSWORD: flowflow
         MPLBACKEND: "agg"
@@ -108,8 +108,8 @@ executors:
       - image: flowminder/flowdb-<<parameters.flowdb_image>>:$CIRCLE_SHA1
         environment:
           N_DAYS: <<parameters.num_days>>
-          DISASTER_START_DATE: <<parameters.disaster_start_date>>
-          DISASTER_END_DATE: <<parameters.disaster_end_date>>
+          DISASTER_START: <<parameters.disaster_start_date>>
+          DISASTER_END: <<parameters.disaster_end_date>>
           N_SUBSCRIBERS: <<parameters.num_subscribers>>
           N_CELLS: <<parameters.num_cells>>
           N_SITES: <<parameters.num_sites>>
@@ -522,6 +522,7 @@ jobs:
       - image: circleci/python:3.7
     environment:
       AIRFLOW_HOME: ./test_airflow_home
+      TESTING: "true"
     working_directory: /home/circleci/project/
     steps:
       - checkout:
@@ -537,10 +538,15 @@ jobs:
           command: |
             PIPENV_PIPFILE=flowetl/Pipfile pipenv install --deploy --dev
       - run:
-          name: run flowetl tests
+          name: run flowetl integration tests
           command: |
             cd flowetl
-            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results.xml ./tests
+            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
+      - run:
+          name: run etl module unit tests
+          command: |
+            cd flowetl
+            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml ./etl/tests
       - store_test_results:
           path: flowetl/test_results
 

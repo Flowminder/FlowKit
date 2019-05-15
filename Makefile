@@ -21,7 +21,7 @@
 DOCKER_COMPOSE_FILE ?= docker-compose.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
 FLOWDB_SERVICES ?= flowdb_testdata
-DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetldb worked_examples
+DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
 export DOCKER_FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
 
 
@@ -34,7 +34,7 @@ up-no_build:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) up -d $(DOCKER_SERVICES)
 
 down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) down
+	docker-compose -f $(DOCKER_COMPOSE_FILE) down -v
 
 
 # Note: the targets below are repetitive and could be simplified by using

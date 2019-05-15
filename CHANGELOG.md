@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 - Error is displayed in the add user form of Flowauth if username is alredy exists. [#690](https://github.com/Flowminder/FlowKit/issues/690)
 - Error is displayed in the add group form of Flowauth if group name already exists. [#709](https://github.com/Flowminder/FlowKit/issues/709)
+- FlowAuth's add new server page now shows helper text for bad inputs. [#749](https://github.com/Flowminder/FlowKit/pull/749)
 
 ### Added
 - FlowKit's worked examples are now Dockerized, and available as part of the quick setup script [#614](https://github.com/Flowminder/FlowKit/issues/614)
@@ -31,6 +32,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The Flowmachine loggers are now initialised only once when flowmachine is imported, with a call to `connect()` only changing the log level [#691](https://github.com/Flowminder/FlowKit/issues/691)
 - The FERNET_KEY environment variable for FlowAuth is now named FLOWAUTH_FERNET_KEY
 - The quick-start script now correctly aborts if one of the FlowKit services doesn't fully start up [#745](https://github.com/Flowminder/flowkit/issues/745)
+- The maps in the worked examples docs pages now appear in any browser
+- Example invocations of `generate-jwt` are no longer uncopyable due to line wrapping [#778](https://github.com/Flowminder/flowkit/issues/745)
 
 ### Removed
 

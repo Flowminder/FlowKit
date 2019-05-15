@@ -65,7 +65,7 @@ then
     then
         export DOCKER_FLOWDB_HOST=flowdb_testdata
     else
-        export DOCKER_FLOWDB_HOST=flowdb_testdata
+        export DOCKER_FLOWDB_HOST=flowdb_synthetic_data
     fi
 else
     export WORKED_EXAMPLES=
@@ -92,7 +92,7 @@ then
     export DOCKER_FLOWDB_HOST=flowdb_testdata
     echo "Stopping containers"
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - down
+    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - down -v
 else
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
      echo "Starting containers (this may take a few minutes)"
