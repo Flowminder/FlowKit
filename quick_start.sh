@@ -65,7 +65,7 @@ then
     then
         export DOCKER_FLOWDB_HOST=flowdb_testdata
     else
-        export DOCKER_FLOWDB_HOST=flowdb_testdata
+        export DOCKER_FLOWDB_HOST=flowdb_synthetic_data
     fi
 else
     export WORKED_EXAMPLES=

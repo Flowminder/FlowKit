@@ -5,7 +5,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from unittest.mock import patch, MagicMock, PropertyMock
+from unittest.mock import patch, Mock
 from etl.dummy_task_callables import dummy__callable, dummy_failing__callable
 
 
