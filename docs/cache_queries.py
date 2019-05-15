@@ -12,18 +12,20 @@ import pandas as pd
 
 flowmachine.connect()
 
-daily_location_queries = [
-    flowmachine.features.daily_location(
-        date=dl_date.strftime("%Y-%m-%d"), level="admin3", method="last"
-    )
-    for dl_date in pd.date_range("2016-01-01", "2016-02-28", freq="D")
-] + [
+admin1_daily_location_queries = [
     flowmachine.features.daily_location(
         date="2016-01-01", level="admin1", method="last"
     ),
     flowmachine.features.daily_location(
         date="2016-01-07", level="admin1", method="last"
     ),
+]
+
+admin3_daily_location_queries = [
+    flowmachine.features.daily_location(
+        date=dl_date.strftime("%Y-%m-%d"), level="admin3", method="last"
+    )
+    for dl_date in pd.date_range("2016-01-01", "2016-02-28", freq="D")
 ]
 
 modal_location_queries = [
@@ -171,9 +173,17 @@ meaningful_locations_queries = [
 ]
 
 for query in (
-    daily_location_queries
+    admin1_daily_location_queries
+    + admin3_daily_location_queries
     + modal_location_queries
     + meaningful_locations_subqueries
     + meaningful_locations_queries
 ):
     query.store()
+
+for query in (
+    admin1_daily_location_queries
+    + modal_location_queries
+    + meaningful_locations_queries
+):
+    query.result()
