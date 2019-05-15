@@ -273,10 +273,12 @@ def print_token(username, secret_key, lifetime, audience):
 
     For example:
 
+    \b
     generate-jwt TEST_USER SECRET 1 TEST_SERVER --all-access http://localhost:9090
 
     Or,
 
+    \b
     generate-jwt TEST_USER SECRET 1 TEST_SERVER --query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
     """
     pass
