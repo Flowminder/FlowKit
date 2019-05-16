@@ -15,7 +15,6 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import SubmitButtons from "./SubmitButtons";
 import ServerAggregationUnits from "./ServerAggregationUnits";
-import ErrorDialog from "./ErrorDialog";
 
 const styles = theme => ({
   root: {
@@ -32,8 +31,6 @@ class TokenDetails extends React.Component {
     expiry: new Date(),
     latest_expiry: new Date(),
     username_helper_text: "",
-    pageError: false,
-    errors: { message: "" }
   };
 
   handleSubmit = () => {
@@ -45,13 +42,7 @@ class TokenDetails extends React.Component {
           json => {
             cancel();
           }
-        ).catch(err => {
-          if (err.code === 400) {
-            this.setState({ pageError: true, errors: err });
-          } else {
-            this.setState({ hasError: true, error: err })
-          }
-        });
+        );
     }
   };
 
@@ -80,10 +71,6 @@ class TokenDetails extends React.Component {
   };
 
   handleNameChange = event => {
-    this.setState({
-      pageError: false,
-      errors: ""
-    });
     var letters = /^[A-Za-z0-9_]+$/;
     let name = event.target.value;
     if (name.match(letters)) {
@@ -233,10 +220,6 @@ class TokenDetails extends React.Component {
         </Grid>
         <Divider />
         {this.renderAggUnits()}
-        <ErrorDialog
-          open={this.state.pageError}
-          message={this.state.errors.message}
-        />
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>
     );
