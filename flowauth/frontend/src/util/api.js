@@ -225,7 +225,6 @@ export async function editServerCapabilities(server_id, rights) {
 export async function editServer(
   server_id,
   server_name,
-  secret_key,
   latest_token_expiry,
   longest_token_life
 ) {
@@ -233,7 +232,6 @@ export async function editServer(
     method: "PATCH",
     body: JSON.stringify({
       name: server_name,
-      secret_key: secret_key,
       latest_token_expiry: latest_token_expiry,
       longest_token_life: longest_token_life
     })
@@ -243,7 +241,6 @@ export async function editServer(
 
 export async function createServer(
   server_name,
-  secret_key,
   latest_token_expiry,
   longest_token_life
 ) {
@@ -251,7 +248,6 @@ export async function createServer(
     method: "POST",
     body: JSON.stringify({
       name: server_name,
-      secret_key: secret_key,
       latest_token_expiry: latest_token_expiry,
       longest_token_life: longest_token_life
     })

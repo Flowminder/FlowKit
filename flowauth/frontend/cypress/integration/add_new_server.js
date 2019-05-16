@@ -14,46 +14,67 @@ describe("Login screen", function () {
     it("Add server name with space", function () {
         cy.get("#new").click();
         // adding username with space
-        cy.get("#name").type("Server ");
+        cy.get("#name").type("Server ", {
+            force: true
+        });
         //checking validation text
         cy.get("#name-helper-text").should(
             "have.text",
             "Server name may only contain letters, numbers and underscores."
         );
         cy.get("#name")
-            .type(" ")
-            .clear();
-        cy.get("#name").type("SERVER_TEST01");
+            .type(" ", {
+            force: true
+        }).clear({
+            force: true
+        });
+        cy.get("#name").type("SERVER_TEST01", {
+            force: true
+        });
         cy.contains("#name-helper-text").should("not.exist");
     });
     it("Add blank server name", function () {
         cy.get("#new").click();
         //adding blank username
         cy.get("#name")
-            .type(" ")
-            .clear();
+            .type(" ", {
+            force: true
+        })
+            .clear({
+            force: true
+        });
         //checking validation text
         cy.get("#name-helper-text").should(
             "have.text",
             "Server name can not be blank."
         );
-        cy.get("#name").type("SERVER_TEST01");
+        cy.get("#name").type("SERVER_TEST01", {
+            force: true
+        });
         cy.contains("#name-helper-text").should("not.exist");
     });
     it("Add server name more than 120 characters", function () {
         cy.get("#new").click();
         //adding username
         cy.get("#name")
-            .type("a".repeat(121));
+            .type("a".repeat(121), {
+            force: true
+        });
         //checking validation text
         cy.get("#name-helper-text").should(
             "have.text",
             "Server name must be 120 characters or less."
         );
         cy.get("#name")
-            .type(" ")
-            .clear();
-        cy.get("#name").type("SERVER_TEST01");
+            .type(" ", {
+            force: true
+        })
+            .clear({
+            force: true
+        });
+        cy.get("#name").type("SERVER_TEST01", {
+            force: true
+        });
         cy.contains("#name-helper-text").should("not.exist");
     });
 
@@ -61,19 +82,27 @@ describe("Login screen", function () {
         cy.get("#new").click();
         //Add blank maximum lifetime minutes
         cy.get("#max-life")
-            .type(" ")
-            .clear();
+            .type(" ", {
+            force: true
+        })
+            .clear({
+            force: true
+        });
         cy.get("#max-life-helper-text").should(
             "have.text",
             "Maximum lifetime minutes can not be blank."
         );
-        cy.get("#max-life").type("1234");
+        cy.get("#max-life").type("1234", {
+            force: true
+        });
         cy.get("#max-life-helper-text").should("not.exist");
     });
     it("Add duplicate Server name", function () {
         cy.get("#new").click();
         //adding existing server name
-        cy.get("#name").type("TEST_SERVER");
+        cy.get("#name").type("TEST_SERVER", {
+            force: true
+        });
         cy.contains("Save").click();
         //checking error dialogue text
         cy.get("#error-dialog-description").should(
@@ -82,9 +111,15 @@ describe("Login screen", function () {
         );
         cy.contains("OK").click();
         cy.get("#name")
-            .type(" ")
-            .clear();
-        cy.get("#name").type("TEST_SERVER2");
+            .type(" ", {
+            force: true
+        })
+            .clear({
+            force: true
+        });
+        cy.get("#name").type("TEST_SERVER2", {
+            force: true
+        });
         cy.contains("Save").click();
         cy.contains("#error-dialog").should("not.exist");
         cy.contains("TEST_SERVER2").should("be.visible");
@@ -92,8 +127,12 @@ describe("Login screen", function () {
     it("Add server", function () {
         cy.get("#new").click();
         //Add new user with password
-        cy.get("#name").type("Server_Test01");
-        cy.get("#max-life").type("1234");
+        cy.get("#name").type("Server_Test01", {
+            force: true
+        });
+        cy.get("#max-life").type("1234", {
+            force: true
+        });
         cy.contains("Save").click();
         cy.contains("Server_Test01").should("be.visible");
     });
