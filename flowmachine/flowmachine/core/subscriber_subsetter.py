@@ -43,9 +43,6 @@ class SubscriberSubsetterBase:
                 f"Class {self.__class__.__name__} does not implement 'md5'"
             )
 
-    def column_names(self) -> List[str]:
-        return []
-
     @abstractmethod
     def apply_subset_if_needed(self, sql, *, subscriber_identifier):
         raise NotImplementedError(
