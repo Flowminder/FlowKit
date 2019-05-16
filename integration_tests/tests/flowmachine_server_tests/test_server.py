@@ -108,7 +108,10 @@ def test_run_daily_location_query(send_zmq_message_and_receive_reply):
 
     q = SpatialAggregate(
         locations=daily_location(
-            date="2016-01-01", method="last", level="admin3", subscriber_subset=None
+            date="2016-01-01",
+            method="most-common",
+            level="admin3",
+            subscriber_subset=None,
         )
     )
     expected_query_id = q.md5
