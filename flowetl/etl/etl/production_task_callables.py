@@ -112,11 +112,7 @@ def move_file_and_record_ingestion_state__callable(
 
     session = get_session()
     ETLRecord.set_state(
-        file_name=file_name,
-        cdr_type=cdr_type,
-        cdr_date=cdr_date,
-        state=to_state,
-        session=session,
+        cdr_type=cdr_type, cdr_date=cdr_date, state=to_state, session=session
     )
 
 

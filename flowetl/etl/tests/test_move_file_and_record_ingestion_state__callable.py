@@ -63,7 +63,6 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_
     _, _, kwargs = mock_ETLRecord__set_state.mock_calls[0]
 
     assert kwargs == {
-        "file_name": file_name,
         "cdr_type": cdr_type,
         "cdr_date": cdr_date,
         "state": Path(to_dir).name,
