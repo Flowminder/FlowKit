@@ -219,11 +219,11 @@ def test_print_dependency_tree():
              - <Query of type: _SubscriberCells, query_id: 'xxxxx'>
                 - <Query of type: EventsTablesUnion, query_id: 'xxxxx'>
                    - <Query of type: EventTableSubset, query_id: 'xxxxx'>
-                      - <Table: 'events.sms', query_id: 'xxxxx'>
-                         - <Table: 'events.sms', query_id: 'xxxxx'>
-                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
                       - <Table: 'events.calls', query_id: 'xxxxx'>
                          - <Table: 'events.calls', query_id: 'xxxxx'>
+                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
+                      - <Table: 'events.sms', query_id: 'xxxxx'>
+                         - <Table: 'events.sms', query_id: 'xxxxx'>
              - <Query of type: CellToAdmin, query_id: 'xxxxx'>
                 - <Query of type: CellToPolygon, query_id: 'xxxxx'>
         """
