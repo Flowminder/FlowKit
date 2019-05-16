@@ -31,7 +31,7 @@ setup(
         "hypercorn",
         "python-rapidjson",
         "structlog",
-        "flask-jwt-extended",
+        "flask-jwt-extended[asymmetric_crypto]",
         "asyncpg",
         "pyyaml >= 5.1",
         "python-rapidjson",

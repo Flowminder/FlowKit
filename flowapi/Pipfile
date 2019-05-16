@@ -8,7 +8,7 @@ pyzmq = "*"
 quart = "*"
 hypercorn = "*"
 asyncpg = "*"
-flask-jwt-extended = "*"
+flask-jwt-extended = {extras = ["asymmetric-crypto"],version = "*"}
 structlog = "*"
 python-rapidjson = "*"
 pyyaml = ">=5.1"
