@@ -333,7 +333,7 @@ jobs:
           path: test_results
       - run:
           name: Upload coverage
-          command: bash <(curl -s https://codecov.io/bash)
+          command: bash <(curl -s https://codecov.io/bash) -F flowmachine_unit_tests
           when: always
 
   run_flowdbsynth_tests:
@@ -387,7 +387,7 @@ jobs:
             COV_CORE_DATAFILE: .coverage.eager
       - store_test_results:
           path: test_results
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: bash <(curl -s https://codecov.io/bash) -F flowkit_jwt_generator_unit_tests
 
   run_flowkit_api_tests:
     docker:
@@ -406,7 +406,7 @@ jobs:
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: bash <(curl -s https://codecov.io/bash) -F flowapi_unit_tests
 
   run_flowauth_backend_tests:
     docker:
@@ -428,7 +428,7 @@ jobs:
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: bash <(curl -s https://codecov.io/bash) -F flowauth_unit_tests
 
   run_flowauth_frontend_tests:
     docker:
@@ -486,7 +486,7 @@ jobs:
             --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: bash <(curl -s https://codecov.io/bash) -F flowclient_unit_tests
 
   build_docker_image:
     parameters:
@@ -570,7 +570,7 @@ jobs:
             --cov-report term
       - store_test_results:
           path: test_results
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: bash <(curl -s https://codecov.io/bash) -F integration_tests
 
   run_quickstart_tests:
     parameters:
