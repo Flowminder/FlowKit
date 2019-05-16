@@ -50,8 +50,6 @@ class ETLRecord(Base):
 
         Parameters
         ----------
-        file_name : str
-            Name of file being processed
         cdr_type : str
             CDR type of file being processed ("calls", "sms", "mds" or "topups")
         cdr_date : Date
