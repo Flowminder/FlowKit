@@ -741,11 +741,17 @@ class Query(metaclass=ABCMeta):
         for x in self.__dict__.values():
             if isinstance(x, Query):
                 dependencies.add(x)
-        lists = [
-            x
-            for x in self.__dict__.values()
-            if isinstance(x, list) or isinstance(x, tuple)
-        ]
+        lists = []
+        for x in self.__dict__.values():
+            if isinstance(x, list) or isinstance(x, tuple):
+                lists.append(x)
+            else:
+                parent_classes = [cls.__name__ for cls in x.__class__.__mro__]
+                if "SubscriberSubsetterBase" in parent_classes:
+                    # special case for subscriber subsetters, because they may contain
+                    # attributes which are Query object but do not derive from Query
+                    # themselves
+                    lists.append(x.__dict__.values())
         for l in lists:
             for x in l:
                 if isinstance(x, Query):
