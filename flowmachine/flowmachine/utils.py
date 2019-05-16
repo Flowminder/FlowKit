@@ -379,7 +379,7 @@ def sort_recursively(d):
         return d
 
 
-def print_dependency_tree(query_obj, stream=None, indent_level=0):
+def print_dependency_tree(query_obj, show_stored=False, stream=None, indent_level=0):
     """
     Print the dependencies of a flowmachine query in a tree-like structure.
 
@@ -387,6 +387,8 @@ def print_dependency_tree(query_obj, stream=None, indent_level=0):
     ----------
     query_obj : Query
         An instance of a query object.
+    show_stored : bool, optional
+        If True, show for each query whether it is stored or not. Default: False.
     stream : io.IOBase, optional
         The stream to which the output should be written (default: stdout).
     indent_level : int
@@ -398,10 +400,13 @@ def print_dependency_tree(query_obj, stream=None, indent_level=0):
     indent_per_level = 3
     indent = " " * (indent_per_level * indent_level - 1)
     prefix = "" if indent_level == 0 else "- "
-    stream.write(f"{indent}{prefix}{query_obj}\n")
+    fmt = "query_id" if not show_stored else "query_id,is_stored"
+    stream.write(f"{indent}{prefix}{query_obj:{fmt}}\n")
     deps_sorted_by_query_id = sorted(query_obj.dependencies, key=lambda q: q.md5)
     for dep in deps_sorted_by_query_id:
-        print_dependency_tree(dep, indent_level=indent_level + 1, stream=stream)
+        print_dependency_tree(
+            dep, indent_level=indent_level + 1, stream=stream, show_stored=show_stored
+        )
 
 
 def _get_query_attrs_for_dependency_graph(query_obj, analyse=False):
