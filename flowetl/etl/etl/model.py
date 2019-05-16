@@ -78,7 +78,7 @@ class ETLRecord(Base):
             The state in the ingestion process the file currently
             is ("ingest", "quarantine" or "archive")
         session : Session
-            A sqlalchmy session for a DB in which this model exists.
+            A sqlalchemy session for a DB in which this model exists.
         """
         row = cls(
             file_name=file_name, cdr_type=cdr_type, cdr_date=cdr_date, state=state
