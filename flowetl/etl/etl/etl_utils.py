@@ -6,13 +6,18 @@
 """
 Contains utility functions for use in the ETL dag and it's callables
 """
+import yaml
+
 from enum import Enum
+from pathlib import Path
 
 from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
 
 
-def construct_etl_dag(*, task_callable_mapping: dict, default_args: dict) -> DAG:
+def construct_etl_dag(
+    *, task_callable_mapping: dict, default_args: dict, cdr_type: str
+) -> DAG:
     """
     This function returns an Airflow DAG object of the structure
     required for ETL. By passing a dictionary mapping task ID to
@@ -39,6 +44,8 @@ def construct_etl_dag(*, task_callable_mapping: dict, default_args: dict) -> DAG
         A set of default args to pass to all callables.
         Must containt at least "owner" key and "start" key (which must be a
         pendulum date object)
+    cdr_type : str
+        The type of CDR that this ETL DAG will process.
 
     Returns
     -------
@@ -69,7 +76,9 @@ def construct_etl_dag(*, task_callable_mapping: dict, default_args: dict) -> DAG
     if set(task_callable_mapping.keys()) != expected_keys:
         raise TypeError("task_callable_mapping argument does not contain correct keys")
 
-    with DAG(dag_id="etl", schedule_interval=None, default_args=default_args) as dag:
+    with DAG(
+        dag_id=f"etl_{cdr_type}", schedule_interval=None, default_args=default_args
+    ) as dag:
 
         init = PythonOperator(
             task_id="init",
