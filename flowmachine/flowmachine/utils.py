@@ -562,7 +562,7 @@ def plot_dependency_graph(
     if format == "png":
         result = Image(s.getvalue(), width=width, height=height)
     elif format == "svg":
-        if width is not None or height is not None:
+        if width is not None or height is not None:  # pragma: no cover
             logger.warning(
                 "The arguments 'width' and 'height' are not supported with format='svg'."
             )
