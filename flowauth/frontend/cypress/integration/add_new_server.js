@@ -57,7 +57,7 @@ describe("Login screen", function () {
         cy.contains("#name-helper-text").should("not.exist");
     });
 
-    it("Add blank maximum liftime minutes", function () {
+    it("Add blank maximum lifetime minutes", function () {
         cy.get("#new").click();
         //Add blank maximum lifetime minutes
         cy.get("#max-life")
