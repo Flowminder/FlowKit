@@ -44,7 +44,7 @@ describe("Login screen", function () {
         cy.get("#new").click();
         //adding username
         cy.get("#name")
-            .type("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            .type("a".repeat(121));
         //checking validation text
         cy.get("#name-helper-text").should(
             "have.text",
@@ -55,34 +55,6 @@ describe("Login screen", function () {
             .clear();
         cy.get("#name").type("SERVER_TEST01");
         cy.contains("#name-helper-text").should("not.exist");
-    });
-    it("Add blank secret key", function () {
-        cy.get("#new").click();
-        //Add blank secret key
-        cy.get("#secret-key")
-            .type(" ")
-            .clear();
-        cy.get("#secret-key-helper-text").should(
-            "have.text",
-            "Secret key can not be blank."
-        );
-        cy.get("#secret-key").type("C>K,7|~44]44:ibK");
-        cy.get("#secret-key-helper-text").should("not.exist");
-    });
-    it("Add secret key with space", function () {
-        cy.get("#new").click();
-        //Add secret key with space
-        cy.get("#secret-key")
-            .type("C>K,7 |~44]44:ibK");
-        cy.get("#secret-key-helper-text").should(
-            "have.text",
-            "Secret key can not contain space."
-        );
-        cy.get("#secret-key")
-            .type(" ")
-            .clear();
-        cy.get("#secret-key").type("C>K,7|~44]44:ibK");
-        cy.get("#secret-key-helper-text").should("not.exist");
     });
 
     it("Add blank maximum liftime minutes", function () {
@@ -100,9 +72,8 @@ describe("Login screen", function () {
     });
     it("Add duplicate Server name", function () {
         cy.get("#new").click();
-        //adding existing server name and new secret key
+        //adding existing server name
         cy.get("#name").type("TEST_SERVER");
-        cy.get("#secret-key").type("C>K,7|~44]44:ibK");
         cy.contains("Save").click();
         //checking error dialogue text
         cy.get("#error-dialog-description").should(
@@ -122,7 +93,6 @@ describe("Login screen", function () {
         cy.get("#new").click();
         //Add new user with password
         cy.get("#name").type("Server_Test01");
-        cy.get("#secret-key").type("C>K,7|~44]44:ibK");
         cy.get("#max-life").type("1234");
         cy.contains("Save").click();
         cy.contains("Server_Test01").should("be.visible");
