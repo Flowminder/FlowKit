@@ -66,7 +66,7 @@ def session():
     """
     engine = create_engine("sqlite:///:memory:")
     engine.execute(f"ATTACH DATABASE ':memory:' AS etl;")
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine, tables=[ETLRecord.__table__])
     Session = sessionmaker(bind=engine)
     returned_session = Session()
     yield returned_session
