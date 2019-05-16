@@ -444,6 +444,8 @@ def calculate_dependency_graph(query_obj, analyse=False):
     as node attributes.
 
     The resulting networkx object can then be visualised, or analysed.
+    When visualised, nodes corresponding to stored queries will be
+    rendered green.
 
     The dependency graph includes the estimated cost of the query in the 'cost' attribute,
     the query object the node represents in the 'query_object' attribute, and with the analyse
@@ -467,9 +469,11 @@ def calculate_dependency_graph(query_obj, analyse=False):
     export it to an SVG string and display it directly in the notebook:
 
     >>> import flowmachine
+    >>> import networkx as nx
     >>> from flowmachine.features import daily_location
     >>> from flowmachine.utils import calculate_dependency_graph
     >>> from io import BytesIO
+    >>> from IPython.display import SVG
     >>> flowmachine.connect(flowdb_user="flowdb", flowdb_password="flowflow", redis_password="fm_redis")
     >>> dl = daily_location(date="2016-01-01")
     >>> G = calculate_dependency_graph(dl, analyse=True)
@@ -518,12 +522,12 @@ def calculate_dependency_graph(query_obj, analyse=False):
     for n in set(y):
         attrs = _get_query_attrs_for_dependency_graph(n, analyse=analyse)
         attrs["shape"] = "rect"
-        attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
         attrs["query_object"] = n
+        attrs["label"] = f"{attrs['name']}. Cost: {attrs['cost']}"
         if analyse:
             attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
         if attrs["stored"]:
-            attrs["fillcolor"] = "green"
+            attrs["fillcolor"] = "#b3de69"  # light green
             attrs["style"] = "filled"
         g.add_node(f"x{n.md5}", **attrs)
 
