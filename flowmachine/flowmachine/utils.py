@@ -422,23 +422,6 @@ def _get_query_attrs_for_dependency_graph(query_obj, analyse=False):
         present if `analyse=True`.
         Example return value: `{"name": "DailyLocation", "stored": False, "cost": 334.53, "runtime": 161.6}`
     """
-
-    from flowmachine.core.subscriber_subsetter import SubscriberSubsetterBase
-
-    if isinstance(query_obj, SubscriberSubsetterBase):
-        # This special case is only needed because SubscriberSubsetterBase
-        # currently inherits from flowmachine.Query. However, since this
-        # class doesn't really represent a full flowmachine.Query
-        # (and this inheritance will be removed in the long run)
-        # we can't return meaningful values here, so we just return
-        # a dictionary with the correct keys but no actual values.
-        attrs = {}
-        attrs["name"] = query_obj.__class__.__name__
-        attrs["stored"] = "N/A"
-        attrs["cost"] = "N/A"
-        attrs["runtime"] = "N/A"
-        return attrs
-
     expl = query_obj.explain(format="json", analyse=analyse)[0]
     attrs = {}
     attrs["name"] = query_obj.__class__.__name__
