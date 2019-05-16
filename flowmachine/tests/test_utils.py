@@ -14,7 +14,9 @@ import unittest.mock
 from io import StringIO
 from pathlib import Path
 
+from flowmachine.core import CustomQuery
 from flowmachine.core.errors import BadLevelError
+from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 from flowmachine.features import daily_location, EventTableSubset
 from flowmachine.utils import (
     parse_datestring,
@@ -208,9 +210,20 @@ def test_sort_recursively():
 
 def test_print_dependency_tree():
     """
-    Test that `print_dependency_tree` displays the expected dependency tree for a daily location query.
+    Test that the expected dependency tree is printed for a daily location query (with an explicit subset).
     """
-    q = daily_location(date="2016-01-02", level="admin2", method="most-common")
+    subscriber_subsetter = make_subscriber_subsetter(
+        CustomQuery(
+            "SELECT duration, msisdn as subscriber FROM events.calls WHERE duration < 10",
+            ["duration", "subscriber"],
+        )
+    )
+    q = daily_location(
+        date="2016-01-02",
+        level="admin2",
+        method="most-common",
+        subscriber_subset=subscriber_subsetter,
+    )
 
     expected_output = textwrap.dedent(
         """\
@@ -219,13 +232,13 @@ def test_print_dependency_tree():
              - <Query of type: _SubscriberCells, query_id: 'xxxxx'>
                 - <Query of type: EventsTablesUnion, query_id: 'xxxxx'>
                    - <Query of type: EventTableSubset, query_id: 'xxxxx'>
-                      - <Table: 'events.calls', query_id: 'xxxxx'>
-                         - <Table: 'events.calls', query_id: 'xxxxx'>
-                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'xxxxx'>
-                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
+                      - <Query of type: CustomQuery, query_id: 'xxxxx'>
                       - <Table: 'events.sms', query_id: 'xxxxx'>
                          - <Table: 'events.sms', query_id: 'xxxxx'>
-                      - <Query of type: SubscriberSubsetterForAllSubscribers, query_id: 'xxxxx'>
+                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
+                      - <Query of type: CustomQuery, query_id: 'xxxxx'>
+                      - <Table: 'events.calls', query_id: 'xxxxx'>
+                         - <Table: 'events.calls', query_id: 'xxxxx'>
              - <Query of type: CellToAdmin, query_id: 'xxxxx'>
                 - <Query of type: CellToPolygon, query_id: 'xxxxx'>
         """
@@ -250,4 +263,5 @@ def test_dependency_graph():
         stop="2016-01-02",
         columns=["msisdn", "datetime", "location_id"],
     )
-    assert "x{}".format(sd.md5) in G.nodes()
+    assert f"x{sd.md5}" in G.nodes()
+    assert G.nodes[f"x{sd.md5}"]["query_object"].md5 == sd.md5

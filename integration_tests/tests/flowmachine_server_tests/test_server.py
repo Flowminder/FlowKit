@@ -4,6 +4,9 @@
 
 import json
 
+from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features.dfs.total_amount_for_metric import DFSTotalMetricAmount
+from flowmachine.features import daily_location, ModalLocation
 from flowmachine.utils import sort_recursively
 from approvaltests.approvals import verify
 
@@ -103,8 +106,18 @@ def test_run_daily_location_query(send_zmq_message_and_receive_reply):
     }
     reply = send_zmq_message_and_receive_reply(msg)
 
+    q = SpatialAggregate(
+        locations=daily_location(
+            date="2016-01-01",
+            method="most-common",
+            level="admin3",
+            subscriber_subset=None,
+        )
+    )
+    expected_query_id = q.md5
+
     assert "success" == reply["status"]
-    assert "3531cfc3957c3ffcd6c87a0d4b18e795" == reply["payload"]["query_id"]
+    assert expected_query_id == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
 
 
@@ -142,8 +155,26 @@ def test_run_modal_location_query(send_zmq_message_and_receive_reply):
     }
     reply = send_zmq_message_and_receive_reply(msg)
 
+    q = SpatialAggregate(
+        locations=ModalLocation(
+            daily_location(
+                date="2016-01-01",
+                method="most-common",
+                level="admin3",
+                subscriber_subset=None,
+            ),
+            daily_location(
+                date="2016-01-02",
+                method="most-common",
+                level="admin3",
+                subscriber_subset=None,
+            ),
+        )
+    )
+    expected_query_id = q.md5
+
     assert "success" == reply["status"]
-    assert "078b127fcc5b2539eb40d0e1f7c8826f" == reply["payload"]["query_id"]
+    assert expected_query_id == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
 
 
@@ -164,6 +195,14 @@ def test_run_dfs_metric_total_amount_query(send_zmq_message_and_receive_reply):
     }
     reply = send_zmq_message_and_receive_reply(msg)
 
+    q = DFSTotalMetricAmount(
+        metric="commission",
+        start_date="2016-01-02",
+        end_date="2016-01-05",
+        aggregation_unit="admin2",
+    )
+    expected_query_id = q.md5
+
     assert "success" == reply["status"]
-    assert "7070dcedf6633d2b6f263b83ea27b9e4" == reply["payload"]["query_id"]
+    assert expected_query_id == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
