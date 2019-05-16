@@ -1,0 +1,16 @@
+default_args:
+  owner: flowminder
+  start_date: '1900-01-01'
+etl:
+  calls:
+    concurrency: 4
+    pattern: CALLS_(\d{4}[01]\d[0123]\d).csv.gz
+  mds:
+    concurrency: 4
+    pattern: MDS_(\d{4}[01]\d[0123]\d).csv.gz
+  sms:
+    concurrency: 4
+    pattern: SMS_(\d{4}[01]\d[0123]\d).csv.gz
+  topups:
+    concurrency: 4
+    pattern: TOPUPS_(\d{4}[01]\d[0123]\d).csv.gz
