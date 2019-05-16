@@ -13,7 +13,8 @@ describe("Login screen", function () {
     });
     it("Add token name with space", function () {
         cy.get("#new").click();
-        // adding username with space
+        // adding token name with space
+        //{force:true} added for test to skip scrooling issue.   
         cy.get("#name").type("Token ", {
             force: true
         });
@@ -63,7 +64,6 @@ describe("Login screen", function () {
             force: true
         });
         cy.contains("Save").click();
-        cy.wait(500);
         cy.contains("TOKEN_TEST01").should("be.visible");
     });
 });
