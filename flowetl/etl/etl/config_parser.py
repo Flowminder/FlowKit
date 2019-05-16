@@ -44,7 +44,8 @@ def validate_config(*, global_config_dict: dict) -> Exception:
         )
 
     for key, value in global_config_dict.get("etl", {}).items():
-        if list(value.keys()) != ["pattern", "concurrency"]:
+        if set(list(value.keys())) != set(["pattern", "concurrency"]):
+            print(value)
             exceptions.append(
                 ValueError(
                     f"Each etl subsection must contain a pattern and concurrency subsection - not present for {key}"
@@ -53,3 +54,8 @@ def validate_config(*, global_config_dict: dict) -> Exception:
 
     if exceptions != []:
         raise ValueError(exceptions)
+
+
+def get_config_from_file(*, config_filepath: Path):
+    content = open(config_filepath, "r").read()
+    return yaml.load(content, Loader=yaml.FullLoader)
