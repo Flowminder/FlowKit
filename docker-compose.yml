@@ -14,7 +14,7 @@ networks:
   flowetl_db:
 
 
-    
+
 services:
 
   flowdb:
@@ -190,6 +190,8 @@ services:
     stdin_open: true
     ports:
       - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
+    volumes:
+      - ${HOST_CONFIG_DIR:?Must set HOST_CONFIG_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/config:ro
 
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -199,6 +201,7 @@ services:
       POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
       POSTGRES_HOST: ${FLOWETL_POSTGRES_HOST:?Must set FLOWETL_POSTGRES_HOST env var}
       POSTGRES_DB: ${FLOWETL_POSTGRES_DB:?Must set FLOWETL_POSTGRES_DB env var}
+      MOUNT_HOME: ${MOUNT_HOME:?Must set MOUNT_HOME env var}
 
     networks:
       - db
@@ -214,7 +217,7 @@ services:
 
     ports:
       - 5433:5432
-    
+
     environment:
       POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
       POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
