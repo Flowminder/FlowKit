@@ -37,7 +37,7 @@ fi
 
 pipenv install
 echo "Pre-caching FlowMachine queries..."
-pipenv run python cache_queries.py
+FLOWMACHINE_LOG_LEVEL=debug pipenv run python cache_queries.py
 echo "Finished pre-caching queries"
 pipenv run flowmachine &
 echo "Started FlowMachine."
