@@ -1,7 +1,10 @@
 import logging
 import pytest
 
+from flowmachine.core.cache import reset_cache
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features import daily_location
 from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
@@ -26,11 +29,17 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
         },
         "request_id": "DUMMY_ID",
     }
-    expected_query_id = "dc1dabaa431b4b9a0f7a72e9d98630b7"
+    q = SpatialAggregate(
+        locations=daily_location(
+            date="2016-01-01", method="last", level="admin3", subscriber_subset=None
+        )
+    )
+    expected_query_id = q.md5
 
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
     #
+    reset_cache(fm_conn, redis)
     assert cache_schema_is_empty(fm_conn)
     assert not redis.exists(expected_query_id)
 

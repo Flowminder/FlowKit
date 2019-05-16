@@ -6,6 +6,8 @@ from flowmachine.core.server.utils import (
     send_zmq_message_and_receive_reply,
     FM_EXAMPLE_MESSAGE,
 )
+from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features import daily_location
 
 
 def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
@@ -30,10 +32,17 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
     }
     assert msg_expected == FM_EXAMPLE_MESSAGE
 
+    q = SpatialAggregate(
+        locations=daily_location(
+            date="2016-01-01", method="last", level="admin3", subscriber_subset=None
+        )
+    )
+    expected_query_id = q.md5
+
     # Check that the flowmachine server sends the expected reply
     reply = send_zmq_message_and_receive_reply(
         FM_EXAMPLE_MESSAGE, host=zmq_host, port=zmq_port
     )
-    assert "dc1dabaa431b4b9a0f7a72e9d98630b7" == reply["payload"]["query_id"]
+    assert expected_query_id == reply["payload"]["query_id"]
     # assert reply["status"] in ("executing", "queued", "completed")
     assert reply["status"] in ("success")
