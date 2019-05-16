@@ -440,6 +440,10 @@ def calculate_dependency_graph(query_obj, analyse=False):
 
     The resulting networkx object can then be visualised, or analysed.
 
+    The dependency graph includes the estimated cost of the query in the 'cost' attribute,
+    the query object the node represents in the 'query_object' attribute, and with the analyse
+    parameter set to true, the actual running time of the query in the `runtime` attribute.
+
     Parameters
     ----------
     query_obj : Query
@@ -453,15 +457,42 @@ def calculate_dependency_graph(query_obj, analyse=False):
 
     Examples
     --------
+
+    A useful way to visualise the dependency graph in a Jupyter notebook is to
+    export it to an SVG string and display it directly in the notebook:
+
     >>> import flowmachine
-    >>> flowmachine.connect()
     >>> from flowmachine.features import daily_location
-    >>> g = daily_location("2016-01-01").dependency_graph()
+    >>> from flowmachine.utils import calculate_dependency_graph
+    >>> from io import BytesIO
+    >>> flowmachine.connect(flowdb_user="flowdb", flowdb_password="flowflow", redis_password="fm_redis")
+    >>> dl = daily_location(date="2016-01-01")
+    >>> G = calculate_dependency_graph(dl, analyse=True)
+    >>> A = nx.nx_agraph.to_agraph(G)
+    >>> svg_str = BytesIO()
+    >>> A.draw(svg_str, format="svg", prog="dot")
+    >>> svg_str = svg_str.getvalue().decode("utf8")
+    >>> SVG(svg_str)  # within a Jupyter notebook this will be displayed as a graph
+
+    Alternatively, you can export the dependency graph to a .dot file as follows:
+
+    >>> import flowmachine
+    >>> from flowmachine.features import daily_location
     >>> from networkx.drawing.nx_agraph import write_dot
-    >>> write_dot(g, "daily_location_dependencies.dot")
-    >>> g = daily_location("2016-01-01").dependency_graph(True)
-    >>> from networkx.drawing.nx_agraph import write_dot
-    >>> write_dot(g, "daily_location_dependencies_runtimes.dot")
+    >>> flowmachine.connect()
+    >>> G = daily_location("2016-01-01").dependency_graph()
+    >>> write_dot(G, "daily_location_dependencies.dot")
+    >>> G = daily_location("2016-01-01").dependency_graph(True)
+    >>> write_dot(G, "daily_location_dependencies_runtimes.dot")
+
+    The resulting .dot file then be converted to a .pdf file using the external
+    tool `dot` which comes as part of the [GraphViz](https://www.graphviz.org/) package:<br />
+
+    ```
+    $ dot -Tpdf daily_location_dependencies.dot -o daily_location_dependencies.pdf
+    ```
+
+    [Graphviz]: https://www.graphviz.org/
 
     Notes
     -----
@@ -483,15 +514,16 @@ def calculate_dependency_graph(query_obj, analyse=False):
         attrs = _get_query_attrs_for_dependency_graph(n, analyse=analyse)
         attrs["shape"] = "rect"
         attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
+        attrs["query_object"] = n
         if analyse:
             attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
         if attrs["stored"]:
             attrs["fillcolor"] = "green"
             attrs["style"] = "filled"
-        g.add_node("x{}".format(n.md5), **attrs)
+        g.add_node(f"x{n.md5}", **attrs)
 
     for x, y in deps:
         if x != 0:
-            g.add_edge(*["x{}".format(z.md5) for z in (x, y)])
+            g.add_edge(*[f"x{z.md5}" for z in (x, y)])
 
     return g

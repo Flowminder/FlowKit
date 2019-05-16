@@ -248,4 +248,5 @@ def test_dependency_graph():
         stop="2016-01-02",
         columns=["msisdn", "datetime", "location_id"],
     )
-    assert "x{}".format(sd.md5) in G.nodes()
+    assert f"x{sd.md5}" in G.nodes()
+    assert G.nodes[f"x{sd.md5}"]["query_object"].md5 == sd.md5
