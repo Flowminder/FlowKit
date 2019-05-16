@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "365790cee03b5af858bc16ff80f80162d58f4e00a06d4b83e82cedfeeed3eeea"
+            "sha256": "e0d1144bda8ebed7d39298ed9ba14c04e1822a670a6a8be4121be7c704bf4712"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -307,6 +307,14 @@
                 "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"
             ],
             "version": "==1.4.3"
+        },
+        "appnope": {
+            "hashes": [
+                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
+                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
+            ],
+            "markers": "sys_platform == 'darwin'",
+            "version": "==0.1.0"
         },
         "approvaltests": {
             "hashes": [
@@ -761,6 +769,13 @@
                 "sha256:5ad302949b3c98dd73f8d9fcdc7e9cb592f120e32a18e23efd7f3dc51194472b"
             ],
             "version": "==2.4.0"
+        },
+        "pygraphviz": {
+            "hashes": [
+                "sha256:50a829a305dc5a0fd1f9590748b19fece756093b581ac91e00c2c27c651d319d"
+            ],
+            "index": "pypi",
+            "version": "==1.5"
         },
         "pyparsing": {
             "hashes": [
