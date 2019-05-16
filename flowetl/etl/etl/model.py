@@ -29,17 +29,13 @@ class ETLRecord(Base):
     __table_args__ = {"schema": "etl"}
 
     id = Column(Integer, primary_key=True)
-    file_name = Column(String)
     cdr_type = Column(String)
     cdr_date = Column(Date)
     state = Column(String)
     timestamp = Column(DateTime)
 
-    def __init__(
-        self, *, file_name: str, cdr_type: str, cdr_date: pendulumDate, state: str
-    ):
+    def __init__(self, *, cdr_type: str, cdr_date: pendulumDate, state: str):
 
-        self.file_name = file_name
         self.cdr_type = CDRType(cdr_type)
         self.cdr_date = cdr_date
         self.state = State(state)
@@ -47,13 +43,7 @@ class ETLRecord(Base):
 
     @classmethod
     def set_state(
-        cls,
-        *,
-        file_name: str,
-        cdr_type: str,
-        cdr_date: pendulumDate,
-        state: str,
-        session: Session,
+        cls, *, cdr_type: str, cdr_date: pendulumDate, state: str, session: Session
     ) -> None:
         """
         Add new row to the etl book-keeping table.
@@ -72,8 +62,6 @@ class ETLRecord(Base):
         session : Session
             A sqlalchemy session for a DB in which this model exists.
         """
-        row = cls(
-            file_name=file_name, cdr_type=cdr_type, cdr_date=cdr_date, state=state
-        )
+        row = cls(cdr_type=cdr_type, cdr_date=cdr_date, state=state)
         session.add(row)
         session.commit()
