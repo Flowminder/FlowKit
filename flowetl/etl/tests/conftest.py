@@ -16,7 +16,7 @@ from etl.model import Base, ETLRecord  # pylint: disable=unused-import
 # pylint: disable=too-few-public-methods
 class FakeDagRun:
     """
-    a fake DagRun object used for faking dag config
+    A fake DagRun object used for faking dag config
     """
 
     def __init__(self, conf=None):
@@ -25,7 +25,7 @@ class FakeDagRun:
 
 class FakeTaskInstance:
     """
-    a fake TaskInstance object
+    A fake TaskInstance object
     """
 
     def __init__(self, task_id):

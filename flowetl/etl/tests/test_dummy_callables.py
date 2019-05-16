@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 """
-Tests that the testing dummy calables behave as expected
+Tests that the testing dummy callables behave as expected.
 """
 from unittest.mock import patch
 
