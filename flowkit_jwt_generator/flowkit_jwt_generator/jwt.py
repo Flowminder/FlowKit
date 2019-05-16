@@ -111,7 +111,7 @@ def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
     username: str,
-    private_key: str,
+    private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
     claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
 ) -> str:
@@ -121,7 +121,7 @@ def generate_token(
     ----------
     username : str
         Username for the token
-    private_key : str
+    private_key : str or _RSAPrivateKey
         Private key to use to sign the token
     lifetime : datetime.timedelta
         Lifetime from now of the token
