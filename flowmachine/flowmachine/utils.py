@@ -550,9 +550,7 @@ def plot_dependency_graph(
     try:
         from IPython.display import Image, SVG
     except ImportError:
-        raise ImportError(
-            "IPython is needed to plot dependency graph. Please install it."
-        )
+        raise ImportError("requires IPython ", "https://ipython.org/")
 
     G = calculate_dependency_graph(query_obj, analyse=analyse)
     A = nx.nx_agraph.to_agraph(G)
