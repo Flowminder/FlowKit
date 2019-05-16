@@ -1,12 +1,34 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+import os
 from unittest.mock import Mock
 
 import pytest
+from cryptography.hazmat.backends.openssl.rsa import _RSAPublicKey, _RSAPrivateKey
+from cryptography.hazmat.primitives import serialization
+
+from flowkit_jwt_generator import load_private_key, load_public_key
 
 pytest_plugins = ["pytester"]
+
+
+@pytest.fixture
+def private_key() -> _RSAPrivateKey:
+    return load_private_key(os.environ["PRIVATE_JWT_SIGNING_KEY"])
+
+
+@pytest.fixture
+def public_key() -> _RSAPublicKey:
+    return load_public_key(os.environ["PUBLIC_JWT_SIGNING_KEY"])
+
+
+@pytest.fixture
+def public_key_bytes(public_key) -> bytes:
+    return public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
 
 
 @pytest.fixture

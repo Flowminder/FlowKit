@@ -8,7 +8,7 @@ from click.testing import CliRunner
 from flowkit_jwt_generator.jwt import print_token, print_all_access_token
 
 
-def test_universal_token_builder(dummy_flowapi):
+def test_universal_token_builder(dummy_flowapi, public_key, private_key):
     """
     Test the universal access token builder cli works as expected.
     """
@@ -17,7 +17,7 @@ def test_universal_token_builder(dummy_flowapi):
         print_token,
         [
             "DUMMY_USER",
-            os.environ["JWT_SECRET_KEY"],
+            private_key,
             1,
             os.environ["FLOWAPI_IDENTIFIER"],
             "--all-access",
@@ -26,16 +26,16 @@ def test_universal_token_builder(dummy_flowapi):
     )
     decoded = jwt.decode(
         jwt=result.output.strip(),
-        key=os.environ["JWT_SECRET_KEY"],
+        key=public_key,
         verify=True,
-        algorithms=["HS256"],
+        algorithms=["RS256"],
         audience=os.environ["FLOWAPI_IDENTIFIER"],
     )
     assert result.exit_code == 0
     assert decoded["user_claims"] == dummy_flowapi
 
 
-def test_token_builder():
+def test_token_builder(private_key, public_key):
     """
     Test the arbitrary token builder cli works as expected.
     """
@@ -44,7 +44,7 @@ def test_token_builder():
         print_token,
         [
             "DUMMY_USER",
-            os.environ["JWT_SECRET_KEY"],
+            private_key,
             1,
             os.environ["FLOWAPI_IDENTIFIER"],
             "--query",
@@ -63,9 +63,9 @@ def test_token_builder():
     )
     decoded = jwt.decode(
         jwt=result.output.strip(),
-        key=os.environ["JWT_SECRET_KEY"],
+        key=public_key,
         verify=True,
-        algorithms=["HS256"],
+        algorithms=["RS256"],
         audience=os.environ["FLOWAPI_IDENTIFIER"],
     )
     assert result.exit_code == 0
@@ -80,7 +80,7 @@ def test_token_builder():
     }
 
 
-def test_token_builder_prompts_with_no_perms():
+def test_token_builder_prompts_with_no_perms(private_key):
     """
     Test the arbitrary token builder cli prompts for confirmation if a claimset will be empty.
     """
@@ -89,7 +89,7 @@ def test_token_builder_prompts_with_no_perms():
         print_token,
         [
             "DUMMY_USER",
-            os.environ["JWT_SECRET_KEY"],
+            private_key,
             1,
             os.environ["FLOWAPI_IDENTIFIER"],
             "--query",

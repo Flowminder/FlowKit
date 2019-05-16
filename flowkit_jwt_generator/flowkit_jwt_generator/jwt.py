@@ -303,7 +303,6 @@ def output_token(claims, username, private_key, lifetime, audience):
         generate_token(
             flowapi_identifier=audience,
             username=username,
-            audience=audience,
             private_key=private_key,
             lifetime=datetime.timedelta(days=lifetime),
             claims=dict(ChainMap(*claims)),
