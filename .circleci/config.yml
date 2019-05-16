@@ -659,7 +659,9 @@ jobs:
                 destination: docs
       - run:
           name: Copy postgres logs
+          when: on_fail
           command: |
+            sudo apt-get install postgresql-client
             psql postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${FLOWDB_HOST}:${FLOWDB_PORT}/flowdb -c "CREATE TABLE postgres_log ( \
               log_time timestamp(3) with time zone, \
               user_name text, \
