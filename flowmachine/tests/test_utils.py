@@ -11,6 +11,7 @@ import pglast
 import re
 import textwrap
 import unittest.mock
+import IPython
 from io import StringIO
 from pathlib import Path
 
@@ -27,6 +28,7 @@ from flowmachine.utils import (
     _makesafe,
     print_dependency_tree,
     calculate_dependency_graph,
+    plot_dependency_graph,
     convert_dict_keys_to_strings,
     sort_recursively,
     time_period_add,
@@ -252,9 +254,9 @@ def test_print_dependency_tree():
     assert expected_output == output_with_query_ids_replaced
 
 
-def test_dependency_graph():
+def test_calculate_dependency_graph():
     """
-    Test that dependency graph util runs and has some correct entries.
+    Test that calculate_dependency_graph() runs and the returned graph has some correct entries.
     """
     query = daily_location("2016-01-01")
     G = calculate_dependency_graph(query, analyse=True)
@@ -265,3 +267,17 @@ def test_dependency_graph():
     )
     assert f"x{sd.md5}" in G.nodes()
     assert G.nodes[f"x{sd.md5}"]["query_object"].md5 == sd.md5
+
+
+def test_plot_dependency_graph():
+    """
+    Test that plot_dependency_graph() runs and returns the expected IPython.display objects.
+    """
+    query = daily_location(date="2016-01-02", level="admin2", method="most-common")
+    output_svg = plot_dependency_graph(query, format="svg")
+    output_png = plot_dependency_graph(query, format="png", width=600, height=200)
+
+    assert isinstance(output_svg, IPython.display.SVG)
+    assert isinstance(output_png, IPython.display.Image)
+    assert output_png.width == 600
+    assert output_png.height == 200
