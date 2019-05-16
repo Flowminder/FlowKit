@@ -440,13 +440,13 @@ def _get_query_attrs_for_dependency_graph(query_obj, analyse=False):
 
 def calculate_dependency_graph(query_obj, analyse=False):
     """
-    Produce a graph of all the queries that go into producing this
-    one, with their estimated run costs, and whether they are stored
-    as node attributes.
+    Produce a graph of all the queries that go into producing this one, with their estimated
+    run costs, and whether they are stored as node attributes.
 
-    The resulting networkx object can then be visualised, or analysed.
-    When visualised, nodes corresponding to stored queries will be
-    rendered green.
+    The resulting networkx object can then be visualised, or analysed. When visualised,
+    nodes corresponding to stored queries will be rendered green. See the function
+    `plot_dependency_graph()` for a convenient way of plotting a dependency graph directly
+    for visualisation in a Jupyter notebook.
 
     The dependency graph includes the estimated cost of the query in the 'cost' attribute,
     the query object the node represents in the 'query_object' attribute, and with the analyse
@@ -466,25 +466,8 @@ def calculate_dependency_graph(query_obj, analyse=False):
     Examples
     --------
 
-    A useful way to visualise the dependency graph in a Jupyter notebook is to
-    export it to an SVG string and display it directly in the notebook:
-
-    >>> import flowmachine
-    >>> import networkx as nx
-    >>> from flowmachine.features import daily_location
-    >>> from flowmachine.utils import calculate_dependency_graph
-    >>> from io import BytesIO
-    >>> from IPython.display import SVG
-    >>> flowmachine.connect(flowdb_user="flowdb", flowdb_password="flowflow", redis_password="fm_redis")
-    >>> dl = daily_location(date="2016-01-01")
-    >>> G = calculate_dependency_graph(dl, analyse=True)
-    >>> A = nx.nx_agraph.to_agraph(G)
-    >>> svg_str = BytesIO()
-    >>> A.draw(svg_str, format="svg", prog="dot")
-    >>> svg_str = svg_str.getvalue().decode("utf8")
-    >>> SVG(svg_str)  # within a Jupyter notebook this will be displayed as a graph
-
-    Alternatively, you can export the dependency graph to a .dot file as follows:
+    If you don't want to visualise the dependency graph directly (for example
+    using `plot_dependency_graph()`, you can export it to a .dot file as follows:
 
     >>> import flowmachine
     >>> from flowmachine.features import daily_location
