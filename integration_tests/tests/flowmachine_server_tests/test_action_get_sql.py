@@ -1,6 +1,8 @@
 import pytest
 
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features import daily_location
 from .helpers import poll_until_done
 
 
@@ -29,7 +31,12 @@ async def test_get_sql(zmq_port, zmq_host):
         },
         "request_id": "DUMMY_ID",
     }
-    expected_query_id = "eba30a3dc94ea6e53502493d4ea3b927"
+    q = SpatialAggregate(
+        locations=daily_location(
+            date="2016-01-01", method="last", level="admin3", subscriber_subset=None
+        )
+    )
+    expected_query_id = q.md5
 
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     # assert reply["status"] in ("executing", "queued", "completed")
