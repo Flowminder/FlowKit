@@ -7,12 +7,15 @@
 Commonly used testing fixtures for flowmachine.
 """
 
-from unittest.mock import Mock
-
+import os
 import pandas as pd
 import pytest
 import re
 import logging
+from unittest.mock import Mock
+from approvaltests.reporters.generic_diff_reporter_factory import (
+    GenericDiffReporterFactory,
+)
 
 import flowmachine
 from flowmachine.core import Query
@@ -20,6 +23,9 @@ from flowmachine.core.cache import reset_cache
 from flowmachine.features import EventTableSubset
 
 logger = logging.getLogger()
+
+here = os.path.dirname(os.path.abspath(__file__))
+flowkit_toplevel_dir = os.path.join(here, "..", "..")
 
 
 @pytest.fixture(
@@ -227,3 +233,12 @@ def dummy_redis(monkeypatch):
     dummy_redis = DummyRedis()
     monkeypatch.setattr(Query, "redis", dummy_redis)
     return dummy_redis
+
+
+@pytest.fixture(scope="session")
+def diff_reporter():
+    diff_reporter_factory = GenericDiffReporterFactory()
+    diff_reporter_factory.load(
+        os.path.join(flowkit_toplevel_dir, "approvaltests_diff_reporters.json")
+    )
+    return diff_reporter_factory.get_first_working()
