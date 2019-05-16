@@ -14,6 +14,8 @@ from sqlalchemy import Column, String, DateTime, Date, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import Session
 
+from etl.etl_utils import CDRType, State
+
 Base = declarative_base()
 
 # pylint: disable=too-few-public-methods
@@ -37,21 +39,11 @@ class ETLRecord(Base):
         self, *, file_name: str, cdr_type: str, cdr_date: pendulumDate, state: str
     ):
 
-        # This should be set more globally - not using enums
-        # because don't have a migration strategy in place
-        allowed_states = ["ingest", "archive", "quarantine"]
-        allowed_cdr_types = ["calls", "sms", "mds", "topups"]
-        # pylint: disable=no-else-raise
-        if state not in allowed_states or cdr_type not in allowed_cdr_types:
-            raise ValueError(
-                f"state should be one of {allowed_states} and cdr_type one of {allowed_cdr_types}"
-            )
-        else:
-            self.file_name = file_name
-            self.cdr_type = cdr_type
-            self.cdr_date = cdr_date
-            self.state = state
-            self.timestamp = pendulum.utcnow()
+        self.file_name = file_name
+        self.cdr_type = CDRType(cdr_type)
+        self.cdr_date = cdr_date
+        self.state = State(state)
+        self.timestamp = pendulum.utcnow()
 
     @classmethod
     def set_state(

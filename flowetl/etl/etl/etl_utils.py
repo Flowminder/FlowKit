@@ -6,6 +6,7 @@
 """
 Contains utility functions for use in the ETL dag and it's callables
 """
+from enum import Enum
 
 from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
@@ -132,3 +133,16 @@ def get_session():
     Dummy for now will get us a session to flowdb
     """
     return "session"
+
+
+class CDRType(str, Enum):
+    CALLS = "calls"
+    SMS = "sms"
+    MDS = "mds"
+    TOPUPS = "topups"
+
+
+class State(str, Enum):
+    INGEST = "ingest"
+    ARCHIVE = "archive"
+    QUARANTINE = "quarantine"
