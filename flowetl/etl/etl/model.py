@@ -73,7 +73,7 @@ class ETLRecord(Base):
         cdr_type : str
             CDR type of file being processed ("calls", "sms", "mds" or "topups")
         cdr_date : Date
-            The date with which the files data is associated
+            The date with which the file's data is associated
         state : str
             The state in the ingestion process the file currently
             is ("ingest", "quarantine" or "archive")
