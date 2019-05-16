@@ -45,7 +45,7 @@ describe("Login screen", function () {
         //checking validation text
         cy.get("#name-helper-text").should(
             "have.text",
-            "Token name can not be blank."
+            "Token name cannot be blank."
         );
         cy.get("#name")
             .clear({
