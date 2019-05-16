@@ -43,7 +43,7 @@ class ETLRecord(Base):
         allowed_cdr_types = ["calls", "sms", "mds", "topups"]
         # pylint: disable=no-else-raise
         if state not in allowed_states or cdr_type not in allowed_cdr_types:
-            raise Exception(
+            raise ValueError(
                 f"state should be one of {allowed_states} and cdr_type one of {allowed_cdr_types}"
             )
         else:

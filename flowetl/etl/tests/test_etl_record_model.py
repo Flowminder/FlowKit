@@ -8,8 +8,8 @@ Tests for the etl book-keeping DB Model
 """
 from unittest.mock import patch
 
-import pytest
 import pendulum
+import pytest
 
 from etl.model import ETLRecord
 
@@ -58,7 +58,7 @@ def test_exception_raised_with_invalid_state(session):
         "cdr_date": pendulum.parse("2016-01-01").date(),
         "state": "hammer_time",
     }
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         ETLRecord.set_state(
             file_name=file_data["file_name"],
             cdr_type=file_data["cdr_type"],
@@ -79,7 +79,7 @@ def test_exception_raised_with_invalid_cdr_type(session):
         "cdr_date": pendulum.parse("2016-01-01").date(),
         "state": "ingest",
     }
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         ETLRecord.set_state(
             file_name=file_data["file_name"],
             cdr_type=file_data["cdr_type"],
