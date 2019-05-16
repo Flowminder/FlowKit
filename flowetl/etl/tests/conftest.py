@@ -25,7 +25,7 @@ class FakeDagRun:
 
 class FakeTaskInstance:
     """
-    a fake TaskInstance object
+    A fake TaskInstance object
     """
 
     def __init__(self, task_id):
