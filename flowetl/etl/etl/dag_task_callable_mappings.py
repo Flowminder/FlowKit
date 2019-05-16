@@ -68,6 +68,7 @@ PRODUCTION_TASK_CALLABLES = {
         db_hook=db_hook,
         config_path=config_path,
         template_name="load",
+        fixed_sql=True,
     ),
     "success_branch": success_branch__callable,
     "archive": partial(
@@ -87,6 +88,7 @@ PRODUCTION_TASK_CALLABLES = {
         db_hook=db_hook,
         config_path=config_path,
         template_name="clean",
+        fixed_sql=True,
     ),
     "fail": dummy_failing__callable,
 }

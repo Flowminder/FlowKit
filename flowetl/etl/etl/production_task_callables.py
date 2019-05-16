@@ -25,6 +25,7 @@ def render_and_run_sql__callable(
     db_hook: DbApiHook,
     config_path: Path,
     template_name: str,
+    fixed_sql=False,
     **kwargs,
 ):
     """
@@ -48,23 +49,28 @@ def render_and_run_sql__callable(
         The file name sans .sql that we wish to template. Most likely the
         same as the task_id.
     """
-    # dag_run.conf["template_path"] -> where the sql templates
-    # for this dag run live. Determined by the type of the CDR
-    # this dag is ingesting. If this is voice then template_path
-    # will be 'etl/voice'.
-    template_path = config_path / dag_run.conf["template_path"]
+    if fixed_sql:
+        # for clean and load the sql used will always be the same
+        # so here we just read that fixed file...
+        pass
+    else:
+        # dag_run.conf["template_path"] -> where the sql templates
+        # for this dag run live. Determined by the type of the CDR
+        # this dag is ingesting. If this is voice then template_path
+        # will be 'etl/voice'.
+        template_path = config_path / dag_run.conf["template_path"]
 
-    # template name matches the task_id this is being used
-    # in. If this is the transform task then it will be 'transform'
-    # and thus the template we use will be 'etl/voice/transform.sql'
-    template_path = template_path / f"{template_name}.sql"
-    template = open(template_path).read()
+        # template name matches the task_id this is being used
+        # in. If this is the transform task then it will be 'transform'
+        # and thus the template we use will be 'etl/voice/transform.sql'
+        template_path = template_path / f"{template_name}.sql"
+        template = open(template_path).read()
 
-    # make use of the operator's templating functionality
-    sql = task.render_template("", template, dag_run.conf)
+        # make use of the operator's templating functionality
+        sql = task.render_template("", template, dag_run.conf)
 
-    # run the templated sql against DB
-    db_hook.run(sql=sql)
+        # run the templated sql against DB
+        db_hook.run(sql=sql)
 
 
 # pylint: disable=unused-argument
