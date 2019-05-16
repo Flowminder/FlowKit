@@ -295,9 +295,6 @@ jobs:
           key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/flowmachine-caaCcVrN
-      - run:
-          name: Install graphviz
-          command: sudo apt-get install -y xvfb graphviz
 
   lint:
     docker: *base_docker
@@ -322,6 +319,9 @@ jobs:
           at: /home/circleci/
       - restore_cache:
           key: flowmachine-deps-1-{{ checksum "Pipfile.lock" }}
+      - run:
+          name: Install graphviz
+          command: sudo apt-get install -y xvfb graphviz
       - run: *wait_for_flowdb
       - run:
           name: Run tests
