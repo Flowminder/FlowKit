@@ -13,26 +13,11 @@ import textwrap
 import unittest.mock
 import IPython
 from io import StringIO
-from pathlib import Path
 
 from flowmachine.core import CustomQuery
-from flowmachine.core.errors import BadLevelError
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 from flowmachine.features import daily_location, EventTableSubset
-from flowmachine.utils import (
-    parse_datestring,
-    proj4string,
-    get_columns_for_level,
-    getsecret,
-    pretty_sql,
-    _makesafe,
-    print_dependency_tree,
-    calculate_dependency_graph,
-    plot_dependency_graph,
-    convert_dict_keys_to_strings,
-    sort_recursively,
-    time_period_add,
-)
+from flowmachine.utils import *
 
 
 @pytest.mark.parametrize("crs", (None, 4326, "+proj=longlat +datum=WGS84 +no_defs"))
@@ -190,6 +175,15 @@ def test_convert_dict_keys_to_strings():
     d_out_expected = {"0": {"0": "foo", "1": "bar"}, "1": {"A": "baz", "2": "quux"}}
     d_out = convert_dict_keys_to_strings(d)
     assert d_out_expected == d_out
+
+
+def test_to_nested_list():
+    """
+    Test that a dictionary with multiple levels is correctly converted to a nested list of key-value pairs.
+    """
+    d = {"a": {"b": 1, "c": [2, 3, {"e": 4}], "d": [5, 6]}}
+    expected = [("a", [("b", 1), ("c", [2, 3, [("e", 4)]]), ("d", [5, 6])])]
+    assert expected == to_nested_list(d)
 
 
 def test_sort_recursively():
