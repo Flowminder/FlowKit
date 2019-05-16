@@ -90,11 +90,6 @@ def test_subsetting_of_query(get_dataframe):
     dl_2 = daily_location(date="2016-01-01", subscriber_subset=subsetter_2)
     dl_3 = daily_location(date="2016-01-01", subscriber_subset=subsetter_3)
 
-    assert "266c182d06723f60725430f0d8965f60" == dl_0.md5
-    assert "20c34b09f489c26e7748f56eee64c6f7" == dl_1.md5
-    assert "ee2a9dbbceacc88cc96f0d997ad1c95c" == dl_2.md5
-    assert "671e8a9d9e9876d59b4c68fe14a4de8e" == dl_3.md5
-
     assert 499 == len(get_dataframe(dl_0))
     assert 499 == len(get_dataframe(dl_1))
     assert 3 == len(get_dataframe(dl_2))
