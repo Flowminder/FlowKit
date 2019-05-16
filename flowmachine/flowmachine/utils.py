@@ -530,6 +530,8 @@ def plot_dependency_graph(
     for more details). This returns an IPython.display object which can be directly displayed in
     Jupyter notebooks.
 
+    Note that this requires the IPython and pygraphviz packages to be installed.
+
     Parameters
     ----------
     query_obj : Query
