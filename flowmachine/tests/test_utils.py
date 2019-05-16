@@ -5,7 +5,6 @@
 """
 Tests for flowmachine small helper functions
 """
-import datetime
 import pytest
 import pglast
 import re
@@ -18,6 +17,7 @@ from flowmachine.core import CustomQuery
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 from flowmachine.features import daily_location, EventTableSubset
 from flowmachine.utils import *
+from flowmachine.utils import _makesafe
 
 
 @pytest.mark.parametrize("crs", (None, 4326, "+proj=longlat +datum=WGS84 +no_defs"))
