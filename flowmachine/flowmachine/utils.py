@@ -11,6 +11,7 @@ import datetime
 import networkx as nx
 import structlog
 import sys
+from io import BytesIO
 from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
@@ -536,3 +537,54 @@ def calculate_dependency_graph(query_obj, analyse=False):
             g.add_edge(*[f"x{z.md5}" for z in (x, y)])
 
     return g
+
+
+def plot_dependency_graph(
+    query_obj, analyse=False, format="png", width=None, height=None
+):
+    """
+    Plot a graph of all the queries that go into producing this one (see `calculate_dependency_graph`
+    for more details). This returns an IPython.display object which can be directly displayed in
+    Jupyter notebooks.
+
+    Parameters
+    ----------
+    query_obj : Query
+        Query object to plot a dependency graph for.
+    analyse : bool
+        Set to True to get actual runtimes for queries. Note that this will actually run the query!
+    format : {"png", "svg"}
+        Output format of the resulting
+    width : int
+        Width in pixels to which to constrain the image. Note this is only supported for format="png".
+    height : int
+        Height in pixels to which to constrain the image. Note this is only supported for format="png".
+
+    Returns
+    -------
+    IPython.display.Image or IPython.display.SVG
+    """
+    try:
+        from IPython.display import Image, SVG
+    except ImportError:
+        raise ImportError(
+            "IPython is needed to plot dependency graph. Please install it."
+        )
+
+    G = calculate_dependency_graph(query_obj, analyse=analyse)
+    A = nx.nx_agraph.to_agraph(G)
+    s = BytesIO()
+    A.draw(s, format=format, prog="dot")
+
+    if format == "png":
+        result = Image(s.getvalue(), width=width, height=height)
+    elif format == "svg":
+        if width is not None or height is not None:
+            logger.warning(
+                "The arguments 'width' and 'height' are not supported with format='svg'."
+            )
+        result = SVG(s.getvalue().decode("utf8"))
+    else:
+        raise ValueError(f"Unsupported output format: '{format}'")
+
+    return result
