@@ -3,14 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-import pendulum
-
+"""
+Testing the task callable that moves files from one location to another.
+"""
 from unittest.mock import patch, Mock
 from pathlib import Path
 
+import pendulum
+
 from etl.production_task_callables import move_file_and_record_ingestion_state__callable
 
-
+# pylint: disable=too-many-locals
 def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_run):
     """
     Tests that we are able to move a file from `from_dir` to `to_dir` and that we
@@ -41,8 +44,8 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_
     mock_get_session = Mock()
     mock_get_session.return_value = "session"
 
-    assert len(mock_ETLRecord__set_state.mock_calls) == 0
-    assert len(mock_get_session.mock_calls) == 0
+    assert mock_ETLRecord__set_state.mock_calls == []
+    assert mock_get_session.mock_calls == []
 
     with patch(
         "etl.production_task_callables.ETLRecord.set_state", mock_ETLRecord__set_state

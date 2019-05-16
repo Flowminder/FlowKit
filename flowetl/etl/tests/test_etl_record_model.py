@@ -1,22 +1,17 @@
-import pytest
-import pendulum
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# -*- coding: utf-8 -*-
+"""
+Tests for the etl book-keeping DB Model
+"""
 from unittest.mock import patch
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import pytest
+import pendulum
 
-from etl.model import Base, ETLRecord
-
-
-@pytest.fixture(scope="function")
-def session():
-    engine = create_engine("sqlite:///:memory:")
-    engine.execute(f"ATTACH DATABASE ':memory:' AS etl;")
-    Base.metadata.create_all(bind=engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    yield session
-    session.close()
+from etl.model import ETLRecord
 
 
 def test_can_set_state(session):

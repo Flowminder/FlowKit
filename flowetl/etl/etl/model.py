@@ -1,13 +1,22 @@
-import pendulum
-from pendulum.date import Date
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from sqlalchemy import Column, String, DateTime, Date, Integer, Interval
+# -*- coding: utf-8 -*-
+"""
+Define a DB model for storing the process of ingestion
+"""
+
+import pendulum
+from pendulum.date import Date as pendulumDate
+
+from sqlalchemy import Column, String, DateTime, Date, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import Session
 
 Base = declarative_base()
 
-
+# pylint: disable=too-few-public-methods
 class ETLRecord(Base):
     """
     DB Model for storing the process of ingestion
@@ -24,13 +33,15 @@ class ETLRecord(Base):
     state = Column(String)
     timestamp = Column(DateTime)
 
-    def __init__(self, *, file_name: str, cdr_type: str, cdr_date: Date, state: str):
+    def __init__(
+        self, *, file_name: str, cdr_type: str, cdr_date: pendulumDate, state: str
+    ):
 
         # This should be set more globally - not using enums
         # because don't have a migration strategy in place
         allowed_states = ["ingest", "archive", "quarantine"]
         allowed_cdr_types = ["calls", "sms", "mds", "topups"]
-
+        # pylint: disable=no-else-raise
         if state not in allowed_states or cdr_type not in allowed_cdr_types:
             raise Exception(
                 f"state should be one of {allowed_states} and cdr_type one of {allowed_cdr_types}"
@@ -48,7 +59,7 @@ class ETLRecord(Base):
         *,
         file_name: str,
         cdr_type: str,
-        cdr_date: Date,
+        cdr_date: pendulumDate,
         state: str,
         session: Session,
     ) -> None:

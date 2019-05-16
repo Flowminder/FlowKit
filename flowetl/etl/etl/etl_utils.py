@@ -128,4 +128,7 @@ def construct_etl_dag(*, task_callable_mapping: dict, default_args: dict) -> DAG
 
 
 def get_session():
-    pass
+    """
+    Dummy for now will get us a session to flowdb
+    """
+    return "session"
