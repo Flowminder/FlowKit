@@ -27,10 +27,15 @@ def test_construct_etl_dag_with_test_callables():
     """
     default_args = {"owner": "bob", "start_date": parse("1900-01-01")}
     task_callable_mapping = TEST_TASK_CALLABLES
+    cdr_type = "spaghetti"
 
     dag = construct_etl_dag(
-        task_callable_mapping=task_callable_mapping, default_args=default_args
+        task_callable_mapping=task_callable_mapping,
+        default_args=default_args,
+        cdr_type=cdr_type,
     )
+
+    assert dag.dag_id == f"etl_{cdr_type}"
 
     dag_task_callable_mapping = {t.task_id: t.python_callable for t in dag.tasks}
     assert dag_task_callable_mapping == TEST_TASK_CALLABLES
@@ -44,10 +49,15 @@ def test_construct_etl_dag_with_production_callables():
     """
     default_args = {"owner": "bob", "start_date": parse("1900-01-01")}
     task_callable_mapping = PRODUCTION_TASK_CALLABLES
+    cdr_type = "spaghetti"
 
     dag = construct_etl_dag(
-        task_callable_mapping=task_callable_mapping, default_args=default_args
+        task_callable_mapping=task_callable_mapping,
+        default_args=default_args,
+        cdr_type=cdr_type,
     )
+
+    assert dag.dag_id == f"etl_{cdr_type}"
 
     dag_task_callable_mapping = {t.task_id: t.python_callable for t in dag.tasks}
     assert dag_task_callable_mapping == PRODUCTION_TASK_CALLABLES
@@ -59,11 +69,14 @@ def test_construct_etl_dag_fails_with_no_start_date():
     """
     default_args = {"owner": "bob"}
     task_callable_mapping = TEST_TASK_CALLABLES
+    cdr_type = "spaghetti"
 
     # pylint: disable=unused-variable
     with pytest.raises(AirflowException):
         dag = construct_etl_dag(
-            task_callable_mapping=task_callable_mapping, default_args=default_args
+            task_callable_mapping=task_callable_mapping,
+            default_args=default_args,
+            cdr_type=cdr_type,
         )
 
 
@@ -74,9 +87,12 @@ def test_construct_etl_dag_with_no_owner_defaults_to_airflow():
     """
     default_args = {"start_date": parse("1900-01-01")}
     task_callable_mapping = TEST_TASK_CALLABLES
+    cdr_type = "spaghetti"
 
     dag = construct_etl_dag(
-        task_callable_mapping=task_callable_mapping, default_args=default_args
+        task_callable_mapping=task_callable_mapping,
+        default_args=default_args,
+        cdr_type=cdr_type,
     )
 
     assert dag.owner == "Airflow"
@@ -88,11 +104,14 @@ def test_construct_etl_dag_fails_with_bad_start_date():
     """
     default_args = {"owner": "bob", "start_date": "bob_time"}
     task_callable_mapping = TEST_TASK_CALLABLES
+    cdr_type = "spaghetti"
 
     # pylint: disable=unused-variable
     with pytest.raises(ParserError):
         dag = construct_etl_dag(
-            task_callable_mapping=task_callable_mapping, default_args=default_args
+            task_callable_mapping=task_callable_mapping,
+            default_args=default_args,
+            cdr_type=cdr_type,
         )
 
 
@@ -103,9 +122,12 @@ def test_construct_etl_dag_fails_with_incorrect_mapping_keys():
     """
     default_args = {"owner": "bob", "start_date": "bob_time"}
     task_callable_mapping = {}
+    cdr_type = "spaghetti"
 
     # pylint: disable=unused-variable
     with pytest.raises(TypeError):
         dag = construct_etl_dag(
-            task_callable_mapping=task_callable_mapping, default_args=default_args
+            task_callable_mapping=task_callable_mapping,
+            default_args=default_args,
+            cdr_type=cdr_type,
         )
