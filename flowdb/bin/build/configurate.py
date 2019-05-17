@@ -75,7 +75,7 @@ config_path = os.getenv(
 )
 
 preload_libraries = ["pg_cron", "pg_stat_statements"]
-if bool_env("FLOWDB_DEBUG"):
+if bool_env("FLOWDB_ENABLE_POSTGRES_DEBUG_MODE"):
     preload_libraries.append("plugin_debugger")
 
 with open("/docker-entrypoint-initdb.d/pg_config_template.conf") as fin:
