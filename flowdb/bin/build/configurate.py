@@ -54,7 +54,7 @@ def bool_env(var):
         return False
 
 
-total_mem = psutil.virtual_memory().total
+total_mem = int(os.getenv("FLOWDB_TOTAL_MEMORY", psutil.virtual_memory().total))
 shared_buffers = (
     _humansize(ceil(0.25 * total_mem)) if total_mem < 64000000000 else "16GB"
 )
