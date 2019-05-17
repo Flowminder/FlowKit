@@ -130,7 +130,7 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
       - FLOWAPI_URL=http://flowapi:9090
-      - MAPBOX_ACCESS_TOKEN=$MAPBOX_ACCESS_TOKEN
+      - MAPBOX_ACCESS_TOKEN
     restart: always
     networks:
       - db
