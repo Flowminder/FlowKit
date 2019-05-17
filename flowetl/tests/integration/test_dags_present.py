@@ -17,7 +17,7 @@ def test_dags_present(airflow_local_setup):
     Test that the correct dags are parsed
     """
     assert set(DagBag(dag_folder="./dags", include_examples=False).dag_ids) == set(
-        ["etl", "etl_sensor"]
+        ["etl_testing", "etl_sensor"]
     )
 
 
@@ -25,7 +25,7 @@ def test_dags_present(airflow_local_setup):
     "dag_name,expected_task_list",
     [
         (
-            "etl",
+            "etl_testing",
             [
                 "init",
                 "extract",
