@@ -37,12 +37,17 @@ else:
     task_callable_mapping = PRODUCTION_TASK_CALLABLES
     logging.info("running in production environment")
 
+    # read and validate the config file before creating the DAGs
     global_config_dict = get_config_from_file(
         config_filepath=os.environ["MOUNT_HOME"] / Path("config/config.yml")
     )
     validate_config(global_config_dict=global_config_dict)
 
+    default_args = global_config_dict["default_args"]
+
+    # create DAG for each cdr_type
     for cdr_type in list(CDRType._value2member_map_.keys()):
+
         globals()[f"etl_{cdr_type}"] = construct_etl_dag(
             task_callable_mapping=task_callable_mapping,
             default_args=default_args,
