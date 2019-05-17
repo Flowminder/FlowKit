@@ -119,7 +119,7 @@ def airflow_local_pipeline_run():
         p.wait()
 
         p = Popen(
-            "airflow unpause etl".split(),
+            "airflow unpause etl_testing".split(),
             shell=False,
             stdout=DEVNULL,
             stderr=DEVNULL,
@@ -154,7 +154,7 @@ def wait_for_completion():
     def wait_func(end_state):
         time_out = Interval(minutes=3)
         t0 = now()
-        while not DagRun.find("etl", state=end_state):
+        while not DagRun.find("etl_testing", state=end_state):
             sleep(1)
             t1 = now()
             if (t1 - t0) > time_out:

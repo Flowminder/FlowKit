@@ -23,7 +23,7 @@ def test_archive_branch(airflow_local_pipeline_run, wait_for_completion):
     final_etl_state = wait_for_completion(end_state)
     assert final_etl_state == end_state
 
-    etl_dag = DagRun.find("etl", state=end_state)[0]
+    etl_dag = DagRun.find("etl_testing", state=end_state)[0]
 
     task_states = {task.task_id: task.state for task in etl_dag.get_task_instances()}
     assert task_states == {
@@ -112,7 +112,7 @@ def test_quarantine_branch(
     final_etl_state = wait_for_completion(end_state)
     assert final_etl_state == end_state
 
-    etl_dag = DagRun.find("etl", state=end_state)[0]
+    etl_dag = DagRun.find("etl_testing", state=end_state)[0]
 
     task_states = {task.task_id: task.state for task in etl_dag.get_task_instances()}
     assert task_states == expected_task_states
