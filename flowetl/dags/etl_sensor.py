@@ -6,6 +6,7 @@
 """
 Skeleton specification for ETL sensor DAG
 """
+import os
 import logging
 import uuid
 
@@ -16,6 +17,8 @@ from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 from pendulum import now, parse
 
+from etl.etl_utils import CDRType
+
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
 # pylint: disable=unused-argument
@@ -24,7 +27,27 @@ def dummy_trigger_callable(*, dag_run: DagRun, **kwargs):
     Dummy callable that triggers ETL dag
     """
     logging.info(dag_run)
-    trigger_dag("etl", run_id=str(uuid.uuid1()), execution_date=now())
+
+    if os.environ.get("TESTING", "") == "true":
+        # If testing then only one DAG and we kick this off
+        logging.info("Triggering ETL in testing environment")
+        trigger_dag("etl_testing", run_id=str(uuid.uuid1()), execution_date=now())
+    else:
+        # otherwise for now (will change!) kick all possible DAGs off
+        logging.info("Triggering ETL in production environment")
+        temp_conf = {
+            "file_name": "bob.csv",
+            "template_path": "some_path",
+            "cdr_type": "spaghetti",
+            "cdr_date": "2016-01-01",
+        }
+        for cdr_type in list(CDRType._value2member_map_.keys()):
+            trigger_dag(
+                f"etl_{cdr_type}",
+                run_id=str(uuid.uuid1()),
+                execution_date=now(),
+                conf=temp_conf,
+            )
 
 
 with DAG(dag_id="etl_sensor", schedule_interval=None, default_args=default_args) as dag:
