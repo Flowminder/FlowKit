@@ -18,12 +18,12 @@ print("Constructing query objects")
 
 # FlowClient example usage
 example_usage_queries = [
-    flowmachine.features.SpatialAggregate(
+    flowmachine.features.utilities.spatial_aggregates.SpatialAggregate(
         locations=flowmachine.features.daily_location(
             date="2016-01-01", level="admin3", method="last"
         )
     ),
-    flowmachine.features.SpatialAggregate(
+    flowmachine.features.utilities.spatial_aggregates.SpatialAggregate(
         locations=flowmachine.features.ModalLocation(
             *[
                 flowmachine.features.daily_location(
@@ -53,7 +53,7 @@ date_ranges = {
     "focal": pd.date_range("2016-02-10", "2016-02-28", freq="D"),
 }
 flows_above_normal_queries = [
-    flowmachine.features.SpatialAggregate(
+    flowmachine.features.utilities.spatial_aggregates.SpatialAggregate(
         locations=flowmachine.features.ModalLocation(
             *[
                 flowmachine.features.daily_location(
