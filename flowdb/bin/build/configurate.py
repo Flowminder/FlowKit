@@ -55,9 +55,9 @@ def bool_env(var):
 
 
 total_mem = psutil.virtual_memory().total
-shared_buffers = (
-    _humansize(ceil(0.25 * total_mem)) if total_mem < 64000000000 else "16GB"
-)
+shared_buffers = _humansize(
+    ceil(0.25 * total_mem)
+)  # if total_mem < 64000000000 else "16GB"
 cores = int(os.getenv("MAX_CPUS", floor(0.9 * psutil.cpu_count())))
 workers = int(os.getenv("MAX_WORKERS", ceil(cores / 2)))
 workers_per_gather = int(os.getenv("MAX_WORKERS_PER_GATHER", ceil(cores / 2)))
