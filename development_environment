@@ -87,6 +87,10 @@ CACHE_HALF_LIFE=10000
 #MAX_WORKERS 
 # Max number of worker processes to use per query
 #MAX_WORKERS_PER_GATHER 
+# Size of postgres shared memory buffers
+#SHARED_BUFFERS_SIZE
+# Set the postgres 'effective_cache_size' parameter
+#EFFECTIVE_CACHE_SIZE
 # Enable/disable postgres JIT
 #JIT 
 # Default stats target for tables

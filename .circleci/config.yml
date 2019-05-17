@@ -128,7 +128,8 @@ executors:
           MAX_CPUS: 2
           MAX_WORKERS: 2
           MAX_WORKERS_PER_GATHER: 2
-          FLOWDB_TOTAL_MEMORY: "4294967296"
+          SHARED_BUFFERS_SIZE: "1GB"
+          EFFECTIVE_CACHE_SIZE: "3GB"
       - image: bitnami/redis:latest
         environment:
           REDIS_PASSWORD: "fm_redis"
@@ -695,6 +696,7 @@ jobs:
             zip pg_log.zip pg_log.csv
       - store_artifacts:
           path: /home/circleci/project/docs/pg_log.zip
+          destination: pg_log
       - save_cache:
           key: flowkit-docs-deps1-{{ checksum "Pipfile.lock" }}
           paths:
