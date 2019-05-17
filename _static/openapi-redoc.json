@@ -300,13 +300,13 @@
           }, 
           "method": {
             "enum": [
-              "mode", 
-              "avg", 
-              "median", 
-              "max", 
-              "variance", 
               "stddev", 
-              "min"
+              "avg", 
+              "min", 
+              "mode", 
+              "variance", 
+              "max", 
+              "median"
             ], 
             "type": "string"
           }, 
@@ -362,13 +362,13 @@
             }, 
             "minItems": 1, 
             "nullable": true, 
-            "type": "string"
+            "type": "array"
           }, 
           "interval": {
             "enum": [
               "day", 
-              "hour", 
-              "min"
+              "min", 
+              "hour"
             ], 
             "type": "string"
           }, 
@@ -498,7 +498,7 @@
               "minimum": -1.0, 
               "type": "number"
             }, 
-            "type": "string"
+            "type": "object"
           }, 
           "tower_hour_of_day_scores": {
             "items": {
@@ -509,7 +509,7 @@
             }, 
             "maxItems": 24, 
             "minItems": 24, 
-            "type": "string"
+            "type": "array"
           }
         }, 
         "required": [
@@ -588,7 +588,7 @@
               "minimum": -1.0, 
               "type": "number"
             }, 
-            "type": "string"
+            "type": "object"
           }, 
           "tower_hour_of_day_scores": {
             "items": {
@@ -599,7 +599,7 @@
             }, 
             "maxItems": 24, 
             "minItems": 24, 
-            "type": "string"
+            "type": "array"
           }
         }, 
         "required": [
@@ -674,7 +674,7 @@
               "minimum": -1.0, 
               "type": "number"
             }, 
-            "type": "string"
+            "type": "object"
           }, 
           "tower_hour_of_day_scores": {
             "items": {
@@ -685,7 +685,7 @@
             }, 
             "maxItems": 24, 
             "minItems": 24, 
-            "type": "string"
+            "type": "array"
           }
         }, 
         "required": [
@@ -886,7 +886,7 @@
       "url": "https://www.mozilla.org/en-US/MPL/2.0/"
     }, 
     "title": "FlowAPI", 
-    "version": "0.6.2"
+    "version": "0.6.3"
   }, 
   "openapi": "3.0.1", 
   "paths": {
