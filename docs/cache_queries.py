@@ -16,6 +16,45 @@ flowmachine.connect()
 
 print("Constructing query objects")
 
+
+# FlowClient example usage
+example_usage_queries = [
+    flowmachine.features.SpatialAggregate(
+        locations=flowmachine.features.daily_location(
+            date="2016-01-01", level="admin3", method="last"
+        )
+    ),
+    flowmachine.features.SpatialAggregate(
+        locations=flowmachine.features.ModalLocation(
+            *[
+                flowmachine.features.daily_location(
+                    date="2016-01-01", level="admin3", method="last"
+                ),
+                flowmachine.features.daily_location(
+                    date="2016-01-02", level="admin3", method="last"
+                ),
+                flowmachine.features.daily_location(
+                    date="2016-01-03", level="admin3", method="last"
+                ),
+            ]
+        )
+    ),
+    flowmachine.features.Flows(
+        flowmachine.features.daily_location(
+            date="2016-01-01", level="admin1", method="last"
+        ),
+        flowmachine.features.daily_location(
+            date="2016-01-07", level="admin1", method="last"
+        ),
+    ),
+    flowmachine.features.TotalLocationEvents(
+        start="2016-01-01", stop="2016-01-08", level="admin3", interval="hour"
+    ),
+]
+
+# Post-crisis
+
+
 daily_location_queries = [
     flowmachine.features.daily_location(
         date="2016-01-01", level="admin1", method="last"
