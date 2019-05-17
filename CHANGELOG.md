@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Architectural Decision Records (ADR) have been added and are included in the auto-generated docs [#780](https://github.com/Flowminder/FlowKit/issues/780)
 - Added FlowDB environment variables `SHARED_BUFFERS_SIZE` and `EFFECTIVE_CACHE_SIZE`, to allow manually setting the Postgres configuration parameters `shared_buffers` and `effective_cache_size`.
 
+### Fixed
+- API parameter `interval` for `location_event_counts` queries is now correctly passed to the underlying FlowMachine query object [#807](https://github.com/Flowminder/FlowKit/issues/807).
+
 
 ### Changed
 - Parameter names in `flowmachine.connect()` have been renamed as follows to be consistent with the associated environment variables [#728](https://github.com/Flowminder/FlowKit/issues/728):

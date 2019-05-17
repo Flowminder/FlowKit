@@ -3,7 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-from unittest.mock import patch, Mock
+"""
+Tests for task callable that will render sql and apply to the DB
+"""
+from unittest.mock import Mock
 from pathlib import Path
 
 from airflow import DAG
@@ -11,8 +14,12 @@ from airflow.operators import BaseOperator
 
 from etl.production_task_callables import render_and_run_sql__callable
 
-
+# pylint: disable=too-few-public-methods
 class FakeDagRun:
+    """
+    A fake DagRun object used for faking config
+    """
+
     def __init__(self, conf):
         self.conf = conf
 
