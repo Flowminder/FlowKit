@@ -426,6 +426,7 @@ jobs:
       FLOWAPI_IDENTIFIER: TEST_SERVER
       FLOWAUTH_ADMIN_PASSWORD: DUMMY_PASSWORD
       FLOWAUTH_ADMIN_USERNAME: TEST_ADMIN
+      SECRET_KEY: secret
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
