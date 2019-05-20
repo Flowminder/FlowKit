@@ -26,6 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `flowmachine.utils.calculate_dependency_graph` now includes the `Query` objects in the `query_object` field of the graph's nodes dictionary [#767](https://github.com/Flowminder/FlowKit/issues/767)
 - Architectural Decision Records (ADR) have been added and are included in the auto-generated docs [#780](https://github.com/Flowminder/FlowKit/issues/780)
 - Added FlowDB environment variables `SHARED_BUFFERS_SIZE` and `EFFECTIVE_CACHE_SIZE`, to allow manually setting the Postgres configuration parameters `shared_buffers` and `effective_cache_size`.
+- The function `print_dependency_tree()` now takes an optional argument `show_stored` to display information whether dependent queries have been stored or not [#804](https://github.com/Flowminder/FlowKit/issues/804)
+- A new function `plot_dependency_graph()` has been added which allows to conveniently plot and visualise a dependency graph for use in Jupyter notebooks (this requires IPython and pygraphviz to be installed) [#786](https://github.com/Flowminder/FlowKit/issues/786)
 
 ### Changed
 - Parameter names in `flowmachine.connect()` have been renamed as follows to be consistent with the associated environment variables [#728](https://github.com/Flowminder/FlowKit/issues/728):
