@@ -34,7 +34,6 @@ setup(
         "flask-jwt-extended[asymmetric_crypto]",
         "asyncpg",
         "pyyaml >= 5.1",
-        "python-rapidjson",
         "apispec[yaml]",
     ],
     extras_require={"test": ["pytest", "coverage"]},

@@ -9,6 +9,7 @@ quart = "*"
 hypercorn = "*"
 asyncpg = "*"
 flask-jwt-extended = {extras = ["asymmetric-crypto"],version = "*"}
+cryptography = "*" # This _should_ get installed given the flask-jwt-extended extra, but is getting put in the develop section of the lockfile
 structlog = "*"
 python-rapidjson = "*"
 pyyaml = ">=5.1"
