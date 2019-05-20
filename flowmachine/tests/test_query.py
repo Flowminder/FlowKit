@@ -135,3 +135,21 @@ def test_make_sql_no_overwrite():
 
     dl = daily_location("2016-01-01")
     assert [] == dl._make_sql("admin3", schema="geography")
+
+
+def test_query_formatting():
+    """
+    Test that query can be formatted as a string, with query attributes
+    specified in the `fmt` argument being included.
+    """
+    dl = daily_location("2016-01-01", method="last")
+    assert "<Query of type: LastLocation>" == format(dl)
+    assert (
+        "<Query of type: LastLocation, level: 'admin3', column_names: ['subscriber', 'pcod']>"
+        == f"{dl:level,column_names}"
+    )
+
+    with pytest.raises(
+        ValueError, match="Format string contains invalid query attribute: 'foo'"
+    ):
+        format(dl, "query_id,foo")

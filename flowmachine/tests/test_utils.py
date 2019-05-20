@@ -5,32 +5,19 @@
 """
 Tests for flowmachine small helper functions
 """
-import datetime
 import pytest
 import pglast
 import re
 import textwrap
 import unittest.mock
+import IPython
 from io import StringIO
-from pathlib import Path
 
 from flowmachine.core import CustomQuery
-from flowmachine.core.errors import BadLevelError
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 from flowmachine.features import daily_location, EventTableSubset
-from flowmachine.utils import (
-    parse_datestring,
-    proj4string,
-    get_columns_for_level,
-    getsecret,
-    pretty_sql,
-    _makesafe,
-    print_dependency_tree,
-    calculate_dependency_graph,
-    convert_dict_keys_to_strings,
-    sort_recursively,
-    time_period_add,
-)
+from flowmachine.utils import *
+from flowmachine.utils import _makesafe
 
 
 @pytest.mark.parametrize("crs", (None, 4326, "+proj=longlat +datum=WGS84 +no_defs"))
@@ -190,6 +177,15 @@ def test_convert_dict_keys_to_strings():
     assert d_out_expected == d_out
 
 
+def test_to_nested_list():
+    """
+    Test that a dictionary with multiple levels is correctly converted to a nested list of key-value pairs.
+    """
+    d = {"a": {"b": 1, "c": [2, 3, {"e": 4}], "d": [5, 6]}}
+    expected = [("a", [("b", 1), ("c", [2, 3, [("e", 4)]]), ("d", [5, 6])])]
+    assert expected == to_nested_list(d)
+
+
 def test_sort_recursively():
     """
     Test that `sort_recursively` recursively sorts all components of the input dictionary.
@@ -252,9 +248,9 @@ def test_print_dependency_tree():
     assert expected_output == output_with_query_ids_replaced
 
 
-def test_dependency_graph():
+def test_calculate_dependency_graph():
     """
-    Test that dependency graph util runs and has some correct entries.
+    Test that calculate_dependency_graph() runs and the returned graph has some correct entries.
     """
     query = daily_location("2016-01-01")
     G = calculate_dependency_graph(query, analyse=True)
@@ -265,3 +261,17 @@ def test_dependency_graph():
     )
     assert f"x{sd.md5}" in G.nodes()
     assert G.nodes[f"x{sd.md5}"]["query_object"].md5 == sd.md5
+
+
+def test_plot_dependency_graph():
+    """
+    Test that plot_dependency_graph() runs and returns the expected IPython.display objects.
+    """
+    query = daily_location(date="2016-01-02", level="admin2", method="most-common")
+    output_svg = plot_dependency_graph(query, format="svg")
+    output_png = plot_dependency_graph(query, format="png", width=600, height=200)
+
+    assert isinstance(output_svg, IPython.display.SVG)
+    assert isinstance(output_png, IPython.display.Image)
+    assert output_png.width == 600
+    assert output_png.height == 200
