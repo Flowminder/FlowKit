@@ -8,6 +8,7 @@ Contains utility functions for use in the ETL dag and it's callables
 """
 import yaml
 
+from uuid import UUID
 from typing import List
 from enum import Enum
 from pathlib import Path
@@ -158,7 +159,7 @@ class State(str, Enum):
     QUARANTINE = "quarantine"
 
 
-def find_files(dump_path: Path, filter_filenames=["README.md"]) -> List[Path]:
+def find_files(*, dump_path: Path, ignore_filenames=["README.md"]) -> List[Path]:
     """
     Returns a list of Path objects for all files
     found in the dump location.
@@ -168,12 +169,44 @@ def find_files(dump_path: Path, filter_filenames=["README.md"]) -> List[Path]:
     dump_path : Path
         The location of the dump path
 
+    ignore_filenames : Path
+        List of filenames to ignore
+
     Returns
     -------
     List[Path]
         List of files found
     """
-    files = filter(lambda file: file.name not in filter_filenames, dump_path.glob("*"))
+    files = filter(lambda file: file.name not in ignore_filenames, dump_path.glob("*"))
     return files
 
     #
+
+
+def generate_temp_table_names(*, cdr_type: CDRType, uuid: UUID) -> dict:
+    """
+    [summary]
+
+    Parameters
+    ----------
+    cdr_type : CDRType
+        [description]
+    uuid : UUID
+        [description]
+
+    Returns
+    -------
+    dict
+        [description]
+    """
+    uuid_sans_underscore = str(uuid).replace("-", "")
+
+    extract_table = f"etl.x{uuid_sans_underscore}"
+    transform_table = f"etl.t{uuid_sans_underscore}"
+    load_table = f"events.{cdr_type}"
+
+    return {
+        "extract_table": extract_table,
+        "transform_table": transform_table,
+        "load_table": load_table,
+    }
