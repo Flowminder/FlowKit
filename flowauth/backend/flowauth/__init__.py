@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from functools import partial
 
 import flask
 import flask_login
@@ -19,7 +20,7 @@ from .spatial_aggregation import blueprint as aggregation_unit_blueprint
 
 
 def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
 
     app.config.from_mapping(get_config())
 
@@ -49,6 +50,21 @@ def create_app(test_config=None):
     app.register_blueprint(
         aggregation_unit_blueprint, url_prefix="/spatial_aggregation"
     )
+
+    # Initialise the database
+    app.before_first_request(partial(init_db, force=app.config["RESET_DB"]))
+
+    if app.config["DEMO_MODE"]:  # Create demo data
+        app.before_first_request(make_demodata)
+    else:
+        # Create an admin user
+        app.before_first_request(
+            partial(
+                add_admin,
+                username=app.config["ADMIN_USER"],
+                password=app.config["ADMIN_PASSWORD"],
+            )
+        )
 
     @app.after_request
     def set_xsrf_cookie(response):
@@ -114,5 +130,5 @@ def create_app(test_config=None):
     # Add flask <command> CLI commands
     app.cli.add_command(demodata)
     app.cli.add_command(init_db_command)
-    app.cli.add_command(add_admin)
+    app.cli.add_command(add_admin_command)
     return app

@@ -16,6 +16,8 @@ FLASK_APP=flowauth
 # Enable/disable flask debug/autoreload
 FLASK_DEBUG=1
 FLOWAUTH_PORT=9091
+FLOWAUTH_ADMIN_PASSWORD=DUMMY_PASSWORD
+FLOWAUTH_ADMIN_USERNAME=TEST_ADMIN
 
 ## FlowAPI settings
 # JWT secret key

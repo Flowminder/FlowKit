@@ -286,10 +286,11 @@ def test_add_server_capabilities(client, auth):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_group_server_listing(client, auth):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+def test_group_server_listing(client, auth, test_admin, test_group):
+    uid, uname, upass = test_admin
+    response, csrf_cookie = auth.login(uname, upass)
     response = client.get(
-        "/admin/groups/1/servers", headers={"X-CSRF-Token": csrf_cookie}
+        f"/admin/groups/{test_group[0]}/servers", headers={"X-CSRF-Token": csrf_cookie}
     )
 
     assert 200 == response.status_code
@@ -298,10 +299,12 @@ def test_group_server_listing(client, auth):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_group_server_time_limits(client, auth):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+def test_group_server_time_limits(client, auth, test_admin, test_group):
+    uid, uname, upass = test_admin
+    response, csrf_cookie = auth.login(uname, upass)
     response = client.get(
-        "/admin/groups/1/servers/1/time_limits", headers={"X-CSRF-Token": csrf_cookie}
+        f"/admin/groups/{test_group[0]}/servers/1/time_limits",
+        headers={"X-CSRF-Token": csrf_cookie},
     )
 
     assert 200 == response.status_code
@@ -311,10 +314,12 @@ def test_group_server_time_limits(client, auth):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_group_server_rights(client, auth):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+def test_group_server_rights(client, auth, test_admin, test_group):
+    uid, uname, password = test_admin
+    response, csrf_cookie = auth.login(uname, password)
     response = client.get(
-        "/admin/groups/1/servers/1/capabilities", headers={"X-CSRF-Token": csrf_cookie}
+        f"/admin/groups/{test_group[0]}/servers/1/capabilities",
+        headers={"X-CSRF-Token": csrf_cookie},
     )
 
     assert 200 == response.status_code
@@ -328,10 +333,11 @@ def test_group_server_rights(client, auth):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_edit_group_server_rights(client, auth):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+def test_edit_group_server_rights(client, auth, test_admin, test_group):
+    uid, uname, upass = test_admin
+    response, csrf_cookie = auth.login(uname, upass)
     response = client.patch(
-        "/admin/groups/1/servers",
+        f"/admin/groups/{test_group[0]}/servers",
         headers={"X-CSRF-Token": csrf_cookie},
         json={
             "servers": [
@@ -347,7 +353,8 @@ def test_edit_group_server_rights(client, auth):
 
     assert 200 == response.status_code
     response = client.get(
-        "/admin/groups/1/servers/1/capabilities", headers={"X-CSRF-Token": csrf_cookie}
+        f"/admin/groups/{test_group[0]}/servers/1/capabilities",
+        headers={"X-CSRF-Token": csrf_cookie},
     )
 
     assert 200 == response.status_code
@@ -360,7 +367,8 @@ def test_edit_group_server_rights(client, auth):
     ]
 
     response = client.get(
-        "/admin/groups/1/servers/1/time_limits", headers={"X-CSRF-Token": csrf_cookie}
+        f"/admin/groups/{test_group[0]}/servers/1/time_limits",
+        headers={"X-CSRF-Token": csrf_cookie},
     )
     json = response.get_json()
     assert 1 == json["longest_token_life"]
@@ -418,10 +426,13 @@ def test_edit_group_server_rights_rejected_for_expiry(client, auth):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_edit_group_server_rights_rejected_for_rights(client, auth):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+def test_edit_group_server_rights_rejected_for_rights(
+    client, auth, test_admin, test_group
+):
+    uid, uname, upass = test_admin
+    response, csrf_cookie = auth.login(uname, upass)
     response = client.patch(
-        "/admin/groups/1/servers",
+        f"/admin/groups/{test_group[0]}/servers",
         headers={"X-CSRF-Token": csrf_cookie},
         json={
             "servers": [

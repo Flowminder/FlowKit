@@ -14,9 +14,10 @@ from pytest import approx
 
 
 @pytest.mark.usefixtures("test_data")
-def test_reject_when_claim_not_allowed(client, auth):
+def test_reject_when_claim_not_allowed(client, auth, test_user):
+    uid, uname, upass = test_user
     # Log in first
-    response, csrf_cookie = auth.login("TEST_USER", "DUMMY_PASSWORD")
+    response, csrf_cookie = auth.login(uname, upass)
     expiry = (datetime.datetime.now() + datetime.timedelta(minutes=2)).strftime(
         "%Y-%m-%dT%H:%M:%S.%fZ"
     )
@@ -41,10 +42,11 @@ def test_reject_when_claim_not_allowed(client, auth):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_token_generation(client, auth, app):
+def test_token_generation(client, auth, app, test_user):
 
     # Log in first
-    response, csrf_cookie = auth.login("TEST_USER", "DUMMY_PASSWORD")
+    uid, uname, upass = test_user
+    response, csrf_cookie = auth.login(uname, upass)
     expiry = datetime.datetime.now() + datetime.timedelta(minutes=2)
     token_eq = {
         "name": "DUMMY_TOKEN",
@@ -78,10 +80,11 @@ def test_token_generation(client, auth, app):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_token_rejected_for_expiry(client, auth, app):
+def test_token_rejected_for_expiry(client, auth, app, test_user):
 
     # Log in first
-    response, csrf_cookie = auth.login("TEST_USER", "DUMMY_PASSWORD")
+    uid, uname, upass = test_user
+    response, csrf_cookie = auth.login(uname, upass)
     expiry = datetime.datetime.now() + datetime.timedelta(minutes=10)
     token_eq = {
         "name": "DUMMY_TOKEN",
@@ -105,10 +108,11 @@ def test_token_rejected_for_expiry(client, auth, app):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_token_rejected_for_bad_right_claim(client, auth, app):
+def test_token_rejected_for_bad_right_claim(client, auth, app, test_user):
 
     # Log in first
-    response, csrf_cookie = auth.login("TEST_USER", "DUMMY_PASSWORD")
+    uid, uname, upass = test_user
+    response, csrf_cookie = auth.login(uname, upass)
     expiry = datetime.datetime.now() + datetime.timedelta(minutes=1)
     token_eq = {
         "name": "DUMMY_TOKEN",

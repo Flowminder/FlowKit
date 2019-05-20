@@ -33,16 +33,23 @@ def getsecret(key: str, default: str) -> str:
 
 def get_config():
     FLOWAUTH_FERNET_KEY = getsecret(
-        "FLOWAUTH_FERNET_KEY", os.getenv("FLOWAUTH_FERNET_KEY", "")
+        "FLOWAUTH_FERNET_KEY", os.environ["FLOWAUTH_FERNET_KEY"]
     ).encode()
     Fernet(FLOWAUTH_FERNET_KEY)  # Error if fernet key is bad
     return dict(
+        ADMIN_USER=getsecret(
+            "FLOWAUTH_ADMIN_USER", os.environ["FLOWAUTH_ADMIN_USERNAME"]
+        ),
+        ADMIN_PASSWORD=getsecret(
+            "FLOWAUTH_ADMIN_PASSWORD", os.environ["FLOWAUTH_ADMIN_PASSWORD"]
+        ),
         SQLALCHEMY_DATABASE_URI=getsecret(
             "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
         ),
-        SECRET_KEY=getsecret("SECRET_KEY", os.getenv("SECRET_KEY", "secret")),
+        SECRET_KEY=getsecret("SECRET_KEY", os.environ["SECRET_KEY"]),
         SESSION_PROTECTION="strong",
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         FLOWAUTH_FERNET_KEY=FLOWAUTH_FERNET_KEY,
         DEMO_MODE=True if os.getenv("DEMO_MODE") is not None else False,
+        RESET_DB=True if os.getenv("RESET_FLOWAUTH_DB") is not None else False,
     )

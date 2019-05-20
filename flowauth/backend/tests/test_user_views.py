@@ -18,23 +18,25 @@ def test_user_group_listing(client, auth, test_user):
     assert 200 == response.status_code  # Should get an OK
 
     assert [
-        {"id": 1, "group_name": username}
+        {"id": uid, "group_name": username}
     ] == response.get_json()  # Should get exactly one group back, their user group
 
 
 @pytest.mark.usefixtures("test_data")
-def test_server_access(client, auth):
+def test_server_access(client, auth, test_user):
+    uid, uname, upass = test_user
     # Log in first
-    response, csrf_cookie = auth.login("TEST_USER", "DUMMY_PASSWORD")
+    response, csrf_cookie = auth.login(uname, upass)
     response = client.get("/user/servers", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
     assert [{"id": 1, "server_name": "DUMMY_SERVER_A"}] == response.get_json()
 
 
 @pytest.mark.usefixtures("test_data")
-def test_no_tokens(client, auth):
+def test_no_tokens(client, auth, test_user):
+    uid, uname, upass = test_user
     # Log in first
-    response, csrf_cookie = auth.login("TEST_USER", "DUMMY_PASSWORD")
+    response, csrf_cookie = auth.login(uname, upass)
     response = client.get("/user/tokens", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
     result = response.get_json()
@@ -43,9 +45,10 @@ def test_no_tokens(client, auth):
 
 
 @pytest.mark.usefixtures("test_data")
-def test_list_tokens(client, auth):
+def test_list_tokens(client, auth, test_admin):
+    uid, uname, upass = test_admin
     # Log in first
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+    response, csrf_cookie = auth.login(uname, upass)
     response = client.get("/user/tokens", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
     result = response.get_json()
@@ -63,9 +66,10 @@ def test_list_tokens(client, auth):
 
 
 @pytest.mark.usefixtures("test_data")
-def test_list_tokens_for_server(client, auth):
+def test_list_tokens_for_server(client, auth, test_admin):
+    uid, uname, upass = test_admin
     # Log in first
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+    response, csrf_cookie = auth.login(uname, upass)
     response = client.get("/user/tokens/2", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
     result = response.get_json()

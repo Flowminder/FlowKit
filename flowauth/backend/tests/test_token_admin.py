@@ -6,9 +6,10 @@ import pytest
 
 
 @pytest.mark.usefixtures("test_data")
-def test_list_tokens_for_server(client, auth):
+def test_list_tokens_for_server(client, auth, test_admin):
+    uid, uname, upass = test_admin
     # Log in first
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
+    response, csrf_cookie = auth.login(uname, upass)
     response = client.get("/admin/tokens", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code
     assert 1 == len(response.get_json())

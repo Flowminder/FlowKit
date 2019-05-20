@@ -464,19 +464,52 @@ class Group(db.Model):
 )
 @with_appcontext
 def init_db_command(force: bool):  # pragma: no cover
-    """Optionally clear existing data and create new tables."""
+    init_db(force)
+    click.echo("Initialized the database.")
+
+
+def init_db(force: bool = False) -> None:
+    """
+    Initialise the database, optionally wipe any existing one first.
+
+    Parameters
+    ----------
+    force : bool
+        If set to true, wipes any existing database.
+    Returns
+    -------
+    None
+    """
     if force:
         db.drop_all()
     db.create_all()
-    click.echo("Initialized the database.")
 
 
 @click.command("add-admin")
 @click.argument("username", envvar="ADMIN_USER")
 @click.argument("password", envvar="ADMIN_PASSWORD")
 @with_appcontext
-def add_admin(username, password):  # pragma: no cover
-    """Add an administrator account."""
+def add_admin_command(username, password):  # pragma: no cover
+    add_admin(username, password)
+    click.echo(f"Added {username} as an admin.")
+
+
+def add_admin(username: str, password: str) -> None:
+    """
+    Add an administrator, or reset their password if they already exist.
+
+    Parameters
+    ----------
+    username : str
+        Username for the admin
+    password : str
+        Password for the admin
+
+    Returns
+    -------
+    None
+
+    """
     u = Server.query.filter(Server.name == username).first()
     if u is None:
         u = User(username=username, password=password, is_admin=True)
@@ -489,10 +522,9 @@ def add_admin(username, password):  # pragma: no cover
     db.session.add(u)
 
     db.session.commit()
-    click.echo(f"Added {username} as an admin.")
 
 
-def make_demodata():  # pragma: no cover
+def make_demodata():
     """
     Generate some demo data.
     """
