@@ -46,7 +46,7 @@ else:
     default_args = global_config_dict["default_args"]
 
     # create DAG for each cdr_type
-    for cdr_type in list(CDRType._value2member_map_.keys()):
+    for cdr_type in CDRType:
 
         globals()[f"etl_{cdr_type}"] = construct_etl_dag(
             task_callable_mapping=task_callable_mapping,

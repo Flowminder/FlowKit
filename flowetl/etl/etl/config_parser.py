@@ -38,9 +38,7 @@ def validate_config(*, global_config_dict: dict) -> Exception:
     etl_keys = global_config_dict.get("etl", {}).keys()
     if etl_keys != CDRType._value2member_map_.keys():
         exceptions.append(
-            ValueError(
-                f"etl section must contain subsections for {list(CDRType._value2member_map_.keys())}"
-            )
+            ValueError(f"etl section must contain subsections for {list(CDRType)}")
         )
 
     for key, value in global_config_dict.get("etl", {}).items():
