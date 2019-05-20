@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 import pytest
 
-from etl.etl_utils import CDRType
+from etl.etl_utils import CDRType, find_files
 from etl.config_constant import config
 from etl.config_parser import get_cdr_type_config, validate_config
 
@@ -87,3 +87,35 @@ def test_config_validation_fails_bad_etl_subsection():
         validate_config(global_config_dict=bad_config)
 
     assert len(raised_exception.value.args[0]) == 1
+
+
+def test_find_files_default_filter(tmpdir):
+    """
+    Test that find files returns correct files
+    with default filter argument.
+    """
+    tmpdir.join("A.txt").write("content")
+    tmpdir.join("B.txt").write("content")
+    tmpdir.join("README.md").write("content")
+
+    tmpdir_path_obj = Path(tmpdir)
+
+    files = find_files(tmpdir_path_obj)
+
+    assert set([file.name for file in files]) == set(["A.txt", "B.txt"])
+
+
+def test_find_files_default_filter(tmpdir):
+    """
+    Test that find files returns correct files
+    with non-default filter argument.
+    """
+    tmpdir.join("A.txt").write("content")
+    tmpdir.join("B.txt").write("content")
+    tmpdir.join("README.md").write("content")
+
+    tmpdir_path_obj = Path(tmpdir)
+
+    files = find_files(tmpdir_path_obj, filter_filenames=["B.txt", "A.txt"])
+
+    assert set([file.name for file in files]) == set(["README.md"])

@@ -8,6 +8,7 @@ Contains utility functions for use in the ETL dag and it's callables
 """
 import yaml
 
+from typing import List
 from enum import Enum
 from pathlib import Path
 
@@ -155,3 +156,24 @@ class State(str, Enum):
     INGEST = "ingest"
     ARCHIVE = "archive"
     QUARANTINE = "quarantine"
+
+
+def find_files(dump_path: Path, filter_filenames=["README.md"]) -> List[Path]:
+    """
+    Returns a list of Path objects for all files
+    found in the dump location.
+
+    Parameters
+    ----------
+    dump_path : Path
+        The location of the dump path
+
+    Returns
+    -------
+    List[Path]
+        List of files found
+    """
+    files = filter(lambda file: file.name not in filter_filenames, dump_path.glob("*"))
+    return files
+
+    #
