@@ -441,7 +441,7 @@ jobs:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash) -F flowauth_unit_tests
 
-  run_flowauth_frontend_tests:
+  run_flowauth_end_to_end_tests:
     docker:
       - image: circleci/python:3.6
     environment:
@@ -782,8 +782,6 @@ workflows:
           <<: *run_always_org_context
       - run_flowauth_backend_tests:
           <<: *run_always_org_context
-      - run_flowauth_frontend_tests:
-          <<: *run_always_org_context
       - lint:
           requires:
             - install_flowmachine_deps
@@ -835,6 +833,10 @@ workflows:
           name: build_flowapi
           component: flowapi
           component_path: flowapi
+          <<: *run_always_org_context
+      - run_flowauth_end_to_end_tests:
+          requires:
+            - build_flowauth
           <<: *run_always_org_context
       - run_flowetl_tests:
           requires:
