@@ -5,7 +5,7 @@
 
 
 
-docker login
+
 docker swarm init
 # Remove existing stack deployment
 echo "Removing existing secrets_test_stack"
@@ -31,13 +31,19 @@ docker secret rm FLOWAPI_FLOWDB_PASSWORD
 docker secret rm FLOWAPI_FLOWDB_USER
 docker secret rm POSTGRES_PASSWORD
 docker secret rm cert-flowkit.pem
-docker secret rm JWT_SECRET_KEY
+docker secret rm PRIVATE_JWT_SIGNING_KEY
+docker secret rm PUBLIC_JWT_SIGNING_KEY
+docker secret rm FLOWAUTH_FERNET_KEY
 docker secret rm REDIS_PASSWORD
 docker secret rm FLOWAPI_IDENTIFIER
 echo "Adding secrets"
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
 echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
+openssl genrsa -out tokens-private-key.key 4096
+openssl rsa -pubout -in  tokens-private-key.key -out tokens-public-key.pub
+docker secret create PRIVATE_JWT_SIGNING_KEY tokens-private-key.key
+docker secret create PUBLIC_JWT_SIGNING_KEY tokens-public-key.pub
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAPI_FLOWDB_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create POSTGRES_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create REDIS_PASSWORD -

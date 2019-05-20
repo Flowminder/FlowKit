@@ -16,18 +16,54 @@ secrets:
     external: true
   POSTGRES_PASSWORD: # Postgres superuser password
     external: true
-  JWT_SECRET_KEY: # Secret used to sign api tokens
+  PRIVATE_JWT_SIGNING_KEY: # Secret used to sign api tokens
+    external: true
+  PUBLIC_JWT_SIGNING_KEY: # Public key to verify api tokens
     external: true
   REDIS_PASSWORD: # Redis password
     external: true
   FLOWAPI_IDENTIFIER: # Secret used in combination with secret key for decoding JWTs, should be unique per FlowAPI server
     external: true
+  FLOWAUTH_FERNET_KEY: # Used for encrypted-at-rest storage of tokens in flowauth
+    external: true
+  FLOWAUTH_ADMIN_USERNAME: # Default flowauth administrator username
+    external: true
+  FLOWAUTH_ADMIN_PASSWORD: # Default flowauth administrator password
+    external: true
+  FLOWAUTH_POSTGRES_PASSWORD: # Password for postgres database
 networks:
   db:
   redis:
   zero:
   api:
+  flowauth_database:
 services:
+    flowauth:
+      image: flowminder/flowauth:${CIRCLE_BRANCH:-latest}
+      ports:
+        - "9091:80"
+      environment:
+        DB_URI: postgres://flowauth:@flowauth_postgres:5432/flowauth
+      secrets:
+        - PRIVATE_JWT_SIGNING_KEY
+        - FLOWAUTH_FERNET_KEY
+        - FLOWAUTH_ADMIN_USERNAME
+        - FLOWAUTH_ADMIN_PASSWORD
+        - FLOWAUTH_POSTGRES_PASSWORD
+      networks:
+        - flowauth_database
+
+    flowauth_postgres:
+      image: postgres
+      environment:
+        - POSTGRES_PASSWORD_FILE=/run/secrets/FLOWAUTH_POSTGRES_PASSWORD
+        - POSTGRES_USER=flowauth
+        - POSTGRES
+      secrets:
+        - FLOWAUTH_POSTGRES_PASSWORD
+      networks:
+        - flowauth_database
+
     flowdb:
         image: "flowminder/flowdb-testdata:${CIRCLE_BRANCH:-latest}"
         environment:
@@ -77,7 +113,7 @@ services:
             - FLOWDB_HOST=flowdb
         secrets:
           - cert-flowkit.pem
-          - JWT_SECRET_KEY
+          - PUBLIC_JWT_SIGNING_KEY
           - FLOWAPI_FLOWDB_USER
           - FLOWAPI_FLOWDB_PASSWORD
           - FLOWAPI_IDENTIFIER
