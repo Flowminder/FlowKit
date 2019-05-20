@@ -6,14 +6,14 @@
 """
 Tests for configuration parsing
 """
-
-from unittest.mock import Mock, patch
-from pathlib import Path
-
 import yaml
 import pytest
 
-from etl.etl_utils import CDRType, find_files
+from uuid import uuid1
+from unittest.mock import Mock, patch
+from pathlib import Path
+
+from etl.etl_utils import CDRType, find_files, generate_temp_table_names
 from etl.config_constant import config
 from etl.config_parser import get_cdr_type_config, validate_config
 
@@ -98,7 +98,7 @@ def test_find_files_default_filter(tmpdir):
     tmpdir.join("B.txt").write("content")
     tmpdir.join("README.md").write("content")
 
-    tmpdir_path_obj = Path(tmpdir)
+    tmpdir_path_obj = Path(dump_path=tmpdir)
 
     files = find_files(tmpdir_path_obj)
 
@@ -116,6 +116,23 @@ def test_find_files_default_filter(tmpdir):
 
     tmpdir_path_obj = Path(tmpdir)
 
-    files = find_files(tmpdir_path_obj, filter_filenames=["B.txt", "A.txt"])
+    files = find_files(dump_path=tmpdir_path_obj, ignore_filenames=["B.txt", "A.txt"])
 
     assert set([file.name for file in files]) == set(["README.md"])
+
+
+@pytest.mark.parametrize(
+    "cdr_type", [CDRType("calls"), CDRType("sms"), CDRType("mds"), CDRType("topups")]
+)
+def test_generate_temp_table_names(cdr_type):
+
+    uuid = uuid1()
+
+    table_names = generate_temp_table_names(uuid=uuid, cdr_type=cdr_type)
+
+    uuid_sans_underscore = str(uuid).replace("-", "")
+    assert table_names == {
+        "extract_table": f"etl.x{uuid_sans_underscore}",
+        "transform_table": f"etl.t{uuid_sans_underscore}",
+        "load_table": f"events.{cdr_type}",
+    }
