@@ -168,6 +168,9 @@ services:
     environment:
       DEMO_MODE: ${DEMO_MODE:?Must set DEMO_MODE env var}
       FLOWAUTH_FERNET_KEY: ${FLOWAUTH_FERNET_KEY:?Must set FLOWAUTH_FERNET_KEY env var}
+      FLOWAUTH_ADMIN_PASSWORD: ${FLOWAUTH_ADMIN_PASSWORD:?Must set FLOWAUTH_ADMIN_PASSWORD env var}
+      FLOWAUTH_ADMIN_USERNAME: ${FLOWAUTH_ADMIN_USERNAME:?Must set FLOWAUTH_ADMIN_USERNAME env var}
+      SECRET_KEY: ${SECRET_KEY:?Must set SECRET_KEY env var}
 
   flowmachine_query_locker:
     container_name: flowmachine_query_locker
