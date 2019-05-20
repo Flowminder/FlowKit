@@ -67,7 +67,14 @@ def get_config():
     SQLALCHEMY_DATABASE_URI = getsecret(
         "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
     )
-    SECRET_KEY = getsecret("SECRET_KEY", os.getenv("SECRET_KEY", "secret"))
+    try:
+        sqlalchemy_username = getsecret(
+            "FLOWAUTH_DB_PASSWORD", os.environ["FLOWAUTH_DB_PASSWORD"]
+        )
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.format(sqlalchemy_username)
+    except KeyError:
+        pass  # No password
+
     SESSION_PROTECTION = "strong"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     FLOWAUTH_FERNET_KEY = getsecret(
@@ -84,7 +91,6 @@ def get_config():
 
     return dict(
         SQLALCHEMY_DATABASE_URI=SQLALCHEMY_DATABASE_URI,
-        SECRET_KEY=SECRET_KEY,
         SESSION_PROTECTION=SESSION_PROTECTION,
         SQLALCHEMY_TRACK_MODIFICATIONS=SQLALCHEMY_TRACK_MODIFICATIONS,
         FLOWAUTH_FERNET_KEY=FLOWAUTH_FERNET_KEY,

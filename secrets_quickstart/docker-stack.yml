@@ -14,7 +14,7 @@ secrets:
     external: true
   FLOWMACHINE_FLOWDB_PASSWORD: # Password for FlowDB
     external: true
-  POSTGRES_PASSWORD: # Postgres superuser password
+  FLOWDB_POSTGRES_PASSWORD: # Postgres superuser password for flowdb
     external: true
   PRIVATE_JWT_SIGNING_KEY: # Secret used to sign api tokens
     external: true
@@ -30,7 +30,8 @@ secrets:
     external: true
   FLOWAUTH_ADMIN_PASSWORD: # Default flowauth administrator password
     external: true
-  FLOWAUTH_POSTGRES_PASSWORD: # Password for postgres database
+  FLOWAUTH_DB_PASSWORD: # Password for flowauth's database
+    external: true
 networks:
   db:
   redis:
@@ -39,39 +40,39 @@ networks:
   flowauth_database:
 services:
     flowauth:
-      image: flowminder/flowauth:${CIRCLE_BRANCH:-latest}
+      image: flowminder/flowauth:${CONTAINER_TAG:-latest}
       ports:
         - "9091:80"
       environment:
-        DB_URI: postgres://flowauth:@flowauth_postgres:5432/flowauth
+        DB_URI: "postgres://flowauth:{}@flowauth_postgres:5432/flowauth"
       secrets:
         - PRIVATE_JWT_SIGNING_KEY
         - FLOWAUTH_FERNET_KEY
         - FLOWAUTH_ADMIN_USERNAME
         - FLOWAUTH_ADMIN_PASSWORD
-        - FLOWAUTH_POSTGRES_PASSWORD
+        - FLOWAUTH_DB_PASSWORD
       networks:
         - flowauth_database
 
     flowauth_postgres:
       image: postgres
       environment:
-        - POSTGRES_PASSWORD_FILE=/run/secrets/FLOWAUTH_POSTGRES_PASSWORD
-        - POSTGRES_USER=flowauth
-        - POSTGRES
+        POSTGRES_PASSWORD_FILE: /run/secrets/FLOWAUTH_DB_PASSWORD
+        POSTGRES_USER: flowauth
+        POSTGRES_DB: flowauth
       secrets:
-        - FLOWAUTH_POSTGRES_PASSWORD
+        - FLOWAUTH_DB_PASSWORD
       networks:
         - flowauth_database
 
     flowdb:
-        image: "flowminder/flowdb-testdata:${CIRCLE_BRANCH:-latest}"
+        image: "flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}"
         environment:
-          - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_PASSWORD
+          - POSTGRES_PASSWORD_FILE=/run/secrets/FLOWDB_POSTGRES_PASSWORD
         ports:
           - "9000:5432"
         secrets:
-          - POSTGRES_PASSWORD
+          - FLOWDB_POSTGRES_PASSWORD
           - FLOWAPI_FLOWDB_USER
           - FLOWAPI_FLOWDB_PASSWORD
           - FLOWMACHINE_FLOWDB_USER
@@ -88,13 +89,13 @@ services:
             aliases:
               - flowdb
     flowmachine:
-        image: "flowminder/flowmachine:${CIRCLE_BRANCH:-latest}"
+        image: "flowminder/flowmachine:${CONTAINER_TAG:-latest}"
         environment:
-            - FLOWDB_PORT=5432
-            - FLOWDB_HOST=flowdb
-            - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:-error}
-            - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
-            - REDIS_HOST=flowmachine_query_locker
+            FLOWDB_PORT: 5432
+            FLOWDB_HOST: flowdb
+            FLOWMACHINE_LOG_LEVEL: ${FLOWMACHINE_LOG_LEVEL:-error}
+            FLOWMACHINE_SERVER_DEBUG_MODE: ${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
+            REDIS_HOST: flowmachine_query_locker
         secrets:
           - FLOWMACHINE_FLOWDB_USER
           - FLOWMACHINE_FLOWDB_PASSWORD
@@ -104,13 +105,13 @@ services:
           - redis
           - zero
     flowapi:
-        image: "flowminder/flowapi:${CIRCLE_BRANCH:-latest}"
+        image: "flowminder/flowapi:${CONTAINER_TAG:-latest}"
         ports:
           - "9090:9090"
         environment:
-            - FLOWMACHINE_HOST=flowmachine
-            - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:-error}
-            - FLOWDB_HOST=flowdb
+            FLOWMACHINE_HOST: flowmachine
+            FLOWAPI_LOG_LEVEL: ${FLOWAPI_LOG_LEVEL:-error}
+            FLOWDB_HOST: flowdb
         secrets:
           - cert-flowkit.pem
           - PUBLIC_JWT_SIGNING_KEY
@@ -124,7 +125,7 @@ services:
     flowmachine_query_locker:
         image: bitnami/redis:latest
         environment:
-          - REDIS_PASSWORD_FILE=/run/secrets/REDIS_PASSWORD
+          REDIS_PASSWORD_FILE: /run/secrets/REDIS_PASSWORD
         secrets:
           - REDIS_PASSWORD
         networks:
