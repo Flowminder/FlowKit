@@ -139,7 +139,8 @@ def test_make_sql_no_overwrite():
 
 def test_query_formatting():
     """
-    Test that query can be formatted as a string, with optional
+    Test that query can be formatted as a string, with query attributes
+    specified in the `fmt` argument being included.
     """
     dl = daily_location("2016-01-01", method="last")
     assert "<Query of type: LastLocation>" == format(dl)
