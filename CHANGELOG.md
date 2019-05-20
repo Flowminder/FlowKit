@@ -7,13 +7,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+- The `FLOWDB_DEBUG` environment variable has been renamed to `FLOWDB_ENABLE_POSTGRES_DEBUG_MODE`.
+
+### Fixed
+- The `FLOWDB_DEBUG` environment variable used to have no effect. This has been fixed. [#811](https://github.com/Flowminder/FlowKit/issues/811)
+
+### Removed
+
+## [0.6.3]
+
+### Added
 - FlowKit's worked examples are now Dockerized, and available as part of the quick setup script [#614](https://github.com/Flowminder/FlowKit/issues/614)
 - Skeleton for Airflow based ETL system added with basic ETL DAG specification and tests.
 - The docs now contain information about required versions of installation prerequisites [#703](https://github.com/Flowminder/FlowKit/issues/703)
 - FlowAPI now requires the `FLOWAPI_IDENTIFIER` environment variable to be set, which contains the name used to identify this FlowAPI server when generating tokens in FlowAuth [#727](https://github.com/Flowminder/FlowKit/issues/727)
 - `flowmachine.utils.calculate_dependency_graph` now includes the `Query` objects in the `query_object` field of the graph's nodes dictionary [#767](https://github.com/Flowminder/FlowKit/issues/767)
 - Architectural Decision Records (ADR) have been added and are included in the auto-generated docs [#780](https://github.com/Flowminder/FlowKit/issues/780)
-
+- Added FlowDB environment variables `SHARED_BUFFERS_SIZE` and `EFFECTIVE_CACHE_SIZE`, to allow manually setting the Postgres configuration parameters `shared_buffers` and `effective_cache_size`.
 
 ### Changed
 - Parameter names in `flowmachine.connect()` have been renamed as follows to be consistent with the associated environment variables [#728](https://github.com/Flowminder/FlowKit/issues/728):
@@ -37,8 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The quick-start script now correctly aborts if one of the FlowKit services doesn't fully start up [#745](https://github.com/Flowminder/flowkit/issues/745)
 - The maps in the worked examples docs pages now appear in any browser
 - Example invocations of `generate-jwt` are no longer uncopyable due to line wrapping [#778](https://github.com/Flowminder/flowkit/issues/745)
-
-### Removed
+- API parameter `interval` for `location_event_counts` queries is now correctly passed to the underlying FlowMachine query object [#807](https://github.com/Flowminder/FlowKit/issues/807).
 
 ## [0.6.2]
 
@@ -355,7 +366,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Python 3.6 support for FlowClient
 
 
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.2...master
+[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.3...master
+[0.6.3]: https://github.com/Flowminder/FlowKit/compare/0.6.2...0.6.3
 [0.6.2]: https://github.com/Flowminder/FlowKit/compare/0.6.1...0.6.2
 [0.6.1]: https://github.com/Flowminder/FlowKit/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/Flowminder/FlowKit/compare/0.5.3...0.6.0

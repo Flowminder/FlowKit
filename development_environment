@@ -70,7 +70,7 @@ FLOWMACHINE_FLOWDB_USER=flowmachine
 # Flowapi user username
 FLOWAPI_FLOWDB_USER=flowapi 
 # Off by default, enables pldebugger
-FLOWDB_DEBUG=False
+FLOWDB_ENABLE_POSTGRES_DEBUG_MODE=False
 # Password for flowmachine user
 FLOWMACHINE_FLOWDB_PASSWORD=foo 
 # Password for flowapi user
@@ -85,6 +85,10 @@ CACHE_HALF_LIFE=10000
 #MAX_WORKERS 
 # Max number of worker processes to use per query
 #MAX_WORKERS_PER_GATHER 
+# Size of postgres shared memory buffers
+#SHARED_BUFFERS_SIZE
+# Set the postgres 'effective_cache_size' parameter
+#EFFECTIVE_CACHE_SIZE
 # Enable/disable postgres JIT
 #JIT 
 # Default stats target for tables

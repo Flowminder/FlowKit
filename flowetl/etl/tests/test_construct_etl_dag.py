@@ -3,6 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
+"""
+Tests for the construction of the ETL DAG
+"""
 import pytest
 from pendulum import parse
 from pendulum.parsing.exceptions import ParserError
@@ -57,6 +60,7 @@ def test_construct_etl_dag_fails_with_no_start_date():
     default_args = {"owner": "bob"}
     task_callable_mapping = TEST_TASK_CALLABLES
 
+    # pylint: disable=unused-variable
     with pytest.raises(AirflowException):
         dag = construct_etl_dag(
             task_callable_mapping=task_callable_mapping, default_args=default_args
@@ -85,6 +89,7 @@ def test_construct_etl_dag_fails_with_bad_start_date():
     default_args = {"owner": "bob", "start_date": "bob_time"}
     task_callable_mapping = TEST_TASK_CALLABLES
 
+    # pylint: disable=unused-variable
     with pytest.raises(ParserError):
         dag = construct_etl_dag(
             task_callable_mapping=task_callable_mapping, default_args=default_args
@@ -99,6 +104,7 @@ def test_construct_etl_dag_fails_with_incorrect_mapping_keys():
     default_args = {"owner": "bob", "start_date": "bob_time"}
     task_callable_mapping = {}
 
+    # pylint: disable=unused-variable
     with pytest.raises(TypeError):
         dag = construct_etl_dag(
             task_callable_mapping=task_callable_mapping, default_args=default_args

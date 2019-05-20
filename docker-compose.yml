@@ -32,7 +32,7 @@ services:
       FLOWAPI_FLOWDB_PASSWORD: ${FLOWAPI_FLOWDB_PASSWORD:?Must set FLOWAPI_FLOWDB_PASSWORD env var}
       CACHE_SIZE: ${CACHE_SIZE:-""}
       CACHE_HALF_LIFE: ${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
-      FLOWDB_DEBUG: ${FLOWDB_DEBUG:?Must set FLOWDB_DEBUG env var}
+      FLOWDB_ENABLE_POSTGRES_DEBUG_MODE: ${FLOWDB_ENABLE_POSTGRES_DEBUG_MODE:?Must set FLOWDB_ENABLE_POSTGRES_DEBUG_MODE env var}
     shm_size: 1G
     tty: true
     stdin_open: true
@@ -130,7 +130,7 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
       - FLOWAPI_URL=http://flowapi:9090
-      - MAPBOX_ACCESS_TOKEN=$MAPBOX_ACCESS_TOKEN
+      - MAPBOX_ACCESS_TOKEN
     restart: always
     networks:
       - db

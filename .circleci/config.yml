@@ -125,6 +125,11 @@ executors:
           CALLS_SEED: 22222
           CELLS_SEED: 99999
           OUTPUT_ROOT_DIR: "/docker-entrypoint-initdb.d"
+          MAX_CPUS: 2
+          MAX_WORKERS: 2
+          MAX_WORKERS_PER_GATHER: 2
+          SHARED_BUFFERS_SIZE: "1GB"
+          EFFECTIVE_CACHE_SIZE: "3GB"
       - image: bitnami/redis:latest
         environment:
           REDIS_PASSWORD: "fm_redis"
@@ -654,6 +659,44 @@ jobs:
             - store_artifacts:
                 path: /home/circleci/project/docs/flowkit-docs.zip
                 destination: docs
+      - run:
+          name: Copy postgres logs
+          when: on_fail
+          command: |
+            sudo apt-get install postgresql-client
+            psql postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${FLOWDB_HOST}:${FLOWDB_PORT}/flowdb -c "CREATE TABLE postgres_log ( \
+              log_time timestamp(3) with time zone, \
+              user_name text, \
+              database_name text, \
+              process_id integer, \
+              connection_from text, \
+              session_id text, \
+              session_line_num bigint, \
+              command_tag text, \
+              session_start_time timestamp with time zone, \
+              virtual_transaction_id text, \
+              transaction_id bigint, \
+              error_severity text, \
+              sql_state_code text, \
+              message text, \
+              detail text, \
+              hint text, \
+              internal_query text, \
+              internal_query_pos integer, \
+              context text, \
+              query text, \
+              query_pos integer, \
+              location text, \
+              application_name text, \
+              PRIMARY KEY (session_id, session_line_num) \
+            );"
+            PG_LOGFILE=$(psql postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${FLOWDB_HOST}:${FLOWDB_PORT}/flowdb -tc "SELECT pg_current_logfile();" | tr -d [:space:])
+            psql postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${FLOWDB_HOST}:${FLOWDB_PORT}/flowdb -c "COPY postgres_log FROM '$PG_LOGFILE' WITH csv;"
+            psql postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${FLOWDB_HOST}:${FLOWDB_PORT}/flowdb -c "COPY postgres_log TO STDOUT WITH csv;" > pg_log.csv
+            zip pg_log.zip pg_log.csv
+      - store_artifacts:
+          path: /home/circleci/project/docs/pg_log.zip
+          destination: pg_log
       - save_cache:
           key: flowkit-docs-deps1-{{ checksum "Pipfile.lock" }}
           paths:

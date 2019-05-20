@@ -55,14 +55,16 @@ def bool_env(var):
 
 
 total_mem = psutil.virtual_memory().total
-shared_buffers = (
-    _humansize(ceil(0.25 * total_mem)) if total_mem < 64000000000 else "16GB"
+shared_buffers = os.getenv(
+    "SHARED_BUFFERS_SIZE",
+    _humansize(ceil(0.25 * total_mem)) if total_mem < 64000000000 else "16GB",
 )
 cores = int(os.getenv("MAX_CPUS", floor(0.9 * psutil.cpu_count())))
 workers = int(os.getenv("MAX_WORKERS", ceil(cores / 2)))
 workers_per_gather = int(os.getenv("MAX_WORKERS_PER_GATHER", ceil(cores / 2)))
-effective_cache_size = _humansize(ceil(0.75 * total_mem))
-debugging = ",plugin_debugger" if bool_env("FLOWDB_DEBUG") else ""
+effective_cache_size = os.getenv(
+    "EFFECTIVE_CACHE_SIZE", _humansize(ceil(0.75 * total_mem))
+)
 use_jit = "on" if bool_env("JIT") else "off"
 stats_target = int(
     os.getenv("STATS_TARGET", 10000)
@@ -73,7 +75,7 @@ config_path = os.getenv(
 )
 
 preload_libraries = ["pg_cron", "pg_stat_statements"]
-if bool_env("DEBUG"):
+if bool_env("FLOWDB_ENABLE_POSTGRES_DEBUG_MODE"):
     preload_libraries.append("plugin_debugger")
 
 with open("/docker-entrypoint-initdb.d/pg_config_template.conf") as fin:
