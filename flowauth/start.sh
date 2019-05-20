@@ -31,10 +31,8 @@ trap TrapQuit EXIT
 if [ "$npm_command" = "start" ] || [ "$npm_command" = "test" ];then
     echo "Installing flowauth dependencies"
     pipenv install -d
-    echo "Creating demo data"
-    pipenv run flask demodata
     echo "Starting FlowAuth"
-    pipenv run flask run --port 3001 &
+    DEMO_DATA=true pipenv run flask run --port 3001 &
 fi
 pushd frontend
 if [ "$npm_command" = "test" ];then

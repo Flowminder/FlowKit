@@ -510,7 +510,7 @@ def add_admin(username: str, password: str) -> None:
     None
 
     """
-    u = Server.query.filter(Server.name == username).first()
+    u = User.query.filter(User.username == username).first()
     if u is None:
         u = User(username=username, password=password, is_admin=True)
         ug = Group(name=username, user_group=True)
