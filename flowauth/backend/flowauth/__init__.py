@@ -4,11 +4,11 @@
 
 import flask
 import flask_login
-from flask import Flask, make_response
+from flask import Flask
 from flask_login import LoginManager, current_user
 from flask_principal import Principal, identity_loaded, UserNeed, RoleNeed
 from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
-from cryptography.fernet import Fernet
+from flowauth.config import get_config
 
 from .invalid_usage import InvalidUsage
 from .models import *
@@ -21,12 +21,9 @@ from .spatial_aggregation import blueprint as aggregation_unit_blueprint
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
-    app.config.from_object("config")
+    app.config.from_mapping(get_config())
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile("config.py", silent=True)
-    else:
+    if test_config is not None:
         # load the test config if passed in
         app.config.update(test_config)
 
