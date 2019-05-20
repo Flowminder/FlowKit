@@ -459,10 +459,14 @@ class Group(db.Model):
 
 
 @click.command("init-db")
+@click.option(
+    "--force/--no-force", default=False, help="Optionally wipe any existing data first."
+)
 @with_appcontext
-def init_db_command():  # pragma: no cover
-    """Clear existing data and create new tables."""
-    db.drop_all()
+def init_db_command(force: bool):  # pragma: no cover
+    """Optionally clear existing data and create new tables."""
+    if force:
+        db.drop_all()
     db.create_all()
     click.echo("Initialized the database.")
 
@@ -473,11 +477,17 @@ def init_db_command():  # pragma: no cover
 @with_appcontext
 def add_admin(username, password):  # pragma: no cover
     """Add an administrator account."""
-    u = User(username=username, password=password, is_admin=True)
-    ug = Group(name=username, user_group=True)
-    ug.members.append(u)
+    u = Server.query.filter(Server.name == username).first()
+    if u is None:
+        u = User(username=username, password=password, is_admin=True)
+        ug = Group(name=username, user_group=True)
+        ug.members.append(u)
+        db.session.add(ug)
+    else:
+        u.password = password
+
     db.session.add(u)
-    db.session.add(ug)
+
     db.session.commit()
     click.echo(f"Added {username} as an admin.")
 

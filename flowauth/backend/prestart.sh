@@ -33,6 +33,9 @@ else
     if [ -n "$INIT_DB" ]
     then
         echo "Recreating db"
+        flask init-db --force
+    else
+        echo "Creating db"
         flask init-db
     fi
     if [ -e /run/secrets/ADMIN_USER ];
