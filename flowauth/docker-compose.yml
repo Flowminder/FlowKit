@@ -12,6 +12,10 @@ services:
       LETSENCRYPT_HOST: ${HOST-exampledomain.com}
       LETSENCRYPT_EMAIL: ${EMAIL:-admin@exampledomain.com}
       DB_URI: "postgresql://postgres:${POSTGRES_PASSWORD:-changeme}@db:5432/flowauth"
+      FLOWAUTH_FERNET_KEY: ${FLOWAUTH_FERNET_KEY:?Must set FLOWAUTH_FERNET_KEY env var}
+      FLOWAUTH_ADMIN_PASSWORD: ${FLOWAUTH_ADMIN_PASSWORD:?Must set FLOWAUTH_ADMIN_PASSWORD env var}
+      FLOWAUTH_ADMIN_USERNAME: ${FLOWAUTH_ADMIN_USERNAME:?Must set FLOWAUTH_ADMIN_USERNAME env var}
+      SECRET_KEY: ${SECRET_KEY:?Must set SECRET_KEY env var}
     networks:
       database:
         aliases:
