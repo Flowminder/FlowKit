@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - The `FLOWDB_DEBUG` environment variable used to have no effect. This has been fixed. [#811](https://github.com/Flowminder/FlowKit/issues/811)
+- FlowAuth's docker container can now be used with a Postgres backing database. [#825](https://github.com/Flowminder/FlowKit/issues/825) 
 
 ### Removed
 
