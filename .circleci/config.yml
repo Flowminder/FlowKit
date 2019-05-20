@@ -324,6 +324,9 @@ jobs:
           at: /home/circleci/
       - restore_cache:
           key: flowmachine-deps-1-{{ checksum "Pipfile.lock" }}
+      - run:
+          name: Install graphviz
+          command: sudo apt-get install -y xvfb graphviz
       - run: *wait_for_flowdb
       - run:
           name: Run tests
