@@ -72,7 +72,7 @@ FLOWMACHINE_FLOWDB_USER=flowmachine
 # Flowapi user username
 FLOWAPI_FLOWDB_USER=flowapi 
 # Off by default, enables pldebugger
-FLOWDB_DEBUG=False
+FLOWDB_ENABLE_POSTGRES_DEBUG_MODE=False
 # Password for flowmachine user
 FLOWMACHINE_FLOWDB_PASSWORD=foo 
 # Password for flowapi user

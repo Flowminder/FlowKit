@@ -65,7 +65,6 @@ workers_per_gather = int(os.getenv("MAX_WORKERS_PER_GATHER", ceil(cores / 2)))
 effective_cache_size = os.getenv(
     "EFFECTIVE_CACHE_SIZE", _humansize(ceil(0.75 * total_mem))
 )
-debugging = ",plugin_debugger" if bool_env("FLOWDB_DEBUG") else ""
 use_jit = "on" if bool_env("JIT") else "off"
 stats_target = int(
     os.getenv("STATS_TARGET", 10000)
@@ -76,7 +75,7 @@ config_path = os.getenv(
 )
 
 preload_libraries = ["pg_cron", "pg_stat_statements"]
-if bool_env("DEBUG"):
+if bool_env("FLOWDB_ENABLE_POSTGRES_DEBUG_MODE"):
     preload_libraries.append("plugin_debugger")
 
 with open("/docker-entrypoint-initdb.d/pg_config_template.conf") as fin:
