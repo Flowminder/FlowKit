@@ -18,6 +18,7 @@
 !frontend/package.json
 !backend/uwsgi.ini
 !backend/flowauth
+!backend/README.md
 !backend/setup.cfg
 !backend/setup.py
 !backend/versioneer.py
