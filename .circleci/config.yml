@@ -447,6 +447,7 @@ jobs:
       - image: flowminder/flowauth:$CIRCLE_SHA1
         environment:
           DB_URI: postgres://flowauth:flowauth@localhost:5432/flowauth
+          DEMO_MODE: true
           <<: *flowauth_env
       - image: postgres
         environment:
