@@ -463,7 +463,7 @@ jobs:
       - run:
           name: Cypress setup
           command: npm ci
-      - run: wait-on tcp://localhost:5432
+      - run: wait-on tcp://localhost:5432 -t 300000
       - run:
           name: Run Cypress end-to-end tests
           command: $(npm bin)/cypress --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
