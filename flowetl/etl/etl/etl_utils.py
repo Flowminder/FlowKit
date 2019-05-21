@@ -7,11 +7,13 @@
 Contains utility functions for use in the ETL dag and it's callables
 """
 import yaml
+import re
 
 from uuid import UUID
 from typing import List
 from enum import Enum
 from pathlib import Path
+from pendulum import parse
 
 from airflow import DAG
 from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
@@ -210,3 +212,26 @@ def generate_temp_table_names(*, cdr_type: CDRType, uuid: UUID) -> dict:
         "transform_table": transform_table,
         "load_table": load_table,
     }
+
+
+def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
+    """[summary]
+
+    Parameters
+    ----------
+    file_name : str
+        [description]
+
+    Returns
+    -------
+    dict
+        [description]
+    """
+    for cdr_type in CDRType:
+        pattern = cdr_type_config[cdr_type]["pattern"]
+        m = re.fullmatch(pattern, file_name)
+        if m:
+            file_cdr_type = cdr_type
+            file_cdr_date = parse(m.groups()[0])
+
+    return {"cdr_type": file_cdr_type, "cdr_date": file_cdr_date}
