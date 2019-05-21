@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-describe("Login screen", function () {
+describe("User management", function () {
   Cypress.Cookies.debug(true);
 
   beforeEach(function () {
@@ -53,15 +53,7 @@ describe("Login screen", function () {
       "have.text",
       "Username already exists."
     );
-    cy.contains("OK").click();
-    cy.get("#username")
-      .type(" ")
-      .clear();
-    cy.get("#username").type("USER_TEST02");
-    cy.get("#password").type("C>K,7|~44]44:ibK");
-    cy.contains("Save").click();
-    cy.contains("#error-dialog").should("not.exist");
-    cy.contains("USER_TEST02").should("be.visible");
+
   });
   it("Add blank Password", function () {
     cy.get("#new").click();
@@ -93,10 +85,11 @@ describe("Login screen", function () {
   it("Add User", function () {
     cy.get("#new").click();
     //Add new user with password
-    cy.get("#username").type("USER_TEST01");
+    const user_name = Math.random().toString(36).substring(2, 15);
+    cy.get("#username").type(user_name);
     cy.get("#password").type("C>K,7|~44]44:ibK");
     cy.contains("Save").click();
-    cy.contains("USER_TEST01").should("be.visible");
+    cy.contains(user_name).should("be.visible");
   });
   it("Unauthorised access", function () {
     cy.get("#new").click();

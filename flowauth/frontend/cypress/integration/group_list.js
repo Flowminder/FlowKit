@@ -53,42 +53,53 @@ describe("Group list screen", function () {
             "Group name already exists."
         );
         cy.contains("OK").click();
-        cy.get("#name")
-            .type(" ")
-            .clear();
-        cy.get("#name").type("Group_TEST");
-        cy.contains("Save").click();
         cy.contains("#error-dialog").should("not.exist");
-        cy.contains("Test_Group").its("length").should("be", 1);
-        cy.contains("Group_TEST").should("be.visible");
     });
 
     it("Add group", function () {
         // Add a new group
-        cy.contains("DUMMY_GROUP").should('not.exist')
+        const group_name = Math.random().toString(36).substring(2, 15);
+        cy.contains(group_name).should('not.exist')
         cy.get("#new").click();
-        cy.get("#name").type("DUMMY_GROUP");
+        cy.get("#name").type(group_name);
         cy.contains("Save").click();
         // Check that new group appears
-        cy.contains("DUMMY_GROUP").should("be.visible");
+        cy.contains(group_name).should("be.visible");
     });
 
     it("Delete group", function () {
-        cy.contains("Test_Group").should("be.visible");
-        cy.get("#rm_2").click();
+        // Create the group
+        const group_name = Math.random().toString(36).substring(2, 15) + "_TO_DELETE";
+        cy.create_group(group_name).then((group) =>
+        {console.log("Group " + group)
+        // Reload the groups page
+        cy.visit("/");
+        cy.get("#group_admin").click();
+        cy.contains(group_name).should("be.visible");
+        cy.get("#rm_" + group.id).click();
         // Check that the group is gone
-        cy.contains("DUMMY_GROUP").should("not.be.visible");
+        cy.contains(group_name).should("not.be.visible")})
+
     });
 
     it("Edit group", function () {
-        cy.get("#edit_2").click();
-        // Check that group is populated and window title is edit
-        cy.contains("Edit Group").should("be.visible");
-        cy.get("#name").should("have.value", "Test_Group");
-        cy.get("#name").type("{selectall}DUMMY_GROUP");
-        cy.contains("Save").click();
-        // Check that group is renamed
-        cy.contains("DUMMY_GROUP").should("be.visible");
-        cy.contains("Test_Group").should("not.be.visible");
+        const group_name = Math.random().toString(36).substring(2, 15) + "_TO_BE_EDITED";
+        cy.create_group(group_name).then((group) => {
+            console.log("Group " + group)
+
+            // Reload the groups page
+            cy.visit("/");
+            cy.get("#group_admin").click();
+            cy.contains(group_name).should("be.visible");
+            cy.get("#edit_" + group.id).click();
+            // Check that group is populated and window title is edit
+            cy.contains("Edit Group").should("be.visible");
+            cy.get("#name").should("have.value", group_name);
+            cy.get("#name").type("{selectall}" + group_name + "_edited");
+            cy.contains("Save").click();
+            // Check that group is renamed
+            cy.contains(group_name + "_edited").should("be.visible");
+            cy.contains("/^"+group_name + "$/").should("not.be.visible");
+        });
     });
 });

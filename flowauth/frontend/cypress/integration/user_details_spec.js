@@ -4,17 +4,21 @@
 
 describe("User details screen", function () {
     Cypress.Cookies.debug(true)
+    var username, password;
 
     beforeEach(function () {
         // Log in and navigate to user details screen
-        cy.login();
+        username = Math.random().toString(36).substring(2, 15);
+        password = "ORIGINAL_DUMMY_PASSWORD";
+        cy.create_user_and_log_in(username, password);
+        cy.log("Created user.")
         cy.visit("/");
         cy.get("#user_details").click();
     });
 
     it("Change user password", function () {
         // Change password
-        cy.get("#oldPassword").type("DUMMY_PASSWORD");
+        cy.get("#oldPassword").type(password);
         cy.get("#newPasswordA").type("ANOTHER_DUMMY_PASSWORD");
         cy.get("#newPasswordB").type("ANOTHER_DUMMY_PASSWORD");
         cy.contains("Save").click();
@@ -25,7 +29,7 @@ describe("User details screen", function () {
         cy.get("#newPasswordB").should("have.value", "");
         // Check that we can log in with new password
         cy.get("#logout").click();
-        cy.get("#username").type("TEST_USER");
+        cy.get("#username").type(username);
         cy.get("#password").type("ANOTHER_DUMMY_PASSWORD");
         cy.get("button").click();
         cy.contains("My Servers");
@@ -44,7 +48,7 @@ describe("User details screen", function () {
 
     it("Display error when passwords do not match", function () {
         // Attempt to change password with non-matching new passwords
-        cy.get("#oldPassword").type("DUMMY_PASSWORD");
+        cy.get("#oldPassword").type(password);
         cy.get("#newPasswordA").type("ANOTHER_DUMMY_PASSWORD");
         cy.get("#newPasswordB").type("DIFFERENT_DUMMY_PASSWORD");
         cy.contains("Save").click();
@@ -55,7 +59,7 @@ describe("User details screen", function () {
 
     it("Display error when password is not complex enough", function () {
         // Attempt to change password to something too simple
-        cy.get("#oldPassword").type("DUMMY_PASSWORD");
+        cy.get("#oldPassword").type(password);
         cy.get("#newPasswordA").type("PASSWORD");
         cy.get("#newPasswordB").type("PASSWORD");
         cy.contains("Save").click();

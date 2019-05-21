@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-describe("Login screen", function () {
+describe("Server management", function () {
     Cypress.Cookies.debug(true);
 
     beforeEach(function () {
@@ -110,22 +110,17 @@ describe("Login screen", function () {
             "Server with this name already exists."
         );
         cy.contains("OK").click();
-        cy.get("#name")
-            .type(" ")
-            .clear();
-        cy.get("#name").type("TEST_SERVER2");
-        cy.contains("Save").click();
-        cy.contains("#error-dialog").should("not.exist");
-        cy.contains("TEST_SERVER2").should("be.visible");
+        cy.get("#error-dialog-description").should("not.exist")
     });
     it("Add server", function () {
         cy.get("#new").click();
         //Add new user with password
-        cy.get("#name").type("Server_Test01");
+        const server_name = Math.random().toString(36).substring(2, 15);
+        cy.get("#name").type(server_name);
         cy.get("#secret-key").type("C>K,7|~44]44:ibK");
         cy.get("#max-life").type("1234");
         cy.contains("Save").click();
-        cy.contains("Server_Test01").should("be.visible");
+        cy.contains(server_name).should("be.visible");
     });
 
 });

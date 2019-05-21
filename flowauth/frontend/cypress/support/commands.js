@@ -24,11 +24,45 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+function getCookieValue(a) {
+  var b = document.cookie.match("(^|;)\\s*" + a + "\\s*=\\s*([^;]+)");
+  return b ? b.pop() : "";
+}
+
 Cypress.Commands.add("login", () =>
 	cy.request("POST", "/signin", {
 		username: "TEST_USER",
 		password: "DUMMY_PASSWORD"
 	})
+);
+Cypress.Commands.add("create_user", (username, password) =>
+
+		cy.login_admin().then((response) =>
+		cy.request({method: "POST", url: "/admin/users",
+			body:{
+			username: username,
+			password: password}
+		, headers: {"X-CSRF-Token":getCookieValue("X-CSRF")}}))
+
+);
+Cypress.Commands.add("create_group", (group_name) =>
+
+		cy.login_admin().then((response) =>
+		cy.request({method: "POST", url: "/admin/groups",
+			body:{
+			name: group_name}
+		, headers: {"X-CSRF-Token":getCookieValue("X-CSRF")}}).its('body')
+		)
+
+);
+Cypress.Commands.add("create_user_and_log_in", (username, password) =>
+
+		cy.create_user(username, password).its('body').then((response) =>
+		cy.request("POST", "/signin", {
+			username: username,
+			password: password
+		}).its('body'))
+
 );
 Cypress.Commands.add("login_admin", () =>
 	cy.request("POST", "/signin", {
