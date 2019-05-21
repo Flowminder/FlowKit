@@ -11,19 +11,41 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import IconButton from "@material-ui/core/IconButton";
+import SvgIcon from '@material-ui/core/SvgIcon';
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Tooltip from '@material-ui/core/Tooltip';
 
 class Token extends React.Component {
-  state = { isOpen: false };
+  state = {
+    isOpen: false,
+    copySuccess: ''
+  };
   toggleOpen = () => {
     this.setState({ isOpen: !this.state.isOpen });
   };
+  copyToClipboard = event => {
+    var textField = document.createElement('textarea')
+    textField.innerText = this.props.token
+    document.body.appendChild(textField)
+    textField.select()
+    document.execCommand('copy')
+    textField.remove()
+    this.setState({ copySuccess: 'Copied!' });
+  };
+  downloadTxtFile = () => {
+    const element = document.createElement("a");
+    const file = new Blob([this.props.token], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = "token.txt";
+    document.body.appendChild(element);
+    element.click();
+  }
   render() {
     const { name, expiry, editAction, token, id } = this.props;
-    const { isOpen } = this.state;
+    const { isOpen, copySuccess } = this.state;
     return (
       <React.Fragment>
         <Grid item xs={2}>
@@ -33,6 +55,11 @@ class Token extends React.Component {
           <Typography component="p">{expiry}</Typography>
         </Grid>
         <Grid item xs={3}>
+
+          <Tooltip title={copySuccess} placement="bottom">
+            <Button onClick={this.copyToClipboard} id="copy">Copy</Button>
+          </Tooltip>
+          <Button onClick={this.downloadTxtFile}>Save as file</Button>
           <Button onClick={this.toggleOpen}>Token</Button>
           <Dialog
             open={isOpen}
