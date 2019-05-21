@@ -38,7 +38,7 @@ def dummy_trigger_callable(*, dag_run: DagRun, **kwargs):
         temp_base_conf = {
             "file_name": "bob.csv",
             "template_path": "some_path",
-            "cdr_type": "spaghetti",
+            "cdr_type": "calls",
             "cdr_date": "2016-01-01",
         }
 
