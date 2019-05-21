@@ -15,9 +15,13 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Tooltip from '@material-ui/core/Tooltip';
 
 class Token extends React.Component {
-  state = { isOpen: false };
+  state = {
+    isOpen: false,
+    copySuccess: ''
+  };
   toggleOpen = () => {
     this.setState({ isOpen: !this.state.isOpen });
   };
@@ -40,7 +44,7 @@ class Token extends React.Component {
   }
   render() {
     const { name, expiry, editAction, token, id } = this.props;
-    const { isOpen } = this.state;
+    const { isOpen, copySuccess } = this.state;
     return (
       <React.Fragment>
         <Grid item xs={2}>
