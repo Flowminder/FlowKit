@@ -518,6 +518,7 @@ def add_admin(username: str, password: str) -> None:
         db.session.add(ug)
     else:
         u.password = password
+        u.is_admin = True
 
     db.session.add(u)
 
