@@ -466,11 +466,11 @@ jobs:
       - run:
           name: Wait for backing db
           command: |
-            npm install wait-on
-            wait-on tcp://localhost:5432 -t 300000
+            npm install -g wait-on
+            wait-on tcp:localhost:5432 -t 300000
       - run:
           name: Run Cypress end-to-end tests
-          command: $(npm bin)/cypress --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
+          command: $(npm bin)/cypress run --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
       - store_test_results:
           path: results
       - store_artifacts:
