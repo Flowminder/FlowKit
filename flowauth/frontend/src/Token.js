@@ -55,8 +55,9 @@ class Token extends React.Component {
           <Typography component="p">{expiry}</Typography>
         </Grid>
         <Grid item xs={3}>
+
           <Tooltip title={copySuccess} placement="bottom">
-            <Button onClick={this.copyToClipboard}>Copy</Button>
+            <Button onClick={this.copyToClipboard} id="copy">Copy</Button>
           </Tooltip>
           <Button onClick={this.downloadTxtFile}>Save as file</Button>
           <Button onClick={this.toggleOpen}>Token</Button>

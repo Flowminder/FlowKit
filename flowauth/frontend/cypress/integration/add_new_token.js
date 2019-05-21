@@ -66,4 +66,16 @@ describe("Login screen", function () {
         cy.contains("Save").click();
         cy.contains("TOKEN_TEST01").should("be.visible");
     });
+    it("Copy to clipboard token", function () {
+        cy.get("#new").click();
+        //Add new token 
+        cy.get("#name").type("TOKEN_TEST01", {
+            force: true
+        });
+        cy.contains("Save").click();
+        cy.contains("TOKEN_TEST01").should("be.visible");
+        cy.get("#copy").click();
+        cy.get('getClipboard').should('contain', 'test');
+    });
+
 });
