@@ -97,7 +97,10 @@ def create_app(test_config=None):
         app.permanent_session_lifetime = datetime.timedelta(minutes=20)
         flask.session.modified = True
         flask.g.user = flask_login.current_user
-        print(f"Logged in user is {flask.g.user}")
+        try:
+            print(f"Logged in user is {flask.g.user.username}:{flask.g.user.id}")
+        except AttributeError:
+            print(f"User is not logged in.")
 
     @login_manager.user_loader
     def load_user(userid):

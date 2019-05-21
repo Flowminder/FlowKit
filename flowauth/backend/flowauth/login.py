@@ -21,7 +21,9 @@ def signin():
         raise InvalidUsage("Must supply username or password.")
     user = User.query.filter(User.username == json["username"]).first()
     if user is not None:
-        print(f"{user.username} trying to log in with password {json['password']}.")
+        print(
+            f"{user.username}:{user.id} trying to log in with password {json['password']}."
+        )
         if user.is_correct_password(json["password"]):
             login_user(user, remember=False)
             identity_changed.send(
