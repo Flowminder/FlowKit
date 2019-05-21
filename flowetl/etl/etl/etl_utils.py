@@ -185,16 +185,18 @@ def find_files(*, dump_path: Path, ignore_filenames=["README.md"]) -> List[Path]
     #
 
 
-def generate_temp_table_names(*, cdr_type: CDRType, uuid: UUID) -> dict:
+def generate_table_names(*, cdr_type: CDRType, uuid: UUID) -> dict:
     """
-    [summary]
+    Generates table names for the various stages of the ETL process.
 
     Parameters
     ----------
     cdr_type : CDRType
-        [description]
+        The type of CDR we are dealing with - used to
+        construct table name for the data's final
+        resting place.
     uuid : UUID
-        [description]
+        A uuid to be used in generating table names
 
     Returns
     -------
@@ -215,17 +217,23 @@ def generate_temp_table_names(*, cdr_type: CDRType, uuid: UUID) -> dict:
 
 
 def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
-    """[summary]
+    """
+    Function to parse date of data and cdr type from filename.
+    Makes use of patterns specified in global config.
 
     Parameters
     ----------
     file_name : str
-        [description]
+        The file name to parse
+    cdr_type_config : dict
+        The config for each CDR type which contains
+        patterns to match against.
 
     Returns
     -------
     dict
-        [description]
+        contains files cdr type and the date associated
+        to the data
     """
     for cdr_type in CDRType:
         pattern = cdr_type_config[cdr_type]["pattern"]
