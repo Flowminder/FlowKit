@@ -50,6 +50,9 @@ def set_password():
         db.session.commit()
         return jsonify({}), 200
     else:
+        print(
+            f"User {current_user.username} tried to change password from {old_pass} to {new_pass}"
+        )
         raise InvalidUsage("Password incorrect.", payload={"bad_field": "password"})
 
 
