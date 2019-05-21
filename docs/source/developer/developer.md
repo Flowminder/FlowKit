@@ -1,6 +1,6 @@
 # Information for Developers
 
-Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](install.md). 
+Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](../install.md). 
 
 An outline roadmap is provided below together with details about [contributing to the project](#contrib).
 
@@ -139,7 +139,7 @@ At present, the following query types are accessible through FlowAPI:
 
 ### FlowAPI Access tokens
 
-As explained in the [quick install guide](install.md), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
+As explained in the [quick install guide](../install.md#quickinstall), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
 
 - API route permissions
 
@@ -149,7 +149,7 @@ As explained in the [quick install guide](install.md), user authentication and a
 
     Level of spatial aggregation at which the user is allowed to access the results of queries. Currently supports administrative levels `admin0`, `admin1`, `admin2`, `admin3`.
 
-JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The [FlowAuth](install.md#installing-flowauth) authentication management system is designed to generate JWTs for accessing FlowAPI.
+JWTs allow these access permissions to be granted independently for each query kind (e.g. `daily_location`, `modal_location`). The FlowAuth authentication management system is designed to generate JWTs for accessing FlowAPI.
 
 #### Test Tokens
 
@@ -172,7 +172,7 @@ FlowMachine is a Python toolkit for the analysis of CDR data. It is essentially 
 
 ### Documentation
 
-Documentation for FlowMachine can be found [here](../flowmachine/flowmachine/). A worked example of using FlowMachine for analysis is provided [here](../worked_examples/mobile-data-usage/).
+Documentation for FlowMachine can be found [here](../../flowmachine/flowmachine/). A worked example of using FlowMachine for analysis is provided [here](../../worked_examples/mobile-data-usage/).
 
 
 <a name="flowdb">

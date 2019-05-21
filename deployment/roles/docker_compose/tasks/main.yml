@@ -1,0 +1,30 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+ # Note: we used to install docker-compose by downloading the binary directly from
+ #       the Github releases page and placing it into /usr/local/hin/docker-compose
+ #       (as described here: https://docs.docker.com/compose/install/). However, this
+ #       does not make the docker-compose Python module available to Ansible (which
+ #       is needed for the docker_service ansible module). Therefore we're installing
+ #       docker-compose now system-wide via pip. The docs warn that "many operating systems
+ #       have python system packages that conflict with docker-compose dependencies".
+ #       However, this seems to work fine for CentOS >=7.4 (which we're assuming).
+ #- name: "Install docker-compose (version {{ DOCKER_COMPOSE_VERSION }})"
+ #  pip:
+ #    name: docker-compose
+ #    version: "{{ DOCKER_COMPOSE_VERSION }}"
+ #  become: yes
+
+ - name: "Install docker-compose (version {{ DOCKER_COMPOSE_VERSION }})"
+   get_url:
+     url: https://github.com/docker/compose/releases/download/{{ DOCKER_COMPOSE_VERSION }}/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
+     dest: /usr/local/bin/docker-compose
+     mode: 'a+x'
+   become: yes
+
+ - name: "Install bash completion for docker-compose"
+   get_url:
+     url: https://raw.githubusercontent.com/docker/compose/{{ DOCKER_COMPOSE_VERSION }}/contrib/completion/bash/docker-compose
+     dest: /etc/bash_completion.d/docker-compose
+   become: yes
