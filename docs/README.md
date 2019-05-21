@@ -15,7 +15,11 @@ This will create any necessary Docker containers, run all notebooks, generate ma
 
 For local development, you can also run `pipenv run serve`, which will build the docs, and then start a live reloading web server. You can view the docs at http://localhost:8000, and any changes you make to markdown files in the `build` directory will be reflected immediately.
 
-Alternatively, you can build the docs by sourcing `development_environment` and  running `FLOWDB_SERVICES="flowdb_synthetic_data" make up` in the project root to bring up the required containers, and then running `pipenv run mkdocs` directly.
+Alternatively, you can build the docs by sourcing `development_environment` and  running
+```
+DOCKER_SERVICES="flowdb_testdata flowapi flowmachine flowmachine_query_locker" make up
+```
+in the project root to bring up the required containers, and then running `pipenv run mkdocs` directly.
 
 ### Editing
 

@@ -6,7 +6,6 @@
 
 set -e
 
-export FLOWDB_SERVICES="flowdb_testdata"
 export DOCKER_SERVICES="flowdb_testdata flowmachine_query_locker"
 
 TrapQuit() {
@@ -23,7 +22,7 @@ if [ "$CI" != "true" ]; then
     echo "Bringing up new ones."
     (pushd .. &&  make down && make up && popd)
     echo "Waiting for flowdb to be ready"
-    docker exec ${FLOWDB_SERVICES} bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
+    docker exec flowdb_testdata bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
 fi
 echo "Installing."
 pipenv install --deploy
