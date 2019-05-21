@@ -58,11 +58,14 @@ Cypress.Commands.add("create_group", (group_name) =>
 Cypress.Commands.add("create_user_and_log_in", (username, password) =>
 
 		cy.create_user(username, password).its('body').then((response) =>
-			{cy.request("/signout");
-		cy.request("POST", "/signin", {
-			username: username,
-			password: password
-		}).its('body')})
+			{
+				cy.clearCookies();
+				cy.request("POST", "/signin", {
+					username: username,
+					password: password
+				}).its('body')
+			}
+			)
 
 );
 Cypress.Commands.add("login_admin", () =>
