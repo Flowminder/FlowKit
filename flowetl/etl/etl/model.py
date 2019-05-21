@@ -32,7 +32,7 @@ class ETLRecord(Base):
     cdr_type = Column(String)
     cdr_date = Column(Date)
     state = Column(String)
-    timestamp = Column(DateTime)
+    timestamp = Column(DateTime(timezone=True))
 
     def __init__(self, *, cdr_type: str, cdr_date: pendulumDate, state: str):
 
