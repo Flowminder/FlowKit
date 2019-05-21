@@ -21,6 +21,23 @@ class Token extends React.Component {
   toggleOpen = () => {
     this.setState({ isOpen: !this.state.isOpen });
   };
+  copyToClipboard = event => {
+    var textField = document.createElement('textarea')
+    textField.innerText = this.props.token
+    document.body.appendChild(textField)
+    textField.select()
+    document.execCommand('copy')
+    textField.remove()
+    this.setState({ copySuccess: 'Copied!' });
+  };
+  downloadTxtFile = () => {
+    const element = document.createElement("a");
+    const file = new Blob([this.props.token], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = this.props.name + ".txt";
+    document.body.appendChild(element);
+    element.click();
+  }
   render() {
     const { name, expiry, editAction, token, id } = this.props;
     const { isOpen } = this.state;
@@ -33,7 +50,12 @@ class Token extends React.Component {
           <Typography component="p">{expiry}</Typography>
         </Grid>
         <Grid item xs={3}>
-          <Button onClick={this.toggleOpen}>Token</Button>
+
+          <Tooltip title={copySuccess} placement="bottom">
+            <Button type='button' onClick={this.copyToClipboard} id="copy" color="primary">Copy</Button>
+          </Tooltip>
+          <Button onClick={this.downloadTxtFile} color="primary">Download</Button>
+          <Button onClick={this.toggleOpen} color="primary">View</Button>
           <Dialog
             open={isOpen}
             onClose={this.toggleOpen}
