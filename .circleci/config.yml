@@ -464,7 +464,6 @@ jobs:
       - run:
           name: Cypress setup
           command: |
-            cd frontend
             npm ci
             npm run cy:verify
       - save_cache:

@@ -11,7 +11,6 @@
 #
 !Pipfile
 !Pipfile.lock
-!frontend/node_modules
 !frontend/public
 !frontend/src
 !frontend/package-lock.json
