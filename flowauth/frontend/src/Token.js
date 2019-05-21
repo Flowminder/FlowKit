@@ -16,6 +16,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Tooltip from '@material-ui/core/Tooltip';
 
 class Token extends React.Component {
   state = {
@@ -54,9 +55,9 @@ class Token extends React.Component {
           <Typography component="p">{expiry}</Typography>
         </Grid>
         <Grid item xs={3}>
-
-          <Button onClick={this.copyToClipboard}>Copy</Button>
-          {copySuccess}
+          <Tooltip title={copySuccess} placement="bottom">
+            <Button onClick={this.copyToClipboard}>Copy</Button>
+          </Tooltip>
           <Button onClick={this.downloadTxtFile}>Save as file</Button>
           <Button onClick={this.toggleOpen}>Token</Button>
           <Dialog
