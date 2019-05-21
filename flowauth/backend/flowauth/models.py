@@ -263,7 +263,7 @@ class Server(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     latest_token_expiry = db.Column(db.DateTime, nullable=False)
     longest_token_life = db.Column(db.Integer, nullable=False)
-    _secret_key = db.Column(db.String(128), nullable=False)  # Encrypted in db
+    _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
     tokens = db.relationship(
         "Token", back_populates="server", cascade="all, delete, delete-orphan"
     )
