@@ -443,38 +443,38 @@ jobs:
 
   run_flowauth_end_to_end_tests:
     docker:
-      - image: circleci/python:3.6
+      - image: circleci/node
+      - image: flowminder/flowauth:$CIRCLE_SHA1
+        environment:
+          DB_URI: postgres://flowauth:flowauth@localhost:5432/flowauth
+          <<: *flowauth_env
+      - image: postgres
+        environment:
+          POSTGRES_USER: flowauth
+          POSTGRES_PASSWORD: flowauth
+          POSTGRES_DB: flowauth
     environment:
       *flowauth_env
-    working_directory: /home/circleci/project/flowauth
+    working_directory: /home/circleci/project/flowauth/frontend
     steps:
       - checkout:
           path: /home/circleci/project/
-      - run:
-          name: Install cypress dependencies
-          command: sudo apt-get install -y xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
       - restore_cache:
-          key: flowkit-flowauth-frontend-deps2-{{ checksum "Pipfile.lock" }}-{{ checksum "frontend/package-lock.json" }}
-      - run:
-          name: Install NPM
-          command: |
-            curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-            sudo apt-get install -y nodejs
+          key: flowkit-flowauth-frontend-deps2-{{ checksum "package-lock.json" }}
       - run:
           name: Cypress setup
           command: |
             cd frontend
             npm ci
             npm run cy:verify
-      - run: pipenv install --deploy --dev
       - save_cache:
-          key: flowkit-flowauth-frontend-deps2-{{ checksum "Pipfile.lock" }}-{{ checksum "frontend/package-lock.json" }}
+          key: flowkit-flowauth-frontend-deps2-{{ checksum "package-lock.json" }}
           paths:
-            - /home/circleci/.local/share/virtualenvs/
             - /home/circleci/project/flowauth/frontend/node_modules
+      - run: *wait_for_flowdb
       - run:
           name: Run Cypress end-to-end tests
-          command: pipenv run test-frontend-with-record --reporter junit --reporter-options "mochaFile=../results/flowauth-frontend.[hash].xml"
+          command: npm run-script test --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
       - store_test_results:
           path: results
       - store_artifacts:
@@ -894,7 +894,7 @@ workflows:
             - build_docs
             - run_flowkit_api_tests
             - run_flowauth_backend_tests
-            - run_flowauth_frontend_tests
+            - run_flowauth_end_to_end_tests
             - run_flowclient_tests
             - run_flowetl_tests
             - synth_data_python_generator_tests
