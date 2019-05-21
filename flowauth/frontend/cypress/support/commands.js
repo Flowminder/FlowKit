@@ -60,6 +60,7 @@ Cypress.Commands.add("create_user_and_log_in", (username, password) =>
 		cy.create_user(username, password).its('body').then((response) =>
 			{
 				cy.clearCookies();
+				cy.getCookies().should('be.empty');
 				cy.request("POST", "/signin", {
 					username: username,
 					password: password
