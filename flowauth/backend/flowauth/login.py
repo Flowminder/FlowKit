@@ -27,6 +27,7 @@ def signin():
             identity_changed.send(
                 current_app._get_current_object(), identity=Identity(user.id)
             )
+            session.modified = True
             return jsonify({"logged_in": True, "is_admin": user.is_admin})
     raise Unauthorized("Incorrect username or password.")
 
