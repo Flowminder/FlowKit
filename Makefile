@@ -9,21 +9,18 @@
 # `make flowapi-down` to tear down the docker container for flowapi
 # only.
 #
-# By setting the variable FLOWDB_SERVICES you can choose which flowdb
-# version or versions you'd like to use when running `make up`. Examples:
+# By setting the variable DOCKER_SERVICES you can choose which services
+# you'd like to use when running `make up`. Examples:
 #
-#     FLOWDB_SERVICES=flowdb_testdata make up
-#     FLOWDB_SERVICES=flowdb_synthetic_data make up
-#     FLOWDB_SERVICES="flowdb_testdata flowdb_synthetic_data" make up
+#     DOCKER_SERVICES="flowdb_synthetic_data flowapi flowmachine flowauth flowmachine_query_locker" make up
+#     DOCKER_SERVICES="flowdb_synthetic_data" make up
+#     DOCKER_SERVICES="flowdb_testdata flowetl flowetl_db" make up
 #
 # flowmachine and flowapi will connected to the first flowdb service in the list.
 
 DOCKER_COMPOSE_FILE ?= docker-compose.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
-FLOWDB_SERVICES ?= flowdb_testdata
-DOCKER_SERVICES ?= $(FLOWDB_SERVICES) flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
-export DOCKER_FLOWDB_HOST=$(word 1, $(FLOWDB_SERVICES))
-
+DOCKER_SERVICES ?= flowdb_testdata flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
 
 all:
 
