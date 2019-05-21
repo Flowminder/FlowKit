@@ -31,7 +31,7 @@ def test_get_secrets_with_env_var(monkeypatch):
     assert "Hush" == secret
 
 
-def test_get_secrets_raises_error_if_value_is_undefined(monkeypatch):
+def test_get_secrets_raises_error_if_value_is_undefined():
     """
     Test getting a secret raises an error if neither the secret nor the env var is defined.
     """
