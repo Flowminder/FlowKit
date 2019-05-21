@@ -443,7 +443,7 @@ jobs:
 
   run_flowauth_end_to_end_tests:
     docker:
-      - image: circleci/node
+      - image: cypress/base:8
       - image: flowminder/flowauth:$CIRCLE_SHA1
         environment:
           DB_URI: postgres://flowauth:flowauth@localhost:5432/flowauth
@@ -454,26 +454,19 @@ jobs:
           POSTGRES_PASSWORD: flowauth
           POSTGRES_DB: flowauth
     environment:
-      *flowauth_env
+      CYPRESS_baseUrl: http://localhost:80
+      <<: *flowauth_env
     working_directory: /home/circleci/project/flowauth/frontend
     steps:
       - checkout:
           path: /home/circleci/project/
-      - restore_cache:
-          key: flowkit-flowauth-frontend-deps2-{{ checksum "package-lock.json" }}
       - run:
           name: Cypress setup
-          command: |
-            npm ci
-            npm run cy:verify
-      - save_cache:
-          key: flowkit-flowauth-frontend-deps2-{{ checksum "package-lock.json" }}
-          paths:
-            - /home/circleci/project/flowauth/frontend/node_modules
+          command: npm ci
       - run: *wait_for_flowdb
       - run:
           name: Run Cypress end-to-end tests
-          command: npm run-script test --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
+          command: $(npm bin)/cypress --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
       - store_test_results:
           path: results
       - store_artifacts:
