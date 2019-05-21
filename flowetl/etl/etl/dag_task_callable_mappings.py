@@ -7,6 +7,8 @@
 Mapping task id to a python callable. Allows for the specification of a set of
 dummy callables to be used for testing.
 """
+import os
+
 from functools import partial
 from pathlib import Path
 
@@ -34,14 +36,14 @@ TEST_TASK_CALLABLES = {
 
 # All these are dummy values for now!
 mount_paths = {
-    "dump": "/dump",
-    "ingest": "/ingest",
-    "archive": "/archive",
-    "quarantine": "/quarantine",
+    "dump": Path(f"{os.environ['MOUNT_HOME']}/dump"),
+    "ingest": Path(f"{os.environ['MOUNT_HOME']}/ingest"),
+    "archive": Path(f"{os.environ['MOUNT_HOME']}/archive"),
+    "quarantine": Path(f"{os.environ['MOUNT_HOME']}/quarantine"),
 }
 
 db_hook = PostgresHook(postgres_conn_id="flowdb")
-config_path = Path("/config")
+config_path = Path(f"{os.environ['MOUNT_HOME']}/config")
 
 # callables to be used in production
 PRODUCTION_TASK_CALLABLES = {
