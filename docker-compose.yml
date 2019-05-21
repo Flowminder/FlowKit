@@ -192,10 +192,15 @@ services:
       - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
     volumes:
       - ${HOST_CONFIG_DIR:?Must set HOST_CONFIG_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/config:ro
+      - ${HOST_DUMP_DIR:?Must set HOST_DUMP_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/dump:rw
+      - ${HOST_ARCHIVE_DIR:?Must set HOST_ARCHIVE_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/archive:rw
+      - ${HOST_QUARANTINE_DIR:?Must set HOST_QUARANTINE_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/quarantine:rw
+      - ${HOST_INGEST_DIR:?Must set HOST_INGEST_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/ingest:rw
 
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${SQL_ALCHEMY_CONN:?Must set SQL_ALCHEMY_CONN env var}
+      AIRFLOW_CONN_FLOWDB: postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$DOCKER_FLOWDB_HOST:5432/flowdb
       AIRFLOW__CORE__FERNET_KEY:  ${FLOWETL_FERNET_KEY:?Must set FLOWETL_FERNET_KEY env var}
       POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
       POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
