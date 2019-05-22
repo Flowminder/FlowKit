@@ -293,6 +293,7 @@ docker secret rm cert-flowkit.pem
 docker secret rm JWT_SECRET_KEY
 docker secret rm REDIS_PASSWORD
 docker secret rm FLOWAPI_IDENTIFIER
+
 echo "Adding secrets"
 echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' \
@@ -316,6 +317,7 @@ openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
 cat cert.key cert.pem > cert-flowkit.pem
 docker secret create cert-flowkit.pem cert-flowkit.pem
 echo "secret" | docker secret create JWT_SECRET_KEY -
+
 echo "Deploying stack"
 docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
 ```
