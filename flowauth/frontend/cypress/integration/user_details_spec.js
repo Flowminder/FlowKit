@@ -10,10 +10,11 @@ describe("User details screen", function () {
         // Log in and navigate to user details screen
         username = Math.random().toString(36).substring(2, 15);
         password = "ORIGINAL_DUMMY_PASSWORD";
-        cy.create_user_and_log_in(username, password);
-        cy.log("Created user: " + username + ":" + password)
-        cy.visit("/");
-        cy.get("#user_details").click();
+        cy.create_user_and_log_in(username, password).
+        log("Created user: " + username + ":" + password).
+        visit("/").
+        get("#user_details").
+        click();
     });
 
     it("Change user password", function () {

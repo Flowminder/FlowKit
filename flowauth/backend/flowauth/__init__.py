@@ -99,6 +99,7 @@ def create_app(test_config=None):
         flask.g.user = flask_login.current_user
         try:
             print(f"Logged in user is {flask.g.user.username}:{flask.g.user.id}")
+            print(flask.session)
         except AttributeError:
             print(f"User is not logged in.")
 
