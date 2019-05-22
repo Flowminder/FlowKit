@@ -6,7 +6,6 @@
 
 set -e
 
-export FLOWDB_SERVICES="flowdb_synthetic_data"
 export DOCKER_SERVICES="flowdb_synthetic_data flowmachine_query_locker"
 
 KillJobs() {
@@ -32,7 +31,7 @@ trap TrapQuit EXIT
 if [ "$CI" != "true" ]; then
     (pushd .. && make down && make up && popd)
     echo "Waiting for flowdb to be ready"
-    docker exec ${FLOWDB_SERVICES} bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
+    docker exec flowdb_synthetic_data bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
 fi
 
 pipenv install
