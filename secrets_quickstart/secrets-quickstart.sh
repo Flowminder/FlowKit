@@ -6,7 +6,8 @@
 set -eu
 set -o pipefail
 
-docker swarm init
+docker swarm init || true
+
 # Remove existing stack deployment
 echo "Removing existing secrets_test_stack"
 docker stack rm secrets_test
@@ -46,6 +47,8 @@ docker secret rm cert-flowkit.pem
 docker secret rm JWT_SECRET_KEY
 docker secret rm REDIS_PASSWORD
 docker secret rm FLOWAPI_IDENTIFIER
+
+# Add new secrets
 echo "Adding secrets"
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
@@ -62,8 +65,15 @@ openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
               || ( [[ -e /etc/pki/tls/openssl.cnf ]] && echo "/etc/pki/tls/openssl.cnf" ) ) \
     <(printf "[SAN]\nsubjectAltName='DNS.1:localhost,DNS.2:flow.api'")) \
     -keyout cert.key -out cert.pem
+if ! ( [ -e cert.key ] && [ -e cert.pem ] ); then
+    echo "Generation of the SSL certificate failed."
+    echo "Please the check the command (in particular the path to the openssl.cnf file) and try again."
+    exit
+fi
 cat cert.key cert.pem > cert-flowkit.pem
 docker secret create cert-flowkit.pem cert-flowkit.pem
 echo "secret" | docker secret create JWT_SECRET_KEY -
+
+# Deploy the stack
 echo "Deploying stack"
 docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
