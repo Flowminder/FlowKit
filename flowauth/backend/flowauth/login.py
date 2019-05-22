@@ -29,7 +29,7 @@ def signin():
             )
             session.modified = True
             return jsonify({"logged_in": True, "is_admin": user.is_admin})
-    current_app.logger.debug(f"{user.username}:{user.id} failed to log in.")
+    current_app.logger.debug(f"{json['username']} failed to log in.")
     raise Unauthorized("Incorrect username or password.")
 
 
