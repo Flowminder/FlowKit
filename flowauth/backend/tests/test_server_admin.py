@@ -290,7 +290,7 @@ def test_group_server_listing(client, auth, test_admin, test_group):
     uid, uname, upass = test_admin
     response, csrf_cookie = auth.login(uname, upass)
     response = client.get(
-        f"/admin/groups/{test_group[0]}/servers", headers={"X-CSRF-Token": csrf_cookie}
+        f"/admin/groups/{test_group.id}/servers", headers={"X-CSRF-Token": csrf_cookie}
     )
 
     assert 200 == response.status_code
@@ -303,7 +303,7 @@ def test_group_server_time_limits(client, auth, test_admin, test_group):
     uid, uname, upass = test_admin
     response, csrf_cookie = auth.login(uname, upass)
     response = client.get(
-        f"/admin/groups/{test_group[0]}/servers/1/time_limits",
+        f"/admin/groups/{test_group.id}/servers/1/time_limits",
         headers={"X-CSRF-Token": csrf_cookie},
     )
 
@@ -318,7 +318,7 @@ def test_group_server_rights(client, auth, test_admin, test_group):
     uid, uname, password = test_admin
     response, csrf_cookie = auth.login(uname, password)
     response = client.get(
-        f"/admin/groups/{test_group[0]}/servers/1/capabilities",
+        f"/admin/groups/{test_group.id}/servers/1/capabilities",
         headers={"X-CSRF-Token": csrf_cookie},
     )
 
@@ -337,7 +337,7 @@ def test_edit_group_server_rights(client, auth, test_admin, test_group):
     uid, uname, upass = test_admin
     response, csrf_cookie = auth.login(uname, upass)
     response = client.patch(
-        f"/admin/groups/{test_group[0]}/servers",
+        f"/admin/groups/{test_group.id}/servers",
         headers={"X-CSRF-Token": csrf_cookie},
         json={
             "servers": [
@@ -353,7 +353,7 @@ def test_edit_group_server_rights(client, auth, test_admin, test_group):
 
     assert 200 == response.status_code
     response = client.get(
-        f"/admin/groups/{test_group[0]}/servers/1/capabilities",
+        f"/admin/groups/{test_group.id}/servers/1/capabilities",
         headers={"X-CSRF-Token": csrf_cookie},
     )
 
@@ -367,7 +367,7 @@ def test_edit_group_server_rights(client, auth, test_admin, test_group):
     ]
 
     response = client.get(
-        f"/admin/groups/{test_group[0]}/servers/1/time_limits",
+        f"/admin/groups/{test_group.id}/servers/1/time_limits",
         headers={"X-CSRF-Token": csrf_cookie},
     )
     json = response.get_json()
@@ -432,7 +432,7 @@ def test_edit_group_server_rights_rejected_for_rights(
     uid, uname, upass = test_admin
     response, csrf_cookie = auth.login(uname, upass)
     response = client.patch(
-        f"/admin/groups/{test_group[0]}/servers",
+        f"/admin/groups/{test_group.id}/servers",
         headers={"X-CSRF-Token": csrf_cookie},
         json={
             "servers": [

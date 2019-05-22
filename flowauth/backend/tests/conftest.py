@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from collections import namedtuple
 
 import datetime
 import pytest
@@ -18,6 +19,9 @@ from flowauth import (
     Token,
     SpatialAggregationUnit,
 )
+
+TestUser = namedtuple("TestUser", ["id", "username", "password"])
+TestGroup = namedtuple("TestGroup", ["id", "name"])
 
 
 @pytest.fixture
@@ -69,7 +73,7 @@ def test_user(app):
         db.session.add(user)
         db.session.add(ug)
         db.session.commit()
-        return user.id, user.username, "TEST_USER_PASSWORD"
+        return TestUser(user.id, user.username, "TEST_USER_PASSWORD")
 
 
 @pytest.fixture
@@ -77,7 +81,7 @@ def test_admin(app):
     with app.app_context():
         user = User.query.filter(User.username == app.config["ADMIN_USER"]).first()
 
-        return user.id, user.username, app.config["ADMIN_PASSWORD"]
+        return TestUser(user.id, user.username, app.config["ADMIN_PASSWORD"])
 
 
 @pytest.fixture
@@ -86,7 +90,7 @@ def test_group(app):
         group = Group(name="TEST_GROUP")
         db.session.add(group)
         db.session.commit()
-        return group.id, group.name
+        return TestGroup(group.id, group.name)
 
 
 @pytest.fixture
@@ -95,7 +99,7 @@ def test_data(app, test_admin, test_user, test_group):
         agg_units = [SpatialAggregationUnit(name=f"admin{x}") for x in range(4)]
         db.session.add_all(agg_units)
 
-        test_group = Group.query.filter(Group.id == test_group[0]).first()
+        test_group = Group.query.filter(Group.id == test_group.id).first()
         # Each user is also a group
         for user in User.query.all():
             test_group.members.append(user)
@@ -175,7 +179,7 @@ def test_data_with_access_rights(app, test_data, test_group):
         ).first()
         gsp = GroupServerPermission.query.filter(
             GroupServerPermission.server_capability == sc
-            and GroupServerPermission.group_id == test_group[0]
+            and GroupServerPermission.group_id == test_group.id
         ).first()
         admin0_agg_unit = SpatialAggregationUnit.query.filter(
             SpatialAggregationUnit.name == "admin0"
