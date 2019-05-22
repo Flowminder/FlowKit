@@ -28,6 +28,7 @@ services:
     image: postgres
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: flowauth
     networks:
       database:
         aliases:

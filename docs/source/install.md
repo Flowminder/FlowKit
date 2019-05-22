@@ -173,11 +173,9 @@ FlowAuth is designed to be deployed as a single Docker container working in coop
 
 FlowAuth supports any database supported by [SQLAlchemy](https://sqlache.me), and to connect you will only need to supply a correct URI for the database either using the `DB_URI` environment variable, or by setting the `DB_URI` secret. If `DB_URI` is not set, a temporary sqlite database will be created.
 
-On first use, you will need to create the necessary tables and an administrator account. 
+FlowAuth will attempt to create all necessary tables when first accessed, but will not overwrite any existing tables. To wipe any existing data, you can either set the `INIT_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
 
-To initialise the tables, you can either set the `INIT_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
-
-To create an initial administrator, use the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables or set them as secrets. Alternatively, you may run `flask add-admin <username> <password>` from inside the container. You can combine these environment variables with the `INIT_DB` environment variable.
+FlowAuth requires you to create at least one admin user by setting the `FLOWAUTH_ADMIN_USER` and `FLOWAUTH_ADMIN_PASSWORD` environment variables or providing them as secrets. You can combine these environment variables with the `INIT_DB` environment variable.
 
 You _must_ also provide two additional environment variables or secrets: `FLOWAUTH_FERNET_KEY`, and `SECRET_KEY`. `FLOWAUTH_FERNET_KEY` is used to encrypt server secret keys, and tokens while 'at rest' in the database, and decrypt them for use. `SECRET_KEY` is used to secure session, and CSRF protection cookies.
 
