@@ -63,6 +63,7 @@ def test_init_db_force(app):
         result = runner.invoke(
             add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTATOR_PASSWORD"]
         )
+        assert len(User.query.all()) > 0
         result = runner.invoke(init_db_command, ["--force"])
         assert len(User.query.all()) == 0
 
