@@ -75,3 +75,25 @@ Cypress.Commands.add("login_admin", () =>
 		password: "DUMMY_PASSWORD"
 	})
 );
+
+/*
+Workaround for cypress holding onto old cookies
+https://github.com/cypress-io/cypress/issues/3438#issuecomment-478660605
+ */
+
+Cypress.Commands.add("goto", {prevSubject: false}, (url, options={}) => {
+    if(options.log !== false) {
+        Cypress.log({
+            name: "goto",
+            message: `Goto ${url}`
+        });
+    }
+
+    const target = new URL("http://localhost" + url);
+    const params = new URLSearchParams(target.search);
+    params.append("cypressBuffferFix", Date.now());
+    const adjusted = target.pathname + "?" + params.toString() + target.hash;
+    cy.visit(adjusted, {
+        log: false,
+    });
+});

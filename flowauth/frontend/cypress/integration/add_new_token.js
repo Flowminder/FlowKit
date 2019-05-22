@@ -8,7 +8,7 @@ describe("Token generation", function () {
     beforeEach(function () {
         // Log in and navigate to user details screen
         cy.login();
-        cy.visit("/");
+        cy.goto("/");
         cy.get("#servers").click();
     });
     it("Add token name with space", function () {

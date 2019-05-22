@@ -1,9 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
+Cypress.Cookies.debug(true);
 describe("User details screen", function () {
-    Cypress.Cookies.debug(true)
     var username, password;
 
     beforeEach(function () {
@@ -12,7 +11,7 @@ describe("User details screen", function () {
         password = "ORIGINAL_DUMMY_PASSWORD";
         cy.create_user_and_log_in(username, password).
         log("Created user: " + username + ":" + password).
-        visit("/").
+        goto("/").
         get("#user_details").
         click();
     });

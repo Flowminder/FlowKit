@@ -8,7 +8,7 @@ describe("Group list screen", function () {
     beforeEach(function () {
         // Log in and navigate to user details screen
         cy.login_admin();
-        cy.visit("/");
+        cy.goto("/");
         cy.get("#group_admin").click();
     });
     it("Add blank group", function () {
@@ -73,7 +73,7 @@ describe("Group list screen", function () {
         cy.create_group(group_name).then((group) =>
         {console.log("Group " + group)
         // Reload the groups page
-        cy.visit("/");
+        cy.goto("/");
         cy.get("#group_admin").click();
         cy.contains(group_name).should("be.visible");
         cy.get("#rm_" + group.id).click();
@@ -88,7 +88,7 @@ describe("Group list screen", function () {
             console.log("Group " + group)
 
             // Reload the groups page
-            cy.visit("/");
+            cy.goto("/");
             cy.get("#group_admin").click();
             cy.contains(group_name).should("be.visible");
             cy.get("#edit_" + group.id).click();

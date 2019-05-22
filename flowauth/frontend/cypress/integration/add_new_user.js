@@ -8,7 +8,7 @@ describe("User management", function () {
   beforeEach(function () {
     // Log in and navigate to user details screen
     cy.login_admin();
-    cy.visit("/");
+    cy.goto("/");
     cy.get("#user_list").click();
   });
 

@@ -7,7 +7,7 @@ describe("Logout", function () {
 
     it("Logout actually logs out", function () {
         cy.login();
-        cy.visit("/");
+        cy.goto("/");
         cy.wait(500);
         cy.get("#logout").click();
         cy.contains("Sign in").should("be.visible");
