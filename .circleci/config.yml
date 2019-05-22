@@ -231,6 +231,7 @@ jobs:
           command: |
             while [ ! -f ".synthetic-data-build-done" ] || [ ! -f ".oracle-build-done" ] || [ ! -f ".testdata-build-done" ]; do
               echo "Waiting for docker image builds to complete"
+              sleep 5
             done
       - run:
           name: Test that a data generator must be set for synth data
