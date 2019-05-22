@@ -10,7 +10,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from flowmachine.core import Table
+from flowmachine.core import Table, Query
 from flowmachine.core.cache import (
     get_compute_time,
     shrink_below_size,
@@ -454,6 +454,18 @@ def test_cache_reset(flowmachine_connect):
         == QueryState.KNOWN
     )
     assert not stored_query.is_stored
+
+
+def test_cache_reset_protects_tables(flowmachine_connect):
+    """
+    Resetting the cache should preserve Table entries.
+    """
+    # Regression test for https://github.com/Flowminder/FlowKit/issues/832
+    dl_query = daily_location(date="2016-01-03", level="admin3", method="last")
+    reset_cache(flowmachine_connect, dl_query.redis)
+    for dep in dl_query._get_stored_dependencies():
+        assert dep.md5 in [x.md5 for x in Query.get_stored()]
+    dl_query.store().result()  # Original bug caused this to error
 
 
 def test_redis_resync_runtimeerror(flowmachine_connect, dummy_redis):

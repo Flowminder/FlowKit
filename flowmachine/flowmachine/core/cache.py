@@ -238,14 +238,14 @@ def reset_cache(connection: "Connection", redis: StrictRedis) -> None:
     # they point to a cache table and hence are a duplicate of a Query entry which
     # will also point to that table.
 
-    qry = f"SELECT tablename FROM cache.cached WHERE NOT class='Table'"
-    tables = connection.fetch(qry)
     with connection.engine.begin() as trans:
+        qry = f"SELECT tablename FROM cache.cached WHERE NOT class='Table'"
+        tables = connection.fetch(qry)
         trans.execute("SELECT setval('cache.cache_touches', 1)")
         for table in tables:
             trans.execute(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
-        trans.execute("TRUNCATE cache.cached CASCADE")
         trans.execute("TRUNCATE cache.dependencies CASCADE")
+        trans.execute(f"DELETE FROM cache.cached WHERE NOT class='Table'")
     resync_redis_with_cache(connection=connection, redis=redis)
 
 
