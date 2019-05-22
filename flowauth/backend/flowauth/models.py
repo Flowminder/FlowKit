@@ -463,7 +463,7 @@ class Group(db.Model):
     "--force/--no-force", default=False, help="Optionally wipe any existing data first."
 )
 @with_appcontext
-def init_db_command(force: bool):  # pragma: no cover
+def init_db_command(force: bool):
     init_db(force)
     click.echo("Initialized the database.")
 
@@ -489,7 +489,7 @@ def init_db(force: bool = False) -> None:
 @click.argument("username", envvar="ADMIN_USER")
 @click.argument("password", envvar="ADMIN_PASSWORD")
 @with_appcontext
-def add_admin_command(username, password):  # pragma: no cover
+def add_admin_command(username, password):
     add_admin(username, password)
     click.echo(f"Added {username} as an admin.")
 
@@ -617,6 +617,6 @@ def make_demodata():
 
 @click.command("demodata")
 @with_appcontext
-def demodata():  # pragma: no cover
+def demodata():
     make_demodata()
     click.echo("Made demo data.")
