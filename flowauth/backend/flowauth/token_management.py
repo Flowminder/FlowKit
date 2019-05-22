@@ -29,7 +29,7 @@ def set_password():
     the new password is strong.
     """
     edits = request.get_json()
-
+    current_app.logger.debug(f"User {current_user.username} tried to change password.")
     try:
         old_pass = edits["password"]
     except KeyError:
@@ -40,9 +40,7 @@ def set_password():
         raise InvalidUsage(
             "Missing new password.", payload={"bad_field": "newPassword"}
         )
-    current_app.logger.debug(
-        f"User {current_user.username} tried to change password from {old_pass} to {new_pass}"
-    )
+
     if current_user.is_correct_password(old_pass):
         if len(new_pass) == 0 or zxcvbn(new_pass)["score"] < 4:
             raise InvalidUsage(
@@ -51,6 +49,7 @@ def set_password():
         current_user.password = new_pass
         db.session.add(current_user)
         db.session.commit()
+        current_app.logger.debug(f"User {current_user.username} password changed.")
         return jsonify({}), 200
     else:
 

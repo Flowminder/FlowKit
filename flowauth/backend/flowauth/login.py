@@ -21,9 +21,7 @@ def signin():
         raise InvalidUsage("Must supply username or password.")
     user = User.query.filter(User.username == json["username"]).first()
     if user is not None:
-        current_app.logger.debug(
-            f"{user.username}:{user.id} trying to log in with password {json['password']}."
-        )
+        current_app.logger.debug(f"{user.username}:{user.id} trying to log in.")
         if user.is_correct_password(json["password"]):
             login_user(user, remember=False)
             identity_changed.send(
@@ -31,6 +29,7 @@ def signin():
             )
             session.modified = True
             return jsonify({"logged_in": True, "is_admin": user.is_admin})
+    current_app.logger.debug(f"{user.username}:{user.id} failed to log in.")
     raise Unauthorized("Incorrect username or password.")
 
 
