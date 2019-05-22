@@ -314,6 +314,7 @@ openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
                    && echo "/etc/pki/tls/openssl.cnf" ) ) \
     <(printf "[SAN]\nsubjectAltName='DNS.1:localhost,DNS.2:flow.api'")) \
     -keyout cert.key -out cert.pem
+# NOTE: make sure that the previous command generated _both_ files cert.key and cert.pem
 cat cert.key cert.pem > cert-flowkit.pem
 docker secret create cert-flowkit.pem cert-flowkit.pem
 echo "secret" | docker secret create JWT_SECRET_KEY -
