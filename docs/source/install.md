@@ -264,7 +264,7 @@ conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certifi
 #### Secrets Quickstart
 
 ```bash
-docker swarm init
+docker swarm init || true
 # Remove existing stack deployment
 echo "Removing existing secrets_test_stack"
 docker stack rm secrets_test
@@ -291,15 +291,15 @@ fi
 
 # Remove existing secrets
 echo "Removing existing secrets"
-docker secret rm FLOWMACHINE_FLOWDB_PASSWORD
-docker secret rm FLOWMACHINE_FLOWDB_USER
-docker secret rm FLOWAPI_FLOWDB_PASSWORD
-docker secret rm FLOWAPI_FLOWDB_USER
-docker secret rm POSTGRES_PASSWORD
-docker secret rm cert-flowkit.pem
-docker secret rm JWT_SECRET_KEY
-docker secret rm REDIS_PASSWORD
-docker secret rm FLOWAPI_IDENTIFIER
+docker secret rm FLOWMACHINE_FLOWDB_PASSWORD || true
+docker secret rm FLOWMACHINE_FLOWDB_USER || true
+docker secret rm FLOWAPI_FLOWDB_PASSWORD || true
+docker secret rm FLOWAPI_FLOWDB_USER || true
+docker secret rm POSTGRES_PASSWORD || true
+docker secret rm cert-flowkit.pem || true
+docker secret rm JWT_SECRET_KEY || true
+docker secret rm REDIS_PASSWORD || true
+docker secret rm FLOWAPI_IDENTIFIER || true
 
 echo "Adding secrets"
 echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
