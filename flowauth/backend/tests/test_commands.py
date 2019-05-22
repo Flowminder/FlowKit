@@ -46,6 +46,10 @@ def test_init_db(app):
     with app.app_context():
         runner = app.test_cli_runner()
         result = runner.invoke(init_db_command)
+        result = runner.invoke(
+            add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTATOR_PASSWORD"]
+        )
+        result = runner.invoke(init_db_command)
         assert len(User.query.all()) > 0
 
 
@@ -55,6 +59,10 @@ def test_init_db_force(app):
     """
     with app.app_context():
         runner = app.test_cli_runner()
+        result = runner.invoke(init_db_command)
+        result = runner.invoke(
+            add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTATOR_PASSWORD"]
+        )
         result = runner.invoke(init_db_command, ["--force"])
         assert len(User.query.all()) == 0
 
