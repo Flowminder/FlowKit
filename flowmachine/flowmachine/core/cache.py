@@ -234,7 +234,7 @@ def reset_cache(
     connection : Connection
     redis : StrictRedis
     protect_table_objects : bool, default True
-        Set to False to also remove Table object cache metadata
+        Set to False to also remove cache metadata for Table objects which point to tables outside the cache schema
 
     Notes
     -----
