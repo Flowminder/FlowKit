@@ -6,6 +6,7 @@
 set -eu
 set -o pipefail
 
+# Ensure this docker node is in swarm mode
 docker swarm init || true
 
 # Remove existing stack deployment
