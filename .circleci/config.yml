@@ -457,6 +457,7 @@ jobs:
           POSTGRES_DB: flowauth
     environment:
       CYPRESS_baseUrl: http://localhost:80
+      DEBUG: cypress:*
       <<: *flowauth_env
     working_directory: /home/circleci/project/flowauth/frontend
     steps:
