@@ -268,18 +268,26 @@ docker swarm init
 # Remove existing stack deployment
 echo "Removing existing secrets_test_stack"
 docker stack rm secrets_test
+
 # Wait for 'docker stack rm' to finish (see https://github.com/moby/moby/issues/30942)
-limit=15
+limit=30
 until [ -z "$(docker service ls --filter label=com.docker.stack.namespace=secrets_test -q)" ] || [ "$limit" -lt 0 ]; do
   sleep 2
   limit="$((limit-1))"
 done
-
-limit=15
+if [ "$limit" -lt 0 ]; then
+    echo "Not all services in the existing docker stack have been removed."
+    echo "Please wait (or try to remove them manually) and run this command again."
+fi
+limit=30
 until [ -z "$(docker network ls --filter label=com.docker.stack.namespace=secrets_test -q)" ] || [ "$limit" -lt 0 ]; do
   sleep 2
   limit="$((limit-1))"
 done
+if [ "$limit" -lt 0 ]; then
+    echo "Not all networks in the existing docker stack have been removed."
+    echo "Please wait (or try to remove them manually) and run this command again."
+fi
 
 # Remove existing secrets
 echo "Removing existing secrets"
