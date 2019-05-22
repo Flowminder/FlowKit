@@ -264,7 +264,6 @@ conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certifi
 #### Secrets Quickstart
 
 ```bash
-docker login
 docker swarm init
 # Remove existing stack deployment
 echo "Removing existing secrets_test_stack"

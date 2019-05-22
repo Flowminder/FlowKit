@@ -6,8 +6,6 @@
 set -eu
 set -o pipefail
 
-
-docker login
 docker swarm init
 # Remove existing stack deployment
 echo "Removing existing secrets_test_stack"
