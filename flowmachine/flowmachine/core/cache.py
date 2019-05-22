@@ -105,12 +105,17 @@ def write_query_to_cache(
             try:
                 plan_time = write_func(query_ddl_ops, con)
                 logger.debug("Executed queries.")
-            except Exception as e:
+            except Exception as exc:
                 q_state_machine.raise_error()
                 logger.error(f"Error executing SQL. Error was {e}")
-                raise e
+                raise exc
             if schema == "cache":
-                write_cache_metadata(connection, query, compute_time=plan_time)
+                try:
+                    write_cache_metadata(connection, query, compute_time=plan_time)
+                except Exception as exc:
+                    q_state_machine.raise_error()
+                    logger.error(f"Error writing cache metadata. Error was {exc}")
+                    raise exc
         q_state_machine.finish()
 
     q_state_machine.wait_until_complete(sleep_duration=sleep_duration)

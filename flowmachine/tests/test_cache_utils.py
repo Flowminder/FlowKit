@@ -29,6 +29,7 @@ from flowmachine.core.cache import (
     cache_table_exists,
     resync_redis_with_cache,
     reset_cache,
+    write_cache_metadata,
 )
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 from flowmachine.features import daily_location
@@ -480,3 +481,31 @@ def test_redis_resync_runtimeerror(flowmachine_connect, dummy_redis):
     dummy_redis.allow_flush = False
     with pytest.raises(RuntimeError):
         resync_redis_with_cache(flowmachine_connect, dummy_redis)
+
+
+def test_cache_metadata_write_error(flowmachine_connect, dummy_redis, monkeypatch):
+    """
+    Test that errors during cache metadata writing leave the query state machine in error state.
+    """
+    # Regression test for https://github.com/Flowminder/FlowKit/issues/833
+
+    class TestException(Exception):
+        """
+        Exception only for use in this test.
+        """
+
+        pass
+
+    writer_mock = Mock(side_effect=TestException)
+    dl_query = daily_location(date="2016-01-03", level="admin3", method="last")
+    assert not dl_query.is_stored
+    monkeypatch.setattr("flowmachine.core.cache.write_cache_metadata", writer_mock)
+
+    store_future = dl_query.store()
+    with pytest.raises(TestException):
+        store_future.result()
+    assert not dl_query.is_stored
+    assert (
+        QueryStateMachine(dl_query.redis, dl_query.md5).current_query_state
+        == QueryState.ERRORED
+    )
