@@ -76,6 +76,13 @@ def create_app(test_config=None):
         react.
         """
         response.set_cookie("X-CSRF", generate_csrf())
+        try:
+            current_app.logger.debug(
+                f"Logged in user was {flask.g.user.username}:{flask.g.user.id}"
+            )
+            current_app.logger.debug(flask.session)
+        except AttributeError:
+            current_app.logger.debug(f"User was not logged in.")
         return response
 
     @app.errorhandler(CSRFError)
