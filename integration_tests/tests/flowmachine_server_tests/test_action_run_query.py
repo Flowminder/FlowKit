@@ -39,7 +39,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
     #
-    reset_cache(fm_conn, redis)
+    reset_cache(fm_conn, redis, protect_table_objects=False)
     assert cache_schema_is_empty(fm_conn)
     assert not redis.exists(expected_query_id)
 
