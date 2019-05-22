@@ -107,7 +107,7 @@ def write_query_to_cache(
                 logger.debug("Executed queries.")
             except Exception as exc:
                 q_state_machine.raise_error()
-                logger.error(f"Error executing SQL. Error was {e}")
+                logger.error(f"Error executing SQL. Error was {exc}")
                 raise exc
             if schema == "cache":
                 try:
