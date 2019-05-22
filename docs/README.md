@@ -17,7 +17,7 @@ For local development, you can also run `pipenv run serve`, which will build the
 
 Alternatively, you can build the docs by sourcing `development_environment` and  running
 ```
-DOCKER_SERVICES="flowdb_testdata flowapi flowmachine flowmachine_query_locker" make up
+DOCKER_SERVICES="flowdb_synthetic_data flowapi flowmachine flowmachine_query_locker" make up
 ```
 in the project root to bring up the required containers, and then running `pipenv run mkdocs` directly.
 
