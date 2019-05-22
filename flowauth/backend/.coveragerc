@@ -1,7 +1,6 @@
 [run]
 branch = True
 
-
 [report]
 omit =
     */python?.?/*
