@@ -59,7 +59,7 @@ def get_config():
     )
     return dict(
         LOG_LEVEL=log_level,
-        ADMIN_USER=get_secret_or_env_var("FLOWAUTH_ADMIN_USER"),
+        ADMIN_USER=get_secret_or_env_var("FLOWAUTH_ADMIN_USERNAME"),
         ADMIN_PASSWORD=get_secret_or_env_var("FLOWAUTH_ADMIN_PASSWORD"),
         SQLALCHEMY_DATABASE_URI=get_secret_or_env_var(
             "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
