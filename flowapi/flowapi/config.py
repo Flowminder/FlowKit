@@ -26,7 +26,7 @@ def get_secret_or_env_var(key: str) -> str:
     Returns
     -------
     str
-        Value in the file, or value of the environment variable, or default if defined.
+        Value in the file, or value of the environment variable.
 
     Raises
     ------
