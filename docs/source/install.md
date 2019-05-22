@@ -173,7 +173,7 @@ FlowAuth is designed to be deployed as a single Docker container working in coop
 
 FlowAuth supports any database supported by [SQLAlchemy](https://sqlalche.me), and to connect you will only need to supply a correct URI for the database either using the `DB_URI` environment variable, or by setting the `DB_URI` secret. If `DB_URI` is not set, a temporary sqlite database will be created.
 
-FlowAuth will attempt to create all necessary tables when first accessed, but will not overwrite any existing tables. To wipe any existing data, you can either set the `INIT_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
+FlowAuth will attempt to create all necessary tables when first accessed, but will not overwrite any existing tables. To wipe any existing data, you can either set the `RESET_FLOWAUTH_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
 
 FlowAuth requires you to create at least one admin user by setting the `FLOWAUTH_ADMIN_USER` and `FLOWAUTH_ADMIN_PASSWORD` environment variables or providing them as secrets. You can combine these environment variables with the `INIT_DB` environment variable.
 
