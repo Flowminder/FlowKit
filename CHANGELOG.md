@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAuth will now automatically set up the database when started without needing to trigger via the cli.
 - FlowAuth now requires that at least one administrator account is created by providing env vars or secrets for:
     - `FLOWAUTH_ADMIN_PASSWORD`
-	- `FLOWAUTH_ADMIN_USERNAME`
+    - `FLOWAUTH_ADMIN_USERNAME`
 
 ### Fixed
 - The `FLOWDB_DEBUG` environment variable used to have no effect. This has been fixed. [#811](https://github.com/Flowminder/FlowKit/issues/811)
