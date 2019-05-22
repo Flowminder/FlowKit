@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed an issue where `Table` objects could be in an inconsistent cache state after resetting cache [#832](https://github.com/Flowminder/FlowKit/issues/832) 
 
 ### Removed
+- The `FLOWDB_SERVICES` environment variable has been removed from the toplevel Makefile, so that now `DOCKER_SERVICES` is the only environment variable that controls which services are spun up when running `make up`. [#827](https://github.com/Flowminder/FlowKit/issues/827)
 
 ## [0.6.3]
 
