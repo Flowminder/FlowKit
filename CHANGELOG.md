@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - The `FLOWDB_DEBUG` environment variable used to have no effect. This has been fixed. [#811](https://github.com/Flowminder/FlowKit/issues/811)
+- When following the "Secrets Quickstart" instructions in the docs, FlowAPI now starts up successfully [#836](https://github.com/Flowminder/FlowKit/issues/836)
+- The command to generate an SSL certificate in the "Secrets Quickstart" section in the docs has been fixed and made more robust [#837](https://github.com/Flowminder/FlowKit/issues/837)
 
 ### Removed
 
