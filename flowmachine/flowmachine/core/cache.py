@@ -222,7 +222,9 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def reset_cache(connection: "Connection", redis: StrictRedis) -> None:
+def reset_cache(
+    connection: "Connection", redis: StrictRedis, protect_table_objects: bool = True
+) -> None:
     """
     Reset the query cache. Deletes any tables under cache schema, resets the cache count,
     clears the cached and dependencies tables.
@@ -231,6 +233,8 @@ def reset_cache(connection: "Connection", redis: StrictRedis) -> None:
     ----------
     connection : Connection
     redis : StrictRedis
+    protect_table_objects : bool, default True
+        Set to False to also remove Table object cache metadata
 
     Notes
     -----
@@ -250,7 +254,10 @@ def reset_cache(connection: "Connection", redis: StrictRedis) -> None:
         for table in tables:
             trans.execute(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
         trans.execute("TRUNCATE cache.dependencies CASCADE")
-        trans.execute(f"DELETE FROM cache.cached WHERE NOT class='Table'")
+        if protect_table_objects:
+            trans.execute(f"DELETE FROM cache.cached WHERE NOT class='Table'")
+        else:
+            trans.execute("TRUNCATE cache.cached CASCADE")
     resync_redis_with_cache(connection=connection, redis=redis)
 
 

@@ -243,7 +243,7 @@ def reset_cache_schema(fm_conn, redis_instance):
     so that they are empty.
     """
     print("[DDD] Recreating cache schema... ", end="", flush=True)
-    reset_cache(fm_conn, redis_instance)
+    reset_cache(fm_conn, redis_instance, protect_table_objects=False)
     print("Done.")
 
 
