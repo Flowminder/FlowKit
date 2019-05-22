@@ -10,10 +10,11 @@
 # only.
 #
 # By setting the variable DOCKER_SERVICES you can choose which services
-# you'd like to use when running `make up`. Examples:
+# you'd like to use when running `make up`. Note that at most one flowdb
+# service must be specified. Examples:
 #
 #     DOCKER_SERVICES="flowdb_synthetic_data flowapi flowmachine flowauth flowmachine_query_locker" make up
-#     DOCKER_SERVICES="flowdb_synthetic_data" make up
+#     DOCKER_SERVICES="flowdb" make up
 #     DOCKER_SERVICES="flowdb_testdata flowetl flowetl_db" make up
 #
 # flowmachine and flowapi will connected to the first flowdb service in the list.
@@ -21,6 +22,14 @@
 DOCKER_COMPOSE_FILE ?= docker-compose.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
 DOCKER_SERVICES ?= flowdb_testdata flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
+
+# Check that at most one flowdb service is present in DOCKER_SERVICES
+NUM_SPECIFIED_FLOWDB_SERVICES=$(words $(filter flowdb%, $(DOCKER_SERVICES)))
+ifneq ($(NUM_SPECIFIED_FLOWDB_SERVICES),0)
+  ifneq ($(NUM_SPECIFIED_FLOWDB_SERVICES),1)
+    $(error "At most one flowdb service must be specified in DOCKER_SERVICES, but found: $(filter flowdb%, $(DOCKER_SERVICES))")
+  endif
+endif
 
 all:
 
