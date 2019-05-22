@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import logging
 
 import os
 from pathlib import Path
@@ -36,7 +37,11 @@ def get_config():
         "FLOWAUTH_FERNET_KEY", os.environ["FLOWAUTH_FERNET_KEY"]
     ).encode()
     Fernet(FLOWAUTH_FERNET_KEY)  # Error if fernet key is bad
+    log_level = getattr(
+        logging, os.getenv("FLOWAUTH_LOG_LEVEL", "error").upper(), logging.ERROR
+    )
     return dict(
+        LOG_LEVEL=log_level,
         ADMIN_USER=getsecret(
             "FLOWAUTH_ADMIN_USER", os.environ["FLOWAUTH_ADMIN_USERNAME"]
         ),

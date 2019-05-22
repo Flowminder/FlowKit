@@ -40,7 +40,7 @@ def set_password():
         raise InvalidUsage(
             "Missing new password.", payload={"bad_field": "newPassword"}
         )
-    print(
+    current_app.logger.debug(
         f"User {current_user.username} tried to change password from {old_pass} to {new_pass}"
     )
     if current_user.is_correct_password(old_pass):
@@ -187,7 +187,7 @@ def add_token(server):
     """
     server = Server.query.filter(Server.id == server).first_or_404()
     json = request.get_json()
-    print(json)
+    current_app.logger.debug(json)
     if "name" not in json:
         raise InvalidUsage("No name.", payload={"bad_field": "name"})
     expiry = datetime.datetime.strptime(json["expiry"], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -196,7 +196,7 @@ def add_token(server):
     if expiry > latest_lifetime:
         raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
     allowed_claims = current_user.allowed_claims(server)
-    print(allowed_claims)
+    current_app.logger.debug(allowed_claims)
     for claim, rights in json["claims"].items():
         if claim not in allowed_claims:
             raise Unauthorized(f"You do not have access to {claim} on {server.name}")

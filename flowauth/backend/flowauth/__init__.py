@@ -54,6 +54,9 @@ def create_app(test_config=None):
     # Initialise the database
     app.before_first_request(partial(init_db, force=app.config["RESET_DB"]))
 
+    # Set the log level
+    app.before_first_request(partial(app.logger.setLevel, app.config["LOG_LEVEL"]))
+
     if app.config["DEMO_MODE"]:  # Create demo data
         app.before_first_request(make_demodata)
     else:
@@ -98,10 +101,12 @@ def create_app(test_config=None):
         flask.session.modified = True
         flask.g.user = flask_login.current_user
         try:
-            print(f"Logged in user is {flask.g.user.username}:{flask.g.user.id}")
-            print(flask.session)
+            current_app.logger.debug(
+                f"Logged in user is {flask.g.user.username}:{flask.g.user.id}"
+            )
+            current_app.logger.debug(flask.session)
         except AttributeError:
-            print(f"User is not logged in.")
+            current_app.logger.debug(f"User is not logged in.")
 
     @login_manager.user_loader
     def load_user(userid):
