@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-describe("Login screen", function () {
+describe("Token generation", function () {
     Cypress.Cookies.debug(true);
 
     beforeEach(function () {
         // Log in and navigate to user details screen
         cy.login();
-        cy.visit("/");
+        cy.goto("/");
         cy.get("#servers").click();
     });
     it("Add token name with space", function () {

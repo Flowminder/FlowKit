@@ -10,6 +10,7 @@ omit =
     */_version.py
     */versioneer.py
     *__init__*
+    */setup.py
 
 exclude_lines =
     # Need to explicitly re-enable the standard pragma
