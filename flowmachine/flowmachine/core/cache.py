@@ -98,7 +98,12 @@ def write_query_to_cache(
     current_state, this_thread_is_owner = q_state_machine.execute()
     if this_thread_is_owner:
         logger.debug(f"In charge of executing '{query.md5}'.")
-        query_ddl_ops = ddl_ops_func(name, schema)
+        try:
+            query_ddl_ops = ddl_ops_func(name, schema)
+        except Exception as exc:
+            q_state_machine.raise_error()
+            logger.error(f"Error generating SQL. Error was {exc}")
+            raise exc
         logger.debug("Made SQL.")
         con = connection.engine
         with con.begin():
