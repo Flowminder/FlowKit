@@ -5,7 +5,7 @@
 describe("Login screen", function () {
 	beforeEach(function () {
 		// Go to login screen
-		cy.visit("/");
+		cy.goto("/");
 	});
 
 	it("Log in as a user", function () {
@@ -63,15 +63,15 @@ describe("Login screen", function () {
 
 	it("Render correct component according to login status", function () {
 		// Check that login screen renders initially
-		cy.visit("/");
+		cy.goto("/");
 		cy.contains("Sign in");
 		// Log in, reload, and check that dashboard renders
 		cy.login();
-		cy.visit("/");
+		cy.goto("/");
 		cy.contains("My Servers");
 		// Log out, reload, and check that login screen renders again
 		cy.request("/signout");
-		cy.visit("/");
+		cy.goto("/");
 		cy.contains("Sign in");
 	});
 });

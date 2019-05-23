@@ -73,8 +73,8 @@ class User(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
-    _password = db.Column(db.String(128), nullable=False)
+    username = db.Column(db.String(), unique=True, nullable=False)
+    _password = db.Column(db.String(), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     groups = db.relationship(
         "Group",
@@ -211,7 +211,7 @@ class Token(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)
+    name = db.Column(db.String(), nullable=False)
     _token = db.Column(db.Text, nullable=False)
     expires = db.Column(db.DateTime, nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
@@ -260,10 +260,10 @@ class Server(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), unique=True, nullable=False)
+    name = db.Column(db.String(), unique=True, nullable=False)
     latest_token_expiry = db.Column(db.DateTime, nullable=False)
     longest_token_life = db.Column(db.Integer, nullable=False)
-    _secret_key = db.Column(db.String(128), nullable=False)  # Encrypted in db
+    _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
     tokens = db.relationship(
         "Token", back_populates="server", cascade="all, delete, delete-orphan"
     )
@@ -399,7 +399,7 @@ class SpatialAggregationUnit(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128), unique=True, nullable=False)
+    name = db.Column(db.String(), unique=True, nullable=False)
     server_usages = db.relationship(
         "ServerCapability",
         secondary=spatial_capabilities,
@@ -424,7 +424,7 @@ class Capability(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128), unique=True, nullable=False)
+    name = db.Column(db.String(), unique=True, nullable=False)
     usages = db.relationship(
         "ServerCapability",
         back_populates="capability",
@@ -441,7 +441,7 @@ class Group(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(128), unique=True, nullable=False)
+    name = db.Column(db.String(), unique=True, nullable=False)
     user_group = db.Column(db.Boolean, default=False)
     server_token_limits = db.relationship(
         "GroupServerTokenLimits",
@@ -459,30 +459,73 @@ class Group(db.Model):
 
 
 @click.command("init-db")
+@click.option(
+    "--force/--no-force", default=False, help="Optionally wipe any existing data first."
+)
 @with_appcontext
-def init_db_command():  # pragma: no cover
-    """Clear existing data and create new tables."""
-    db.drop_all()
-    db.create_all()
+def init_db_command(force: bool):
+    init_db(force)
     click.echo("Initialized the database.")
+
+
+def init_db(force: bool = False) -> None:
+    """
+    Initialise the database, optionally wipe any existing one first.
+
+    Parameters
+    ----------
+    force : bool
+        If set to true, wipes any existing database.
+    Returns
+    -------
+    None
+    """
+    if force:
+        db.drop_all()
+    db.create_all()
 
 
 @click.command("add-admin")
 @click.argument("username", envvar="ADMIN_USER")
 @click.argument("password", envvar="ADMIN_PASSWORD")
 @with_appcontext
-def add_admin(username, password):  # pragma: no cover
-    """Add an administrator account."""
-    u = User(username=username, password=password, is_admin=True)
-    ug = Group(name=username, user_group=True)
-    ug.members.append(u)
-    db.session.add(u)
-    db.session.add(ug)
-    db.session.commit()
+def add_admin_command(username, password):
+    add_admin(username, password)
     click.echo(f"Added {username} as an admin.")
 
 
-def make_demodata():  # pragma: no cover
+def add_admin(username: str, password: str) -> None:
+    """
+    Add an administrator, or reset their password if they already exist.
+
+    Parameters
+    ----------
+    username : str
+        Username for the admin
+    password : str
+        Password for the admin
+
+    Returns
+    -------
+    None
+
+    """
+    u = User.query.filter(User.username == username).first()
+    if u is None:
+        u = User(username=username, password=password, is_admin=True)
+        ug = Group(name=username, user_group=True)
+        ug.members.append(u)
+        db.session.add(ug)
+    else:
+        u.password = password
+        u.is_admin = True
+
+    db.session.add(u)
+
+    db.session.commit()
+
+
+def make_demodata():
     """
     Generate some demo data.
     """
@@ -574,6 +617,6 @@ def make_demodata():  # pragma: no cover
 
 @click.command("demodata")
 @with_appcontext
-def demodata():  # pragma: no cover
+def demodata():
     make_demodata()
     click.echo("Made demo data.")
