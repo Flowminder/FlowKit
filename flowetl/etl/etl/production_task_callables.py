@@ -52,7 +52,7 @@ def render_and_run_sql__callable(
     if fixed_sql:
         # for clean and load the sql used will always be the same
         # so here we just read that fixed file...
-        pass
+        template_path = config_path / f"fixed_sql/{template_name}.sql"
     else:
         # dag_run.conf["template_path"] -> where the sql templates
         # for this dag run live. Determined by the type of the CDR
@@ -64,13 +64,14 @@ def render_and_run_sql__callable(
         # in. If this is the transform task then it will be 'transform'
         # and thus the template we use will be 'etl/voice/transform.sql'
         template_path = template_path / f"{template_name}.sql"
-        template = open(template_path).read()
 
-        # make use of the operator's templating functionality
-        sql = task.render_template("", template, dag_run.conf)
+    template = open(template_path).read()
 
-        # run the templated sql against DB
-        db_hook.run(sql=sql)
+    # make use of the operator's templating functionality
+    sql = task.render_template("", template, dag_run.conf)
+
+    # run the templated sql against DB
+    db_hook.run(sql=sql)
 
 
 # pylint: disable=unused-argument
