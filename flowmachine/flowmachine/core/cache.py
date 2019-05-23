@@ -247,9 +247,9 @@ def reset_cache(
     # they point to a cache table and hence are a duplicate of a Query entry which
     # will also point to that table.
 
-    qry = f"SELECT tablename FROM cache.cached WHERE schema='cache'"
-    tables = connection.fetch(qry)
     with connection.engine.begin() as trans:
+        qry = f"SELECT tablename FROM cache.cached WHERE schema='cache'"
+        tables = trans.execute(qry).fetchall()
 
         trans.execute("SELECT setval('cache.cache_touches', 1)")
         for table in tables:
