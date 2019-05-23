@@ -125,7 +125,7 @@ Contributor:
     Contributions with other software (except as part of its Contributor
     Version); or
 
-(c) under Patent Claims infringed by Covered Software in the absence of
+&#40;c) under Patent Claims infringed by Covered Software in the absence of
     its Contributions.
 
 This License does not grant any rights in the trademarks, service marks,

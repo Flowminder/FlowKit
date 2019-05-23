@@ -3,42 +3,60 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+set -eu
+set -o pipefail
+
+# Ensure this docker node is in swarm mode
+docker swarm init || true
 
 
-
-docker swarm init
 # Remove existing stack deployment
 echo "Removing existing secrets_test_stack"
 docker stack rm secrets_test
+
 # Wait for 'docker stack rm' to finish (see https://github.com/moby/moby/issues/30942)
-limit=15
+limit=30
 until [ -z "$(docker service ls --filter label=com.docker.stack.namespace=secrets_test -q)" ] || [ "$limit" -lt 0 ]; do
   sleep 2
   limit="$((limit-1))"
 done
+if [ "$limit" -lt 0 ]; then
+    echo "Not all services in the existing docker stack have been removed."
+    echo "Please wait (or try to remove them manually) and run this script again."
+    exit 1
+fi
 
-limit=15
+limit=30
 until [ -z "$(docker network ls --filter label=com.docker.stack.namespace=secrets_test -q)" ] || [ "$limit" -lt 0 ]; do
   sleep 2
   limit="$((limit-1))"
 done
+if [ "$limit" -lt 0 ]; then
+    echo "Not all networks in the existing docker stack have been removed."
+    echo "Please wait (or try to remove them manually) and run this script again."
+    exit 1
+fi
+
 
 # Remove existing secrets
 echo "Removing existing secrets"
-docker secret rm FLOWMACHINE_FLOWDB_PASSWORD
-docker secret rm FLOWMACHINE_FLOWDB_USER
-docker secret rm FLOWAPI_FLOWDB_PASSWORD
-docker secret rm FLOWAPI_FLOWDB_USER
-docker secret rm FLOWDB_POSTGRES_PASSWORD
-docker secret rm cert-flowkit.pem
-docker secret rm PRIVATE_JWT_SIGNING_KEY
-docker secret rm PUBLIC_JWT_SIGNING_KEY
-docker secret rm FLOWAUTH_FERNET_KEY
-docker secret rm REDIS_PASSWORD
-docker secret rm FLOWAPI_IDENTIFIER
-docker secret rm FLOWAUTH_ADMIN_USERNAME
-docker secret rm FLOWAUTH_ADMIN_PASSWORD
-docker secret rm FLOWAUTH_DB_PASSWORD
+
+docker secret rm FLOWMACHINE_FLOWDB_PASSWORD || true
+docker secret rm FLOWMACHINE_FLOWDB_USER || true
+docker secret rm FLOWAPI_FLOWDB_PASSWORD || true
+docker secret rm FLOWAPI_FLOWDB_USER || true
+docker secret rm FLOWDB_POSTGRES_PASSWORD || true
+docker secret rm cert-flowkit.pem || true
+docker secret rm JWT_SECRET_KEY || true
+docker secret rm REDIS_PASSWORD || true
+docker secret rm FLOWAPI_IDENTIFIER || true
+docker secret rm FLOWAUTH_ADMIN_USERNAME || true
+docker secret rm FLOWAUTH_ADMIN_PASSWORD || true
+docker secret rm FLOWAUTH_DB_PASSWORD || true
+docker secret rm PRIVATE_JWT_SIGNING_KEY || true
+docker secret rm PUBLIC_JWT_SIGNING_KEY || true
+
+# Add new secrets
 
 echo "Adding secrets"
 # Flowauth
@@ -66,11 +84,21 @@ docker secret create PUBLIC_JWT_SIGNING_KEY tokens-public-key.pub
 echo "flowapi_server" | docker secret create FLOWAPI_IDENTIFIER -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
     -extensions SAN \
-    -config <( cat $( [[ "Darwin" -eq "$(uname -s)" ]]  && echo /System/Library/OpenSSL/openssl.cnf || echo /etc/ssl/openssl.cnf  ) \
+    -config <( \
+        cat $(   ( [[ -e /System/Library/OpenSSL/openssl.cnf ]] && echo "/System/Library/OpenSSL/openssl.cnf" ) \
+              || ( [[ -e /etc/ssl/openssl.cnf ]] && echo "/etc/ssl/openssl.cnf" ) \
+              || ( [[ -e /etc/pki/tls/openssl.cnf ]] && echo "/etc/pki/tls/openssl.cnf" ) ) \
     <(printf "[SAN]\nsubjectAltName='DNS.1:localhost,DNS.2:flow.api'")) \
     -keyout cert.key -out cert.pem
+if ! ( [ -e cert.key ] && [ -e cert.pem ] ); then
+    echo "Generation of the SSL certificate failed."
+    echo "Please the check the command (in particular the path to the openssl.cnf file) and try again."
+    exit
+fi
 cat cert.key cert.pem > cert-flowkit.pem
 docker secret create cert-flowkit.pem cert-flowkit.pem
+
+# Deploy the stack
 
 echo "Deploying stack"
 docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test

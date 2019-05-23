@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from collections import namedtuple
 
 import datetime
 import pytest
@@ -19,6 +20,9 @@ from flowauth import (
     SpatialAggregationUnit,
 )
 
+TestUser = namedtuple("TestUser", ["id", "username", "password"])
+TestGroup = namedtuple("TestGroup", ["id", "name"])
+
 
 @pytest.fixture
 def app(tmpdir):
@@ -26,10 +30,16 @@ def app(tmpdir):
     db_path = tmpdir / "db.db"
 
     app = create_app(
-        {"TESTING": True, "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}"}
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}",
+            "FLOWAUTH_ADMIN_USERNAME": "TEST_ADMIN",
+            "FLOWAUTH_ADMIN_PASSWORD": "DUMMY_PASSWORD",
+            "DEMO_MODE": False,
+        }
     )
     with app.app_context():
-        db.create_all()
+        app.test_client().get("/")
     yield app
 
 
@@ -63,46 +73,37 @@ def test_user(app):
         db.session.add(user)
         db.session.add(ug)
         db.session.commit()
-        return user.id, user.username, "TEST_USER_PASSWORD"
+        return TestUser(user.id, user.username, "TEST_USER_PASSWORD")
 
 
 @pytest.fixture
 def test_admin(app):
     with app.app_context():
-        user = User(
-            username="TEST_ADMIN", password="TEST_ADMIN_PASSWORD", is_admin=True
-        )
-        ug = Group(name="TEST_ADMIN", user_group=True, members=[user])
-        db.session.add(user)
-        db.session.add(ug)
-        db.session.commit()
-        return user.id, user.username, "TEST_ADMIN_PASSWORD"
+        user = User.query.filter(User.username == app.config["ADMIN_USER"]).first()
+
+        return TestUser(user.id, user.username, app.config["ADMIN_PASSWORD"])
 
 
 @pytest.fixture
-def test_data(app):
+def test_group(app):
+    with app.app_context():
+        group = Group(name="TEST_GROUP")
+        db.session.add(group)
+        db.session.commit()
+        return TestGroup(group.id, group.name)
+
+
+@pytest.fixture
+def test_data(app, test_admin, test_user, test_group):
     with app.app_context():
         agg_units = [SpatialAggregationUnit(name=f"admin{x}") for x in range(4)]
         db.session.add_all(agg_units)
-        users = [
-            User(username="TEST_USER", password="DUMMY_PASSWORD"),
-            User(username="TEST_ADMIN", is_admin=True),
-        ]
-        for user in users:
-            user.password = "DUMMY_PASSWORD"
 
+        test_group = Group.query.filter(Group.id == test_group.id).first()
         # Each user is also a group
-        groups = [
-            Group(name="TEST_USER", user_group=True),
-            Group(name="TEST_ADMIN", user_group=True),
-            Group(name="TEST_GROUP"),
-        ]
-        groups[0].members.append(users[0])
-        groups[1].members.append(users[1])
-        for user in users:
-            groups[2].members.append(user)
-        for x in users + groups:
-            db.session.add(x)
+        for user in User.query.all():
+            test_group.members.append(user)
+        db.session.add(test_group)
         # Add some things that you can do
         caps = []
         for c in ("DUMMY_ROUTE_A", "DUMMY_ROUTE_B"):
@@ -141,11 +142,11 @@ def test_data(app):
             db.session.add(sc)
         # Give test user group permissions on Haiti
         for sc in dummy_server_a.capabilities:
-            gsp = GroupServerPermission(group=groups[0], server_capability=sc)
+            gsp = GroupServerPermission(group=test_group, server_capability=sc)
             db.session.add(gsp)
         db.session.add(
             GroupServerTokenLimits(
-                group=groups[0],
+                group=test_group,
                 longest_life=2,
                 latest_end=datetime.datetime(2020, 1, 1),
                 server=dummy_server_a,
@@ -158,7 +159,7 @@ def test_data(app):
             name="DUMMY_TOKEN",
             token="DUMMY_TOKEN_STRING",
             expires=datetime.datetime(2019, 1, 1),
-            owner=users[1],
+            owner=User.query.all()[0],
             server=dummy_server_b,
         )
         db.session.add(t)
@@ -166,7 +167,7 @@ def test_data(app):
 
 
 @pytest.fixture
-def test_data_with_access_rights(app, test_data):
+def test_data_with_access_rights(app, test_data, test_group):
     with app.app_context():
         dl_capability = Capability.query.filter(
             Capability.name == "DUMMY_ROUTE_A"
@@ -176,6 +177,7 @@ def test_data_with_access_rights(app, test_data):
         ).first()
         gsp = GroupServerPermission.query.filter(
             GroupServerPermission.server_capability == sc
+            and GroupServerPermission.group_id == test_group.id
         ).first()
         admin0_agg_unit = SpatialAggregationUnit.query.filter(
             SpatialAggregationUnit.name == "admin0"

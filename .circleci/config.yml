@@ -231,6 +231,7 @@ jobs:
           command: |
             while [ ! -f ".synthetic-data-build-done" ] || [ ! -f ".oracle-build-done" ] || [ ! -f ".testdata-build-done" ]; do
               echo "Waiting for docker image builds to complete"
+              sleep 5
             done
       - run:
           name: Test that a data generator must be set for synth data
@@ -424,6 +425,10 @@ jobs:
       FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
       FLOWAPI_IDENTIFIER: TEST_SERVER
+      FLOWAUTH_ADMIN_PASSWORD: DUMMY_PASSWORD
+      FLOWAUTH_ADMIN_USERNAME: TEST_ADMIN
+      SECRET_KEY: secret
+      FLOWAUTH_LOG_LEVEL: debug
     working_directory: /home/circleci/project/flowauth
     steps:
       - checkout:
@@ -438,40 +443,37 @@ jobs:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash) -F flowauth_unit_tests
 
-  run_flowauth_frontend_tests:
+  run_flowauth_end_to_end_tests:
     docker:
-      - image: circleci/python:3.6
+      - image: cypress/base:8
+      - image: flowminder/flowauth:$CIRCLE_SHA1
+        environment:
+          DB_URI: postgres://flowauth:flowauth@localhost:5432/flowauth
+          DEMO_MODE: true
+          <<: *flowauth_env
+      - image: postgres
+        environment:
+          POSTGRES_USER: flowauth
+          POSTGRES_PASSWORD: flowauth
+          POSTGRES_DB: flowauth
     environment:
-      *flowauth_env
-    working_directory: /home/circleci/project/flowauth
+      CYPRESS_baseUrl: http://localhost:80
+      <<: *flowauth_env
+    working_directory: /home/circleci/project/flowauth/frontend
     steps:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: Install cypress dependencies
-          command: sudo apt-get install -y xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
-      - restore_cache:
-          key: flowkit-flowauth-frontend-deps2-{{ checksum "Pipfile.lock" }}-{{ checksum "frontend/package-lock.json" }}
-      - run:
-          name: Install NPM
-          command: |
-            curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-      - run:
           name: Cypress setup
+          command: npm ci
+      - run:
+          name: Wait for backing db
           command: |
-            cd frontend
-            npm ci
-            npm run cy:verify
-      - run: pipenv install --deploy --dev
-      - save_cache:
-          key: flowkit-flowauth-frontend-deps2-{{ checksum "Pipfile.lock" }}-{{ checksum "frontend/package-lock.json" }}
-          paths:
-            - /home/circleci/.local/share/virtualenvs/
-            - /home/circleci/project/flowauth/frontend/node_modules
+            npm install -g wait-on
+            wait-on tcp:localhost:5432 -t 300000
       - run:
           name: Run Cypress end-to-end tests
-          command: pipenv run test-frontend-with-record --reporter junit --reporter-options "mochaFile=../results/flowauth-frontend.[hash].xml"
+          command: $(npm bin)/cypress run --record --reporter junit --reporter-options "mochaFile=results/flowauth-frontend.[hash].xml"
       - store_test_results:
           path: results
       - store_artifacts:
@@ -779,8 +781,6 @@ workflows:
           <<: *run_always_org_context
       - run_flowauth_backend_tests:
           <<: *run_always_org_context
-      - run_flowauth_frontend_tests:
-          <<: *run_always_org_context
       - lint:
           requires:
             - install_flowmachine_deps
@@ -832,6 +832,10 @@ workflows:
           name: build_flowapi
           component: flowapi
           component_path: flowapi
+          <<: *run_always_org_context
+      - run_flowauth_end_to_end_tests:
+          requires:
+            - build_flowauth
           <<: *run_always_org_context
       - run_flowetl_tests:
           requires:
@@ -889,7 +893,7 @@ workflows:
             - build_docs
             - run_flowkit_api_tests
             - run_flowauth_backend_tests
-            - run_flowauth_frontend_tests
+            - run_flowauth_end_to_end_tests
             - run_flowclient_tests
             - run_flowetl_tests
             - synth_data_python_generator_tests
