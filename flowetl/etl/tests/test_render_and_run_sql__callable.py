@@ -72,7 +72,11 @@ def test_render_and_run_sql__callable(tmpdir, create_fake_dag_run):
 
 
 def test_render_and_run_sql__callable_with_fixed_sql(tmpdir, create_fake_dag_run):
-
+    """
+    Test that the render sql callable, when fixed_sql=True, is able to
+    construct the correct sql from a template in the correct
+    location and issues this sql to the db_hook run command.
+    """
     config_dir = tmpdir.mkdir("config")
     fixed_sql_dir = config_dir.mkdir("fixed_sql")
 
