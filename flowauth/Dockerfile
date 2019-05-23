@@ -16,7 +16,8 @@ COPY Pipfile.lock .
 RUN apk update && apk add --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
     libressl-dev libffi-dev && \
     pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
-    apk del build-dependencies
+    apk del build-dependencies && \
+    apk add libpq # Required for psycopg2
 ENV STATIC_PATH /app/static
 ENV STATIC_INDEX 1
 ENV FLASK_APP flowauth

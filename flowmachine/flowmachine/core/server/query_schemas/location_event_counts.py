@@ -65,6 +65,7 @@ class LocationEventCountsExposed(BaseExposedQuery):
         return TotalLocationEvents(
             start=self.start_date,
             stop=self.end_date,
+            interval=self.interval,
             direction=self.direction,
             table=self.event_types,
             level=self.aggregation_unit,

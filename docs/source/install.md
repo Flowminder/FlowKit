@@ -33,7 +33,7 @@ The bulk of the installation process consists of using [Docker Compose](https://
 
 These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pipenv](https://github.com/pypa/pipenv). If you are using [Anaconda](https://www.anaconda.com/what-is-anaconda/)-based installation commands may be different.
 
-Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the DockerCloud repositories [flowminder/flowapi](http://https://hub.docker.com/r/flowminder/flowapi), [flowminder/flowmachine](http://https://hub.docker.com/r/flowminder/flowmachine), [flowminder/flowdb](http://https://hub.docker.com/r/flowminder/flowdb), [flowminder/flowauth](http://https://hub.docker.com/r/flowminder/flowauth), and [flowminder/flowkit-examples](http://https://hub.docker.com/r/flowminder/flowkit-examples) respectively. To install them, you will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the DockerCloud repositories [flowminder/flowapi](https://hub.docker.com/r/flowminder/flowapi), [flowminder/flowmachine](https://hub.docker.com/r/flowminder/flowmachine), [flowminder/flowdb](https://hub.docker.com/r/flowminder/flowdb), [flowminder/flowauth](https://hub.docker.com/r/flowminder/flowauth), and [flowminder/flowkit-examples](https://hub.docker.com/r/flowminder/flowkit-examples) respectively. To install them, you will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 Start the FlowKit test system by running 
 
@@ -157,7 +157,7 @@ pipenv install --dev
 pipenv run pytest
 ```
 
-Also see [Setting up a development environment](dev_environment_setup.md) for further details on setting up FlowKit for code development.
+Also see [Setting up a development environment](developer/dev_environment_setup.md) for further details on setting up FlowKit for code development.
 
 
  <a name="prodinstall">
@@ -171,13 +171,11 @@ Contact Flowminder on [flowkit@flowminder.org](mailto:flowkit@flowminder.org) fo
 
 FlowAuth is designed to be deployed as a single Docker container working in cooperation with a database and, typically, an ssl reverse proxy (e.g. [nginx-proxy](https://github.com/jwilder/nginx-proxy) combined with [letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion)).
 
-FlowAuth supports any database supported by [SQLAlchemy](https://sqlache.me), and to connect you will only need to supply a correct URI for the database either using the `DB_URI` environment variable, or by setting the `DB_URI` secret. If `DB_URI` is not set, a temporary sqlite database will be created.
+FlowAuth supports any database supported by [SQLAlchemy](https://sqlalche.me), and to connect you will only need to supply a correct URI for the database either using the `DB_URI` environment variable, or by setting the `DB_URI` secret. If `DB_URI` is not set, a temporary sqlite database will be created.
 
-On first use, you will need to create the necessary tables and an administrator account. 
+FlowAuth will attempt to create all necessary tables when first accessed, but will not overwrite any existing tables. To wipe any existing data, you can either set the `RESET_FLOWAUTH_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
 
-To initialise the tables, you can either set the `INIT_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
-
-To create an initial administrator, use the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables or set them as secrets. Alternatively, you may run `flask add-admin <username> <password>` from inside the container. You can combine these environment variables with the `INIT_DB` environment variable.
+FlowAuth requires you to create at least one admin user by setting the `FLOWAUTH_ADMIN_USER` and `FLOWAUTH_ADMIN_PASSWORD` environment variables or providing them as secrets. You can combine these environment variables with the `INIT_DB` environment variable.
 
 You _must_ also provide two additional environment variables or secrets: `FLOWAUTH_FERNET_KEY`, and `SECRET_KEY`. `FLOWAUTH_FERNET_KEY` is used to encrypt server secret keys, and tokens while 'at rest' in the database, and decrypt them for use. `SECRET_KEY` is used to secure session, and CSRF protection cookies.
 
@@ -190,7 +188,7 @@ While `SECRET_KEY` can be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be 
 
 The standard Docker compose file supplies a number of 'secret' values as environment variables. Typically, this is a bad idea.
 
-Instead, you should make use of [docker secrets](https://docs.docker.com/engine/swarm/secrets/), which are stored securely in docker and only made available _inside_ containers.  The `secrets_quickstart` directory contains a [docker _stack_](https://docs.docker.com/docker-cloud/apps/stack-yaml-reference/) file (`docker-stack.yml`). The stack file is very similar to a compose file, but removes container names, and adds a new section - secrets.
+Instead, you should make use of [docker secrets](https://docs.docker.com/engine/swarm/secrets/), which are stored securely in docker and only made available _inside_ containers.  The `secrets_quickstart` directory contains a docker _stack_ file (`docker-stack.yml`). The stack file is very similar to a compose file, but removes container names, and adds a new section - [secrets](https://docs.docker.com/compose/compose-file/#secrets-configuration-reference).
 
 The stack expects you to provide eight secrets:
 
@@ -264,38 +262,49 @@ conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certifi
 #### Secrets Quickstart
 
 ```bash
-docker login
-docker swarm init
+# Ensure this docker node is in swarm mode
+docker swarm init || true
+
 # Remove existing stack deployment
 echo "Removing existing secrets_test_stack"
 docker stack rm secrets_test
+
 # Wait for 'docker stack rm' to finish (see https://github.com/moby/moby/issues/30942)
-limit=15
+limit=30
 until [ -z "$(docker service ls --filter label=com.docker.stack.namespace=secrets_test -q)" ] || [ "$limit" -lt 0 ]; do
   sleep 2
   limit="$((limit-1))"
 done
-
-limit=15
+if [ "$limit" -lt 0 ]; then
+    echo "Not all services in the existing docker stack have been removed."
+    echo "Please wait (or try to remove them manually) and run this command again."
+fi
+limit=30
 until [ -z "$(docker network ls --filter label=com.docker.stack.namespace=secrets_test -q)" ] || [ "$limit" -lt 0 ]; do
   sleep 2
   limit="$((limit-1))"
 done
+if [ "$limit" -lt 0 ]; then
+    echo "Not all networks in the existing docker stack have been removed."
+    echo "Please wait (or try to remove them manually) and run this command again."
+fi
 
 # Remove existing secrets
 echo "Removing existing secrets"
-docker secret rm FLOWMACHINE_FLOWDB_PASSWORD
-docker secret rm FLOWMACHINE_FLOWDB_USER
-docker secret rm FLOWAPI_FLOWDB_PASSWORD
-docker secret rm FLOWAPI_FLOWDB_USER
-docker secret rm POSTGRES_PASSWORD
-docker secret rm cert-flowkit.pem
-docker secret rm JWT_SECRET_KEY
-docker secret rm REDIS_PASSWORD
-docker secret rm FLOWAPI_IDENTIFIER
+docker secret rm FLOWMACHINE_FLOWDB_PASSWORD || true
+docker secret rm FLOWMACHINE_FLOWDB_USER || true
+docker secret rm FLOWAPI_FLOWDB_PASSWORD || true
+docker secret rm FLOWAPI_FLOWDB_USER || true
+docker secret rm POSTGRES_PASSWORD || true
+docker secret rm cert-flowkit.pem || true
+docker secret rm JWT_SECRET_KEY || true
+docker secret rm REDIS_PASSWORD || true
+docker secret rm FLOWAPI_IDENTIFIER || true
+
 echo "Adding secrets"
-openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
+openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' \
+    | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAPI_FLOWDB_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create POSTGRES_PASSWORD -
@@ -303,12 +312,20 @@ openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create REDIS_PASS
 echo "flowapi_server" | docker secret create FLOWAPI_IDENTIFIER -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
     -extensions SAN \
-    -config <( cat $( [[ "Darwin" -eq "$(uname -s)" ]]  && echo /System/Library/OpenSSL/openssl.cnf || echo /etc/ssl/openssl.cnf  ) \
+    -config <( \
+        cat $(   ( [[ -e /System/Library/OpenSSL/openssl.cnf ]] \
+                   && echo "/System/Library/OpenSSL/openssl.cnf" ) \
+              || ( [[ -e /etc/ssl/openssl.cnf ]] \
+                   && echo "/etc/ssl/openssl.cnf" ) \
+              || ( [[ -e /etc/pki/tls/openssl.cnf ]] \
+                   && echo "/etc/pki/tls/openssl.cnf" ) ) \
     <(printf "[SAN]\nsubjectAltName='DNS.1:localhost,DNS.2:flow.api'")) \
     -keyout cert.key -out cert.pem
+# NOTE: make sure that the previous command generated _both_ files cert.key and cert.pem
 cat cert.key cert.pem > cert-flowkit.pem
 docker secret create cert-flowkit.pem cert-flowkit.pem
 echo "secret" | docker secret create JWT_SECRET_KEY -
+
 echo "Deploying stack"
 docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
 ```

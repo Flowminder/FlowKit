@@ -38,9 +38,9 @@ nav:
   - license.md
   - Worked examples:
       - worked_examples/index.md
-      - worked_examples/Flows.ipynb
-      - worked_examples/mobile-data-usage.ipynb
+      - worked_examples/flows-above-normal.ipynb
       - worked_examples/commuting-patterns.ipynb
+      - worked_examples/mobile-data-usage.ipynb
   - FlowAPI specification: api-spec.html
   - api-docs-flowmachine
   - FlowClient:

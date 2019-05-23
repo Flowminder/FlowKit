@@ -112,16 +112,51 @@ class Query(metaclass=ABCMeta):
             self._md5 = md5(str(hashes).encode()).hexdigest()
             return self._md5
 
+    query_id = md5  # alias which is more meaningful to users than 'md5'
+
     @abstractmethod
     def _make_query(self):
 
         raise NotImplementedError
 
     def __repr__(self):
+        # Default representation, derived classes might want to add something more specific
+        return format(self, "query_id")
 
-        # Default representation, derived classes might want to
-        # add something more specific
-        return f"<Query of type: {self.__class__.__name__}, query_id: '{self.md5}'>"
+    def __format__(self, fmt=""):
+        """
+        Return a formatted string representation of this query object.
+
+        Parameters
+        ----------
+        fmt : str, optional
+            This should be the empty string or a comma-separated list of
+            query attributes that will be included in the formatted string.
+
+        Examples
+        --------
+
+        >>> dl = daily_location(date="2016-01-01", method="last")
+        >>> format(dl)
+        <Query of type: LastLocation>
+        >>> format(dl, "query_id,is_stored")
+        <Query of type: LastLocation, query_id: 'd9537c9bc11580f868e3fc372dafdb94', is_stored: True>
+        >>> print(f"{dl:is_stored,query_state}")
+        <Query of type: LastLocation, is_stored: True, query_state: <QueryState.COMPLETED: 'completed'>
+        """
+        query_descr = f"Query of type: {self.__class__.__name__}"
+        attrs_to_include = [] if fmt == "" else fmt.split(",")
+        attr_descriptions = []
+        for attr in attrs_to_include:
+            try:
+                attr_descriptions.append(f"{attr}: {getattr(self, attr)!r}")
+            except AttributeError:
+                raise ValueError(
+                    f"Format string contains invalid query attribute: '{attr}'"
+                )
+
+        all_descriptions = [query_descr] + attr_descriptions
+        return f"<{', '.join(all_descriptions)}>"
 
     def __iter__(self):
         con = self.connection.engine

@@ -30,7 +30,7 @@ brief summary given our context.
 - Cons: same as `pip`
 
 
-(c) [conda](https://conda.io/miniconda.html)
+&#40;c) [conda](https://conda.io/miniconda.html)
 
 - Pros: supports packaging of non-Python dependencies (e.g. third-party libraries), which is advantageous if the user doesn't have full control over the system (e.g. installation in a non-admin environment)
 - Cons: introduces a third-party dependency; not always clear which conda channels provide which packages

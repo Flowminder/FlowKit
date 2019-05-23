@@ -11,6 +11,7 @@ import datetime
 import networkx as nx
 import structlog
 import sys
+from io import BytesIO
 from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
@@ -379,7 +380,7 @@ def sort_recursively(d):
         return d
 
 
-def print_dependency_tree(query_obj, stream=None, indent_level=0):
+def print_dependency_tree(query_obj, show_stored=False, stream=None, indent_level=0):
     """
     Print the dependencies of a flowmachine query in a tree-like structure.
 
@@ -387,6 +388,8 @@ def print_dependency_tree(query_obj, stream=None, indent_level=0):
     ----------
     query_obj : Query
         An instance of a query object.
+    show_stored : bool, optional
+        If True, show for each query whether it is stored or not. Default: False.
     stream : io.IOBase, optional
         The stream to which the output should be written (default: stdout).
     indent_level : int
@@ -398,10 +401,13 @@ def print_dependency_tree(query_obj, stream=None, indent_level=0):
     indent_per_level = 3
     indent = " " * (indent_per_level * indent_level - 1)
     prefix = "" if indent_level == 0 else "- "
-    stream.write(f"{indent}{prefix}{query_obj}\n")
+    fmt = "query_id" if not show_stored else "query_id,is_stored"
+    stream.write(f"{indent}{prefix}{query_obj:{fmt}}\n")
     deps_sorted_by_query_id = sorted(query_obj.dependencies, key=lambda q: q.md5)
     for dep in deps_sorted_by_query_id:
-        print_dependency_tree(dep, indent_level=indent_level + 1, stream=stream)
+        print_dependency_tree(
+            dep, indent_level=indent_level + 1, stream=stream, show_stored=show_stored
+        )
 
 
 def _get_query_attrs_for_dependency_graph(query_obj, analyse=False):
@@ -434,11 +440,13 @@ def _get_query_attrs_for_dependency_graph(query_obj, analyse=False):
 
 def calculate_dependency_graph(query_obj, analyse=False):
     """
-    Produce a graph of all the queries that go into producing this
-    one, with their estimated run costs, and whether they are stored
-    as node attributes.
+    Produce a graph of all the queries that go into producing this one, with their estimated
+    run costs, and whether they are stored as node attributes.
 
-    The resulting networkx object can then be visualised, or analysed.
+    The resulting networkx object can then be visualised, or analysed. When visualised,
+    nodes corresponding to stored queries will be rendered green. See the function
+    `plot_dependency_graph()` for a convenient way of plotting a dependency graph directly
+    for visualisation in a Jupyter notebook.
 
     The dependency graph includes the estimated cost of the query in the 'cost' attribute,
     the query object the node represents in the 'query_object' attribute, and with the analyse
@@ -458,23 +466,8 @@ def calculate_dependency_graph(query_obj, analyse=False):
     Examples
     --------
 
-    A useful way to visualise the dependency graph in a Jupyter notebook is to
-    export it to an SVG string and display it directly in the notebook:
-
-    >>> import flowmachine
-    >>> from flowmachine.features import daily_location
-    >>> from flowmachine.utils import calculate_dependency_graph
-    >>> from io import BytesIO
-    >>> flowmachine.connect(flowdb_user="flowdb", flowdb_password="flowflow", redis_password="fm_redis")
-    >>> dl = daily_location(date="2016-01-01")
-    >>> G = calculate_dependency_graph(dl, analyse=True)
-    >>> A = nx.nx_agraph.to_agraph(G)
-    >>> svg_str = BytesIO()
-    >>> A.draw(svg_str, format="svg", prog="dot")
-    >>> svg_str = svg_str.getvalue().decode("utf8")
-    >>> SVG(svg_str)  # within a Jupyter notebook this will be displayed as a graph
-
-    Alternatively, you can export the dependency graph to a .dot file as follows:
+    If you don't want to visualise the dependency graph directly (for example
+    using `plot_dependency_graph()`, you can export it to a .dot file as follows:
 
     >>> import flowmachine
     >>> from flowmachine.features import daily_location
@@ -513,12 +506,12 @@ def calculate_dependency_graph(query_obj, analyse=False):
     for n in set(y):
         attrs = _get_query_attrs_for_dependency_graph(n, analyse=analyse)
         attrs["shape"] = "rect"
-        attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
         attrs["query_object"] = n
+        attrs["label"] = f"{attrs['name']}. Cost: {attrs['cost']}"
         if analyse:
             attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
         if attrs["stored"]:
-            attrs["fillcolor"] = "green"
+            attrs["fillcolor"] = "#b3de69"  # light green
             attrs["style"] = "filled"
         g.add_node(f"x{n.md5}", **attrs)
 
@@ -527,3 +520,54 @@ def calculate_dependency_graph(query_obj, analyse=False):
             g.add_edge(*[f"x{z.md5}" for z in (x, y)])
 
     return g
+
+
+def plot_dependency_graph(
+    query_obj, analyse=False, format="png", width=None, height=None
+):
+    """
+    Plot a graph of all the queries that go into producing this one (see `calculate_dependency_graph`
+    for more details). This returns an IPython.display object which can be directly displayed in
+    Jupyter notebooks.
+
+    Note that this requires the IPython and pygraphviz packages to be installed.
+
+    Parameters
+    ----------
+    query_obj : Query
+        Query object to plot a dependency graph for.
+    analyse : bool
+        Set to True to get actual runtimes for queries. Note that this will actually run the query!
+    format : {"png", "svg"}
+        Output format of the resulting
+    width : int
+        Width in pixels to which to constrain the image. Note this is only supported for format="png".
+    height : int
+        Height in pixels to which to constrain the image. Note this is only supported for format="png".
+
+    Returns
+    -------
+    IPython.display.Image or IPython.display.SVG
+    """
+    try:
+        from IPython.display import Image, SVG
+    except ImportError:
+        raise ImportError("requires IPython ", "https://ipython.org/")
+
+    G = calculate_dependency_graph(query_obj, analyse=analyse)
+    A = nx.nx_agraph.to_agraph(G)
+    s = BytesIO()
+    A.draw(s, format=format, prog="dot")
+
+    if format == "png":
+        result = Image(s.getvalue(), width=width, height=height)
+    elif format == "svg":
+        if width is not None or height is not None:  # pragma: no cover
+            logger.warning(
+                "The arguments 'width' and 'height' are not supported with format='svg'."
+            )
+        result = SVG(s.getvalue().decode("utf8"))
+    else:
+        raise ValueError(f"Unsupported output format: '{format}'")
+
+    return result

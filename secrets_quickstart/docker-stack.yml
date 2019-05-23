@@ -73,8 +73,11 @@ services:
           - "9090:9090"
         environment:
             - FLOWMACHINE_HOST=flowmachine
-            - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:-error}
+            - FLOWMACHINE_PORT=5555
             - FLOWDB_HOST=flowdb
+            - FLOWDB_PORT=5432
+            - FLOWAPI_FLOWDB_USER=flowapi
+            - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:-error}
         secrets:
           - cert-flowkit.pem
           - JWT_SECRET_KEY

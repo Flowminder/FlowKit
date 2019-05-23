@@ -2,7 +2,7 @@ Title: Administrator
 
 # Administration Tools
 
-This section contains information on managing the [cache](#caching) and [log files](#logging) relevant to system administrators.
+This section contains information on managing the [cache](#caching) and [log files](#logging-and-audit-trails) relevant to system administrators.
 
 <a name="caching">
 ## Caching in FlowKit
