@@ -64,6 +64,7 @@ def test_init_db_force(app):
             add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTATOR_PASSWORD"]
         )
         assert len(User.query.all()) > 0
+        app.config["DB_IS_SET_UP"].clear()
         result = runner.invoke(init_db_command, ["--force"])
         assert len(User.query.all()) == 0
 
@@ -74,6 +75,7 @@ def test_demo_data(app):
     """
     with app.app_context():
         runner = app.test_cli_runner()
+        app.config["DB_IS_SET_UP"].clear()
         result = runner.invoke(demodata)
         assert len(User.query.all()) == 2
         assert len(Group.query.all()) == 3

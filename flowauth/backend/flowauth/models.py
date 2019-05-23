@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from multiprocessing import Value
 
 import datetime
 from itertools import chain
@@ -11,9 +12,10 @@ from flask import current_app
 from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
+from passlib.hash import argon2
 
 db = SQLAlchemy()
-from passlib.hash import argon2
+
 
 # Link table for mapping users to groups
 group_memberships = db.Table(
@@ -480,9 +482,20 @@ def init_db(force: bool = False) -> None:
     -------
     None
     """
+    if current_app.config["DB_IS_SET_UP"].is_set():
+        current_app.logger.debug("Database already set up by another worker, skipping.")
+        return
+    if current_app.config["DB_IS_SETTING_UP"].is_set():
+        current_app.logger.debug(
+            "Database setup in progress by another worker, skipping."
+        )
+        return
+    current_app.config["DB_IS_SETTING_UP"].set()
     if force:
         db.drop_all()
     db.create_all()
+    current_app.config["DB_IS_SET_UP"].set()
+    current_app.config["DB_IS_SETTING_UP"].clear()
 
 
 @click.command("add-admin")
@@ -512,11 +525,13 @@ def add_admin(username: str, password: str) -> None:
     """
     u = User.query.filter(User.username == username).first()
     if u is None:
+        current_app.logger.debug(f"Creating new admin {username}.")
         u = User(username=username, password=password, is_admin=True)
         ug = Group(name=username, user_group=True)
         ug.members.append(u)
         db.session.add(ug)
     else:
+        current_app.logger.debug(f"Promoting {username} to admin.")
         u.password = password
         u.is_admin = True
 
@@ -529,6 +544,13 @@ def make_demodata():
     """
     Generate some demo data.
     """
+    if current_app.config["DB_IS_SET_UP"].is_set():
+        current_app.logger.debug("Database already set up, skipping.")
+        return
+    if current_app.config["DB_IS_SETTING_UP"].is_set():
+        current_app.logger.debug("Database setup in progress, skipping.")
+        return
+    current_app.config["DB_IS_SETTING_UP"].set()
     db.drop_all()
     db.create_all()
     agg_units = [SpatialAggregationUnit(name=f"admin{x}") for x in range(4)]
@@ -613,6 +635,8 @@ def make_demodata():
         )
     )
     db.session.commit()
+    current_app.config["DB_IS_SET_UP"].set()
+    current_app.config["DB_IS_SETTING_UP"].clear()
 
 
 @click.command("demodata")
