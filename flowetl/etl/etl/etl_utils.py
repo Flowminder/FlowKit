@@ -8,6 +8,7 @@ Contains utility functions for use in the ETL dag and it's callables
 """
 import yaml
 import re
+import os
 
 from uuid import UUID
 from typing import List
@@ -15,7 +16,11 @@ from enum import Enum
 from pathlib import Path
 from pendulum import parse
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from airflow import DAG
+from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
 
 
@@ -141,11 +146,27 @@ def construct_etl_dag(
     return dag
 
 
-def get_session():
+def get_session(*, postgres_conn_id="flowdb"):
+    """[summary]
+
+    Parameters
+    ----------
+    postgres_conn_id : str, optional
+        [description], by default "flowdb"
+
+    Returns
+    -------
+    [type]
+        [description]
     """
-    Dummy for now will get us a session to flowdb
-    """
-    return "session"
+    conn_env_var = f"AIRFLOW_CONN_{postgres_conn_id.upper()}"
+    if conn_env_var not in os.environ:
+        raise ValueError(f"{conn_env_var} not set")
+
+    engine = create_engine(
+        "postgresql://", creator=PostgresHook(postgres_conn_id).get_conn
+    )
+    return sessionmaker(bind=engine)()
 
 
 class CDRType(str, Enum):
