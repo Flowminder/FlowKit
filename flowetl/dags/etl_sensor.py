@@ -17,7 +17,7 @@ from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 from pendulum import now, parse
 
-from etl.etl_utils import CDRType, generate_temp_table_names
+from etl.etl_utils import CDRType, generate_table_names
 
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
@@ -45,7 +45,7 @@ def dummy_trigger_callable(*, dag_run: DagRun, **kwargs):
         for cdr_type in CDRType:
             uuid = uuid1()
 
-            temp_table_names = generate_temp_table_names(uuid=uuid, cdr_type=cdr_type)
+            temp_table_names = generate_table_names(uuid=uuid, cdr_type=cdr_type)
             trigger_dag(
                 f"etl_{cdr_type}",
                 run_id=str(uuid),
