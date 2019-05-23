@@ -16,7 +16,13 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
 
+const styles = theme => ({
+  button: {
+    margin: theme.spacing.unit,
+  },
+});
 class Token extends React.Component {
   state = {
     isOpen: false,
@@ -43,7 +49,7 @@ class Token extends React.Component {
     element.click();
   }
   render() {
-    const { name, expiry, editAction, token, id } = this.props;
+    const { name, expiry, editAction, token, id, classes } = this.props;
     const { isOpen, copySuccess } = this.state;
     return (
       <React.Fragment>
@@ -53,13 +59,12 @@ class Token extends React.Component {
         <Grid item xs={3}>
           <Typography component="p">{expiry}</Typography>
         </Grid>
-        <Grid item xs={3}>
-
+        <Grid item xs={4}>
           <Tooltip title={copySuccess} placement="bottom">
-            <Button type='button' onClick={this.copyToClipboard} id="copy" color="primary">Copy</Button>
+            <Button variant="outlined" color="primary" onClick={this.copyToClipboard}>Copy</Button>
           </Tooltip>
-          <Button onClick={this.downloadTxtFile} color="primary">Download</Button>
-          <Button onClick={this.toggleOpen} color="primary">View</Button>
+          <Button variant="outlined" color="primary" onClick={this.downloadTxtFile} className={classes.button}>Download</Button>
+          <Button variant="outlined" color="primary" onClick={this.toggleOpen} >View</Button>
           <Dialog
             open={isOpen}
             onClose={this.toggleOpen}
@@ -77,7 +82,7 @@ class Token extends React.Component {
           </Dialog>
         </Grid>
         <Grid item xs={4} />
-      </React.Fragment>
+      </React.Fragment >
     );
   }
 }
@@ -85,4 +90,4 @@ class Token extends React.Component {
 Token.propTypes = {
   classes: PropTypes.object.isRequired
 };
-export default Token;
+export default withStyles(styles)(Token);
