@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - The `FLOWDB_DEBUG` environment variable used to have no effect. This has been fixed. [#811](https://github.com/Flowminder/FlowKit/issues/811)
 - FlowAuth's docker container can now be used with a Postgres backing database. [#825](https://github.com/Flowminder/FlowKit/issues/825) 
+- FlowAPI now starts up successfully when following the "Secrets Quickstart" instructions in the docs. [#836](https://github.com/Flowminder/FlowKit/issues/836)
+- The command to generate an SSL certificate in the "Secrets Quickstart" section in the docs has been fixed and made more robust [#837](https://github.com/Flowminder/FlowKit/issues/837)
 
 ### Removed
 - The `FLOWDB_SERVICES` environment variable has been removed from the toplevel Makefile, so that now `DOCKER_SERVICES` is the only environment variable that controls which services are spun up when running `make up`. [#827](https://github.com/Flowminder/FlowKit/issues/827)
