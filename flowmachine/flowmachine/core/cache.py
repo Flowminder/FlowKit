@@ -246,6 +246,9 @@ def reset_cache(
     You _must_ ensure that no queries are currently running when calling this function.
     Any queries currently running will no longer be tracked by redis, and UNDEFINED BEHAVIOUR
     will occur.
+
+    In addition, you should restart any interpreter running flowmachine after this command is run
+    to ensure that the local objects have not drifted out of sync with the database.
     """
     # For deletion purposes, we ignore Table objects. These either point to something
     # outside the cache schema and hence shouldn't be removed by calling this, or
