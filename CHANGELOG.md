@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - The `FLOWDB_DEBUG` environment variable used to have no effect. This has been fixed. [#811](https://github.com/Flowminder/FlowKit/issues/811)
+- Previously, queries could be stuck in an executing state if writing their cache metadata failed, they will now correctly show as having errored. [#833](https://github.com/Flowminder/FlowKit/issues/833)
+- Fixed an issue where `Table` objects could be in an inconsistent cache state after resetting cache [#832](https://github.com/Flowminder/FlowKit/issues/832) 
 - FlowAuth's docker container can now be used with a Postgres backing database. [#825](https://github.com/Flowminder/FlowKit/issues/825) 
 - FlowAPI now starts up successfully when following the "Secrets Quickstart" instructions in the docs. [#836](https://github.com/Flowminder/FlowKit/issues/836)
 - The command to generate an SSL certificate in the "Secrets Quickstart" section in the docs has been fixed and made more robust [#837](https://github.com/Flowminder/FlowKit/issues/837)
