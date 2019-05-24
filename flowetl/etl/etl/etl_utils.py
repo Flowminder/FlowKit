@@ -11,7 +11,7 @@ import re
 import os
 
 from uuid import UUID
-from typing import List
+from typing import List, Callable
 from enum import Enum
 from pathlib import Path
 from pendulum import parse
@@ -22,6 +22,18 @@ from sqlalchemy.orm import sessionmaker
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
+
+
+def construct_etl_sensor_dag(*, callable: Callable, default_args: dict):
+
+    with DAG(
+        dag_id=f"etl_sensor", schedule_interval=None, default_args=default_args
+    ) as dag:
+        sense = PythonOperator(
+            task_id="sense", python_callable=callable, provide_context=True
+        )
+
+    return dag
 
 
 def construct_etl_dag(
@@ -256,6 +268,7 @@ def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
         contains files cdr type and the date associated
         to the data
     """
+    file_cdr_type, file_cdr_date = None, None
     for cdr_type in CDRType:
         pattern = cdr_type_config[cdr_type]["pattern"]
         m = re.fullmatch(pattern, file_name)
@@ -263,4 +276,7 @@ def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
             file_cdr_type = cdr_type
             file_cdr_date = parse(m.groups()[0])
 
-    return {"cdr_type": file_cdr_type, "cdr_date": file_cdr_date}
+    if file_cdr_type and file_cdr_date:
+        return {"cdr_type": file_cdr_type, "cdr_date": file_cdr_date}
+    else:
+        raise ValueError("No pattern match found")

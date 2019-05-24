@@ -6,23 +6,19 @@
 """
 Tests for configuration parsing
 """
-import yaml
-import pytest
-
-from uuid import uuid1
-from unittest.mock import Mock, patch
-from pathlib import Path
-from pendulum import parse
+from builtins import ValueError
 from copy import deepcopy
+from pathlib import Path
+from unittest.mock import Mock, patch
+from uuid import uuid1
 
-from etl.etl_utils import (
-    CDRType,
-    find_files,
-    generate_temp_table_names,
-    parse_file_name,
-)
+import pytest
+import yaml
+from pendulum import parse
+
 from etl.config_constant import config
 from etl.config_parser import get_cdr_type_config, validate_config
+from etl.etl_utils import CDRType, find_files, generate_table_names, parse_file_name
 
 
 def test_get_cdr_type_config_with_valid_type():
@@ -131,13 +127,13 @@ def test_find_files_default_filter(tmpdir):
 @pytest.mark.parametrize(
     "cdr_type", [CDRType("calls"), CDRType("sms"), CDRType("mds"), CDRType("topups")]
 )
-def test_generate_temp_table_names(cdr_type):
+def test_generate_table_names(cdr_type):
     """
     Test that we are able to generate correct temp table names for each cdr_type
     """
     uuid = uuid1()
 
-    table_names = generate_temp_table_names(uuid=uuid, cdr_type=cdr_type)
+    table_names = generate_table_names(uuid=uuid, cdr_type=cdr_type)
 
     uuid_sans_underscore = str(uuid).replace("-", "")
     assert table_names == {
@@ -169,7 +165,22 @@ def test_generate_temp_table_names(cdr_type):
     ],
 )
 def test_parse_file_name(file_name, want):
-
+    """
+    Test we can parse cdr_type and cdr_date
+    from filenames based on cdr type config.
+    """
     cdr_type_config = config["etl"]
     got = parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
     assert got == want
+
+
+def test_parse_file_name_exception():
+    """
+    Test that we get a value error if filename does
+    not match any pattern
+    """
+    cdr_type_config = config["etl"]
+    file_name = "bob.csv"
+    with pytest.raises(ValueError):
+        parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
+
