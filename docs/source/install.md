@@ -67,6 +67,9 @@ bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick
 to get the examples with the larger dataset (the one used when producing this documentation).
 
 !!! info
+    The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the [Flows Above Normal](worked_examples/flows-above-normal.ipynb) example because this uses data for dates outside the range included in the small dataset.
+
+!!! info
     The worked examples make use of [Mapbox GL](https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/) for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions [here](https://account.mapbox.com/)), and set this as the value of the `MAPBOX_ACCESS_TOKEN` environment variable before running the above commands.
 
 To shut down the system, you can either stop all the docker containers directly, or run
@@ -156,7 +159,7 @@ By default, `SECRET_KEY` will be set to `secret`. You should supply this to ensu
 While `SECRET_KEY` can be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.  
 
 
-#### Running with Secrets
+### Running with Secrets
 
 The standard Docker compose file supplies a number of 'secret' values as environment variables. Typically, this is a bad idea.
 
@@ -316,3 +319,7 @@ conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", s
 ```
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
+
+### Demonstrating successful deployment
+
+Once FlowKit installation is complete, we suggest running the provided [worked examples](worked_examples/index.md) against the deployed FlowKit to check that everything is working correctly.
