@@ -214,8 +214,8 @@ mobile_data_usage_queries = [
     )
 ]
 
-# Total Network Objects
-total_network_objects_queries = [
+# Cell Towers Per Region
+cell_towers_per_region_queries = [
     flowmachine.features.TotalNetworkObjects(
         start="2016-01-01", stop="2016-01-08", level="admin3", total_by="month"
     )
@@ -236,7 +236,7 @@ dependency_graphs = [
         + flows_above_normal_queries
         + commuting_patterns_queries
         + mobile_data_usage_queries
-        + total_network_objects_queries
+        + cell_towers_per_region_queries
         + unique_subscriber_counts_queries
     )
 ]
