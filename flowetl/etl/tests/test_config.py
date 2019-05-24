@@ -183,4 +183,3 @@ def test_parse_file_name_exception():
     file_name = "bob.csv"
     with pytest.raises(ValueError):
         parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
-
