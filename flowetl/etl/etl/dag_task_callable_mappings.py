@@ -14,15 +14,30 @@ from pathlib import Path
 
 from airflow.hooks.postgres_hook import PostgresHook
 
-from etl.dummy_task_callables import dummy__callable, dummy_failing__callable
+from etl.dummy_task_callables import (
+    dummy__callable,
+    dummy_failing__callable,
+    dummy_trigger__callable,
+)
 from etl.production_task_callables import (
     move_file_and_record_ingestion_state__callable,
     render_and_run_sql__callable,
     success_branch__callable,
+    trigger__callable,
 )
 
+mount_paths = {
+    "dump": Path(f"{os.environ.get('MOUNT_HOME','')}/dump"),
+    "ingest": Path(f"{os.environ.get('MOUNT_HOME','')}/ingest"),
+    "archive": Path(f"{os.environ.get('MOUNT_HOME','')}/archive"),
+    "quarantine": Path(f"{os.environ.get('MOUNT_HOME','')}/quarantine"),
+}
+
+db_hook = PostgresHook(postgres_conn_id="flowdb")
+config_path = Path(f"{os.environ.get('MOUNT_HOME','')}/config")
+
 # callables to be used when testing the structure of the ETL DAG
-TEST_TASK_CALLABLES = {
+TEST_ETL_TASK_CALLABLES = {
     "init": dummy__callable,
     "extract": dummy__callable,
     "transform": dummy__callable,
@@ -34,19 +49,8 @@ TEST_TASK_CALLABLES = {
     "fail": dummy_failing__callable,
 }
 
-# All these are dummy values for now!
-mount_paths = {
-    "dump": Path(f"{os.environ['MOUNT_HOME']}/dump"),
-    "ingest": Path(f"{os.environ['MOUNT_HOME']}/ingest"),
-    "archive": Path(f"{os.environ['MOUNT_HOME']}/archive"),
-    "quarantine": Path(f"{os.environ['MOUNT_HOME']}/quarantine"),
-}
-
-db_hook = PostgresHook(postgres_conn_id="flowdb")
-config_path = Path(f"{os.environ['MOUNT_HOME']}/config")
-
 # callables to be used in production
-PRODUCTION_TASK_CALLABLES = {
+PRODUCTION_ETL_TASK_CALLABLES = {
     "init": partial(
         move_file_and_record_ingestion_state__callable,
         mount_paths=mount_paths,
@@ -94,3 +98,8 @@ PRODUCTION_TASK_CALLABLES = {
     ),
     "fail": dummy_failing__callable,
 }
+
+TEST_ETL_SENSOR_TASK_CALLABLE = dummy_trigger__callable
+PRODUCTION_ETL_SENSOR_TASK_CALLABLE = partial(
+    trigger__callable, dump_path=mount_paths["dump"]
+)
