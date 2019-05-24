@@ -16,8 +16,8 @@ from airflow import DAG  # pylint: disable=unused-import
 
 from pendulum import parse
 from etl.dag_task_callable_mappings import (
-    TEST_TASK_CALLABLES,
-    PRODUCTION_TASK_CALLABLES,
+    TEST_ETL_TASK_CALLABLES,
+    PRODUCTION_ETL_TASK_CALLABLES,
 )
 from etl.etl_utils import construct_etl_dag, CDRType
 from etl.config_parser import validate_config, get_config_from_file
@@ -26,7 +26,7 @@ default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
 # Determine if we are in a testing environment - use dummy callables if so
 if os.environ.get("TESTING", "") == "true":
-    task_callable_mapping = TEST_TASK_CALLABLES
+    task_callable_mapping = TEST_ETL_TASK_CALLABLES
     logging.info("running in testing environment")
     dag = construct_etl_dag(
         task_callable_mapping=task_callable_mapping,
@@ -34,7 +34,7 @@ if os.environ.get("TESTING", "") == "true":
         cdr_type="testing",
     )
 else:
-    task_callable_mapping = PRODUCTION_TASK_CALLABLES
+    task_callable_mapping = PRODUCTION_ETL_TASK_CALLABLES
     logging.info("running in production environment")
 
     # read and validate the config file before creating the DAGs
