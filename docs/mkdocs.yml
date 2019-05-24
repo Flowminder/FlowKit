@@ -35,7 +35,6 @@ nav:
        - developer/adr/0006-JWTs.md
        - developer/adr/0007-mapbox-for-worked-examples.md
   - administrator.md
-  - license.md
   - Worked examples:
       - worked_examples/index.md
       - worked_examples/flows-above-normal.ipynb
@@ -48,6 +47,7 @@ nav:
   - FlowClient:
       - flowclient/example_usage.ipynb
       - api-docs-flowclient
+  - license.md
 
 theme:
   name: "material"
