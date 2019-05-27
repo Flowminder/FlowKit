@@ -15,6 +15,11 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import SubmitButtons from "./SubmitButtons";
 import ServerAggregationUnits from "./ServerAggregationUnits";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const styles = theme => ({
   root: {
@@ -31,6 +36,8 @@ class TokenDetails extends React.Component {
     expiry: new Date(),
     latest_expiry: new Date(),
     username_helper_text: "",
+    isPermissionChecked: true,
+    isAggregationChecked: true
   };
 
   handleSubmit = () => {
@@ -69,7 +76,12 @@ class TokenDetails extends React.Component {
     }
     this.setState({ rights: rights });
   };
-
+  handlePermissionCheckbox = event => {
+    this.setState({ isPermissionChecked: !this.state.isPermissionChecked });
+  }
+  handleAggregationCheckbox = event => {
+    this.setState({ isAggregationChecked: !this.state.isAggregationChecked });
+  }
   handleNameChange = event => {
     var letters = /^[A-Za-z0-9_]+$/;
     let name = event.target.value;
@@ -112,12 +124,13 @@ class TokenDetails extends React.Component {
 
   renderRights = () => {
     var perms = [];
-    const { rights, permitted } = this.state;
+    const { rights, permitted, isPermissionChecked } = this.state;
     for (const key in rights) {
       perms.push([
         <TokenPermission
           permissions={rights[key].permissions}
           claim={key}
+          isChecked={!isPermissionChecked}
           checkedHandler={this.handleChange}
           permitted={permitted[key].permissions}
         />,
@@ -139,12 +152,13 @@ class TokenDetails extends React.Component {
 
   renderAggUnits = () => {
     var perms = [];
-    const { rights, permitted } = this.state;
+    const { rights, permitted, isAggregationChecked } = this.state;
     for (const key in rights) {
       perms.push([
         <ServerAggregationUnits
           units={rights[key].spatial_aggregation}
           claim={key}
+          isChecked={!isAggregationChecked}
           checkedHandler={this.handleAggUnitChange}
           permitted={this.isAggUnitPermitted}
         />,
@@ -206,20 +220,44 @@ class TokenDetails extends React.Component {
             />
           </MuiPickersUtilsProvider>
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h5" component="h1">
-            API Permissions
-          </Typography>
-        </Grid>
-        <Divider />
-        {this.renderRights()}
-        <Grid item xs={12}>
-          <Typography variant="h5" component="h1">
-            Aggregation Units
-          </Typography>
-        </Grid>
-        <Divider />
-        {this.renderAggUnits()}
+        <ExpansionPanel>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Checkbox
+              value="checkedB"
+              color="primary"
+              onClick={this.handlePermissionCheckbox}
+            />
+            <Grid item xs={1}>
+              <Typography className={classes.heading}>
+                API Permissions
+              </Typography>
+            </Grid>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <Grid container spacing={5}>
+              {this.renderRights()}
+            </Grid>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+        <ExpansionPanel>
+          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Checkbox
+              value="checkedB"
+              color="primary"
+              onClick={this.handleAggregationCheckbox}
+            />
+            <Grid item xs={1}>
+              <Typography className={classes.heading}>
+                Aggregation Units
+              </Typography>
+            </Grid>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <Grid container spacing={5}>
+              {this.renderAggUnits()}
+            </Grid>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>
     );
