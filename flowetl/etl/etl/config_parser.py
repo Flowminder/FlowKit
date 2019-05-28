@@ -14,7 +14,17 @@ from etl.etl_utils import CDRType
 
 
 def validate_config(*, global_config_dict: dict) -> Exception:
+    """
+    Function used to validate the config.yml file. Makes sure we
+    have entries for each CDR type in CDRType enum and that each
+    entry has expected information. Either raises Exceptions or
+    passes silently.
 
+    Parameters
+    ----------
+    global_config_dict : dict
+        dict containing global config for ETL
+    """
     keys = global_config_dict.keys()
 
     exceptions = []
