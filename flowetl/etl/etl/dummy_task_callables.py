@@ -10,8 +10,8 @@ Contains the definition of dummy callables to be used when testing
 import os
 import logging
 
-from pendulum import utcnow
 from uuid import uuid1
+from pendulum import utcnow
 from airflow.models import DagRun, TaskInstance
 from airflow.api.common.experimental.trigger_dag import trigger_dag
 
