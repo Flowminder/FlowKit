@@ -224,7 +224,7 @@ services:
     restart: always
 
     ports:
-      - 5433:5432
+      - ${FLOWETL_POSTGRES_PORT:?Must set FLOWETL_POSTGRES_PORT env var}:5432
 
     environment:
       POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
