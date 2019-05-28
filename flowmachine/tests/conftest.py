@@ -114,7 +114,7 @@ def skip_datecheck(request, monkeypatch):
 def flowmachine_connect():
     con = flowmachine.connect()
     yield con
-    reset_cache(con, Query.redis)
+    reset_cache(con, Query.redis, protect_table_objects=False)
     con.engine.dispose()  # Close the connection
     Query.redis.flushdb()  # Empty the redis
     del Query.connection  # Ensure we recreate everything at next use

@@ -98,19 +98,29 @@ def write_query_to_cache(
     current_state, this_thread_is_owner = q_state_machine.execute()
     if this_thread_is_owner:
         logger.debug(f"In charge of executing '{query.md5}'.")
-        query_ddl_ops = ddl_ops_func(name, schema)
+        try:
+            query_ddl_ops = ddl_ops_func(name, schema)
+        except Exception as exc:
+            q_state_machine.raise_error()
+            logger.error(f"Error generating SQL. Error was {exc}")
+            raise exc
         logger.debug("Made SQL.")
         con = connection.engine
         with con.begin():
             try:
                 plan_time = write_func(query_ddl_ops, con)
                 logger.debug("Executed queries.")
-            except Exception as e:
+            except Exception as exc:
                 q_state_machine.raise_error()
-                logger.error(f"Error executing SQL. Error was {e}")
-                raise e
+                logger.error(f"Error executing SQL. Error was {exc}")
+                raise exc
             if schema == "cache":
-                write_cache_metadata(connection, query, compute_time=plan_time)
+                try:
+                    write_cache_metadata(connection, query, compute_time=plan_time)
+                except Exception as exc:
+                    q_state_machine.raise_error()
+                    logger.error(f"Error writing cache metadata. Error was {exc}")
+                    raise exc
         q_state_machine.finish()
 
     q_state_machine.wait_until_complete(sleep_duration=sleep_duration)
@@ -217,7 +227,9 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def reset_cache(connection: "Connection", redis: StrictRedis) -> None:
+def reset_cache(
+    connection: "Connection", redis: StrictRedis, protect_table_objects: bool = True
+) -> None:
     """
     Reset the query cache. Deletes any tables under cache schema, resets the cache count,
     clears the cached and dependencies tables.
@@ -226,26 +238,34 @@ def reset_cache(connection: "Connection", redis: StrictRedis) -> None:
     ----------
     connection : Connection
     redis : StrictRedis
+    protect_table_objects : bool, default True
+        Set to False to also remove cache metadata for Table objects which point to tables outside the cache schema
 
     Notes
     -----
     You _must_ ensure that no queries are currently running when calling this function.
     Any queries currently running will no longer be tracked by redis, and UNDEFINED BEHAVIOUR
     will occur.
+
+    In addition, you should restart any interpreter running flowmachine after this command is run
+    to ensure that the local objects have not drifted out of sync with the database.
     """
     # For deletion purposes, we ignore Table objects. These either point to something
     # outside the cache schema and hence shouldn't be removed by calling this, or
     # they point to a cache table and hence are a duplicate of a Query entry which
     # will also point to that table.
 
-    qry = f"SELECT tablename FROM cache.cached WHERE NOT class='Table'"
-    tables = connection.fetch(qry)
     with connection.engine.begin() as trans:
+        qry = f"SELECT tablename FROM cache.cached WHERE schema='cache'"
+        tables = trans.execute(qry).fetchall()
+
         trans.execute("SELECT setval('cache.cache_touches', 1)")
         for table in tables:
             trans.execute(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
-        trans.execute("TRUNCATE cache.cached CASCADE")
-        trans.execute("TRUNCATE cache.dependencies CASCADE")
+        if protect_table_objects:
+            trans.execute(f"DELETE FROM cache.cached WHERE schema='cache'")
+        else:
+            trans.execute("TRUNCATE cache.cached CASCADE")
     resync_redis_with_cache(connection=connection, redis=redis)
 
 

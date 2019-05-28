@@ -10,7 +10,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from flowmachine.core import Table
+from flowmachine.core import Table, Query
 from flowmachine.core.cache import (
     get_compute_time,
     shrink_below_size,
@@ -29,9 +29,19 @@ from flowmachine.core.cache import (
     cache_table_exists,
     resync_redis_with_cache,
     reset_cache,
+    write_cache_metadata,
+    write_query_to_cache,
 )
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 from flowmachine.features import daily_location
+
+
+class TestException(Exception):
+    """
+    Exception only for use in these tests..
+    """
+
+    pass
 
 
 def test_scoring(flowmachine_connect):
@@ -456,6 +466,18 @@ def test_cache_reset(flowmachine_connect):
     assert not stored_query.is_stored
 
 
+def test_cache_reset_protects_tables(flowmachine_connect):
+    """
+    Resetting the cache should preserve Table entries.
+    """
+    # Regression test for https://github.com/Flowminder/FlowKit/issues/832
+    dl_query = daily_location(date="2016-01-03", level="admin3", method="last")
+    reset_cache(flowmachine_connect, dl_query.redis)
+    for dep in dl_query._get_stored_dependencies():
+        assert dep.md5 in [x.md5 for x in Query.get_stored()]
+    dl_query.store().result()  # Original bug caused this to error
+
+
 def test_redis_resync_runtimeerror(flowmachine_connect, dummy_redis):
     """
     Test that a runtime error is raised if redis is being updated from multiple places when trying to resync.
@@ -468,3 +490,45 @@ def test_redis_resync_runtimeerror(flowmachine_connect, dummy_redis):
     dummy_redis.allow_flush = False
     with pytest.raises(RuntimeError):
         resync_redis_with_cache(flowmachine_connect, dummy_redis)
+
+
+def test_cache_metadata_write_error(flowmachine_connect, dummy_redis, monkeypatch):
+    """
+    Test that errors during cache metadata writing leave the query state machine in error state.
+    """
+    # Regression test for https://github.com/Flowminder/FlowKit/issues/833
+
+    writer_mock = Mock(side_effect=TestException)
+    dl_query = daily_location(date="2016-01-03", level="admin3", method="last")
+    assert not dl_query.is_stored
+    monkeypatch.setattr("flowmachine.core.cache.write_cache_metadata", writer_mock)
+
+    store_future = dl_query.store()
+    with pytest.raises(TestException):
+        store_future.result()
+    assert not dl_query.is_stored
+    assert (
+        QueryStateMachine(dl_query.redis, dl_query.md5).current_query_state
+        == QueryState.ERRORED
+    )
+
+
+def test_cache_ddl_op_error(dummy_redis):
+    """
+    Test that errors when generating SQL leave the query state machine in error state.
+    """
+
+    query_mock = Mock(md5="DUMMY_MD5")
+    qsm = QueryStateMachine(dummy_redis, "DUMMY_MD5")
+    qsm.enqueue()
+
+    with pytest.raises(TestException):
+        write_query_to_cache(
+            name="DUMMY_QUERY",
+            redis=dummy_redis,
+            query=query_mock,
+            connection=Mock(),
+            ddl_ops_func=Mock(side_effect=TestException),
+            write_func=Mock(),
+        )
+    assert qsm.current_query_state == QueryState.ERRORED
