@@ -177,17 +177,20 @@ def construct_etl_dag(
 
 
 def get_session(*, postgres_conn_id="flowdb"):
-    """[summary]
+    """
+    Constructs a sqlalchmy session for use with
+    the ETLRecord model in flowdb. Can construct
+    connection to other DB's specified by
+    postgres_conn_id and reflected in the ENV by
+    variables of the form AIRFLOW_CONN_${postgres_conn_id}
 
     Parameters
     ----------
     postgres_conn_id : str, optional
-        [description], by default "flowdb"
-
-    Returns
-    -------
-    [type]
-        [description]
+        The ID of a connection known to airflow.
+        Should exist as an ENV var of the form
+        AIRFLOW_CONN_${postgres_conn_id}.
+        default "flowdb"
     """
     conn_env_var = f"AIRFLOW_CONN_{postgres_conn_id.upper()}"
     if conn_env_var not in os.environ:
