@@ -27,27 +27,6 @@ from etl.etl_utils import (
 )
 
 
-def test_get_cdr_type_config_with_valid_type():
-    """
-    Test that we can get the config for a given CDR type
-    """
-    cdr_type = "calls"
-    cdr_type_config = get_cdr_type_config(cdr_type=cdr_type, global_config=config)
-
-    assert cdr_type_config == config["etl"][cdr_type]
-
-
-def test_get_cdr_type_config_with_invalid_type():
-    """
-    Test that if we try to get a non existent CDR type as defined
-    by etl.etl_utils.CDRType we gat an exception.
-    """
-    cdr_type = "spaghetti"
-
-    with pytest.raises(ValueError):
-        cdr_type_config = get_cdr_type_config(cdr_type=cdr_type, global_config=config)
-
-
 def test_config_validation():
     """
     Check that with valid config dict we get no exception
