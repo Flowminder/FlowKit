@@ -117,14 +117,15 @@ def test_generate_table_names(cdr_type):
     Test that we are able to generate correct temp table names for each cdr_type
     """
     uuid = uuid1()
+    cdr_date = parse("2016-01-01")
 
-    table_names = generate_table_names(uuid=uuid, cdr_type=cdr_type)
+    table_names = generate_table_names(uuid=uuid, cdr_type=cdr_type, cdr_date=cdr_date)
 
     uuid_sans_underscore = str(uuid).replace("-", "")
     assert table_names == {
         "extract_table": f"etl.x{uuid_sans_underscore}",
         "transform_table": f"etl.t{uuid_sans_underscore}",
-        "load_table": f"events.{cdr_type}",
+        "load_table": f"events.{cdr_type}_{str(cdr_date.date()).replace('-','')}",
     }
 
 
