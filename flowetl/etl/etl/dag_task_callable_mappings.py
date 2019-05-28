@@ -8,12 +8,12 @@ Mapping task id to a python callable. Allows for the specification of a set of
 dummy callables to be used for testing.
 """
 import os
-
 from functools import partial
 from pathlib import Path
 
 from airflow.hooks.postgres_hook import PostgresHook
 
+from etl.config_parser import get_config_from_file
 from etl.dummy_task_callables import (
     dummy__callable,
     dummy_failing__callable,
@@ -35,6 +35,12 @@ mount_paths = {
 
 db_hook = PostgresHook(postgres_conn_id="flowdb")
 config_path = Path(f"{os.environ.get('MOUNT_HOME','')}/config")
+try:
+    config = get_config_from_file(config_filepath=config_path / "config.yml")
+except FileNotFoundError:
+    # If we are testing then there will be no config file and we
+    # don't actually need any!
+    config = {}
 
 # callables to be used when testing the structure of the ETL DAG
 TEST_ETL_TASK_CALLABLES = {
@@ -101,5 +107,7 @@ PRODUCTION_ETL_TASK_CALLABLES = {
 
 TEST_ETL_SENSOR_TASK_CALLABLE = dummy_trigger__callable
 PRODUCTION_ETL_SENSOR_TASK_CALLABLE = partial(
-    trigger__callable, dump_path=mount_paths["dump"]
+    trigger__callable,
+    dump_path=mount_paths["dump"],
+    cdr_type_config=config.get("etl", {}),
 )
