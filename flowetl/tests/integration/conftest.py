@@ -8,11 +8,14 @@ Conftest for flowetl integration tests
 """
 import os
 import shutil
+import logging
 
 from time import sleep
 from subprocess import DEVNULL, Popen
 from pendulum import now, Interval
 from airflow.models import DagRun
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 import pytest
 import docker
@@ -151,10 +154,9 @@ def wait_for_completion():
     seems OK...) three minutes raises a TimeoutError.
     """
 
-    def wait_func(end_state):
-        time_out = Interval(minutes=3)
+    def wait_func(end_state, dag_id, session=None, time_out=Interval(minutes=3)):
         t0 = now()
-        while not DagRun.find("etl_testing", state=end_state):
+        while not DagRun.find(dag_id, state=end_state, session=session):
             sleep(1)
             t1 = now()
             if (t1 - t0) > time_out:
@@ -162,3 +164,42 @@ def wait_for_completion():
         return end_state
 
     return wait_func
+
+
+@pytest.fixture(scope="session")
+def flowdb_connection_engine():
+    conn_str = f"postgresql://{os.getenv('FLOWDB_USER')}:{os.getenv('FLOWDB_PW')}@localhost:{os.getenv('FLOWDB_PORT')}/{os.getenv('FLOWDB_NAME')}"
+    engine = create_engine(conn_str)
+
+    return engine
+
+
+@pytest.fixture(scope="function")
+def flowdb_connection(flowdb_connection_engine):
+    with flowdb_connection_engine.begin() as connection:
+        yield connection
+
+
+@pytest.fixture(scope="function")
+def flowdb_session(flowdb_connection_engine):
+    return sessionmaker(bind=flowdb_connection_engine)()
+
+
+@pytest.fixture(scope="session")
+def flowetl_db_connection_engine():
+    conn_str = f"postgresql://{os.getenv('FLOWETL_POSTGRES_USER')}:{os.getenv('FLOWETL_POSTGRES_PASSWORD')}@localhost:{os.getenv('FLOWETL_POSTGRES_PORT')}/{os.getenv('FLOWETL_POSTGRES_DB')}"
+    logging.info(conn_str)
+    engine = create_engine(conn_str)
+
+    return engine
+
+
+@pytest.fixture(scope="function")
+def flowetl_db_connection(flowetl_db_connection_engine):
+    with flowetl_db_connection_engine.begin() as connection:
+        yield connection
+
+
+@pytest.fixture(scope="function")
+def flowetl_db_session(flowetl_db_connection_engine):
+    return sessionmaker(bind=flowetl_db_connection_engine)()
