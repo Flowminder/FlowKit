@@ -23,6 +23,7 @@ import ServerList from "./ServerList";
 import AdminMenu from "./AdminMenu";
 import UserDetails from "./UserDetails";
 import CapabilityList from "./CapabilityList";
+import PublicKey from "./PublicKey";
 import AggregationUnitList from "./AggregationUnitList";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { logout } from "./util/api";
@@ -157,6 +158,8 @@ class Dashboard extends React.Component {
         return <CapabilityList />;
       case "aggregation_unit_admin":
         return <AggregationUnitList />;
+      case "public_key_admin":
+        return <PublicKey />;
       default:
         return <div />;
     }

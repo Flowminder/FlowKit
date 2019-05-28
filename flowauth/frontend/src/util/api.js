@@ -56,6 +56,10 @@ export async function getUsers() {
   return await getResponseDefault("/admin/users");
 }
 
+export async function getPublicKey() {
+  return await getResponseDefault("/admin/public_key");
+}
+
 export async function getUser(user_id) {
   return await getResponseDefault("/admin/users/" + user_id);
 }

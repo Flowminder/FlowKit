@@ -876,7 +876,7 @@ def get_public_key():
     Get the public key which can be used to verify tokens for this
     flowauth server.
     """
-    return (
+    key = (
         current_app.config["PRIVATE_JWT_SIGNING_KEY"]
         .public_key()
         .public_bytes(
@@ -884,6 +884,7 @@ def get_public_key():
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
         .decode()
-        .strip(),
-        200,
+        .strip()
     )
+    current_app.logger.debug(key)
+    return jsonify({"public_key": key})
