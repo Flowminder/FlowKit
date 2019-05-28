@@ -21,11 +21,17 @@ const styles = theme => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
-    button: {
+    paddingBottom: theme.spacing.unit * 2
+  },
+  button: {
     margin: theme.spacing.unit,
-  }
-  }
+  },
+  gridRoot: {
+    flexGrow: 1
+  },
+  codeBlock: {
+    fontFamily:"Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace"
+}
 });
 
 class PublicKey extends React.Component {
@@ -42,6 +48,25 @@ class PublicKey extends React.Component {
       });
   }
 
+  copyToClipboard = event => {
+    const textField = document.createElement('textarea')
+    textField.style.whiteSpace = "pre-wrap"
+    textField.value = this.state.key
+    document.body.appendChild(textField)
+    textField.select()
+    document.execCommand('copy')
+    textField.remove()
+    this.setState({ copySuccess: 'Copied!' });
+  };
+  downloadkey = () => {
+    const element = document.createElement("a");
+    const file = new Blob([this.state.key], { type: 'application/x-pem-file' });
+    element.href = URL.createObjectURL(file);
+    element.download = "flowauth_public_key.pub";
+    document.body.appendChild(element);
+    element.click();
+  }
+
 
   render() {
     if (this.state.hasError) throw this.state.error;
@@ -50,21 +75,23 @@ class PublicKey extends React.Component {
     const { key } = this.state;
     return (
       <Paper className={classes.root}>
-          <Grid container spacing={16} >
-        <Grid item xs={9}>
-        <Paper className={classes.root}>
+        <div className={classes.gridRoot}>
+          <Grid container spacing={16} direction="row"
+  justify="flex-start"
+  alignItems="flex-start">
+        <Grid item xs>
+        <Paper className={classes.root} id="public_key_body" >
 
-        {key.split("\n").map((val, ix) => {return <Typography variant="body1">{val}</Typography>})}
+        {key.split("\n").map((val, ix) => {return <Typography variant="body1" className={classes.codeBlock} noWrap>{val}</Typography>})}
 
               </Paper>
               </Grid>
-              <Grid item  xs={1}>
+              <Grid item  xs={3}>
             <Button variant="outlined" color="primary" onClick={this.copyToClipboard} className={classes.button}>Copy</Button>
-              </Grid>
-              <Grid item xs={1}>
-          <Button variant="outlined" color="primary" onClick={this.downloadTxtFile} className={classes.button}>Download</Button>
+          <Button variant="outlined" color="primary" onClick={this.downloadkey} className={classes.button}>Download</Button>
               </Grid>
               </Grid>
+              </div>
       </Paper>
     );
   }
