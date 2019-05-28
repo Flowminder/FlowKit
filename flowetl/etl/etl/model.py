@@ -14,7 +14,7 @@ from sqlalchemy import Column, String, DateTime, Date, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import Session
 
-from etl.etl_utils import CDRType, State
+from etl import etl_utils
 
 Base = declarative_base()
 
@@ -36,9 +36,9 @@ class ETLRecord(Base):
 
     def __init__(self, *, cdr_type: str, cdr_date: pendulumDate, state: str):
 
-        self.cdr_type = CDRType(cdr_type)
+        self.cdr_type = etl_utils.CDRType(cdr_type)
         self.cdr_date = cdr_date
-        self.state = State(state)
+        self.state = etl_utils.State(state)
         self.timestamp = pendulum.utcnow()
 
     @classmethod
@@ -63,3 +63,38 @@ class ETLRecord(Base):
         row = cls(cdr_type=cdr_type, cdr_date=cdr_date, state=state)
         session.add(row)
         session.commit()
+
+    @classmethod
+    def can_process(cls, *, cdr_type: str, cdr_date: pendulumDate, session: Session):
+        """
+        Method that determines if a given cdr_type, cdr_date pair is ok to process.
+        If we have never seen the pair then should process or if pair has been seen but
+        its current state is quarantine.
+
+        Parameters
+        ----------
+        cdr_type : str
+            The type of the CDR data
+        cdr_date : pendulumDate
+            The date of the CDR data
+        session : Session
+            A sqlalchemy session for a DB in which this model exists.
+
+        Returns
+        -------
+        bool
+            OK to process the pair?
+        """
+        res = (
+            session.query(cls)
+            .filter(cls.cdr_type == cdr_type, cls.cdr_date == cdr_date)
+            .order_by(cls.timestamp.desc())
+            .first()
+        )
+
+        if (res is None) or (res.state == "quarantine"):
+            process = True
+        else:
+            process = False
+
+        return process
