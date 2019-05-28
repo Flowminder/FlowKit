@@ -6,8 +6,6 @@
 """
 functions used for parsing global config
 """
-
-import re
 import yaml
 
 from pathlib import Path
@@ -46,6 +44,19 @@ def validate_config(*, global_config_dict: dict) -> Exception:
         raise ValueError(exceptions)
 
 
-def get_config_from_file(*, config_filepath: Path):
+def get_config_from_file(*, config_filepath: Path) -> dict:
+    """
+    Function used to load configuration from YAML file.
+
+    Parameters
+    ----------
+    config_filepath : Path
+        Location of the file config.yml
+
+    Returns
+    -------
+    dict
+        Yaml config loaded into a python dict
+    """
     content = open(config_filepath, "r").read()
     return yaml.load(content, Loader=yaml.FullLoader)
