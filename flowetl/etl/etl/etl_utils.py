@@ -203,6 +203,10 @@ def get_session(*, postgres_conn_id="flowdb"):
 
 
 class CDRType(str, Enum):
+    """
+    CDR type enum
+    """
+
     CALLS = "calls"
     SMS = "sms"
     MDS = "mds"
@@ -210,6 +214,10 @@ class CDRType(str, Enum):
 
 
 class State(str, Enum):
+    """
+    ETL state enum
+    """
+
     INGEST = "ingest"
     ARCHIVE = "archive"
     QUARANTINE = "quarantine"
