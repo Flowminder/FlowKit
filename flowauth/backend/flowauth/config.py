@@ -1,6 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from multiprocessing import Event
+
 from typing import Optional
 
 import logging
@@ -70,4 +72,6 @@ def get_config():
         FLOWAUTH_FERNET_KEY=flowauth_fernet_key,
         DEMO_MODE=True if os.getenv("DEMO_MODE") is not None else False,
         RESET_DB=True if os.getenv("RESET_FLOWAUTH_DB") is not None else False,
+        DB_IS_SETTING_UP=Event(),
+        DB_IS_SET_UP=Event(),
     )
