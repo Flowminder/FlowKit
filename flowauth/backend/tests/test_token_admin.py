@@ -1,6 +1,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from cryptography.hazmat.primitives import serialization
+from os import environ
+from flowkit_jwt_generator import load_public_key
 
 import pytest
 
@@ -21,4 +24,11 @@ def test_get_server_public_key(app, client, auth):
     response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
 
     response = client.get("/admin/public_key", headers={"X-CSRF-Token": csrf_cookie})
-    assert app.config["PUBLIC_JWT_SIGNING_KEY"] == response.data
+    expected_key = load_public_key(environ["PUBLIC_JWT_SIGNING_KEY"]).public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    assert expected_key == load_public_key(response.data.decode()).public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )

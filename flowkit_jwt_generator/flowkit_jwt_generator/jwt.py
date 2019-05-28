@@ -63,14 +63,15 @@ def load_public_key(key_string: str) -> _RSAPublicKey:
 
     Returns
     -------
-    _RSAPubliceKey
+    _RSAPublicKey
         The public key
     """
+
     try:
         return serialization.load_pem_public_key(
             key_string.encode(), backend=default_backend()
         )
-    except ValueError:
+    except (ValueError, TypeError):
         try:
             return load_public_key(base64.b64decode(key_string).decode())
         except (binascii.Error, ValueError):

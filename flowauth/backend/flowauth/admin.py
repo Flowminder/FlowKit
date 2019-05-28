@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+from cryptography.hazmat.primitives import serialization
 from flask import jsonify, Blueprint, request, current_app
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
@@ -876,4 +876,14 @@ def get_public_key():
     Get the public key which can be used to verify tokens for this
     flowauth server.
     """
-    return current_app.config["PUBLIC_JWT_SIGNING_KEY"].decode(), 200
+    return (
+        current_app.config["PRIVATE_JWT_SIGNING_KEY"]
+        .public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        .decode()
+        .strip(),
+        200,
+    )
