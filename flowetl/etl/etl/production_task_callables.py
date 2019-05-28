@@ -10,12 +10,21 @@ import logging
 import shutil
 
 from pathlib import Path
+from uuid import uuid1
+from pendulum import utcnow
 
 from airflow.models import DagRun, BaseOperator
 from airflow.hooks.dbapi_hook import DbApiHook
+from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 from etl.model import ETLRecord
-from etl.etl_utils import get_session
+from etl.etl_utils import (
+    get_session,
+    find_files,
+    filter_files,
+    get_config,
+    generate_table_names,
+)
 
 # pylint: disable=unused-argument
 def render_and_run_sql__callable(
@@ -137,3 +146,56 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
         branch = "archive"
 
     return branch
+
+
+def trigger__callable(
+    *, dag_run: DagRun, dump_path: Path, cdr_type_config: dict, **kwargs
+):
+    """
+    Function that determines which files in dump should be processed
+    and triggers the correct ETL dag with config based on filename.
+
+    Parameters
+    ----------
+    dag_run : DagRun
+        Passed as part of the Dag context - contains the config.
+    dump_path : Path
+        Location of dump directory
+    cdr_type_config : dict
+        ETL config for each cdr type
+    """
+
+    found_files = find_files(dump_path=dump_path)
+    logging.info(found_files)
+
+    # remove files that either do not match a pattern
+    # or have been processed successfully allready...
+    filtered_files = filter_files(
+        found_files=found_files, cdr_type_config=cdr_type_config
+    )
+    logging.info(filtered_files)
+
+    # what to do with these!?
+    bad_files = list(set(found_files) - set(filtered_files))
+    logging.info(bad_files)
+
+    configs = [
+        (file, get_config(file_name=file.name, cdr_type_config=cdr_type_config))
+        for file in filtered_files
+    ]
+    logging.info(configs)
+
+    for file, config in configs:
+
+        cdr_type = config["cdr_type"]
+        cdr_date = config["cdr_date"]
+        uuid = uuid1()
+        table_names = generate_table_names(
+            cdr_type=cdr_type, cdr_date=cdr_date, uuid=uuid
+        )
+        trigger_dag(
+            f"etl_{cdr_type}",
+            execution_date=utcnow(),
+            run_id=f"{file.name}-{str(uuid)}",
+            conf={**config, **table_names},
+        )
