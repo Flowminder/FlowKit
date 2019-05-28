@@ -26,8 +26,24 @@ from airflow.operators.python_operator import BranchPythonOperator, PythonOperat
 from etl import model
 
 
-def construct_etl_sensor_dag(*, callable: Callable, default_args: dict):
+def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
+    """
+    This function constructs the sensor single task DAG that triggers ETL
+    DAGS with correct config based on filename.
 
+    Parameters
+    ----------
+    callable : Callable
+        The sense callable that deals with finding files and triggering
+        ETL DAGs
+    default_args : dict
+        Default arguments for DAG
+
+    Returns
+    -------
+    DAG
+        Airflow DAG
+    """
     with DAG(
         dag_id=f"etl_sensor", schedule_interval=None, default_args=default_args
     ) as dag:
