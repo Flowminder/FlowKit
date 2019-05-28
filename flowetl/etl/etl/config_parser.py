@@ -9,17 +9,10 @@ functions used for parsing global config
 
 import re
 import yaml
+
 from pathlib import Path
 
 from etl.etl_utils import CDRType
-
-
-def get_cdr_type_config(*, cdr_type: str, global_config: dict) -> dict:
-    """
-    Get the config for a particular type of CDR
-    """
-
-    return global_config["etl"][CDRType(cdr_type)]
 
 
 def validate_config(*, global_config_dict: dict) -> Exception:
@@ -43,12 +36,11 @@ def validate_config(*, global_config_dict: dict) -> Exception:
 
     for key, value in global_config_dict.get("etl", {}).items():
         if set(list(value.keys())) != set(["pattern", "concurrency"]):
-            print(value)
-            exceptions.append(
-                ValueError(
-                    f"Each etl subsection must contain a pattern and concurrency subsection - not present for {key}"
-                )
-            )
+            exc_msg = f"""
+                    Each etl subsection must contain a pattern and concurrency
+                    subsection - not present for {key}.
+            """
+            exceptions.append(ValueError(exc_msg))
 
     if exceptions != []:
         raise ValueError(exceptions)
