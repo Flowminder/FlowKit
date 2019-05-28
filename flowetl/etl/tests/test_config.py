@@ -17,7 +17,7 @@ from pendulum import parse
 
 from etl.model import ETLRecord
 from etl.config_constant import config
-from etl.config_parser import get_cdr_type_config, validate_config, get_config_from_file
+from etl.config_parser import validate_config, get_config_from_file
 from etl.etl_utils import (
     CDRType,
     find_files,
