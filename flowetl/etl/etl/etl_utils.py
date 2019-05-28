@@ -6,7 +6,6 @@
 """
 Contains utility functions for use in the ETL dag and it's callables
 """
-import yaml
 import re
 import os
 
@@ -15,6 +14,7 @@ from typing import List, Callable
 from enum import Enum
 from pathlib import Path
 from pendulum import parse
+from pendulum.date import Date as pendulumDate
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -22,6 +22,8 @@ from sqlalchemy.orm import sessionmaker
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
+
+from etl import model
 
 
 def construct_etl_sensor_dag(*, callable: Callable, default_args: dict):
@@ -213,12 +215,81 @@ def find_files(*, dump_path: Path, ignore_filenames=["README.md"]) -> List[Path]
         List of files found
     """
     files = filter(lambda file: file.name not in ignore_filenames, dump_path.glob("*"))
-    return files
-
-    #
+    return list(files)
 
 
-def generate_table_names(*, cdr_type: CDRType, uuid: UUID) -> dict:
+def filter_files(*, found_files: List, cdr_type_config: dict):
+    """
+    Takes a list of files and filters them based on two
+    factors;
+    1. Does the filename match any CDR type pattern if not remove
+    2. Has the file been successfully ingested if so remove
+
+    Parameters
+    ----------
+    found_files : List
+        List of found files should be Path objects
+    cdr_type_config : dict
+        config dict containing patterns for
+        each cdr type
+
+
+    Returns
+    -------
+    List
+        Files that can be processed by ETL DAG
+    """
+    filtered_files = []
+    for file in found_files:
+        try:
+            # try to parse file name
+            parsed_file_name_config = parse_file_name(
+                file_name=file.name, cdr_type_config=cdr_type_config
+            )
+        except ValueError:
+            # couldnt parse moving on
+            continue
+
+        cdr_type = parsed_file_name_config["cdr_type"]
+        cdr_date = parsed_file_name_config["cdr_date"]
+
+        session = get_session()
+        if model.ETLRecord.can_process(
+            cdr_type=cdr_type, cdr_date=cdr_date, session=session
+        ):
+            filtered_files.append(file)
+
+    return filtered_files
+
+
+def get_config(*, file_name: str, cdr_type_config: dict) -> dict:
+    """
+    Create DAG config that is based on filename
+
+    Parameters
+    ----------
+    file_name : str
+        name of file to construct config for
+    cdr_type_config : dict
+        config dict containing patterns for
+        each cdr type
+
+    Returns
+    -------
+    dict
+        Dictionary with config for this filename
+    """
+    parsed_file_name_config = parse_file_name(
+        file_name=file_name, cdr_type_config=cdr_type_config
+    )
+    template_path = f"etl/{parsed_file_name_config['cdr_type']}"
+    other_config = {"file_name": file_name, "template_path": template_path}
+    return {**parsed_file_name_config, **other_config}
+
+
+def generate_table_names(
+    *, cdr_type: CDRType, cdr_date: pendulumDate, uuid: UUID
+) -> dict:
     """
     Generates table names for the various stages of the ETL process.
 
@@ -228,6 +299,8 @@ def generate_table_names(*, cdr_type: CDRType, uuid: UUID) -> dict:
         The type of CDR we are dealing with - used to
         construct table name for the data's final
         resting place.
+    cdr_date: pendulumDate
+        The date associated to this files data
     uuid : UUID
         A uuid to be used in generating table names
 
@@ -240,7 +313,7 @@ def generate_table_names(*, cdr_type: CDRType, uuid: UUID) -> dict:
 
     extract_table = f"etl.x{uuid_sans_underscore}"
     transform_table = f"etl.t{uuid_sans_underscore}"
-    load_table = f"events.{cdr_type}"
+    load_table = f"events.{cdr_type}_{str(cdr_date.date()).replace('-','')}"
 
     return {
         "extract_table": extract_table,
@@ -277,6 +350,8 @@ def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
             file_cdr_date = parse(m.groups()[0])
 
     if file_cdr_type and file_cdr_date:
-        return {"cdr_type": file_cdr_type, "cdr_date": file_cdr_date}
+        parsed_file_info = {"cdr_type": file_cdr_type, "cdr_date": file_cdr_date}
     else:
         raise ValueError("No pattern match found")
+
+    return parsed_file_info
