@@ -59,7 +59,7 @@ class Token extends React.Component {
         <Grid item xs={3}>
           <Typography component="p">{expiry}</Typography>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={7}>
           <Tooltip title={copySuccess} placement="bottom">
             <Button variant="outlined" color="primary" onClick={this.copyToClipboard}>Copy</Button>
           </Tooltip>
@@ -81,7 +81,6 @@ class Token extends React.Component {
             </DialogContent>
           </Dialog>
         </Grid>
-        <Grid item xs={4} />
       </React.Fragment >
     );
   }
