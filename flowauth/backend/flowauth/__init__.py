@@ -1,6 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
 from functools import partial
 
 import flask
@@ -52,15 +54,14 @@ def create_app(test_config=None):
         aggregation_unit_blueprint, url_prefix="/spatial_aggregation"
     )
 
-    # Initialise the database
-    app.before_first_request(partial(init_db, force=app.config["RESET_DB"]))
-
     # Set the log level
     app.before_first_request(partial(app.logger.setLevel, app.config["LOG_LEVEL"]))
 
     if app.config["DEMO_MODE"]:  # Create demo data
         app.before_first_request(make_demodata)
     else:
+        # Initialise the database
+        app.before_first_request(partial(init_db, force=app.config["RESET_DB"]))
         # Create an admin user
         app.before_first_request(
             partial(
@@ -69,6 +70,10 @@ def create_app(test_config=None):
                 password=app.config["ADMIN_PASSWORD"],
             )
         )
+
+    app.before_first_request(
+        app.config["DB_IS_SET_UP"].wait
+    )  # Cause workers to wait for db to set up
 
     @app.after_request
     def set_xsrf_cookie(response):
