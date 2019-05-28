@@ -96,4 +96,3 @@ def test_dummy_trigger__callable(monkeypatch):
     mock_trigger_dag.assert_called_once_with(
         "etl_testing", run_id=str(uuid), execution_date=now
     )
-
