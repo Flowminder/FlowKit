@@ -9,16 +9,18 @@ Conftest for flowetl integration tests
 import os
 import shutil
 import logging
+import pytest
 
+from itertools import chain
+from pathlib import Path
 from time import sleep
 from subprocess import DEVNULL, Popen
 from pendulum import now, Interval
 from airflow.models import DagRun
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-
-import pytest
-import docker
+from docker import from_env
+from docker.types import Mount
 
 
 @pytest.fixture(scope="session")
@@ -26,15 +28,182 @@ def docker_client():
     """
     docker client object
     """
-    return docker.from_env()
+    return from_env()
 
 
 @pytest.fixture(scope="session")
-def flowetl_tag():
+def tag():
     """
     Get flowetl tag to use
     """
-    return os.environ.get("FLOWETL_TAG", "latest")
+    return os.environ.get("TAG", "latest")
+
+
+@pytest.fixture(scope="session")
+def container_env():
+
+    flowdb = {
+        "POSTGRES_USER": "flowdb",
+        "POSTGRES_PASSWORD": "flowflow",
+        "POSTGRES_DB": "flowdb",
+        "FLOWMACHINE_FLOWDB_USER": "flowmachine",
+        "FLOWAPI_FLOWDB_USER": "flowapi",
+        "FLOWMACHINE_FLOWDB_PASSWORD": "flowmachine",
+        "FLOWAPI_FLOWDB_PASSWORD": "flowapi",
+    }
+
+    flowetl_db = {
+        "POSTGRES_USER": "flowetl",
+        "POSTGRES_PASSWORD": "flowetl",
+        "POSTGRES_DB": "flowetl",
+    }
+
+    flowetl = {
+        "AIRFLOW__CORE__EXECUTOR": "LocalExecutor",
+        "AIRFLOW__CORE__FERNET_KEY": "ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=",
+        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
+        "AIRFLOW_CONN_FLOWDB": f"postgres://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
+        "MOUNT_HOME": "/mounts",
+        "POSTGRES_USER": "flowetl",
+        "POSTGRES_PASSWORD": "flowetl",
+        "POSTGRES_DB": "flowetl",
+        "POSTGRES_HOST": "flowetl_db",
+    }
+
+    return {"flowetl": flowetl, "flowdb": flowdb, "flowetl_db": flowetl_db}
+
+
+@pytest.fixture(scope="session")
+def container_ports():
+
+    flowetl_db_host_port = 9000
+    flowdb_host_port = 9001
+
+    return {"flowetl_db": flowetl_db_host_port, "flowdb": flowdb_host_port}
+
+
+@pytest.fixture(scope="module")
+def container_network(docker_client):
+
+    network = docker_client.networks.create("testing", driver="bridge")
+    yield
+    network.remove()
+
+
+@pytest.fixture(scope="module")
+def mounts():
+
+    config_mount = Mount("/mounts/config", f"{os.getcwd()}/mounts/config", type="bind")
+    archive_mount = Mount(
+        "/mounts/archive", f"{os.getcwd()}/mounts/archive", type="bind"
+    )
+    dump_mount = Mount("/mounts/dump", f"{os.getcwd()}/mounts/dump", type="bind")
+    ingest_mount = Mount("/mounts/ingest", f"{os.getcwd()}/mounts/ingest", type="bind")
+    quarantine_mount = Mount(
+        "/mounts/quarantine", f"{os.getcwd()}/mounts/quarantine", type="bind"
+    )
+    return [config_mount, archive_mount, dump_mount, ingest_mount, quarantine_mount]
+
+
+@pytest.fixture(scope="module")
+def flowetl_container(docker_client, tag, container_env, container_network, mounts):
+
+    container = docker_client.containers.run(
+        f"flowminder/flowetl:{tag}",
+        environment=container_env["flowetl"],
+        name="flowetl",
+        network="testing",
+        restart_policy={"Name": "always"},
+        ports={"8080": "8080"},
+        mounts=mounts,
+        detach=True,
+    )
+    yield container
+    container.kill()
+    container.remove()
+
+
+@pytest.fixture(scope="module")
+def flowdb_container(
+    docker_client, tag, container_env, container_ports, container_network
+):
+
+    container = docker_client.containers.run(
+        f"flowminder/flowdb:{tag}",
+        environment=container_env["flowdb"],
+        ports={"5432": container_ports["flowdb"]},
+        name="flowdb",
+        network="testing",
+        detach=True,
+    )
+    yield
+    container.kill()
+    container.remove()
+
+
+@pytest.fixture(scope="module")
+def flowetl_db_container(
+    docker_client, container_env, container_ports, container_network
+):
+
+    container = docker_client.containers.run(
+        f"postgres:11.0",
+        environment=container_env["flowetl_db"],
+        ports={"5432": container_ports["flowetl_db"]},
+        name="flowetl_db",
+        network="testing",
+        detach=True,
+    )
+    yield
+    container.kill()
+    container.remove()
+
+
+@pytest.fixture(scope="module")
+def container_setup(flowetl_container, flowdb_container, flowetl_db_container):
+    yield flowetl_container
+
+
+@pytest.fixture(scope="module")
+def trigger_dags(container_setup):
+    flowetl = container_setup
+
+    # I know bad but there just isn't a way to know that the scheduler is ready!
+    sleep(5)
+
+    def trigger_dags_function():
+
+        dags = ["etl_sensor", "etl_sms", "etl_mds", "etl_calls", "etl_topups"]
+
+        for dag in dags:
+            flowetl.exec_run(f"airflow unpause {dag}")
+
+        flowetl.exec_run("airflow trigger_dag etl_sensor")
+
+    return trigger_dags_function
+
+
+@pytest.fixture(scope="function")
+def write_files_to_dump():
+
+    dump_dir = f"{os.getcwd()}/mounts/dump"
+    archive_dir = f"{os.getcwd()}/mounts/archive"
+    quarantine_dir = f"{os.getcwd()}/mounts/quarantine"
+
+    def write_files_to_dump_function(*, file_names):
+        for file_name in file_names:
+            Path(f"{dump_dir}/{file_name}").touch()
+
+    yield write_files_to_dump_function
+
+    files_to_remove = chain(
+        Path(dump_dir).glob("*"),
+        Path(archive_dir).glob("*"),
+        Path(quarantine_dir).glob("*"),
+    )
+    files_to_remove = filter(lambda file: file.name != "README.md", files_to_remove)
+
+    [file.unlink() for file in files_to_remove]
 
 
 @pytest.fixture(scope="module")
@@ -186,8 +355,8 @@ def flowdb_session(flowdb_connection_engine):
 
 
 @pytest.fixture(scope="session")
-def flowetl_db_connection_engine():
-    conn_str = f"postgresql://{os.getenv('FLOWETL_POSTGRES_USER')}:{os.getenv('FLOWETL_POSTGRES_PASSWORD')}@localhost:{os.getenv('FLOWETL_POSTGRES_PORT')}/{os.getenv('FLOWETL_POSTGRES_DB')}"
+def flowetl_db_connection_engine(container_env, container_ports):
+    conn_str = f"postgresql://{container_env['flowetl_db']['POSTGRES_USER']}:{container_env['flowetl_db']['POSTGRES_PASSWORD']}@localhost:{container_ports['flowetl_db']}/{container_env['flowetl_db']['POSTGRES_DB']}"
     logging.info(conn_str)
     engine = create_engine(conn_str)
 
@@ -203,3 +372,9 @@ def flowetl_db_connection(flowetl_db_connection_engine):
 @pytest.fixture(scope="function")
 def flowetl_db_session(flowetl_db_connection_engine):
     return sessionmaker(bind=flowetl_db_connection_engine)()
+
+
+@pytest.fixture(scope="function")
+def airflow_docker_pipeline_run(docker_client, flowetl_tag):
+    res = docker_client.containers.exec_run("bash -c 'id -g'")
+    logging.info(res)
