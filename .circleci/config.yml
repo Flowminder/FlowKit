@@ -528,8 +528,8 @@ jobs:
             docker push flowminder/<<parameters.component>>:$CIRCLE_SHA1
 
   run_flowetl_tests:
-    docker:
-      - image: circleci/python:3.7
+    machine:
+      image: circleci/classic:201808-01
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       TESTING: "true"
