@@ -104,3 +104,32 @@ class JoinToLocation(Query):
         """
 
         return sql
+
+
+def location_joined_query(left, *, spatial_unit, time_col="time"):
+    """
+    Helper function which returns JoinToLocation(left_query, spatial_unit, time_col)
+    unless type(spatial_unit)==CellSpatialUnit, in which case this returns left_query.
+
+    Parameters
+    ----------
+    left : flowmachine.Query
+        This represents a table that can be joined to the cell information
+        table. This must have a date column (called time) and a location column
+        call 'location_id'.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit
+        A query which maps cell identifiers in the CDR to a different spatial
+        unit (e.g. versioned site or admin region)
+    time_col : str, default 'time'
+        The name of the column that identifies the time in the source table
+        e.g. 'time', 'date', 'start_time' etc.
+
+    Returns
+    -------
+    flowmachine.Query
+        Either a JoinToLocation object, or the input parameter 'left'
+    """
+    if isinstance(spatial_unit, CellSpatialUnit):
+        return left
+    else:
+        return JoinToLocation(left, spatial_unit=spatial_unit, time_col=time_col)
