@@ -21,6 +21,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from docker import from_env
 from docker.types import Mount
+from shutil import rmtree
 
 
 @pytest.fixture(scope="session")
@@ -91,7 +92,16 @@ def container_network(docker_client):
 
 
 @pytest.fixture(scope="function")
-def mounts():
+def data_dir():
+    path = f"{os.getcwd()}/pg_data"
+    if not os.path.exists(path):
+        os.makedirs(path)
+    yield path
+    rmtree(path)
+
+
+@pytest.fixture(scope="function")
+def mounts(data_dir):
 
     config_mount = Mount("/mounts/config", f"{os.getcwd()}/mounts/config", type="bind")
     archive_mount = Mount(
@@ -102,12 +112,24 @@ def mounts():
     quarantine_mount = Mount(
         "/mounts/quarantine", f"{os.getcwd()}/mounts/quarantine", type="bind"
     )
-    return [config_mount, archive_mount, dump_mount, ingest_mount, quarantine_mount]
+    flowetl_mounts = [
+        config_mount,
+        archive_mount,
+        dump_mount,
+        ingest_mount,
+        quarantine_mount,
+    ]
+
+    data_mount = Mount("/var/lib/postgresql/data", data_dir, type="bind")
+    ingest_mount = Mount("/ingest", f"{os.getcwd()}/mounts/ingest", type="bind")
+    flowdb_mounts = [data_mount, ingest_mount]
+
+    return {"flowetl": flowetl_mounts, "flowdb": flowdb_mounts}
 
 
 @pytest.fixture(scope="function")
 def flowdb_container(
-    docker_client, tag, container_env, container_ports, container_network
+    docker_client, tag, container_env, container_ports, container_network, mounts
 ):
 
     user = f"{os.getuid()}:{os.getgid()}"
@@ -117,6 +139,7 @@ def flowdb_container(
         ports={"5432": container_ports["flowdb"]},
         name="flowdb",
         network="testing",
+        mounts=mounts["flowdb"],
         user=user,
         detach=True,
     )
@@ -162,7 +185,7 @@ def flowetl_container(
         network="testing",
         restart_policy={"Name": "always"},
         ports={"8080": "8080"},
-        mounts=mounts,
+        mounts=mounts["flowetl"],
         user=user,
         detach=True,
     )
