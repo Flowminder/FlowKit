@@ -8,11 +8,11 @@ import Lister from "./Lister";
 import { getUsers, deleteUser } from "./util/api";
 
 const styles = theme => ({
-	root: {
-		...theme.mixins.gutters(),
-		paddingTop: theme.spacing.unit * 2,
-		paddingBottom: theme.spacing.unit * 2
-	}
+  root: {
+    ...theme.mixins.gutters(),
+    paddingTop: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit * 2
+  }
 });
 const UserList = Lister(UserAdminDetails, "Users", getUsers, deleteUser);
 export default withStyles(styles)(UserList);

@@ -143,7 +143,7 @@ class UserAdminDetails extends React.Component {
           if (err.code === 400) {
             this.setState({ pageError: true, errors: err });
           } else {
-            this.setState({ hasError: true, error: err })
+            this.setState({ hasError: true, error: err });
           }
         });
     }

@@ -62,7 +62,8 @@ class GroupDetails extends React.Component {
         });
       } else {
         state = Object.assign(state, {
-          name_helper_text: "Group name may only contain letters, numbers and underscores."
+          name_helper_text:
+            "Group name may only contain letters, numbers and underscores."
         });
       }
       // console.log(event.target.value);
@@ -79,7 +80,6 @@ class GroupDetails extends React.Component {
     const { name_helper_text } = this.state;
     var task;
     if (name_helper_text === "") {
-
       if (this.state.edit_mode) {
         task = renameGroup(this.props.item_id, this.state.name);
       } else {
@@ -101,7 +101,7 @@ class GroupDetails extends React.Component {
           if (err.code === 400) {
             this.setState({ pageError: true, errors: err });
           } else {
-            this.setState({ hasError: true, error: err })
+            this.setState({ hasError: true, error: err });
           }
         });
     }
