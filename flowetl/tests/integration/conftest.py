@@ -110,12 +110,14 @@ def flowdb_container(
     docker_client, tag, container_env, container_ports, container_network
 ):
 
+    user = f"{os.getuid()}:{os.getgid()}"
     container = docker_client.containers.run(
         f"flowminder/flowdb:{tag}",
         environment=container_env["flowdb"],
         ports={"5432": container_ports["flowdb"]},
         name="flowdb",
         network="testing",
+        user=user,
         detach=True,
     )
     yield
@@ -152,6 +154,7 @@ def flowetl_container(
     mounts,
 ):
 
+    user = f"{os.getuid()}:{os.getgid()}"
     container = docker_client.containers.run(
         f"flowminder/flowetl:{tag}",
         environment=container_env["flowetl"],
@@ -160,6 +163,7 @@ def flowetl_container(
         restart_policy={"Name": "always"},
         ports={"8080": "8080"},
         mounts=mounts,
+        user=user,
         detach=True,
     )
     sleep(10)  # BADDD but no clear way to know that airflow scheduler is ready!
