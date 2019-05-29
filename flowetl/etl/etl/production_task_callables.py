@@ -198,4 +198,5 @@ def trigger__callable(
             execution_date=utcnow(),
             run_id=f"{file.name}-{str(uuid)}",
             conf={**config, **table_names},
+            replace_microseconds=False,
         )
