@@ -353,7 +353,9 @@ def flowdb_connection(flowdb_connection_engine):
 
 @pytest.fixture(scope="function")
 def flowdb_session(flowdb_connection_engine):
-    return sessionmaker(bind=flowdb_connection_engine)()
+    session = sessionmaker(bind=flowdb_connection_engine)()
+    yield session
+    session.close()
 
 
 @pytest.fixture(scope="function")
@@ -367,7 +369,9 @@ def flowetl_db_connection_engine(container_env, container_ports):
 
 @pytest.fixture(scope="function")
 def flowetl_db_session(flowetl_db_connection_engine):
-    return sessionmaker(bind=flowetl_db_connection_engine)()
+    session = sessionmaker(bind=flowetl_db_connection_engine)()
+    yield session
+    session.close()
 
 
 @pytest.fixture(scope="function")
