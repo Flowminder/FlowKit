@@ -7,11 +7,9 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import {
-  getPublicKey,
-} from "./util/api";
+import { getPublicKey } from "./util/api";
 import Grid from "@material-ui/core/Grid";
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 
 const styles = theme => ({
@@ -21,56 +19,54 @@ const styles = theme => ({
     paddingBottom: theme.spacing.unit * 2
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing.unit
   },
   gridRoot: {
     flexGrow: 1
   },
   codeBlock: {
-    fontFamily:"Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace"
-}
+    fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace"
+  }
 });
 
 class PublicKey extends React.Component {
-  state = {key:"", copySuccess: ''}
-  componentDidMount() {
-    getPublicKey()
-      .then(key => {
-        this.setState({
-          key: key.public_key
-            })
-      })
-      .catch(err => {
-        this.setState({ hasError: true, error: err });
+  state = { key: "", copySuccess: "" };
+  async componentDidMount() {
+    try {
+      const key = await getPublicKey();
+      this.setState({
+        key: key.public_key
       });
+    } catch (err) {
+      this.setState({ hasError: true, error: err });
+    }
   }
 
   copyToClipboard = event => {
-    const textField = document.createElement('textarea')
-    textField.style.whiteSpace = "pre-wrap"
-    textField.value = this.state.key
-    document.body.appendChild(textField)
-    textField.select()
-    document.execCommand('copy')
-    textField.remove()
-    this.setState({ copySuccess: 'Copied!' });
+    const textField = document.createElement("textarea");
+    textField.style.whiteSpace = "pre-wrap";
+    textField.value = this.state.key;
+    document.body.appendChild(textField);
+    textField.select();
+    document.execCommand("copy");
+    textField.remove();
+    this.setState({ copySuccess: "Copied!" });
   };
   downloadkey = () => {
     const element = document.createElement("a");
-    const file = new Blob([this.state.key], { type: 'application/x-pem-file' });
+    const file = new Blob([this.state.key], { type: "application/x-pem-file" });
     element.href = URL.createObjectURL(file);
     element.download = "flowauth_public_key.pub";
     document.body.appendChild(element);
     if (window.Cypress) {
-          // Do not attempt to actually download the file in test.
-          // Just leave the anchor in there. Ensure your code doesn't
-          // automatically remove it either.
-          return;
-        }
+      // Do not attempt to actually download the file in test.
+      // Just leave the anchor in there. Ensure your code doesn't
+      // automatically remove it either.
+      return;
+    }
     element.click();
     element.remove();
-  }
-
+  };
 
   render() {
     if (this.state.hasError) throw this.state.error;
@@ -80,24 +76,51 @@ class PublicKey extends React.Component {
     return (
       <Paper className={classes.root}>
         <div className={classes.gridRoot}>
-          <Grid container spacing={16} direction="row"
-  justify="flex-start"
-  alignItems="flex-start">
-        <Grid item xs>
-        <Paper className={classes.root} id="public_key_body" >
-
-        {key.split("\n").map((val, ix) => {return <Typography variant="body1" className={classes.codeBlock} noWrap>{val}</Typography>})}
-
+          <Grid
+            container
+            spacing={16}
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
+            <Grid item xs>
+              <Paper className={classes.root} id="public_key_body">
+                {key.split("\n").map((val, ix) => {
+                  return (
+                    <Typography
+                      variant="body1"
+                      className={classes.codeBlock}
+                      noWrap
+                    >
+                      {val}
+                    </Typography>
+                  );
+                })}
               </Paper>
-              </Grid>
-              <Grid item  xs={3}>
+            </Grid>
+            <Grid item xs={3}>
               <Tooltip title={copySuccess} placement="bottom">
-            <Button variant="outlined" color="primary" onClick={this.copyToClipboard} className={classes.button}>Copy</Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={this.copyToClipboard}
+                  className={classes.button}
+                >
+                  Copy
+                </Button>
               </Tooltip>
-          <Button variant="outlined" color="primary" id="download" onClick={this.downloadkey} className={classes.button}>Download</Button>
-              </Grid>
-              </Grid>
-              </div>
+              <Button
+                variant="outlined"
+                color="primary"
+                id="download"
+                onClick={this.downloadkey}
+                className={classes.button}
+              >
+                Download
+              </Button>
+            </Grid>
+          </Grid>
+        </div>
       </Paper>
     );
   }

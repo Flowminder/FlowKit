@@ -19,10 +19,11 @@ class AdminMenu extends React.Component {
           <ListItem button onClick={() => onClick("user_admin")} id="user_list">
             <ListItemText primary="Users" />
           </ListItem>
-          < ListItem button onClick={
-            () => onClick("server_admin")
-          }
-            id="server_list" >
+          <ListItem
+            button
+            onClick={() => onClick("server_admin")}
+            id="server_list"
+          >
             <ListItemText primary="Servers" />
           </ListItem>
           <ListItem
@@ -38,7 +39,11 @@ class AdminMenu extends React.Component {
           <ListItem button onClick={() => onClick("aggregation_unit_admin")}>
             <ListItemText primary="Aggregation Units" />
           </ListItem>
-        <ListItem button onClick={() => onClick("public_key_admin")} id="public_key">
+          <ListItem
+            button
+            onClick={() => onClick("public_key_admin")}
+            id="public_key"
+          >
             <ListItemText primary="Public Key" />
           </ListItem>
         </List>

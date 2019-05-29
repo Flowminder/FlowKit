@@ -30,19 +30,18 @@ class TokenDetails extends React.Component {
     rights: {},
     expiry: new Date(),
     latest_expiry: new Date(),
-    username_helper_text: "",
+    username_helper_text: ""
   };
 
   handleSubmit = () => {
     const { name, expiry, rights, name_helper_text } = this.state;
     const { serverID, cancel } = this.props;
     if (name && name_helper_text === "") {
-      createToken(name, serverID, new Date(expiry).toISOString(), rights)
-        .then(
-          json => {
-            cancel();
-          }
-        );
+      createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
+        json => {
+          cancel();
+        }
+      );
     }
   };
 
@@ -74,18 +73,24 @@ class TokenDetails extends React.Component {
     var letters = /^[A-Za-z0-9_]+$/;
     let name = event.target.value;
     if (name.match(letters)) {
-      this.setState(Object.assign(this.state, {
-        name_helper_text: ""
-      }));
+      this.setState(
+        Object.assign(this.state, {
+          name_helper_text: ""
+        })
+      );
     } else if (name.length == 0) {
-      this.setState(Object.assign(this.state, {
-        name_helper_text: "Token name cannot be blank."
-      }));
+      this.setState(
+        Object.assign(this.state, {
+          name_helper_text: "Token name cannot be blank."
+        })
+      );
     } else {
-      this.setState(Object.assign(this.state, {
-        name_helper_text:
-          "Token name may only contain letters, numbers and underscores."
-      }));
+      this.setState(
+        Object.assign(this.state, {
+          name_helper_text:
+            "Token name may only contain letters, numbers and underscores."
+        })
+      );
     }
     this.setState({ name: event.target.value });
   };

@@ -54,7 +54,13 @@ class ServerAdminDetails extends React.Component {
       maxlife_helper_text
     } = this.state;
     const { item_id, onClick } = this.props;
-    if (name && name_helper_text === "" && key_helper_text === "" && max_life && maxlife_helper_text === "") {
+    if (
+      name &&
+      name_helper_text === "" &&
+      key_helper_text === "" &&
+      max_life &&
+      maxlife_helper_text === ""
+    ) {
       var task;
       if (edit_mode) {
         task = editServer(
@@ -81,7 +87,7 @@ class ServerAdminDetails extends React.Component {
           if (err.code === 400) {
             this.setState({ pageError: true, errors: err });
           } else {
-            this.setState({ hasError: true, error: err })
+            this.setState({ hasError: true, error: err });
           }
         });
     }
@@ -94,8 +100,6 @@ class ServerAdminDetails extends React.Component {
       return false;
     }
   };
-
-
 
   handleDateChange = date => {
     this.setState({ latest_expiry: date });
@@ -140,7 +144,8 @@ class ServerAdminDetails extends React.Component {
         });
       } else if (!servername.match(letters)) {
         state = Object.assign(state, {
-          name_helper_text: "Server name may only contain letters, numbers and underscores."
+          name_helper_text:
+            "Server name may only contain letters, numbers and underscores."
         });
       } else {
         state = Object.assign(state, {
@@ -148,7 +153,6 @@ class ServerAdminDetails extends React.Component {
         });
       }
     }
-
 
     if (name === "max_life") {
       let maxlife = event.target.value;
@@ -163,7 +167,7 @@ class ServerAdminDetails extends React.Component {
       }
     }
     this.setState(state);
-  }
+  };
 
   componentDidMount() {
     const { item_id } = this.props;
@@ -194,7 +198,7 @@ class ServerAdminDetails extends React.Component {
       getAllCapabilities()
         .then(json => {
           this.setState({
-            rights: json,
+            rights: json
           });
         })
         .catch(err => {
@@ -229,7 +233,7 @@ class ServerAdminDetails extends React.Component {
             margin="normal"
             required={true}
             error={this.state.name_helper_text}
-            helperText={(this.state.name_helper_text)}
+            helperText={this.state.name_helper_text}
           />
         </Grid>
         <Grid item xs={6} />
