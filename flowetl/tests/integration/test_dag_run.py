@@ -20,7 +20,7 @@ def test_archive_branch(airflow_local_pipeline_run, wait_for_completion):
 
     # passing empty TASK_TO_FAIL to signal no task should fail
     airflow_local_pipeline_run({"TASK_TO_FAIL": ""})
-    final_etl_state = wait_for_completion(end_state)
+    final_etl_state = wait_for_completion(end_state, dag_id="etl_testing")
     assert final_etl_state == end_state
 
     etl_dag = DagRun.find("etl_testing", state=end_state)[0]
@@ -109,7 +109,7 @@ def test_quarantine_branch(
     """
     end_state = "failed"
     airflow_local_pipeline_run({"TASK_TO_FAIL": task_to_fail})
-    final_etl_state = wait_for_completion(end_state)
+    final_etl_state = wait_for_completion(end_state, dag_id="etl_testing")
     assert final_etl_state == end_state
 
     etl_dag = DagRun.find("etl_testing", state=end_state)[0]
