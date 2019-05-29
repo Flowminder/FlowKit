@@ -179,8 +179,9 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
     if audience is None and "FLOWAPI_IDENTIFIER" in os.environ:
         audience = os.environ["FLOWAPI_IDENTIFIER"]
 
-    private_key = load_private_key(os.getenv("PRIVATE_JWT_SIGNING_KEY"))
-    if private_key is None:
+    try:
+        private_key = load_private_key(os.environ["PRIVATE_JWT_SIGNING_KEY"])
+    except KeyError:
         raise EnvironmentError(
             "PRIVATE_JWT_SIGNING_KEY environment variable must be set."
         )
