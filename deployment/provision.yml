@@ -10,7 +10,7 @@
   roles:
     - base_packages
     - docker
-    - docker-compose
+    - docker_compose
     - role: user_accounts
       username: "{{ username }}"
       password: "{{ password }}"
