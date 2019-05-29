@@ -83,7 +83,7 @@ executors:
         default: "2015-01-01"
       disaster_end_date:
         type: string
-        default: "2015-01-01" 
+        default: "2015-01-01"
     environment:
         POSTGRES_PASSWORD: flowflow
         MPLBACKEND: "agg"
@@ -551,7 +551,7 @@ jobs:
           name: run flowetl integration tests
           command: |
             cd flowetl
-            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
+            TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
       - run:
           name: run etl module unit tests
           command: |
