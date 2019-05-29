@@ -69,6 +69,7 @@ def container_env():
         "POSTGRES_PASSWORD": "flowetl",
         "POSTGRES_DB": "flowetl",
         "POSTGRES_HOST": "flowetl_db",
+        "AIRFLOW__WEBSERVER__WEB_SERVER_HOST": "0.0.0.0",
     }
 
     return {"flowetl": flowetl, "flowdb": flowdb, "flowetl_db": flowetl_db}
