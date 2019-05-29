@@ -119,7 +119,9 @@ describe("Server management", function () {
         cy.get("#name").type(server_name, {
             force: true
         });
-        cy.get("#max-life").type("1234");
+        cy.get("#max-life").type("1234", {
+            force: true
+        });
         cy.contains("Save").click();
         cy.contains(server_name).should("be.visible");
     });
