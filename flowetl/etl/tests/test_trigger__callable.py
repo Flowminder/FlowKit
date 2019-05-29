@@ -62,6 +62,7 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
         conf=expected_conf,
         execution_date=now,
         run_id=f"SMS_20160101.csv.gz-{uuid}",
+        replace_microseconds=False,
     )
 
 
@@ -127,6 +128,7 @@ def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
         conf=expected_conf,
         execution_date=now,
         run_id=f"SMS_20160102.csv.gz-{uuid}",
+        replace_microseconds=False,
     )
 
 
@@ -189,6 +191,7 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
         conf=expected_conf_file1,
         execution_date=now,
         run_id=f"SMS_20160101.csv.gz-{uuid}",
+        replace_microseconds=False,
     )
 
     trigger_dag_mock.assert_any_call(
@@ -196,4 +199,6 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
         conf=expected_conf_file2,
         execution_date=now,
         run_id=f"CALLS_20160102.csv.gz-{uuid}",
+        replace_microseconds=False,
     )
+
