@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Buttons to copy token to clipboard and download token as file added to token list page.[#704](https://github.com/Flowminder/FlowKit/issues/704)
+-  Two new worked examples: "Cell Towers Per Region" and "Unique Subscriber Counts". [#633](https://github.com/Flowminder/FlowKit/issues/633), [#634](https://github.com/Flowminder/FlowKit/issues/634)
 
 ### Changed
 - The `FLOWDB_DEBUG` environment variable has been renamed to `FLOWDB_ENABLE_POSTGRES_DEBUG_MODE`.

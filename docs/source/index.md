@@ -43,7 +43,7 @@ This architecture is shown in the figure below.
     
 - FlowAuth
 
-    An authentication management system used to generate access tokens for use with FlowClient.
+    An authentication management system used to generate access tokens for use with FlowClient and FlowAPI.
     <p>    
 
 - Redis
