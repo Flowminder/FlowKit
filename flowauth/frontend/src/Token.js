@@ -92,7 +92,7 @@ class Token extends React.Component {
             </DialogContent>
           </Dialog>
         </Grid>
-      </React.Fragment >
+      </React.Fragment>
     );
   }
 }
