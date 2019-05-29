@@ -396,6 +396,8 @@ class PolygonSpatialUnit(BaseSpatialUnit):
         if isinstance(polygon_table, Query):
             self.polygon_table = polygon_table
         else:
+            # Creating a GeoTable object here means that we don't have to handle
+            # admin tables and Grid objects differently in self.geo_augment
             self.polygon_table = GeoTable(name=polygon_table, geom_column=geom_col)
 
         self.geom_col = geom_col
