@@ -82,7 +82,7 @@ def container_ports():
     return {"flowetl_db": flowetl_db_host_port, "flowdb": flowdb_host_port}
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def container_network(docker_client):
 
     network = docker_client.networks.create("testing", driver="bridge")
@@ -90,7 +90,7 @@ def container_network(docker_client):
     network.remove()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def mounts():
 
     config_mount = Mount("/mounts/config", f"{os.getcwd()}/mounts/config", type="bind")
@@ -336,7 +336,7 @@ def wait_for_completion():
     return wait_func
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def flowdb_connection_engine(container_env, container_ports):
     conn_str = f"postgresql://{container_env['flowdb']['POSTGRES_USER']}:{container_env['flowdb']['POSTGRES_PASSWORD']}@localhost:{container_ports['flowdb']}/flowdb"
     engine = create_engine(conn_str)
@@ -349,7 +349,6 @@ def flowdb_connection(flowdb_connection_engine):
     connection = flowdb_connection_engine.connect()
     trans = connection.begin()
     yield connection, trans
-    connection.close()
 
 
 @pytest.fixture(scope="function")
@@ -357,19 +356,13 @@ def flowdb_session(flowdb_connection_engine):
     return sessionmaker(bind=flowdb_connection_engine)()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def flowetl_db_connection_engine(container_env, container_ports):
     conn_str = f"postgresql://{container_env['flowetl_db']['POSTGRES_USER']}:{container_env['flowetl_db']['POSTGRES_PASSWORD']}@localhost:{container_ports['flowetl_db']}/{container_env['flowetl_db']['POSTGRES_DB']}"
     logging.info(conn_str)
     engine = create_engine(conn_str)
 
     return engine
-
-
-@pytest.fixture(scope="function")
-def flowetl_db_connection(flowetl_db_connection_engine):
-    with flowetl_db_connection_engine.begin() as connection:
-        yield connection
 
 
 @pytest.fixture(scope="function")
