@@ -334,9 +334,7 @@ jobs:
             - ~/.cache
       - run:
           name: Linting JS with prettier
-          command: |
-            cd flowauth/frontend
-            $(npm bin)/prettier --check "**/*.js"
+          command: $(npm bin)/prettier --check "**/*.js"
 
   run_flowmachine_tests:
     executor:
