@@ -318,17 +318,25 @@ jobs:
       - image: circleci/node
     working_directory: /home/circleci/project/flowauth/frontend
     steps:
-      - checkout
+      - checkout:
+          path: /home/circleci/project/
       - restore_cache:
-          key: flowauth-deps-1-{{ checksum "package-lock.json" }}
+          keys:
+            - flowauth-deps-1-{{ checksum "package.json" }}
       - run:
           name: Install deps
-          command: npm install
+          command: npm ci
       - save_cache:
-          key: flowauth-deps-1-{{ checksum "package-lock.json" }}
+          key: flowauth-deps-1-{{ checksum "package.json" }}
+          # cache NPM modules and the folder with the Cypress binary
           paths:
-            - ./node_modules
-      - run: node_modules/.bin/prettier --check "**/*.js"
+            - ~/.npm
+            - ~/.cache
+      - run:
+          name: Linting JS with prettier
+          command: |
+            cd flowauth/frontend
+            $(npm bin)/prettier --check "**/*.js"
 
   run_flowmachine_tests:
     executor:
@@ -480,9 +488,18 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
+      - restore_cache:
+          keys:
+            - flowauth-deps-1-{{ checksum "package.json" }}
       - run:
           name: Cypress setup
           command: npm ci
+      - save_cache:
+          key: flowauth-deps-1-{{ checksum "package.json" }}
+          # cache NPM modules and the folder with the Cypress binary
+          paths:
+            - ~/.npm
+            - ~/.cache
       - run:
           name: Wait for backing db
           command: |
