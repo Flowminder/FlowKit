@@ -9,6 +9,8 @@ from typing import List
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
+valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+
 
 class EventCount(SubscriberFeature):
     """
@@ -41,13 +43,13 @@ class EventCount(SubscriberFeature):
     >>> s = EventCount("2016-01-01", "2016-01-07", direction="in")
     >>> s.get_dataframe()
 
-             subscriber  event_count
-    0  2ZdMowMXoyMByY07           65
-    1  MobnrVMDK24wPRzB           81
-    2  0Ze1l70j0LNgyY4w           57
-    3  Nnlqka1oevEMvVrm           63
-    4  4dqenN2oQZExwEK2           59
-                    ...          ...
+          subscriber        value
+    2ZdMowMXoyMByY07           65
+    MobnrVMDK24wPRzB           81
+    0Ze1l70j0LNgyY4w           57
+    Nnlqka1oevEMvVrm           63
+    4dqenN2oQZExwEK2           59
+                 ...          ...
     """
 
     def __init__(
@@ -66,16 +68,14 @@ class EventCount(SubscriberFeature):
         self.subscriber_identifier = subscriber_identifier
         self.direction = direction
         self.hours = hours
+        self.tables = tables
 
-        if direction not in {"in", "out", "both"}:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
-
-        if self.direction == "both":
+        if self.direction in {"both"}:
             column_list = [self.subscriber_identifier]
-            self.tables = tables
-        else:
+        elif self.direction in {"in", "out"}:
             column_list = [self.subscriber_identifier, "outgoing"]
-            self.tables = tables
+        else:
+            raise ValueError("{} is not a valid direction.".format(self.direction))
 
         self.unioned_query = EventsTablesUnion(
             self.start,
@@ -90,7 +90,7 @@ class EventCount(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "event_count"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
         where_clause = ""
@@ -99,7 +99,7 @@ class EventCount(SubscriberFeature):
                 f"WHERE outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
             )
         return f"""
-        SELECT subscriber, COUNT(*) as event_count FROM
+        SELECT subscriber, COUNT(*) as value FROM
         ({self.unioned_query.get_query()}) u
         {where_clause}
         GROUP BY subscriber

@@ -3,12 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.core.server.utils import (
-    send_message_and_receive_reply,
+    send_zmq_message_and_receive_reply,
     FM_EXAMPLE_MESSAGE,
 )
+from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features import daily_location
 
 
-def test_send_message_and_receive_reply(zmq_host, zmq_port):
+def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
     """
     Reply from the flowmachine server to the example message stored in `FM_EXAMPLE_MESSAGE` is as expected.
     """
@@ -16,20 +18,31 @@ def test_send_message_and_receive_reply(zmq_host, zmq_port):
     # Check that FM_EXAMPLE_MESSAGE contains the expected message
     msg_expected = {
         "action": "run_query",
-        "query_kind": "daily_location",
-        "request_id": "DUMMY_ID",
         "params": {
-            "date": "2016-01-01",
-            "daily_location_method": "last",
-            "aggregation_unit": "admin3",
-            "subscriber_subset": "all",
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
+        "request_id": "DUMMY_ID",
     }
     assert msg_expected == FM_EXAMPLE_MESSAGE
 
+    q = SpatialAggregate(
+        locations=daily_location(
+            date="2016-01-01", method="last", level="admin3", subscriber_subset=None
+        )
+    )
+    expected_query_id = q.md5
+
     # Check that the flowmachine server sends the expected reply
-    reply = send_message_and_receive_reply(
+    reply = send_zmq_message_and_receive_reply(
         FM_EXAMPLE_MESSAGE, host=zmq_host, port=zmq_port
     )
-    expected_reply = {"status": "accepted", "id": "e39b0d45bc6b46b7700c67cd52f00455"}
-    assert expected_reply == reply
+    assert expected_query_id == reply["payload"]["query_id"]
+    # assert reply["status"] in ("executing", "queued", "completed")
+    assert reply["status"] in ("success")

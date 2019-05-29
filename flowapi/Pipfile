@@ -9,15 +9,18 @@ quart = "*"
 hypercorn = "*"
 asyncpg = "*"
 flask-jwt-extended = "*"
-ujson = "*"
 structlog = "*"
+python-rapidjson = "*"
+pyyaml = ">=5.1"
+apispec = {extras = ["yaml"],version = "*"}
 
 [dev-packages]
 pytest = "*"
 pytest-asyncio = "*"
 "pytest-cov" = "*"
 asynctest = "*"
-black = "==18.9b0"
+black = "==19.3b0"
+flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 
 [requires]
 python_version = "3.7"

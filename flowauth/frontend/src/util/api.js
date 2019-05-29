@@ -326,5 +326,13 @@ export async function isLoggedIn() {
 }
 
 export async function logout() {
-  return await getResponseDefault("/signout");
+  try {
+    return await getResponseDefault("/signout");
+  } catch (err) {
+    if(err.code === 401) { // Being logged out is the desired response here
+      return {}
+    } else {
+      throw err
+    }
+  }
 }

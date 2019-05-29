@@ -58,6 +58,19 @@ def get_sql_string(sqlalchemy_query):
     return sql
 
 
+def get_string_representation(sqlalchemy_expr, engine=None):
+    """
+    Return a string containing a SQL fragment which is compiled from the given sqlalchemy expression.
+
+    Returns
+    -------
+    str
+        String representation of the sqlalchemy expression.
+    """
+    # assert isinstance(sqlalchemy_expr, ColumnElement)
+    return str(sqlalchemy_expr.compile(engine, compile_kwargs={"literal_binds": True}))
+
+
 def get_query_result_as_dataframe(query, *, engine):
     """
     Run the given sqlalchemy query and return the result as a pandas DataFrame.

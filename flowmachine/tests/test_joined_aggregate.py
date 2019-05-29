@@ -24,7 +24,7 @@ def test_joined_aggregate(get_dataframe):
     joined = mfl.join_aggregate(RadiusOfGyration("2016-01-01", "2016-01-04"))
     assert (
         pytest.approx(203.12391560786)
-        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].rog
+        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].value
     )
 
 
@@ -43,11 +43,11 @@ def test_joined_modal_aggregate(get_dataframe):
         .join(get_dataframe(mfl).set_index("subscriber"))
         .set_index("pcod")
         .loc["524 2 05 29"]
-        .degree.mode()[0]
+        .value.mode()[0]
     )
     assert (
         pytest.approx(rawus_mode)
-        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].degree
+        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].value
     )
 
 
@@ -66,11 +66,11 @@ def test_joined_median_aggregate(get_dataframe):
         .join(get_dataframe(mfl).set_index("subscriber"))
         .set_index("pcod")
         .loc["524 2 05 29"]
-        .rog.median()
+        .value.median()
     )
     assert (
         pytest.approx(rawus_avg)
-        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].rog
+        == get_dataframe(joined).set_index("pcod").loc["524 2 05 29"].value
     ), rawus_avg
 
 

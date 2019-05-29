@@ -1,0 +1,2 @@
+# Install pyenv role from the Ansible Galaxy
+- src: avanov.pyenv

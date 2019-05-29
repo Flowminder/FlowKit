@@ -11,7 +11,7 @@ function ServerButton(props) {
 
 	return (
 		<React.Fragment>
-			<ListItem button onClick={() => onClick(id, name)}>
+			<ListItem button id="servers" onClick={() => onClick(id, name)}>
 				<ListItemText primary={name} />
 			</ListItem>
 		</React.Fragment>

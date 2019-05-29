@@ -11,20 +11,20 @@ import os
 import re
 import datetime
 import warnings
-import logging
-from functools import reduce
+
 from typing import Tuple, Union, Dict, List
 
 import sqlalchemy
 
 from urllib.parse import quote_plus as urlquote
 
-from sqlalchemy import event, exc
 
 import flowmachine
 from cachetools import cached, TTLCache
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+from structlog import get_logger
+
+logger = get_logger(__name__)
 
 
 class Connection:
@@ -51,6 +51,7 @@ class Connection:
 
     def __init__(
         self,
+        *,
         port=None,
         user=None,
         password=None,
@@ -58,7 +59,6 @@ class Connection:
         database=None,
         pool_size=5,
         overflow=10,
-        *,
         conn_str=None,
     ):
         if conn_str is None:
@@ -126,22 +126,20 @@ class Connection:
 
     def __check_flowdb_version(self):
         """
-        Private method that checks what is the version
-        of `flowdb` currently deployed.
+        Private method which checks that the version of `flowdb` currently deployed
+        is compatible with this version of flowmachine.
         """
 
-        from ..__init__ import __version__, __flowdb_version__
+        from ..versions import __version__, __min_flowdb_version__
 
-        query = "SELECT * FROM flowdb_version();"
-        for i in self.fetch(query):
-            flowdb_version = i[0]
-            if __flowdb_version__ > flowdb_version.replace("v", ""):
-                raise EnvironmentError(
-                    "The current version of Flowdb "
-                    + "(%s) is not supported. " % flowdb_version
-                    + "FlowMachine (%s) only supports " % __version__
-                    + "Flowdb %s or higher." % __flowdb_version__
-                )
+        query_output = self.fetch("SELECT * FROM flowdb_version();")
+        flowdb_version = query_output[0][0]
+        if __min_flowdb_version__ > flowdb_version.replace("v", ""):
+            raise OSError(
+                f"The current version of Flowdb ({flowdb_version}) is not supported. "
+                f"FlowMachine ({__version__}) only supports "
+                f"Flowdb {__min_flowdb_version__} or higher."
+            )
 
     def fetch(self, query):
         """

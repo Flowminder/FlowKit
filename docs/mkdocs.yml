@@ -16,6 +16,36 @@ plugins:
   - mknotebooks:
       execute: true
       preamble: "notebook_preamble.py"
+      timeout: 600
+
+nav:
+  - index.md
+  - install.md
+  - analyst.md
+  - Developer:
+    - developer/developer.md
+    - developer/dev_environment_setup.md
+    - Architectural Decision Records (ADR):
+       - developer/adr/README.md
+       - developer/adr/0001-pipenv-for-package-and-dependency-management.md
+       - developer/adr/0002-pytest-for-testing.md
+       - developer/adr/0003-http-api.md
+       - developer/adr/0004-http-framework.md
+       - developer/adr/0005-IPC-methods.md
+       - developer/adr/0006-JWTs.md
+       - developer/adr/0007-mapbox-for-worked-examples.md
+  - administrator.md
+  - license.md
+  - Worked examples:
+      - worked_examples/index.md
+      - worked_examples/flows-above-normal.ipynb
+      - worked_examples/commuting-patterns.ipynb
+      - worked_examples/mobile-data-usage.ipynb
+  - FlowAPI specification: api-spec.html
+  - api-docs-flowmachine
+  - FlowClient:
+      - flowclient/example_usage.ipynb
+      - api-docs-flowclient
 
 theme:
   name: "material"

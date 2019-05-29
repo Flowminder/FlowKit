@@ -49,7 +49,7 @@ class SubscriberDegree(SubscriberFeature):
     --------
 
     >>> SubscriberDegree('2016-01-01', '2016-01-01')
-                   msisdn  count
+                   msisdn  value
     0    038OVABN11Ak4W5P      2
     1    09NrjaNNvDanD8pk      2
     2    0ayZGYEQrqYlKw6g      2
@@ -61,93 +61,69 @@ class SubscriberDegree(SubscriberFeature):
     """
 
     def __init__(
-        self, start, stop, tables="all", subscriber_identifier="msisdn", **kwargs
+        self,
+        start,
+        stop,
+        *,
+        hours="all",
+        tables="all",
+        subscriber_identifier="msisdn",
+        direction="both",
+        exclude_self_calls=True,
+        subscriber_subset=None,
     ):
-        """
-
-        """
-
-        self.tables = tables
         self.start = start
         self.stop = stop
+        self.hours = hours
+        self.direction = direction
         self.subscriber_identifier = subscriber_identifier
-        try:
-            self.hours = kwargs["hours"]
-        except KeyError:
-            self.hours = "ALL"
-        column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
+        self.exclude_self_calls = exclude_self_calls
+        self.tables = tables
+
+        if self.direction in {"both"}:
+            column_list = [self.subscriber_identifier, "msisdn_counterpart"]
+        elif self.direction in {"in", "out"}:
+            column_list = [self.subscriber_identifier, "msisdn_counterpart", "outgoing"]
+        else:
+            raise ValueError("{} is not a valid direction.".format(self.direction))
+
         self.unioned_query = EventsTablesUnion(
             self.start,
             self.stop,
+            hours=self.hours,
             tables=self.tables,
             columns=column_list,
             subscriber_identifier=self.subscriber_identifier,
-            **kwargs
+            subscriber_subset=subscriber_subset,
         )
         self._cols = ["subscriber", "degree"]
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "degree"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
-        sql = """
+        filters = []
+        if self.direction != "both":
+            filters.append(
+                f"outgoing = {'TRUE' if self.direction == 'out' else 'FALSE'}"
+            )
+        if self.exclude_self_calls:
+            filters.append("subscriber != msisdn_counterpart")
+        where_clause = f"WHERE {' AND '.join(filters)} " if len(filters) > 0 else ""
+
+        sql = f"""
         SELECT
            subscriber,
-            count(*) AS degree FROM
-        (SELECT DISTINCT subscriber, msisdn_counterpart
-         FROM ({unioned_query}) AS subscriber_degree) AS _
+           COUNT(*) AS value
+        FROM (
+            SELECT DISTINCT subscriber, msisdn_counterpart
+            FROM ({self.unioned_query.get_query()}) AS U
+            {where_clause}
+        ) AS U
         GROUP BY subscriber
-        """.format(
-            unioned_query=self.unioned_query.get_query()
-        )
-
-        return sql
-
-
-class SubscriberInDegree(SubscriberDegree):
-    """
-    Find the total number of unique contacts
-    that each subscriber is contacted by.
-    """
-
-    def _make_query(self):
-
-        sql = """
-        SELECT
-            subscriber,
-            count(*) AS degree FROM
-        (SELECT DISTINCT subscriber, msisdn_counterpart
-         FROM ({unioned_query}) AS subscriber_degree
-         WHERE subscriber_degree.outgoing = FALSE) AS _
-        GROUP BY subscriber
-        """.format(
-            unioned_query=self.unioned_query.get_query()
-        )
-
-        return sql
-
-
-class SubscriberOutDegree(SubscriberDegree):
-    """
-    Find the total number of unique contacts
-    that each subscriber contacts.
-    """
-
-    def _make_query(self):
-
-        sql = """
-        SELECT
-            subscriber,
-            count(*) AS degree FROM
-        (SELECT DISTINCT subscriber AS subscriber, msisdn_counterpart
-         FROM ({unioned_query}) AS subscriber_degree
-         WHERE subscriber_degree.outgoing = TRUE) AS _
-        GROUP BY subscriber
-        """.format(
-            unioned_query=self.unioned_query.get_query()
-        )
+        """
 
         return sql

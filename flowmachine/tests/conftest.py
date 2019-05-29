@@ -7,13 +7,16 @@
 Commonly used testing fixtures for flowmachine.
 """
 
-from unittest.mock import Mock
-
+import os
 import pandas as pd
 import pytest
 import re
-import warnings
 import logging
+from unittest.mock import Mock
+from approvaltests.reporters.generic_diff_reporter_factory import (
+    GenericDiffReporterFactory,
+)
+
 import flowmachine
 from flowmachine.core import Query
 from flowmachine.core.cache import reset_cache
@@ -29,6 +32,9 @@ from flowmachine.core.spatial_unit import (
 from flowmachine.features import EventTableSubset
 
 logger = logging.getLogger()
+
+here = os.path.dirname(os.path.abspath(__file__))
+flowkit_toplevel_dir = os.path.join(here, "..", "..")
 
 
 @pytest.fixture(
@@ -154,7 +160,7 @@ def skip_datecheck(request, monkeypatch):
 def flowmachine_connect():
     con = flowmachine.connect()
     yield con
-    reset_cache(con)
+    reset_cache(con, Query.redis, protect_table_objects=False)
     con.engine.dispose()  # Close the connection
     Query.redis.flushdb()  # Empty the redis
     del Query.connection  # Ensure we recreate everything at next use
@@ -173,7 +179,7 @@ def mocked_connections(monkeypatch):
     Yields
     ------
     tuple of mocks
-        Mocks for _init_logging, Connection, StrictRedis and _start_threadpool
+        Mocks for init_logging, Connection, StrictRedis and _start_threadpool
 
     """
     logging_mock = Mock()
@@ -181,7 +187,7 @@ def mocked_connections(monkeypatch):
     redis_mock = Mock()
     tp_mock = Mock()
     monkeypatch.delattr("flowmachine.core.query.Query.connection", raising=False)
-    monkeypatch.setattr(flowmachine.core.init, "_init_logging", logging_mock)
+    monkeypatch.setattr(flowmachine.core.init, "set_log_level", logging_mock)
     monkeypatch.setattr(flowmachine.core.Connection, "__init__", connection_mock)
     monkeypatch.setattr("redis.StrictRedis", redis_mock)
     monkeypatch.setattr(flowmachine.core.init, "_start_threadpool", tp_mock)
@@ -191,13 +197,11 @@ def mocked_connections(monkeypatch):
 
 @pytest.fixture
 def clean_env(monkeypatch):
-    monkeypatch.delenv("LOG_LEVEL", raising=False)
-    monkeypatch.delenv("WRITE_LOG_FILE", raising=False)
+    monkeypatch.delenv("FLOWMACHINE_LOG_LEVEL", raising=False)
     monkeypatch.delenv("FLOWDB_PORT", raising=False)
-    monkeypatch.delenv("DB_USER", raising=False)
-    monkeypatch.delenv("DB_PW", raising=False)
-    monkeypatch.delenv("DB_HOST", raising=False)
-    monkeypatch.delenv("DB_NAME", raising=False)
+    monkeypatch.delenv("FLOWMACHINE_FLOWDB_USER", raising=False)
+    monkeypatch.delenv("FLOWMACHINE_FLOWDB_PASSWORD", raising=False)
+    monkeypatch.delenv("FLOWDB_HOST", raising=False)
     monkeypatch.delenv("DB_CONNECTION_POOL_SIZE", raising=False)
     monkeypatch.delenv("DB_CONNECTION_POOL_OVERFLOW", raising=False)
     monkeypatch.delenv("REDIS_HOST", raising=False)
@@ -225,3 +229,62 @@ def get_length(flowmachine_connect):
     yield lambda query: len(
         pd.read_sql_query(query.get_query(), con=flowmachine_connect.engine)
     )
+
+
+class DummyRedis:
+    """
+    Drop-in replacement for redis.
+    """
+
+    def __init__(self):
+        self._store = {}
+        self.allow_flush = True
+
+    def setnx(self, name, val):
+        if name not in self._store:
+            self._store[name] = val.encode()
+
+    def eval(self, script, numkeys, name, event):
+        current_value = self._store[name]
+        try:
+            self._store[name] = self._store[event][current_value]
+            return self._store[name], current_value
+        except KeyError:
+            return current_value, None
+
+    def hset(self, key, current, next):
+        try:
+            self._store[key][current.encode()] = next.encode()
+        except KeyError:
+            self._store[key] = {current.encode(): next.encode()}
+
+    def set(self, key, value):
+        self._store[key] = value.encode()
+
+    def get(self, key):
+        return self._store.get(key, None)
+
+    def keys(self):
+        return sorted(self._store.keys())
+
+    def flushdb(self):
+        if (
+            self.allow_flush
+        ):  # Set allow_flush attribute to False to simulate concurrent writes
+            self._store = {}
+
+
+@pytest.fixture(scope="function")
+def dummy_redis(monkeypatch):
+    dummy_redis = DummyRedis()
+    monkeypatch.setattr(Query, "redis", dummy_redis)
+    return dummy_redis
+
+
+@pytest.fixture(scope="session")
+def diff_reporter():
+    diff_reporter_factory = GenericDiffReporterFactory()
+    diff_reporter_factory.load(
+        os.path.join(flowkit_toplevel_dir, "approvaltests_diff_reporters.json")
+    )
+    return diff_reporter_factory.get_first_working()

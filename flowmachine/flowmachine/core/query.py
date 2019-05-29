@@ -8,30 +8,36 @@ This is the base class that defines any query on our database.  It simply
 defines methods that returns the query as a string and as a pandas dataframe.
 
 """
-import json
+import rapidjson as json
 import pickle
-import logging
 import weakref
 from concurrent.futures import Future
+
+
+import structlog
 from typing import List, Union
 
 import psycopg2
-import networkx as nx
 import pandas as pd
 
 from hashlib import md5
 
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
 
 from flowmachine.core.cache import touch_cache
-from flowmachine.utils import rlock
+from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
+from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
-from .errors import NameTooLongError, NotConnectedError
+from flowmachine.core.errors import NameTooLongError, NotConnectedError
 
 import flowmachine
+from flowmachine.utils import _sleep
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+from flowmachine.core.cache import write_query_to_cache
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 # This is the maximum length that postgres will allow for its
 # table name. This should only be changed if postgres is updated
@@ -83,25 +89,30 @@ class Query(metaclass=ABCMeta):
         try:
             return self._md5
         except:
+            dependencies = self.dependencies
             state = self.__getstate__()
-            hashes = sorted([x.md5 for x in self.dependencies])
+            hashes = sorted([x.md5 for x in dependencies])
             for key, item in sorted(state.items()):
-                try:
-                    if isinstance(item, list) or isinstance(item, tuple):
-                        item = sorted(item)
-                    elif isinstance(item, dict):
-                        item = json.dumps(item, sort_keys=True, default=str)
-
-                    try:
-                        hashes.append(str(item))
-                    except TypeError:
-                        pass
-                except:
+                if isinstance(item, Query) and item in dependencies:
+                    # this item is already included in `hashes`
+                    continue
+                elif isinstance(item, list) or isinstance(item, tuple):
+                    item = sorted(
+                        item, key=lambda x: x.md5 if isinstance(x, Query) else x
+                    )
+                elif isinstance(item, dict):
+                    item = json.dumps(item, sort_keys=True, default=str)
+                else:
+                    # if it's not a list or a dict we leave the item as it is
                     pass
+
+                hashes.append(str(item))
             hashes.append(self.__class__.__name__)
             hashes.sort()
             self._md5 = md5(str(hashes).encode()).hexdigest()
             return self._md5
+
+    query_id = md5  # alias which is more meaningful to users than 'md5'
 
     @abstractmethod
     def _make_query(self):
@@ -109,10 +120,43 @@ class Query(metaclass=ABCMeta):
         raise NotImplementedError
 
     def __repr__(self):
+        # Default representation, derived classes might want to add something more specific
+        return format(self, "query_id")
 
-        # Default representation, derived classes might want to
-        # add something more specific
-        return "Query object of type : " + self.__class__.__name__
+    def __format__(self, fmt=""):
+        """
+        Return a formatted string representation of this query object.
+
+        Parameters
+        ----------
+        fmt : str, optional
+            This should be the empty string or a comma-separated list of
+            query attributes that will be included in the formatted string.
+
+        Examples
+        --------
+
+        >>> dl = daily_location(date="2016-01-01", method="last")
+        >>> format(dl)
+        <Query of type: LastLocation>
+        >>> format(dl, "query_id,is_stored")
+        <Query of type: LastLocation, query_id: 'd9537c9bc11580f868e3fc372dafdb94', is_stored: True>
+        >>> print(f"{dl:is_stored,query_state}")
+        <Query of type: LastLocation, is_stored: True, query_state: <QueryState.COMPLETED: 'completed'>
+        """
+        query_descr = f"Query of type: {self.__class__.__name__}"
+        attrs_to_include = [] if fmt == "" else fmt.split(",")
+        attr_descriptions = []
+        for attr in attrs_to_include:
+            try:
+                attr_descriptions.append(f"{attr}: {getattr(self, attr)!r}")
+            except AttributeError:
+                raise ValueError(
+                    f"Format string contains invalid query attribute: '{attr}'"
+                )
+
+        all_descriptions = [query_descr] + attr_descriptions
+        return f"<{', '.join(all_descriptions)}>"
 
     def __iter__(self):
         con = self.connection.engine
@@ -176,6 +220,32 @@ class Query(metaclass=ABCMeta):
         """
         return self._cache
 
+    @property
+    def query_state(self) -> "QueryState":
+        """
+        Return the current query state.
+
+        Returns
+        -------
+        flowmachine.core.query_state.QueryState
+            The current query state
+        """
+        state_machine = QueryStateMachine(self.redis, self.md5)
+        return state_machine.current_query_state
+
+    @property
+    def query_state_str(self) -> str:
+        """
+        Return the current query state as a string
+
+        Returns
+        -------
+        str
+            The current query state. The possible values are the ones
+            defined in `flowmachine.core.query_state.QueryState`.
+        """
+        return self.query_state.value
+
     def get_query(self):
         """
         Returns a  string representing an SQL query. The string will point
@@ -190,16 +260,19 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
-            with rlock(self.redis, self.md5):
-                if self.connection.has_table(schema=schema, name=name):
-                    try:
-                        touch_cache(self.connection, self.md5)
-                    except ValueError:
-                        pass  # Cache record not written yet, which can happen for Models
-                        # which will call through to this method from their `_make_query` method while writing metadata.
-                    # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
-                    # as the cache metadata transaction isn't complete!
-                    return "SELECT * FROM {}".format(table_name)
+            state_machine = QueryStateMachine(self.redis, self.md5)
+            state_machine.wait_until_complete()
+            if state_machine.is_completed and self.connection.has_table(
+                schema=schema, name=name
+            ):
+                try:
+                    touch_cache(self.connection, self.md5)
+                except ValueError:
+                    pass  # Cache record not written yet, which can happen for Models
+                    # which will call through to this method from their `_make_query` method while writing metadata.
+                # In that scenario, the table _is_ written, but won't be visible from the connection touch_cache uses
+                # as the cache metadata transaction isn't complete!
+                return "SELECT * FROM {}".format(table_name)
         except NotImplementedError:
             pass
         return self._make_query()
@@ -236,7 +309,7 @@ class Query(metaclass=ABCMeta):
                 with self.connection.engine.begin():
                     return pd.read_sql_query(qur, con=self.connection.engine)
 
-        df_future = self.tp.submit(do_get)
+        df_future = self.thread_pool_executor.submit(do_get)
         return df_future
 
     def get_dataframe(self):
@@ -263,7 +336,6 @@ class Query(metaclass=ABCMeta):
         -------
         list of str
             List of the column names of this query.
-
         """
         pass
 
@@ -271,10 +343,11 @@ class Query(metaclass=ABCMeta):
     def column_names_as_string_list(self) -> str:
         """
         Get the column names as a comma separated list
+
         Returns
         -------
         str
-
+            Comma separated list of column names
         """
         return ", ".join(self.column_names)
 
@@ -424,9 +497,7 @@ class Query(metaclass=ABCMeta):
         subset_class = subset_numbers_factory(self.__class__)
         return subset_class(self, col, low, high)
 
-    def _make_sql(
-        self, name: str, schema: Union[str, None] = None, force: bool = False
-    ) -> List[str]:
+    def _make_sql(self, name: str, schema: Union[str, None] = None) -> List[str]:
         """
         Create the SQL necessary to store the result of the calculation back
         into the database.
@@ -438,8 +509,6 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
 
         Returns
         -------
@@ -453,12 +522,12 @@ class Query(metaclass=ABCMeta):
             full_name = name
         queries = []
         # Deal with the table already existing potentially
-        if self.connection.has_table(name, schema=schema) and (not force):
+        if self.connection.has_table(name, schema=schema):
             logger.info("Table already exists")
             return []
 
         Q = f"""EXPLAIN (ANALYZE TRUE, TIMING FALSE, FORMAT JSON) CREATE TABLE {full_name} AS 
-            (SELECT {self.column_names_as_string_list} FROM ({self._make_query() if force else self.get_query()}) _)"""
+        (SELECT {self.column_names_as_string_list} FROM ({self._make_query()}) _)"""
         queries.append(Q)
         for ix in self.index_cols:
             queries.append(
@@ -468,9 +537,7 @@ class Query(metaclass=ABCMeta):
             )
         return queries
 
-    def to_sql(
-        self, name: str, schema: Union[str, None] = None, force: bool = False
-    ) -> Future:
+    def to_sql(self, name: str, schema: Union[str, None] = None) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -481,8 +548,6 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
 
         Returns
         -------
@@ -501,43 +566,45 @@ class Query(metaclass=ABCMeta):
             ).format(name, len(name), MAX_POSTGRES_NAME_LENGTH)
             raise NameTooLongError(err_msg)
 
-        def do_query() -> Query:
-            logger.debug("Getting storage lock.")
-            with rlock(self.redis, self.md5):
-                logger.debug("Obtained storage lock.")
-                query_ddl_ops = self._make_sql(name, schema=schema, force=force)
-                logger.debug("Made SQL.")
-                con = self.connection.engine
-                if force:
-                    self.invalidate_db_cache(name, schema=schema)
-                plan_time = 0
-                with con.begin():
-                    ddl_op_results = []
-                    for ddl_op in query_ddl_ops:
-                        try:
-                            ddl_op_result = con.execute(ddl_op)
-                        except Exception as e:
-                            logger.error(
-                                f"Error executing SQL: '{ddl_op}'. Error was {e}"
-                            )
-                            raise e
-                        try:
-                            ddl_op_results.append(ddl_op_result.fetchall())
-                        except ResourceClosedError:
-                            pass  # Nothing to do here
-                        for ddl_op_result in ddl_op_results:
-                            try:
-                                plan = ddl_op_result[0][0][0]  # Should be a query plan
-                                plan_time += plan["Execution Time"]
-                            except (IndexError, KeyError):
-                                pass  # Not an explain result
-                    logger.debug("Executed queries.")
-                    if schema == "cache":
-                        self._db_store_cache_metadata(compute_time=plan_time)
-            logger.debug("Released storage lock.")
-            return self
+        def write_query(query_ddl_ops: List[str], connection: Engine) -> float:
+            plan_time = 0
+            ddl_op_results = []
+            for ddl_op in query_ddl_ops:
+                try:
+                    ddl_op_result = connection.execute(ddl_op)
+                except Exception as e:
+                    logger.error(f"Error executing SQL: '{ddl_op}'. Error was {e}")
+                    raise e
+                try:
+                    ddl_op_results.append(ddl_op_result.fetchall())
+                except ResourceClosedError:
+                    pass  # Nothing to do here
+                for ddl_op_result in ddl_op_results:
+                    try:
+                        plan = ddl_op_result[0][0][0]  # Should be a query plan
+                        plan_time += plan["Execution Time"]
+                    except (IndexError, KeyError):
+                        pass  # Not an explain result
+            logger.debug("Executed queries.")
+            return plan_time
 
-        store_future = self.tp.submit(do_query)
+        current_state, changed_to_queue = QueryStateMachine(
+            self.redis, self.md5
+        ).enqueue()
+        logger.debug(
+            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+        )
+        # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
+        store_future = self.thread_pool_executor.submit(
+            write_query_to_cache,
+            name=name,
+            schema=schema,
+            query=self,
+            connection=self.connection,
+            redis=self.redis,
+            ddl_ops_func=self._make_sql,
+            write_func=write_query,
+        )
         return store_future
 
     def explain(self, format="text", analyse=False):
@@ -575,31 +642,6 @@ class Query(metaclass=ABCMeta):
                 x[0] for x in exp
             )  # TEXT comes back as multiple rows, i.e. a list of tuple(str, )
         return exp[0][0]  # Everything else comes as one
-
-    def _get_query_attrs_for_dependency_graph(self, analyse):
-        """
-        Helper method which returns information about this query for use in a dependency graph.
-
-        Parameters
-        ----------
-        analyse : bool
-            Set to True to get actual runtimes for queries, note that this will actually run the query!
-
-        Returns
-        -------
-        dict
-            Dictionary containing the keys "name", "stored", "cost" and "runtime" (the latter is only
-            present if `analyse=True`.
-            Example return value: `{"name": "DailyLocation", "stored": False, "cost": 334.53, "runtime": 161.6}`
-        """
-        expl = self.explain(format="json", analyse=analyse)[0]
-        attrs = {}
-        attrs["name"] = self.__class__.__name__
-        attrs["stored"] = self.is_stored
-        attrs["cost"] = expl["Plan"]["Total Cost"]
-        if analyse:
-            attrs["runtime"] = expl["Execution Time"]
-        return attrs
 
     @property
     def fully_qualified_table_name(self):
@@ -642,15 +684,10 @@ class Query(metaclass=ABCMeta):
         except NotImplementedError:
             return False
 
-    def store(self, force=False):
+    def store(self):
         """
         Store the results of this computation with the correct table
         name using a background thread.
-
-        Parameters
-        ----------
-        force : bool, default False
-            Will overwrite an existing table if the name already exists
 
         Returns
         -------
@@ -666,7 +703,7 @@ class Query(metaclass=ABCMeta):
 
         schema, name = table_name.split(".")
 
-        store_future = self.to_sql(name, schema=schema, force=force)
+        store_future = self.to_sql(name, schema=schema)
         return store_future
 
     def _db_store_cache_metadata(self, compute_time=None):
@@ -690,7 +727,7 @@ class Query(metaclass=ABCMeta):
         try:
             in_cache = bool(
                 self.connection.fetch(
-                    "SELECT * FROM cache.cached WHERE query_id='{}'".format(self.md5)
+                    f"SELECT * FROM cache.cached WHERE query_id='{self.md5}'"
                 )
             )
 
@@ -718,7 +755,7 @@ class Query(metaclass=ABCMeta):
                     "{} added to cache.".format(self.fully_qualified_table_name)
                 )
                 if not in_cache:
-                    for dep in self._get_deps(root=True):
+                    for dep in self._get_stored_dependencies(exclude_self=True):
                         con.execute(
                             "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
                             (self.md5, dep.md5),
@@ -733,26 +770,23 @@ class Query(metaclass=ABCMeta):
         Returns
         -------
         set
-            Query's this one is directly dependent on
-        """
-        return self._adjacent()
-
-    def _adjacent(self):
-        """
-        Returns
-        -------
-        set
-            Query's this one is directly dependent on
+            The set of queries which this one is directly dependent on.
         """
         dependencies = set()
         for x in self.__dict__.values():
             if isinstance(x, Query):
                 dependencies.add(x)
-        lists = [
-            x
-            for x in self.__dict__.values()
-            if isinstance(x, list) or isinstance(x, tuple)
-        ]
+        lists = []
+        for x in self.__dict__.values():
+            if isinstance(x, list) or isinstance(x, tuple):
+                lists.append(x)
+            else:
+                parent_classes = [cls.__name__ for cls in x.__class__.__mro__]
+                if "SubscriberSubsetterBase" in parent_classes:
+                    # special case for subscriber subsetters, because they may contain
+                    # attributes which are Query object but do not derive from Query
+                    # themselves
+                    lists.append(x.__dict__.values())
         for l in lists:
             for x in l:
                 if isinstance(x, Query):
@@ -760,15 +794,17 @@ class Query(metaclass=ABCMeta):
 
         return dependencies
 
-    def _get_deps(self, root=False, stored_dependencies=None):
+    def _get_stored_dependencies(
+        self, exclude_self=False, discovered_dependencies=None
+    ):
         """
 
         Parameters
         ----------
-        root : bool
-            Set to true to exclude this query from the resulting set
-        stored_dependencies : set
-            Keeps track of dependencies already discovered
+        exclude_self : bool
+            Set to true to exclude this query from the resulting set.
+        discovered_dependencies : set
+            Keeps track of dependencies already discovered (during recursive calls).
 
         Returns
         -------
@@ -776,20 +812,27 @@ class Query(metaclass=ABCMeta):
             The set of all stored queries this one depends on
 
         """
-        if stored_dependencies is None:
-            stored_dependencies = set()
-        if not root and self.is_stored:
-            stored_dependencies.add(self)
+        if discovered_dependencies is None:
+            discovered_dependencies = set()
+        if not exclude_self and self.is_stored:
+            discovered_dependencies.add(self)
         else:
-            for d in self.dependencies - stored_dependencies:
-                d._get_deps(stored_dependencies=stored_dependencies)
-        return stored_dependencies.difference([self])
+            for d in self.dependencies - discovered_dependencies:
+                d._get_stored_dependencies(
+                    discovered_dependencies=discovered_dependencies
+                )
+        return discovered_dependencies.difference([self])
 
     def invalidate_db_cache(self, name=None, schema=None, cascade=True, drop=True):
         """
-        Helper function for store, drops this table, and (by default) any
-        that depend on it, as well as removing them from
-        the cache metadata table.
+        Drops this table, and (by default) any that depend on it, as well as removing them from
+        the cache metadata table. If the table is currently being dropped from elsewhere, this
+        method will block and return when the table has been removed.
+
+        Raises
+        ------
+        QueryResetFailedException
+            If the query wasn't succesfully removed
 
         Parameters
         ----------
@@ -802,7 +845,9 @@ class Query(metaclass=ABCMeta):
         drop : bool
             Set to false to remove the cache record without dropping the table
         """
-        with rlock(self.redis, self.md5):
+        q_state_machine = QueryStateMachine(self.redis, self.md5)
+        current_state, this_thread_is_owner = q_state_machine.reset()
+        if this_thread_is_owner:
             con = self.connection.engine
             try:
                 table_reference_to_this_query = self.get_table()
@@ -862,6 +907,15 @@ class Query(metaclass=ABCMeta):
             logger.debug("Dropping {}".format(full_name))
             with con.begin():
                 con.execute("DROP TABLE IF EXISTS {}".format(full_name))
+            q_state_machine.finish_resetting()
+        elif q_state_machine.is_resetting:
+            logger.debug(
+                f"Query '{self.md5}' is being reset from elsewhere, waiting for reset to finish."
+            )
+            while q_state_machine.is_resetting:
+                _sleep(1)
+        if not q_state_machine.is_known:
+            raise QueryResetFailedException(self.md5)
 
     @property
     def index_cols(self):
@@ -900,8 +954,10 @@ class Query(metaclass=ABCMeta):
         try:
             if self.subscriber_identifier in cols:
                 ixen.append(self.subscriber_identifier)
-            else:
+            elif "subscriber" in cols:
                 ixen.append('"subscriber"')
+            else:
+                pass
         except AttributeError:
             pass
         return ixen
@@ -1054,69 +1110,3 @@ class Query(metaclass=ABCMeta):
             estimate_count=estimate_count,
             seed=seed,
         )
-
-    def dependency_graph(self, analyse=False):
-        """
-        Produce a graph of all the queries that go into producing this
-        one, with their estimated run costs, and whether they are stored
-        as node attributes.
-
-        The resulting networkx object can then be visualised, or analysed.
-
-        Parameters
-        ----------
-        query : Query
-            Query object to produce a dependency graph fot
-        analyse : bool
-            Set to True to get actual runtimes for queries, note that this will actually
-            run the query!
-
-        Returns
-        -------
-        networkx.DiGraph
-
-        Examples
-        --------
-        >>> import flowmachine
-        >>> flowmachine.connect()
-        >>> from flowmachine.features import daily_location
-        >>> g = daily_location("2016-01-01").dependency_graph()
-        >>> from networkx.drawing.nx_agraph import write_dot
-        >>> write_dot(g, "daily_location_dependencies.dot")
-        >>> g = daily_location("2016-01-01").dependency_graph(True)
-        >>> from networkx.drawing.nx_agraph import write_dot
-        >>> write_dot(g, "daily_location_dependencies_runtimes.dot")
-
-        Notes
-        -----
-        The queries listed as dependencies are not _guaranteed_ to be
-        used in the actual running of a query, only to be referenced by it.
-
-        """
-        g = nx.DiGraph()
-        openlist = [(0, self)]
-        deps = []
-
-        while openlist:
-            y, x = openlist.pop()
-            deps.append((y, x))
-
-            openlist += list(zip([x] * len(x.dependencies), x.dependencies))
-
-        _, y = zip(*deps)
-        for n in set(y):
-            attrs = n._get_query_attrs_for_dependency_graph(analyse=analyse)
-            attrs["shape"] = "rect"
-            attrs["label"] = "{}. Cost: {}.".format(attrs["name"], attrs["cost"])
-            if analyse:
-                attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
-            if attrs["stored"]:
-                attrs["fillcolor"] = "green"
-                attrs["style"] = "filled"
-            g.add_node("x{}".format(n.md5), **attrs)
-
-        for x, y in deps:
-            if x != 0:
-                g.add_edge(*["x{}".format(z.md5) for z in (x, y)])
-
-        return g

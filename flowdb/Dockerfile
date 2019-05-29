@@ -12,7 +12,7 @@
 #  on the official Debian Stretch (9) image.
 #
 ARG POSTGRES_RELEASE=11
-ARG POSTGRES_DIGEST=e33ab1e8a206c54f66913812f0edb524959917a2fb5f2cf233d46083394a99ef
+ARG POSTGRES_DIGEST=d61e82a1316928e732fc885b11e57de95efe018651a4ee5640b32cfe5a928d8a
 
 FROM postgres:$POSTGRES_RELEASE@sha256:$POSTGRES_DIGEST
 
@@ -20,10 +20,9 @@ ARG POSTGRES_RELEASE
 ENV POSTGRES_RELEASE=$POSTGRES_RELEASE
 ARG POSTGIS_MAJOR=2.5
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
-ARG POSTGIS_VERSION=2.5.0
+ARG POSTGIS_VERSION=2.5.2
 ENV POSTGIS_VERSION=$POSTGIS_VERSION
-ARG POSTGRES_DB=flowdb
-ENV POSTGRES_DB=$POSTGRES_DB
+ENV POSTGRES_DB=flowdb
 ARG POSTGRES_USER=flowdb
 ENV POSTGRES_USER=$POSTGRES_USER
 ENV LC_ALL=en_US.UTF-8
@@ -124,14 +123,12 @@ ENV FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE
 
 # Default users
 
-ENV FM_USER=analyst
-ENV API_USER=reporter
+ENV FLOWMACHINE_FLOWDB_USER=flowmachine
+ENV FLOWAPI_FLOWDB_USER=flowapi
 
 # Default location table
 ENV LOCATION_TABLE=infrastructure.cells
 
-# Setup pgadmin debugger
-ENV DEBUG=False
 
 #
 #  Copy file spinup build scripts to be execed.
@@ -149,6 +146,3 @@ ADD --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
 RUN chown -R postgres /docker-entrypoint-initdb.d
 
 EXPOSE 5432
-
-RUN mkdir /ok && touch /ok/ok
-EXPOSE 8000

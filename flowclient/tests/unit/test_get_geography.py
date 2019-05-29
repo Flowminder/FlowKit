@@ -16,7 +16,7 @@ def test_get_geography(token):
     connection_mock = Mock()
     connection_mock.get_url.return_value.status_code = 200
     connection_mock.get_url.return_value.json.return_value = {"some": "json"}
-    gj = get_geography(connection_mock, "DUMMY_AGGREGATION")
+    gj = get_geography(connection=connection_mock, aggregation_unit="DUMMY_AGGREGATION")
     assert {"some": "json"} == gj
 
 
@@ -32,7 +32,7 @@ def test_get_geography_error(http_code, token):
         FlowclientConnectionError,
         match=f"Could not get result. API returned with status code: {http_code}. Reason: MESSAGE",
     ):
-        get_geography(connection_mock, "DUMMY_AGGREGATION")
+        get_geography(connection=connection_mock, aggregation_unit="DUMMY_AGGREGATION")
 
 
 def test_get_geography_no_msg_error(token):
@@ -46,4 +46,4 @@ def test_get_geography_no_msg_error(token):
         FlowclientConnectionError,
         match=f"Could not get result. API returned with status code: 404.",
     ):
-        get_geography(connection_mock, "DUMMY_AGGREGATION")
+        get_geography(connection=connection_mock, aggregation_unit="DUMMY_AGGREGATION")

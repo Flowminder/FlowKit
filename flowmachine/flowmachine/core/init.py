@@ -5,39 +5,37 @@
 # -*- coding: utf-8 -*-
 """
 This module provides initial setup routines for flowmachine. From a user
-perspective, only the `start` method is relevant.
+perspective, only the `connect` method is relevant.
 
 From a developer perspective, this is where one-time operations
-should live - for example creating postgres functions.
+should live - for example configuring loggers.
 """
 
-
-import logging
 import os
+import redis
+import structlog
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-from logging.handlers import TimedRotatingFileHandler
-
-import redis
+from typing import Union
 
 import flowmachine
-from typing import Union
+from flowmachine.core import Connection, Query
+from flowmachine.core.logging import set_log_level
 from flowmachine.utils import getsecret
-from . import Connection, Query
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 def connect(
+    *,
     log_level: Union[str, None] = None,
-    write_log_file: Union[bool, None] = None,
-    db_port: Union[int, None] = None,
-    db_user: Union[str, None] = None,
-    db_pw: Union[str, None] = None,
-    db_host: Union[str, None] = None,
-    db_name: Union[str, None] = None,
-    db_connection_pool_size: Union[int, None] = None,
-    db_connection_pool_overflow: Union[int, None] = None,
+    flowdb_port: Union[int, None] = None,
+    flowdb_user: Union[str, None] = None,
+    flowdb_password: Union[str, None] = None,
+    flowdb_host: Union[str, None] = None,
+    flowdb_connection_pool_size: Union[int, None] = None,
+    flowdb_connection_pool_overflow: Union[int, None] = None,
     redis_host: Union[str, None] = None,
     redis_port: Union[int, None] = None,
     redis_password: Union[str, None] = None,
@@ -52,29 +50,24 @@ def connect(
     ----------
     log_level : str, default "error"
         Level to log at
-    write_log_file : bool, default False
-        If True, logging output will be written to the file 'flowmachine-debug.log'
-        in the directory '/var/log/flowmachine/' (or the directory given by the
-        environment variable 'LOG_DIRECTORY' if it is set). Log files are rotated
-        at midnight.
-    db_port : int, default 9000
+    flowdb_port : int, default 9000
         Port number to connect to flowdb
-    db_user : str, default "analyst"
+    flowdb_user : str, default "flowmachine"
         Name of user to connect to flowdb as
-    db_pw : str, default "foo"
+    flowdb_password : str
         Password to connect to flowdb
-    db_host : str, default "localhost"
+    flowdb_host : str, default "localhost"
         Hostname of flowdb server
-    db_name : str, default "flowdb"
-        Name of database to connect to.
-    db_connection_pool_size : int, default 5
+    flowdb_connection_pool_size : int, default 5
         Default number of database connections to use
-    db_connection_pool_overflow : int, default 1
+    flowdb_connection_pool_overflow : int, default 1
         Number of extra database connections to allow
     redis_host : str, default "localhost"
         Hostname for redis server.
     redis_port : int, default 6379
         Port the redis server is available on
+    redis_password : str
+        Password for the redis instance
     conn : flowmachine.core.Connection
         Optionally provide an existing Connection object to use, overriding any the db options specified here.
 
@@ -84,8 +77,7 @@ def connect(
 
     Notes
     -----
-    All parameters can also be provided as environment variables, named the same
-    but in uppercase, e.g. `env LOG_LEVEL=error` instead of `connect(log_level="error")`.
+    All parameters can also be provided as environment variables.
     If a parameter is provided, and an environment variable is set,
     then the provided value is used. If neither is provided, the defaults as given
     in the docstring are used.
@@ -97,54 +89,50 @@ def connect(
     """
 
     log_level = (
-        getsecret("LOG_LEVEL", os.getenv("LOG_LEVEL", "error"))
+        getsecret("FLOWMACHINE_LOG_LEVEL", os.getenv("FLOWMACHINE_LOG_LEVEL", "error"))
         if log_level is None
         else log_level
     )
-    write_log_file = (
-        (
-            "TRUE"
-            == getsecret("WRITE_LOG_FILE", os.getenv("WRITE_LOG_FILE", "FALSE")).upper()
-        )
-        if write_log_file is None
-        else write_log_file
-    )
-    db_port = int(
+    flowdb_port = int(
         getsecret("FLOWDB_PORT", os.getenv("FLOWDB_PORT", 9000))
-        if db_port is None
-        else db_port
+        if flowdb_port is None
+        else flowdb_port
     )
-    db_user = (
-        getsecret("DB_USER", os.getenv("DB_USER", "analyst"))
-        if db_user is None
-        else db_user
+    flowdb_user = (
+        getsecret(
+            "FLOWMACHINE_FLOWDB_USER",
+            os.getenv("FLOWMACHINE_FLOWDB_USER", "flowmachine"),
+        )
+        if flowdb_user is None
+        else flowdb_user
     )
-    db_pw = getsecret("DB_PW", os.getenv("DB_PW", "foo")) if db_pw is None else db_pw
-    db_host = (
-        getsecret("DB_HOST", os.getenv("DB_HOST", "localhost"))
-        if db_host is None
-        else db_host
+    flowdb_password = (
+        getsecret(
+            "FLOWMACHINE_FLOWDB_PASSWORD", os.getenv("FLOWMACHINE_FLOWDB_PASSWORD")
+        )
+        if flowdb_password is None
+        else flowdb_password
     )
-    db_name = (
-        getsecret("DB_NAME", os.getenv("DB_NAME", "flowdb"))
-        if db_name is None
-        else db_name
+    flowdb_host = (
+        getsecret("FLOWDB_HOST", os.getenv("FLOWDB_HOST", "localhost"))
+        if flowdb_host is None
+        else flowdb_host
     )
-    db_connection_pool_size = (
+    flowdb_connection_pool_size = (
         int(
             getsecret(
                 "DB_CONNECTION_POOL_SIZE", os.getenv("DB_CONNECTION_POOL_SIZE", 5)
             )
         )
-        if db_connection_pool_size is None
-        else db_connection_pool_size
+        if flowdb_connection_pool_size is None
+        else flowdb_connection_pool_size
     )
-    db_connection_pool_overflow = int(
+    flowdb_connection_pool_overflow = int(
         getsecret(
             "DB_CONNECTION_POOL_OVERFLOW", os.getenv("DB_CONNECTION_POOL_OVERFLOW", 1)
         )
-        if db_connection_pool_overflow is None
-        else db_connection_pool_overflow
+        if flowdb_connection_pool_overflow is None
+        else flowdb_connection_pool_overflow
     )
 
     redis_host = (
@@ -157,91 +145,53 @@ def connect(
         if redis_port is None
         else redis_port
     )
-    redis_pw = (
-        getsecret("REDIS_PASSWORD_FILE", os.getenv("REDIS_PASSWORD", "fm_redis"))
+    redis_password = (
+        getsecret("REDIS_PASSWORD", os.getenv("REDIS_PASSWORD"))
         if redis_password is None
         else redis_password
     )
+
+    if flowdb_password is None:
+        raise ValueError(
+            "You must provide a secret named FLOWMACHINE_FLOWDB_PASSWORD, set an environment variable named FLOWMACHINE_FLOWDB_PASSWORD, or provide a flowdb_password argument."
+        )
+
+    if redis_password is None:
+        raise ValueError(
+            "You must provide a secret named REDIS_PASSWORD, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
+        )
 
     try:
         Query.connection
         warnings.warn("FlowMachine already started. Ignoring.")
     except AttributeError:
-        _init_logging(log_level, write_log_file)
+        set_log_level("flowmachine.debug", log_level)
         if conn is None:
             conn = Connection(
-                db_port,
-                db_user,
-                db_pw,
-                db_host,
-                db_name,
-                db_connection_pool_size,
-                db_connection_pool_overflow,
+                host=flowdb_host,
+                port=flowdb_port,
+                user=flowdb_user,
+                password=flowdb_password,
+                database="flowdb",
+                pool_size=flowdb_connection_pool_size,
+                overflow=flowdb_connection_pool_overflow,
             )
         Query.connection = conn
 
         Query.redis = redis.StrictRedis(
-            host=redis_host, port=redis_port, password=redis_pw
+            host=redis_host, port=redis_port, password=redis_password
         )
-        _start_threadpool(db_connection_pool_size)
+        _start_threadpool(thread_pool_size=flowdb_connection_pool_size)
 
         print(f"FlowMachine version: {flowmachine.__version__}")
 
         print(
-            f"Flowdb running on: {db_host}:{db_port}/{db_name} (connecting user: {db_user})"
+            f"Flowdb running on: {flowdb_host}:{flowdb_port}/flowdb (connecting user: {flowdb_user})"
         )
     return Query.connection
 
 
-def _init_logging(log_level, write_log_file):
-    """
-
-    Parameters
-    ----------
-    log_level : str
-        Level to emit logs at
-    write_log_file : bool
-        If True, logging output will be written to the file 'flowmachine-debug.log'
-        in the directory '/var/log/flowmachine/' (or the directory given by the
-        environment variable 'LOG_DIRECTORY' if it is set). Log files are rotated
-        at midnight.
-
-    Returns
-    -------
-
-    """
-    try:
-        log_level = logging.getLevelName(log_level.upper())
-        log_level + 1
-    except (AttributeError, TypeError):
-        log_level = logging.ERROR
-    true_log_level = logging.getLevelName(log_level)
-    formatter = logging.Formatter(
-        "%(asctime)s %(name)s %(levelname)s %(threadName)s %(message)s"
-    )
-    logger = logging.getLogger("flowmachine")
-    logger.setLevel(true_log_level)
-    ch = logging.StreamHandler()
-    ch.setLevel(log_level)
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-    logger.info(f"Logger created with level {true_log_level}")
-    if write_log_file:
-        log_root = os.getenv("LOG_DIRECTORY", "/var/log/flowmachine/")
-        if not os.path.exists(log_root):
-            logger.info(
-                f"Creating log_root directory because it does not exist: {log_root}"
-            )
-            os.makedirs(log_root)
-        log_file = os.path.join(log_root, "flowmachine-debug.log")
-        fh = TimedRotatingFileHandler(log_file, when="midnight")
-        fh.setLevel(true_log_level)
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
-        logger.info(f"Added log file handler, logging to {log_file}")
-
-
-def _start_threadpool(thread_pool_size=None):
+def _start_threadpool(*, thread_pool_size=None):
     """
     Start the threadpool flowmachine uses for executing queries
     asynchronously.
@@ -256,4 +206,4 @@ def _start_threadpool(thread_pool_size=None):
     ThreadPoolExecutor
 
     """
-    Query.tp = ThreadPoolExecutor(thread_pool_size)
+    Query.thread_pool_executor = ThreadPoolExecutor(thread_pool_size)

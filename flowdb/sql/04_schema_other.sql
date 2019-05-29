@@ -70,13 +70,32 @@ Schema used for temp storage during etl.
 CREATE SCHEMA IF NOT EXISTS etl;
 
 CREATE TYPE cdrtype AS ENUM ('voice', 'sms', 'mds', 'topups');
-CREATE TYPE status AS ENUM ('in_process', 'done', 'quarantine');
+CREATE TYPE etl_status AS ENUM ('in_process', 'done', 'quarantine');
 CREATE TABLE etl.etl (
 	id SERIAL NOT NULL,
 	file_name VARCHAR,
 	cdr_type cdrtype,
 	cdr_date DATE,
-	status status,
+	status etl_status,
+	time_stamp TIMESTAMP WITH TIME ZONE,
+	PRIMARY KEY (id)
+);
+
+/*
+
+Schema used for record keeping of aggregate calculations.
+
+*/
+
+CREATE SCHEMA IF NOT EXISTS aggregates;
+
+CREATE TYPE aggstatus AS ENUM ('in_process', 'done', 'failed');
+CREATE TABLE aggregates.aggregates (
+	id SERIAL NOT NULL,
+	aggregate_type VARCHAR,
+	aggregate_date DATE,
+	status aggstatus,
+	cache_ref VARCHAR,
 	time_stamp TIMESTAMP WITH TIME ZONE,
 	PRIMARY KEY (id)
 );

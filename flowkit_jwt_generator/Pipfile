@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pyjwt = "*"
+cryptography = "*"
+click = "*"
+requests = "*"
+pytest = "*"
+
+[dev-packages]
+versioneer = "*"
+pytest-cov = "*"
+flowkit-jwt-generator = {editable = true,path = "."}
+
+[requires]
+python_version = "3.7"

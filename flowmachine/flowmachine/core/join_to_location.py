@@ -71,15 +71,17 @@ class JoinToLocation(Query):
     def column_names(self) -> List[str]:
         right_columns = self.spatial_unit.location_columns
         left_columns = self.left.column_names
-        if "location_id" in right_columns and "location_id" in left_columns:
-            left_columns.remove("location_id")
+        for column in right_columns:
+            if column in left_columns:
+                left_columns.remove(column)
         return left_columns + right_columns
 
     def _make_query(self):
         right_columns = self.spatial_unit.location_columns
         left_columns = self.left.column_names
-        if "location_id" in right_columns and "location_id" in left_columns:
-            left_columns.remove("location_id")
+        for column in right_columns:
+            if column in left_columns:
+                left_columns.remove(column)
 
         right_columns_str = ", ".join([f"sites.{c}" for c in right_columns])
         left_columns_str = ", ".join([f"l.{c}" for c in left_columns])

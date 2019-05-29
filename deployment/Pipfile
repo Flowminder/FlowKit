@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 ansible = "*"
+passlib = "*"
 
 [dev-packages]
-passlib = "*"
 
 [requires]
 python_version = "3.7"

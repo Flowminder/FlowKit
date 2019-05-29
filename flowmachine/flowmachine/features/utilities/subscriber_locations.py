@@ -11,7 +11,7 @@ These are used for creating base objects that are
 later used for computing subscriber features.
 
 """
-import logging
+
 
 from .events_tables_union import EventsTablesUnion
 from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
@@ -20,7 +20,9 @@ from ...core.query import Query
 from ...core.join_to_location import JoinToLocation
 from ...core.spatial_unit import CellSpatialUnit
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class _SubscriberCells(Query):
@@ -92,9 +94,9 @@ class BaseLocation:
         that represents the location, and the total counts of
         subscribers.
         """
-        return SpatialAggregate(self)
+        return SpatialAggregate(locations=self)
 
-    def join_aggregate(self, metric, method="mean"):
+    def join_aggregate(self, metric, method="avg"):
         """
         Join with a metric representing object and aggregate
         spatially.
@@ -102,14 +104,14 @@ class BaseLocation:
         Parameters
         ----------
         metric : Query
-        method : {"mean", "mode", "median"}
+        method : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
 
         Returns
         -------
         JoinedSpatialAggregate
         """
 
-        return JoinedSpatialAggregate(metric, self, method=method)
+        return JoinedSpatialAggregate(metric=metric, locations=self, method=method)
 
     def __getitem__(self, item):
 

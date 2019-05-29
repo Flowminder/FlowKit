@@ -39,7 +39,21 @@ class RadiusOfGyration(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    args and kwargs passed to flowmachine.subscriber_locations
+    hours : tuple of ints, default 'all'
+        subset the result within certain hours, e.g. (4,17)
+        This will subset the query only with these hours, but
+        across all specified days. Or set to 'all' to include
+        all hours.
+    table : str, default 'all'
+        schema qualified name of the table which the analysis is
+        based upon. If 'all' it will pull together all of the tables
+        specified as flowmachine.yml under 'location_tables'
+    ignore_nulls : bool, default True
+        ignores those values that are null. Sometime data appears for which
+        the cell is null. If set to true this will ignore those lines. If false
+        these lines with null cells should still be present, although they contain
+        no information on the subscribers location, they still tell us that the subscriber made
+        a call at that time.
 
     Notes
     -----
@@ -54,7 +68,7 @@ class RadiusOfGyration(SubscriberFeature):
     >>> RoG = RadiusOfGyration('2016-01-01 13:30:30',
                                '2016-01-02 16:25:00')
     >>> RoG.head()
-     subscriber   RoG
+     subscriber   value
     subscriberA  13.0
     subscriberB  12.3
     subscriberC   6.5
@@ -62,93 +76,85 @@ class RadiusOfGyration(SubscriberFeature):
 
     """
 
-    def __init__(self, start, stop, unit="km", *args, **kwargs):
-        """
-        """
+    allowed_units = {"km", "m"}
 
-        allowed_units = ["km", "m"]
-        if unit not in allowed_units:
+    def __init__(
+        self,
+        start,
+        stop,
+        unit="km",
+        hours="all",
+        table="all",
+        subscriber_identifier="msisdn",
+        ignore_nulls=True,
+        subscriber_subset=None,
+    ):
+
+        self.unit = unit.lower()
+        if unit not in self.allowed_units:
             raise ValueError(
-                "Unrecognised unit {},".format(unit)
-                + " use one of {}".format(allowed_units)
+                f"Unrecognised unit {unit}, use one of {self.allowed_units}"
             )
 
         self.start = start
         self.stop = stop
-        self.unit = unit
         self.ul = subscriber_locations(
-            self.start, self.stop, level="lat-lon", *args, **kwargs
+            self.start,
+            self.stop,
+            level="lat-lon",
+            hours=hours,
+            table=table,
+            subscriber_subset=subscriber_subset,
+            subscriber_identifier=subscriber_identifier,
+            ignore_nulls=ignore_nulls,
         )
 
         super().__init__()
 
-    def _get_dist_string(self, lo1, la1, lo2, la2):
-        """
-        Private method for getting the distance
-        query string.
-        """
-        return """
-        ST_Distance(ST_Point({}, {})::geography,
-                    ST_point({}, {})::geography)
-        """.format(
-            lo1, la1, lo2, la2
-        )
-
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "rog"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
-        """
-        Default query method implemented in the
-        metaclass Query().
-        """
 
-        av_dist = """
+        av_dist = f"""
         SELECT 
             subscriber_locs.subscriber, 
             avg(lat) AS av_lat, 
             avg(lon) AS av_long
-        FROM ({subscriber_locs}) AS subscriber_locs
+        FROM ({self.ul.get_query()}) AS subscriber_locs
         GROUP BY subscriber_locs.subscriber
-        """.format(
-            subscriber_locs=self.ul.get_query()
-        )
+        """
 
-        distance_string = self._get_dist_string(
-            "locs.lon", "locs.lat", "mean.av_long", "mean.av_lat"
-        )
+        distance_string = """
+        ST_Distance(ST_Point(locs.lon, locs.lat)::geography,
+                    ST_point(mean.av_long, mean.av_lat)::geography)
+        """
 
         # It seems like I'm creating the sub query twice here
         # I wonder whether this slows things down at all.
-        dist = """
+        dist = f"""
         SELECT
             locs.subscriber,
             ({distance_string})^2
             AS distance_sqr
         FROM
-            ({locs}) AS locs
+            ({self.ul.get_query()}) AS locs
         INNER JOIN
             ({av_dist}) AS mean
             ON locs.subscriber=mean.subscriber
-        """.format(
-            av_dist=av_dist, distance_string=distance_string, locs=self.ul.get_query()
-        )
+        """
 
         if self.unit == "km":
             divisor = 1000
         elif self.unit == "m":
             divisor = 1
 
-        RoG = """
+        return f"""
         SELECT
             dist.subscriber,
-            sqrt( avg( distance_sqr ) )/{} AS rog
+            sqrt( avg( distance_sqr ) )/{divisor} AS value
         FROM 
             ({dist}) AS dist
         GROUP BY dist.subscriber
-        """.format(
-            divisor, dist=dist
-        )
-
-        return RoG
+        """

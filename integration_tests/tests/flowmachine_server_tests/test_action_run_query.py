@@ -1,52 +1,45 @@
-import asyncio
 import logging
 import pytest
 
-from .helpers import (
-    cache_schema_is_empty,
-    get_cache_tables,
-    poll_until_done,
-    send_message_and_get_reply,
-)
+from flowmachine.core.cache import reset_cache
+from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
+from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features import daily_location
+from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
 
 
-def test_bail_out_if_pytest_asyncio_is_not_installed(event_loop):
-    """
-    This is a "smoke test" to check that the integration tests are being run under asyncio.
-    We do this by checking for the existence of the 'event_loop' fixture, which only exists
-    if pytest-asyncio is installed.
-    """
-    if not isinstance(event_loop, asyncio.AbstractEventLoop):
-        raise RuntimeError(
-            "Expecting 'event_loop' fixture from pytest-asyncio. Please ensure that pytest-asyncio is installed."
-        )
-    else:
-        logger.debug("Confirming that pytest-asyncio is installed")
-
-
 @pytest.mark.asyncio
-async def test_run_query(zmq_url, fm_conn, redis):
+async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     """
     Run daily_location query and check the resulting table contains the expected rows.
     """
     msg_run_query = {
         "action": "run_query",
-        "query_kind": "daily_location",
         "params": {
-            "date": "2016-01-01",
-            "daily_location_method": "last",
-            "aggregation_unit": "admin3",
-            "subscriber_subset": "all",
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
         },
         "request_id": "DUMMY_ID",
     }
-    expected_query_id = "e39b0d45bc6b46b7700c67cd52f00455"
+    q = SpatialAggregate(
+        locations=daily_location(
+            date="2016-01-01", method="last", level="admin3", subscriber_subset=None
+        )
+    )
+    expected_query_id = q.md5
 
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).
     #
+    reset_cache(fm_conn, redis, protect_table_objects=False)
     assert cache_schema_is_empty(fm_conn)
     assert not redis.exists(expected_query_id)
 
@@ -54,22 +47,25 @@ async def test_run_query(zmq_url, fm_conn, redis):
     # Send message to run the daily_location query, check it was accepted
     # and a redis lookup was created for the query id.
     #
-    reply = send_message_and_get_reply(zmq_url, msg_run_query)
-    assert {"status": "accepted", "id": expected_query_id} == reply
-    assert redis.exists(expected_query_id)
+    reply = send_zmq_message_and_receive_reply(
+        msg_run_query, port=zmq_port, host=zmq_host
+    )
+    # assert reply["status"] in ("executing", "queued", "completed")
+    assert reply["status"] in ("success")
+    assert expected_query_id == reply["payload"]["query_id"]
+    # assert redis.exists(expected_query_id)
 
     #
     # Wait until the query has finished.
     #
-    poll_until_done(zmq_url, expected_query_id)
+    poll_until_done(zmq_port, expected_query_id)
 
     #
     # Check that a cache table for the query result was created
     # and that it contains the expected number of rows.
     #
     output_cache_table = f"x{expected_query_id}"
-    implicit_cache_table = f"x77ea8996b031a8712c71dbaf87828ca0"
-    assert [implicit_cache_table, output_cache_table] == get_cache_tables(fm_conn)
+    assert [output_cache_table] == get_cache_tables(fm_conn)
     num_rows = fm_conn.engine.execute(
         f"SELECT COUNT(*) FROM cache.{output_cache_table}"
     ).fetchone()[0]
@@ -80,93 +76,127 @@ async def test_run_query(zmq_url, fm_conn, redis):
     #
 
     first_few_rows_expected = [
-        ("524 3 09 50", 18),
-        ("524 5 13 67", 17),
+        ("524 1 01 04", 13),
+        ("524 1 02 09", 26),
         ("524 1 03 13", 20),
     ]
     first_few_rows = fm_conn.engine.execute(
-        f"SELECT * FROM cache.{output_cache_table} LIMIT 3"
+        f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
     ).fetchall()
     assert first_few_rows_expected == first_few_rows
 
 
 @pytest.mark.parametrize(
-    "params, expected_error_msg",
+    "params, expected_error_messages",
     [
         (
             {
-                "date": "2000-88-99",
-                "daily_location_method": "last",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": "all",
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2000-88-99",
+                    "method": "last",
+                    "aggregation_unit": "admin3",
+                    "subscriber_subset": None,
+                },
             },
-            "month must be in 1..12",
+            {"0": {"locations": {"0": {"date": ["Not a valid date."]}}}},
         ),
         (
             {
-                "date": "2016-01-01",
-                "daily_location_method": "FOOBAR",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": "all",
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "method": "FOOBAR",
+                    "aggregation_unit": "admin3",
+                    "subscriber_subset": None,
+                },
             },
-            "Unrecognised method 'FOOBAR', must be one of: ['last', 'most-common']",
+            {
+                "0": {
+                    "locations": {
+                        "0": {"method": ["Must be one of: last, most-common."]}
+                    }
+                }
+            },
         ),
         (
             {
-                "date": "2016-01-01",
-                "daily_location_method": "last",
-                "aggregation_unit": "admin9999",
-                "subscriber_subset": "all",
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "method": "last",
+                    "aggregation_unit": "admin9999",
+                    "subscriber_subset": None,
+                },
             },
-            "Unrecognised level 'admin9999', must be one of: ['admin0', 'admin1', 'admin2', 'admin3', 'admin4']",
+            {
+                "0": {
+                    "locations": {
+                        "0": {
+                            "aggregation_unit": [
+                                "Must be one of: admin0, admin1, admin2, admin3."
+                            ]
+                        }
+                    }
+                }
+            },
         ),
         (
             {
-                "date": "2016-01-01",
-                "daily_location_method": "last",
-                "aggregation_unit": "admin3",
-                "subscriber_subset": None,
+                "query_kind": "spatial_aggregate",
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "method": "last",
+                    "aggregation_unit": "admin3",
+                    "subscriber_subset": "virtually_all_subscribers",
+                },
             },
-            "Cannot construct daily_location subset from given input: None",
+            {
+                "0": {
+                    "locations": {"0": {"subscriber_subset": ["Must be one of: None."]}}
+                }
+            },
         ),
     ],
 )
 @pytest.mark.asyncio
 async def test_run_query_with_wrong_parameters(
-    params, expected_error_msg, zmq_url, fm_conn
+    params, expected_error_messages, zmq_port, zmq_host
 ):
     """
-    Run daily_location query and check the resulting table contains the expected rows.
+    Run daily_location query and check that the resulting table contains the expected rows.
     """
-    msg_run_query = {
-        "action": "run_query",
-        "query_kind": "daily_location",
-        "params": params,
-        "request_id": "DUMMY_ID",
-    }
+    msg_run_query = {"action": "run_query", "params": params, "request_id": "DUMMY_ID"}
 
-    reply = send_message_and_get_reply(zmq_url, msg_run_query)
-    expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
+    reply = send_zmq_message_and_receive_reply(
+        msg_run_query, port=zmq_port, host=zmq_host
+    )
+    # expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
+    # expected_reason = "Message contains unexpected key(s): ['query_kind'], 'data': {}"
     assert "error" == reply["status"]
-    assert expected_reason == reply["error"]
+    assert expected_error_messages == reply["payload"]
 
 
 @pytest.mark.skip(reason="Cannot currently test this because the sender hangs")
 @pytest.mark.asyncio
-async def test_wrongly_formatted_zmq_message(zmq_url):
+async def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
     """
     """
-    # msg = {"query_kind": "daily_location", "params": {"date": "2016-01-01", "daily_location_method": "last", "aggregation_unit": "admin3", "subscriber_subset": "all"}}
     msg = {
         "foo": "bar",
-        "query_kind": "daily_location",
         "params": {
+            "query_kind": "daily_location",
             "date": "2016-01-01",
-            "daily_location_method": "last",
+            "method": "last",
             "aggregation_unit": "admin3",
-            "subscriber_subset": "all",
+            "subscriber_subset": None,
         },
+        "request_id": "DUMMY_ID",
     }
 
-    reply = send_message_and_get_reply(zmq_url, msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     assert False

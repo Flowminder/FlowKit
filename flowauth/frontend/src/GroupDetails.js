@@ -10,6 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import GroupMembersPicker from "./GroupMembersPicker";
 import GroupServerPermissions from "./GroupServerPermissions";
 import SubmitButtons from "./SubmitButtons";
+import ErrorDialog from "./ErrorDialog";
 import {
   getGroup,
   editMembers,
@@ -18,7 +19,15 @@ import {
 } from "./util/api";
 
 class GroupDetails extends React.Component {
-  state = { name: "", members: [], servers: [], edit_mode: false };
+  state = {
+    name: "",
+    members: [],
+    servers: [],
+    edit_mode: false,
+    name_helper_text: "",
+    pageError: false,
+    errors: { message: "" }
+  };
 
   componentDidMount() {
     this._asyncRequest = getGroup(this.props.item_id)
@@ -34,8 +43,31 @@ class GroupDetails extends React.Component {
 
   handleChange = name => event => {
     this.setState({
-      [name]: event.target.value
+      pageError: false,
+      errors: ""
     });
+    var state = {
+      [name]: event.target.value
+    };
+    if (name === "name") {
+      var letters = /^[A-Za-z0-9_]+$/;
+      let groupname = event.target.value;
+      if (groupname.match(letters)) {
+        state = Object.assign(state, {
+          name_helper_text: ""
+        });
+      } else if (groupname.length == 0) {
+        state = Object.assign(state, {
+          name_helper_text: "Group name can not be blank."
+        });
+      } else {
+        state = Object.assign(state, {
+          name_helper_text: "Group name may only contain letters, numbers and underscores."
+        });
+      }
+      // console.log(event.target.value);
+      this.setState(state);
+    }
   };
   updateMembers = members => {
     this.setState({ members: members });
@@ -44,30 +76,41 @@ class GroupDetails extends React.Component {
     this.setState({ servers: servers });
   };
   handleSubmit = () => {
+    const { name_helper_text } = this.state;
     var task;
-    if (this.state.edit_mode) {
-      task = renameGroup(this.props.item_id, this.state.name);
-    } else {
-      task = createGroup(this.state.name, []);
-    }
+    if (name_helper_text === "") {
 
-    task
-      .then(json => {
-        console.log(json);
-        return editMembers(json.id, this.state.members);
-      })
-      .then(json => {
-        return editGroupServers(json.id, this.state.servers);
-      })
-      .then(json => {
-        this.props.onClick();
-      });
+      if (this.state.edit_mode) {
+        task = renameGroup(this.props.item_id, this.state.name);
+      } else {
+        task = createGroup(this.state.name, []);
+      }
+
+      task
+        .then(json => {
+          console.log(json);
+          return editMembers(json.id, this.state.members);
+        })
+        .then(json => {
+          return editGroupServers(json.id, this.state.servers);
+        })
+        .then(json => {
+          this.props.onClick();
+        })
+        .catch(err => {
+          if (err.code === 400) {
+            this.setState({ pageError: true, errors: err });
+          } else {
+            this.setState({ hasError: true, error: err })
+          }
+        });
+    }
   };
   render() {
     if (this.state.hasError) throw this.state.error;
 
     const { classes, onClick, item_id } = this.props;
-    const { servers } = this.state;
+    const { name, servers } = this.state;
 
     return (
       <React.Fragment>
@@ -78,12 +121,15 @@ class GroupDetails extends React.Component {
         </Grid>
         <Grid xs={12}>
           <TextField
-            id="group_name"
+            id="name"
             label="Name"
             className={classes.textField}
-            value={this.state.name}
+            required={true}
+            value={name}
             onChange={this.handleChange("name")}
             margin="normal"
+            error={this.state.name_helper_text}
+            helperText={this.state.name_helper_text}
           />
         </Grid>
 
@@ -104,7 +150,10 @@ class GroupDetails extends React.Component {
           servers={servers}
           classes={classes}
         />
-
+        <ErrorDialog
+          open={this.state.pageError}
+          message={this.state.errors.message}
+        />
         <Grid item xs={12} />
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>

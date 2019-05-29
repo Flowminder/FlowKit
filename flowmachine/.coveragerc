@@ -11,9 +11,12 @@ omit =
     */_version.py
     */versioneer.py
     *__init__*
-    flowmachine/core/server/server.py
 
 exclude_lines =
+    # Need to explicitly re-enable the standard pragma
+    pragma: no cover
+
     if __name__ == '__main__':
+    def __repr__
 
 show_missing = True

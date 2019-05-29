@@ -1,3 +1,5 @@
+.env
+
 # Notebook output
 docs/test.csv
 docs/tower_metrics.csv
@@ -67,6 +69,9 @@ instance/
 # Scrapy stuff:
 .scrapy
 
+# Node modules
+node_modules
+
 # Sphinx documentation
 docs/_build/
 
@@ -117,3 +122,7 @@ venv.bak/
 tags
 flowauth/test_results/pytest/results.xml
 /integration_tests/test_results/
+docs/source/_static/openapi-redoc.json
+
+# Approvaltests: output of test runs
+*.received.txt

@@ -13,7 +13,7 @@ import datetime as dt
 
 @pytest.fixture
 def test_tables():
-    """Define the test tables for testing the analyst and reporter roles.
+    """Define the test tables for testing the flowmachine and flowapi user roles.
 
     Returns
     -------

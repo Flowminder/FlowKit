@@ -1,86 +1,227 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # DOCKER COMPOSE FOR FLOWKIT
 #
 
-version: '3'
+version: '3.5'
 
 networks:
   db:
   redis:
   zero:
-  api:
+  flowetl_db:
 
+
+    
 services:
-  flowdb-testdata:
-    container_name: flowdb_testdata
-    image: flowminder/flowdb-testdata:latest
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB:-flowdb}
-      - POSTGRES_USER=${POSTGRES_USER:-flowdb}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-flowflow}
-      - FM_PASSWORD=${FM_PASSWORD:-foo}
-      - API_PASSWORD=${API_PASSWORD:-foo}
+
+  flowdb:
+    container_name: flowdb
+    image: flowminder/flowdb:${CONTAINER_TAG:-latest}
+    ports:
+      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
+
+    environment: &base-flowdb-environment
+      POSTGRES_USER: ${POSTGRES_USER:?Must set POSTGRES_USER env var}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
+      FLOWMACHINE_FLOWDB_USER: ${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
+      FLOWMACHINE_FLOWDB_PASSWORD: ${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
+      FLOWAPI_FLOWDB_USER: ${FLOWAPI_FLOWDB_USER:?Must set FLOWAPI_FLOWDB_USER env var}
+      FLOWAPI_FLOWDB_PASSWORD: ${FLOWAPI_FLOWDB_PASSWORD:?Must set FLOWAPI_FLOWDB_PASSWORD env var}
+      CACHE_SIZE: ${CACHE_SIZE:-""}
+      CACHE_HALF_LIFE: ${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
+      FLOWDB_ENABLE_POSTGRES_DEBUG_MODE: ${FLOWDB_ENABLE_POSTGRES_DEBUG_MODE:?Must set FLOWDB_ENABLE_POSTGRES_DEBUG_MODE env var}
+    shm_size: 1G
     tty: true
     stdin_open: true
     restart: always
-    shm_size: 1G
-    volumes:
-      - data_volume_flowdb:/var/lib/postgresql/data
     networks:
       db:
         aliases:
           - flowdb
-  flowmachine:
-    container_name: flowmachine
-    image: flowminder/flowmachine:latest
-    restart: always
+
+  flowdb_testdata:
+    container_name: flowdb_testdata
+    image: flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}
+    ports:
+      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
-      - FLOWDB_PORT=${FLOWDB_PORT:-5432}
-      - DB_HOST=${DB_HOST:-flowdb}
-      - LOG_LEVEL=${LOG_LEVEL:-error}
-      - DEBUG=${FM_DEBUG:-False}
-      - REDIS_HOST=${REDIS_HOST:-redis}
-      - REDIS_PASSWORD={REDIS_PASSWORD:-fm_redis}
+      *base-flowdb-environment
+    shm_size: 1G
     tty: true
     stdin_open: true
+    restart: always
+    networks:
+      db:
+        aliases:
+          - flowdb
+
+  flowdb_synthetic_data:
+    container_name: flowdb_synthetic_data
+    image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
+    ports:
+      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
+    environment:
+      << : *base-flowdb-environment
+      SYNTHETIC_DATA_GENERATOR: ${SYNTHETIC_DATA_GENERATOR:?Must set SYNTHETIC_DATA_GENERATOR env var}
+      N_SITES: ${N_SITES:?Must set N_SITES env var}
+      N_CELLS: ${N_CELLS:?Must set N_CELLS env var}
+      N_SUBSCRIBERS: ${N_SUBSCRIBERS:?Must set N_SUBSCRIBERS env var}
+      N_DAYS: ${N_DAYS:?Must set N_DAYS env var}
+      N_CALLS: ${N_CALLS:?Must set N_CALLS env var}
+      N_SMS: ${N_SMS:?Must set N_SMS env var}
+      N_MDS: ${N_MDS:?Must set N_MDS env var}
+      N_TACS: ${N_TACS:?Must set N_TACS env var}
+      P_OUT_OF_AREA: ${P_OUT_OF_AREA:?Must set P_OUT_OF_AREA env var}
+      P_RELOCATE: ${P_RELOCATE:?Must set P_RELOCATE env var}
+      INTERACTIONS_MULTIPLIER: ${INTERACTIONS_MULTIPLIER:?Must set INTERACTIONS_MULTIPLIER env var}
+      DISASTER_START: ${DISASTER_START:?Must set DISASTER_START env var}
+      DISASTER_END: ${DISASTER_END:?Must set DISASTER_END env var}
+    shm_size: 1G
+    tty: true
+    stdin_open: true
+    restart: always
+    networks:
+      db:
+        aliases:
+          - flowdb
+
+  flowmachine:
+    container_name: flowmachine
+    image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
+    ports:
+      - ${FLOWMACHINE_PORT:?Must set FLOWMACHINE_PORT env var}:5555
+    depends_on:
+      - flowmachine_query_locker
+    tty: true
+    stdin_open: true
+    environment:
+      - FLOWMACHINE_PORT=5555
+      - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:?Must set FLOWMACHINE_LOG_LEVEL env var}
+      - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:?Must set FLOWMACHINE_SERVER_DEBUG_MODE env var}
+      - FLOWDB_PORT=5432
+      - FLOWDB_HOST=flowdb
+      - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
+      - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
+      - REDIS_HOST=flowmachine_query_locker
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+    restart: always
+    networks:
+      - zero
+      - db
+      - redis
+
+  worked_examples:
+    container_name: worked_examples
+    image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
+    ports:
+      - ${WORKED_EXAMPLES_PORT:?Must set WORKED_EXAMPLES_PORT env var}:8888
+    tty: true
+    stdin_open: true
+    environment:
+      - FLOWDB_PORT=5432
+      - FLOWDB_HOST=flowdb
+      - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
+      - FLOWMACHINE_FLOWDB_PASSWORD=${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
+      - REDIS_HOST=flowmachine_query_locker
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
+      - FLOWAPI_URL=http://flowapi:9090
+      - MAPBOX_ACCESS_TOKEN
+    restart: always
     networks:
       - db
       - redis
-      - zero
+    command:
+      ["start.sh", "jupyter", "lab", "--LabApp.token=''"]
+
   flowapi:
     container_name: flowapi
-    image: flowminder/flowapi:latest
-    restart: always
+    image: flowminder/flowapi:${CONTAINER_TAG:-latest}
     ports:
-      - 9090:9090
+      - ${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}:9090
     environment:
-      - SERVER=flowmachine
-      - LOG_LEVEL=${LOG_LEVEL:-error}
-      - DB_USER=reporter
-      - DB_PASS=${API_PASSWORD:-foo}
-      - DB_HOST=${DB_HOST:-flowdb}
-      - FLOWDB_PORT=${FLOWDB_PORT:-5432}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}
-    volumes:
-      - data_volume_flowapi_logs:/var/logs/flowkit/
+      - FLOWMACHINE_HOST=flowmachine
+      - FLOWMACHINE_PORT=5555
+      - FLOWAPI_FLOWDB_USER=${FLOWAPI_FLOWDB_USER:?Must set FLOWAPI_FLOWDB_USER env var}
+      - FLOWAPI_FLOWDB_PASSWORD=${FLOWAPI_FLOWDB_PASSWORD:?Must set FLOWAPI_FLOWDB_PASSWORD env var}
+      - FLOWDB_HOST=flowdb
+      - FLOWDB_PORT=5432
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:?Must set JWT_SECRET_KEY env var}
+      - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:?Must set FLOWAPI_LOG_LEVEL env var}
+      - FLOWAPI_IDENTIFIER=${FLOWAPI_IDENTIFIER:?Must set FLOWAPI_IDENTIFIER env var}
     tty: true
     stdin_open: true
+    restart: always
     networks:
-      - zero
       - db
-      - api
-  redis:
-    container_name: redis_flowkit
-    image: bitnami/redis:latest
+      - zero
+
+  flowauth:
+    container_name: flowauth
+    image: flowminder/flowauth:${CONTAINER_TAG:-latest}
+    ports:
+      - ${FLOWAUTH_PORT:?Must set FLOWAUTH_PORT env var}:80
     environment:
-      - REDIS_PASSWORD={REDIS_PASSWORD:-fm_redis}
+      DEMO_MODE: ${DEMO_MODE:?Must set DEMO_MODE env var}
+      FLOWAUTH_FERNET_KEY: ${FLOWAUTH_FERNET_KEY:?Must set FLOWAUTH_FERNET_KEY env var}
+      FLOWAUTH_ADMIN_PASSWORD: ${FLOWAUTH_ADMIN_PASSWORD:?Must set FLOWAUTH_ADMIN_PASSWORD env var}
+      FLOWAUTH_ADMIN_USERNAME: ${FLOWAUTH_ADMIN_USERNAME:?Must set FLOWAUTH_ADMIN_USERNAME env var}
+      SECRET_KEY: ${SECRET_KEY:?Must set SECRET_KEY env var}
+
+  flowmachine_query_locker:
+    container_name: flowmachine_query_locker
+    image: bitnami/redis
+    ports:
+      - ${REDIS_PORT:?Must set REDIS_PORT env var}:6379
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Must set REDIS_PASSWORD env var}
     restart: always
     networks:
       redis:
         aliases:
           - redis
 
-volumes:
-  data_volume_flowdb:
-  data_volume_flowapi_logs:
+  flowetl:
+    container_name: flowetl
+    image: flowminder/flowetl:${CONTAINER_TAG:-latest}
+    restart: always
+    tty: true
+    stdin_open: true
+    ports:
+      - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
 
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${SQL_ALCHEMY_CONN:?Must set SQL_ALCHEMY_CONN env var}
+      AIRFLOW__CORE__FERNET_KEY:  ${FLOWETL_FERNET_KEY:?Must set FLOWETL_FERNET_KEY env var}
+      POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
+      POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
+      POSTGRES_HOST: ${FLOWETL_POSTGRES_HOST:?Must set FLOWETL_POSTGRES_HOST env var}
+      POSTGRES_DB: ${FLOWETL_POSTGRES_DB:?Must set FLOWETL_POSTGRES_DB env var}
+
+    networks:
+      - db
+      - flowetl_db
+
+  flowetl_db:
+    image: postgres:11.0
+    container_name: flowetl_db
+
+    tty: true
+    stdin_open: true
+    restart: always
+
+    ports:
+      - 5433:5432
+    
+    environment:
+      POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
+      POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
+      POSTGRES_DB: ${FLOWETL_POSTGRES_DB:?Must set FLOWETL_POSTGRES_DB env var}
+
+    networks:
+      - flowetl_db

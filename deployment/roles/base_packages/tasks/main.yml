@@ -13,7 +13,7 @@
   become: yes
   become_user: root
   yum:
-    name: ['ack', 'bash-completion-extras', 'colordiff', 'emacs', 'git', 'postgresql', 'tmux', 'tree', 'ufw', 'unzip', 'vim', 'wget']
+    name: ['ack', 'bash-completion-extras', 'colordiff', 'emacs', 'git', 'ncdu', 'postgresql', 'tmux', 'tree', 'ufw', 'unzip', 'vim', 'wget']
     update_cache: yes
 
 - name: "Ensure sshd always restarts"

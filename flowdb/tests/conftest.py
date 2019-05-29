@@ -118,13 +118,13 @@ class DBConn:
 
 @pytest.fixture(autouse=True)
 def _skip_usr(request):
-    """Skip the usr is listed in the list provided to the `skip_usrs` mark."""
+    """Skip if the usr_env_prefix is listed in the list provided to the `skip_usrs` mark."""
     # based on
     # https://stackoverflow.com/questions/28179026/how-to-skip-a-pytest-using-an-external-fixture
     if request.node.get_closest_marker("skip_usrs"):
-        usr = request.getfixturevalue("usr")
-        if usr in request.node.get_closest_marker("skip_usrs").args[0]:
-            pytest.skip("does not apply to: {}".format(usr))
+        usr_env_prefix = request.getfixturevalue("usr_env_prefix")
+        if usr_env_prefix in request.node.get_closest_marker("skip_usrs").args[0]:
+            pytest.skip("does not apply to: {}".format(usr_env_prefix))
 
 
 @pytest.fixture(scope="session")
@@ -144,8 +144,10 @@ def env():
         SYNTHETIC_DATA_DB_PORT
         POSTGRES_USER=flowdb
         POSTGRES_PASSWORD=flowflow
-        ANALYST_PASSWORD=foo
-        REPORTER_PASSWORD=foo
+        FLOWMACHINE_FLOWDB_USER=flowmachine
+        FLOWAPI_FLOWDB_USER=flowapi
+        FLOWMACHINE_FLOWDB_PASSWORD=foo
+        FLOWAPI_FLOWDB_PASSWORD=foo
         POSTGRES_GID
         POSTGRES_UID
 
@@ -166,8 +168,10 @@ def env():
         "SYNTHETIC_DATA_DB_PORT": None,
         "POSTGRES_USER": "flowdb",
         "POSTGRES_PASSWORD": "flowflow",
-        "ANALYST_PASSWORD": "foo",
-        "REPORTER_PASSWORD": "foo",
+        "FLOWMACHINE_FLOWDB_USER": "flowmachine",
+        "FLOWAPI_FLOWDB_USER": "flowapi",
+        "FLOWMACHINE_FLOWDB_PASSWORD": "foo",
+        "FLOWAPI_FLOWDB_PASSWORD": "foo",
         "POSTGRES_GID": None,
         "POSTGRES_UID": None,
     }

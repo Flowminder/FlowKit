@@ -26,7 +26,7 @@ from flowmachine.utils import list_of_dates
 def test_events_table_subset_column_names(columns):
     """Test that EventTableSubset column_names property is accurate."""
     etu = EventTableSubset(
-        "2016-01-01", "2016-01-02", columns=columns, table="events.calls"
+        start="2016-01-01", stop="2016-01-02", columns=columns, table="events.calls"
     )
     assert etu.head(0).columns.tolist() == etu.column_names
 
@@ -35,8 +35,8 @@ def test_events_table_subset_column_names(columns):
 def test_events_table_subscriber_ident_substitutions(ident):
     """Test that EventTableSubset replaces the subscriber ident column name with subscriber."""
     etu = EventTableSubset(
-        "2016-01-01",
-        "2016-01-02",
+        start="2016-01-01",
+        stop="2016-01-02",
         columns=[ident],
         table="events.calls",
         subscriber_identifier=ident,
@@ -85,7 +85,7 @@ def test_cdrs_can_be_subset_by_table(
     """
 
     su = EventTableSubset(
-        "2016-01-01", "2016-01-03", subscriber_subset=subscriber_list_table
+        start="2016-01-01", stop="2016-01-03", subscriber_subset=subscriber_list_table
     )
 
     df = get_dataframe(su)
@@ -99,8 +99,10 @@ def test_cdrs_can_be_subset_by_table(
 
 def test_subset_correct(subscriber_list, get_dataframe):
     """Test that pushed in subsetting matches .subset result"""
-    su = EventTableSubset("2016-01-01", "2016-01-03", subscriber_subset=subscriber_list)
-    subsu = EventTableSubset("2016-01-01", "2016-01-03").subset(
+    su = EventTableSubset(
+        start="2016-01-01", stop="2016-01-03", subscriber_subset=subscriber_list
+    )
+    subsu = EventTableSubset(start="2016-01-01", stop="2016-01-03").subset(
         "subscriber", subscriber_list
     )
     assert all(get_dataframe(su) == get_dataframe(subsu))
@@ -148,7 +150,9 @@ def test_cdrs_can_be_subset_by_list(get_dataframe, subscriber_list):
     We can subset CDRs with a list.
     """
 
-    su = EventTableSubset("2016-01-01", "2016-01-03", subscriber_subset=subscriber_list)
+    su = EventTableSubset(
+        start="2016-01-01", stop="2016-01-03", subscriber_subset=subscriber_list
+    )
     df = get_dataframe(su)
 
     # Get the set of subscribers present in the dataframe, we need to handle the logic
@@ -164,7 +168,7 @@ def test_can_subset_by_sampler(get_dataframe):
         size=10, method="system", seed=0.1
     )
     su = EventTableSubset(
-        "2016-01-01", "2016-01-03", subscriber_subset=unique_subs_sample
+        start="2016-01-01", stop="2016-01-03", subscriber_subset=unique_subs_sample
     )
     su_set = set(get_dataframe(su).subscriber)
     uu_set = set(get_dataframe(unique_subs_sample).subscriber)
@@ -177,16 +181,16 @@ def test_omitted_subscriber_column(get_dataframe, subscriber_list):
     with pytest.warns(UserWarning):
         su_omit_col = get_dataframe(
             EventTableSubset(
-                "2016-01-01",
-                "2016-01-03",
+                start="2016-01-01",
+                stop="2016-01-03",
                 subscriber_subset=subscriber_list,
                 columns=["duration"],
             )
         )
     su_all_cols = get_dataframe(
         EventTableSubset(
-            "2016-01-01",
-            "2016-01-03",
+            start="2016-01-01",
+            stop="2016-01-03",
             subscriber_subset=subscriber_list,
             columns=["msisdn", "duration"],
         )

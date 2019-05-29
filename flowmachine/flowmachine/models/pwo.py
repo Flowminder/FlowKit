@@ -24,7 +24,7 @@ References
     Yan X-Y, Zhao C, Fan Y, Di Z, Wang W-X. 2014 "Universal predictability of mobility patterns in cities". J. R. Soc. Interface 11: 20140834. http://dx.doi.org/10.1098/rsif.2014.0834
 
 """
-import logging
+
 import warnings
 from typing import List
 
@@ -38,7 +38,9 @@ from ..core.model import Model, model_result
 from ..core.spatial_unit import VersionedSiteSpatialUnit
 from ..features.spatial.distance_matrix import DistanceMatrix
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class _populationBuffer(Query):

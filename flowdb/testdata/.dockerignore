@@ -11,14 +11,18 @@
 # building the flowdb_testdata image:
 #
 !./bin/z_ingest_test_data.sh
+!./bin/zz_run_synthetic_dfs_data_generation_script.sh
+!./test_data/Pipfile
+!./test_data/Pipfile.lock
 !./test_data/sql/
+!./test_data/py/
 !./test_data/data/
 
 # And un-exclude only those folders and files that are needed for
 # building the flowdb_synthetic_data image:
-!Pipfile
-!Pipfile.lock
+!./synthetic_data/Pipfile
+!./synthetic_data/Pipfile.lock
 !./bin/generate_synthetic_data.py
+!./bin/generate_synthetic_data_sql.py
 !./bin/z_ingest_synthetic_data.sh
-!./synthetic_data/sql/*
-!./synthetic_data/data/NPL_admbnda_adm3_Districts_simplified.geojson
+!./synthetic_data/data/

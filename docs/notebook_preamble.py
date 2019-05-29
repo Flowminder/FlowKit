@@ -9,21 +9,19 @@ import pandas as pd
 import tabulate as tabulate
 import pprint
 import warnings
+import logging
 import os
-import sys
-from dotenv import find_dotenv
+from flowkit_jwt_generator.jwt import generate_token, get_all_claims_from_flowapi
 from datetime import timedelta
 
-path_to_utils_module = os.path.join(
-    os.path.dirname(find_dotenv()), "..", "integration_tests", "tests"
-)
-sys.path.insert(0, path_to_utils_module)
-
-from utils import make_token
 
 # Ignore warnings in notebook output
 
 warnings.filterwarnings("ignore")
+
+
+# Suppress flowmachine log messages
+logging.getLogger().setLevel(logging.ERROR)
 
 
 # Format pandas tables nicely
@@ -42,29 +40,17 @@ get_ipython().display_formatter.formatters["text/markdown"].for_type(dict, forma
 get_ipython().display_formatter.formatters["text/markdown"].for_type(
     str, lambda x: f">`{x}`"
 )
-
+get_ipython().display_formatter.formatters["text/markdown"].for_type(
+    list, lambda x: f">`{x}`"
+)
 
 # Create an API access token
 
-claims = {
-    "daily_location": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2"],
-    },
-    "modal_location": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2"],
-    },
-    "flows": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-    "location_event_counts": {
-        "permissions": {"run": True, "poll": True, "get_result": True},
-        "spatial_aggregation": ["admin3", "admin2", "admin1"],
-    },
-}
 
-TOKEN = make_token(
-    username="testuser", secret_key="secret", lifetime=timedelta(days=1), claims=claims
+TOKEN = generate_token(
+    username="docsuser",
+    secret=os.environ["JWT_SECRET_KEY"],
+    lifetime=timedelta(days=1),
+    claims=get_all_claims_from_flowapi(flowapi_url="http://localhost:9090"),
+    flowapi_identifier=os.environ["FLOWAPI_IDENTIFIER"],
 )

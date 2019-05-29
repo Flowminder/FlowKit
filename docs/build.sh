@@ -6,6 +6,7 @@
 
 set -e
 
+export DOCKER_SERVICES="flowdb_synthetic_data flowmachine_query_locker"
 
 KillJobs() {
     for job in $(jobs -p); do
@@ -16,9 +17,9 @@ KillJobs() {
 }
 
 TrapQuit() {
-    if [ "$CI" != "true" ]; then
+    if [ "$CI" != "true" ] && [ "$KEEP_CONTAINERS_ALIVE" != "true" ]; then
 	    echo "Bringing down containers."
-	    docker-compose -f docs-build-containers.yml down
+	    (pushd .. && make down && popd)
 	fi
 
 	echo "Shutting down FlowMachine and FlowAPI"
@@ -28,29 +29,22 @@ TrapQuit() {
 trap TrapQuit EXIT
 
 if [ "$CI" != "true" ]; then
-	export PIPENV_DOTENV_LOCATION=$(pwd)/.env
-    echo "Setting up docker containers"
-    echo "Bringing down any existing ones."
-    docker-compose -f docs-build-containers.yml down
-    echo "Bringing up new ones."
-    docker-compose -f docs-build-containers.yml up -d
+    (pushd .. && make down && make up && popd)
     echo "Waiting for flowdb to be ready"
-    docker exec flowkit_docs_flowdb bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
-else
-	export PIPENV_DONT_LOAD_ENV=1
+    docker exec flowdb_synthetic_data bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
 fi
 
-pushd ../flowmachine
-pipenv install -d
+pipenv install
+echo "Pre-caching FlowMachine queries..."
+FLOWMACHINE_LOG_LEVEL=debug pipenv run python cache_queries.py
+echo "Finished pre-caching queries"
 pipenv run flowmachine &
 echo "Started FlowMachine."
-popd
-pushd ../flowapi
-pipenv install -d
 pipenv run quart run --port 9090 &
+echo "Retrieving API spec"
+sleep 5
+curl http://localhost:9090/api/0/spec/openapi-redoc.json -o source/_static/openapi-redoc.json
 echo "Started FlowAPI."
-popd
 echo "Starting build."
 
-pipenv install
-BRANCH=${CIRCLE_BRANCH:="master"} pipenv run mkdocs "${@:-build}"
+BRANCH=${CIRCLE_BRANCH:="master"} FLOWMACHINE_LOG_LEVEL=error pipenv run mkdocs "${@:-build}"

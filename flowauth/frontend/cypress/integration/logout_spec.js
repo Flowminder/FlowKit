@@ -7,9 +7,9 @@ describe("Logout", function () {
 
     it("Logout actually logs out", function () {
         cy.login();
-        cy.visit("/");
-        cy.get("#logout").click();
+        cy.goto("/");
         cy.wait(500);
-        cy.contains("Sign in");
+        cy.get("#logout").click();
+        cy.contains("Sign in").should("be.visible");
     });
 });

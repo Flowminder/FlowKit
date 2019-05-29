@@ -26,10 +26,11 @@ def test_get_result_by_params(monkeypatch, token):
     dummy_method = Mock()
     monkeypatch.setattr(flowclient.client, "get_result_by_query_id", dummy_method)
     get_result(
-        connection_mock, {"query_kind": "query_type", "params": {"param": "value"}}
+        connection=connection_mock,
+        query={"query_kind": "query_type", "params": {"param": "value"}},
     )
     # Should request the query by id
-    dummy_method.assert_called_with(connection_mock, "99")
+    dummy_method.assert_called_with(connection=connection_mock, query_id="99")
 
 
 def test_get_result_by_id(token):
@@ -46,13 +47,13 @@ def test_get_result_by_id(token):
     )
     connection_mock.get_url.return_value.headers = {"Location": "/api/0/foo/Test"}
 
-    df = get_result_by_query_id(connection_mock, "99")
+    df = get_result_by_query_id(connection=connection_mock, query_id="99")
 
     # Query id should be requested
-    assert call("poll/99") in connection_mock.get_url.call_args_list
+    assert call(route="poll/99") in connection_mock.get_url.call_args_list
 
     # Query json should be requested
-    assert call("foo/Test") in connection_mock.get_url.call_args_list
+    assert call(route="foo/Test") in connection_mock.get_url.call_args_list
     # Query result should contain the id, and the dataframe
     assert 1 == len(df)
     assert "foo" == df.name[0]
@@ -77,8 +78,8 @@ def test_get_result_by_id_error(monkeypatch, http_code, token):
         FlowclientConnectionError,
         match=f"Could not get result. API returned with status code: {http_code}. Reason: MESSAGE",
     ):
-        get_result_by_query_id(connection_mock, "99")
-    assert call("DUMMY_LOCATION") in connection_mock.get_url.call_args_list
+        get_result_by_query_id(connection=connection_mock, query_id="99")
+    assert call(route="DUMMY_LOCATION") in connection_mock.get_url.call_args_list
 
 
 def test_get_result_by_id_poll_loop(monkeypatch):
@@ -88,6 +89,6 @@ def test_get_result_by_id_poll_loop(monkeypatch):
     ready_mock = Mock(side_effect=[(False, None), StopIteration])
     monkeypatch.setattr("flowclient.client.query_is_ready", ready_mock)
     with pytest.raises(StopIteration):
-        get_result_by_query_id("placeholder", "99")
+        get_result_by_query_id(connection="placeholder", query_id="99")
 
     assert 2 == ready_mock.call_count

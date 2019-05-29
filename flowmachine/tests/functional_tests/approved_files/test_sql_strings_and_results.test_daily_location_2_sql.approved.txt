@@ -19,8 +19,9 @@ FROM (SELECT times_visited.subscriber,
                                      events.calls.location_id
                               FROM events.calls
                               WHERE (events.calls.datetime >= '2016-01-04 00:00:00')
-                                AND (events.calls.datetime <= '2016-01-05 00:00:00')
-                                AND EXTRACT(HOUR FROM events.calls.datetime) BETWEEN 3 AND 8
+                                AND (events.calls.datetime < '2016-01-05 00:00:00')
+                                AND (to_char(events.calls.datetime, 'HH24:MI') >= '03:00')
+                                AND (to_char(events.calls.datetime, 'HH24:MI') < '09:00')
                                 AND events.calls.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')
 
                               UNION ALL
@@ -30,8 +31,9 @@ FROM (SELECT times_visited.subscriber,
                                      events.sms.location_id
                               FROM events.sms
                               WHERE (events.sms.datetime >= '2016-01-04 00:00:00')
-                                AND (events.sms.datetime <= '2016-01-05 00:00:00')
-                                AND EXTRACT(HOUR FROM events.sms.datetime) BETWEEN 3 AND 8
+                                AND (events.sms.datetime < '2016-01-05 00:00:00')
+                                AND (to_char(events.sms.datetime, 'HH24:MI') >= '03:00')
+                                AND (to_char(events.sms.datetime, 'HH24:MI') < '09:00')
                                 AND events.sms.imei IN ('2GJxeNazvlgZbqj6', '7qKmzkeMbmk5nOa0', '8dpPLR15XwR7jQyN', '1NqnrAB9bRd597x2')) AS foo) AS l
                        INNER JOIN (SELECT location_id,
                                           version,
@@ -46,10 +48,10 @@ FROM (SELECT times_visited.subscriber,
                                          FROM infrastructure.cells AS locinfo
                                               INNER JOIN geography.admin2 AS polygon ON st_within(locinfo.geom_point::geometry,
                                                                                                   st_setsrid(polygon.geom, 4326)::geometry)) AS map) AS sites ON (l.location_id = sites.location_id)
-                                                                                                                                                             AND l.time::date BETWEEN COALESCE(sites.date_of_first_service,
-                                                                                                                                                                                               '-infinity'::timestamptz)
-                                                                                                                                                                                  AND COALESCE(sites.date_of_last_service,
-                                                                                                                                                                                               'infinity'::timestamptz)
+                                                                                                                                                             AND (l.time)::date BETWEEN COALESCE(sites.date_of_first_service,
+                                                                                                                                                                                                 ('-infinity')::timestamptz)
+                                                                                                                                                                                    AND COALESCE(sites.date_of_last_service,
+                                                                                                                                                                                                 ('infinity')::timestamptz)
                   ORDER BY time) AS subscriber_locs
             GROUP BY subscriber_locs.subscriber, admin2pcod) AS times_visited) AS ranked
 WHERE rank = 1

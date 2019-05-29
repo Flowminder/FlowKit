@@ -71,6 +71,9 @@ setup(
     install_requires=[
         "SQLAlchemy",
         "cachetools",
+        "apispec-oneofschema",
+        "marshmallow>=3.0.0rc6",  # TODO: unpin
+        "marshmallow-oneofschema==2.0.0b2",  # TODO: unpin
         "numpy",
         "networkx",
         "pandas",
@@ -79,11 +82,12 @@ setup(
         "pytz",
         "python-louvain",
         "psycopg2-binary",
-        "python-redis-lock",
+        "finist",
         "redis",
         "pyzmq",
         "structlog",
         "shapely",
+        "python-rapidjson",
     ],
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,

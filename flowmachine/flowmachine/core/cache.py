@@ -7,18 +7,203 @@
 """
 Functions which deal with inspecting and managing the query cache.
 """
-import logging
+
 import pickle
 
-from typing import TYPE_CHECKING, Tuple, List
+from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
 
 from psycopg2 import InternalError
+
+from redis import StrictRedis
+import psycopg2
+from sqlalchemy.engine import Engine
+
+from flowmachine.core.errors.flowmachine_errors import (
+    QueryCancelledException,
+    QueryErroredException,
+    StoreFailedException,
+)
+from flowmachine.core.query_state import QueryStateMachine, QueryEvent
 
 if TYPE_CHECKING:
     from .query import Query
     from .connection import Connection
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
+
+
+def write_query_to_cache(
+    *,
+    name: str,
+    redis: StrictRedis,
+    query: "Query",
+    connection: "Connection",
+    ddl_ops_func: Callable[[str, str], List[str]],
+    write_func: Callable[[List[str], Engine], float],
+    schema: Optional[str] = "cache",
+    sleep_duration: Optional[int] = 1,
+) -> "Query":
+    """
+    Write a Query object into a postgres table and update the cache metadata about it.
+    Attempts to update the query's state in redis to `executing`, and if successful, tries to run
+    it. If unable to update the state to `executing`, will block until the query is in a `completed`,
+    `errored`, or `cancelled` state.
+
+    Parameters
+    ----------
+    name : str
+        Name of the table to write to
+    redis : StrictRedis
+        Redis connection to use to update state
+    query : Query
+        Query object to write
+    connection : Connection
+        Flowmachine connection to use for writing
+    ddl_ops_func : Callable[[str, str], List[str]]
+        Function that will be called to generate a list of SQL statements to run. Should accept name and
+        schema as arguments and return a list of SQL strings.
+    write_func : Callable[[List[str], Engine], float]
+        Function which will be called with the result of ddl_ops_func to perform the actual write.
+        Should take a list of SQL strings and an SQLAlchemy Engine as arguments and return the runtime
+        of the query.
+    schema : str, default "cache"
+        Name of the schema to write to
+    sleep_duration : int, default 1
+        Number of seconds to wait between polls when monitoring a query being written from elsewhere
+
+    Returns
+    -------
+    Query
+        The query object which was written once the write has completed successfully.
+
+
+    Raises
+    ------
+    QueryCancelledException
+        If execution of the query was interrupted by a user
+    QueryErroredException
+        If running the ddl ops failed
+    StoreFailedException
+        If something unexpected went wrong while storing the query
+
+    Notes
+    -----
+    This is a _blocking function_, and will not return until the query is no longer in an executing state.
+
+    """
+    logger.debug(f"Trying to switch '{query.md5}' to executing state.")
+    q_state_machine = QueryStateMachine(redis, query.md5)
+    current_state, this_thread_is_owner = q_state_machine.execute()
+    if this_thread_is_owner:
+        logger.debug(f"In charge of executing '{query.md5}'.")
+        try:
+            query_ddl_ops = ddl_ops_func(name, schema)
+        except Exception as exc:
+            q_state_machine.raise_error()
+            logger.error(f"Error generating SQL. Error was {exc}")
+            raise exc
+        logger.debug("Made SQL.")
+        con = connection.engine
+        with con.begin():
+            try:
+                plan_time = write_func(query_ddl_ops, con)
+                logger.debug("Executed queries.")
+            except Exception as exc:
+                q_state_machine.raise_error()
+                logger.error(f"Error executing SQL. Error was {exc}")
+                raise exc
+            if schema == "cache":
+                try:
+                    write_cache_metadata(connection, query, compute_time=plan_time)
+                except Exception as exc:
+                    q_state_machine.raise_error()
+                    logger.error(f"Error writing cache metadata. Error was {exc}")
+                    raise exc
+        q_state_machine.finish()
+
+    q_state_machine.wait_until_complete(sleep_duration=sleep_duration)
+    if q_state_machine.is_completed:
+        return query
+    elif q_state_machine.is_cancelled:
+        logger.error(f"Query '{query.md5}' was cancelled.")
+        raise QueryCancelledException(query.md5)
+    elif q_state_machine.is_errored:
+        logger.error(f"Query '{query.md5}' finished with an error.")
+        raise QueryErroredException(query.md5)
+    else:
+        logger.error(
+            f"Query '{query.md5}' not stored. State is {q_state_machine.current_query_state}"
+        )
+        raise StoreFailedException(query.md5)
+
+
+def write_cache_metadata(
+    connection: "Connection", query: "Query", compute_time: Optional[float] = None
+):
+    """
+    Helper function for store, updates flowmachine metadata table to
+    log that this query is stored, but does not actually store
+    the query.
+
+    Parameters
+    ----------
+    connection : Connection
+        Flowmachine connection object to use
+    query : Query
+        Query object to write metadata about
+    compute_time : float, default None
+        Optionally provide the compute time for the query
+
+    """
+
+    from ..__init__ import __version__
+
+    con = connection.engine
+
+    self_storage = b""
+    try:
+        self_storage = pickle.dumps(query)
+    except Exception as e:
+        logger.debug("Can't pickle ({e}), attempting to cache anyway.")
+        pass
+
+    try:
+        in_cache = bool(
+            connection.fetch(f"SELECT * FROM cache.cached WHERE query_id='{query.md5}'")
+        )
+
+        with con.begin():
+            cache_record_insert = """
+            INSERT INTO cache.cached 
+            (query_id, version, query, created, access_count, last_accessed, compute_time, 
+            cache_score_multiplier, class, schema, tablename, obj) 
+            VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
+             ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
+            con.execute(
+                cache_record_insert,
+                (
+                    query.md5,
+                    __version__,
+                    query._make_query(),
+                    compute_time,
+                    query.__class__.__name__,
+                    *query.fully_qualified_table_name.split("."),
+                    psycopg2.Binary(self_storage),
+                ),
+            )
+            con.execute("SELECT touch_cache(%s);", query.md5)
+            con.execute("SELECT pg_notify(%s, 'Done.')", query.md5)
+            logger.debug("{} added to cache.".format(query.fully_qualified_table_name))
+            if not in_cache:
+                for dep in query._get_stored_dependencies(exclude_self=True):
+                    con.execute(
+                        "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
+                        (query.md5, dep.md5),
+                    )
+    except NotImplementedError:
+        logger.debug("Table has no standard name.")
 
 
 def touch_cache(connection: "Connection", query_id: str) -> float:
@@ -42,28 +227,86 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
         raise ValueError(f"Query id '{query_id}' is not in cache on this connection.")
 
 
-def reset_cache(connection: "Connection") -> None:
+def reset_cache(
+    connection: "Connection", redis: StrictRedis, protect_table_objects: bool = True
+) -> None:
     """
-    Reset the query cache. Deletes any tables under cache schema, resets the cache count
-    and clears the cached and dependencies tables.
+    Reset the query cache. Deletes any tables under cache schema, resets the cache count,
+    clears the cached and dependencies tables.
 
     Parameters
     ----------
     connection : Connection
+    redis : StrictRedis
+    protect_table_objects : bool, default True
+        Set to False to also remove cache metadata for Table objects which point to tables outside the cache schema
+
+    Notes
+    -----
+    You _must_ ensure that no queries are currently running when calling this function.
+    Any queries currently running will no longer be tracked by redis, and UNDEFINED BEHAVIOUR
+    will occur.
+
+    In addition, you should restart any interpreter running flowmachine after this command is run
+    to ensure that the local objects have not drifted out of sync with the database.
     """
     # For deletion purposes, we ignore Table objects. These either point to something
     # outside the cache schema and hence shouldn't be removed by calling this, or
     # they point to a cache table and hence are a duplicate of a Query entry which
     # will also point to that table.
 
-    qry = f"SELECT tablename FROM cache.cached WHERE NOT class='Table'"
-    tables = connection.fetch(qry)
     with connection.engine.begin() as trans:
+        qry = f"SELECT tablename FROM cache.cached WHERE schema='cache'"
+        tables = trans.execute(qry).fetchall()
+
         trans.execute("SELECT setval('cache.cache_touches', 1)")
         for table in tables:
             trans.execute(f"DROP TABLE IF EXISTS cache.{table[0]} CASCADE")
-        trans.execute("TRUNCATE cache.cached CASCADE")
-        trans.execute("TRUNCATE cache.dependencies CASCADE")
+        if protect_table_objects:
+            trans.execute(f"DELETE FROM cache.cached WHERE schema='cache'")
+        else:
+            trans.execute("TRUNCATE cache.cached CASCADE")
+    resync_redis_with_cache(connection=connection, redis=redis)
+
+
+def resync_redis_with_cache(connection: "Connection", redis: StrictRedis) -> None:
+    """
+    Reset redis to be in sync with the current contents of the cache.
+
+    Parameters
+    ----------
+    connection : Connection
+    redis : StrictRedis
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    You _must_ ensure that no queries are currently running when calling this function.
+    Any queries currently running will no longer be tracked by redis, and UNDEFINED BEHAVIOUR
+    will occur.
+    """
+    logger.debug("Redis resync")
+    qry = f"SELECT query_id FROM cache.cached"
+    queries_in_cache = connection.fetch(qry)
+    logger.debug("Redis resync", queries_in_cache=queries_in_cache)
+    redis.flushdb()
+    logger.debug("Flushing redis.")
+    for event in (QueryEvent.QUEUE, QueryEvent.EXECUTE, QueryEvent.FINISH):
+        for qid in queries_in_cache:
+            new_state, changed = QueryStateMachine(redis, qid[0]).trigger_event(event)
+            logger.debug(
+                "Redis resync",
+                fast_forwarded=qid[0],
+                new_state=new_state,
+                fast_forward_succeeded=changed,
+            )
+            if not changed:
+                raise RuntimeError(
+                    f"Failed to trigger {event} on '{qid[0]}', ensure nobody else is accessing redis!"
+                )
 
 
 def invalidate_cache_by_id(

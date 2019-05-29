@@ -7,14 +7,16 @@
 Here you find metaclasses for building subscriber features.
 
 """
-import logging
+
 import warnings
 
 from ...core.query import Query
 from ..utilities.spatial_aggregates import JoinedSpatialAggregate
 
 
-logger = logging.getLogger("flowmachine").getChild(__name__)
+import structlog
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class SubscriberFeature(Query):
@@ -24,14 +26,14 @@ class SubscriberFeature(Query):
     case
     """
 
-    def join_aggregate(self, locations, method="mean"):
+    def join_aggregate(self, locations, method="avg"):
         """
         Join with a location representing object and aggregate
         spatially.
 
         Parameters
         ----------
-        method : {'mean', 'mode', 'median'}
+        method : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
         locations :
             Subscriber locating type query
 
@@ -41,7 +43,7 @@ class SubscriberFeature(Query):
             Query object representing a version of this metric aggregated to
             the location level.
         """
-        return JoinedSpatialAggregate(self, locations, method=method)
+        return JoinedSpatialAggregate(metric=self, locations=locations, method=method)
 
     def __getitem__(self, item):
 

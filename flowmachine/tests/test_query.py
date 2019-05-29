@@ -61,7 +61,7 @@ def test_object_representation_is_correct():
 
     o = inherits_object_representation()
     r = o.__repr__()
-    assert "Query object of type" in r
+    assert r.startswith("<Query of type:")
 
 
 def test_instantiating_base_class_raises_error():
@@ -126,3 +126,30 @@ def test_limited_head():
     """Test that we can call head on a query with a limit clause."""
     dl = daily_location("2016-01-01")
     dl.random_sample(2).head()
+
+
+def test_make_sql_no_overwrite():
+    """
+    Test the Query._make_sql won't overwrite an existing table
+    """
+
+    dl = daily_location("2016-01-01")
+    assert [] == dl._make_sql("admin3", schema="geography")
+
+
+def test_query_formatting():
+    """
+    Test that query can be formatted as a string, with query attributes
+    specified in the `fmt` argument being included.
+    """
+    dl = daily_location("2016-01-01", method="last")
+    assert "<Query of type: LastLocation>" == format(dl)
+    assert (
+        "<Query of type: LastLocation, level: 'admin3', column_names: ['subscriber', 'pcod']>"
+        == f"{dl:level,column_names}"
+    )
+
+    with pytest.raises(
+        ValueError, match="Format string contains invalid query attribute: 'foo'"
+    ):
+        format(dl, "query_id,foo")

@@ -17,13 +17,30 @@ Makes use of the tohu module for generation of random data.
 """
 
 import os
+from contextlib import contextmanager
+from multiprocessing import cpu_count
+
 import pandas as pd
+import sqlalchemy
+from sqlalchemy.exc import ResourceClosedError
 from tohu import *
 import argparse
 import datetime
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
-# here = os.path.dirname(os.path.abspath(__file__))
+import structlog
+import json
+
+structlog.configure(
+    processors=[
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.JSONRenderer(serializer=json.dumps),
+    ]
+)
+logger = structlog.get_logger(__name__)
 
 parser = argparse.ArgumentParser(description="Flowminder Synthetic CDR Generator\n")
 parser.add_argument(
@@ -199,16 +216,19 @@ def write_day_csv(subscribers, cells, date, num_calls, call_seed, output_root_di
     }
     os.makedirs(f"{output_root_dir}/data/records/calls", exist_ok=True)
     fpath = f"{output_root_dir}/data/records/calls/calls_{date.strftime('%Y%m%d')}.csv"
-    calls_df = ceg.generate(num_calls, seed=call_seed).to_df(fields=fields)
-    calls_df_twoline = convert_to_two_line_format(calls_df)
-    calls_df_twoline.to_csv(fpath, index=False)
+    with log_duration("Generating calls."):
+        calls_df = ceg.generate(num_calls, seed=call_seed).to_df(fields=fields)
+    with log_duration("Converting calls to two-line."):
+        calls_df_twoline = convert_to_two_line_format(calls_df)
+    with log_duration("Writing calls to csv."):
+        calls_df_twoline.to_csv(fpath, index=False)
 
     ingest_sql = """
-        BEGIN;
             CREATE TABLE IF NOT EXISTS events.calls_{table} (
                     CHECK ( datetime >= '{table}'::TIMESTAMPTZ
                     AND datetime < '{end_date}'::TIMESTAMPTZ)
                 ) INHERITS (events.calls);
+                ALTER TABLE events.calls_{table} NO INHERIT events.calls;
 
                 COPY events.calls_{table}( datetime,msisdn_counterpart,id,msisdn,location_id,outgoing,duration,tac )
                     FROM '{output_root_dir}/data/records/calls/calls_{table}.csv'
@@ -222,82 +242,166 @@ def write_day_csv(subscribers, cells, date, num_calls, call_seed, output_root_di
             CREATE INDEX ON events.calls_{table} (datetime);
             CLUSTER events.calls_{table} USING calls_{table}_msisdn_idx;
             ANALYZE events.calls_{table};
-        COMMIT;""".format(
+            ALTER TABLE events.calls_{table} INHERIT events.calls;""".format(
         output_root_dir=output_root_dir,
         table=date.strftime("%Y%m%d"),
         end_date=(date + datetime.timedelta(days=1)).strftime("%Y%m%d"),
     )
-    return ingest_sql
+    return f"Inserting {num_calls} calls for {date}.", ingest_sql
 
 
-def write_ingest_sql(tables, output_root_dir):
+@contextmanager
+def log_duration(job: str, **kwargs):
     """
-    Write to `{output_root_dir}/sql/syntheticdata/ingest_calls.sql` an ingestion
-    script that wraps the list of table creation statements provided in tables.
+    Small context handler that logs the duration of the with block.
 
     Parameters
     ----------
-    tables: list of str
-        List of SQL strings, each of which is a table creation statement.
+    job: str
+        Description of what is being run, will be shown under the "job" key in log
+    kwargs: dict
+        Any kwargs will be shown in the log as "key":"value"
     """
-    ingest_head = """
-        BEGIN;
-        DELETE FROM events.calls;"""
-    ingest_tail = """
-        ANALYZE events.calls;
-        INSERT INTO available_tables (table_name, has_locations, has_subscribers, has_counterparts) VALUES ('calls', true, true, true)
-        ON conflict (table_name)
-        DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;
-        COMMIT;"""
-    output_dir = os.path.join(output_root_dir, "sql", "syntheticdata")
-    os.makedirs(output_dir, exist_ok=True)
-    with open(f"{output_dir}/ingest_calls.sql", "w") as fout:
-        fout.write("\n".join([ingest_head] + tables + [ingest_tail]))
+    start_time = datetime.datetime.now()
+    logger.info("Started", job=job, **kwargs)
+    yield
+    logger.info(
+        "Finished", job=job, runtime=str(datetime.datetime.now() - start_time), **kwargs
+    )
 
 
 if __name__ == "__main__":
-    print("Generating synthetic data..")
     args = parser.parse_args()
-    print(args)
-    num_subscribers = args.n_subscribers
-    num_cells = args.n_cells
-    num_calls = args.n_calls
+    with log_duration("Generating synthetic data", **vars(args)):
+        num_subscribers = args.n_subscribers
+        num_cells = args.n_cells
+        num_calls = args.n_calls
 
-    subscriber_seed = args.subscribers_seed
-    cell_seed = args.cells_seed
-    call_seed = args.calls_seed
+        subscriber_seed = args.subscribers_seed
+        cell_seed = args.cells_seed
+        call_seed = args.calls_seed
 
-    output_root_dir = args.output_root_dir
-    os.makedirs(os.path.join(output_root_dir, "data", "infrastructure"), exist_ok=True)
-
-    print("Generating {} subscribers.".format(num_subscribers))
-    sg = SubscriberGenerator()
-    subscribers = list(sg.generate(num_subscribers, seed=subscriber_seed))
-
-    print("Generating {} cells.".format(num_cells))
-    cg = CellGenerator()
-    cells = cg.generate(num_cells, seed=cell_seed)
-    cells.to_csv(
-        os.path.join(output_root_dir, "data", "infrastructure", "cells.csv"),
-        fields=[
-            "cell_id",
-            "site_id",
-            "version",
-            "longitude",
-            "latitude",
-            "date_of_first_service",
-            "date_of_last_service",
-        ],
-    )
-
-    print("Generating {} days of calls.".format(args.n_days))
-    dates = pd.date_range(start="2016-01-01", periods=args.n_days)
-
-    def write_f(seed_inc, date):
-        return write_day_csv(
-            subscribers, cells, date, num_calls, call_seed + seed_inc, output_root_dir
+        output_root_dir = args.output_root_dir
+        os.makedirs(
+            os.path.join(output_root_dir, "data", "infrastructure"), exist_ok=True
         )
 
-    with ProcessPoolExecutor() as pool:
-        tables = list(pool.map(write_f, *zip(*enumerate(dates))))
-    write_ingest_sql(tables, output_root_dir)
+        with log_duration(f"Generating {num_subscribers} subscribers."):
+            sg = SubscriberGenerator()
+            subscribers = list(sg.generate(num_subscribers, seed=subscriber_seed))
+
+        with log_duration(f"Generating {num_cells} cells."):
+            cg = CellGenerator()
+            cells = cg.generate(num_cells, seed=cell_seed)
+            cells.to_csv(
+                os.path.join(output_root_dir, "data", "infrastructure", "cells.csv"),
+                fields=[
+                    "cell_id",
+                    "site_id",
+                    "version",
+                    "longitude",
+                    "latitude",
+                    "date_of_first_service",
+                    "date_of_last_service",
+                ],
+            )
+
+        cells_ingest_sql = f"""
+        DELETE FROM infrastructure.cells;
+    
+        CREATE TEMP TABLE temp_cells (
+            id TEXT,
+            site_id TEXT,
+            version NUMERIC,
+            longitude NUMERIC,
+            latitude NUMERIC,
+            date_of_first_service TEXT,
+            date_of_last_service TEXT
+        );
+        
+        COPY temp_cells (
+                id,
+                site_id,
+                version,
+                longitude,
+                latitude,
+                date_of_first_service,
+                date_of_last_service
+            )
+        FROM
+            '{os.path.join(output_root_dir, "data", "infrastructure", "cells.csv")}'
+        WITH
+            ( DELIMITER ',',
+            HEADER true,
+            FORMAT csv );
+        
+        INSERT INTO infrastructure.cells (
+            id,
+            site_id,
+            version,
+            date_of_first_service,
+            date_of_last_service,
+            geom_point
+            )
+                SELECT
+                    id,
+                    site_id,
+                    version,
+                    date_of_first_service::date,
+                    date_of_last_service::date,
+                    ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) AS geom_point
+                FROM temp_cells;
+        INSERT INTO infrastructure.sites(id, version, date_of_first_service, date_of_last_service, geom_point) 
+            SELECT site_id, version, date_of_first_service, date_of_last_service, geom_point FROM infrastructure.cells;
+        """
+
+        with log_duration(f"Generating {args.n_days} days of calls."):
+            dates = pd.date_range(start="2016-01-01", periods=args.n_days)
+
+            def write_f(seed_inc, date):
+                return write_day_csv(
+                    subscribers,
+                    cells,
+                    date,
+                    num_calls,
+                    call_seed + seed_inc,
+                    output_root_dir,
+                )
+
+            with ProcessPoolExecutor() as pool:
+                tables = list(pool.map(write_f, *zip(*enumerate(dates))))
+        tables.append((f"Inserting {num_cells} cells.", cells_ingest_sql))
+
+        # Run ingest on multiple threads
+        engine = sqlalchemy.create_engine(
+            f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
+            echo=False,
+            strategy="threadlocal",
+            pool_size=cpu_count(),
+            pool_timeout=None,
+        )
+
+        def do_exec(args):
+            msg, sql = args
+            with log_duration(msg):
+                started = datetime.datetime.now()
+                with engine.begin() as trans:
+                    res = trans.execute(sql)
+                    try:
+                        logger.info(f"Ran", job=msg, result=res.fetchall())
+                    except ResourceClosedError:
+                        pass  # Nothing to do here
+
+        do_exec(("Ensuring events.calls is empty.", "DELETE FROM events.calls;"))
+        with ThreadPoolExecutor(cpu_count()) as tp:
+            list(tp.map(do_exec, tables))
+        do_exec(("Analyzing events.calls.", "ANALYZE events.calls;"))
+        do_exec(
+            (
+                "Marking tables as available.",
+                """
+            INSERT INTO available_tables (table_name, has_locations, has_subscribers, has_counterparts) VALUES ('calls', true, true, true)
+            ON conflict (table_name)
+            DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;""",
+            )
+        )

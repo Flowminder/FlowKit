@@ -5,14 +5,14 @@
 describe("Login screen", function () {
 	beforeEach(function () {
 		// Go to login screen
-		cy.visit("/");
+		cy.goto("/");
 	});
 
 	it("Log in as a user", function () {
 		cy.get("#username").type("TEST_USER");
 		cy.get("#password").type("DUMMY_PASSWORD");
 		cy.get("button").click();
-		cy.contains("Aruba").should("exist");
+		cy.contains("TEST_SERVER").should("exist");
 		cy.getCookie("session").should("exist");
 		cy.getCookie("X-CSRF").should("exist");
 	});
@@ -63,15 +63,15 @@ describe("Login screen", function () {
 
 	it("Render correct component according to login status", function () {
 		// Check that login screen renders initially
-		cy.visit("/");
+		cy.goto("/");
 		cy.contains("Sign in");
 		// Log in, reload, and check that dashboard renders
 		cy.login();
-		cy.visit("/");
+		cy.goto("/");
 		cy.contains("My Servers");
 		// Log out, reload, and check that login screen renders again
 		cy.request("/signout");
-		cy.visit("/");
+		cy.goto("/");
 		cy.contains("Sign in");
 	});
 });

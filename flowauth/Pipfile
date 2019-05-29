@@ -8,22 +8,23 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-login = "*"
 flask-principal = "*"
-flask-jwt-extended = "*"
+pyjwt = "*"
 flask-wtf =  "*"
 zxcvbn = "*"
 versioneer = "*"
 passlib = "*"
 argon2_cffi = "*"
-"psycopg2-binary" = "*"
+psycopg2-binary = "*"
 cryptography = "*"
 
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
 "flowauth" = {editable = true, path = "./backend"}
+flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
 
 [scripts]
 build-frontend = "bash start.sh build"

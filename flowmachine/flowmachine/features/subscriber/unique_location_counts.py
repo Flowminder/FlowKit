@@ -59,7 +59,7 @@ class UniqueLocationCounts(SubscriberFeature):
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
-    table : str, default 'ALL'
+    tables : str, default 'ALL'
         schema qualified name of the table which the analysis is
         based upon. If 'ALL' it will pull together all of the tables
         specified as flowmachine.yml under 'location_tables'
@@ -87,14 +87,37 @@ class UniqueLocationCounts(SubscriberFeature):
             2   0679FBNM35DsTH3K    3
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        start,
+        stop,
+        *,
+        level="cell",
+        hours="all",
+        tables="all",
+        subscriber_identifier="msisdn",
+        ignore_nulls=True,
+        column_name=None,
+        subscriber_subset=None,
+        polygon_table=None,
+        size=None,
+        radius=None,
+    ):
 
-        """
-
-        """
-
-        self._kwargs = kwargs
-        self.ul = subscriber_locations(*args, **kwargs)
+        self.ul = subscriber_locations(
+            start=start,
+            stop=stop,
+            level=level,
+            hours=hours,
+            table=tables,
+            subscriber_identifier=subscriber_identifier,
+            ignore_nulls=ignore_nulls,
+            column_name=column_name,
+            subscriber_subset=subscriber_subset,
+            polygon_table=polygon_table,
+            size=size,
+            radius=radius,
+        )
         super().__init__()
 
     @property

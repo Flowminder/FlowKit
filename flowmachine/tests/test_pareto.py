@@ -36,13 +36,19 @@ def paretos(df):
         else:
             subscriber_count = dict(zip(*zip(*counts)))
             ps.append(percent_pareto_interactions(subscriber_count))
-    return pd.DataFrame({"subscriber": subscribers, "pareto": ps})
+    return pd.DataFrame({"subscriber": subscribers, "value": ps})
 
 
 def test_pareto(get_dataframe):
     """Test pareto proportion is correct for some hand picked subscribers."""
     p = ParetoInteractions("2016-01-01", "2016-01-02")
     assert all(get_dataframe(p).set_index("subscriber").loc["VkzMxYjv7mYn53oK"] == 0.75)
+
+    p = ParetoInteractions("2016-01-03", "2016-01-04", direction="in")
+    assert all(get_dataframe(p).set_index("subscriber").loc["ZM3zYAPqx95Rw15J"] == 1)
+
+    p = ParetoInteractions("2016-01-03", "2016-01-04", direction="out")
+    assert all(get_dataframe(p).set_index("subscriber").loc["YK6z2lXzg7w57Vap"] == 1)
 
 
 def test_pareto_nepal(get_dataframe):
@@ -69,7 +75,7 @@ def test_pareto__call(get_dataframe):
             subscriber_subset="self_caller",
         )
     )
-    assert 1.0 == pi.pareto[0]
+    assert 1.0 == pi.value[0]
 
 
 def test_pareto__call_exclusion(get_length):
