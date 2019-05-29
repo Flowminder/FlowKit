@@ -8,7 +8,7 @@ Tests that fixuid works as expected
 """
 
 
-def test_uid(docker_client, flowetl_tag):
+def test_uid(docker_client, tag):
     """
     test that we can run the flowetl container with a specific user.
     Check UID is correct.
@@ -21,7 +21,7 @@ def test_uid(docker_client, flowetl_tag):
     assert out.decode("utf-8").strip() == "1002"
 
 
-def test_gid(docker_client, flowetl_tag):
+def test_gid(docker_client, tag):
     """
     test that we can run the flowetl container with a specific user.
     Check GID is correct.
@@ -34,7 +34,7 @@ def test_gid(docker_client, flowetl_tag):
     assert out.decode("utf-8").strip() == "1003"
 
 
-def test_uid_is_airflow(docker_client, flowetl_tag):
+def test_uid_is_airflow(docker_client, tag):
     """
     Test that the user we run the container with is the airflow user.
     """

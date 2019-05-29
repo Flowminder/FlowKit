@@ -375,6 +375,6 @@ def flowetl_db_session(flowetl_db_connection_engine):
 
 
 @pytest.fixture(scope="function")
-def airflow_docker_pipeline_run(docker_client, flowetl_tag):
+def airflow_docker_pipeline_run(docker_client, tag):
     res = docker_client.containers.exec_run("bash -c 'id -g'")
     logging.info(res)
