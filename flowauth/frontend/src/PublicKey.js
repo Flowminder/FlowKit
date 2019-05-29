@@ -11,10 +11,7 @@ import {
   getPublicKey,
 } from "./util/api";
 import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Tooltip from '@material-ui/core/Tooltip';
 import Button from "@material-ui/core/Button";
 
 const styles = theme => ({
@@ -35,7 +32,7 @@ const styles = theme => ({
 });
 
 class PublicKey extends React.Component {
-  state = {key:""}
+  state = {key:"", copySuccess: ''}
   componentDidMount() {
     getPublicKey()
       .then(key => {
@@ -64,7 +61,14 @@ class PublicKey extends React.Component {
     element.href = URL.createObjectURL(file);
     element.download = "flowauth_public_key.pub";
     document.body.appendChild(element);
+    if (window.Cypress) {
+          // Do not attempt to actually download the file in test.
+          // Just leave the anchor in there. Ensure your code doesn't
+          // automatically remove it either.
+          return;
+        }
     element.click();
+    element.remove();
   }
 
 
@@ -72,7 +76,7 @@ class PublicKey extends React.Component {
     if (this.state.hasError) throw this.state.error;
 
     const { classes } = this.props;
-    const { key } = this.state;
+    const { key, copySuccess } = this.state;
     return (
       <Paper className={classes.root}>
         <div className={classes.gridRoot}>
@@ -87,8 +91,10 @@ class PublicKey extends React.Component {
               </Paper>
               </Grid>
               <Grid item  xs={3}>
+              <Tooltip title={copySuccess} placement="bottom">
             <Button variant="outlined" color="primary" onClick={this.copyToClipboard} className={classes.button}>Copy</Button>
-          <Button variant="outlined" color="primary" onClick={this.downloadkey} className={classes.button}>Download</Button>
+              </Tooltip>
+          <Button variant="outlined" color="primary" id="download" onClick={this.downloadkey} className={classes.button}>Download</Button>
               </Grid>
               </Grid>
               </div>

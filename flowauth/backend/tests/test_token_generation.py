@@ -166,7 +166,7 @@ def test_against_general_generator(app):
                 }
             },
         ),
-        key=app.config["PUBLIC_JWT_SIGNING_KEY"],
+        key=load_public_key(environ["PUBLIC_JWT_SIGNING_KEY"]),
         audience="TEST_SERVER",
     )
     assert generator_token["aud"] == flowauth_token["aud"]
