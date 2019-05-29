@@ -16,7 +16,7 @@ def test_uid(docker_client, tag):
 
     user = "1002:1003"
     out = docker_client.containers.run(
-        f"flowminder/flowetl:{flowetl_tag}", "bash -c 'id -u'", user=user
+        f"flowminder/flowetl:{tag}", "bash -c 'id -u'", user=user
     )
     assert out.decode("utf-8").strip() == "1002"
 
@@ -29,7 +29,7 @@ def test_gid(docker_client, tag):
 
     user = "1002:1003"
     out = docker_client.containers.run(
-        f"flowminder/flowetl:{flowetl_tag}", "bash -c 'id -g'", user=user
+        f"flowminder/flowetl:{tag}", "bash -c 'id -g'", user=user
     )
     assert out.decode("utf-8").strip() == "1003"
 
@@ -41,6 +41,6 @@ def test_uid_is_airflow(docker_client, tag):
 
     user = "1002:1003"
     out = docker_client.containers.run(
-        f"flowminder/flowetl:{flowetl_tag}", "bash -c 'id -u | id -nu'", user=user
+        f"flowminder/flowetl:{tag}", "bash -c 'id -u | id -nu'", user=user
     )
     assert out.decode("utf-8").strip() == "airflow"
