@@ -325,7 +325,6 @@ docker secret rm FLOWAPI_FLOWDB_PASSWORD || true
 docker secret rm FLOWAPI_FLOWDB_USER || true
 docker secret rm FLOWDB_POSTGRES_PASSWORD || true
 docker secret rm cert-flowkit.pem || true
-docker secret rm JWT_SECRET_KEY || true
 docker secret rm REDIS_PASSWORD || true
 docker secret rm FLOWAPI_IDENTIFIER || true
 docker secret rm FLOWAUTH_ADMIN_USERNAME || true
