@@ -105,25 +105,7 @@ def mounts():
     return [config_mount, archive_mount, dump_mount, ingest_mount, quarantine_mount]
 
 
-@pytest.fixture(scope="module")
-def flowetl_container(docker_client, tag, container_env, container_network, mounts):
-
-    container = docker_client.containers.run(
-        f"flowminder/flowetl:{tag}",
-        environment=container_env["flowetl"],
-        name="flowetl",
-        network="testing",
-        restart_policy={"Name": "always"},
-        ports={"8080": "8080"},
-        mounts=mounts,
-        detach=True,
-    )
-    yield container
-    container.kill()
-    container.remove()
-
-
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def flowdb_container(
     docker_client, tag, container_env, container_ports, container_network
 ):
@@ -141,7 +123,7 @@ def flowdb_container(
     container.remove()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def flowetl_db_container(
     docker_client, container_env, container_ports, container_network
 ):
@@ -159,26 +141,43 @@ def flowetl_db_container(
     container.remove()
 
 
-@pytest.fixture(scope="module")
-def container_setup(flowetl_container, flowdb_container, flowetl_db_container):
-    yield flowetl_container
+@pytest.fixture(scope="function")
+def flowetl_container(
+    flowdb_container,
+    flowetl_db_container,
+    docker_client,
+    tag,
+    container_env,
+    container_network,
+    mounts,
+):
+
+    container = docker_client.containers.run(
+        f"flowminder/flowetl:{tag}",
+        environment=container_env["flowetl"],
+        name="flowetl",
+        network="testing",
+        restart_policy={"Name": "always"},
+        ports={"8080": "8080"},
+        mounts=mounts,
+        detach=True,
+    )
+    sleep(10)  # BADDD but no clear way to know that airflow scheduler is ready!
+    yield container
+    container.kill()
+    container.remove()
 
 
-@pytest.fixture(scope="module")
-def trigger_dags(container_setup):
-    flowetl = container_setup
-
-    # I know bad but there just isn't a way to know that the scheduler is ready!
-    sleep(5)
-
-    def trigger_dags_function():
+@pytest.fixture(scope="function")
+def trigger_dags():
+    def trigger_dags_function(*, flowetl_container):
 
         dags = ["etl_sensor", "etl_sms", "etl_mds", "etl_calls", "etl_topups"]
 
         for dag in dags:
-            flowetl.exec_run(f"airflow unpause {dag}")
+            flowetl_container.exec_run(f"airflow unpause {dag}")
 
-        flowetl.exec_run("airflow trigger_dag etl_sensor")
+        flowetl_container.exec_run("airflow trigger_dag etl_sensor")
 
     return trigger_dags_function
 
@@ -323,9 +322,11 @@ def wait_for_completion():
     seems OK...) three minutes raises a TimeoutError.
     """
 
-    def wait_func(end_state, dag_id, session=None, time_out=Interval(minutes=3)):
+    def wait_func(
+        end_state, dag_id, session=None, count=1, time_out=Interval(minutes=3)
+    ):
         t0 = now()
-        while not DagRun.find(dag_id, state=end_state, session=session):
+        while len(DagRun.find(dag_id, state=end_state, session=session)) != count:
             sleep(1)
             t1 = now()
             if (t1 - t0) > time_out:
@@ -336,8 +337,8 @@ def wait_for_completion():
 
 
 @pytest.fixture(scope="session")
-def flowdb_connection_engine():
-    conn_str = f"postgresql://{os.getenv('FLOWDB_USER')}:{os.getenv('FLOWDB_PW')}@localhost:{os.getenv('FLOWDB_PORT')}/{os.getenv('FLOWDB_NAME')}"
+def flowdb_connection_engine(container_env, container_ports):
+    conn_str = f"postgresql://{container_env['flowdb']['POSTGRES_USER']}:{container_env['flowdb']['POSTGRES_PASSWORD']}@localhost:{container_ports['flowdb']}/flowdb"
     engine = create_engine(conn_str)
 
     return engine
@@ -345,8 +346,10 @@ def flowdb_connection_engine():
 
 @pytest.fixture(scope="function")
 def flowdb_connection(flowdb_connection_engine):
-    with flowdb_connection_engine.begin() as connection:
-        yield connection
+    connection = flowdb_connection_engine.connect()
+    trans = connection.begin()
+    yield connection, trans
+    connection.close()
 
 
 @pytest.fixture(scope="function")
