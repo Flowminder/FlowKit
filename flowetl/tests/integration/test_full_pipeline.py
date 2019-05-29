@@ -3,73 +3,73 @@ from pendulum import parse
 from etl.model import ETLRecord
 
 
-def test_single_file_never_seen(
-    flowetl_container,
-    write_files_to_dump,
-    trigger_dags,
-    flowetl_db_session,
-    wait_for_completion,
-):
+# def test_single_file_never_seen(
+#     flowetl_container,
+#     write_files_to_dump,
+#     trigger_dags,
+#     flowetl_db_session,
+#     wait_for_completion,
+# ):
 
-    write_files_to_dump(file_names=["CALLS_20160101.csv.gz"])
-    trigger_dags(flowetl_container=flowetl_container)
-    wait_for_completion("success", "etl_calls", session=flowetl_db_session)
-
-
-def test_single_file_bad_name(
-    flowetl_container,
-    write_files_to_dump,
-    trigger_dags,
-    flowetl_db_session,
-    wait_for_completion,
-):
-
-    write_files_to_dump(file_names=["bad_file.bad"])
-    trigger_dags(flowetl_container=flowetl_container)
-    wait_for_completion("success", "etl_sensor", session=flowetl_db_session)
+#     write_files_to_dump(file_names=["CALLS_20160101.csv.gz"])
+#     trigger_dags(flowetl_container=flowetl_container)
+#     wait_for_completion("success", "etl_calls", session=flowetl_db_session)
 
 
-def test_multiple_files_different_type_never_seen(
-    flowetl_container,
-    write_files_to_dump,
-    trigger_dags,
-    flowetl_db_session,
-    wait_for_completion,
-):
+# def test_single_file_bad_name(
+#     flowetl_container,
+#     write_files_to_dump,
+#     trigger_dags,
+#     flowetl_db_session,
+#     wait_for_completion,
+# ):
 
-    write_files_to_dump(
-        file_names=[
-            "CALLS_20160101.csv.gz",
-            "SMS_20160101.csv.gz",
-            "MDS_20160101.csv.gz",
-            "TOPUPS_20160101.csv.gz",
-        ]
-    )
-    trigger_dags(flowetl_container=flowetl_container)
-    wait_for_completion("success", "etl_calls", session=flowetl_db_session)
-    wait_for_completion("success", "etl_sms", session=flowetl_db_session)
-    wait_for_completion("success", "etl_mds", session=flowetl_db_session)
-    wait_for_completion("success", "etl_topups", session=flowetl_db_session)
+#     write_files_to_dump(file_names=["bad_file.bad"])
+#     trigger_dags(flowetl_container=flowetl_container)
+#     wait_for_completion("success", "etl_sensor", session=flowetl_db_session)
 
 
-def test_multiple_files_same_type_never_seen(
-    flowetl_container,
-    write_files_to_dump,
-    trigger_dags,
-    flowetl_db_session,
-    wait_for_completion,
-):
+# def test_multiple_files_different_type_never_seen(
+#     flowetl_container,
+#     write_files_to_dump,
+#     trigger_dags,
+#     flowetl_db_session,
+#     wait_for_completion,
+# ):
 
-    write_files_to_dump(
-        file_names=[
-            "CALLS_20160101.csv.gz",
-            "CALLS_20160102.csv.gz",
-            "CALLS_20160103.csv.gz",
-            "CALLS_20160104.csv.gz",
-        ]
-    )
-    trigger_dags(flowetl_container=flowetl_container)
-    wait_for_completion("success", "etl_calls", count=4, session=flowetl_db_session)
+#     write_files_to_dump(
+#         file_names=[
+#             "CALLS_20160101.csv.gz",
+#             "SMS_20160101.csv.gz",
+#             "MDS_20160101.csv.gz",
+#             "TOPUPS_20160101.csv.gz",
+#         ]
+#     )
+#     trigger_dags(flowetl_container=flowetl_container)
+#     wait_for_completion("success", "etl_calls", session=flowetl_db_session)
+#     wait_for_completion("success", "etl_sms", session=flowetl_db_session)
+#     wait_for_completion("success", "etl_mds", session=flowetl_db_session)
+#     wait_for_completion("success", "etl_topups", session=flowetl_db_session)
+
+
+# def test_multiple_files_same_type_never_seen(
+#     flowetl_container,
+#     write_files_to_dump,
+#     trigger_dags,
+#     flowetl_db_session,
+#     wait_for_completion,
+# ):
+
+#     write_files_to_dump(
+#         file_names=[
+#             "CALLS_20160101.csv.gz",
+#             "CALLS_20160102.csv.gz",
+#             "CALLS_20160103.csv.gz",
+#             "CALLS_20160104.csv.gz",
+#         ]
+#     )
+#     trigger_dags(flowetl_container=flowetl_container)
+#     wait_for_completion("success", "etl_calls", count=4, session=flowetl_db_session)
 
 
 def test_single_file_previously_quarantined(
@@ -107,19 +107,19 @@ def test_single_file_previously_quarantined(
     wait_for_completion("success", "etl_calls", count=2, session=flowetl_db_session)
 
 
-def test_single_file_previously_archived(
-    flowetl_container,
-    write_files_to_dump,
-    trigger_dags,
-    flowetl_db_session,
-    flowdb_session,
-    wait_for_completion,
-):
+# def test_single_file_previously_archived(
+#     flowetl_container,
+#     write_files_to_dump,
+#     trigger_dags,
+#     flowetl_db_session,
+#     flowdb_session,
+#     wait_for_completion,
+# ):
 
-    write_files_to_dump(file_names=["CALLS_20160101.csv.gz"])
-    trigger_dags(flowetl_container=flowetl_container)
-    wait_for_completion("success", "etl_calls", session=flowetl_db_session)
+#     write_files_to_dump(file_names=["CALLS_20160101.csv.gz"])
+#     trigger_dags(flowetl_container=flowetl_container)
+#     wait_for_completion("success", "etl_calls", session=flowetl_db_session)
 
-    write_files_to_dump(file_names=["CALLS_20160101.csv.gz"])
-    trigger_dags(flowetl_container=flowetl_container)
-    wait_for_completion("success", "etl_sensor", count=2, session=flowetl_db_session)
+#     write_files_to_dump(file_names=["CALLS_20160101.csv.gz"])
+#     trigger_dags(flowetl_container=flowetl_container)
+#     wait_for_completion("success", "etl_sensor", count=2, session=flowetl_db_session)
