@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Buttons to copy token to clipboard and download token as file added to token list page.[#704](https://github.com/Flowminder/FlowKit/issues/704)
+- `PRIVATE_JWT_SIGNING_KEY` environment variable/secret added to FlowAuth, which should be a PEM encoded RSA private key, optionally base64 encoded if supplied as an environment variable.
+- `PUBLIC_JWT_SIGNING_KEY` environment variable/secret added to FlowAPI, which should be a PEM encoded RSA public key, optionally base64 encoded if supplied as an environment variable.
 
 ### Changed
 - The `FLOWDB_DEBUG` environment variable has been renamed to `FLOWDB_ENABLE_POSTGRES_DEBUG_MODE`.
@@ -15,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAuth now requires that at least one administrator account is created by providing env vars or secrets for:
     - `FLOWAUTH_ADMIN_PASSWORD`
     - `FLOWAUTH_ADMIN_USERNAME`
+- FlowAuth and FlowAPI are now linked using an RSA keypair, instead of per-server shared secrets. [#89](https://github.com/Flowminder/FlowKit/issues/89)
 
 ### Fixed
 - The `FLOWDB_DEBUG` environment variable used to have no effect. This has been fixed. [#811](https://github.com/Flowminder/FlowKit/issues/811)
@@ -27,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 - The `FLOWDB_SERVICES` environment variable has been removed from the toplevel Makefile, so that now `DOCKER_SERVICES` is the only environment variable that controls which services are spun up when running `make up`. [#827](https://github.com/Flowminder/FlowKit/issues/827)
+- `JWT_SECRET_KEY` has been removed in favour of RSA keys.
 
 ## [0.6.3]
 
