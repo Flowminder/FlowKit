@@ -12,10 +12,9 @@
 // the project's config changing)
 
 module.exports = (on, config) => {
-
-    // Add in the public key from the parent environmen to cypress'
-  config.env = config.env || {}
-  config.env.PUBLIC_JWT_SIGNING_KEY = process.env.PUBLIC_JWT_SIGNING_KEY
-  console.log('extended config.env with process.env.{PUBLIC_JWT_SIGNING_KEY}')
-  return config
-}
+  // Add in the public key from the parent environmen to cypress'
+  config.env = config.env || {};
+  config.env.PUBLIC_JWT_SIGNING_KEY = process.env.PUBLIC_JWT_SIGNING_KEY;
+  console.log("extended config.env with process.env.{PUBLIC_JWT_SIGNING_KEY}");
+  return config;
+};

@@ -24,9 +24,8 @@ describe("Public key viewing", function() {
     );
   });
   it("Public key can be downloaded", function() {
-      // Ideally we'd test the download works, but this isn't possible headless in cypress (https://github.com/cypress-io/cypress/issues/949)
+    // Ideally we'd test the download works, but this isn't possible headless in cypress (https://github.com/cypress-io/cypress/issues/949)
     cy.get("#download").click();
-    cy.get("a[download]")
-      .should("exist");
+    cy.get("a[download]").should("exist");
   });
 });
