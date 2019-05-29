@@ -29,11 +29,11 @@ There are additional requirements for a development setup. See the [Developer in
 
 This quick install guide will install the major components of FlowKit together with an intial setup and example analysis query.
 
-The bulk of the installation process consists of using [Docker Compose](https://docs.docker.com/compose/) to download [Docker](https://docs.docker.com/install/) containers from [DockerCloud](https://cloud.docker.com/), followed by a `pip install` of FlowClient.
+The bulk of the installation process consists of using [Docker Compose](https://docs.docker.com/compose/) to download [Docker](https://docs.docker.com/install/) containers from [Docker Hub](https://hub.docker.com/u/flowminder), followed by a `pip install` of FlowClient.
 
 These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pipenv](https://github.com/pypa/pipenv). If you are using [Anaconda](https://www.anaconda.com/what-is-anaconda/)-based installation commands may be different.
 
-Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the DockerCloud repositories [flowminder/flowapi](https://hub.docker.com/r/flowminder/flowapi), [flowminder/flowmachine](https://hub.docker.com/r/flowminder/flowmachine), [flowminder/flowdb](https://hub.docker.com/r/flowminder/flowdb), [flowminder/flowauth](https://hub.docker.com/r/flowminder/flowauth), and [flowminder/flowkit-examples](https://hub.docker.com/r/flowminder/flowkit-examples) respectively. To install them, you will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
+Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the Docker Hub repositories [flowminder/flowapi](https://hub.docker.com/r/flowminder/flowapi), [flowminder/flowmachine](https://hub.docker.com/r/flowminder/flowmachine), [flowminder/flowdb](https://hub.docker.com/r/flowminder/flowdb), [flowminder/flowauth](https://hub.docker.com/r/flowminder/flowauth), and [flowminder/flowkit-examples](https://hub.docker.com/r/flowminder/flowkit-examples) respectively. To install them, you will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 Start the FlowKit test system by running 
 
@@ -67,6 +67,9 @@ bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick
 to get the examples with the larger dataset (the one used when producing this documentation).
 
 !!! info
+    The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the [Flows Above Normal](worked_examples/flows-above-normal.ipynb) example because this uses data for dates outside the range included in the small dataset.
+
+!!! info
     The worked examples make use of [Mapbox GL](https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/) for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions [here](https://account.mapbox.com/)), and set this as the value of the `MAPBOX_ACCESS_TOKEN` environment variable before running the above commands.
 
 To shut down the system, you can either stop all the docker containers directly, or run
@@ -75,41 +78,13 @@ To shut down the system, you can either stop all the docker containers directly,
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) stop
 ```
 
-In order to use the test system, now install FlowClient, and generate a token using FlowAuth.
+In order to use the test system, now [install FlowClient](#flowclient), and generate a token using FlowAuth.
 
-#### FlowAuth Quickstart
+### FlowAuth Quickstart
 
 Visit <a href="http://localhost:9091/" target="_blank">http://localhost:9091</a> and log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`. `TEST_USER` is already set up to generate tokens for the FlowAPI instance started by the quick start script.
 
-#### Granting user permissions in FlowAuth
-
-The following steps using the FlowAuth administration tool are required to add a user and allow them to generate access tokens to communicate with a FlowKit server through FlowAPI:
-
-1. Log into FlowAuth as an administrator.
-
-2. Under "API Routes", add any applicable API routes (e.g. `daily_location`).
-
-3. Under "Aggregation Units", add any applicable aggregation units (e.g. `admin3`).
-
-3. Under "Servers", add a new server and give it a name and secret key. Note that the Secret Key must match the `JWT_SECRET_KEY` set in the flowapi docker container on this server ('secret' in the example above).
-
-4. Enable any permissions for this server under "API Permissions", and aggregation units under "Aggregation Units".
-
-5. Under "Users", add a new user, and set the username and password.
-
-6. Either:
-    - Add a server to the user, and enable/disable API permissions and aggregation units,
-    <p>
-7. Or:
-    <p>
-    - Under "Groups", add a new group,
-
-    - Add a server to the group, and enable/disable API permissions and aggregation units,
-
-    - Add the user to the group.
-
-
-The user can then log into FlowAuth and generate a token (see the [analyst section](analyst.md#flowauth) for instructions).
+See the [administrator section](administrator.md#granting-user-permissions-in-flowauth) for details of how to add servers and users or modify user permissions, or the [analyst section](analyst.md#flowauth) for instructions to generate a token.
 
 
 ### FlowClient <a name="flowclient"> </a>
@@ -194,7 +169,7 @@ By default, `SECRET_KEY` will be set to `secret`. You should supply this to ensu
 While `SECRET_KEY` can be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.  
 
 
-#### Running with Secrets
+### Running with Secrets
 
 The standard Docker compose file supplies a number of 'secret' values as environment variables. Typically, this is a bad idea.
 
@@ -395,3 +370,7 @@ conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", s
 ```
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
+
+### Demonstrating successful deployment
+
+Once FlowKit installation is complete, we suggest running the provided [worked examples](worked_examples/index.md) against the deployed FlowKit to check that everything is working correctly.
