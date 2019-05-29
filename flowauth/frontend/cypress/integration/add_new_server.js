@@ -116,8 +116,9 @@ describe("Server management", function () {
         cy.get("#new").click();
         //Add new user with password
         const server_name = Math.random().toString(36).substring(2, 15);
-        cy.get("#name").type(server_name);
-        cy.get("#secret-key").type("C>K,7|~44]44:ibK");
+        cy.get("#name").type(server_name, {
+            force: true
+        });
         cy.get("#max-life").type("1234");
         cy.contains("Save").click();
         cy.contains(server_name).should("be.visible");

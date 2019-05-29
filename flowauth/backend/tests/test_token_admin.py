@@ -24,11 +24,12 @@ def test_get_server_public_key(app, client, auth):
     response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
 
     response = client.get("/admin/public_key", headers={"X-CSRF-Token": csrf_cookie})
+    key_json = response.get_json()
     expected_key = load_public_key(environ["PUBLIC_JWT_SIGNING_KEY"]).public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
-    assert expected_key == load_public_key(response.data.decode()).public_bytes(
+    assert expected_key == load_public_key(key_json["public_key"]).public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
