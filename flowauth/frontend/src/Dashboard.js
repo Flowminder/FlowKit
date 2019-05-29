@@ -120,8 +120,10 @@ class Dashboard extends React.Component {
   };
 
   handleLogout = () => {
-    logout().then(json => { this.props.setLoggedOut() });
-  }
+    logout().then(json => {
+      this.props.setLoggedOut();
+    });
+  };
 
   setServer = (server_id, server_name) => {
     this.setState({
@@ -209,7 +211,11 @@ class Dashboard extends React.Component {
               >
                 <AccountCircleIcon />
               </IconButton>
-              <IconButton id="logout" color="inherit" onClick={this.handleLogout}>
+              <IconButton
+                id="logout"
+                color="inherit"
+                onClick={this.handleLogout}
+              >
                 <ExitToAppIcon />
               </IconButton>
             </Toolbar>

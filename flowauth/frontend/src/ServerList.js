@@ -8,16 +8,16 @@ import Lister from "./Lister";
 import { getServers, deleteServer } from "./util/api";
 
 const styles = theme => ({
-	root: {
-		...theme.mixins.gutters(),
-		paddingTop: theme.spacing.unit * 2,
-		paddingBottom: theme.spacing.unit * 2
-	}
+  root: {
+    ...theme.mixins.gutters(),
+    paddingTop: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit * 2
+  }
 });
 const ServerList = Lister(
-	ServerAdminDetails,
-	"Servers",
-	getServers,
-	deleteServer
+  ServerAdminDetails,
+  "Servers",
+  getServers,
+  deleteServer
 );
 export default withStyles(styles)(ServerList);

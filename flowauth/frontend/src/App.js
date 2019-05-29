@@ -11,22 +11,24 @@ class App extends Component {
       is_admin: false
     };
   }
-  setLoggedIn = (is_admin) => {
+  setLoggedIn = is_admin => {
     this.setState({
       loggedIn: true,
       is_admin: is_admin
     });
-  }
+  };
   componentDidCatch(error, info) {
     console.log(error);
-    logout().then(json => { this.setLoggedOut() });
+    logout().then(json => {
+      this.setLoggedOut();
+    });
   }
   setLoggedOut = () => {
     this.setState({
       loggedIn: false,
       is_admin: false
     });
-  }
+  };
   render() {
     if (this.state.hasError) throw this.state.error;
 
