@@ -537,7 +537,6 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - setup_remote_docker
       - restore_cache:
           key: flowetl-deps-1-{{ checksum "flowetl/Pipfile.lock"}}
       - run:
