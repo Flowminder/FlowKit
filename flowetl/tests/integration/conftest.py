@@ -325,13 +325,25 @@ def wait_for_completion():
     def wait_func(
         end_state, dag_id, session=None, count=1, time_out=Interval(minutes=3)
     ):
-        t0 = now()
-        while len(DagRun.find(dag_id, state=end_state, session=session)) != count:
-            sleep(1)
-            t1 = now()
-            if (t1 - t0) > time_out:
-                raise TimeoutError
-        return end_state
+        # if you actually pass None to DagRun.find it thinks None is the session
+        # you want to use - need to not pass at all if you want airflow to pick
+        # up correct session using it's provide_session decorator...
+        if session is None:
+            t0 = now()
+            while len(DagRun.find(dag_id, state=end_state)) != count:
+                sleep(1)
+                t1 = now()
+                if (t1 - t0) > time_out:
+                    raise TimeoutError
+            return end_state
+        else:
+            t0 = now()
+            while len(DagRun.find(dag_id, state=end_state, session=session)) != count:
+                sleep(1)
+                t1 = now()
+                if (t1 - t0) > time_out:
+                    raise TimeoutError
+            return end_state
 
     return wait_func
 
