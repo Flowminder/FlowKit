@@ -101,4 +101,4 @@ docker secret create cert-flowkit.pem cert-flowkit.pem
 # Deploy the stack
 
 echo "Deploying stack"
-docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
+docker stack deploy -docker-stack.yml secrets_test
