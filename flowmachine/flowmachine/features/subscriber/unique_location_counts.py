@@ -101,7 +101,6 @@ class UniqueLocationCounts(SubscriberFeature):
         subscriber_subset=None,
         polygon_table=None,
         size=None,
-        radius=None,
     ):
 
         self.ul = subscriber_locations(
@@ -116,7 +115,6 @@ class UniqueLocationCounts(SubscriberFeature):
             subscriber_subset=subscriber_subset,
             polygon_table=polygon_table,
             size=size,
-            radius=radius,
         )
         super().__init__()
 

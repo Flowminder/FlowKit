@@ -67,7 +67,6 @@ class FirstLocation(SubscriberFeature):
         subscriber_subset=None,
         polygon_table=None,
         size=None,
-        radius=None,
     ):
         """
 
@@ -95,7 +94,6 @@ class FirstLocation(SubscriberFeature):
             subscriber_subset=subscriber_subset,
             polygon_table=polygon_table,
             size=size,
-            radius=radius,
         )
 
         self.table = self.ul.table

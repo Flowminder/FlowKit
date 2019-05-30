@@ -75,7 +75,6 @@ class MostFrequentLocation(BaseLocation, Query):
         *,
         ignore_nulls=True,
         subscriber_subset=None,
-        radius=None,
     ):
         """
 
@@ -100,7 +99,6 @@ class MostFrequentLocation(BaseLocation, Query):
             subscriber_identifier=self.subscriber_identifier,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,
-            radius=radius,
         )
 
         super().__init__()
