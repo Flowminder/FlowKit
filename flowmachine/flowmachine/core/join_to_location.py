@@ -7,6 +7,10 @@ Core class definition JoinToLocation, which facilitates
 the joining of any query with cell/site information to
 another spatial level, such as a grid or an admin region.
 
+No join is required if the spatial unit is CellSpatialUnit,
+so we also define the helper function location_joined_query
+to return a JoinToLocation object if a join is required, or
+the original query object otherwise.
 """
 from typing import List
 

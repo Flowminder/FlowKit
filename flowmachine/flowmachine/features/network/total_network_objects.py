@@ -14,7 +14,7 @@ at the network level.
 from typing import List
 
 from ...core.mixins import GeoDataMixin
-from ...core import JoinToLocation
+from ...core import location_joined_query
 from ...core.query import Query
 from ...core.spatial_unit import (
     CellSpatialUnit,
@@ -54,7 +54,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
 
     Other Parameters
     ----------------
-    Passed to JoinToLocation
+    Passed to EventsTablesUnion
 
     Examples
     --------
@@ -119,21 +119,21 @@ class TotalNetworkObjects(GeoDataMixin, Query):
                 )
             )
 
-        events = EventsTablesUnion(
-            self.start,
-            self.stop,
-            tables=self.table,
-            columns=["location_id", "datetime"],
-            hours=hours,
-            subscriber_subset=subscriber_subset,
-            subscriber_identifier=subscriber_identifier,
+        events = location_joined_query(
+            EventsTablesUnion(
+                self.start,
+                self.stop,
+                tables=self.table,
+                columns=["location_id", "datetime"],
+                hours=hours,
+                subscriber_subset=subscriber_subset,
+                subscriber_identifier=subscriber_identifier,
+            ),
+            spatial_unit=self.network_object,
+            time_col="datetime",
         )
-        if not isinstance(self.network_object, CellSpatialUnit):
-            events = JoinToLocation(
-                events, spatial_unit=self.network_object, time_col="datetime"
-            )
 
-        self.joined = JoinToLocation(
+        self.joined = location_joined_query(
             events, spatial_unit=self.spatial_unit, time_col="datetime"
         )
         self.total_by = total_by.lower()
@@ -182,10 +182,6 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
     aggregate_by : {'second', 'minute', 'hour', 'day', 'month', 'year', 'century'}
         A period definition to calculate statistics over, defaults to the one
         greater than total_network_objects.total_by.
-
-    Other Parameters
-    ----------------
-    Passed to JoinToLocation
 
     Examples
     --------

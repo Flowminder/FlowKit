@@ -17,7 +17,7 @@ from .events_tables_union import EventsTablesUnion
 from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 
 from ...core.query import Query
-from ...core.join_to_location import JoinToLocation
+from ...core.join_to_location import location_joined_query
 from ...core.spatial_unit import CellSpatialUnit
 
 import structlog
@@ -194,10 +194,7 @@ def subscriber_locations(
         ignore_nulls=ignore_nulls,
     )
 
-    if isinstance(spatial_unit, CellSpatialUnit):
-        return subscriber_cells
-    else:
-        return JoinToLocation(
-            subscriber_cells, spatial_unit=spatial_unit, time_col="time"
-        )
+    return location_joined_query(
+        subscriber_cells, spatial_unit=spatial_unit, time_col="time"
+    )
 
