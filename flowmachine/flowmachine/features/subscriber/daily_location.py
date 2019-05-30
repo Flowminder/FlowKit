@@ -29,7 +29,6 @@ def locate_subscribers(
     *,
     ignore_nulls=True,
     subscriber_subset=None,
-    radius=None,
 ):
     """
     Return a class representing the location of an individual. This can be called
@@ -108,7 +107,6 @@ def locate_subscribers(
             subscriber_identifier=subscriber_identifier,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,
-            radius=radius,
         )
     elif method == "most-common":
         return MostFrequentLocation(
@@ -120,7 +118,6 @@ def locate_subscribers(
             subscriber_identifier=subscriber_identifier,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,
-            radius=radius,
         )
     # elif self.method == 'first':
     #     _obj = FirstLocation(start, stop, spatial_unit, hours)
@@ -141,7 +138,6 @@ def daily_location(
     subscriber_identifier="msisdn",
     ignore_nulls=True,
     subscriber_subset=None,
-    radius=None,
 ):
     """
     Return a query for locating all subscribers on a single day of data.
@@ -214,5 +210,4 @@ def daily_location(
         subscriber_identifier=subscriber_identifier,
         ignore_nulls=ignore_nulls,
         subscriber_subset=subscriber_subset,
-        radius=radius,
     )
