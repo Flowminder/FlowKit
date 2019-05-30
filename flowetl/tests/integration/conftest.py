@@ -19,7 +19,7 @@ from pendulum import now, Interval
 from airflow.models import DagRun
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from docker import from_env
+from docker import from_env, APIClient
 from docker.types import Mount
 from shutil import rmtree
 
@@ -30,6 +30,14 @@ def docker_client():
     docker client object
     """
     return from_env()
+
+
+@pytest.fixture(scope="session")
+def docker_APIClient():
+    """
+    docker APIClient object
+    """
+    return APIClient()
 
 
 @pytest.fixture(scope="session")
@@ -130,7 +138,13 @@ def mounts(data_dir):
 
 @pytest.fixture(scope="function")
 def flowdb_container(
-    docker_client, tag, container_env, container_ports, container_network, mounts
+    docker_client,
+    docker_APIClient,
+    tag,
+    container_env,
+    container_ports,
+    container_network,
+    mounts,
 ):
 
     user = f"{os.getuid()}:{os.getgid()}"
@@ -141,9 +155,16 @@ def flowdb_container(
         name="flowdb",
         network="testing",
         mounts=mounts["flowdb"],
+        healthcheck={"test": "pg_isready -h localhost -U flowdb"},
         user=user,
         detach=True,
     )
+
+    healthy = False
+    while not healthy:
+        container_info = docker_APIClient.inspect_container(container.id)
+        healthy = container_info["State"]["Health"]["Status"] == "healthy"
+
     yield
     container.kill()
     container.remove()
