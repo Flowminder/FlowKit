@@ -66,6 +66,70 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
     )
 
 
+def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkeypatch):
+    """
+    Test that the trigger callable picks up files in dump and suitably filters
+    them. In this case we have one previously seen and quarantined file.
+    We expect a single call of the trigger_dag_mock for the quarantined file.
+    """
+    dump = tmpdir.mkdir("dump")
+
+    file1 = dump.join("SMS_20160101.csv.gz")
+    file1.write("blah")
+
+    # add a some etl records
+    file1_data = {
+        "cdr_type": "sms",
+        "cdr_date": parse("2016-01-01").date(),
+        "state": "quarantine",
+    }
+
+    ETLRecord.set_state(
+        cdr_type=file1_data["cdr_type"],
+        cdr_date=file1_data["cdr_date"],
+        state=file1_data["state"],
+        session=session,
+    )
+
+    cdr_type_config = config["etl"]
+    fake_dag_run = {}
+    trigger_dag_mock = Mock()
+    now = utcnow()
+    uuid = uuid1()
+    uuid_sans_underscore = str(uuid).replace("-", "")
+
+    monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
+    monkeypatch.setattr("etl.production_task_callables.utcnow", lambda: now)
+    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
+
+    trigger__callable(
+        dag_run=fake_dag_run, cdr_type_config=cdr_type_config, dump_path=Path(dump)
+    )
+
+    assert trigger_dag_mock.call_count == 1
+
+    cdr_type = CDRType("sms")
+    cdr_date = parse("2016-01-01")
+    expected_conf = {
+        "cdr_type": cdr_type,
+        "cdr_date": cdr_date,
+        "file_name": "SMS_20160101.csv.gz",
+        "template_path": "etl/sms",
+        "extract_table": f"etl.x{uuid_sans_underscore}",
+        "transform_table": f"etl.t{uuid_sans_underscore}",
+        "load_table": f"events.{cdr_type}_{str(cdr_date.date()).replace('-','')}",
+    }
+
+    trigger_dag_mock.assert_called_with(
+        "etl_sms",
+        conf=expected_conf,
+        execution_date=now,
+        run_id=f"SMS_20160101.csv.gz-{uuid}",
+        replace_microseconds=False,
+    )
+
+
 def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
     """
     Test that the trigger callable picks up files in dump and suitably filters
