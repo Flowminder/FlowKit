@@ -13,6 +13,7 @@ def test_single_file_previously_quarantined(
     wait_for_completion,
     flowetl_db_session,
     flowdb_session,
+    flowdb_connection,
 ):
     write_files_to_dump(
         file_names=[
@@ -84,6 +85,73 @@ def test_single_file_previously_quarantined(
     assert set() == (set(ingest) - set(["README.md"]))
 
     # make sure tables expected exist in flowdb
+    connection, _ = flowdb_connection
+    sql = """
+    select
+        count(*)
+    from
+        information_schema.tables
+    where
+        table_schema = 'events'
+        and
+        table_name = '{table_name}'
+    """
+    # calls_20160102
+    res = connection.execute(sql.format(table_name="calls_20160102")).fetchone()[0]
+    assert res == 1
+
+    # sms_20160101
+    res = connection.execute(sql.format(table_name="sms_20160101")).fetchone()[0]
+    assert res == 1
+
+    # mds_20160101
+    res = connection.execute(sql.format(table_name="mds_20160101")).fetchone()[0]
+    assert res == 1
+
+    # topups_20160101
+    res = connection.execute(sql.format(table_name="topups_20160101")).fetchone()[0]
+    assert res == 1
 
     # make sure etl_records table is what we expect
 
+    # calls,20160101 -> archive
+    res = (
+        flowdb_session.query(ETLRecord.state)
+        .filter(ETLRecord.cdr_type == "calls", ETLRecord.cdr_date == "2016-01-01")
+        .all()
+    )
+    assert set([row[0] for row in res]) == set(["archive"])
+
+    # calls,20160102 -> ingest + archive
+    res = (
+        flowdb_session.query(ETLRecord.state)
+        .filter(ETLRecord.cdr_type == "calls", ETLRecord.cdr_date == "2016-01-02")
+        .all()
+    )
+    assert sorted([row[0] for row in res]) == sorted(["ingest", "archive"])
+
+    # sms,20160101 -> quarantine + ingest + archive
+    res = (
+        flowdb_session.query(ETLRecord.state)
+        .filter(ETLRecord.cdr_type == "sms", ETLRecord.cdr_date == "2016-01-01")
+        .all()
+    )
+    assert sorted([row[0] for row in res]) == sorted(
+        ["quarantine", "ingest", "archive"]
+    )
+
+    # mds,20160101 -> ingest + archive
+    res = (
+        flowdb_session.query(ETLRecord.state)
+        .filter(ETLRecord.cdr_type == "mds", ETLRecord.cdr_date == "2016-01-01")
+        .all()
+    )
+    assert sorted([row[0] for row in res]) == sorted(["ingest", "archive"])
+
+    # topups,20160101 -> ingest + archive
+    res = (
+        flowdb_session.query(ETLRecord.state)
+        .filter(ETLRecord.cdr_type == "topups", ETLRecord.cdr_date == "2016-01-01")
+        .all()
+    )
+    assert sorted([row[0] for row in res]) == sorted(["ingest", "archive"])
