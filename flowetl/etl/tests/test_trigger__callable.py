@@ -265,4 +265,3 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
         run_id=f"CALLS_20160102.csv.gz-{uuid}",
         replace_microseconds=False,
     )
-
