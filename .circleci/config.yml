@@ -839,6 +839,7 @@ workflows:
       - run_flowetl_tests:
           requires:
             - build_flowetl
+            - build_flowdb
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
