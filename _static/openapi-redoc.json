@@ -300,13 +300,13 @@
           }, 
           "method": {
             "enum": [
-              "stddev", 
-              "avg", 
-              "min", 
               "mode", 
-              "variance", 
               "max", 
-              "median"
+              "variance", 
+              "median", 
+              "min", 
+              "avg", 
+              "stddev"
             ], 
             "type": "string"
           }, 
@@ -366,9 +366,9 @@
           }, 
           "interval": {
             "enum": [
+              "hour", 
               "day", 
-              "min", 
-              "hour"
+              "min"
             ], 
             "type": "string"
           }, 
@@ -886,7 +886,7 @@
       "url": "https://www.mozilla.org/en-US/MPL/2.0/"
     }, 
     "title": "FlowAPI", 
-    "version": "0.6.3"
+    "version": "0.6.3+250.g3089f364"
   }, 
   "openapi": "3.0.1", 
   "paths": {
