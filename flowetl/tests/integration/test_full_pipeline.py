@@ -15,6 +15,20 @@ def test_single_file_previously_quarantined(
     flowdb_session,
     flowdb_connection,
 ):
+    """
+    Test for full pipeline. We want to test the following things;
+
+    1. Do files in the dump location get picked up?
+    2. Do files that do not match a configuration pattern get ignored?
+    3. Do files (cdr_type, cdr_date pairs) that have a state of archive
+    in etl.etl_records get ignored?
+    4. Do files (cdr_type, cdr_date pairs) that have a state of quarantine
+    in etl.etl_records get picked up to be reprocessed?
+    5. Do files of different CDR types cause the correct etl_{cdr_type}
+    DAG to run?
+    6. Do child tables get created under the associated parent table in
+    the events schema?
+    """
     write_files_to_dump(
         file_names=[
             "CALLS_20160101.csv.gz",
