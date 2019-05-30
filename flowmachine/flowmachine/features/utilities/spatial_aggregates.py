@@ -29,8 +29,7 @@ class SpatialAggregate(GeoDataMixin, Query):
     def __init__(self, *, locations):
 
         self.locations = locations
-        self.level = locations.level
-        self.column_name = locations.column_name
+        self.spatial_unit = locations.spatial_unit
         super().__init__()
 
     @property
@@ -39,19 +38,17 @@ class SpatialAggregate(GeoDataMixin, Query):
 
     def _make_query(self):
 
-        aggregate_cols = self.locations.column_names[1:]
+        aggregate_cols = ",".join(self.locations.column_names[1:])
 
-        sql = """
+        sql = f"""
         SELECT
-            {agg_cols},
+            {aggregate_cols},
             count(*) AS total
         FROM
-            ({to_agg}) AS to_agg
+            ({self.locations.get_query()}) AS to_agg
         GROUP BY
-            {agg_cols}
-        """.format(
-            to_agg=self.locations.get_query(), agg_cols=",".join(aggregate_cols)
-        )
+            {aggregate_cols}
+        """
 
         return sql
 
@@ -102,8 +99,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     def __init__(self, *, metric, locations, method="mean"):
         self.metric = metric
         self.locations = locations
-        self.level = locations.level
-        self.column_name = locations.column_name
+        self.spatial_unit = locations.spatial_unit
         self.method = method.lower()
         if self.method not in self.allowed_methods:
             raise ValueError(
