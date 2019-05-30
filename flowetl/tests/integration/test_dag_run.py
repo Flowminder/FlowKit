@@ -12,33 +12,6 @@ import pytest
 from airflow.models import DagRun
 
 
-def test_archive_branch(airflow_local_pipeline_run, wait_for_completion):
-    """
-    Tests that correct tasks run when ETL is succesful
-    """
-    end_state = "success"
-
-    # passing empty TASK_TO_FAIL to signal no task should fail
-    airflow_local_pipeline_run({"TASK_TO_FAIL": ""})
-    final_etl_state = wait_for_completion(end_state, dag_id="etl_testing")
-    assert final_etl_state == end_state
-
-    etl_dag = DagRun.find("etl_testing", state=end_state)[0]
-
-    task_states = {task.task_id: task.state for task in etl_dag.get_task_instances()}
-    assert task_states == {
-        "init": "success",
-        "extract": "success",
-        "transform": "success",
-        "success_branch": "success",
-        "load": "success",
-        "archive": "success",
-        "quarantine": "skipped",
-        "clean": "success",
-        "fail": "skipped",
-    }
-
-
 @pytest.mark.parametrize(
     "task_to_fail,expected_task_states",
     [
