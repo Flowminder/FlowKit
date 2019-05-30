@@ -302,7 +302,7 @@ jobs:
           paths:
             - /home/circleci/.local/share/virtualenvs/flowmachine-caaCcVrN
 
-  lint:
+  lint_python:
     docker: *base_docker
     working_directory: /home/circleci/project
     steps:
@@ -312,6 +312,29 @@ jobs:
       - run:
           name: Linting files with black
           command: PIPENV_PIPFILE=flowmachine/Pipfile pipenv run black --check .
+
+  lint_js:
+    docker:
+      - image: circleci/node
+    working_directory: /home/circleci/project/flowauth/frontend
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - restore_cache:
+          keys:
+            - flowauth-deps-1-{{ checksum "package.json" }}
+      - run:
+          name: Install deps
+          command: npm ci
+      - save_cache:
+          key: flowauth-deps-1-{{ checksum "package.json" }}
+          # cache NPM modules and the folder with the Cypress binary
+          paths:
+            - ~/.npm
+            - ~/.cache
+      - run:
+          name: Linting JS with prettier
+          command: $(npm bin)/prettier --check "**/*.js"
 
   run_flowmachine_tests:
     executor:
@@ -463,9 +486,18 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
+      - restore_cache:
+          keys:
+            - flowauth-deps-1-{{ checksum "package.json" }}
       - run:
           name: Cypress setup
           command: npm ci
+      - save_cache:
+          key: flowauth-deps-1-{{ checksum "package.json" }}
+          # cache NPM modules and the folder with the Cypress binary
+          paths:
+            - ~/.npm
+            - ~/.cache
       - run:
           name: Wait for backing db
           command: |
@@ -781,9 +813,11 @@ workflows:
           <<: *run_always_org_context
       - run_flowauth_backend_tests:
           <<: *run_always_org_context
-      - lint:
+      - lint_python:
           requires:
             - install_flowmachine_deps
+          <<: *run_always_org_context
+      - lint_js:
           <<: *run_always_org_context
       - run_flowmachine_tests:
           requires:

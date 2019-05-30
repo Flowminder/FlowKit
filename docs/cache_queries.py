@@ -214,6 +214,19 @@ mobile_data_usage_queries = [
     )
 ]
 
+# Cell Towers Per Region
+cell_towers_per_region_queries = [
+    flowmachine.features.TotalNetworkObjects(
+        start="2016-01-01", stop="2016-01-08", level="admin3", total_by="month"
+    )
+]
+
+# Unique Subscriber Counts
+unique_subscriber_counts_queries = [
+    flowmachine.features.UniqueSubscriberCounts(
+        start="2016-01-01", stop="2016-01-08", level="admin3"
+    )
+]
 
 print("Generating full dependency graph")
 dependency_graphs = [
@@ -223,6 +236,8 @@ dependency_graphs = [
         + flows_above_normal_queries
         + commuting_patterns_queries
         + mobile_data_usage_queries
+        + cell_towers_per_region_queries
+        + unique_subscriber_counts_queries
     )
 ]
 full_graph = dependency_graphs.pop()

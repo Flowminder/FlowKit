@@ -7,15 +7,15 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 
 function ServerButton(props) {
-	const { id, name, onClick } = props;
+  const { id, name, onClick } = props;
 
-	return (
-		<React.Fragment>
-			<ListItem button id="servers" onClick={() => onClick(id, name)}>
-				<ListItemText primary={name} />
-			</ListItem>
-		</React.Fragment>
-	);
+  return (
+    <React.Fragment>
+      <ListItem button id="servers" onClick={() => onClick(id, name)}>
+        <ListItemText primary={name} />
+      </ListItem>
+    </React.Fragment>
+  );
 }
 
 export default ServerButton;

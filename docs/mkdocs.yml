@@ -35,17 +35,19 @@ nav:
        - developer/adr/0006-JWTs.md
        - developer/adr/0007-mapbox-for-worked-examples.md
   - administrator.md
-  - license.md
   - Worked examples:
       - worked_examples/index.md
       - worked_examples/flows-above-normal.ipynb
       - worked_examples/commuting-patterns.ipynb
+      - worked_examples/cell-towers-per-region.ipynb
+      - worked_examples/unique-subscriber-counts.ipynb
       - worked_examples/mobile-data-usage.ipynb
   - FlowAPI specification: api-spec.html
   - api-docs-flowmachine
   - FlowClient:
       - flowclient/example_usage.ipynb
       - api-docs-flowclient
+  - license.md
 
 theme:
   name: "material"
