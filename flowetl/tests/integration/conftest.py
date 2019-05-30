@@ -410,6 +410,7 @@ def flowdb_connection(flowdb_connection_engine):
     connection = flowdb_connection_engine.connect()
     trans = connection.begin()
     yield connection, trans
+    connection.close()
 
 
 @pytest.fixture(scope="function")
