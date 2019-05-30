@@ -148,7 +148,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
 
     def _make_query(self):
         cols = self.network_object.location_columns
-        group_cols = self.spatial_unit.column_names
+        group_cols = self.spatial_unit.location_columns
         for column in group_cols:
             if column in cols:
                 cols.remove(column)

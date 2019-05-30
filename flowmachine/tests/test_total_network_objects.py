@@ -10,8 +10,12 @@ Level classes.
 
 import pytest
 
-from flowmachine.core.spatial_unit import CellSpatialUnit, VersionedSiteSpatialUnit
-import flowmachine.features.network as network
+from flowmachine.core.spatial_unit import (
+    CellSpatialUnit,
+    VersionedCellSpatialUnit,
+    VersionedSiteSpatialUnit,
+    LatLonSpatialUnit,
+)
 from flowmachine.features import TotalNetworkObjects, AggregateNetworkObjects
 
 
@@ -22,8 +26,8 @@ def test_tno_at_lat_lng(get_dataframe):
     tno = TotalNetworkObjects(
         start="2016-01-01",
         stop="2016-01-07",
-        network_object="versioned-cell",
-        level="lat-lon",
+        network_object=VersionedCellSpatialUnit(),
+        spatial_unit=LatLonSpatialUnit(),
     )
     assert tno.get_dataframe().sum().value == 330
 
@@ -45,8 +49,8 @@ def test_aggregate_returns_correct_values(stat, expected, get_dataframe):
     AggregateNetworkObjects returns correct values.
 
     """
-    instance = network.AggregateNetworkObjects(
-        total_network_objects=network.TotalNetworkObjects(
+    instance = AggregateNetworkObjects(
+        total_network_objects=TotalNetworkObjects(
             start="2016-01-01", stop="2016-12-30", table="calls", total_by="hour"
         ),
         statistic=stat,
@@ -66,7 +70,7 @@ def test_count_returns_correct_values(get_dataframe):
     TotalNetworkObjects returns correct values.
 
     """
-    instance = network.TotalNetworkObjects(
+    instance = TotalNetworkObjects(
         start="2016-01-01", stop="2016-12-30", table="calls", total_by="hour"
     )
     df = get_dataframe(instance)
