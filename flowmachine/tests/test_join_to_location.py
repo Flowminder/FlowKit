@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 import numpy as np
 
 from flowmachine.features import subscriber_locations
-from flowmachine.core import JoinToLocation
+from flowmachine.core import JoinToLocation, location_joined_query
 from flowmachine.core.spatial_unit import (
     CellSpatialUnit,
     AdminSpatialUnit,
@@ -152,3 +152,19 @@ def test_join_to_grid(get_dataframe, get_length):
     )
     df = get_dataframe(JoinToLocation(ul, spatial_unit=GridSpatialUnit(size=50)))
     assert len(df) == get_length(ul)
+
+
+def test_location_joined_query_return_type(exemplar_spatial_unit_param):
+    """
+    Test that location_joined_query(query, spatial_unit) returns a
+    JoinToLocation object when spatial_unit != CellSpatialUnit(), and returns
+    query when spatial_unit == CellSpatialUnit().
+    """
+    table = subscriber_locations(
+        "2016-01-05", "2016-01-07", spatial_unit=CellSpatialUnit()
+    )
+    joined = location_joined_query(table, spatial_unit=exemplar_spatial_unit_param)
+    if isinstance(exemplar_spatial_unit_param, CellSpatialUnit):
+        assert joined is table
+    else:
+        assert isinstance(joined, JoinToLocation)
