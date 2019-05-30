@@ -27,7 +27,7 @@ from shutil import rmtree
 @pytest.fixture(scope="session")
 def docker_client():
     """
-    docker client object
+    docker client object - used to run containers
     """
     return from_env()
 
@@ -35,7 +35,7 @@ def docker_client():
 @pytest.fixture(scope="session")
 def docker_APIClient():
     """
-    docker APIClient object
+    docker APIClient object - needed to inspect containers
     """
     return APIClient()
 
@@ -43,14 +43,16 @@ def docker_APIClient():
 @pytest.fixture(scope="session")
 def tag():
     """
-    Get flowetl tag to use
+    Get tag to use for containers
     """
     return os.environ.get("TAG", "latest")
 
 
 @pytest.fixture(scope="session")
 def container_env():
-
+    """
+    Environments for each container
+    """
     flowdb = {
         "POSTGRES_USER": "flowdb",
         "POSTGRES_PASSWORD": "flowflow",
@@ -77,7 +79,7 @@ def container_env():
         "POSTGRES_PASSWORD": "flowetl",
         "POSTGRES_DB": "flowetl",
         "POSTGRES_HOST": "flowetl_db",
-        "AIRFLOW__WEBSERVER__WEB_SERVER_HOST": "0.0.0.0",
+        "AIRFLOW__WEBSERVER__WEB_SERVER_HOST": "0.0.0.0",  # helpful for circle debugging
     }
 
     return {"flowetl": flowetl, "flowdb": flowdb, "flowetl_db": flowetl_db}
@@ -85,7 +87,9 @@ def container_env():
 
 @pytest.fixture(scope="session")
 def container_ports():
-
+    """
+    Exposed ports for flowetl_db and flowdb
+    """
     flowetl_db_host_port = 9000
     flowdb_host_port = 9001
 
@@ -94,7 +98,9 @@ def container_ports():
 
 @pytest.fixture(scope="function")
 def container_network(docker_client):
-
+    """
+    A docker network for containers to communicate on
+    """
     network = docker_client.networks.create("testing", driver="bridge")
     yield
     network.remove()
@@ -102,6 +108,11 @@ def container_network(docker_client):
 
 @pytest.fixture(scope="function")
 def data_dir():
+    """
+    Creates and cleans up a directory for storing pg data.
+    Used by Flowdb because on unix changing flowdb user is
+    incompatible with using a volume for the DB's data.
+    """
     path = f"{os.getcwd()}/pg_data"
     if not os.path.exists(path):
         os.makedirs(path)
@@ -111,7 +122,9 @@ def data_dir():
 
 @pytest.fixture(scope="function")
 def mounts(data_dir):
-
+    """
+    Various mount objects needed by containers
+    """
     config_mount = Mount("/mounts/config", f"{os.getcwd()}/mounts/config", type="bind")
     archive_mount = Mount(
         "/mounts/archive", f"{os.getcwd()}/mounts/archive", type="bind"
@@ -146,7 +159,12 @@ def flowdb_container(
     container_network,
     mounts,
 ):
-
+    """
+    Starts flowdb (and cleans up) and waits until healthy
+    - so that we can be sure connections to the DB will work.
+    Setting user to uid/gid of user running the tests - necessary
+    for ingestion.
+    """
     user = f"{os.getuid()}:{os.getgid()}"
     container = docker_client.containers.run(
         f"flowminder/flowdb:{tag}",
@@ -174,7 +192,9 @@ def flowdb_container(
 def flowetl_db_container(
     docker_client, container_env, container_ports, container_network
 ):
-
+    """
+    Start (and clean up) flowetl_db just a vanilla pg 11
+    """
     container = docker_client.containers.run(
         f"postgres:11.0",
         environment=container_env["flowetl_db"],
@@ -198,7 +218,11 @@ def flowetl_container(
     container_network,
     mounts,
 ):
-
+    """
+    Start (and clean up) flowetl. Setting user to uid/gid of
+    user running the tests - necessary for moving files between
+    host directories.
+    """
     user = f"{os.getuid()}:{os.getgid()}"
     container = docker_client.containers.run(
         f"flowminder/flowetl:{tag}",
@@ -219,6 +243,11 @@ def flowetl_container(
 
 @pytest.fixture(scope="function")
 def trigger_dags():
+    """
+    Returns a function that unpauses all DAGs and then triggers
+    the etl_sensor DAG.
+    """
+
     def trigger_dags_function(*, flowetl_container):
 
         dags = ["etl_sensor", "etl_sms", "etl_mds", "etl_calls", "etl_topups"]
@@ -233,7 +262,11 @@ def trigger_dags():
 
 @pytest.fixture(scope="function")
 def write_files_to_dump():
-
+    """
+    Returns a function that allows for writing a list
+    of empty files to the dump location. Also cleans
+    up dump, archive and quarantine.
+    """
     dump_dir = f"{os.getcwd()}/mounts/dump"
     archive_dir = f"{os.getcwd()}/mounts/archive"
     quarantine_dir = f"{os.getcwd()}/mounts/quarantine"
@@ -399,6 +432,9 @@ def wait_for_completion():
 
 @pytest.fixture(scope="function")
 def flowdb_connection_engine(container_env, container_ports):
+    """
+    Engine for flowdb
+    """
     conn_str = f"postgresql://{container_env['flowdb']['POSTGRES_USER']}:{container_env['flowdb']['POSTGRES_PASSWORD']}@localhost:{container_ports['flowdb']}/flowdb"
     engine = create_engine(conn_str)
 
@@ -407,6 +443,10 @@ def flowdb_connection_engine(container_env, container_ports):
 
 @pytest.fixture(scope="function")
 def flowdb_connection(flowdb_connection_engine):
+    """
+    Connection for flowdb - allowing for execution of
+    raw sql.
+    """
     connection = flowdb_connection_engine.connect()
     trans = connection.begin()
     yield connection, trans
@@ -415,6 +455,9 @@ def flowdb_connection(flowdb_connection_engine):
 
 @pytest.fixture(scope="function")
 def flowdb_session(flowdb_connection_engine):
+    """
+    sqlalchmy session for flowdb - used for ORM models
+    """
     session = sessionmaker(bind=flowdb_connection_engine)()
     yield session
     session.close()
@@ -422,6 +465,9 @@ def flowdb_session(flowdb_connection_engine):
 
 @pytest.fixture(scope="function")
 def flowetl_db_connection_engine(container_env, container_ports):
+    """
+    Engine for flowetl_db
+    """
     conn_str = f"postgresql://{container_env['flowetl_db']['POSTGRES_USER']}:{container_env['flowetl_db']['POSTGRES_PASSWORD']}@localhost:{container_ports['flowetl_db']}/{container_env['flowetl_db']['POSTGRES_DB']}"
     logging.info(conn_str)
     engine = create_engine(conn_str)
@@ -431,12 +477,9 @@ def flowetl_db_connection_engine(container_env, container_ports):
 
 @pytest.fixture(scope="function")
 def flowetl_db_session(flowetl_db_connection_engine):
+    """
+    sqlalchmy session for flowetl - used for ORM models
+    """
     session = sessionmaker(bind=flowetl_db_connection_engine)()
     yield session
     session.close()
-
-
-@pytest.fixture(scope="function")
-def airflow_docker_pipeline_run(docker_client, tag):
-    res = docker_client.containers.exec_run("bash -c 'id -g'")
-    logging.info(res)
