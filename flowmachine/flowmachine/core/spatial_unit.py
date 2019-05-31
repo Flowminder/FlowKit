@@ -44,6 +44,9 @@ class CellSpatialUnit:
 
     _loc_cols = ("location_id",)
 
+    def __eq__(self, other):
+        return isinstance(other, CellSpatialUnit)
+
     @property
     def location_columns(self) -> List[str]:
         """
@@ -110,6 +113,9 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
     # TODO: Currently most spatial units require a FlowDB connection at init time.
     # It would be useful to remove this requirement wherever possible, and instead
     # implement a method to check whether the required data can be found in the DB.
+
+    def __eq__(self, other):
+        return self.md5 == other.md5
 
     @property
     def location_columns(self) -> List[str]:
@@ -204,6 +210,9 @@ class LatLonSpatialUnit(BaseSpatialUnit):
             location_column_names=["lat", "lon"],
         )
 
+    def __eq__(self, other):
+        return isinstance(other, LatLonSpatialUnit)
+
     def geo_augment(self, query):
         sql = f"""
         SELECT 
@@ -237,6 +246,9 @@ class VersionedCellSpatialUnit(BaseSpatialUnit):
             location_column_names=["location_id", "version", "lon", "lat"],
             location_info_table="infrastructure.cells",
         )
+
+    def __eq__(self, other):
+        return isinstance(other, VersionedCellSpatialUnit)
 
     def geo_augment(self, query):
         sql = f"""
@@ -325,6 +337,9 @@ class VersionedSiteSpatialUnit(BaseSpatialUnit):
             location_info_table=f"infrastructure.sites AS {sites_alias}",
             join_clause=join_clause,
         )
+
+    def __eq__(self, other):
+        return isinstance(other, VersionedSiteSpatialUnit)
 
     def geo_augment(self, query):
         sql = f"""
@@ -447,6 +462,14 @@ class PolygonSpatialUnit(BaseSpatialUnit):
             join_clause=join_clause,
         )
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, PolygonSpatialUnit)
+            and self.polygon_table.md5 == other.polygon_table.md5
+            and self.polygon_column_names == other.polygon_column_names
+            and self.geom_col == other.geom_col
+        )
+
     def geo_augment(self, query):
         r_col_name, l_col_name = get_name_and_alias(self.polygon_column_names[0])
         sql = f"""
@@ -494,6 +517,15 @@ class AdminSpatialUnit(PolygonSpatialUnit):
 
         super().__init__(polygon_column_names=col_name, polygon_table=table)
 
+    def __eq__(self, other):
+        if isinstance(other, AdminSpatialUnit):
+            return (
+                self.level == other.level
+                and self.polygon_column_names == other.polygon_column_names
+            )
+        else:
+            return super().__eq__(other)
+
     def _get_standard_name(self):
         """
         Returns the standard name of the column that identifies
@@ -521,3 +553,9 @@ class GridSpatialUnit(PolygonSpatialUnit):
             polygon_table=Grid(self.size),
             geom_col="geom_square",
         )
+
+    def __eq__(self, other):
+        if isinstance(other, GridSpatialUnit):
+            return self.size == other.size
+        else:
+            return super().__eq__(other)
