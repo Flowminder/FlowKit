@@ -59,7 +59,12 @@ class TokenList extends React.Component {
         ))}
         <Grid item xs={11} />
         <Grid item xs>
-          <IconButton color="inherit" id="new" aria-label="New" onClick={editAction}>
+          <IconButton
+            color="inherit"
+            id="new"
+            aria-label="New"
+            onClick={editAction}
+          >
             <AddIcon />
           </IconButton>
         </Grid>

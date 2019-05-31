@@ -139,7 +139,10 @@ class Login extends React.Component {
             </form>
           </Paper>
         </main>
-        <ErrorDialog open={this.state.hasError} message={this.state.error.message} />
+        <ErrorDialog
+          open={this.state.hasError}
+          message={this.state.error.message}
+        />
       </React.Fragment>
     );
   }
