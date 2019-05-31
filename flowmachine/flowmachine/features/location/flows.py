@@ -43,13 +43,12 @@ class Flows(GeoDataMixin, GraphMixin, Query):
 
         """
 
-        if loc1.level != loc2.level:
+        if loc1.spatial_unit != loc2.spatial_unit:
             raise ValueError(
-                "You cannot compute flows for locations on " + "different levels"
+                "You cannot compute flows for locations on different spatial units"
             )
 
-        self.level = loc1.level
-        self.column_name = loc1.column_name
+        self.spatial_unit = loc1.spatial_unit
         self.joined = loc1.join(
             loc2, on_left="subscriber", left_append="_from", right_append="_to"
         )
@@ -82,12 +81,12 @@ class Flows(GeoDataMixin, GraphMixin, Query):
 
     @property
     def index_cols(self):
-        cols = get_columns_for_level(self.level, self.column_name)
+        cols = self.spatial_unit.location_columns
         return [["{}_from".format(x) for x in cols], ["{}_to".format(x) for x in cols]]
 
     @property
     def column_names(self) -> List[str]:
-        cols = get_columns_for_level(self.level, self.column_name)
+        cols = self.spatial_unit.location_columns
         return (
             [f"{col}_from" for col in cols] + [f"{col}_to" for col in cols] + ["count"]
         )
@@ -95,24 +94,22 @@ class Flows(GeoDataMixin, GraphMixin, Query):
     def _make_query(self):
         group_cols = ",".join(self.joined.column_names[1:])
 
-        grouped = """
+        grouped = f"""
         SELECT
             {group_cols},
             count(*)
         FROM 
-            ({joined}) AS joined
+            ({self.joined.get_query()}) AS joined
         GROUP BY
             {group_cols}
         ORDER BY {group_cols} DESC
-        """.format(
-            group_cols=group_cols, joined=self.joined.get_query()
-        )
+        """
 
         return grouped
 
     def _geo_augmented_query(self):
         """
-        Returns one of each geom for non-point levels, with the
+        Returns one of each geom for non-point spatial units, with the
         flows in/out as properties.
 
         Returns
@@ -120,56 +117,34 @@ class Flows(GeoDataMixin, GraphMixin, Query):
         str
             A version of this query with geom and gid columns
         """
-        loc_join = self._get_location_join()
-        level = loc_join.level
-        if level in ["lat-lon", "versioned-site"]:
-            return super()._geo_augmented_query()
-        else:
-            mapping = loc_join.right_query.mapping
-            col_name = mapping.column_name[0]
-            l_col_name = (
-                "pcod"
-                if ("admin" in level) and (self.column_name is None)
-                else col_name
-            )
-            geom_col = mapping.geom_col
-            poly_query = mapping.polygon_table
-            if isinstance(poly_query, Query):  # Deal with grids
-                poly_query = poly_query.get_query()
-            else:
-                poly_query = "SELECT * FROM {}".format(poly_query)
+        loc_cols = self.spatial_unit.location_columns
+        loc_cols_string = ",".join(loc_cols)
+        loc_cols_from_string = ",".join([f"{col}_from" for col in loc_cols])
+        loc_cols_to_string = ",".join([f"{col}_to" for col in loc_cols])
+        loc_cols_from_aliased_string = ",".join(
+            [f"{col}_from AS {col}" for col in loc_cols]
+        )
+        loc_cols_to_aliased_string = ",".join(
+            [f"{col}_to AS {col}" for col in loc_cols]
+        )
 
-            agg_qry = """
-            WITH flows AS ({query})
-            select {col_name}, json_strip_nulls(outflows) as outflows, json_strip_nulls(inflows) as inflows FROM
-            (SELECT {col_name}_from as {col_name}, json_object_agg({col_name}_to, count) AS outflows
-            FROM flows
-            GROUP BY {col_name}_from
-            ) x
-            FULL JOIN
-            (SELECT {col_name}_to as {col_name}, json_object_agg({col_name}_from, count) AS inflows
-            FROM flows
-            GROUP BY {col_name}_to
-            ) y
-            USING ({col_name})
-            """.format(
-                query=self.get_query(), col_name=l_col_name
-            )
+        agg_qry = f"""
+        WITH flows AS ({self.get_query()})
+        select {loc_cols_string}, json_strip_nulls(outflows) as outflows, json_strip_nulls(inflows) as inflows FROM
+        (SELECT {loc_cols_from_aliased_string}, json_object_agg({loc_cols_to_string}, count) AS outflows
+        FROM flows
+        GROUP BY {loc_cols_from_string}
+        ) x
+        FULL JOIN
+        (SELECT {loc_cols_to_aliased_string}, json_object_agg({loc_cols_from_string}, count) AS inflows
+        FROM flows
+        GROUP BY {loc_cols_to_string}
+        ) y
+        USING ({loc_cols_string})
+        """
 
-            joined_query = """
-                                SELECT row_number() over() as gid, {geom_col} as geom, u.*
-                                 FROM ({qur}) u
-                                  LEFT JOIN
-                                 ({poly_query}) g
-                                 ON u.{l_col_name}=g.{r_col_name}
-                                """.format(
-                qur=agg_qry,
-                poly_query=poly_query,
-                geom_col=geom_col,
-                l_col_name=l_col_name,
-                r_col_name=col_name,
-            )
-        return joined_query, [l_col_name, "outflows", "inflows", "geom", "gid"]
+        joined_query = self.spatial_unit.geo_augment(agg_qry)
+        return joined_query, loc_cols + ["outflows", "inflows", "geom", "gid"]
 
 
 class BaseInOutFlow(GeoDataMixin, Query, metaclass=ABCMeta):
@@ -183,13 +158,11 @@ class BaseInOutFlow(GeoDataMixin, Query, metaclass=ABCMeta):
     """
 
     def __init__(self, flow):
-
         self.flow = flow
         cols = self.flow.column_names
         self.loc_from = ",".join([c for c in cols if c.endswith("_from")])
         self.loc_to = ",".join([c for c in cols if c.endswith("_to")])
-        self.level = flow.level
-        self.column_name = flow.column_name
+        self.spatial_unit = flow.spatial_unit
         super().__init__()
 
     # Returns a query that groups by one column and sums the count
@@ -210,7 +183,7 @@ class OutFlow(BaseInOutFlow):
     """
     Class for an outflow. These are the total number of people coming from one
     locations, regardless of where they go to. Note that this is normally initialised
-    through the outflows method of a flows class.
+    through the outflows method of a Flows object.
     """
 
     def _make_query(self):
@@ -219,12 +192,12 @@ class OutFlow(BaseInOutFlow):
 
     @property
     def index_cols(self):
-        cols = get_columns_for_level(self.level, self.column_name)
-        return [["{}_from".format(x) for x in cols]]
+        cols = self.spatial_unit.location_columns
+        return [[f"{x}_from" for x in cols]]
 
     @property
     def column_names(self) -> List[str]:
-        cols = get_columns_for_level(self.level, self.column_name)
+        cols = self.spatial_unit.location_columns
         return [f"{col}_from" for col in cols] + ["total"]
 
 
@@ -241,10 +214,10 @@ class InFlow(BaseInOutFlow):
 
     @property
     def index_cols(self):
-        cols = get_columns_for_level(self.level, self.column_name)
-        return [["{}_to".format(x) for x in cols]]
+        cols = self.spatial_unit.location_columns
+        return [[f"{x}_to" for x in cols]]
 
     @property
     def column_names(self) -> List[str]:
-        cols = get_columns_for_level(self.level, self.column_name)
+        cols = self.spatial_unit.location_columns
         return [f"{col}_to" for col in cols] + ["total"]
