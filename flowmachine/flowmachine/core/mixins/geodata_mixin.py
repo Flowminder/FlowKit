@@ -83,7 +83,9 @@ class GeoDataMixin:
             The columns this query contains
         """
         loc_join = self._get_location_join()
-        return loc_join.spatial_unit.geo_augment(self)
+        sql = loc_join.spatial_unit.geo_augment(self.get_query())
+        cols = list(set(self.column_names + ["gid", "geom"]))
+        return sql, cols
 
     def geojson_query(self, crs=None):
         """

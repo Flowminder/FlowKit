@@ -129,23 +129,21 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
         return [get_name_and_alias(c)[1].split(".").pop() for c in self._cols]
 
     @abstractmethod
-    def geo_augment(self, query):
+    def geo_augment(self, sql_query):
         """
-        Given a query object (which is assumed to be a JoinToLocation object,
+        Given a SQL string (which will usually be from a JoinToLocation object,
         joined to this spatial unit), return a version of the query augmented
         with a geom column and a gid column.
 
         Parameters
         ----------
-        query : flowmachine.Query
+        sql_query : string
             The query to augment with geom and gid columns
         
         Returns
         -------
         str
             A version of this query with geom and gid columns
-        list
-            The columns this query contains
         """
         raise NotImplementedError
 
@@ -213,16 +211,15 @@ class LatLonSpatialUnit(BaseSpatialUnit):
     def __eq__(self, other):
         return isinstance(other, LatLonSpatialUnit)
 
-    def geo_augment(self, query):
+    def geo_augment(self, sql_query):
         sql = f"""
         SELECT 
             row_number() over() AS gid,
             *, 
             ST_SetSRID(ST_Point(lon, lat), 4326) AS geom
-        FROM ({query.get_query()}) AS L
+        FROM ({sql_query}) AS L
         """
-        cols = list(set(query.column_names + ["gid", "geom"]))
-        return sql, cols
+        return sql
 
 
 class VersionedCellSpatialUnit(BaseSpatialUnit):
@@ -250,19 +247,18 @@ class VersionedCellSpatialUnit(BaseSpatialUnit):
     def __eq__(self, other):
         return isinstance(other, VersionedCellSpatialUnit)
 
-    def geo_augment(self, query):
+    def geo_augment(self, sql_query):
         sql = f"""
         SELECT 
             row_number() OVER () AS gid, 
             geom_point AS geom, 
             U.*
-        FROM ({query.get_query()}) AS U
+        FROM ({sql_query}) AS U
         LEFT JOIN infrastructure.cells AS S
             ON U.location_id = S.id AND
                 U.version = S.version
         """
-        cols = list(set(query.column_names + ["gid", "geom"]))
-        return sql, cols
+        return sql
 
     def distance_matrix_query(self, return_geometry=False):
         return_geometry_statement = ""
@@ -341,19 +337,18 @@ class VersionedSiteSpatialUnit(BaseSpatialUnit):
     def __eq__(self, other):
         return isinstance(other, VersionedSiteSpatialUnit)
 
-    def geo_augment(self, query):
+    def geo_augment(self, sql_query):
         sql = f"""
         SELECT 
             row_number() OVER () AS gid, 
             geom_point AS geom, 
             U.*
-        FROM ({query.get_query()}) AS U
+        FROM ({sql_query}) AS U
         LEFT JOIN infrastructure.sites AS S
             ON U.site_id = S.id AND
                 U.version = S.version
         """
-        cols = list(set(query.column_names + ["gid", "geom"]))
-        return sql, cols
+        return sql
 
     def distance_matrix_query(self, return_geometry=False):
         return_geometry_statement = ""
@@ -470,19 +465,18 @@ class PolygonSpatialUnit(BaseSpatialUnit):
             and self.geom_col == other.geom_col
         )
 
-    def geo_augment(self, query):
+    def geo_augment(self, sql_query):
         r_col_name, l_col_name = get_name_and_alias(self.polygon_column_names[0])
         sql = f"""
         SELECT 
             row_number() OVER () as gid, 
             {self.geom_col} AS geom, 
             U.*
-        FROM ({query.get_query()}) AS U
+        FROM ({sql_query}) AS U
         LEFT JOIN ({self.polygon_table.get_query()}) AS G
             ON U.{l_col_name} = G.{r_col_name}
         """
-        cols = list(set(query.column_names + ["gid", "geom"]))
-        return sql, cols
+        return sql
 
 
 class AdminSpatialUnit(PolygonSpatialUnit):
