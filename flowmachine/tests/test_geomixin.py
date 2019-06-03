@@ -17,6 +17,7 @@ import pytest
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.core.spatial_unit import (
+    CellSpatialUnit,
     LatLonSpatialUnit,
     VersionedCellSpatialUnit,
     VersionedSiteSpatialUnit,
@@ -75,36 +76,30 @@ def test_massive_geojson():
     ManyRows().to_geojson()  # This will error if the geojson couldn't be constructed
 
 
-def test_valid_geojson():
+def test_valid_geojson(exemplar_spatial_unit_param):
     """
     Check that valid geojson is returned.
 
     """
-    test_geojson = [
-        daily_location("2016-01-01", "2016-01-02").aggregate(),
-        daily_location(
-            "2016-01-01", "2016-01-02", spatial_unit=grid_spatial_unit(size=100)
-        ).aggregate(),
-        daily_location(
-            "2016-01-01", "2016-01-02", spatial_unit=LatLonSpatialUnit()
-        ).aggregate(),
-        daily_location(
-            "2016-01-01", "2016-01-02", spatial_unit=VersionedSiteSpatialUnit()
-        ).aggregate(),
-        daily_location(
-            "2016-01-01", "2016-01-02", spatial_unit=VersionedCellSpatialUnit()
-        ).aggregate(),
-        daily_location(
-            "2016-01-01", "2016-01-02", spatial_unit=admin_spatial_unit(level=2)
-        ).aggregate(),
-        daily_location(
-            "2016-01-01",
-            "2016-01-02",
-            spatial_unit=admin_spatial_unit(level=2, column_name="admin2name"),
-        ).aggregate(),
-    ]
-    for o in test_geojson:
-        assert geojson.loads(o.to_geojson_string()).is_valid
+    if CellSpatialUnit() == exemplar_spatial_unit_param:
+        pytest.skip("Query with spatial_unit=CellSpatialUnit has no geometry.")
+    dl = daily_location(
+        "2016-01-01", "2016-01-02", spatial_unit=exemplar_spatial_unit_param
+    ).aggregate()
+    assert geojson.loads(dl.to_geojson_string()).is_valid
+
+
+def test_valid_flows_geojson(exemplar_spatial_unit_param):
+    """
+    Check that valid geojson is returned for Flows.
+
+    """
+    if CellSpatialUnit() == exemplar_spatial_unit_param:
+        pytest.skip("Query with spatial_unit=CellSpatialUnit has no geometry.")
+    dl = daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param)
+    dl2 = daily_location("2016-01-02", spatial_unit=exemplar_spatial_unit_param)
+    fl = Flows(dl, dl2)
+    assert geojson.loads(fl.to_geojson_string()).is_valid
 
 
 def test_correct_geojson():
