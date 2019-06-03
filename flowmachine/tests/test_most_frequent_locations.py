@@ -5,7 +5,7 @@
 import pytest
 
 from flowmachine.core.spatial_unit import (
-    AdminSpatialUnit,
+    admin_spatial_unit,
     VersionedSiteSpatialUnit,
     LatLonSpatialUnit,
 )
@@ -63,7 +63,7 @@ def test_most_fequent_admin(get_dataframe):
     mfl = locate_subscribers(
         "2016-01-01",
         "2016-01-02",
-        spatial_unit=AdminSpatialUnit(level=3),
+        spatial_unit=admin_spatial_unit(level=3),
         method="most-common",
     )
     df = get_dataframe(mfl)

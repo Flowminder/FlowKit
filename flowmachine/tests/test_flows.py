@@ -6,7 +6,7 @@ import os
 
 import pytest
 
-from flowmachine.core.spatial_unit import AdminSpatialUnit
+from flowmachine.core.spatial_unit import admin_spatial_unit
 from flowmachine.features import daily_location
 from flowmachine.features.location.flows import *
 from flowmachine.features.subscriber.daily_location import locate_subscribers
@@ -29,8 +29,8 @@ def test_flows_raise_error():
     """
     Flows() raises error if location levels are different.
     """
-    dl1 = daily_location("2016-01-01", spatial_unit=AdminSpatialUnit(level=3))
-    dl2 = daily_location("2016-01-01", spatial_unit=AdminSpatialUnit(level=3))
+    dl1 = daily_location("2016-01-01", spatial_unit=admin_spatial_unit(level=3))
+    dl2 = daily_location("2016-01-01", spatial_unit=admin_spatial_unit(level=3))
     with pytest.raises(ValueError):
         Flows(dl1, dl2)
 
@@ -48,7 +48,7 @@ def test_calculates_flows(get_dataframe):
     """
     Flows() are correctly calculated
     """
-    spatial_unit = AdminSpatialUnit(level=3)
+    spatial_unit = admin_spatial_unit(level=3)
     dl1 = locate_subscribers(
         "2016-01-01", "2016-01-02", spatial_unit=spatial_unit, method="last"
     )
@@ -81,7 +81,7 @@ def test_flows_geojson_correct():
     """
     Test that flows outputs expected geojson.
     """
-    spatial_unit = AdminSpatialUnit(level=3)
+    spatial_unit = admin_spatial_unit(level=3)
     dl1 = locate_subscribers(
         "2016-01-01", "2016-01-02", spatial_unit=spatial_unit, method="last"
     )

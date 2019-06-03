@@ -20,8 +20,8 @@ from flowmachine.core.spatial_unit import (
     LatLonSpatialUnit,
     VersionedCellSpatialUnit,
     VersionedSiteSpatialUnit,
-    AdminSpatialUnit,
-    GridSpatialUnit,
+    admin_spatial_unit,
+    grid_spatial_unit,
 )
 from flowmachine.features import daily_location, Flows
 from flowmachine.utils import proj4string
@@ -83,7 +83,7 @@ def test_valid_geojson():
     test_geojson = [
         daily_location("2016-01-01", "2016-01-02").aggregate(),
         daily_location(
-            "2016-01-01", "2016-01-02", spatial_unit=GridSpatialUnit(size=100)
+            "2016-01-01", "2016-01-02", spatial_unit=grid_spatial_unit(size=100)
         ).aggregate(),
         daily_location(
             "2016-01-01", "2016-01-02", spatial_unit=LatLonSpatialUnit()
@@ -95,12 +95,12 @@ def test_valid_geojson():
             "2016-01-01", "2016-01-02", spatial_unit=VersionedCellSpatialUnit()
         ).aggregate(),
         daily_location(
-            "2016-01-01", "2016-01-02", spatial_unit=AdminSpatialUnit(level=2)
+            "2016-01-01", "2016-01-02", spatial_unit=admin_spatial_unit(level=2)
         ).aggregate(),
         daily_location(
             "2016-01-01",
             "2016-01-02",
-            spatial_unit=AdminSpatialUnit(level=2, column_name="admin2name"),
+            spatial_unit=admin_spatial_unit(level=2, column_name="admin2name"),
         ).aggregate(),
     ]
     for o in test_geojson:
@@ -113,7 +113,7 @@ def test_correct_geojson():
     """
     js = (
         daily_location(
-            "2016-01-01", "2016-01-02", spatial_unit=AdminSpatialUnit(level=2)
+            "2016-01-01", "2016-01-02", spatial_unit=admin_spatial_unit(level=2)
         )
         .aggregate()
         .to_geojson()
@@ -139,7 +139,7 @@ def test_geojson_file_output(tmpdir):
     js_file = tmpdir / "geojson_test.json"
 
     daily_location(
-        "2016-01-01", "2016-01-02", spatial_unit=AdminSpatialUnit(level=2)
+        "2016-01-01", "2016-01-02", spatial_unit=admin_spatial_unit(level=2)
     ).aggregate().to_geojson_file(js_file)
     with open(js_file) as fin:
         js = json.load(fin)
@@ -162,10 +162,10 @@ def test_flows_geojson(get_dataframe):
     """
 
     dl = daily_location(
-        "2016-01-01", spatial_unit=AdminSpatialUnit(level=2, column_name="admin2name")
+        "2016-01-01", spatial_unit=admin_spatial_unit(level=2, column_name="admin2name")
     )
     dl2 = daily_location(
-        "2016-01-02", spatial_unit=AdminSpatialUnit(level=2, column_name="admin2name")
+        "2016-01-02", spatial_unit=admin_spatial_unit(level=2, column_name="admin2name")
     )
     fl = Flows(dl, dl2)
     js = fl.to_geojson()

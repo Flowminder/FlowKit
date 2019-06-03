@@ -5,7 +5,7 @@
 import pytest
 
 from flowmachine.core.errors import MissingDateError
-from flowmachine.core.spatial_unit import AdminSpatialUnit, CellSpatialUnit
+from flowmachine.core.spatial_unit import admin_spatial_unit, CellSpatialUnit
 from flowmachine.features import daily_location, MostFrequentLocation
 
 
@@ -43,7 +43,7 @@ def test_works_with_admin_names(get_dataframe):
     """
 
     dl = daily_location(
-        "2016-01-05", spatial_unit=AdminSpatialUnit(level=3, column_name="admin3name")
+        "2016-01-05", spatial_unit=admin_spatial_unit(level=3, column_name="admin3name")
     )
     df = get_dataframe(dl)
     assert "Lamjung" == df.admin3name[0]

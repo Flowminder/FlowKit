@@ -13,7 +13,7 @@ representing where an subscriber is on a given day.
 """
 import datetime
 
-from ...core.spatial_unit import AdminSpatialUnit
+from ...core.spatial_unit import admin_spatial_unit
 from .last_location import LastLocation
 from .most_frequent_location import MostFrequentLocation
 
@@ -43,7 +43,7 @@ def locate_subscribers(
         iso format date range for the the time frame,
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
-                   default AdminSpatialUnit(level=3)
+                   default admin_spatial_unit(level=3)
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of spatial_unit.py for more information.
     hours : tuple of ints, default 'all'
@@ -95,7 +95,7 @@ def locate_subscribers(
                         .
     """
     if spatial_unit is None:
-        spatial_unit = AdminSpatialUnit(level=3)
+        spatial_unit = admin_spatial_unit(level=3)
 
     if method == "last":
         return LastLocation(
@@ -151,7 +151,7 @@ def daily_location(
         optionally specify a stop datetime in iso format date for the day in question,
         e.g. 2016-01-02 06:00:00
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
-                   default AdminSpatialUnit(level=3)
+                   default admin_spatial_unit(level=3)
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of spatial_unit.py for more information.
     hours : tuple of ints, default 'all'
@@ -186,7 +186,7 @@ def daily_location(
 
     """
     if spatial_unit is None:
-        spatial_unit = AdminSpatialUnit(level=3)
+        spatial_unit = admin_spatial_unit(level=3)
 
     # Temporary band-aid; marshmallow deserialises date strings
     # to date objects, so we convert it back here because the

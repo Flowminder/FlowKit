@@ -28,7 +28,7 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
     >>> dt = DayTrajectories(
             '2016-01-01',
             '2016-01-04',
-            spatial_unit = AdminSpatialUnit(level=3),
+            spatial_unit = admin_spatial_unit(level=3),
             method = 'last',
             hours = (5,17),
         )

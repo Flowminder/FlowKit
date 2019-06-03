@@ -26,8 +26,8 @@ from flowmachine.core.spatial_unit import (
     VersionedCellSpatialUnit,
     VersionedSiteSpatialUnit,
     PolygonSpatialUnit,
-    AdminSpatialUnit,
-    GridSpatialUnit,
+    admin_spatial_unit,
+    grid_spatial_unit,
 )
 from flowmachine.features import EventTableSubset
 
@@ -73,13 +73,13 @@ def exemplar_level_param(request):
 
 @pytest.fixture(
     params=[
-        (AdminSpatialUnit, {"level": 2}),
-        (AdminSpatialUnit, {"level": 2, "column_name": "admin2name"}),
+        (admin_spatial_unit, {"level": 2}),
+        (admin_spatial_unit, {"level": 2, "column_name": "admin2name"}),
         (VersionedSiteSpatialUnit, {}),
         (VersionedCellSpatialUnit, {}),
         (CellSpatialUnit, {}),
         (LatLonSpatialUnit, {}),
-        (GridSpatialUnit, {"size": 5}),
+        (grid_spatial_unit, {"size": 5}),
         (
             PolygonSpatialUnit,
             {"polygon_column_names": "admin3pcod", "polygon_table": "geography.admin3"},

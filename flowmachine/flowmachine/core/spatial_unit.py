@@ -8,6 +8,8 @@ Classes that map cells (or towers or sites) to a spatial unit.
 The available spatial units are:
     CellSpatialUnit:
         The identifier as found in the CDR.
+    LatLonSpatialUnit:
+        Latitude and longitude of cell/site locations.
     VersionedCellSpatialUnit:
         The identifier as found in the CDR combined with the version from the
         cells table.
@@ -19,12 +21,14 @@ The available spatial units are:
         return after the join, and polygon_table, the table where the polygons
         reside (with the schema), and additionally geom_col which is the column
         with the geometry information (will default to 'geom').
-    AdminSpatialUnit:
+    admin_spatial_unit:
         An admin region of interest, such as admin3. Must live in the database
         in the standard location.
-    GridSpatialUnit:
+        Special case of PolygonSpatialUnit.
+    grid_spatial_unit:
         A square in a regular grid, in addition pass size to determine the size
         of the polygon.
+        Special case of PolygonSpatialUnit.
 """
 from typing import List
 from abc import ABCMeta, abstractmethod
@@ -46,6 +50,11 @@ class CellSpatialUnit:
 
     def __eq__(self, other):
         return isinstance(other, CellSpatialUnit)
+
+    def __hash__(self):
+        # We may never need CellSpatialUnits to be hashable, but I'll define
+        # this just in case.
+        return hash(self.__class__.__name__)
 
     @property
     def location_columns(self) -> List[str]:
@@ -116,6 +125,10 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
 
     def __eq__(self, other):
         return self.md5 == other.md5
+
+    def __hash__(self):
+        # Must define this because we explicitly define self.__eq__
+        return self.md5
 
     @property
     def location_columns(self) -> List[str]:
@@ -208,9 +221,6 @@ class LatLonSpatialUnit(BaseSpatialUnit):
             location_column_names=["lat", "lon"],
         )
 
-    def __eq__(self, other):
-        return isinstance(other, LatLonSpatialUnit)
-
     def geo_augment(self, sql_query):
         sql = f"""
         SELECT 
@@ -243,9 +253,6 @@ class VersionedCellSpatialUnit(BaseSpatialUnit):
             location_column_names=["location_id", "version", "lon", "lat"],
             location_info_table="infrastructure.cells",
         )
-
-    def __eq__(self, other):
-        return isinstance(other, VersionedCellSpatialUnit)
 
     def geo_augment(self, sql_query):
         sql = f"""
@@ -334,9 +341,6 @@ class VersionedSiteSpatialUnit(BaseSpatialUnit):
             join_clause=join_clause,
         )
 
-    def __eq__(self, other):
-        return isinstance(other, VersionedSiteSpatialUnit)
-
     def geo_augment(self, sql_query):
         sql = f"""
         SELECT 
@@ -407,7 +411,7 @@ class PolygonSpatialUnit(BaseSpatialUnit):
             self.polygon_table = polygon_table
         else:
             # Creating a GeoTable object here means that we don't have to handle
-            # admin tables and Grid objects differently in self.geo_augment
+            # admin tables and Grid objects differently in join_clause and self.geo_augment
             self.polygon_table = GeoTable(name=polygon_table, geom_column=geom_col)
 
         self.geom_col = geom_col
@@ -457,14 +461,6 @@ class PolygonSpatialUnit(BaseSpatialUnit):
             join_clause=join_clause,
         )
 
-    def __eq__(self, other):
-        return (
-            isinstance(other, PolygonSpatialUnit)
-            and self.polygon_table.md5 == other.polygon_table.md5
-            and self.polygon_column_names == other.polygon_column_names
-            and self.geom_col == other.geom_col
-        )
-
     def geo_augment(self, sql_query):
         r_col_name, l_col_name = get_name_and_alias(self.polygon_column_names[0])
         sql = f"""
@@ -479,11 +475,11 @@ class PolygonSpatialUnit(BaseSpatialUnit):
         return sql
 
 
-class AdminSpatialUnit(PolygonSpatialUnit):
+def admin_spatial_unit(*, level, column_name=None):
     """
-    Class that maps all cells (aka sites) to an admin region. This is a thin
-    wrapper to the more general class PolygonSpatialUnit, which assumes that
-    you have the standard set-up.
+    Helper function to create a PolygonSpatialUnit object that maps all cells
+    (aka sites) to an admin region. This assumes that you have geography data
+    in the standard location in FlowDB.
 
     Parameters
     ----------
@@ -494,62 +490,42 @@ class AdminSpatialUnit(PolygonSpatialUnit):
         identifier of the admin region. By default
         this will be admin*pcod. But you may wish
         to use something else, such as admin3name.
+    
+    Returns
+    -------
+    PolygonSpatialUnit
+        Query which maps cell/site IDs to admin regions
     """
+    # If there is no column_name passed then we can use the default, which is
+    # of the form admin3pcod. If the user has asked for the standard
+    # column_name then we will alias this column as 'pcod', otherwise we won't
+    # alias it at all.
+    if (column_name is None) or (column_name == f"admin{level}pcod"):
+        col_name = f"admin{level}pcod AS pcod"
+    else:
+        col_name = column_name
+    table = f"geography.admin{level}"
 
-    def __init__(self, *, level, column_name=None):
-        self.level = level
-        # If there is no column_name passed then we can use
-        # the default, which is of the form admin3pcod.
-        # If the user has asked for the standard column_name
-        # then we will alias this column as 'pcod', otherwise
-        # we'll won't alias it at all.
-        if (column_name is None) or (column_name == self._get_standard_name()):
-            col_name = f"{self._get_standard_name()} AS pcod"
-        else:
-            col_name = column_name
-        table = f"geography.admin{self.level}"
-
-        super().__init__(polygon_column_names=col_name, polygon_table=table)
-
-    def __eq__(self, other):
-        if isinstance(other, AdminSpatialUnit):
-            return (
-                self.level == other.level
-                and self.polygon_column_names == other.polygon_column_names
-            )
-        else:
-            return super().__eq__(other)
-
-    def _get_standard_name(self):
-        """
-        Returns the standard name of the column that identifies
-        the name of the region.
-        """
-
-        return f"admin{self.level}pcod"
+    return PolygonSpatialUnit(polygon_column_names=col_name, polygon_table=table)
 
 
-class GridSpatialUnit(PolygonSpatialUnit):
+def grid_spatial_unit(*, size):
     """
-    Query representing a mapping between all the sites in the database
-    and a grid of arbitrary size.
+    Helper function to create a PolygonSpatialUnit representing a mapping
+    between all the sites in the database and a grid of arbitrary size.
 
     Parameters
     ----------
     size : float or int
         Size of the grid in kilometres
+    
+    Returns
+    -------
+    PolygonSpatialUnit
+        Query which maps cell/site IDs to grid squares
     """
-
-    def __init__(self, *, size):
-        self.size = size
-        super().__init__(
-            polygon_column_names=["grid_id"],
-            polygon_table=Grid(self.size),
-            geom_col="geom_square",
-        )
-
-    def __eq__(self, other):
-        if isinstance(other, GridSpatialUnit):
-            return self.size == other.size
-        else:
-            return super().__eq__(other)
+    return PolygonSpatialUnit(
+        polygon_column_names=["grid_id"],
+        polygon_table=Grid(size),
+        geom_col="geom_square",
+    )

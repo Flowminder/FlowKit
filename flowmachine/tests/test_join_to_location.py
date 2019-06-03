@@ -12,11 +12,11 @@ from flowmachine.features import subscriber_locations
 from flowmachine.core import JoinToLocation, location_joined_query
 from flowmachine.core.spatial_unit import (
     CellSpatialUnit,
-    AdminSpatialUnit,
+    admin_spatial_unit,
     VersionedSiteSpatialUnit,
     VersionedCellSpatialUnit,
     LatLonSpatialUnit,
-    GridSpatialUnit,
+    grid_spatial_unit,
     PolygonSpatialUnit,
 )
 
@@ -137,7 +137,7 @@ def test_join_to_admin(get_dataframe, get_length):
     ul = subscriber_locations(
         "2016-01-05", "2016-01-07", spatial_unit=CellSpatialUnit()
     )
-    df = get_dataframe(JoinToLocation(ul, spatial_unit=AdminSpatialUnit(level=3)))
+    df = get_dataframe(JoinToLocation(ul, spatial_unit=admin_spatial_unit(level=3)))
     assert len(df) == get_length(ul)
     expected_cols = sorted(["subscriber", "time", "location_id", "pcod"])
     assert sorted(df.columns) == expected_cols
@@ -150,7 +150,7 @@ def test_join_to_grid(get_dataframe, get_length):
     ul = subscriber_locations(
         "2016-01-05", "2016-01-07", spatial_unit=CellSpatialUnit()
     )
-    df = get_dataframe(JoinToLocation(ul, spatial_unit=GridSpatialUnit(size=50)))
+    df = get_dataframe(JoinToLocation(ul, spatial_unit=grid_spatial_unit(size=50)))
     assert len(df) == get_length(ul)
 
 

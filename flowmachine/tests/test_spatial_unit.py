@@ -10,8 +10,8 @@ from flowmachine.core.spatial_unit import (
     VersionedCellSpatialUnit,
     VersionedSiteSpatialUnit,
     PolygonSpatialUnit,
-    AdminSpatialUnit,
-    GridSpatialUnit,
+    admin_spatial_unit,
+    grid_spatial_unit,
 )
 import pytest
 
@@ -52,10 +52,10 @@ def test_spatial_unit_column_names(exemplar_spatial_unit_param):
             },
             ["id"],
         ),
-        (AdminSpatialUnit, {"level": 3}, ["pcod"]),
-        (AdminSpatialUnit, {"level": 3, "column_name": "admin3pcod"}, ["pcod"]),
-        (AdminSpatialUnit, {"level": 3, "column_name": "admin3name"}, ["admin3name"]),
-        (GridSpatialUnit, {"size": 5}, ["grid_id"]),
+        (admin_spatial_unit, {"level": 3}, ["pcod"]),
+        (admin_spatial_unit, {"level": 3, "column_name": "admin3pcod"}, ["pcod"]),
+        (admin_spatial_unit, {"level": 3, "column_name": "admin3name"}, ["admin3name"]),
+        (grid_spatial_unit, {"size": 5}, ["grid_id"]),
     ],
 )
 def test_spatial_unit_location_columns(spatial_unit, kwargs, loc_cols):

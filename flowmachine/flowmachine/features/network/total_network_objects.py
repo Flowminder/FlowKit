@@ -20,7 +20,7 @@ from ...core.spatial_unit import (
     CellSpatialUnit,
     VersionedSiteSpatialUnit,
     VersionedCellSpatialUnit,
-    AdminSpatialUnit,
+    admin_spatial_unit,
 )
 from ..utilities import EventsTablesUnion
 
@@ -49,7 +49,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         Objects to track, defaults to CellSpatialUnit(), the unversioned lowest
         level of infrastructure available.
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
-                   default AdminSpatialUnit(level=0)
+                   default admin_spatial_unit(level=0)
         Spatial unit to facet on.
 
     Other Parameters
@@ -108,7 +108,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
             )
 
         if spatial_unit is None:
-            self.spatial_unit = AdminSpatialUnit(level=0)
+            self.spatial_unit = admin_spatial_unit(level=0)
         else:
             self.spatial_unit = spatial_unit
         if type(self.spatial_unit) in allowed_network_object_types:
