@@ -197,4 +197,3 @@ def subscriber_locations(
     return location_joined_query(
         subscriber_cells, spatial_unit=spatial_unit, time_col="time"
     )
-
