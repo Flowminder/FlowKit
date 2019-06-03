@@ -30,7 +30,7 @@ def test_flows_raise_error():
     Flows() raises error if location levels are different.
     """
     dl1 = daily_location("2016-01-01", spatial_unit=admin_spatial_unit(level=3))
-    dl2 = daily_location("2016-01-01", spatial_unit=admin_spatial_unit(level=3))
+    dl2 = daily_location("2016-01-01", spatial_unit=admin_spatial_unit(level=2))
     with pytest.raises(ValueError):
         Flows(dl1, dl2)
 
