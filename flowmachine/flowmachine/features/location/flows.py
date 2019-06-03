@@ -130,12 +130,12 @@ class Flows(GeoDataMixin, GraphMixin, Query):
         agg_qry = f"""
         WITH flows AS ({self.get_query()})
         select {loc_cols_string}, json_strip_nulls(outflows) as outflows, json_strip_nulls(inflows) as inflows FROM
-        (SELECT {loc_cols_from_aliased_string}, json_object_agg({loc_cols_to_string}, count) AS outflows
+        (SELECT {loc_cols_from_aliased_string}, json_object_agg({loc_cols[0]}_to, count) AS outflows
         FROM flows
         GROUP BY {loc_cols_from_string}
         ) x
         FULL JOIN
-        (SELECT {loc_cols_to_aliased_string}, json_object_agg({loc_cols_from_string}, count) AS inflows
+        (SELECT {loc_cols_to_aliased_string}, json_object_agg({loc_cols[0]}_from, count) AS inflows
         FROM flows
         GROUP BY {loc_cols_to_string}
         ) y
