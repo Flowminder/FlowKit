@@ -41,7 +41,7 @@ class SubscriberFeature(Query):
         -------
         JoinedSpatialAggregate
             Query object representing a version of this metric aggregated to
-            the location level.
+            the spatial unit.
         """
         return JoinedSpatialAggregate(metric=self, locations=locations, method=method)
 

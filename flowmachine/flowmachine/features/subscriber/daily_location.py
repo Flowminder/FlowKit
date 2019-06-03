@@ -35,7 +35,7 @@ def locate_subscribers(
     with a number of different methods.
 
     Find the last/most-frequent location for every subscriber within the given time
-    frame. Specify a level.
+    frame. Specify a spatial unit.
 
     Parameters
     ----------
@@ -83,7 +83,7 @@ def locate_subscribers(
 
     >>> last_locs = locate_subscribers('2016-01-01 13:30:30',
                                 '2016-01-02 16:25:00'
-                                 level = 'cell'
+                                 spatial_unit = CellSpatialUnit
                                  method='last')
     >>> last_locs.head()
                 subscriber    |    cell

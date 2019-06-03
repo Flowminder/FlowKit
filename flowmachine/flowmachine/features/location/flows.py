@@ -6,7 +6,7 @@
 """
 Definition of the flows class, which is the difference in 
 locations between two daily or home location classes, 
-aggregated to a location level.
+aggregated to a spatial unit.
 
 
 
@@ -17,7 +17,6 @@ from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin, GraphMixin
-from flowmachine.utils import get_columns_for_level
 
 import structlog
 
