@@ -102,7 +102,7 @@ def exemplar_spatial_unit_param(request):
 
     Yields
     ------
-    flowmachine.core.spatial_unit.*SpatialUnit or None
+    flowmachine.core.spatial_unit.*SpatialUnit
 
     """
     yield request.param[0](**request.param[1])
