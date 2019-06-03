@@ -128,7 +128,7 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
 
     def __hash__(self):
         # Must define this because we explicitly define self.__eq__
-        return self.md5
+        return hash(self.md5)
 
     @property
     def location_columns(self) -> List[str]:
