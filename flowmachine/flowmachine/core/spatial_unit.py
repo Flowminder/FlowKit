@@ -124,7 +124,10 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
     # implement a method to check whether the required data can be found in the DB.
 
     def __eq__(self, other):
-        return self.md5 == other.md5
+        try:
+            return self.md5 == other.md5
+        except AttributeError:
+            return False
 
     def __hash__(self):
         # Must define this because we explicitly define self.__eq__
