@@ -406,8 +406,8 @@ class Query(metaclass=ABCMeta):
 
         Examples
         --------
-        >>> dl1 = daily_location('2016-01-01', level='cell')
-        >>> dl2 = daily_location('2016-01-02', level='cell')
+        >>> dl1 = daily_location('2016-01-01', spatial_unit=CellSpatialUnit())
+        >>> dl2 = daily_location('2016-01-02', spatial_unit=CellSpatialUnit())
         >>> dl1.union(dl2).get_query()
         'cell_msisdn_20160101 UNION ALL cell_msisdn_20160102'
 
@@ -927,26 +927,17 @@ class Query(metaclass=ABCMeta):
         -------
         ixen : list
             By default, returns the location columns if they are present
-            and self.level is defined, and the subscriber column.
+            and self.spatial_unit is defined, and the subscriber column.
 
         Examples
         --------
         >>> daily_location("2016-01-01").index_cols
         [['name'], '"subscriber"']
         """
-        from flowmachine.utils import (
-            get_columns_for_level,
-        )  # Local import to avoid circular import
-
         cols = self.column_names
         ixen = []
         try:
-            # Not all objects define the attribute column_name so we'll fall
-            # back to the default if it is not defined
-            try:
-                loc_cols = get_columns_for_level(self.level, self.column_name)
-            except AttributeError:
-                loc_cols = get_columns_for_level(self.level)
+            loc_cols = self.spatial_unit.location_columns
             if set(loc_cols).issubset(cols):
                 ixen.append(loc_cols)
         except AttributeError:
