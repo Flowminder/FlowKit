@@ -20,7 +20,7 @@ def test_spatial_unit_column_names(exemplar_spatial_unit_param):
     """
     Test that the SpatialUnit classes have accurate column_names properties.
     """
-    if isinstance(exemplar_spatial_unit_param, CellSpatialUnit):
+    if CellSpatialUnit() == exemplar_spatial_unit_param:
         pytest.skip(
             "CellSpatialUnit does not have a column_names property (not a Query)"
         )
@@ -103,18 +103,6 @@ def test_missing_location_columns_raises_error():
         )
 
 
-def test_geo_augment_columns(exemplar_spatial_unit_param):
-    """
-    Test that the columns returned by the geo_augment method are correct.
-    """
-    if isinstance(exemplar_spatial_unit_param, CellSpatialUnit):
-        pytest.skip("CellSpatialUnit does not have a geo_augment method")
-    su = exemplar_spatial_unit_param
-    sql, cols = su.geo_augment(su)
-    cq = CustomQuery(sql, cols)
-    assert cq.head(0).columns.tolist() == cols
-
-
 @pytest.mark.parametrize(
     "spatial_unit", [VersionedCellSpatialUnit, VersionedSiteSpatialUnit]
 )
@@ -129,3 +117,83 @@ def test_distance_matrix_columns(spatial_unit, return_geometry):
     cols = su.distance_matrix_columns(return_geometry=return_geometry)
     cq = CustomQuery(sql, cols)
     assert cq.head(0).columns.tolist() == cols
+
+
+@pytest.mark.parametrize(
+    "spatial_unit, kwargs",
+    [
+        (admin_spatial_unit, {"level": 2}),
+        (admin_spatial_unit, {"level": 2, "column_name": "admin2name"}),
+        (VersionedSiteSpatialUnit, {}),
+        (VersionedCellSpatialUnit, {}),
+        (CellSpatialUnit, {}),
+        (LatLonSpatialUnit, {}),
+        (grid_spatial_unit, {"size": 5}),
+        (
+            PolygonSpatialUnit,
+            {"polygon_column_names": "admin3pcod", "polygon_table": "geography.admin3"},
+        ),
+        (
+            PolygonSpatialUnit,
+            {
+                "polygon_column_names": "id",
+                "polygon_table": "infrastructure.sites",
+                "geom_col": "geom_point",
+            },
+        ),
+    ],
+)
+def test_spatial_unit_equals_itself(spatial_unit, kwargs):
+    """
+    Test that instances of the SpatialUnit classes are equal to themselves.
+    """
+    su1 = spatial_unit(**kwargs)
+    su2 = spatial_unit(**kwargs)
+    assert su1 == su2
+    assert hash(su1) == hash(su2)
+
+
+def test_cell_spatial_unit_not_equal_to_other_spatial_unit():
+    """
+    Test that a CellSpatialUnit is not equal to a VersionedCellSpatialUnit.
+    """
+    su1 = CellSpatialUnit()
+    su2 = VersionedCellSpatialUnit()
+    assert su1 != su2
+    assert su2 != su1
+
+
+def test_different_spatial_units_are_not_equal():
+    """
+    Test that two different spatial units are not equal.
+    """
+    su1 = VersionedCellSpatialUnit()
+    su2 = VersionedSiteSpatialUnit()
+    assert su1 != su2
+
+
+def test_different_level_admin_spatial_units_are_not_equal():
+    """
+    Test that two admin spatial units with different levels are not equal.
+    """
+    su1 = admin_spatial_unit(level=1)
+    su2 = admin_spatial_unit(level=3)
+    assert su1 != su2
+
+
+def test_different_column_name_admin_spatial_units_are_not_equal():
+    """
+    Test that two admin spatial units with different column_names are not equal.
+    """
+    su1 = admin_spatial_unit(level=3, column_name="admin3pcod")
+    su2 = admin_spatial_unit(level=3, column_name="admin3name")
+    assert su1 != su2
+
+
+def test_different_grid_spatial_units_are_not_equal():
+    """
+    Test that two grid spatial units with different sizes are not equal.
+    """
+    su1 = grid_spatial_unit(size=5)
+    su2 = grid_spatial_unit(size=50)
+    assert su1 != su2
