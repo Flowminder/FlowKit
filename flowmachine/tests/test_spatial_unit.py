@@ -39,7 +39,7 @@ def test_spatial_unit_column_names(exemplar_spatial_unit_param):
             {
                 "polygon_column_names": "id",
                 "polygon_table": "infrastructure.sites",
-                "geom_col": "geom_point",
+                "geom_column": "geom_point",
             },
             ["id"],
         ),
@@ -48,7 +48,7 @@ def test_spatial_unit_column_names(exemplar_spatial_unit_param):
             {
                 "polygon_column_names": ["id"],
                 "polygon_table": "infrastructure.sites",
-                "geom_col": "geom_point",
+                "geom_column": "geom_point",
             },
             ["id"],
         ),
@@ -75,7 +75,7 @@ def test_polygon_spatial_unit_column_list():
     psu = PolygonSpatialUnit(
         polygon_column_names=passed_cols,
         polygon_table="infrastructure.sites",
-        geom_col="geom_point",
+        geom_column="geom_point",
     )
     loc_cols = psu.location_columns
     assert passed_cols == loc_cols
@@ -122,7 +122,7 @@ def test_missing_location_columns_raises_error():
             {
                 "polygon_column_names": "id",
                 "polygon_table": "infrastructure.sites",
-                "geom_col": "geom_point",
+                "geom_column": "geom_point",
             },
         ),
     ],

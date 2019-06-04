@@ -19,7 +19,7 @@ The available spatial units are:
         A custom set of polygons that live in the database. Takes the
         parameters polygon_column_names, which is the columns you want to
         return after the join, and polygon_table, the table where the polygons
-        reside (with the schema), and additionally geom_col which is the column
+        reside (with the schema), and additionally geom_column which is the column
         with the geometry information (will default to 'geom').
     admin_spatial_unit:
         An admin region of interest, such as admin3. Must live in the database
@@ -34,7 +34,7 @@ from typing import List
 from abc import ABCMeta, abstractmethod
 
 from flowmachine.utils import get_name_and_alias
-from . import Query, GeoTable
+from . import Query, Table
 from .grid import Grid
 
 
@@ -143,6 +143,9 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
     @property
     def column_names(self) -> List[str]:
         return [get_name_and_alias(c)[1].split(".").pop() for c in self._cols]
+    
+    def get_geom_sql(self):
+
 
     @abstractmethod
     def geo_augment(self, sql_query):
@@ -307,19 +310,19 @@ class PolygonSpatialUnit(BaseSpatialUnit):
         name of the table containing the geography information.
         Can be either the name of a table, with the schema, a flowmachine.Query
         object, or a string representing a query.
-    geom_col : str, default 'geom'
+    geom_column : str, default 'geom'
         column that defines the geography.
     """
 
-    def __init__(self, *, polygon_column_names, polygon_table, geom_col="geom"):
+    def __init__(self, *, polygon_column_names, polygon_table, geom_column="geom"):
         if isinstance(polygon_table, Query):
             self.polygon_table = polygon_table
         else:
-            # Creating a GeoTable object here means that we don't have to handle
+            # Creating a Table object here means that we don't have to handle
             # admin tables and Grid objects differently in join_clause and self.geo_augment
-            self.polygon_table = GeoTable(name=polygon_table, geom_column=geom_col)
+            self.polygon_table = Table(name=polygon_table)
 
-        self.geom_col = geom_col
+        self.geom_column = geom_column
 
         location_info_table = self.connection.location_table
 
@@ -338,7 +341,7 @@ class PolygonSpatialUnit(BaseSpatialUnit):
                 ({self.polygon_table.get_query()}) AS {joined_alias}
             ON ST_within(
                 {locinfo_alias}.geom_point::geometry,
-                ST_SetSRID({joined_alias}.{self.geom_col}, 4326)::geometry
+                ST_SetSRID({joined_alias}.{self.geom_column}, 4326)::geometry
             )
             """
 
@@ -371,7 +374,7 @@ class PolygonSpatialUnit(BaseSpatialUnit):
         sql = f"""
         SELECT 
             row_number() OVER () as gid, 
-            {self.geom_col} AS geom, 
+            {self.geom_column} AS geom, 
             U.*
         FROM ({sql_query}) AS U
         LEFT JOIN ({self.polygon_table.get_query()}) AS G
@@ -432,5 +435,5 @@ def grid_spatial_unit(*, size):
     return PolygonSpatialUnit(
         polygon_column_names=["grid_id"],
         polygon_table=Grid(size),
-        geom_col="geom_square",
+        geom_column="geom_square",
     )

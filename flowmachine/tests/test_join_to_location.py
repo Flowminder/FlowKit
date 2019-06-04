@@ -120,7 +120,7 @@ def test_join_with_polygon(get_dataframe, get_length):
         spatial_unit=PolygonSpatialUnit(
             polygon_column_names="admin3pcod",
             polygon_table="geography.admin3",
-            geom_col="geom",
+            geom_column="geom",
         ),
     )
     df = get_dataframe(j)
