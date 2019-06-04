@@ -4,7 +4,7 @@
 
 from flowmachine.core import CustomQuery
 from flowmachine.core.spatial_unit import (
-    BaseSpatialUnit,
+    SpatialUnit,
     CellSpatialUnit,
     LatLonSpatialUnit,
     VersionedCellSpatialUnit,
@@ -87,13 +87,8 @@ def test_missing_location_columns_raises_error():
     Test that a ValueError is raised if the location_column_names passed to
     SpatialUnit are not a subset of column_names.
     """
-
-    class TestSpatialUnit(BaseSpatialUnit):
-        def geo_augment(self, query):
-            pass
-
     with pytest.raises(ValueError, match="['NOT_A_COLUMN']"):
-        su = TestSpatialUnit(
+        su = SpatialUnit(
             selected_column_names=[
                 "id AS location_id",
                 "date_of_first_service",

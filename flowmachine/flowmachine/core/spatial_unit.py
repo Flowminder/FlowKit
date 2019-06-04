@@ -31,7 +31,6 @@ The available spatial units are:
         Special case of PolygonSpatialUnit.
 """
 from typing import List
-from abc import ABCMeta, abstractmethod
 
 from flowmachine.utils import get_name_and_alias
 from . import Query, Table
@@ -64,7 +63,7 @@ class CellSpatialUnit:
         return list(self._loc_cols)
 
 
-class BaseSpatialUnit(Query, metaclass=ABCMeta):
+class SpatialUnit(Query):
     """
     Base class for all spatial units except CellSpatialUnit. Selects columns
     from the location table, and optionally joins to data in another table.
@@ -163,25 +162,6 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
 
         return sql, self.location_columns + ["geom"]
 
-    @abstractmethod
-    def geo_augment(self, sql_query):
-        """
-        Given a SQL string (which will usually be from a JoinToLocation object,
-        joined to this spatial unit), return a version of the query augmented
-        with a geom column and a gid column.
-
-        Parameters
-        ----------
-        sql_query : string
-            The query to augment with geom and gid columns
-        
-        Returns
-        -------
-        str
-            A version of this query with geom and gid columns
-        """
-        raise NotImplementedError
-
     def _make_query(self):
         columns = ", ".join(self._cols)
         sql = f"""
@@ -194,7 +174,7 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
         return sql
 
 
-class LatLonSpatialUnit(BaseSpatialUnit):
+class LatLonSpatialUnit(SpatialUnit):
     """
     Class that maps cell location_id to lat-lon coordinates. 
     """
@@ -212,18 +192,8 @@ class LatLonSpatialUnit(BaseSpatialUnit):
             geom_column="geom_point",
         )
 
-    def geo_augment(self, sql_query):
-        sql = f"""
-        SELECT 
-            row_number() over() AS gid,
-            *, 
-            ST_SetSRID(ST_Point(lon, lat), 4326) AS geom
-        FROM ({sql_query}) AS L
-        """
-        return sql
 
-
-class VersionedCellSpatialUnit(BaseSpatialUnit):
+class VersionedCellSpatialUnit(SpatialUnit):
     """
     Class that maps cell location_id to a cell version and lat-lon coordinates.
     """
@@ -246,21 +216,8 @@ class VersionedCellSpatialUnit(BaseSpatialUnit):
             geom_column="geom_point",
         )
 
-    def geo_augment(self, sql_query):
-        sql = f"""
-        SELECT 
-            row_number() OVER () AS gid, 
-            geom_point AS geom, 
-            U.*
-        FROM ({sql_query}) AS U
-        LEFT JOIN infrastructure.cells AS S
-            ON U.location_id = S.id AND
-                U.version = S.version
-        """
-        return sql
 
-
-class VersionedSiteSpatialUnit(BaseSpatialUnit):
+class VersionedSiteSpatialUnit(SpatialUnit):
     """
     Class that maps cell location_id to a site version and lat-lon coordinates.
     """
@@ -301,21 +258,8 @@ class VersionedSiteSpatialUnit(BaseSpatialUnit):
             join_clause=join_clause,
         )
 
-    def geo_augment(self, sql_query):
-        sql = f"""
-        SELECT 
-            row_number() OVER () AS gid, 
-            geom_point AS geom, 
-            U.*
-        FROM ({sql_query}) AS U
-        LEFT JOIN infrastructure.sites AS S
-            ON U.site_id = S.id AND
-                U.version = S.version
-        """
-        return sql
 
-
-class PolygonSpatialUnit(BaseSpatialUnit):
+class PolygonSpatialUnit(SpatialUnit):
     """
     Class that provides a mapping from cell/site data in the location table to
     spatial regions defined by geography information in a table.
@@ -338,7 +282,7 @@ class PolygonSpatialUnit(BaseSpatialUnit):
             self.polygon_table = polygon_table
         else:
             # Creating a Table object here means that we don't have to handle
-            # admin tables and Grid objects differently in join_clause and self.geo_augment
+            # admin tables and Grid objects differently in join_clause and self.get_geom_query
             self.polygon_table = Table(name=polygon_table)
 
         location_info_table = self.connection.location_table
@@ -400,19 +344,6 @@ class PolygonSpatialUnit(BaseSpatialUnit):
         """
 
         return sql, self.location_columns + ["geom"]
-
-    def geo_augment(self, sql_query):
-        r_col_name, l_col_name = get_name_and_alias(self._polygon_column_names[0])
-        sql = f"""
-        SELECT 
-            row_number() OVER () as gid, 
-            {self._geom_column} AS geom, 
-            U.*
-        FROM ({sql_query}) AS U
-        LEFT JOIN ({self.polygon_table.get_query()}) AS G
-            ON U.{l_col_name} = G.{r_col_name}
-        """
-        return sql
 
 
 def admin_spatial_unit(*, level, column_name=None):

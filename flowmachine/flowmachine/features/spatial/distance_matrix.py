@@ -25,7 +25,7 @@ class DistanceMatrix(GraphMixin, Query):
 
     Parameters
     ----------
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default VersionedCellSpatialUnit()
+    spatial_unit : flowmachine.core.spatial_unit.SpatialUnit, default VersionedCellSpatialUnit()
         Locations to compute distances for.
         Note: only point locations (i.e. spatial units with "lat" and "lon"
         included in location_columns) are supported at this time.

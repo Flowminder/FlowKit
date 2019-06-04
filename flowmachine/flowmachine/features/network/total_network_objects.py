@@ -48,7 +48,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
     network_object : {Cell,VersionedCell,VersionedSite}SpatialUnit, default CellSpatialUnit()
         Objects to track, defaults to CellSpatialUnit(), the unversioned lowest
         level of infrastructure available.
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
+    spatial_unit : flowmachine.core.spatial_unit.SpatialUnit,
                    default admin_spatial_unit(level=0)
         Spatial unit to facet on.
 
