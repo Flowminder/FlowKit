@@ -187,7 +187,7 @@ The stack expects you to provide eight secrets:
  
     The password that FlowMachine will use to connect to FlowDB
 
- - POSTGRES_PASSWORD
+ - FLOWDB_ADMIN_PASSWORD
  
     The superuser password for the `flowdb` user 
 
@@ -266,11 +266,11 @@ fi
 
 # Remove existing secrets
 echo "Removing existing secrets"
+docker secret rm FLOWDB_ADMIN_PASSWORD || true
 docker secret rm FLOWMACHINE_FLOWDB_PASSWORD || true
 docker secret rm FLOWMACHINE_FLOWDB_USER || true
 docker secret rm FLOWAPI_FLOWDB_PASSWORD || true
 docker secret rm FLOWAPI_FLOWDB_USER || true
-docker secret rm POSTGRES_PASSWORD || true
 docker secret rm cert-flowkit.pem || true
 docker secret rm JWT_SECRET_KEY || true
 docker secret rm REDIS_PASSWORD || true
@@ -282,7 +282,7 @@ openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' \
     | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAPI_FLOWDB_PASSWORD -
-openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create POSTGRES_PASSWORD -
+openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWDB_ADMIN_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create REDIS_PASSWORD -
 echo "flowapi_server" | docker secret create FLOWAPI_IDENTIFIER -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
