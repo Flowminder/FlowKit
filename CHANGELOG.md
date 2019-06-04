@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- The FlowDB PostgreSQL admin user/password are now controlled by the environment variables `FLOWDB_ADMIN_USER` and `FLOWDB_ADMIN_PASSWORD`,
+  rather than the default env vars `POSTGRES_USER` and `POSTGRES_PASSWORD` [#894](https://github.com/Flowminder/FlowKit/issues/894) 
+
 ### Fixed
 
 ### Removed
