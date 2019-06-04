@@ -33,42 +33,6 @@ class GeoDataMixin:
     type queries.
     """
 
-    def _get_location_join(self):
-        """
-        Utility method which searches the query tree for location
-        information.
-        
-        Returns
-        -------
-        JoinToLocation
-            The first JoinToLocation object encountered in the query tree.
-
-        """
-        open = set(self.dependencies)
-        closed = set()
-        while True:
-            try:
-                qur = open.pop()
-                closed.add(qur)
-
-                #
-                #  This will check if the passed query
-                #  is an instance of the JoinToLocation class.
-                #  We don't check for the instance directly
-                #  because of import issues. This isn't an
-                #  ideal solution.
-                #
-                #  - Luis Capelo, June 22, 2017
-                #
-                if "JoinToLocation" in str(getattr(qur, "__class__", lambda: None)):
-                    return qur
-
-                open.update(qur.dependencies - closed)
-
-            except KeyError:
-                logger.warning("No JoinToLocation object found.")
-                break
-
     def _geo_augmented_query(self):
         """
         Creates a version of this query augmented with a geom column,
@@ -82,10 +46,15 @@ class GeoDataMixin:
         list
             The columns this query contains
         """
-        loc_join = self._get_location_join()
-        spatial_unit = loc_join.spatial_unit
-        join_columns_string = ",".join(spatial_unit.location_columns)
-        geom_query, _ = spatial_unit.get_geom_query()
+        join_columns_string = ",".join(self.spatial_unit.location_columns)
+
+        try:
+            geom_query, _ = self.spatial_unit.get_geom_query()
+        except AttributeError:
+            raise ValueError(
+                f"Query {self} with spatial_unit of type "
+                f"{type(self.spatial_unit)} has no geography information."
+            )
 
         sql = f"""
         SELECT
