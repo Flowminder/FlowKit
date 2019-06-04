@@ -395,7 +395,9 @@ class PolygonSpatialUnit(BaseSpatialUnit):
         """
         columns = self._polygon_column_names + [f"{self._geom_column} AS geom"]
 
-        sql = f"SELECT {','.join(columns)} FROM ({self.polygon_table.get_query()}) AS polygon"
+        sql = f"""
+        SELECT {','.join(columns)} FROM ({self.polygon_table.get_query()}) AS polygon
+        """
 
         return sql, self.location_columns + ["geom"]
 
