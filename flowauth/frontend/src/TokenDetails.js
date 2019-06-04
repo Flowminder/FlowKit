@@ -37,7 +37,9 @@ class TokenDetails extends React.Component {
     latest_expiry: new Date(),
     username_helper_text: "",
     isPermissionChecked: true,
-    isAggregationChecked: true
+    isAggregationChecked: true,
+    isIntermidiate: false,
+    isPermission: { yes: false, no: false, intermidiate: false }
   };
 
   handleSubmit = () => {
@@ -60,7 +62,10 @@ class TokenDetails extends React.Component {
     var rights = this.state.rights;
     rights[claim] = Object.assign({}, rights[claim]);
     rights[claim].permissions[right] = event.target.checked;
-    this.setState(Object.assign(this.state, { rights: rights }));
+    this.setState(
+      Object.assign(this.state, { rights: rights, isIntermidiate: true })
+    );
+    // console.log(rights)
   };
 
   handleAggUnitChange = (claim_id, claim, unit) => event => {
@@ -76,11 +81,16 @@ class TokenDetails extends React.Component {
     this.setState({ rights: rights });
   };
   handlePermissionCheckbox = event => {
-    this.setState({ isPermissionChecked: !this.state.isPermissionChecked });
-  }
+    event.stopPropagation();
+    this.setState({
+      isPermissionChecked: !this.state.isPermissionChecked,
+      isIntermidiate: false
+    });
+  };
   handleAggregationCheckbox = event => {
+    event.stopPropagation();
     this.setState({ isAggregationChecked: !this.state.isAggregationChecked });
-  }
+  };
   handleNameChange = event => {
     var letters = /^[A-Za-z0-9_]+$/;
     let name = event.target.value;
@@ -186,7 +196,7 @@ class TokenDetails extends React.Component {
   render() {
     if (this.state.hasError) throw this.state.error;
 
-    const { expiry, latest_expiry, name } = this.state;
+    const { expiry, latest_expiry, name, isIntermidiate } = this.state;
     const { classes, onClick } = this.props;
 
     return (
@@ -227,11 +237,21 @@ class TokenDetails extends React.Component {
         </Grid>
         <ExpansionPanel>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Checkbox
-              value="checkedB"
-              color="primary"
-              onClick={this.handlePermissionCheckbox}
-            />
+            {isIntermidiate ? (
+              <Checkbox
+                indeterminate
+                value="checkedB"
+                color="primary"
+                onClick={this.handlePermissionCheckbox}
+              />
+            ) : (
+              <Checkbox
+                value="checkedB"
+                color="primary"
+                onClick={this.handlePermissionCheckbox}
+              />
+            )}
+
             <Grid item xs={1}>
               <Typography className={classes.heading}>
                 API Permissions
