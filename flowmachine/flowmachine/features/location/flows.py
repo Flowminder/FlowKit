@@ -129,20 +129,46 @@ class Flows(GeoDataMixin, GraphMixin, Query):
 
         agg_qry = f"""
         WITH flows AS ({self.get_query()})
-        select {loc_cols_string}, json_strip_nulls(outflows) as outflows, json_strip_nulls(inflows) as inflows FROM
-        (SELECT {loc_cols_from_aliased_string}, json_object_agg({loc_cols[0]}_to, count) AS outflows
-        FROM flows
-        GROUP BY {loc_cols_from_string}
+        SELECT
+            {loc_cols_string},
+            json_strip_nulls(outflows) as outflows,
+            json_strip_nulls(inflows) as inflows
+        FROM
+        (
+            SELECT
+                {loc_cols_from_aliased_string},
+                json_object_agg({loc_cols[0]}_to, count) AS outflows
+            FROM flows
+            GROUP BY {loc_cols_from_string}
         ) x
         FULL JOIN
-        (SELECT {loc_cols_to_aliased_string}, json_object_agg({loc_cols[0]}_from, count) AS inflows
-        FROM flows
-        GROUP BY {loc_cols_to_string}
+        (
+            SELECT
+                {loc_cols_to_aliased_string},
+                json_object_agg({loc_cols[0]}_from, count) AS inflows
+            FROM flows
+            GROUP BY {loc_cols_to_string}
         ) y
         USING ({loc_cols_string})
         """
 
-        joined_query = self.spatial_unit.geo_augment(agg_qry)
+        try:
+            geom_query, _ = self.spatial_unit.get_geom_query()
+        except AttributeError:
+            raise ValueError(
+                f"Query {self} with spatial_unit of type "
+                f"{type(self.spatial_unit)} has no geography information."
+            )
+
+        joined_query = f"""
+        SELECT
+            row_number() over() AS gid,
+            *
+        FROM ({agg_qry}) AS Q
+        LEFT JOIN ({geom_query}) AS G
+        USING ({loc_cols_string})
+        """
+
         return joined_query, loc_cols + ["outflows", "inflows", "geom", "gid"]
 
 
