@@ -6,9 +6,14 @@
 Tests for the DistanceMatrix() class.
 """
 
+import pytest
 
 from flowmachine.features.spatial import DistanceMatrix
-from flowmachine.core.spatial_unit import VersionedSiteSpatialUnit
+from flowmachine.core.spatial_unit import (
+    VersionedCellSpatialUnit,
+    VersionedSiteSpatialUnit,
+    LatLonSpatialUnit,
+)
 
 
 def test_some_results(get_dataframe):
@@ -23,9 +28,17 @@ def test_some_results(get_dataframe):
     assert round(set_df.loc["8wPojr"]["distance"].values[4]) == 758
 
 
-def test_result_has_correct_length(get_length):
+@pytest.mark.parametrize(
+    "spatial_unit_type, length",
+    [
+        (VersionedCellSpatialUnit, 62),
+        (VersionedSiteSpatialUnit, 35),
+        (LatLonSpatialUnit, 62),
+    ],
+)
+def test_result_has_correct_length(spatial_unit_type, length, get_length):
     """
     DistanceMatrix() has the correct length.
     """
-    c = DistanceMatrix(spatial_unit=VersionedSiteSpatialUnit())
-    assert get_length(c) == 35 ** 2
+    c = DistanceMatrix(spatial_unit=spatial_unit_type())
+    assert get_length(c) == length ** 2

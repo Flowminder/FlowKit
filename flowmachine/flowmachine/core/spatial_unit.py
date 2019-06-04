@@ -163,38 +163,6 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-    def distance_matrix_query(self, return_geometry):
-        """
-        A query that calculates the complete distance matrix between all
-        elements of this spatial unit. Distance is returned in km.
-
-        Parameters
-        ----------
-        return_geometry : bool
-            If True, geometries are returned in query
-            (represented as WKB in a dataframe)
-
-        Returns
-        -------
-        str
-            SQL query string
-
-        """
-        raise NotImplementedError(
-            f"Spatial units of type {type(self).__name__} do not support distance_matrix_query at this time."
-        )
-
-    def distance_matrix_columns(self, return_geometry=False):
-        """
-        List of columns for self.distance_matrix_query
-        """
-        col_names = [f"{c}_from" for c in self.location_columns]
-        col_names += [f"{c}_to" for c in self.location_columns]
-        col_names += ["distance"]
-        if return_geometry:
-            col_names += ["geom_origin", "geom_destination"]
-        return col_names
-
     def _make_query(self):
         columns = ", ".join(self._cols)
         sql = f"""
@@ -270,39 +238,6 @@ class VersionedCellSpatialUnit(BaseSpatialUnit):
         """
         return sql
 
-    def distance_matrix_query(self, return_geometry=False):
-        return_geometry_statement = ""
-        if return_geometry:
-            return_geometry_statement = """
-                ,
-                A.geom_point AS geom_origin,
-                B.geom_point AS geom_destination
-            """
-
-        sql = f"""
-
-            SELECT
-                A.id AS location_id_from,
-                A.version AS version_from,
-                B.id AS location_id_to,
-                B.version AS version_to,
-                ST_X(A.geom_point::geometry) AS lon_from,
-                ST_Y(A.geom_point::geometry) AS lat_from,
-                ST_X(B.geom_point::geometry) AS lon_to,
-                ST_Y(B.geom_point::geometry) AS lat_to,
-                ST_Distance(
-                    A.geom_point::geography, 
-                    B.geom_point::geography
-                ) / 1000 AS distance
-                {return_geometry_statement}
-            FROM infrastructure.cells AS A
-            CROSS JOIN infrastructure.cells AS B
-            ORDER BY distance DESC
-            
-        """
-
-        return sql
-
 
 class VersionedSiteSpatialUnit(BaseSpatialUnit):
     """
@@ -355,39 +290,6 @@ class VersionedSiteSpatialUnit(BaseSpatialUnit):
             ON U.site_id = S.id AND
                 U.version = S.version
         """
-        return sql
-
-    def distance_matrix_query(self, return_geometry=False):
-        return_geometry_statement = ""
-        if return_geometry:
-            return_geometry_statement = """
-                ,
-                A.geom_point AS geom_origin,
-                B.geom_point AS geom_destination
-            """
-
-        sql = f"""
-
-            SELECT
-                A.id AS site_id_from,
-                A.version AS version_from,
-                B.id AS site_id_to,
-                B.version AS version_to,
-                ST_X(A.geom_point::geometry) AS lon_from,
-                ST_Y(A.geom_point::geometry) AS lat_from,
-                ST_X(B.geom_point::geometry) AS lon_to,
-                ST_Y(B.geom_point::geometry) AS lat_to,
-                ST_Distance(
-                    A.geom_point::geography, 
-                    B.geom_point::geography
-                ) / 1000 AS distance
-                {return_geometry_statement}
-            FROM infrastructure.sites AS A
-            CROSS JOIN infrastructure.sites AS B
-            ORDER BY distance DESC
-            
-        """
-
         return sql
 
 

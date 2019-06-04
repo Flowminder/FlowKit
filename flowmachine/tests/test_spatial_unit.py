@@ -104,22 +104,6 @@ def test_missing_location_columns_raises_error():
 
 
 @pytest.mark.parametrize(
-    "spatial_unit", [VersionedCellSpatialUnit, VersionedSiteSpatialUnit]
-)
-@pytest.mark.parametrize("return_geometry", [True, False])
-def test_distance_matrix_columns(spatial_unit, return_geometry):
-    """
-    Test that the columns returned by the distance_matrix_columns method match
-    the columns of the distance_matrix_query.
-    """
-    su = spatial_unit()
-    sql = su.distance_matrix_query(return_geometry=return_geometry)
-    cols = su.distance_matrix_columns(return_geometry=return_geometry)
-    cq = CustomQuery(sql, cols)
-    assert cq.head(0).columns.tolist() == cols
-
-
-@pytest.mark.parametrize(
     "spatial_unit, kwargs",
     [
         (admin_spatial_unit, {"level": 2}),
