@@ -12,13 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- When creating a new token in FlowAuth, the expiry now always shows the year, seconds till expiry, and timezone. [#260](https://github.com/Flowminder/FlowKit/issues/260)
+
 ### Removed
 
 ## [0.6.4]
 
 ### Added
 
-- Buttons to copy token to clipboard and download token as file added to token list page.[#704](https://github.com/Flowminder/FlowKit/issues/704)
+- Buttons to copy token to clipboard and download token as file added to token list page. [#704](https://github.com/Flowminder/FlowKit/issues/704)
 - Two new worked examples: "Cell Towers Per Region" and "Unique Subscriber Counts". [#633](https://github.com/Flowminder/FlowKit/issues/633), [#634](https://github.com/Flowminder/FlowKit/issues/634)
 
 ### Changed
