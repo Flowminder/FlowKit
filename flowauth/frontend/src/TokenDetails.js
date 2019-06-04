@@ -222,7 +222,7 @@ class TokenDetails extends React.Component {
               format="yyyy/MM/dd HH:mm:ss"
               ampm={false}
               margin="normal"
-              helperText={new Date().toTimeString().slice(9)}
+              helperText={new Date().toTimeString().slice(9)} // Display the timezone
             />
           </MuiPickersUtilsProvider>
         </Grid>
