@@ -54,8 +54,9 @@ The following steps only need to be done once.
      environment variable below).
 
    - `provision-dev.yml`: in addition to the standard tasks performed by `provision.yml`, this performs
-     additional steps which are useful to do development on FlowKit: it installs Python 3 via `pyenv`
-     and clones the FlowKit repository at `/home/flowkit/code/FlowKit`.
+     additional steps which are useful to do development on FlowKit: it installs Python 3 via `pyenv`,
+     clones the FlowKit repository at `/home/flowkit/code/FlowKit` and generates a pair of SSH keys for
+     the `flowkit` user.
 
 - `FLOWKIT_USER_NAME` and `FLOWKIT_USER_PASSWORD_SHA512`: these specify the username and (hashed) password
    of the user account that will install and run FlowKit. The default values given in the "Quick Start"
