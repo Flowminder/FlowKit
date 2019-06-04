@@ -236,7 +236,7 @@ jobs:
       - run:
           name: Test that a data generator must be set for synth data
           command: |
-            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e POSTGRES_PASSWORD=$FLOWDB_ADMIN_PASSWORD flowminder/flowdb-synthetic-data:$SAFE_TAG; then
+            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e FLOWDB_ADMIN_PASSWORD=$FLOWDB_ADMIN_PASSWORD flowminder/flowdb-synthetic-data:$SAFE_TAG; then
                 echo "Error: could run flowdb-synthetic-data with no data generator selected."
                 exit 1
             else
@@ -248,12 +248,12 @@ jobs:
             docker run --name flowdb --publish $FLOWDB_PORT:5432 --user $(id -u):$(id -g) --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
               --volume=${FLOWDB_INGESTION_DIR}:/ingestion:ro -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
               -e MAX_CPUS=2 -e MAX_WORKERS=2 -e MAX_WORKERS_PER_GATHER=2 \
-              -e POSTGRES_PASSWORD=$FLOWDB_ADMIN_PASSWORD \
+              -e FLOWDB_ADMIN_PASSWORD=$FLOWDB_ADMIN_PASSWORD \
               --detach flowminder/flowdb:$SAFE_TAG
 
             echo "Waiting for flowdb to be ready.."
             docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
-            -e POSTGRES_PASSWORD=$FLOWDB_ADMIN_PASSWORD \
+            -e FLOWDB_ADMIN_PASSWORD=$FLOWDB_ADMIN_PASSWORD \
              --detach flowminder/flowdb:oracle-$SAFE_TAG
             docker exec flowdb bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432 -U flowdb);do let i=i+1; echo Waiting 10s; sleep 10;done'
             echo "Waiting for flowdb with oracle_fdw to be ready.."
