@@ -4,12 +4,14 @@
 import json
 import os
 
+import geojson
 import pytest
 
 from flowmachine.core.spatial_unit import admin_spatial_unit
 from flowmachine.features import daily_location
 from flowmachine.features.location.flows import *
 from flowmachine.features.subscriber.daily_location import locate_subscribers
+from flowmachine.core.spatial_unit import CellSpatialUnit
 
 pytestmark = pytest.mark.usefixtures("skip_datecheck")
 
@@ -95,3 +97,52 @@ def test_flows_geojson_correct():
     with open(reference_file) as ref:
         ref_json = json.load(ref)
     assert ref_json == fl_json
+
+
+def test_valid_flows_geojson(exemplar_spatial_unit_param):
+    """
+    Check that valid geojson is returned for Flows.
+
+    """
+    if CellSpatialUnit() == exemplar_spatial_unit_param:
+        pytest.skip("Query with spatial_unit=CellSpatialUnit has no geometry.")
+    dl = daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param)
+    dl2 = daily_location("2016-01-02", spatial_unit=exemplar_spatial_unit_param)
+    fl = Flows(dl, dl2)
+    assert geojson.loads(fl.to_geojson_string()).is_valid
+
+
+def test_flows_geo_augmented_query_raises_error():
+    """
+    Test that a ValueError is raised when attempting to get geojson for a flows
+    query with no geography data.
+    """
+    dl = daily_location("2016-01-01", spatial_unit=CellSpatialUnit())
+    dl2 = daily_location("2016-01-02", spatial_unit=CellSpatialUnit())
+    fl = Flows(dl, dl2)
+    with pytest.raises(ValueError):
+        fl.to_geojson_string()
+
+
+def test_flows_geojson(get_dataframe):
+    """
+    Test geojson works for flows with non-standard column names.
+    """
+
+    dl = daily_location(
+        "2016-01-01", spatial_unit=admin_spatial_unit(level=2, column_name="admin2name")
+    )
+    dl2 = daily_location(
+        "2016-01-02", spatial_unit=admin_spatial_unit(level=2, column_name="admin2name")
+    )
+    fl = Flows(dl, dl2)
+    js = fl.to_geojson()
+    df = get_dataframe(fl)
+    check_features = [js["features"][0], js["features"][5], js["features"][7]]
+    for feature in check_features:
+        outflows = feature["properties"]["outflows"]
+        df_src = df[
+            df.admin2name_from == feature["properties"]["admin2name"]
+        ].set_index("admin2name_to")
+        for dest, tot in outflows.items():
+            assert tot == df_src.loc[dest]["count"]

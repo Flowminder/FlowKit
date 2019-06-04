@@ -19,12 +19,9 @@ from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.core.spatial_unit import (
     CellSpatialUnit,
     LatLonSpatialUnit,
-    VersionedCellSpatialUnit,
-    VersionedSiteSpatialUnit,
     admin_spatial_unit,
-    grid_spatial_unit,
 )
-from flowmachine.features import daily_location, Flows
+from flowmachine.features import daily_location
 from flowmachine.utils import proj4string
 
 
@@ -89,17 +86,16 @@ def test_valid_geojson(exemplar_spatial_unit_param):
     assert geojson.loads(dl.to_geojson_string()).is_valid
 
 
-def test_valid_flows_geojson(exemplar_spatial_unit_param):
+def test_geo_augmented_query_raises_error():
     """
-    Check that valid geojson is returned for Flows.
-
+    Test that a ValueError is raised when attempting to get geojson for a query
+    with no geography data.
     """
-    if CellSpatialUnit() == exemplar_spatial_unit_param:
-        pytest.skip("Query with spatial_unit=CellSpatialUnit has no geometry.")
-    dl = daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param)
-    dl2 = daily_location("2016-01-02", spatial_unit=exemplar_spatial_unit_param)
-    fl = Flows(dl, dl2)
-    assert geojson.loads(fl.to_geojson_string()).is_valid
+    dl = daily_location(
+        "2016-01-01", "2016-01-02", spatial_unit=CellSpatialUnit()
+    ).aggregate()
+    with pytest.raises(ValueError):
+        dl.to_geojson_string()
 
 
 def test_correct_geojson():
@@ -149,30 +145,6 @@ def test_geojson_file_output(tmpdir):
             found = True
             break
     assert found
-
-
-def test_flows_geojson(get_dataframe):
-    """
-    Test geojson works for flows with non-standard column names.
-    """
-
-    dl = daily_location(
-        "2016-01-01", spatial_unit=admin_spatial_unit(level=2, column_name="admin2name")
-    )
-    dl2 = daily_location(
-        "2016-01-02", spatial_unit=admin_spatial_unit(level=2, column_name="admin2name")
-    )
-    fl = Flows(dl, dl2)
-    js = fl.to_geojson()
-    df = get_dataframe(fl)
-    check_features = [js["features"][0], js["features"][5], js["features"][7]]
-    for feature in check_features:
-        outflows = feature["properties"]["outflows"]
-        df_src = df[
-            df.admin2name_from == feature["properties"]["admin2name"]
-        ].set_index("admin2name_to")
-        for dest, tot in outflows.items():
-            assert tot == df_src.loc[dest]["count"]
 
 
 def test_reprojection():
