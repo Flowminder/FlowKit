@@ -98,8 +98,8 @@ class DBConn:
         """Gets the DB params required to open a connection."""
         defaults = OrderedDict(
             [
-                ("usr", self.env["POSTGRES_USER"]),
-                ("pwd", self.env["POSTGRES_PASSWORD"]),
+                ("usr", self.env["FLOWDB_ADMIN_USER"]),
+                ("pwd", self.env["FLOWDB_ADMIN_PASSWORD"]),
                 ("port", self.env["FLOWDB_PORT"]),
                 ("db", "flowdb"),
             ]
@@ -142,8 +142,8 @@ def env():
         FLOWDB_PORT
         ORACLE_DB_PORT
         SYNTHETIC_DATA_DB_PORT
-        POSTGRES_USER=flowdb
-        POSTGRES_PASSWORD=flowflow
+        FLOWDB_ADMIN_USER=flowdb
+        FLOWDB_ADMIN_PASSWORD=flowflow
         FLOWMACHINE_FLOWDB_USER=flowmachine
         FLOWAPI_FLOWDB_USER=flowapi
         FLOWMACHINE_FLOWDB_PASSWORD=foo
@@ -166,8 +166,8 @@ def env():
         "FLOWDB_PORT": None,
         "ORACLE_DB_PORT": None,
         "SYNTHETIC_DATA_DB_PORT": None,
-        "POSTGRES_USER": "flowdb",
-        "POSTGRES_PASSWORD": "flowflow",
+        "FLOWDB_ADMIN_USER": "flowdb",
+        "FLOWDB_ADMIN_PASSWORD": "flowflow",
         "FLOWMACHINE_FLOWDB_USER": "flowmachine",
         "FLOWAPI_FLOWDB_USER": "flowapi",
         "FLOWMACHINE_FLOWDB_PASSWORD": "foo",
@@ -232,8 +232,8 @@ def create_test_tables(request, env, test_tables):
     # conflicts with the db_conn fixture
     db_params = OrderedDict(
         [
-            ("usr", env["POSTGRES_USER"]),
-            ("pwd", env["POSTGRES_PASSWORD"]),
+            ("usr", env["FLOWDB_ADMIN_USER"]),
+            ("pwd", env["FLOWDB_ADMIN_PASSWORD"]),
             ("port", env["FLOWDB_PORT"]),
             ("db", "flowdb"),
         ]
