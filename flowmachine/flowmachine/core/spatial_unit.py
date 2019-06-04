@@ -143,9 +143,6 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
     @property
     def column_names(self) -> List[str]:
         return [get_name_and_alias(c)[1].split(".").pop() for c in self._cols]
-    
-    def get_geom_sql(self):
-
 
     @abstractmethod
     def geo_augment(self, sql_query):
