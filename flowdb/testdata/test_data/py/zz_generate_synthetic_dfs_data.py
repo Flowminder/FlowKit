@@ -28,7 +28,7 @@ dfs_schema = "dfs"
 
 # Note: at this stage of the postgres startup process we connect
 # without specifying the host/port and password.
-db_user = os.environ["POSTGRES_USER"]
+db_user = os.environ["FLOWDB_ADMIN_USER"]
 db_name = os.environ["POSTGRES_DB"]
 conn_str = f"postgresql://{db_user}@/{db_name}"
 engine = create_engine(conn_str)

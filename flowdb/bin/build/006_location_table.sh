@@ -13,7 +13,7 @@ set -e
 #  references. Used in get_location_table().
 #
 
-export PGUSER="$POSTGRES_USER"
+export PGUSER="$FLOWDB_ADMIN_USER"
 
 psql --dbname="$POSTGRES_DB" -c "
     BEGIN;

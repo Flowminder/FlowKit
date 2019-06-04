@@ -6,7 +6,7 @@
 
 
 set -e
-export PGUSER="$POSTGRES_USER"
+export PGUSER="$FLOWDB_ADMIN_USER"
 
 
 

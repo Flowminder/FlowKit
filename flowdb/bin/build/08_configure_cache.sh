@@ -21,7 +21,7 @@ CACHE_SIZE=${CACHE_SIZE:-$(expr $avail / 10)}
 CACHE_HALF_LIFE=${CACHE_HALF_LIFE:-1000}
 echo "Setting cache size to $CACHE_SIZE bytes"
 echo "Setting cache half-life to $CACHE_HALF_LIFE"
-export PGUSER="$POSTGRES_USER"
+export PGUSER="$FLOWDB_ADMIN_USER"
 psql --dbname="$POSTGRES_DB" -c "
         UPDATE cache.cache_config set value='$CACHE_HALF_LIFE' WHERE key='half_life';
         UPDATE cache.cache_config set value='$CACHE_SIZE' WHERE key='cache_size';

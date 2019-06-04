@@ -8,9 +8,9 @@
 set -e
 
 #
-#  Perform all actions as $POSTGRES_USER
+#  Perform all actions as $FLOWDB_ADMIN_USER
 #
-export PGUSER="$POSTGRES_USER"
+export PGUSER="$FLOWDB_ADMIN_USER"
 EXTENSIONS=('postgis' 'postgis_topology' 'fuzzystrmatch' \
             'file_fdw' 'uuid-ossp' 'plpythonu' \
             'tsm_system_rows' 'pgrouting' 'pldbgapi')

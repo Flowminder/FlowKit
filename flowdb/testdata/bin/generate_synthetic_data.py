@@ -374,7 +374,7 @@ if __name__ == "__main__":
 
         # Run ingest on multiple threads
         engine = sqlalchemy.create_engine(
-            f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
+            f"postgresql://{os.getenv('FLOWDB_ADMIN_USER')}@/{os.getenv('POSTGRES_DB')}",
             echo=False,
             strategy="threadlocal",
             pool_size=cpu_count(),

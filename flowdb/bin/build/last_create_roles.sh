@@ -29,12 +29,12 @@ set -e
 #               for visualization applications.
 #
 
-export PGUSER="$POSTGRES_USER"
+export PGUSER="$FLOWDB_ADMIN_USER"
 
-if [ ! -e /run/secrets/POSTGRES_PASSWORD -a -z "$POSTGRES_PASSWORD" ];
+if [ ! -e /run/secrets/FLOWDB_ADMIN_PASSWORD -a -z "$FLOWDB_ADMIN_PASSWORD" ];
 then
     echo "No password supplied for superuser!"
-    echo "Set the POSTGRES_PASSWORD environment variable, or provide the POSTGRES_PASSWORD secret"
+    echo "Set the FLOWDB_ADMIN_PASSWORD environment variable, or provide the FLOWDB_ADMIN_PASSWORD secret"
     exit 1
 fi
 
