@@ -80,6 +80,8 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
     location_info_table : str, optional
         Fully qualified name of the location info table to select from.
         Defaults to self.connection.location_table
+    geom_column : str, default "geom"
+        Name of the column that defines the geometry in location_info_table.
     join_clause : str, optional
         Optionally provide a SQL join clause to join data from the
         location info table to spatial regions in another table.
@@ -91,6 +93,7 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
         selected_column_names,
         location_column_names,
         location_info_table=None,
+        geom_column="geom",
         join_clause="",
     ):
         if type(selected_column_names) is str:
@@ -115,6 +118,8 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
         else:
             self.location_info_table = self.connection.location_table
 
+        self._geom_column = geom_column
+
         self._join_clause = join_clause
 
         super().__init__()
@@ -136,13 +141,27 @@ class BaseSpatialUnit(Query, metaclass=ABCMeta):
     @property
     def location_columns(self) -> List[str]:
         """
-        List of the location-related column names.
+        List of names of the columns which identify the locations.
         """
         return self._loc_cols
 
     @property
     def column_names(self) -> List[str]:
         return [get_name_and_alias(c)[1].split(".").pop() for c in self._cols]
+
+    def get_geom_query(self):
+        """
+        Returns a SQL query which can be used to map locations (identified by
+        the values in self.location_columns) to their geometries (in a column
+        named "geom").
+        """
+        columns = [
+            c for c in self._cols if get_name_and_alias(c)[1] in self.location_columns
+        ] + [f"{self._geom_column} AS geom"]
+
+        sql = f"SELECT {','.join(columns)} FROM {self.location_info_table}"
+
+        return sql, self.location_columns + ["geom"]
 
     @abstractmethod
     def geo_augment(self, sql_query):
@@ -190,6 +209,7 @@ class LatLonSpatialUnit(BaseSpatialUnit):
                 "ST_Y(geom_point::geometry) AS lat",
             ],
             location_column_names=["lat", "lon"],
+            geom_column="geom_point",
         )
 
     def geo_augment(self, sql_query):
@@ -223,6 +243,7 @@ class VersionedCellSpatialUnit(BaseSpatialUnit):
             ],
             location_column_names=["location_id", "version", "lon", "lat"],
             location_info_table="infrastructure.cells",
+            geom_column="geom_point",
         )
 
     def geo_augment(self, sql_query):
@@ -276,6 +297,7 @@ class VersionedSiteSpatialUnit(BaseSpatialUnit):
             ],
             location_column_names=["site_id", "version", "lon", "lat"],
             location_info_table=f"infrastructure.sites AS {sites_alias}",
+            geom_column="geom_point",
             join_clause=join_clause,
         )
 
@@ -308,7 +330,7 @@ class PolygonSpatialUnit(BaseSpatialUnit):
         Can be either the name of a table, with the schema, a flowmachine.Query
         object, or a string representing a query.
     geom_column : str, default 'geom'
-        column that defines the geography.
+        Name of the column in polygon_table that defines the geography.
     """
 
     def __init__(self, *, polygon_column_names, polygon_table, geom_column="geom"):
@@ -318,8 +340,6 @@ class PolygonSpatialUnit(BaseSpatialUnit):
             # Creating a Table object here means that we don't have to handle
             # admin tables and Grid objects differently in join_clause and self.geo_augment
             self.polygon_table = Table(name=polygon_table)
-
-        self.geom_column = geom_column
 
         location_info_table = self.connection.location_table
 
@@ -338,7 +358,7 @@ class PolygonSpatialUnit(BaseSpatialUnit):
                 ({self.polygon_table.get_query()}) AS {joined_alias}
             ON ST_within(
                 {locinfo_alias}.geom_point::geometry,
-                ST_SetSRID({joined_alias}.{self.geom_column}, 4326)::geometry
+                ST_SetSRID({joined_alias}.{geom_column}, 4326)::geometry
             )
             """
 
@@ -349,29 +369,42 @@ class PolygonSpatialUnit(BaseSpatialUnit):
             f"{locinfo_alias}.date_of_last_service AS date_of_last_service",
         ]
         if type(polygon_column_names) is str:
-            self.polygon_column_names = [polygon_column_names]
+            self._polygon_column_names = [polygon_column_names]
         else:
-            self.polygon_column_names = polygon_column_names
+            self._polygon_column_names = polygon_column_names
         all_column_names = locinfo_column_names + [
-            f"{joined_alias}.{c}" for c in self.polygon_column_names
+            f"{joined_alias}.{c}" for c in self._polygon_column_names
         ]
         location_column_names = [
-            get_name_and_alias(c)[1] for c in self.polygon_column_names
+            get_name_and_alias(c)[1] for c in self._polygon_column_names
         ]
 
         super().__init__(
             selected_column_names=all_column_names,
             location_column_names=location_column_names,
             location_info_table=f"{location_info_table} AS {locinfo_alias}",
+            geom_column=geom_column,
             join_clause=join_clause,
         )
 
+    def get_geom_query(self):
+        """
+        Returns a SQL query which can be used to map locations (identified by
+        the values in self.location_columns) to their geometries (in a column
+        named "geom").
+        """
+        columns = self._polygon_column_names + [f"{self._geom_column} AS geom"]
+
+        sql = f"SELECT {','.join(columns)} FROM ({self.polygon_table.get_query()}) AS polygon"
+
+        return sql, self.location_columns + ["geom"]
+
     def geo_augment(self, sql_query):
-        r_col_name, l_col_name = get_name_and_alias(self.polygon_column_names[0])
+        r_col_name, l_col_name = get_name_and_alias(self._polygon_column_names[0])
         sql = f"""
         SELECT 
             row_number() OVER () as gid, 
-            {self.geom_column} AS geom, 
+            {self._geom_column} AS geom, 
             U.*
         FROM ({sql_query}) AS U
         LEFT JOIN ({self.polygon_table.get_query()}) AS G

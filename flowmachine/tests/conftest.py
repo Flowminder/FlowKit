@@ -89,7 +89,7 @@ def exemplar_level_param(request):
             {
                 "polygon_column_names": "id",
                 "polygon_table": "infrastructure.sites",
-                "geom_col": "geom_point",
+                "geom_column": "geom_point",
             },
         ),
     ],
