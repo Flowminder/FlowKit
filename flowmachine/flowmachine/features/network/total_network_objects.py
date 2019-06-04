@@ -227,15 +227,16 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             raise ValueError(
                 "{} is not a valid aggregate_by value.".format(self.aggregate_by)
             )
+        self.spatial_unit = self.total_objs.spatial_unit
 
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return self.total_objs.spatial_unit.location_columns + ["value", "datetime"]
+        return self.spatial_unit.location_columns + ["value", "datetime"]
 
     def _make_query(self):
-        group_cols = ",".join(self.total_objs.spatial_unit.location_columns)
+        group_cols = ",".join(self.spatial_unit.location_columns)
         if self.statistic == "mode":
             av_call = f"pg_catalog.mode() WITHIN GROUP(ORDER BY z.value)"
         else:
