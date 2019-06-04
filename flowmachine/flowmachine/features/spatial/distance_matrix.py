@@ -70,7 +70,7 @@ class DistanceMatrix(GraphMixin, Query):
             [f"B.{c} AS {c}_to" for c in self.spatial_unit.location_columns]
         )
 
-        geom_query, _ = self.spatial_unit.get_geom_query()
+        geom_query = self.spatial_unit.get_geom_query()
 
         if self.return_geometry:
             return_geometry_statement = """

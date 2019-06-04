@@ -49,7 +49,7 @@ class GeoDataMixin:
         join_columns_string = ",".join(self.spatial_unit.location_columns)
 
         try:
-            geom_query, _ = self.spatial_unit.get_geom_query()
+            geom_query = self.spatial_unit.get_geom_query()
         except AttributeError:
             raise ValueError(
                 f"Query {self} with spatial_unit of type "

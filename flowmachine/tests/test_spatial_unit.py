@@ -28,6 +28,18 @@ def test_spatial_unit_column_names(exemplar_spatial_unit_param):
     assert su.head(0).columns.tolist() == su.column_names
 
 
+def test_get_geom_query_column_names(exemplar_spatial_unit_param):
+    """
+    Test that the get_geom_query method returns a query with the correct columns.
+    """
+    if CellSpatialUnit() == exemplar_spatial_unit_param:
+        pytest.skip("CellSpatialUnit does not have a get_geom_query method")
+    geom_query = exemplar_spatial_unit_param.get_geom_query()
+    cols = exemplar_spatial_unit_param.location_columns + ["geom"]
+    cq = CustomQuery(geom_query, cols)
+    assert cq.head(0).columns.tolist() == cols
+
+
 @pytest.mark.parametrize(
     "spatial_unit, kwargs, loc_cols",
     [

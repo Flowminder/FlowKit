@@ -160,7 +160,7 @@ class SpatialUnit(Query):
 
         sql = f"SELECT {','.join(columns)} FROM {self.location_info_table}"
 
-        return sql, self.location_columns + ["geom"]
+        return sql
 
     def _make_query(self):
         columns = ", ".join(self._cols)
@@ -343,7 +343,7 @@ class PolygonSpatialUnit(SpatialUnit):
         SELECT {','.join(columns)} FROM ({self.polygon_table.get_query()}) AS polygon
         """
 
-        return sql, self.location_columns + ["geom"]
+        return sql
 
 
 def admin_spatial_unit(*, level, column_name=None):
