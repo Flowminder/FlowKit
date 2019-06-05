@@ -19,7 +19,7 @@ from shapely.geometry import box, MultiPoint
 from flowmachine.core import Table, CustomQuery
 from flowmachine.core.query import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.core.spatial_unit import versioned_site_spatial_unit
+from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features import (
     CallDays,
     HartiganCluster,
@@ -34,7 +34,7 @@ def test_hartigan_column_names(get_column_names_from_run):
     """Test that Hartigan has correct column_names property."""
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
     hartigan = HartiganCluster(calldays=cd, radius=50)
@@ -46,7 +46,7 @@ def test_joined_hartigan_column_names(get_column_names_from_run):
     """Test that Hartigan has correct column_names property."""
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
     hartigan = HartiganCluster(calldays=cd, radius=50)
@@ -66,7 +66,7 @@ def test_joined_hartigan_type_error():
     """Test that joining hartigan to something which isn't query like raises a type error."""
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
     hartigan = HartiganCluster(calldays=cd, radius=50)
@@ -107,7 +107,7 @@ def test_cluster_is_within_envelope(get_dataframe):
     """
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
 
@@ -125,7 +125,7 @@ def test_first_call_day_in_first_cluster(get_dataframe):
     """
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
     cd_df = get_dataframe(cd)
@@ -152,7 +152,7 @@ def test_bigger_radius_yields_fewer_clusters(get_dataframe):
     radius = [1, 2, 5, 10, 50]
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
 
@@ -172,7 +172,7 @@ def test_different_call_days_format(get_dataframe):
     """
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
     har = get_dataframe(HartiganCluster(calldays=cd, radius=50))
@@ -198,7 +198,7 @@ def test_call_threshold_works(get_dataframe):
     """
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
 
@@ -217,7 +217,7 @@ def test_buffered_hartigan():
     """
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
 
@@ -237,7 +237,7 @@ def test_all_options_hartigan():
     """
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
 
@@ -255,7 +255,7 @@ def test_join_returns_the_same_clusters():
     """
     cd = CallDays(
         subscriber_locations(
-            "2016-01-01", "2016-01-04", spatial_unit=versioned_site_spatial_unit()
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
 

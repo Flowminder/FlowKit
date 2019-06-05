@@ -8,7 +8,7 @@ from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.features.subscriber import *
 from threading import Thread
 import pandas as pd
-from flowmachine.core.spatial_unit import CellSpatialUnit
+from flowmachine.core.spatial_unit import make_spatial_unit
 
 
 def test_returns_future():
@@ -35,7 +35,7 @@ def test_double_store():
     Storing a query twice doesn't raise an error.
     """
 
-    dl = daily_location("2016-01-01", spatial_unit=CellSpatialUnit())
+    dl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("cell"))
     dl.store().result()
     dl.store().result()
 
@@ -46,12 +46,12 @@ def test_store_async():
     """
 
     schema = "cache"
-    dl = daily_location("2016-01-01", spatial_unit=CellSpatialUnit())
+    dl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("cell"))
     table_name = dl.fully_qualified_table_name.split(".")[1]
     store_future = dl.store()
     store_future.result()
     assert dl.connection.has_table(table_name, schema=schema)
-    dl = daily_location("2016-01-01", spatial_unit=CellSpatialUnit())
+    dl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("cell"))
     assert table_name in dl.get_query()
 
 
@@ -59,7 +59,7 @@ def test_get_query_blocks_on_store():
     """
     If a store is running get_query should block.
     """
-    dl = daily_location("2016-01-01", spatial_unit=CellSpatialUnit())
+    dl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("cell"))
     dl.store().result()
     timer = []
 
@@ -83,8 +83,8 @@ def test_blocks_on_store_cascades():
     If a store is running on a query that is used
     in a another query, that query should wait.
     """
-    dl = daily_location("2016-01-01", spatial_unit=CellSpatialUnit())
-    dl2 = daily_location("2016-01-02", spatial_unit=CellSpatialUnit())
+    dl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("cell"))
+    dl2 = daily_location("2016-01-02", spatial_unit=make_spatial_unit("cell"))
     store_future = dl.store()
     store_future.result()
     hl = ModalLocation(dl, dl2)

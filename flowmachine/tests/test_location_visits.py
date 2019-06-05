@@ -4,7 +4,7 @@
 
 from flowmachine.features import LocationVisits, daily_location, DayTrajectories
 from flowmachine.utils import list_of_dates
-from flowmachine.core.spatial_unit import admin_spatial_unit
+from flowmachine.core.spatial_unit import make_spatial_unit
 
 
 def test_column_names_location_visits(exemplar_spatial_unit_param):
@@ -30,7 +30,7 @@ def test_dl_count_sum_equal_or_less_than_period(get_dataframe):
         DayTrajectories(
             *[
                 daily_location(
-                    d, spatial_unit=admin_spatial_unit(level=3), method="last"
+                    d, spatial_unit=make_spatial_unit("admin", level=3), method="last"
                 )
                 for d in list_of_dates(start_date, stop_date)
             ]
@@ -46,7 +46,7 @@ def test_dl_count_sum_equal_or_less_than_period(get_dataframe):
         DayTrajectories(
             *[
                 daily_location(
-                    d, spatial_unit=admin_spatial_unit(level=3), method="last"
+                    d, spatial_unit=make_spatial_unit("admin", level=3), method="last"
                 )
                 for d in list_of_dates(start_date, stop_date)
             ]

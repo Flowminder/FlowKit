@@ -4,10 +4,7 @@
 
 import pytest
 
-from flowmachine.core.spatial_unit import (
-    lat_lon_spatial_unit,
-    versioned_site_spatial_unit,
-)
+from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features import LastLocation
 
 
@@ -29,7 +26,7 @@ def test_last_loc_vsite(get_dataframe):
     """
 
     last_loc = LastLocation(
-        "2016-01-01", "2016-01-02", spatial_unit=versioned_site_spatial_unit()
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("versioned-site")
     )
 
     df = get_dataframe(last_loc)
@@ -44,7 +41,7 @@ def test_last_loc_lat_lon(get_dataframe):
     """
 
     last_loc = LastLocation(
-        "2016-01-01", "2016-01-02", spatial_unit=lat_lon_spatial_unit()
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lat-lon")
     )
     df = get_dataframe(last_loc)
     df.set_index("subscriber", inplace=True)

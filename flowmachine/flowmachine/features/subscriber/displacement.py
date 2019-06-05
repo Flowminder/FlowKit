@@ -17,11 +17,7 @@ from .metaclasses import SubscriberFeature
 from . import ModalLocation
 from ..utilities.subscriber_locations import subscriber_locations
 from flowmachine.utils import parse_datestring, get_dist_string, list_of_dates
-from flowmachine.core.spatial_unit import (
-    lat_lon_spatial_unit,
-    versioned_cell_spatial_unit,
-    versioned_site_spatial_unit,
-)
+from flowmachine.core.spatial_unit import make_spatial_unit
 
 from dateutil.relativedelta import relativedelta
 
@@ -141,7 +137,7 @@ class Displacement(SubscriberFeature):
                 *[
                     daily_location(
                         date,
-                        spatial_unit=lat_lon_spatial_unit(),
+                        spatial_unit=make_spatial_unit("lat-lon"),
                         hours=hours,
                         method=method,
                         table=table,
@@ -156,7 +152,7 @@ class Displacement(SubscriberFeature):
         sl = subscriber_locations(
             self.start,
             self.stop_sl,
-            spatial_unit=lat_lon_spatial_unit(),
+            spatial_unit=make_spatial_unit("lat-lon"),
             hours=hours,
             table=table,
             subscriber_identifier=subscriber_identifier,

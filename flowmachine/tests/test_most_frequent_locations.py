@@ -4,11 +4,7 @@
 
 import pytest
 
-from flowmachine.core.spatial_unit import (
-    admin_spatial_unit,
-    versioned_site_spatial_unit,
-    lat_lon_spatial_unit,
-)
+from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features import MostFrequentLocation
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
@@ -32,7 +28,7 @@ def test_vsites(get_dataframe):
     """
 
     mfl = MostFrequentLocation(
-        "2016-01-01", "2016-01-02", spatial_unit=versioned_site_spatial_unit()
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("versioned-site")
     )
     df = get_dataframe(mfl)
     df.set_index("subscriber", inplace=True)
@@ -47,7 +43,7 @@ def test_lat_lons(get_dataframe):
     """
 
     mfl = MostFrequentLocation(
-        "2016-01-01", "2016-01-02", spatial_unit=lat_lon_spatial_unit()
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lat-lon")
     )
     df = get_dataframe(mfl)
     df.set_index("subscriber", inplace=True)
@@ -63,7 +59,7 @@ def test_most_fequent_admin(get_dataframe):
     mfl = locate_subscribers(
         "2016-01-01",
         "2016-01-02",
-        spatial_unit=admin_spatial_unit(level=3),
+        spatial_unit=make_spatial_unit("admin", level=3),
         method="most-common",
     )
     df = get_dataframe(mfl)

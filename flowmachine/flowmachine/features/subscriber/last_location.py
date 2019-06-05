@@ -15,7 +15,7 @@ from typing import List
 from flowmachine.core import Query
 from ..utilities.subscriber_locations import BaseLocation
 from ..utilities.subscriber_locations import subscriber_locations
-from flowmachine.core.spatial_unit import admin_spatial_unit
+from flowmachine.core.spatial_unit import make_spatial_unit
 
 
 class LastLocation(BaseLocation, Query):
@@ -31,7 +31,7 @@ class LastLocation(BaseLocation, Query):
     stop : str
         As above
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
-                   default admin_spatial_unit(level=3)
+                   default admin3
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of spatial_unit.py for more information.
     hours : tuple of ints, default 'all'
@@ -82,7 +82,7 @@ class LastLocation(BaseLocation, Query):
         self.start = start
         self.stop = stop
         if spatial_unit is None:
-            self.spatial_unit = admin_spatial_unit(level=3)
+            self.spatial_unit = make_spatial_unit("admin", level=3)
         else:
             self.spatial_unit = spatial_unit
         self.hours = hours

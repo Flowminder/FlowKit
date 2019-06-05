@@ -7,7 +7,7 @@ from flowmachine.utils import pretty_sql
 from approvaltests.approvals import verify
 from flowmachine.core import CustomQuery
 from flowmachine.features import daily_location
-from flowmachine.core.spatial_unit import admin_spatial_unit, CellSpatialUnit
+from flowmachine.core.spatial_unit import make_spatial_unit
 
 
 def test_daily_location_1_sql(diff_reporter):
@@ -34,7 +34,9 @@ def test_daily_location_2_sql(diff_reporter):
     """
     dl = daily_location(
         "2016-01-04",
-        spatial_unit=admin_spatial_unit(level=2, region_id_column_name="admin2pcod"),
+        spatial_unit=make_spatial_unit(
+            "admin", level=2, region_id_column_name="admin2pcod"
+        ),
         hours=(3, 9),
         method="most-common",
         subscriber_identifier="imei",
@@ -56,7 +58,7 @@ def test_daily_location_2_df(get_dataframe, diff_reporter):
     """
     dl = daily_location(
         "2016-01-04",
-        spatial_unit=admin_spatial_unit(level=2),
+        spatial_unit=make_spatial_unit("admin", level=2),
         hours=(3, 9),
         method="most-common",
         # subscriber_identifier="imei",
@@ -82,7 +84,7 @@ def test_daily_location_3_sql(diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        spatial_unit=CellSpatialUnit(),
+        spatial_unit=make_spatial_unit("cell"),
         hours=(23, 5),
         method="last",
         # subscriber_identifier="imei",
@@ -103,7 +105,7 @@ def test_daily_location_3_df(get_dataframe, diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        spatial_unit=CellSpatialUnit(),
+        spatial_unit=make_spatial_unit("cell"),
         hours=(23, 5),
         method="last",
         # subscriber_identifier="imei",
@@ -160,7 +162,7 @@ def test_daily_location_5_sql(diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        spatial_unit=CellSpatialUnit(),
+        spatial_unit=make_spatial_unit("cell"),
         hours=(23, 5),
         method="last",
         # subscriber_identifier="imei",
@@ -187,7 +189,7 @@ def test_daily_location_5_df(get_dataframe, diff_reporter):
 
     dl = daily_location(
         "2016-01-02",
-        spatial_unit=admin_spatial_unit(level=3),
+        spatial_unit=make_spatial_unit("admin", level=3),
         hours=(4, 9),
         method="most-common",
         # subscriber_identifier="imei",

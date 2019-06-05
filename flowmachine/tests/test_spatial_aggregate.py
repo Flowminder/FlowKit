@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.core.spatial_unit import admin_spatial_unit, lat_lon_spatial_unit
+from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features import ModalLocation, daily_location
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 from flowmachine.utils import list_of_dates
@@ -15,7 +15,7 @@ def test_can_be_aggregated_admin3(get_dataframe):
     mfl = locate_subscribers(
         "2016-01-01",
         "2016-01-02",
-        spatial_unit=admin_spatial_unit(level=3),
+        spatial_unit=make_spatial_unit("admin", level=3),
         method="most-common",
     )
     agg = mfl.aggregate()
@@ -29,7 +29,7 @@ def test_can_be_aggregated_latlong(get_dataframe):
     """
     hl = ModalLocation(
         *[
-            daily_location(d, spatial_unit=lat_lon_spatial_unit(), method="last")
+            daily_location(d, spatial_unit=make_spatial_unit("lat-lon"), method="last")
             for d in list_of_dates("2016-01-01", "2016-01-03")
         ]
     )

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from flowmachine.core.spatial_unit import PolygonSpatialUnit
+from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features.utilities.subscriber_locations import subscriber_locations
 
 
@@ -15,8 +15,10 @@ def test_can_get_pcods(get_dataframe):
     subscriber_pcod = subscriber_locations(
         "2016-01-01 13:30:30",
         "2016-01-02 16:25:00",
-        spatial_unit=PolygonSpatialUnit(
-            polygon_column_names="admin3pcod", polygon_table="geography.admin3"
+        spatial_unit=make_spatial_unit(
+            "polygon",
+            region_id_column_name="admin3pcod",
+            polygon_table="geography.admin3",
         ),
     )
     df = get_dataframe(subscriber_pcod)

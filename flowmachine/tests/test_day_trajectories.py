@@ -4,7 +4,7 @@
 
 
 from flowmachine.features import DayTrajectories, daily_location
-from flowmachine.core.spatial_unit import admin_spatial_unit
+from flowmachine.core.spatial_unit import make_spatial_unit
 
 
 def test_column_names_day_trajectories(exemplar_spatial_unit_param):
@@ -21,12 +21,14 @@ def test_day_trajectories(get_dataframe):
     """
     traj = DayTrajectories(
         daily_location(
-            "2016-01-01", spatial_unit=admin_spatial_unit(level=3), method="last"
+            "2016-01-01",
+            spatial_unit=make_spatial_unit("admin", level=3),
+            method="last",
         )
     )
     df = get_dataframe(traj).drop("date", axis=1)
     dldf = daily_location(
-        "2016-01-01", spatial_unit=admin_spatial_unit(level=3), method="last"
+        "2016-01-01", spatial_unit=make_spatial_unit("admin", level=3), method="last"
     ).get_dataframe()
     assert [df["subscriber"][0], df["pcod"][0]] == [
         dldf["subscriber"][0],
