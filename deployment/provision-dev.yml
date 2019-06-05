@@ -39,3 +39,11 @@
         dest: "~{{ username }}/code/FlowKit"
         version: master
         update: no
+    - name: "Generate ssh keys for user '{{ username }}'"
+      become: yes
+      become_user: "{{ username }}"
+      openssh_keypair:
+        path: "~{{ username }}/.ssh/id_rsa"
+        type: rsa
+        size: 4096
+        comment: "{{ username }}@{{ ansible_hostname }}"
