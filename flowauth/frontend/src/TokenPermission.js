@@ -32,8 +32,7 @@ class TokenPermission extends React.Component {
       claim,
       permissions,
       checkedHandler,
-      permitted,
-      isChecked
+      permitted
     } = this.props;
 
     return (
@@ -45,9 +44,7 @@ class TokenPermission extends React.Component {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={
-                      isChecked ? (permissions[key] ? true : false) : false
-                    }
+                    checked={permissions[key]}
                     onChange={checkedHandler(claim, key)}
                     value={claim + ":" + key}
                     color="primary"
