@@ -355,10 +355,10 @@ def admin_spatial_unit(*, level, region_id_column_name=None):
     flowmachine.core.spatial_unit.PolygonSpatialUnit
         Query which maps cell/site IDs to admin regions
     """
-    # If there is no column_name passed then we can use the default, which is
-    # of the form admin3pcod. If the user has asked for the standard
-    # column_name then we will alias this column as 'pcod', otherwise we won't
-    # alias it at all.
+    # If there is no region_id_column_name passed then we can use the default,
+    # which is of the form admin3pcod. If the user has asked for the standard
+    # region_id_column_name then we will alias this column as 'pcod', otherwise
+    # we won't alias it at all.
     if region_id_column_name is None or region_id_column_name == f"admin{level}pcod":
         col_name = f"admin{level}pcod AS pcod"
     else:

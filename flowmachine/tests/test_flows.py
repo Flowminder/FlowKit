@@ -130,10 +130,12 @@ def test_flows_geojson(get_dataframe):
     """
 
     dl = daily_location(
-        "2016-01-01", spatial_unit=admin_spatial_unit(level=2, column_name="admin2name")
+        "2016-01-01",
+        spatial_unit=admin_spatial_unit(level=2, region_id_column_name="admin2name"),
     )
     dl2 = daily_location(
-        "2016-01-02", spatial_unit=admin_spatial_unit(level=2, column_name="admin2name")
+        "2016-01-02",
+        spatial_unit=admin_spatial_unit(level=2, region_id_column_name="admin2name"),
     )
     fl = Flows(dl, dl2)
     js = fl.to_geojson()

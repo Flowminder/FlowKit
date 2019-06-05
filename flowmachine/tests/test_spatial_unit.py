@@ -3,16 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.core import CustomQuery
-from flowmachine.core.spatial_unit import (
-    SpatialUnit,
-    CellSpatialUnit,
-    lat_lon_spatial_unit,
-    versioned_cell_spatial_unit,
-    versioned_site_spatial_unit,
-    PolygonSpatialUnit,
-    admin_spatial_unit,
-    grid_spatial_unit,
-)
+from flowmachine.core.spatial_unit import *
 import pytest
 
 
@@ -43,40 +34,57 @@ def test_get_geom_query_column_names(
 
 
 @pytest.mark.parametrize(
-    "spatial_unit, kwargs, loc_cols",
+    "make_spatial_unit_args, loc_cols",
     [
-        (lat_lon_spatial_unit, {}, ["lat", "lon"]),
-        (versioned_cell_spatial_unit, {}, ["location_id", "version", "lon", "lat"]),
-        (versioned_site_spatial_unit, {}, ["site_id", "version", "lon", "lat"]),
+        ({"spatial_unit_type": "lat-lon"}, ["lat", "lon"]),
         (
-            PolygonSpatialUnit,
+            {"spatial_unit_type": "versioned-cell"},
+            ["location_id", "version", "lon", "lat"],
+        ),
+        ({"spatial_unit_type": "versioned-site"}, ["site_id", "version", "lon", "lat"]),
+        (
             {
-                "polygon_column_names": "id",
+                "spatial_unit_type": "polygon",
+                "region_id_column_name": "id",
                 "polygon_table": "infrastructure.sites",
                 "geom_column": "geom_point",
             },
             ["id"],
         ),
         (
-            PolygonSpatialUnit,
             {
-                "polygon_column_names": ["id"],
+                "spatial_unit_type": "polygon",
+                "region_id_column_name": ["id"],
                 "polygon_table": "infrastructure.sites",
                 "geom_column": "geom_point",
             },
             ["id"],
         ),
-        (admin_spatial_unit, {"level": 3}, ["pcod"]),
-        (admin_spatial_unit, {"level": 3, "column_name": "admin3pcod"}, ["pcod"]),
-        (admin_spatial_unit, {"level": 3, "column_name": "admin3name"}, ["admin3name"]),
-        (grid_spatial_unit, {"size": 5}, ["grid_id"]),
+        ({"spatial_unit_type": "admin", "level": 3}, ["pcod"]),
+        (
+            {
+                "spatial_unit_type": "admin",
+                "level": 3,
+                "region_id_column_name": "admin3pcod",
+            },
+            ["pcod"],
+        ),
+        (
+            {
+                "spatial_unit_type": "admin",
+                "level": 3,
+                "region_id_column_name": "admin3name",
+            },
+            ["admin3name"],
+        ),
+        ({"spatial_unit_type": "grid", "size": 5}, ["grid_id"]),
     ],
 )
-def test_spatial_unit_location_columns(spatial_unit, kwargs, loc_cols):
+def test_spatial_unit_location_columns(make_spatial_unit_args, loc_cols):
     """
     Test that the SpatialUnit classes have the correct location_columns properties.
     """
-    su = spatial_unit(**kwargs)
+    su = make_spatial_unit(**make_spatial_unit_args)
     assert loc_cols == su.location_columns
 
 
@@ -113,35 +121,40 @@ def test_missing_location_columns_raises_error():
 
 
 @pytest.mark.parametrize(
-    "spatial_unit, kwargs",
+    "make_spatial_unit_args",
     [
-        (admin_spatial_unit, {"level": 2}),
-        (admin_spatial_unit, {"level": 2, "column_name": "admin2name"}),
-        (versioned_site_spatial_unit, {}),
-        (versioned_cell_spatial_unit, {}),
-        (CellSpatialUnit, {}),
-        (lat_lon_spatial_unit, {}),
-        (grid_spatial_unit, {"size": 5}),
-        (
-            PolygonSpatialUnit,
-            {"polygon_column_names": "admin3pcod", "polygon_table": "geography.admin3"},
-        ),
-        (
-            PolygonSpatialUnit,
-            {
-                "polygon_column_names": "id",
-                "polygon_table": "infrastructure.sites",
-                "geom_column": "geom_point",
-            },
-        ),
+        {"spatial_unit_type": "admin", "level": 2},
+        {
+            "spatial_unit_type": "admin",
+            "level": 2,
+            "region_id_column_name": "admin2name",
+        },
+        {"spatial_unit_type": "versioned-site"},
+        {"spatial_unit_type": "versioned-cell"},
+        {"spatial_unit_type": "cell"},
+        {"spatial_unit_type": "lat-lon"},
+        {"spatial_unit_type": "grid", "size": 5},
+        {
+            "spatial_unit_type": "polygon",
+            "region_id_column_name": "admin3pcod",
+            "polygon_table": "geography.admin3",
+        },
+        {
+            "spatial_unit_type": "polygon",
+            "region_id_column_name": "id",
+            "polygon_table": "infrastructure.sites",
+            "geom_column": "geom_point",
+        },
     ],
 )
-def test_spatial_unit_equals_itself(spatial_unit, kwargs):
+def test_spatial_unit_equals_itself(make_spatial_unit_args):
     """
     Test that instances of the SpatialUnit classes are equal to themselves.
     """
-    su1 = spatial_unit(**kwargs)
-    su2 = spatial_unit(**kwargs)
+    # Can't use exemplar_spatial_unit_param here because we need to create two
+    # different but equal spatial units.
+    su1 = make_spatial_unit(**make_spatial_unit_args)
+    su2 = make_spatial_unit(**make_spatial_unit_args)
     assert su1 == su2
     assert hash(su1) == hash(su2)
 
@@ -178,8 +191,8 @@ def test_different_column_name_admin_spatial_units_are_not_equal():
     """
     Test that two admin spatial units with different column_names are not equal.
     """
-    su1 = admin_spatial_unit(level=3, column_name="admin3pcod")
-    su2 = admin_spatial_unit(level=3, column_name="admin3name")
+    su1 = admin_spatial_unit(level=3, region_id_column_name="admin3pcod")
+    su2 = admin_spatial_unit(level=3, region_id_column_name="admin3name")
     assert su1 != su2
 
 
@@ -190,3 +203,18 @@ def test_different_grid_spatial_units_are_not_equal():
     su1 = grid_spatial_unit(size=5)
     su2 = grid_spatial_unit(size=50)
     assert su1 != su2
+
+
+@pytest.mark.parametrize(
+    "make_spatial_unit_args",
+    [
+        {"spatial_unit_type": "INVALID_SPATIAL_UNIT_TYPE"},
+        {"spatial_unit_type": "admin"},
+        {"spatial_unit_type": "grid"},
+        {"spatial_unit_type": "polygon", "polygon_table": "geography.admin3"},
+        {"spatial_unit_type": "polygon", "region_id_column_name": "DUMMY_COLUMN_NAME"},
+    ],
+)
+def test_make_spatial_unit_raises_errors(make_spatial_unit_args):
+    with pytest.raises(ValueError):
+        su = make_spatial_unit(**make_spatial_unit_args)

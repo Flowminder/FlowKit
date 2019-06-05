@@ -20,15 +20,7 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
 import flowmachine
 from flowmachine.core import Query
 from flowmachine.core.cache import reset_cache
-from flowmachine.core.spatial_unit import (
-    CellSpatialUnit,
-    lat_lon_spatial_unit,
-    versioned_cell_spatial_unit,
-    versioned_site_spatial_unit,
-    PolygonSpatialUnit,
-    admin_spatial_unit,
-    grid_spatial_unit,
-)
+from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features import EventTableSubset
 
 logger = logging.getLogger()
@@ -73,27 +65,30 @@ def exemplar_level_param(request):
 
 @pytest.fixture(
     params=[
-        (admin_spatial_unit, {"level": 2}),
-        (admin_spatial_unit, {"level": 2, "column_name": "admin2name"}),
-        (versioned_site_spatial_unit, {}),
-        (versioned_cell_spatial_unit, {}),
-        (CellSpatialUnit, {}),
-        (lat_lon_spatial_unit, {}),
-        (grid_spatial_unit, {"size": 5}),
-        (
-            PolygonSpatialUnit,
-            {"polygon_column_names": "admin3pcod", "polygon_table": "geography.admin3"},
-        ),
-        (
-            PolygonSpatialUnit,
-            {
-                "polygon_column_names": "id",
-                "polygon_table": "infrastructure.sites",
-                "geom_column": "geom_point",
-            },
-        ),
+        {"spatial_unit_type": "admin", "level": 2},
+        {
+            "spatial_unit_type": "admin",
+            "level": 2,
+            "region_id_column_name": "admin2name",
+        },
+        {"spatial_unit_type": "versioned-site"},
+        {"spatial_unit_type": "versioned-cell"},
+        {"spatial_unit_type": "cell"},
+        {"spatial_unit_type": "lat-lon"},
+        {"spatial_unit_type": "grid", "size": 5},
+        {
+            "spatial_unit_type": "polygon",
+            "region_id_column_name": "admin3pcod",
+            "polygon_table": "geography.admin3",
+        },
+        {
+            "spatial_unit_type": "polygon",
+            "region_id_column_name": "id",
+            "polygon_table": "infrastructure.sites",
+            "geom_column": "geom_point",
+        },
     ],
-    ids=lambda x: x[0].__name__,
+    ids=lambda x: str(x),
 )
 def exemplar_spatial_unit_param(request):
     """
@@ -105,7 +100,7 @@ def exemplar_spatial_unit_param(request):
     flowmachine.core.spatial_unit.*SpatialUnit
 
     """
-    yield request.param[0](**request.param[1])
+    yield make_spatial_unit(**request.param)
 
 
 def get_string_with_test_parameter_values(item):

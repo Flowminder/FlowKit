@@ -43,7 +43,8 @@ def test_works_with_admin_names(get_dataframe):
     """
 
     dl = daily_location(
-        "2016-01-05", spatial_unit=admin_spatial_unit(level=3, column_name="admin3name")
+        "2016-01-05",
+        spatial_unit=admin_spatial_unit(level=3, region_id_column_name="admin3name"),
     )
     df = get_dataframe(dl)
     assert "Lamjung" == df.admin3name[0]

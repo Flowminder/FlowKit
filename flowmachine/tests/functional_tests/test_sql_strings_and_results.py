@@ -34,7 +34,7 @@ def test_daily_location_2_sql(diff_reporter):
     """
     dl = daily_location(
         "2016-01-04",
-        spatial_unit=admin_spatial_unit(level=2, column_name="admin2pcod"),
+        spatial_unit=admin_spatial_unit(level=2, region_id_column_name="admin2pcod"),
         hours=(3, 9),
         method="most-common",
         subscriber_identifier="imei",
