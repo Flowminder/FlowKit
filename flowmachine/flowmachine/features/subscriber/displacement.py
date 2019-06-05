@@ -56,12 +56,36 @@ class Displacement(SubscriberFeature):
     unit : {'km', 'm'}, default 'km'
         Unit with which to express the answers, currently the choices
         are kilometres ('km') or metres ('m')
+    
+    Other parameters
+    ----------------
+    hours : tuple of ints, default 'all'
+        Subset the result within certain hours, e.g. (4,17)
+        This will subset the query only with these hours, but
+        across all specified days. Or set to 'all' to include
+        all hours.
+    method : str, default 'last'
+        The method by which to calculate the location of the subscriber.
+        This can be either 'most-common' or last. 'most-common' is
+        simply the modal location of the subscribers, whereas 'lsat' is
+        the location of the subscriber at the time of the final call in
+        the data.
+    table : str, default 'all'
+        schema qualified name of the table which the analysis is
+        based upon. If 'ALL' it will use all tables that contain
+        location data, specified in flowmachine.yml.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
+    ignore_nulls : bool, default True
+        ignores those values that are null. Sometime data appears for which
+        the cell is null. If set to true this will ignore those lines. If false
+        these lines with null cells should still be present, although they contain
+        no information on the subscribers location, they still tell us that the subscriber made
+        a call at that time.
 
     Examples
     --------
@@ -74,7 +98,18 @@ class Displacement(SubscriberFeature):
     """
 
     def __init__(
-        self, start, stop, modal_locations=None, statistic="avg", unit="km", **kwargs
+        self,
+        start,
+        stop,
+        modal_locations=None,
+        statistic="avg",
+        unit="km",
+        hours="all",
+        method="last",
+        table="all",
+        subscriber_identifier="msisdn",
+        ignore_nulls=True,
+        subscriber_subset=None,
     ):
 
         # need to subtract one day from hl end in order to be
@@ -104,13 +139,29 @@ class Displacement(SubscriberFeature):
         else:
             hl = ModalLocation(
                 *[
-                    daily_location(date, spatial_unit=lat_lon_spatial_unit(), **kwargs)
+                    daily_location(
+                        date,
+                        spatial_unit=lat_lon_spatial_unit(),
+                        hours=hours,
+                        method=method,
+                        table=table,
+                        subscriber_identifier=subscriber_identifier,
+                        ignore_nulls=ignore_nulls,
+                        subscriber_subset=subscriber_subset,
+                    )
                     for date in list_of_dates(self.start, self.stop_hl)
                 ]
             )
 
         sl = subscriber_locations(
-            self.start, self.stop_sl, spatial_unit=lat_lon_spatial_unit(), **kwargs
+            self.start,
+            self.stop_sl,
+            spatial_unit=lat_lon_spatial_unit(),
+            hours=hours,
+            table=table,
+            subscriber_identifier=subscriber_identifier,
+            ignore_nulls=ignore_nulls,
+            subscriber_subset=subscriber_subset,
         )
 
         self.statistic = statistic.lower()
