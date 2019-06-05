@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- The quick-start script now only pulls the docker images for the services that are actually started up. [#898](https://github.com/Flowminder/FlowKit/issues/898)
+
 ### Fixed
 
 ### Removed
