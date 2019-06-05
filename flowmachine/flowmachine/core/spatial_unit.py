@@ -96,14 +96,14 @@ class SpatialUnit(Query):
         join_clause="",
     ):
         if type(selected_column_names) is str:
-            self._cols = [selected_column_names]
+            self._cols = (selected_column_names,)
         else:
-            self._cols = selected_column_names
+            self._cols = tuple(selected_column_names)
 
         if type(location_column_names) is str:
-            self._loc_cols = [location_column_names]
+            self._loc_cols = (location_column_names,)
         else:
-            self._loc_cols = location_column_names
+            self._loc_cols = tuple(location_column_names)
 
         # Check that _loc_cols is a subset of column_names
         missing_cols = [c for c in self._loc_cols if not (c in self.column_names)]
@@ -142,7 +142,7 @@ class SpatialUnit(Query):
         """
         List of names of the columns which identify the locations.
         """
-        return self._loc_cols
+        return list(self._loc_cols)
 
     @property
     def column_names(self) -> List[str]:
@@ -313,9 +313,9 @@ class PolygonSpatialUnit(SpatialUnit):
             f"{locinfo_alias}.date_of_last_service AS date_of_last_service",
         ]
         if type(polygon_column_names) is str:
-            self._polygon_column_names = [polygon_column_names]
+            self._polygon_column_names = (polygon_column_names,)
         else:
-            self._polygon_column_names = polygon_column_names
+            self._polygon_column_names = tuple(polygon_column_names)
         all_column_names = locinfo_column_names + [
             f"{joined_alias}.{c}" for c in self._polygon_column_names
         ]
@@ -337,7 +337,7 @@ class PolygonSpatialUnit(SpatialUnit):
         the values in self.location_columns) to their geometries (in a column
         named "geom").
         """
-        columns = self._polygon_column_names + [f"{self._geom_column} AS geom"]
+        columns = list(self._polygon_column_names) + [f"{self._geom_column} AS geom"]
 
         sql = f"""
         SELECT {','.join(columns)} FROM ({self.polygon_table.get_query()}) AS polygon
