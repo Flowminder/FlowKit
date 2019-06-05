@@ -22,9 +22,9 @@ from flowmachine.core import Query
 from flowmachine.core.cache import reset_cache
 from flowmachine.core.spatial_unit import (
     CellSpatialUnit,
-    LatLonSpatialUnit,
-    VersionedCellSpatialUnit,
-    VersionedSiteSpatialUnit,
+    lat_lon_spatial_unit,
+    versioned_cell_spatial_unit,
+    versioned_site_spatial_unit,
     PolygonSpatialUnit,
     admin_spatial_unit,
     grid_spatial_unit,
@@ -75,10 +75,10 @@ def exemplar_level_param(request):
     params=[
         (admin_spatial_unit, {"level": 2}),
         (admin_spatial_unit, {"level": 2, "column_name": "admin2name"}),
-        (VersionedSiteSpatialUnit, {}),
-        (VersionedCellSpatialUnit, {}),
+        (versioned_site_spatial_unit, {}),
+        (versioned_cell_spatial_unit, {}),
         (CellSpatialUnit, {}),
-        (LatLonSpatialUnit, {}),
+        (lat_lon_spatial_unit, {}),
         (grid_spatial_unit, {"size": 5}),
         (
             PolygonSpatialUnit,

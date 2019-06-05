@@ -18,9 +18,9 @@ from . import ModalLocation
 from ..utilities.subscriber_locations import subscriber_locations
 from flowmachine.utils import parse_datestring, get_dist_string, list_of_dates
 from flowmachine.core.spatial_unit import (
-    LatLonSpatialUnit,
-    VersionedCellSpatialUnit,
-    VersionedSiteSpatialUnit,
+    lat_lon_spatial_unit,
+    versioned_cell_spatial_unit,
+    versioned_site_spatial_unit,
 )
 
 from dateutil.relativedelta import relativedelta
@@ -84,33 +84,33 @@ class Displacement(SubscriberFeature):
 
         self.start = start
 
-        allowed_spatial_units = [
-            LatLonSpatialUnit,
-            VersionedCellSpatialUnit,
-            VersionedSiteSpatialUnit,
-        ]
+        def is_allowed_spatial_unit(spatial_unit):
+            return (
+                "lat" in spatial_unit.location_columns
+                and "lon" in spatial_unit.location_columns
+            )
+
         if modal_locations:
-            if (
-                isinstance(modal_locations, ModalLocation)
-                and type(modal_locations.spatial_unit) in allowed_spatial_units
+            if isinstance(modal_locations, ModalLocation) and is_allowed_spatial_unit(
+                modal_locations.spatial_unit
             ):
                 hl = modal_locations
             else:
                 raise ValueError(
                     "Argument 'modal_locations' should be an instance of "
-                    "ModalLocation class with type(spatial_unit) in "
-                    f"{su.__name__ for su in allowed_spatial_units}"
+                    "ModalLocation class with 'lat' and 'lon' in "
+                    "spatial_unit.location_columns"
                 )
         else:
             hl = ModalLocation(
                 *[
-                    daily_location(date, spatial_unit=LatLonSpatialUnit(), **kwargs)
+                    daily_location(date, spatial_unit=lat_lon_spatial_unit(), **kwargs)
                     for date in list_of_dates(self.start, self.stop_hl)
                 ]
             )
 
         sl = subscriber_locations(
-            self.start, self.stop_sl, spatial_unit=LatLonSpatialUnit(), **kwargs
+            self.start, self.stop_sl, spatial_unit=lat_lon_spatial_unit(), **kwargs
         )
 
         self.statistic = statistic.lower()

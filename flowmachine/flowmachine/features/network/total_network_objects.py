@@ -16,12 +16,7 @@ from typing import List
 from ...core.mixins import GeoDataMixin
 from ...core import location_joined_query
 from ...core.query import Query
-from ...core.spatial_unit import (
-    CellSpatialUnit,
-    VersionedSiteSpatialUnit,
-    VersionedCellSpatialUnit,
-    admin_spatial_unit,
-)
+from ...core.spatial_unit import CellSpatialUnit, admin_spatial_unit
 from ..utilities import EventsTablesUnion
 
 valid_stats = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
@@ -95,27 +90,27 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         if self.table != "all" and not self.table.startswith("events"):
             self.table = "events.{}".format(self.table)
 
-        allowed_network_object_types = [
-            CellSpatialUnit,
-            VersionedCellSpatialUnit,
-            VersionedSiteSpatialUnit,
-        ]
+        def is_allowed_network_object(spatial_unit):
+            return (
+                "location_id" in spatial_unit.location_columns
+                or "site_id" in spatial_unit.location_columns
+            )
 
         self.network_object = network_object
-        if type(self.network_object) not in allowed_network_object_types:
+        if not is_allowed_network_object(self.network_object):
             raise ValueError(
-                "{} is not a valid network object type.".format(type(network_object))
+                "{} is not a valid network object.".format(self.network_object)
             )
 
         if spatial_unit is None:
             self.spatial_unit = admin_spatial_unit(level=0)
         else:
             self.spatial_unit = spatial_unit
-        if type(self.spatial_unit) in allowed_network_object_types:
+        if is_allowed_network_object(self.spatial_unit):
             # No sense in aggregating network object to network object
             raise ValueError(
-                "{} is not a valid spatial unit type for TotalNetworkObjects".format(
-                    type(self.spatial_unit)
+                "{} is not a valid spatial unit for TotalNetworkObjects".format(
+                    self.spatial_unit
                 )
             )
 

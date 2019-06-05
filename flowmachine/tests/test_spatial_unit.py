@@ -6,9 +6,9 @@ from flowmachine.core import CustomQuery
 from flowmachine.core.spatial_unit import (
     SpatialUnit,
     CellSpatialUnit,
-    LatLonSpatialUnit,
-    VersionedCellSpatialUnit,
-    VersionedSiteSpatialUnit,
+    lat_lon_spatial_unit,
+    versioned_cell_spatial_unit,
+    versioned_site_spatial_unit,
     PolygonSpatialUnit,
     admin_spatial_unit,
     grid_spatial_unit,
@@ -45,9 +45,9 @@ def test_get_geom_query_column_names(
 @pytest.mark.parametrize(
     "spatial_unit, kwargs, loc_cols",
     [
-        (LatLonSpatialUnit, {}, ["lat", "lon"]),
-        (VersionedCellSpatialUnit, {}, ["location_id", "version", "lon", "lat"]),
-        (VersionedSiteSpatialUnit, {}, ["site_id", "version", "lon", "lat"]),
+        (lat_lon_spatial_unit, {}, ["lat", "lon"]),
+        (versioned_cell_spatial_unit, {}, ["location_id", "version", "lon", "lat"]),
+        (versioned_site_spatial_unit, {}, ["site_id", "version", "lon", "lat"]),
         (
             PolygonSpatialUnit,
             {
@@ -117,10 +117,10 @@ def test_missing_location_columns_raises_error():
     [
         (admin_spatial_unit, {"level": 2}),
         (admin_spatial_unit, {"level": 2, "column_name": "admin2name"}),
-        (VersionedSiteSpatialUnit, {}),
-        (VersionedCellSpatialUnit, {}),
+        (versioned_site_spatial_unit, {}),
+        (versioned_cell_spatial_unit, {}),
         (CellSpatialUnit, {}),
-        (LatLonSpatialUnit, {}),
+        (lat_lon_spatial_unit, {}),
         (grid_spatial_unit, {"size": 5}),
         (
             PolygonSpatialUnit,
@@ -148,10 +148,10 @@ def test_spatial_unit_equals_itself(spatial_unit, kwargs):
 
 def test_cell_spatial_unit_not_equal_to_other_spatial_unit():
     """
-    Test that a CellSpatialUnit is not equal to a VersionedCellSpatialUnit.
+    Test that a CellSpatialUnit is not equal to a versioned_cell_spatial_unit.
     """
     su1 = CellSpatialUnit()
-    su2 = VersionedCellSpatialUnit()
+    su2 = versioned_cell_spatial_unit()
     assert su1 != su2
     assert su2 != su1
 
@@ -160,8 +160,8 @@ def test_different_spatial_units_are_not_equal():
     """
     Test that two different spatial units are not equal.
     """
-    su1 = VersionedCellSpatialUnit()
-    su2 = VersionedSiteSpatialUnit()
+    su1 = versioned_cell_spatial_unit()
+    su2 = versioned_site_spatial_unit()
     assert su1 != su2
 
 

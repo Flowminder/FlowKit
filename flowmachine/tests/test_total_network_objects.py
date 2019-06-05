@@ -12,9 +12,9 @@ import pytest
 
 from flowmachine.core.spatial_unit import (
     CellSpatialUnit,
-    VersionedCellSpatialUnit,
-    VersionedSiteSpatialUnit,
-    LatLonSpatialUnit,
+    versioned_cell_spatial_unit,
+    versioned_site_spatial_unit,
+    lat_lon_spatial_unit,
 )
 from flowmachine.features import TotalNetworkObjects, AggregateNetworkObjects
 
@@ -26,8 +26,8 @@ def test_tno_at_lat_lng(get_dataframe):
     tno = TotalNetworkObjects(
         start="2016-01-01",
         stop="2016-01-07",
-        network_object=VersionedCellSpatialUnit(),
-        spatial_unit=LatLonSpatialUnit(),
+        network_object=versioned_cell_spatial_unit(),
+        spatial_unit=lat_lon_spatial_unit(),
     )
     assert tno.get_dataframe().sum().value == 330
 
@@ -117,7 +117,7 @@ def test_median_returns_correct_values(get_dataframe):
     """
     instance = AggregateNetworkObjects(
         total_network_objects=TotalNetworkObjects(
-            table="calls", total_by="hour", network_object=VersionedSiteSpatialUnit()
+            table="calls", total_by="hour", network_object=versioned_site_spatial_unit()
         ),
         aggregate_by="day",
         statistic="median",
@@ -141,7 +141,7 @@ def test_mean_returns_correct_values(get_dataframe):
             start="2016-01-01",
             stop="2016-12-30",
             total_by="hour",
-            network_object=VersionedSiteSpatialUnit(),
+            network_object=versioned_site_spatial_unit(),
         ),
         aggregate_by="day",
     )

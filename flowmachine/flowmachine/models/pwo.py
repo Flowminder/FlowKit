@@ -35,7 +35,7 @@ from flowmachine.utils import list_of_dates
 from ..features import ModalLocation
 from ..core.query import Query
 from ..core.model import Model, model_result
-from ..core.spatial_unit import VersionedSiteSpatialUnit
+from ..core.spatial_unit import versioned_site_spatial_unit
 from ..features.spatial.distance_matrix import DistanceMatrix
 
 import structlog
@@ -193,9 +193,9 @@ class PopulationWeightedOpportunities(Model):
         documentation for other available methods.
 
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
-                   default VersionedSiteSpatialUnit()
+                   default versioned_site_spatial_unit()
         Note: DistanceMatrix only supports spatial units
-        VersionedCellSpatialUnit() and VersionedSiteSpatialUnit() at this time.
+        with 'lat' and 'lon' columns at this time.
 
     **kwargs : arguments
         Used to pass custom arguments to the ModalLocation() objects.
@@ -253,7 +253,7 @@ class PopulationWeightedOpportunities(Model):
         self.stop = stop
         self.method = method
         if spatial_unit is None:
-            self.spatial_unit = VersionedSiteSpatialUnit()
+            self.spatial_unit = versioned_site_spatial_unit()
         else:
             self.spatial_unit = spatial_unit
         self.distance_matrix = DistanceMatrix(

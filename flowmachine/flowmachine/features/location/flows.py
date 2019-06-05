@@ -156,8 +156,8 @@ class Flows(GeoDataMixin, GraphMixin, Query):
             geom_query = self.spatial_unit.get_geom_query()
         except AttributeError:
             raise ValueError(
-                f"Query {self} with spatial_unit of type "
-                f"{type(self.spatial_unit)} has no geography information."
+                f"Query {self} with spatial_unit {self.spatial_unit} has no "
+                "geography information."
             )
 
         joined_query = f"""

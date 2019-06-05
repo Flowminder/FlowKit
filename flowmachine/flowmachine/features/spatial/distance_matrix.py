@@ -11,7 +11,7 @@ from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GraphMixin
-from ...core.spatial_unit import VersionedSiteSpatialUnit, VersionedCellSpatialUnit
+from ...core.spatial_unit import versioned_cell_spatial_unit
 
 
 class DistanceMatrix(GraphMixin, Query):
@@ -25,7 +25,7 @@ class DistanceMatrix(GraphMixin, Query):
 
     Parameters
     ----------
-    spatial_unit : flowmachine.core.spatial_unit.SpatialUnit, default VersionedCellSpatialUnit()
+    spatial_unit : flowmachine.core.spatial_unit.SpatialUnit, default versioned_cell_spatial_unit()
         Locations to compute distances for.
         Note: only point locations (i.e. spatial units with "lat" and "lon"
         included in location_columns) are supported at this time.
@@ -39,7 +39,7 @@ class DistanceMatrix(GraphMixin, Query):
 
     def __init__(self, spatial_unit=None, return_geometry=False):
         if spatial_unit is None:
-            self.spatial_unit = VersionedCellSpatialUnit()
+            self.spatial_unit = versioned_cell_spatial_unit()
         else:
             self.spatial_unit = spatial_unit
 

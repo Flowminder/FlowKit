@@ -13,9 +13,9 @@ from flowmachine.core import JoinToLocation, location_joined_query
 from flowmachine.core.spatial_unit import (
     CellSpatialUnit,
     admin_spatial_unit,
-    VersionedSiteSpatialUnit,
-    VersionedCellSpatialUnit,
-    LatLonSpatialUnit,
+    versioned_site_spatial_unit,
+    versioned_cell_spatial_unit,
+    lat_lon_spatial_unit,
     grid_spatial_unit,
     PolygonSpatialUnit,
 )
@@ -64,7 +64,7 @@ def test_join_with_versioned_cells(get_dataframe, get_length):
     ul = subscriber_locations(
         "2016-01-05", "2016-01-07", spatial_unit=CellSpatialUnit()
     )
-    df = get_dataframe(JoinToLocation(ul, spatial_unit=VersionedCellSpatialUnit()))
+    df = get_dataframe(JoinToLocation(ul, spatial_unit=versioned_cell_spatial_unit()))
     # As our database is complete we should not drop any rows
     assert len(df) == get_length(ul)
     # These should all be version zero, these are the towers before the changeover date, or those that
@@ -89,7 +89,7 @@ def test_join_with_lat_lon(get_dataframe):
     ul = subscriber_locations(
         "2016-01-05", "2016-01-07", spatial_unit=CellSpatialUnit()
     )
-    df = get_dataframe(JoinToLocation(ul, spatial_unit=LatLonSpatialUnit()))
+    df = get_dataframe(JoinToLocation(ul, spatial_unit=lat_lon_spatial_unit()))
 
     expected_cols = sorted(["subscriber", "time", "location_id", "lat", "lon"])
     assert sorted(df.columns) == expected_cols

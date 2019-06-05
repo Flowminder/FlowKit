@@ -10,9 +10,9 @@ import pytest
 
 from flowmachine.features.spatial import DistanceMatrix
 from flowmachine.core.spatial_unit import (
-    VersionedCellSpatialUnit,
-    VersionedSiteSpatialUnit,
-    LatLonSpatialUnit,
+    versioned_cell_spatial_unit,
+    versioned_site_spatial_unit,
+    lat_lon_spatial_unit,
 )
 
 
@@ -20,7 +20,7 @@ def test_some_results(get_dataframe):
     """
     DistanceMatrix() returns a dataframe that contains hand-picked results.
     """
-    c = DistanceMatrix(spatial_unit=VersionedSiteSpatialUnit())
+    c = DistanceMatrix(spatial_unit=versioned_site_spatial_unit())
     df = get_dataframe(c)
     set_df = df.set_index("site_id_from")
     assert round(set_df.loc["8wPojr"]["distance"].values[0]) == 789
@@ -31,9 +31,9 @@ def test_some_results(get_dataframe):
 @pytest.mark.parametrize(
     "spatial_unit_type, length",
     [
-        (VersionedCellSpatialUnit, 62),
-        (VersionedSiteSpatialUnit, 35),
-        (LatLonSpatialUnit, 62),
+        (versioned_cell_spatial_unit, 62),
+        (versioned_site_spatial_unit, 35),
+        (lat_lon_spatial_unit, 62),
     ],
 )
 def test_result_has_correct_length(spatial_unit_type, length, get_length):

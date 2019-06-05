@@ -6,8 +6,8 @@ import pytest
 
 from flowmachine.core.spatial_unit import (
     admin_spatial_unit,
-    VersionedSiteSpatialUnit,
-    LatLonSpatialUnit,
+    versioned_site_spatial_unit,
+    lat_lon_spatial_unit,
 )
 from flowmachine.features import MostFrequentLocation
 from flowmachine.features.subscriber.daily_location import locate_subscribers
@@ -32,7 +32,7 @@ def test_vsites(get_dataframe):
     """
 
     mfl = MostFrequentLocation(
-        "2016-01-01", "2016-01-02", spatial_unit=VersionedSiteSpatialUnit()
+        "2016-01-01", "2016-01-02", spatial_unit=versioned_site_spatial_unit()
     )
     df = get_dataframe(mfl)
     df.set_index("subscriber", inplace=True)
@@ -47,7 +47,7 @@ def test_lat_lons(get_dataframe):
     """
 
     mfl = MostFrequentLocation(
-        "2016-01-01", "2016-01-02", spatial_unit=LatLonSpatialUnit()
+        "2016-01-01", "2016-01-02", spatial_unit=lat_lon_spatial_unit()
     )
     df = get_dataframe(mfl)
     df.set_index("subscriber", inplace=True)

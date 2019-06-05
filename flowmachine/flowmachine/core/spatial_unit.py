@@ -8,12 +8,12 @@ Classes that map cells (or towers or sites) to a spatial unit.
 The available spatial units are:
     CellSpatialUnit:
         The identifier as found in the CDR.
-    LatLonSpatialUnit:
+    lat_lon_spatial_unit:
         Latitude and longitude of cell/site locations.
-    VersionedCellSpatialUnit:
+    versioned_cell_spatial_unit:
         The identifier as found in the CDR combined with the version from the
         cells table.
-    VersionedSiteSpatialUnit:
+    versioned_site_spatial_unit:
         The ID found in the sites table, coupled with the version number.
     PolygonSpatialUnit:
         A custom set of polygons that live in the database. Takes the
@@ -35,6 +35,9 @@ from typing import List
 from flowmachine.utils import get_name_and_alias
 from . import Query, Table
 from .grid import Grid
+
+
+# class SpatialUnitMixin:
 
 
 class CellSpatialUnit:
@@ -174,89 +177,97 @@ class SpatialUnit(Query):
         return sql
 
 
-class LatLonSpatialUnit(SpatialUnit):
+def lat_lon_spatial_unit():
     """
-    Class that maps cell location_id to lat-lon coordinates. 
-    """
+    Returns a SpatialUnit that maps cell location_id to lat-lon coordinates.
 
-    def __init__(self):
-        super().__init__(
-            selected_column_names=[
-                "id AS location_id",
-                "date_of_first_service",
-                "date_of_last_service",
-                "ST_X(geom_point::geometry) AS lon",
-                "ST_Y(geom_point::geometry) AS lat",
-            ],
-            location_column_names=["lat", "lon"],
-            geom_column="geom_point",
+    Returns
+    -------
+    flowmachine.core.spatial_unit.SpatialUnit
+    """
+    return SpatialUnit(
+        selected_column_names=[
+            "id AS location_id",
+            "date_of_first_service",
+            "date_of_last_service",
+            "ST_X(geom_point::geometry) AS lon",
+            "ST_Y(geom_point::geometry) AS lat",
+        ],
+        location_column_names=["lat", "lon"],
+        geom_column="geom_point",
+    )
+
+
+def versioned_cell_spatial_unit():
+    """
+    Returns a SpatialUnit that maps cell location_id to a cell version and
+    lat-lon coordinates.
+
+    Returns
+    -------
+    flowmachine.core.spatial_unit.SpatialUnit
+    """
+    if Query.connection.location_table != "infrastructure.cells":
+        raise ValueError("Versioned cell spatial unit is unavailable.")
+
+    return SpatialUnit(
+        selected_column_names=[
+            "id AS location_id",
+            "date_of_first_service",
+            "date_of_last_service",
+            "version",
+            "ST_X(geom_point::geometry) AS lon",
+            "ST_Y(geom_point::geometry) AS lat",
+        ],
+        location_column_names=["location_id", "version", "lon", "lat"],
+        location_info_table="infrastructure.cells",
+        geom_column="geom_point",
+    )
+
+
+def versioned_site_spatial_unit():
+    """
+    Returns a SpatialUnit that maps cell location_id to a site version and
+    lat-lon coordinates.
+
+    Returns
+    -------
+    flowmachine.core.spatial_unit.SpatialUnit
+    """
+    location_table = Query.connection.location_table
+
+    sites_alias = "s"
+    if location_table == "infrastructure.sites":
+        cells_alias = sites_alias
+        join_clause = ""
+    elif location_table == "infrastructure.cells":
+        cells_alias = "c"
+        join_clause = f"""
+        RIGHT JOIN
+        infrastructure.cells AS {cells_alias}
+        ON {sites_alias}.id = {cells_alias}.site_id
+        """
+    else:
+        raise ValueError(
+            f"Expected location table to be 'infrastructure.cells' "
+            f"or 'infrastructure.sites', not '{location_table}''"
         )
 
-
-class VersionedCellSpatialUnit(SpatialUnit):
-    """
-    Class that maps cell location_id to a cell version and lat-lon coordinates.
-    """
-
-    def __init__(self):
-        if self.connection.location_table != "infrastructure.cells":
-            raise ValueError("Versioned cell spatial unit is unavailable.")
-
-        super().__init__(
-            selected_column_names=[
-                "id AS location_id",
-                "date_of_first_service",
-                "date_of_last_service",
-                "version",
-                "ST_X(geom_point::geometry) AS lon",
-                "ST_Y(geom_point::geometry) AS lat",
-            ],
-            location_column_names=["location_id", "version", "lon", "lat"],
-            location_info_table="infrastructure.cells",
-            geom_column="geom_point",
-        )
-
-
-class VersionedSiteSpatialUnit(SpatialUnit):
-    """
-    Class that maps cell location_id to a site version and lat-lon coordinates.
-    """
-
-    def __init__(self):
-        location_table = self.connection.location_table
-
-        sites_alias = "s"
-        if location_table == "infrastructure.sites":
-            cells_alias = sites_alias
-            join_clause = ""
-        elif location_table == "infrastructure.cells":
-            cells_alias = "c"
-            join_clause = f"""
-            RIGHT JOIN
-            infrastructure.cells AS {cells_alias}
-            ON {sites_alias}.id = {cells_alias}.site_id
-            """
-        else:
-            raise ValueError(
-                f"Expected location table to be 'infrastructure.cells' "
-                f"or 'infrastructure.sites', not '{location_table}''"
-            )
-
-        super().__init__(
-            selected_column_names=[
-                f"{cells_alias}.id AS location_id",
-                f"{sites_alias}.id AS site_id",
-                f"{sites_alias}.date_of_first_service AS date_of_first_service",
-                f"{sites_alias}.date_of_last_service AS date_of_last_service",
-                f"{sites_alias}.version AS version",
-                f"ST_X({sites_alias}.geom_point::geometry) AS lon",
-                f"ST_Y({sites_alias}.geom_point::geometry) AS lat",
-            ],
-            location_column_names=["site_id", "version", "lon", "lat"],
-            location_info_table=f"infrastructure.sites AS {sites_alias}",
-            geom_column="geom_point",
-            join_clause=join_clause,
-        )
+    return SpatialUnit(
+        selected_column_names=[
+            f"{cells_alias}.id AS location_id",
+            f"{sites_alias}.id AS site_id",
+            f"{sites_alias}.date_of_first_service AS date_of_first_service",
+            f"{sites_alias}.date_of_last_service AS date_of_last_service",
+            f"{sites_alias}.version AS version",
+            f"ST_X({sites_alias}.geom_point::geometry) AS lon",
+            f"ST_Y({sites_alias}.geom_point::geometry) AS lat",
+        ],
+        location_column_names=["site_id", "version", "lon", "lat"],
+        location_info_table=f"infrastructure.sites AS {sites_alias}",
+        geom_column="geom_point",
+        join_clause=join_clause,
+    )
 
 
 class PolygonSpatialUnit(SpatialUnit):
@@ -348,9 +359,9 @@ class PolygonSpatialUnit(SpatialUnit):
 
 def admin_spatial_unit(*, level, column_name=None):
     """
-    Helper function to create a PolygonSpatialUnit object that maps all cells
-    (aka sites) to an admin region. This assumes that you have geography data
-    in the standard location in FlowDB.
+    Returns a PolygonSpatialUnit object that maps all cells (aka sites) to an
+    admin region. This assumes that you have geography data in the standard
+    location in FlowDB.
 
     Parameters
     ----------
@@ -364,7 +375,7 @@ def admin_spatial_unit(*, level, column_name=None):
     
     Returns
     -------
-    PolygonSpatialUnit
+    flowmachine.core.spatial_unit.PolygonSpatialUnit
         Query which maps cell/site IDs to admin regions
     """
     # If there is no column_name passed then we can use the default, which is
@@ -382,7 +393,7 @@ def admin_spatial_unit(*, level, column_name=None):
 
 def grid_spatial_unit(*, size):
     """
-    Helper function to create a PolygonSpatialUnit representing a mapping
+    Returns a PolygonSpatialUnit representing a mapping
     between all the sites in the database and a grid of arbitrary size.
 
     Parameters
@@ -392,7 +403,7 @@ def grid_spatial_unit(*, size):
     
     Returns
     -------
-    PolygonSpatialUnit
+    flowmachine.core.spatial_unit.PolygonSpatialUnit
         Query which maps cell/site IDs to grid squares
     """
     return PolygonSpatialUnit(

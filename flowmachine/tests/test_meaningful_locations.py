@@ -4,7 +4,7 @@
 import pytest
 
 from flowmachine.core.errors import BadLevelError
-from flowmachine.core.spatial_unit import VersionedSiteSpatialUnit
+from flowmachine.core.spatial_unit import versioned_site_spatial_unit
 from flowmachine.features import (
     HartiganCluster,
     CallDays,
@@ -37,7 +37,7 @@ def test_column_names_meaningful_locations(get_column_names_from_run):
                 subscriber_locations=subscriber_locations(
                     start="2016-01-01",
                     stop="2016-01-02",
-                    spatial_unit=VersionedSiteSpatialUnit(),
+                    spatial_unit=versioned_site_spatial_unit(),
                 )
             ),
             radius=1,
@@ -67,7 +67,7 @@ def test_column_names_meaningful_locations_aggregate(
                     subscriber_locations=subscriber_locations(
                         start="2016-01-01",
                         stop="2016-01-02",
-                        spatial_unit=VersionedSiteSpatialUnit(),
+                        spatial_unit=versioned_site_spatial_unit(),
                     )
                 ),
                 radius=1,
@@ -95,7 +95,7 @@ def test_meaningful_locations_aggregate_disallowed_level_raises():
                         subscriber_locations=subscriber_locations(
                             start="2016-01-01",
                             stop="2016-01-02",
-                            spatial_unit=VersionedSiteSpatialUnit(),
+                            spatial_unit=versioned_site_spatial_unit(),
                         )
                     ),
                     radius=1,
@@ -124,7 +124,7 @@ def test_column_names_meaningful_locations_od(
                 subscriber_locations=subscriber_locations(
                     start="2016-01-01",
                     stop="2016-01-02",
-                    spatial_unit=VersionedSiteSpatialUnit(),
+                    spatial_unit=versioned_site_spatial_unit(),
                 )
             ),
             radius=1,
@@ -142,7 +142,7 @@ def test_column_names_meaningful_locations_od(
                 subscriber_locations=subscriber_locations(
                     start="2016-01-01",
                     stop="2016-01-02",
-                    spatial_unit=VersionedSiteSpatialUnit(),
+                    spatial_unit=versioned_site_spatial_unit(),
                 )
             ),
             radius=1,
@@ -178,7 +178,7 @@ def test_meaningful_locations_results(
                 subscriber_locations=subscriber_locations(
                     start="2016-01-01",
                     stop="2016-01-02",
-                    spatial_unit=VersionedSiteSpatialUnit(),
+                    spatial_unit=versioned_site_spatial_unit(),
                 )
             ),
             radius=1,
@@ -212,7 +212,7 @@ def test_meaningful_locations_aggregation_results(exemplar_level_param, get_data
                 subscriber_locations=subscriber_locations(
                     start="2016-01-01",
                     stop="2016-01-02",
-                    spatial_unit=VersionedSiteSpatialUnit(),
+                    spatial_unit=versioned_site_spatial_unit(),
                 )
             ),
             radius=1,
@@ -246,7 +246,7 @@ def test_meaningful_locations_od_raises_for_bad_level(
                 subscriber_locations=subscriber_locations(
                     start="2016-01-01",
                     stop="2016-01-02",
-                    spatial_unit=VersionedSiteSpatialUnit(),
+                    spatial_unit=versioned_site_spatial_unit(),
                 )
             ),
             radius=1,
@@ -276,7 +276,7 @@ def test_meaningful_locations_od_results(get_dataframe):
                 subscriber_locations=subscriber_locations(
                     start="2016-01-01",
                     stop="2016-01-02",
-                    spatial_unit=VersionedSiteSpatialUnit(),
+                    spatial_unit=versioned_site_spatial_unit(),
                 )
             ),
             radius=1,
@@ -294,7 +294,7 @@ def test_meaningful_locations_od_results(get_dataframe):
                 subscriber_locations=subscriber_locations(
                     start="2016-01-02",
                     stop="2016-01-03",
-                    spatial_unit=VersionedSiteSpatialUnit(),
+                    spatial_unit=versioned_site_spatial_unit(),
                 )
             ),
             radius=1,

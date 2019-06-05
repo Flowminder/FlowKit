@@ -7,7 +7,7 @@ from flowmachine.features import Displacement, ModalLocation, daily_location
 from numpy import isnan
 
 from flowmachine.utils import list_of_dates
-from flowmachine.core.spatial_unit import LatLonSpatialUnit
+from flowmachine.core.spatial_unit import lat_lon_spatial_unit
 
 
 @pytest.mark.parametrize(
@@ -51,7 +51,7 @@ def test_pass_modal_location(get_dataframe):
 
     ml = ModalLocation(
         *[
-            daily_location(d, spatial_unit=LatLonSpatialUnit())
+            daily_location(d, spatial_unit=lat_lon_spatial_unit())
             for d in list_of_dates("2016-01-01", "2016-01-06")
         ]
     )
@@ -90,7 +90,7 @@ def test_get_all_users_in_modal_location(get_dataframe):
 
     ml = ModalLocation(
         *[
-            daily_location(d, spatial_unit=LatLonSpatialUnit(), hours=(12, 13))
+            daily_location(d, spatial_unit=lat_lon_spatial_unit(), hours=(12, 13))
             for d in list_of_dates(p1[0], p1[1])
         ]
     )
@@ -114,7 +114,7 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
 
     ml = ModalLocation(
         *[
-            daily_location(d, spatial_unit=LatLonSpatialUnit(), hours=(12, 13))
+            daily_location(d, spatial_unit=lat_lon_spatial_unit(), hours=(12, 13))
             for d in list_of_dates(p1[0], p1[1])
         ]
     )

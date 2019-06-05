@@ -11,7 +11,7 @@ days where an subscriber has made at least one call
 import pytest
 
 
-from flowmachine.core.spatial_unit import VersionedSiteSpatialUnit, CellSpatialUnit
+from flowmachine.core.spatial_unit import versioned_site_spatial_unit, CellSpatialUnit
 from flowmachine.features import CallDays, subscriber_locations
 import numpy as np
 
@@ -39,7 +39,7 @@ def test_call_days_returns_expected_counts_per_subscriber(get_dataframe):
     )
     for (subscriber, start, end, calls) in test_values:
         cd = CallDays(
-            subscriber_locations(start, end, spatial_unit=VersionedSiteSpatialUnit())
+            subscriber_locations(start, end, spatial_unit=versioned_site_spatial_unit())
         )
         df = get_dataframe(cd).query('subscriber == "{}"'.format(subscriber))
         assert df.calldays.sum() == calls
@@ -57,7 +57,7 @@ def test_call_days_returns_expected_counts_per_subscriber_tower(get_dataframe):
     )
     for (subscriber, location, start, end, calls) in test_values:
         cd = CallDays(
-            subscriber_locations(start, end, spatial_unit=VersionedSiteSpatialUnit())
+            subscriber_locations(start, end, spatial_unit=versioned_site_spatial_unit())
         )
         df = get_dataframe(cd).query(
             'subscriber == "{}" & site_id == "{}"'.format(subscriber, location)
