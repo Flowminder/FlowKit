@@ -3,32 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Classes that map cells (or towers or sites) to a spatial unit.
+Classes that map cell (or tower or site) IDs to a spatial unit.
 
-The available spatial units are:
-    CellSpatialUnit:
-        The identifier as found in the CDR.
-    lat_lon_spatial_unit:
-        Latitude and longitude of cell/site locations.
-    versioned_cell_spatial_unit:
-        The identifier as found in the CDR combined with the version from the
-        cells table.
-    versioned_site_spatial_unit:
-        The ID found in the sites table, coupled with the version number.
-    PolygonSpatialUnit:
-        A custom set of polygons that live in the database. Takes the
-        parameters polygon_column_names, which is the columns you want to
-        return after the join, and polygon_table, the table where the polygons
-        reside (with the schema), and additionally geom_column which is the column
-        with the geometry information (will default to 'geom').
-    admin_spatial_unit:
-        An admin region of interest, such as admin3. Must live in the database
-        in the standard location.
-        Special case of PolygonSpatialUnit.
-    grid_spatial_unit:
-        A square in a regular grid, in addition pass size to determine the size
-        of the polygon.
-        Special case of PolygonSpatialUnit.
+The helper function 'make_spatial_unit' can be used to create spatial unit objects.
 """
 from typing import List
 
@@ -282,8 +259,8 @@ class PolygonSpatialUnit(SpatialUnit):
         table in the database. Can also be a list of names.
     polygon_table : str or flowmachine.Query
         name of the table containing the geography information.
-        Can be either the name of a table, with the schema, a flowmachine.Query
-        object, or a string representing a query.
+        Can be either the name of a table, with the schema, or a
+        flowmachine.Query object.
     geom_column : str, default 'geom'
         Name of the column in polygon_table that defines the geography.
     """
@@ -357,7 +334,7 @@ class PolygonSpatialUnit(SpatialUnit):
         return sql
 
 
-def admin_spatial_unit(*, level, column_name=None):
+def admin_spatial_unit(*, level, region_id_column_name=None):
     """
     Returns a PolygonSpatialUnit object that maps all cells (aka sites) to an
     admin region. This assumes that you have geography data in the standard
@@ -367,7 +344,7 @@ def admin_spatial_unit(*, level, column_name=None):
     ----------
     level : int
         Admin level (e.g. 1 for admin1, 2 for admin2, etc.)
-    column_name : str, optional
+    region_id_column_name : str, optional
         Pass a string of the column to use as the
         identifier of the admin region. By default
         this will be admin*pcod. But you may wish
@@ -382,10 +359,10 @@ def admin_spatial_unit(*, level, column_name=None):
     # of the form admin3pcod. If the user has asked for the standard
     # column_name then we will alias this column as 'pcod', otherwise we won't
     # alias it at all.
-    if (column_name is None) or (column_name == f"admin{level}pcod"):
+    if region_id_column_name is None or region_id_column_name == f"admin{level}pcod":
         col_name = f"admin{level}pcod AS pcod"
     else:
-        col_name = column_name
+        col_name = region_id_column_name
     table = f"geography.admin{level}"
 
     return PolygonSpatialUnit(polygon_column_names=col_name, polygon_table=table)
@@ -411,3 +388,119 @@ def grid_spatial_unit(*, size):
         polygon_table=Grid(size),
         geom_column="geom_square",
     )
+
+
+def make_spatial_unit(
+    spatial_unit_type,
+    *,
+    level=None,
+    region_id_column_name=None,
+    size=None,
+    polygon_table=None,
+    geom_column="geom",
+):
+    """
+    Helper function to create an object representing a spatial unit.
+
+    Parameters
+    ----------
+    spatial_unit_type : str
+        Can be one of:
+            'cell'
+                The identifier as found in the CDR.
+            'lat-lon'
+                Latitude and longitude of cell/site locations.
+            'versioned-cell'
+                The identifier as found in the CDR combined with the version
+                from the cells table.
+            'versioned-site'
+                The ID found in the sites table, coupled with the version
+                number.
+            'polygon'
+                A custom set of polygons that live in the database. In which
+                case you can pass the parameters 'column_name', which is the
+                column or columns you want to return after the join, and
+                'polygon_table', the table where the polygons reside (with the
+                schema), and additionally geom_column which is the column with
+                the geometry information (will default to 'geom').
+            'admin'
+                An admin region of interest, such as admin3. Must live in the
+                database in the standard location. In addition pass the 'level'
+                parameter, e.g. level=3 for admin3. Optionally also pass the
+                parameter 'column_name' to choose the column to use as the
+                identifier of the admin region (default is 'admin*pcod')
+            'grid'
+                A square in a regular grid, in addition pass the 'size'
+                parameter to determine the size of the polygon.
+    level : int
+        Admin level (e.g. 1 for admin1, 2 for admin2, etc.).
+        Required when spatial_unit_type='admin'.
+    region_id_column_name : str or list
+        Name(s) of column(s) which identifies the polygon regions.
+        Required when spatial_unit_type='polygon',
+        optional when spatial_unit_type='admin'.
+    size : float or int
+        Size of the grid in kilometres.
+        Required when spatial_unit_type='grid'.
+    polygon_table : str or flowmachine.Query
+        Name of the table containing the geography information. Can be either
+        the name of a table, with the schema, or a flowmachine.Query object.
+        Required when spatial_unit_type='polygon'.
+    geom_column : str, default 'geom'
+        Name of the column in polygon_table that defines the geography.
+        Required when spatial_unit_type='polygon'.
+    
+    Returns
+    -------
+    flowmachine.core.spatial_unit.*SpatialUnit
+        An object representing a mapping from location identifiers to a spatial
+        unit.
+    """
+    valid_spatial_unit_types = {
+        "cell",
+        "versioned-cell",
+        "versioned-site",
+        "lat-lon",
+        "admin",
+        "grid",
+        "polygon",
+    }
+    if not (spatial_unit_type in valid_spatial_unit_types):
+        raise ValueError(f"Unrecognised spatial unit type: {spatial_unit_type}.")
+
+    if spatial_unit_type == "cell":
+        return CellSpatialUnit()
+    elif spatial_unit_type == "versioned-cell":
+        return versioned_cell_spatial_unit()
+    elif spatial_unit_type == "versioned-site":
+        return versioned_site_spatial_unit()
+    elif spatial_unit_type == "lat-lon":
+        return lat_lon_spatial_unit()
+    elif spatial_unit_type == "admin":
+        if level is None:
+            raise ValueError(
+                "'level' parameter is required for spatial unit of type 'admin'."
+            )
+        return admin_spatial_unit(
+            level=level, region_id_column_name=region_id_column_name
+        )
+    elif spatial_unit_type == "grid":
+        if size is None:
+            raise ValueError(
+                "'size' parameter is required for spatial unit of type 'grid'."
+            )
+        return grid_spatial_unit(size=size)
+    elif spatial_unit_type == "polygon":
+        if polygon_table is None:
+            raise ValueError(
+                "'polygon_table' parameter is required for spatial unit of type 'polygon'."
+            )
+        if region_id_column_name is None:
+            raise ValueError(
+                "'region_id_column_name' parameter is required for spatial unit of type 'polygon'."
+            )
+        return PolygonSpatialUnit(
+            polygon_column_names=region_id_column_name,
+            polygon_table=polygon_table,
+            geom_column=geom_column,
+        )
