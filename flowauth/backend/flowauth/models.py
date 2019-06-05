@@ -1,9 +1,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from multiprocessing import Value
+import string
+
+import random
 
 import datetime
+import pyotp
 from itertools import chain
 
 import click
@@ -86,6 +89,9 @@ class User(db.Model):
     )
     tokens = db.relationship(
         "Token", back_populates="owner", cascade="all, delete, delete-orphan"
+    )
+    two_factor_auth = db.relationship(
+        "TwoFactorAuth", back_populates="user", cascade="all, delete, delete-orphan"
     )
 
     def is_authenticated(self):
@@ -201,8 +207,147 @@ class User(db.Model):
     def password(self, plaintext):
         self._password = argon2.hash(plaintext)
 
+    def is_valid_backup_code(self, plaintext):
+        """
+        Verify if a password is correct.
+
+        Parameters
+        ----------
+        plaintext: str
+            Input to check
+
+        Returns
+        -------
+        bool
+
+        """
+        codes = TwoFactorBackups.query.filter(TwoFactorBackups.user == self).all()
+        for code in codes:
+            if code.verify(plaintext):
+                db.session.delete(code)
+                db.session.commit()
+                return True
+        return False
+
     def __repr__(self):
         return f"<User {self.username}>"
+
+
+class TwoFactorAuth(db.Model):
+    user_id = db.Column(
+        db.Integer, db.ForeignKey("user.id"), nullable=False, primary_key=True
+    )
+    user = db.relationship("User", back_populates="two_factor_auth", lazy=True)
+    _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
+    last_used_two_factor_code = db.relationship(
+        "LastUsedTwoFactorCode",
+        back_populates="auth",
+        cascade="all, delete, delete-orphan",
+    )
+    two_factor_backups = db.relationship(
+        "TwoFactorBackups", back_populates="auth", cascade="all, delete, delete-orphan"
+    )
+
+    def validate(self, code):
+        is_valid = pyotp.totp.TOTP(self.secret_key).verify(code)
+        if is_valid:
+            last_used = self.last_used_two_factor_code
+            if last_used is None:
+                last_used = LastUsedTwoFactorCode(user_id=self.user_id, code=code)
+            else:
+                if last_used.code == code:  # Reject if the code is being reused
+                    return False
+                else:
+                    last_used.code = code
+            db.session.add(last_used)
+            db.session.commit()
+
+    @hybrid_property
+    def secret_key(self):
+        """
+        Hybrid property which allows for the server's secret key to
+        be encrypted in db, but decrypted when read.
+
+        Returns
+        -------
+        InstrumentedProperty or str
+            Returns the underlying prop when called by sqlalchemy at class level
+            but the decrypted secret key when called on an instance
+        """
+        key = self._secret_key
+        try:
+            key.decode()
+        except AttributeError:
+            return key
+        return get_fernet().decrypt(key).decode()
+
+    @secret_key.setter
+    def secret_key(self, plaintext):
+        """
+        Encrypt, then store to the database the server's secret key.
+
+        Parameters
+        ----------
+        plaintext: str
+            Key to encrypt.
+        """
+        self._secret_key = get_fernet().encrypt(plaintext.encode())
+
+
+class LastUsedTwoFactorCode(db.Model):
+    """
+    Last two factor code used by a user.
+    """
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey(TwoFactorAuth.user_id),
+        nullable=False,
+        primary_key=True,
+    )
+    auth = db.relationship(
+        "TwoFactorAuth", back_populates="last_used_two_factor_code", lazy=True
+    )
+    code = db.Column(db.String(), nullable=False)
+
+
+class TwoFactorBackup(db.Model):
+    """
+    Back up login codes for two-factor auth.
+    """
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    auth_id = db.Column(
+        db.Integer, db.ForeignKey("two_factor_auth.user_id"), nullable=False
+    )
+    auth = db.relationship(
+        "TwoFactorAuth", back_populates="two_factor_backups", lazy=True
+    )
+    _backup_code = db.Column(db.String(), nullable=False)
+
+    def verify(self, plaintext):
+        return argon2.verify(plaintext, self._backup_code)
+
+    @hybrid_property
+    def backup_code(self):
+        return self._password
+
+    @backup_code.setter
+    def backup_code(self, plaintext):
+        self._backup_code = argon2.hash(plaintext)
+
+    @classmethod
+    def generate(cls, user_id):
+        auth = TwoFactorAuth.query.filter(
+            TwoFactorAuth.user_id == user_id
+        ).first_or_404()
+        codes = []
+        for i in range(16):
+            code = "".join(random.choices(string.ascii_letters + string.digits, k=10))
+            codes.append(code)
+            backup = TwoFactorBackup(auth_id=auth.user_id)
+            backup.backup_code = code
+            db.session.add(backup)
 
 
 class Token(db.Model):
