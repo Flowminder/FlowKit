@@ -48,7 +48,10 @@ function confirm {
 }
 
 #
-# Set git revision or branch name to be used
+# Set git revision or branch name to be used. Note that the
+# environment variable GIT_REVISION_OR_BRANCH is also used
+# inside the docker-compose file which is downloaded and run
+# below.
 #
 if [ "$CI" = "true" ]; then
     export GIT_REVISION_OR_BRANCH=$CIRCLE_SHA1
