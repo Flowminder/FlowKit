@@ -106,6 +106,14 @@ class BadLevelError(Exception):
         Exception.__init__(self, msg)
 
 
+class InvalidSpatialUnitError(ValueError):
+    """
+    Raised when any class is given a spatial unit that is not valid.
+    """
+
+    pass
+
+
 class MissingDateError(Exception):
     """
     Raised when instantiating a class that points to a date that does not exist

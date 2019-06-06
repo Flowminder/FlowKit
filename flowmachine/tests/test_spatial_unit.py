@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from flowmachine.core import CustomQuery
+from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.core.spatial_unit import *
 import pytest
 
@@ -216,5 +217,42 @@ def test_different_grid_spatial_units_are_not_equal():
     ],
 )
 def test_make_spatial_unit_raises_errors(make_spatial_unit_args):
+    """
+    Test that make_spatial_unit raises a ValueError when bad arguments are passed.
+    """
     with pytest.raises(ValueError):
         su = make_spatial_unit(**make_spatial_unit_args)
+
+
+@pytest.mark.parametrize(
+    "make_spatial_unit_args, criterion, negate",
+    [
+        ({"spatial_unit_type": "cell"}, "has_geometry", False),
+        ({"spatial_unit_type": "versioned-cell"}, "has_geometry", True),
+        ({"spatial_unit_type": "admin", "level": 3}, "has_lat_lon_columns", False),
+        ({"spatial_unit_type": "lat-lon"}, "has_lat_lon_columns", True),
+        ({"spatial_unit_type": "admin", "level": 3}, "is_network_object", False),
+        ({"spatial_unit_type": "cell"}, "is_network_object", True),
+        ({"spatial_unit_type": "versioned-site"}, "is_network_object", True),
+        ({"spatial_unit_type": "lat-lon"}, "is_polygon", False),
+        ({"spatial_unit_type": "grid", "size": 10}, "is_polygon", True),
+    ],
+)
+def test_verify_criterion(make_spatial_unit_args, criterion, negate):
+    """
+    Test that the verify_criterion method raises an InvalidSpatialUnitError
+    when the criterion is not met.
+    """
+    su = make_spatial_unit(**make_spatial_unit_args)
+    with pytest.raises(InvalidSpatialUnitError):
+        su.verify_criterion(criterion, negate=negate)
+
+
+def test_verify_criterion_raises_value_error():
+    """
+    Test that the verify_criterion method raises a ValueError if the criterion
+    is not recognised.
+    """
+    su = CellSpatialUnit()
+    with pytest.raises(ValueError):
+        su.verify_criterion("BAD_CRITERION")

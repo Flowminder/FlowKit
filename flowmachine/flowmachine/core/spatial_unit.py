@@ -10,14 +10,107 @@ The helper function 'make_spatial_unit' can be used to create spatial unit objec
 from typing import List
 
 from flowmachine.utils import get_name_and_alias
+from flowmachine.core.errors import InvalidSpatialUnitError
 from . import Query, Table
 from .grid import Grid
 
 
-# class SpatialUnitMixin:
+class SpatialUnitMixin:
+    """
+    Mixin for SpatialUnit classes, which provides a 'location_columns' property
+    and methods for verifying whether a spatial unit meets different criteria
+    (useful for checking whether a spatial unit is valid in a given query).
+    """
+
+    @property
+    def location_columns(self) -> List[str]:
+        """
+        Names of the columns that identify a location.
+        """
+        return list(self._loc_cols)
+
+    @property
+    def has_geometry(self):
+        """
+        True if spatial unit has geometry information.
+        """
+        return hasattr(self, "get_geom_query")
+
+    @property
+    def has_lat_lon_columns(self):
+        """
+        True if spatial unit has lat/lon columns.
+        """
+        return "lat" in self.location_columns and "lon" in self.location_columns
+
+    @property
+    def is_network_object(self):
+        """
+        True if spatial unit is a network object (cell or site).
+        """
+        return (
+            "location_id" in self.location_columns or "site_id" in self.location_columns
+        )
+
+    @property
+    def is_polygon(self):
+        """
+        True if spatial unit's geographies are polygons.
+        """
+        return isinstance(self, PolygonSpatialUnit)
+
+    def verify_criterion(self, criterion, negate=False):
+        """
+        Check whether this spatial unit meets a criterion, and raise an
+        InvalidSpatialUnitError if not.
+
+        Parameters
+        ----------
+        criterion : str
+            One of:
+                'has_geometry'
+                'has_lat_lon_columns'
+                'is_network_object'
+                'is_polygon'
+        negate : bool, default False
+            If True, negate the criterion check (i.e. raise an error if
+            criterion is met).
+        
+        Raises
+        ------
+        InvalidSpatialUnitError
+            if criterion is not met
+        ValueError
+            if criterion is not recognised
+        """
+        criteria = {
+            "has_geometry": {
+                "property": self.has_geometry,
+                "message": f"{'has' if negate else 'does not have'} geometry information.",
+            },
+            "has_lat_lon_columns": {
+                "property": self.has_lat_lon_columns,
+                "message": f"{'has' if negate else 'does not have'} latitude/longitude columns.",
+            },
+            "is_network_object": {
+                "property": self.is_network_object,
+                "message": f"{'is' if negate else 'is not'} a network object.",
+            },
+            "is_polygon": {
+                "property": self.is_polygon,
+                "message": f"{'is' if negate else 'is not'} a polygon spatial unit.",
+            },
+        }
+        if criterion not in criteria.keys():
+            raise ValueError(f"Unrecognised criterion '{criterion}'.")
+        if criteria[criterion]["property"] == negate:
+            raise InvalidSpatialUnitError(
+                f"Spatial unit {self} with location columns {self.location_columns} "
+                + criteria[criterion]["message"]
+            )
 
 
-class CellSpatialUnit:
+class CellSpatialUnit(SpatialUnitMixin):
     """
     This class represents the case where no join of cell ID to other data is
     required. As such, this class does not inherit from Query, is not a valid
@@ -35,15 +128,8 @@ class CellSpatialUnit:
         # this just in case.
         return hash(self.__class__.__name__)
 
-    @property
-    def location_columns(self) -> List[str]:
-        """
-        List of the location-related column names.
-        """
-        return list(self._loc_cols)
 
-
-class SpatialUnit(Query):
+class SpatialUnit(SpatialUnitMixin, Query):
     """
     Base class for all spatial units except CellSpatialUnit. Selects columns
     from the location table, and optionally joins to data in another table.
@@ -116,13 +202,6 @@ class SpatialUnit(Query):
     def __hash__(self):
         # Must define this because we explicitly define self.__eq__
         return hash(self.md5)
-
-    @property
-    def location_columns(self) -> List[str]:
-        """
-        List of names of the columns which identify the locations.
-        """
-        return list(self._loc_cols)
 
     @property
     def column_names(self) -> List[str]:
