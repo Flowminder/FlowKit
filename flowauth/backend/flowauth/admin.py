@@ -760,6 +760,8 @@ def user_details(user_id):
             "id": user.id,
             "name": user.username,
             "is_admin": user.is_admin,
+            "has_two_factor": user.two_factor_auth is not None
+            and user.two_factor_auth.enabled,
             "groups": [{"id": group.id, "name": group.name} for group in user.groups],
             "servers": [
                 {
