@@ -19,17 +19,13 @@ def test_list_tokens_for_server(client, auth, test_admin):
 
 
 @pytest.mark.usefixtures("test_data")
-def test_get_server_public_key(app, client, auth):
+def test_get_server_public_key(app, client, auth, public_key_bytes):
     """Test that admin can get the flowauth server's public key"""
     response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
 
     response = client.get("/admin/public_key", headers={"X-CSRF-Token": csrf_cookie})
     key_json = response.get_json()
-    expected_key = load_public_key(environ["PUBLIC_JWT_SIGNING_KEY"]).public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    )
-    assert expected_key == load_public_key(key_json["public_key"]).public_bytes(
+    assert public_key_bytes == load_public_key(key_json["public_key"]).public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )

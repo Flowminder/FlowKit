@@ -43,7 +43,7 @@ def test_reject_when_claim_not_allowed(client, auth, test_user):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_token_generation(client, auth, app, test_user):
+def test_token_generation(client, auth, app, test_user, public_key):
 
     # Log in first
     uid, uname, upass = test_user
@@ -66,7 +66,7 @@ def test_token_generation(client, auth, app, test_user):
     token_json = response.get_json()
     decoded_token = jwt.decode(
         jwt=token_json["token"].encode(),
-        key=load_public_key(environ["PUBLIC_JWT_SIGNING_KEY"]),
+        key=public_key,
         algorithms=["RS256"],
         audience="DUMMY_SERVER_A",
     )
@@ -135,7 +135,7 @@ def test_token_rejected_for_bad_right_claim(client, auth, app, test_user):
     )
 
 
-def test_against_general_generator(app):
+def test_against_general_generator(app, public_key):
     """Test that the token generator in FlowAuth and the one in flowkit-jwt-generator produce same results."""
     flowauth_token = jwt.decode(
         flowauth_generate_token(
@@ -150,7 +150,7 @@ def test_against_general_generator(app):
                 }
             },
         ),
-        key=load_public_key(environ["PUBLIC_JWT_SIGNING_KEY"]),
+        key=public_key,
         audience="TEST_SERVER",
     )
     generator_token = jwt.decode(
@@ -166,7 +166,7 @@ def test_against_general_generator(app):
                 }
             },
         ),
-        key=load_public_key(environ["PUBLIC_JWT_SIGNING_KEY"]),
+        key=public_key,
         audience="TEST_SERVER",
     )
     assert generator_token["aud"] == flowauth_token["aud"]
