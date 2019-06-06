@@ -133,7 +133,7 @@ def generate_token(
 
     Examples
     --------
-    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key="SECRET",lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key=rsa_private_key,lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
             "spatial_aggregation": ["admin3"]}})
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
 
@@ -267,10 +267,23 @@ def universal_access_token(flowapi_url: str, access_token_builder: Callable) -> 
 
 
 @click.group(chain=True)
-@click.argument("username", type=str)
-@click.argument("private-key", type=str, envvar="PRIVATE_JWT_SIGNING_KEY")
-@click.argument("lifetime", type=int)
-@click.argument("audience", type=str)
+@click.option("--username", type=str, required=True, help="Username this token is for.")
+@click.option(
+    "--private-key",
+    type=str,
+    envvar="PRIVATE_JWT_SIGNING_KEY",
+    required=True,
+    help="RSA private key, optionally base64 encoded.",
+)
+@click.option(
+    "--lifetime", type=int, required=True, help="Lifetime in days of this token."
+)
+@click.option(
+    "--audience",
+    type=str,
+    required=True,
+    help="FlowAPI server this token may be used with.",
+)
 def print_token(username, private_key, lifetime, audience):
     """
     Generate a JWT token for access to FlowAPI.
@@ -282,19 +295,19 @@ def print_token(username, private_key, lifetime, audience):
     For example:
 
 
-    generate-jwt TEST_USER TEST_SERVER 1 --all-access http://localhost:9090
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER all-access http://localhost:9090
 
     Or,
 
-    generate-jwt TEST_USER TEST_SERVER 1 --query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
 
     \b
-    generate-jwt TEST_USER SECRET 1 TEST_SERVER --all-access http://localhost:9090
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER all-access http://localhost:9090
 
     Or,
 
     \b
-    generate-jwt TEST_USER SECRET 1 TEST_SERVER --query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER query -a admin0 -a admin1 -p run -p get_result daily_location query -a admin0 -p get_result flows
     """
     pass
 
@@ -305,15 +318,15 @@ def output_token(claims, username, private_key, lifetime, audience):
         generate_token(
             flowapi_identifier=audience,
             username=username,
-            private_key=private_key,
+            private_key=load_private_key(private_key),
             lifetime=datetime.timedelta(days=lifetime),
             claims=dict(ChainMap(*claims)),
         )
     )
 
 
-@print_token.command("--query")
-@click.argument("query_name", type=str)
+@print_token.command("query")
+@click.option("--query-name", type=str, help="Name of the query type.", required=True)
 @click.option(
     "--permission",
     "-p",
@@ -342,7 +355,12 @@ def named_query(query_name, permission, aggregation):
     }
 
 
-@print_token.command("--all-access")
-@click.argument("flowapi_url", type=str)
+@print_token.command("all-access")
+@click.option(
+    "--flowapi-url",
+    type=str,
+    required=True,
+    help="URL of the FlowAPI server to grant access to.",
+)
 def print_all_access_token(flowapi_url):
     return get_all_claims_from_flowapi(flowapi_url=flowapi_url)

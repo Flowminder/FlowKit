@@ -8,7 +8,7 @@ from click.testing import CliRunner
 from flowkit_jwt_generator.jwt import print_token, print_all_access_token
 
 
-def test_universal_token_builder(dummy_flowapi, public_key, private_key):
+def test_universal_token_builder(dummy_flowapi, public_key, private_key_bytes):
     """
     Test the universal access token builder cli works as expected.
     """
@@ -16,11 +16,16 @@ def test_universal_token_builder(dummy_flowapi, public_key, private_key):
     result = runner.invoke(
         print_token,
         [
+            "--username",
             "DUMMY_USER",
-            private_key,
+            "--private-key",
+            private_key_bytes,
+            "--lifetime",
             1,
+            "--audience",
             os.environ["FLOWAPI_IDENTIFIER"],
-            "--all-access",
+            "all-access",
+            "--flowapi-url",
             "DUMMY_URL",
         ],
     )
@@ -35,7 +40,7 @@ def test_universal_token_builder(dummy_flowapi, public_key, private_key):
     assert decoded["user_claims"] == dummy_flowapi
 
 
-def test_token_builder(private_key, public_key):
+def test_token_builder(private_key_bytes, public_key):
     """
     Test the arbitrary token builder cli works as expected.
     """
@@ -43,21 +48,27 @@ def test_token_builder(private_key, public_key):
     result = runner.invoke(
         print_token,
         [
+            "--username",
             "DUMMY_USER",
-            private_key,
+            "--private-key",
+            private_key_bytes,
+            "--lifetime",
             1,
+            "--audience",
             os.environ["FLOWAPI_IDENTIFIER"],
-            "--query",
+            "query",
             "-p",
             "run",
             "-p",
             "poll",
+            "--query-name",
             "DUMMY_QUERY",
-            "--query",
+            "query",
             "-a",
             "admin3",
             "-a",
             "admin0",
+            "--query-name",
             "DUMMY_QUERY_B",
         ],
     )
@@ -80,7 +91,7 @@ def test_token_builder(private_key, public_key):
     }
 
 
-def test_token_builder_prompts_with_no_perms(private_key):
+def test_token_builder_prompts_with_no_perms(private_key_bytes):
     """
     Test the arbitrary token builder cli prompts for confirmation if a claimset will be empty.
     """
@@ -88,11 +99,16 @@ def test_token_builder_prompts_with_no_perms(private_key):
     result = runner.invoke(
         print_token,
         [
+            "--username",
             "DUMMY_USER",
-            private_key,
+            "--private-key",
+            private_key_bytes,
+            "--lifetime",
             1,
+            "--audience",
             os.environ["FLOWAPI_IDENTIFIER"],
-            "--query",
+            "query",
+            "--query-name",
             "DUMMY_QUERY",
         ],
     )

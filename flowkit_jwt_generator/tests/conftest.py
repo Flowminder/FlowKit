@@ -32,6 +32,15 @@ def public_key_bytes(public_key) -> bytes:
 
 
 @pytest.fixture
+def private_key_bytes(private_key) -> bytes:
+    return private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+
+
+@pytest.fixture
 def dummy_flowapi(monkeypatch):
     """
     Fixture which monkeypatches requests.get to return a dummy flowapi schema and returns
