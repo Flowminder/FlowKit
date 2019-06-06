@@ -352,7 +352,7 @@ echo "Deploying stack"
 docker stack deploy -docker-stack.yml secrets_test
 ```
 
-This will bring up a single node swarm, create random 16 character passwords for the database users, generate a certificate valid for the `flowkit.api` domain (and point that to `localhost` using `/etc/hosts`), pull all necessary containers, and bring up the API with a newly generated JWT signing key pair.
+This will bring up a single node swarm, create random 16 character passwords for the database users, generate a fresh RSA key pair which links FlowAuth and FlowAPI, generate a certificate valid for the `flowkit.api` domain (and point that to `localhost` using `/etc/hosts`), pull all necessary containers, and bring up FlowAuth and FlowAPI.
 
 For convenience, you can also do `pipenv run secrets_quickstart` from the `secrets_quickstart` directory.
 
