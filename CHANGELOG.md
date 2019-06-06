@@ -16,8 +16,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - The quick-start script now only pulls the docker images for the services that are actually started up. [#898](https://github.com/Flowminder/FlowKit/issues/898)
 - FlowAuth and FlowAPI are now linked using an RSA keypair, instead of per-server shared secrets. [#89](https://github.com/Flowminder/FlowKit/issues/89)
-  - `FLOWAUTH_ADMIN_PASSWORD`
-  - `FLOWAUTH_ADMIN_USERNAME`
 
 ### Fixed
 
