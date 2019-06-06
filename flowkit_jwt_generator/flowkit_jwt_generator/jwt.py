@@ -161,46 +161,6 @@ def generate_token(
     ).decode("utf-8")
 
 
-@pytest.fixture
-def access_token_builder(audience: Optional[str] = None) -> Callable:
-    """
-    Fixture which builds short-life access tokens.
-
-    Parameters
-    ----------
-    audience : str, default None
-        Optionally specify an audience for the token
-
-    Returns
-    -------
-    function
-        Function which returns a token encoding the specified claims.
-    """
-
-    if audience is None and "FLOWAPI_IDENTIFIER" in os.environ:
-        audience = os.environ["FLOWAPI_IDENTIFIER"]
-
-    try:
-        private_key = load_private_key(os.environ["PRIVATE_JWT_SIGNING_KEY"])
-    except KeyError:
-        raise EnvironmentError(
-            "PRIVATE_JWT_SIGNING_KEY environment variable must be set."
-        )
-
-    def token_maker(
-        claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]]
-    ) -> str:
-        return generate_token(
-            flowapi_identifier=audience,
-            username="test",
-            private_key=private_key,
-            lifetime=timedelta(seconds=90),
-            claims=claims,
-        )
-
-    return token_maker
-
-
 def get_all_claims_from_flowapi(
     flowapi_url: str
 ) -> Dict[str, Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]]]:
@@ -247,24 +207,6 @@ def get_all_claims_from_flowapi(
         }
     )
     return all_claims
-
-
-@pytest.fixture
-def universal_access_token(flowapi_url: str, access_token_builder: Callable) -> str:
-    """
-
-    Parameters
-    ----------
-    flowapi_url : str
-    access_token_builder : pytest.fixture
-
-    Returns
-    -------
-    str
-        The token
-
-    """
-    return access_token_builder(get_all_claims_from_flowapi(flowapi_url=flowapi_url))
 
 
 @click.group(chain=True)
