@@ -123,7 +123,8 @@ def generate_token(
     username : str
         Username for the token
     private_key : str or _RSAPrivateKey
-        Private key to use to sign the token
+        Private key to use to sign the token.  May be an _RSAPrivateKey object, or a string
+        containing a PEM encoded key
     lifetime : datetime.timedelta
         Lifetime from now of the token
     claims : dict
