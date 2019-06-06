@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - The quick-start script now only pulls the docker images for the services that are actually started up. [#898](https://github.com/Flowminder/FlowKit/issues/898)
-- The docker-compose files and quick-start script now consistently use the single environment variable `GIT_REVISION_OR_BRANCH` to configure the branch to be deployed.
+- The docker-compose files and quick-start script now consistently use the single environment variable `GIT_REVISION` to configure the version of the docker containers to be deployed.
   (Previously the variables `CONTAINER_TAG` and/or `BRANCH` needed to be set).
 
 ### Fixed

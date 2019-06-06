@@ -19,7 +19,7 @@ services:
 
   flowdb:
     container_name: flowdb
-    image: flowminder/flowdb:${GIT_REVISION_OR_BRANCH:-latest}
+    image: flowminder/flowdb:${GIT_REVISION:-latest}
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
 
@@ -44,7 +44,7 @@ services:
 
   flowdb_testdata:
     container_name: flowdb_testdata
-    image: flowminder/flowdb-testdata:${GIT_REVISION_OR_BRANCH:-latest}
+    image: flowminder/flowdb-testdata:${GIT_REVISION:-latest}
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
@@ -60,7 +60,7 @@ services:
 
   flowdb_synthetic_data:
     container_name: flowdb_synthetic_data
-    image: flowminder/flowdb-synthetic-data:${GIT_REVISION_OR_BRANCH:-latest}
+    image: flowminder/flowdb-synthetic-data:${GIT_REVISION:-latest}
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
@@ -90,7 +90,7 @@ services:
 
   flowmachine:
     container_name: flowmachine
-    image: flowminder/flowmachine:${GIT_REVISION_OR_BRANCH:-latest}
+    image: flowminder/flowmachine:${GIT_REVISION:-latest}
     ports:
       - ${FLOWMACHINE_PORT:?Must set FLOWMACHINE_PORT env var}:5555
     depends_on:
@@ -116,7 +116,7 @@ services:
 
   worked_examples:
     container_name: worked_examples
-    image: flowminder/flowkit-examples:${GIT_REVISION_OR_BRANCH:-latest}
+    image: flowminder/flowkit-examples:${GIT_REVISION:-latest}
     ports:
       - ${WORKED_EXAMPLES_PORT:?Must set WORKED_EXAMPLES_PORT env var}:8888
     tty: true
@@ -140,7 +140,7 @@ services:
 
   flowapi:
     container_name: flowapi
-    image: flowminder/flowapi:${GIT_REVISION_OR_BRANCH:-latest}
+    image: flowminder/flowapi:${GIT_REVISION:-latest}
     ports:
       - ${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}:9090
     environment:
@@ -162,7 +162,7 @@ services:
 
   flowauth:
     container_name: flowauth
-    image: flowminder/flowauth:${GIT_REVISION_OR_BRANCH:-latest}
+    image: flowminder/flowauth:${GIT_REVISION:-latest}
     ports:
       - ${FLOWAUTH_PORT:?Must set FLOWAUTH_PORT env var}:80
     environment:
@@ -187,7 +187,7 @@ services:
 
   flowetl:
     container_name: flowetl
-    image: flowminder/flowetl:${GIT_REVISION_OR_BRANCH:-latest}
+    image: flowminder/flowetl:${GIT_REVISION:-latest}
     restart: always
     tty: true
     stdin_open: true

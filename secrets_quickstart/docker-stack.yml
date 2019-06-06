@@ -29,7 +29,7 @@ networks:
   api:
 services:
     flowdb:
-        image: "flowminder/flowdb-testdata:${GIT_REVISION_OR_BRANCH:-latest}"
+        image: "flowminder/flowdb-testdata:${GIT_REVISION:-latest}"
         environment:
           - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_PASSWORD
         ports:
@@ -52,7 +52,7 @@ services:
             aliases:
               - flowdb
     flowmachine:
-        image: "flowminder/flowmachine:${GIT_REVISION_OR_BRANCH:-latest}"
+        image: "flowminder/flowmachine:${GIT_REVISION:-latest}"
         environment:
             - FLOWDB_PORT=5432
             - FLOWDB_HOST=flowdb
@@ -68,7 +68,7 @@ services:
           - redis
           - zero
     flowapi:
-        image: "flowminder/flowapi:${GIT_REVISION_OR_BRANCH:-latest}"
+        image: "flowminder/flowapi:${GIT_REVISION:-latest}"
         ports:
           - "9090:9090"
         environment:
