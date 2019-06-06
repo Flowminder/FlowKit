@@ -81,12 +81,12 @@ class Flows(GeoDataMixin, GraphMixin, Query):
 
     @property
     def index_cols(self):
-        cols = self.spatial_unit.location_columns
+        cols = self.spatial_unit.location_id_columns
         return [["{}_from".format(x) for x in cols], ["{}_to".format(x) for x in cols]]
 
     @property
     def column_names(self) -> List[str]:
-        cols = self.spatial_unit.location_columns
+        cols = self.spatial_unit.location_id_columns
         return (
             [f"{col}_from" for col in cols] + [f"{col}_to" for col in cols] + ["count"]
         )
@@ -119,7 +119,7 @@ class Flows(GeoDataMixin, GraphMixin, Query):
         """
         self.spatial_unit.verify_criterion("has_geography")
 
-        loc_cols = self.spatial_unit.location_columns
+        loc_cols = self.spatial_unit.location_id_columns
         loc_cols_string = ",".join(loc_cols)
         loc_cols_from_string = ",".join([f"{col}_from" for col in loc_cols])
         loc_cols_to_string = ",".join([f"{col}_to" for col in loc_cols])
@@ -212,12 +212,12 @@ class OutFlow(BaseInOutFlow):
 
     @property
     def index_cols(self):
-        cols = self.spatial_unit.location_columns
+        cols = self.spatial_unit.location_id_columns
         return [[f"{x}_from" for x in cols]]
 
     @property
     def column_names(self) -> List[str]:
-        cols = self.spatial_unit.location_columns
+        cols = self.spatial_unit.location_id_columns
         return [f"{col}_from" for col in cols] + ["total"]
 
 
@@ -234,10 +234,10 @@ class InFlow(BaseInOutFlow):
 
     @property
     def index_cols(self):
-        cols = self.spatial_unit.location_columns
+        cols = self.spatial_unit.location_id_columns
         return [[f"{x}_to" for x in cols]]
 
     @property
     def column_names(self) -> List[str]:
-        cols = self.spatial_unit.location_columns
+        cols = self.spatial_unit.location_id_columns
         return [f"{col}_to" for col in cols] + ["total"]

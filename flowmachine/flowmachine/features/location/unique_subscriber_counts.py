@@ -99,7 +99,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.spatial_unit.location_columns + ["unique_subscriber_counts"]
+        return self.spatial_unit.location_id_columns + ["unique_subscriber_counts"]
 
     def _make_query(self):
         """
@@ -107,7 +107,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         metaclass Query().
         """
 
-        relevant_columns = ",".join(self.spatial_unit.location_columns)
+        relevant_columns = ",".join(self.spatial_unit.location_id_columns)
         sql = """
         SELECT {rc}, COUNT(unique_subscribers) AS unique_subscriber_counts FROM 
         (SELECT 

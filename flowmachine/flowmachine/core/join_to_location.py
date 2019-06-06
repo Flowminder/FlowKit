@@ -70,7 +70,7 @@ class JoinToLocation(Query):
 
     @property
     def column_names(self) -> List[str]:
-        right_columns = self.spatial_unit.location_columns
+        right_columns = self.spatial_unit.location_id_columns
         left_columns = self.left.column_names
         for column in right_columns:
             if column in left_columns:
@@ -78,7 +78,7 @@ class JoinToLocation(Query):
         return left_columns + right_columns
 
     def _make_query(self):
-        right_columns = self.spatial_unit.location_columns
+        right_columns = self.spatial_unit.location_id_columns
         left_columns = self.left.column_names
         for column in right_columns:
             if column in left_columns:

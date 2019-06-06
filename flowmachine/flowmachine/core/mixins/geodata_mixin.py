@@ -46,7 +46,7 @@ class GeoDataMixin:
         list
             The columns this query contains
         """
-        join_columns_string = ",".join(self.spatial_unit.location_columns)
+        join_columns_string = ",".join(self.spatial_unit.location_id_columns)
 
         self.spatial_unit.verify_criterion("has_geography")
 

@@ -29,14 +29,14 @@ class ModalLocation(MultiLocation, BaseLocation, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"] + self.spatial_unit.location_columns
+        return ["subscriber"] + self.spatial_unit.location_id_columns
 
     def _make_query(self):
         """
         Default query method implemented in the
         metaclass Query().
         """
-        location_columns_string = ", ".join(self.spatial_unit.location_columns)
+        location_columns_string = ", ".join(self.spatial_unit.location_id_columns)
 
         # This query represents the concatenated locations of the
         # subscribers

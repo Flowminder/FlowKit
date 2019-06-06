@@ -104,7 +104,7 @@ class MostFrequentLocation(BaseLocation, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"] + self.spatial_unit.location_columns
+        return ["subscriber"] + self.spatial_unit.location_id_columns
 
     def _make_query(self):
         """
@@ -113,7 +113,7 @@ class MostFrequentLocation(BaseLocation, Query):
         """
         subscriber_query = "{} ORDER BY time".format(self.subscriber_locs.get_query())
 
-        relevant_columns = ", ".join(self.spatial_unit.location_columns)
+        relevant_columns = ", ".join(self.spatial_unit.location_id_columns)
 
         # Create a table which has the total times each subscriber visited
         # each location

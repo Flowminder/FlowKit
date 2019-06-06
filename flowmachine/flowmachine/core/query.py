@@ -937,7 +937,7 @@ class Query(metaclass=ABCMeta):
         cols = self.column_names
         ixen = []
         try:
-            loc_cols = self.spatial_unit.location_columns
+            loc_cols = self.spatial_unit.location_id_columns
             if set(loc_cols).issubset(cols):
                 ixen.append(loc_cols)
         except AttributeError:

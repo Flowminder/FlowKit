@@ -51,8 +51,8 @@ class DistanceMatrix(GraphMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        col_names = [f"{c}_from" for c in self.spatial_unit.location_columns]
-        col_names += [f"{c}_to" for c in self.spatial_unit.location_columns]
+        col_names = [f"{c}_from" for c in self.spatial_unit.location_id_columns]
+        col_names += [f"{c}_to" for c in self.spatial_unit.location_id_columns]
         col_names += ["distance"]
         if self.return_geometry:
             col_names += ["geom_origin", "geom_destination"]
@@ -60,10 +60,10 @@ class DistanceMatrix(GraphMixin, Query):
 
     def _make_query(self):
         cols_A = ",".join(
-            [f"A.{c} AS {c}_from" for c in self.spatial_unit.location_columns]
+            [f"A.{c} AS {c}_from" for c in self.spatial_unit.location_id_columns]
         )
         cols_B = ",".join(
-            [f"B.{c} AS {c}_to" for c in self.spatial_unit.location_columns]
+            [f"B.{c} AS {c}_to" for c in self.spatial_unit.location_id_columns]
         )
 
         geom_query = self.spatial_unit.get_geom_query()

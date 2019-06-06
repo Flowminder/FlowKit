@@ -101,14 +101,14 @@ class LastLocation(BaseLocation, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"] + self.spatial_unit.location_columns
+        return ["subscriber"] + self.spatial_unit.location_id_columns
 
     def _make_query(self):
         """
         Default query method implemented in the
         metaclass Query().
         """
-        relevant_columns = ",".join(self.spatial_unit.location_columns)
+        relevant_columns = ",".join(self.spatial_unit.location_id_columns)
 
         sql = """
         SELECT final_time.subscriber, {rc}

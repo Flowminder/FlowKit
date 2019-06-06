@@ -29,7 +29,7 @@ def test_get_geom_query_column_names(
     if not exemplar_spatial_unit_param.has_geography:
         pytest.skip("CellSpatialUnit does not have a get_geom_query method")
     geom_query = exemplar_spatial_unit_param.get_geom_query()
-    cols = exemplar_spatial_unit_param.location_columns + ["geom"]
+    cols = exemplar_spatial_unit_param.location_id_columns + ["geom"]
     cq = CustomQuery(geom_query, cols)
     assert sorted(get_column_names_from_run(cq)) == sorted(cols)
 
@@ -81,18 +81,18 @@ def test_get_geom_query_column_names(
         ({"spatial_unit_type": "grid", "size": 5}, ["grid_id"]),
     ],
 )
-def test_spatial_unit_location_columns(make_spatial_unit_args, loc_cols):
+def test_spatial_unit_location_id_columns(make_spatial_unit_args, loc_cols):
     """
-    Test that the SpatialUnit classes have the correct location_columns properties.
+    Test that the SpatialUnit classes have the correct location_id_columns properties.
     """
     su = make_spatial_unit(**make_spatial_unit_args)
-    assert loc_cols == su.location_columns
+    assert loc_cols == su.location_id_columns
 
 
 def test_polygon_spatial_unit_column_list():
     """
     Test that, when supplying polygon_column_names to PolygonSpatialUnit as a
-    list, location_columns returns it as a new list.
+    list, location_id_columns returns it as a new list.
     """
     passed_cols = ["id"]
     psu = PolygonSpatialUnit(
@@ -100,7 +100,7 @@ def test_polygon_spatial_unit_column_list():
         polygon_table="infrastructure.sites",
         geom_column="geom_point",
     )
-    loc_cols = psu.location_columns
+    loc_cols = psu.location_id_columns
     assert passed_cols == loc_cols
     assert id(passed_cols) != id(loc_cols)
 

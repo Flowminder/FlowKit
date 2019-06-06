@@ -125,11 +125,11 @@ class TotalNetworkObjects(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.spatial_unit.location_columns + ["value", "datetime"]
+        return self.spatial_unit.location_id_columns + ["value", "datetime"]
 
     def _make_query(self):
-        cols = self.network_object.location_columns
-        group_cols = self.spatial_unit.location_columns
+        cols = self.network_object.location_id_columns
+        group_cols = self.spatial_unit.location_id_columns
         for column in group_cols:
             if column in cols:
                 cols.remove(column)
@@ -214,10 +214,10 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.spatial_unit.location_columns + ["value", "datetime"]
+        return self.spatial_unit.location_id_columns + ["value", "datetime"]
 
     def _make_query(self):
-        group_cols = ",".join(self.spatial_unit.location_columns)
+        group_cols = ",".join(self.spatial_unit.location_id_columns)
         if self.statistic == "mode":
             av_call = f"pg_catalog.mode() WITHIN GROUP(ORDER BY z.value)"
         else:

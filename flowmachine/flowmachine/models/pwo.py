@@ -74,7 +74,7 @@ class _populationBuffer(Query):
         (i..e an origin) and all its possible
         counterparts (i.e. destinations).
         """
-        cols = self.spatial_unit.location_columns
+        cols = self.spatial_unit.location_id_columns
 
         from_cols = ", ".join("{c}_from".format(c=c) for c in cols)
         to_cols = ", ".join("{c}_to".format(c=c) for c in cols)
@@ -99,7 +99,7 @@ class _populationBuffer(Query):
 
     @property
     def column_names(self) -> List[str]:
-        cols = self.spatial_unit.location_columns
+        cols = self.spatial_unit.location_id_columns
 
         return (
             ["id"]
@@ -114,7 +114,7 @@ class _populationBuffer(Query):
         that calculates the population that is
         covered by a buffer.
         """
-        cols = self.spatial_unit.location_columns
+        cols = self.spatial_unit.location_id_columns
 
         from_cols = ", ".join("B.{c}_from".format(c=c) for c in cols)
         outer_from_cols = ", ".join("C.{c}_from".format(c=c) for c in cols)
@@ -368,18 +368,20 @@ class PopulationWeightedOpportunities(Model):
             ix = [
                 "{}_{}".format(c, d)
                 for d in ("from", "to")
-                for c in self.spatial_unit.location_columns
+                for c in self.spatial_unit.location_id_columns
             ]
             population_buffer.set_index(ix, inplace=True)
 
             M = population_df["total"].sum()
-            N = len(population_df[self.spatial_unit.location_columns].drop_duplicates())
+            N = len(
+                population_df[self.spatial_unit.location_id_columns].drop_duplicates()
+            )
             beta = 1 / M
 
             locations = population_df[
-                self.spatial_unit.location_columns
+                self.spatial_unit.location_id_columns
             ].values.tolist()
-            population_df.set_index(self.spatial_unit.location_columns, inplace=True)
+            population_df.set_index(self.spatial_unit.location_id_columns, inplace=True)
 
         if not departure_rate_vector:
             logger.warning(
@@ -432,7 +434,7 @@ class PopulationWeightedOpportunities(Model):
         ix = [
             "{}_{}".format(c, d)
             for d in ("from", "to")
-            for c in self.spatial_unit.location_columns
+            for c in self.spatial_unit.location_id_columns
         ]
         ix += ["prediction", "probability"]
         res = pd.DataFrame(results, columns=ix)
