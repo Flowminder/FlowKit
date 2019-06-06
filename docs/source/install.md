@@ -4,24 +4,24 @@ Title: Installation
 
 There are three main ways to install FlowKit.
 
-* [Quick Install](#quickinstall); suitable for a try-out on a local PC, includes basic example using FlowClient.
-* [Developer Install](#developers); for those wishing to contribute code
-* [Production Install](#prodinstall); for deployment, e.g. inside an MNO firewall
-
+- [Quick Install](#quickinstall); suitable for a try-out on a local PC, includes basic example using FlowClient.
+- [Developer Install](#developers); for those wishing to contribute code
+- [Production Install](#prodinstall); for deployment, e.g. inside an MNO firewall
 
 <a name="installationrequirements">
 
 ## Installation Requirements
 
 Most FlowKit components (FlowDB, FlowMachine, FlowAPI, FlowAuth) are distributed as docker containers. To install these, you need:
+
 - `docker >= 17.12.0`
 - `docker-compose >= 1.21.0`
 
 In addition, running FlowClient requires:
+
 - `Python >= 3.6`
 
 There are additional requirements for a development setup. See the [Developer install](#developers) section below for details.
-
 
 <a name="quickinstall">
 
@@ -35,11 +35,11 @@ These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pi
 
 Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the Docker Hub repositories [flowminder/flowapi](https://hub.docker.com/r/flowminder/flowapi), [flowminder/flowmachine](https://hub.docker.com/r/flowminder/flowmachine), [flowminder/flowdb](https://hub.docker.com/r/flowminder/flowdb), [flowminder/flowauth](https://hub.docker.com/r/flowminder/flowauth), and [flowminder/flowkit-examples](https://hub.docker.com/r/flowminder/flowkit-examples) respectively. To install them, you will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
-Start the FlowKit test system by running 
+Start the FlowKit test system by running
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh)
-``` 
+```
 
 This will pull any necessary docker containers, and start the system in the background with the API exposed on port `9090` by default, and the FlowAuth authentication system accessible by visiting <a href="http://localhost:9091/" target="_blank">http://localhost:9091</a> using your web browser.
 
@@ -47,30 +47,30 @@ The default system includes a small amount of test data. For a test system with 
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) larger_data
-```  
+```
 
 !!! warning
-    The larger data container will take considerably longer to start up, as it generates data when first run.
+The larger data container will take considerably longer to start up, as it generates data when first run.
 
-The [worked examples](worked_examples) are also available as part of the demo system. To install these run 
+The [worked examples](worked_examples) are also available as part of the demo system. To install these run
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples smaller_data
-```  
+```
 
-for the examples with a small dataset, or 
+for the examples with a small dataset, or
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh) examples
-```  
+```
 
 to get the examples with the larger dataset (the one used when producing this documentation).
 
 !!! info
-    The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the [Flows Above Normal](worked_examples/flows-above-normal.ipynb) example because this uses data for dates outside the range included in the small dataset.
+The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the [Flows Above Normal](worked_examples/flows-above-normal.ipynb) example because this uses data for dates outside the range included in the small dataset.
 
 !!! info
-    The worked examples make use of [Mapbox GL](https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/) for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions [here](https://account.mapbox.com/)), and set this as the value of the `MAPBOX_ACCESS_TOKEN` environment variable before running the above commands.
+The worked examples make use of [Mapbox GL](https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/) for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions [here](https://account.mapbox.com/)), and set this as the value of the `MAPBOX_ACCESS_TOKEN` environment variable before running the above commands.
 
 To shut down the system, you can either stop all the docker containers directly, or run
 
@@ -85,7 +85,6 @@ In order to use the test system, now [install FlowClient](#flowclient), and gene
 Visit <a href="http://localhost:9091/" target="_blank">http://localhost:9091</a> and log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`. `TEST_USER` is already set up to generate tokens for the FlowAPI instance started by the quick start script.
 
 See the [administrator section](administrator.md#granting-user-permissions-in-flowauth) for details of how to add servers and users or modify user permissions, or the [analyst section](analyst.md#flowauth) for instructions to generate a token.
-
 
 ### FlowClient <a name="flowclient"> </a>
 
@@ -134,13 +133,11 @@ pipenv run pytest
 
 Also see [Setting up a development environment](developer/dev_environment_setup.md) for further details on setting up FlowKit for code development.
 
-
  <a name="prodinstall">
 
-## Production Install 
+## Production Install
 
 Contact Flowminder on [flowkit@flowminder.org](mailto:flowkit@flowminder.org) for full instructions. Instructions on FlowAuth production deployment and dealing with docker secrets is described below. Note that these instructions are likely subject to change.
-
 
 ### FlowAuth Production Deployment
 
@@ -152,7 +149,7 @@ FlowAuth will attempt to create all necessary tables when first accessed, but wi
 
 FlowAuth requires you to create at least one admin user by setting the `FLOWAUTH_ADMIN_USER` and `FLOWAUTH_ADMIN_PASSWORD` environment variables or providing them as secrets. You can combine these environment variables with the `INIT_DB` environment variable.
 
-You _must_ also provide three additional environment variables or secrets: `FLOWAUTH_FERNET_KEY`, `SECRET_KEY`, and `PRIVATE_JWT_SIGNING_KEY`. `FLOWAUTH_FERNET_KEY` is used to encrypt server secret keys, and tokens while 'at rest' in the database, and decrypt them for use. `SECRET_KEY` is used to secure session, and CSRF protection cookies.
+You _must_ also provide three additional environment variables or secrets: `FLOWAUTH_FERNET_KEY`, `SECRET_KEY`, and `PRIVATE_JWT_SIGNING_KEY`. `FLOWAUTH_FERNET_KEY` is used to encrypt tokens while 'at rest' in the database, and decrypt them for use. `SECRET_KEY` is used to secure session, and CSRF protection cookies.
 
 `PRIVATE_JWT_SIGNING_KEY` is used to sign the tokens generated by FlowAuth, which ensures that they can be trusted by FlowAPI. When deploying instances of FlowAPI, you will need to supply them with the corresponding _public_ key, to allow them to verify the tokens were produced by this instance of FlowAuth.
 
@@ -162,61 +159,59 @@ You can use `openssl` to generate a private key:
 openssl genrsa -out flowauth-private-key.key 4096
 ```
 
-And then create a public key from the key file (`openssl rsa -pubout -in  flowauth-private-key.key -out flowapi-public-key.pub`), or download it from FlowAuth once started. Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key - FlowAuth and FlowAPI will automatically decode it for use. 
+And then create a public key from the key file (`openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub`), or download it from FlowAuth once started. Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. `base64 -i flowauth-private-key.key`). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.
 
 By default, `SECRET_KEY` will be set to `secret`. You should supply this to ensure a secure system.
 
-While `SECRET_KEY` can be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.  
-
+While `SECRET_KEY` can be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.
 
 ### Running with Secrets
 
 The standard Docker compose file supplies a number of 'secret' values as environment variables. Typically, this is a bad idea.
 
-Instead, you should make use of [docker secrets](https://docs.docker.com/engine/swarm/secrets/), which are stored securely in docker and only made available _inside_ containers.  The `secrets_quickstart` directory contains a docker _stack_ file (`docker-stack.yml`). The stack file is very similar to a compose file, but removes container names, and adds a new section - [secrets](https://docs.docker.com/compose/compose-file/#secrets-configuration-reference).
+Instead, you should make use of [docker secrets](https://docs.docker.com/engine/swarm/secrets/), which are stored securely in docker and only made available _inside_ containers. The `secrets_quickstart` directory contains a docker _stack_ file (`docker-stack.yml`). The stack file is very similar to a compose file, but removes container names, and adds a new section - [secrets](https://docs.docker.com/compose/compose-file/#secrets-configuration-reference).
 
 The stack expects you to provide eight secrets:
 
- - cert-flowkit.pem
- 
-    An SSL certificate file (should contain private key as well)
+- cert-flowkit.pem
 
- - FLOWAPI_FLOWDB_USER
- 
-    The username the API will use to connect to FlowDB
+  An SSL certificate file (should contain private key as well)
 
- - FLOWAPI_FLOWDB_PASSWORD
- 
-    The password that the API will use to connect to FlowDB
+- FLOWAPI_FLOWDB_USER
 
- - FLOWMACHINE_FLOWDB_USER
- 
-    The username that FlowMachine will use to connect to FlowDB
+  The username the API will use to connect to FlowDB
 
- - FLOWMACHINE_FLOWDB_PASSWORD
- 
-    The password that FlowMachine will use to connect to FlowDB
+- FLOWAPI_FLOWDB_PASSWORD
 
- - POSTGRES_PASSWORD
- 
-    The superuser password for the `flowdb` user 
+  The password that the API will use to connect to FlowDB
 
- - REDIS_PASSWORD
- 
-    The password for redis 
+- FLOWMACHINE_FLOWDB_USER
 
- - PRIVATE_JWT_SIGNING_KEY
- 
-    The secret key used to sign API access tokens, should be an RSA private key
- 
- - PUBLIC_JWT_SIGNING_KEY
- 
-    The public key used to verify API access tokens, should be the public key which matches PRIVATE_JWT_SIGNING_KEY
- 
- - FLOWAPI_IDENTIFIER
- 
-    The unique name of the FlowAPI server. Used to verify that a decoded token is intended for _this_ server.
-    
+  The username that FlowMachine will use to connect to FlowDB
+
+- FLOWMACHINE_FLOWDB_PASSWORD
+
+  The password that FlowMachine will use to connect to FlowDB
+
+- POSTGRES_PASSWORD
+
+  The superuser password for the `flowdb` user
+
+- REDIS_PASSWORD
+
+  The password for redis
+
+- PRIVATE_JWT_SIGNING_KEY
+
+  The secret key used to sign API access tokens, should be an RSA private key
+
+- PUBLIC_JWT_SIGNING_KEY
+
+  The public key used to verify API access tokens, should be the public key which matches PRIVATE_JWT_SIGNING_KEY
+
+- FLOWAPI_IDENTIFIER
+
+  The unique name of the FlowAPI server. Used to verify that a decoded token is intended for _this_ server.
 
 To make use of secrets you will need to use docker swarm. For testing purposes, you can set up a single node swarm by running `docker swarm init`.
 
