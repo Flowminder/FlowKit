@@ -10,50 +10,50 @@ version: '3.5'
 services:
 
   flowdb:
-    image: flowminder/flowdb:${CONTAINER_TAG:-latest}
+    image: flowminder/flowdb:${GIT_REV_OR_BRANCH:-latest}
     build:
       context: ./flowdb/
       dockerfile: Dockerfile
 
   flowdb_testdata:
-    image: flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}
+    image: flowminder/flowdb-testdata:${GIT_REV_OR_BRANCH:-latest}
     build:
       context: ./flowdb/testdata/
       dockerfile: Dockerfile
 
   flowdb_synthetic_data:
-    image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
+    image: flowminder/flowdb-synthetic-data:${GIT_REV_OR_BRANCH:-latest}
     build:
       context: ./flowdb/testdata/
       dockerfile: Dockerfile.synthetic_data
 
   flowmachine:
-    image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
+    image: flowminder/flowmachine:${GIT_REV_OR_BRANCH:-latest}
     build:
       context: ./flowmachine
       dockerfile: Dockerfile
 
   worked_examples:
     container_name: worked_examples
-    image: flowminder/flowkit-examples:${CONTAINER_TAG:-latest}
+    image: flowminder/flowkit-examples:${GIT_REV_OR_BRANCH:-latest}
     build:
       context: .
       dockerfile: Dockerfile
 
   flowapi:
-    image: flowminder/flowapi:${CONTAINER_TAG:-latest}
+    image: flowminder/flowapi:${GIT_REV_OR_BRANCH:-latest}
     build:
       context: ./flowapi
       dockerfile: Dockerfile
 
   flowauth:
-    image: flowminder/flowauth:${CONTAINER_TAG:-latest}
+    image: flowminder/flowauth:${GIT_REV_OR_BRANCH:-latest}
     build:
       context: ./flowauth
       dockerfile: Dockerfile
 
   flowetl:
-    image: flowminder/flowetl:${CONTAINER_TAG:-latest}
+    image: flowminder/flowetl:${GIT_REV_OR_BRANCH:-latest}
     build:
       context: ./flowetl
       dockerfile: Dockerfile
