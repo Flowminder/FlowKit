@@ -11,6 +11,7 @@ Level classes.
 import pytest
 
 from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.features import TotalNetworkObjects, AggregateNetworkObjects
 
 
@@ -78,19 +79,30 @@ def test_count_returns_correct_values(get_dataframe):
     assert df.value[34] == 31
 
 
-@pytest.mark.parametrize(
-    "bad_arg, bad_val",
-    [
-        ("total_by", "BAD_TOTAL_BY"),
-        ("spatial_unit", make_spatial_unit("cell")),
-        ("network_object", "BAD_OBJECT"),
-    ],
-)
-def test_bad_params(bad_arg, bad_val):
-    """Test value errors are raised for bad params"""
+def test_bad_total_by():
+    """Test value errors are raised for bad 'total_by' param"""
     with pytest.raises(ValueError):
         TotalNetworkObjects(
-            start="2016-01-01", stop="2016-12-30", table="calls", **{bad_arg: bad_val}
+            start="2016-01-01",
+            stop="2016-12-30",
+            table="calls",
+            total_by="BAD_TOTAL_BY",
+        )
+
+
+@pytest.mark.parametrize(
+    "bad_arg, spatial_unit_type",
+    [("spatial_unit", "cell"), ("network_object", "lat-lon")],
+)
+def test_bad_spatial_units(bad_arg, spatial_unit_type):
+    """
+    Test InvalidSpatialUnitErrors are raised for bad 'network_object' or
+    'spatial_unit' params.
+    """
+    su = make_spatial_unit(spatial_unit_type)
+    with pytest.raises(InvalidSpatialUnitError):
+        TotalNetworkObjects(
+            start="2016-01-01", stop="2016-12-30", table="calls", **{bad_arg: su}
         )
 
 

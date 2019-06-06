@@ -13,7 +13,7 @@ representing where an subscriber is on a given day.
 """
 import datetime
 
-from ...core.spatial_unit import admin_spatial_unit
+from ...core.spatial_unit import make_spatial_unit
 from .last_location import LastLocation
 from .most_frequent_location import MostFrequentLocation
 
@@ -42,10 +42,9 @@ def locate_subscribers(
     start, stop : str
         iso format date range for the the time frame,
         e.g. 2016-01-01 or 2016-01-01 14:03:01
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
-                   default admin_spatial_unit(level=3)
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to which subscriber locations will be mapped. See the
-        docstring of spatial_unit.py for more information.
+        docstring of make_spatial_unit for more information.
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -95,7 +94,7 @@ def locate_subscribers(
                         .
     """
     if spatial_unit is None:
-        spatial_unit = admin_spatial_unit(level=3)
+        spatial_unit = make_spatial_unit("admin", level=3)
 
     if method == "last":
         return LastLocation(
@@ -150,10 +149,9 @@ def daily_location(
     stop : str
         optionally specify a stop datetime in iso format date for the day in question,
         e.g. 2016-01-02 06:00:00
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
-                   default admin_spatial_unit(level=3)
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to which subscriber locations will be mapped. See the
-        docstring of spatial_unit.py for more information.
+        docstring of make_spatial_unit for more information.
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -186,7 +184,7 @@ def daily_location(
 
     """
     if spatial_unit is None:
-        spatial_unit = admin_spatial_unit(level=3)
+        spatial_unit = make_spatial_unit("admin", level=3)
 
     # Temporary band-aid; marshmallow deserialises date strings
     # to date objects, so we convert it back here because the

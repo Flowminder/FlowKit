@@ -30,10 +30,9 @@ class LastLocation(BaseLocation, Query):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit,
-                   default admin3
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to which subscriber locations will be mapped. See the
-        docstring of spatial_unit.py for more information.
+        docstring ofmake_spatial_unit for more information.
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but

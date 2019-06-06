@@ -18,7 +18,7 @@ from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 
 from ...core.query import Query
 from ...core.join_to_location import location_joined_query
-from ...core.spatial_unit import CellSpatialUnit
+from ...core.spatial_unit import make_spatial_unit
 
 import structlog
 
@@ -46,7 +46,7 @@ class _SubscriberCells(Query):
         self.table = table
         self.subscriber_identifier = subscriber_identifier
         self.ignore_nulls = ignore_nulls
-        self.spatial_unit = CellSpatialUnit()
+        self.spatial_unit = make_spatial_unit("cell")
 
         self.tables = table
         cols = [self.subscriber_identifier, "datetime", "location_id"]
@@ -122,7 +122,7 @@ def subscriber_locations(
     start,
     stop,
     *,
-    spatial_unit=CellSpatialUnit(),
+    spatial_unit=make_spatial_unit("cell"),
     hours="all",
     table="all",
     subscriber_identifier="msisdn",
@@ -140,9 +140,9 @@ def subscriber_locations(
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default CellSpatialUnit()
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
         Spatial unit to which subscriber locations will be mapped. See the
-        docstring of spatial_unit.py for more information.
+        docstring of make_spatial_unit for more information.
     hours : tuple of ints, default 'all'
         subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but

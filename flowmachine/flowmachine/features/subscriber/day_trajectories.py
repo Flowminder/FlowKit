@@ -49,7 +49,7 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
         Default query method implemented in the
         metaclass Query().
         """
-        relevant_columns = self._get_relevant_columns()
+        location_columns_string = ", ".join(self.spatial_unit.location_columns)
 
         # This query represents the concatenated locations of the
         # subscribers. Similar to the first step when calculating
@@ -58,15 +58,13 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
             lambda x, y: x.union(y), (self._append_date(dl) for dl in self._all_dls)
         )
 
-        sql = """
+        sql = f"""
         SELECT 
             all_locs.subscriber, 
-            {rc},
+            {location_columns_string},
             all_locs.date
-        FROM ({all_locs}) AS all_locs
+        FROM ({all_locs.get_query()}) AS all_locs
         ORDER BY all_locs.subscriber, all_locs.date
-        """.format(
-            all_locs=all_locs.get_query(), rc=relevant_columns
-        )
+        """
 
         return sql

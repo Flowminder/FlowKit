@@ -48,20 +48,14 @@ class GeoDataMixin:
         """
         join_columns_string = ",".join(self.spatial_unit.location_columns)
 
-        try:
-            geom_query = self.spatial_unit.get_geom_query()
-        except AttributeError:
-            raise ValueError(
-                f"Query {self} with spatial_unit {self.spatial_unit} has no "
-                "geography information."
-            )
+        self.spatial_unit.verify_criterion("has_geography")
 
         sql = f"""
         SELECT
             row_number() over() AS gid,
             *
         FROM ({self.get_query()}) AS Q
-        LEFT JOIN ({geom_query}) AS G
+        LEFT JOIN ({self.spatial_unit.get_geom_query()}) AS G
         USING ({join_columns_string})
         """
         cols = list(set(self.column_names + ["gid", "geom"]))

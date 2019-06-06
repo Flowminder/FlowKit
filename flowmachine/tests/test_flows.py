@@ -103,7 +103,7 @@ def test_valid_flows_geojson(exemplar_spatial_unit_param):
     Check that valid geojson is returned for Flows.
 
     """
-    if make_spatial_unit("cell") == exemplar_spatial_unit_param:
+    if not exemplar_spatial_unit_param.has_geography:
         pytest.skip("Query with spatial_unit=CellSpatialUnit() has no geometry.")
     dl = daily_location("2016-01-01", spatial_unit=exemplar_spatial_unit_param)
     dl2 = daily_location("2016-01-02", spatial_unit=exemplar_spatial_unit_param)

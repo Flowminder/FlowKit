@@ -81,10 +81,3 @@ class MultiLocation:
         date_string = f"to_date('{dl.start}','YYYY-MM-DD') AS date"
         sql = f"SELECT *, {date_string} FROM ({dl.get_query()}) AS dl"
         return CustomQuery(sql, self.spatial_unit.location_columns + ["date"])
-
-    def _get_relevant_columns(self):
-        """
-        Get a string of the location related columns
-        """
-
-        return ", ".join(self.spatial_unit.location_columns)

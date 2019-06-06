@@ -26,7 +26,7 @@ def test_get_geom_query_column_names(
     """
     Test that the get_geom_query method returns a query with the correct columns.
     """
-    if CellSpatialUnit() == exemplar_spatial_unit_param:
+    if not exemplar_spatial_unit_param.has_geography:
         pytest.skip("CellSpatialUnit does not have a get_geom_query method")
     geom_query = exemplar_spatial_unit_param.get_geom_query()
     cols = exemplar_spatial_unit_param.location_columns + ["geom"]
@@ -227,8 +227,8 @@ def test_make_spatial_unit_raises_errors(make_spatial_unit_args):
 @pytest.mark.parametrize(
     "make_spatial_unit_args, criterion, negate",
     [
-        ({"spatial_unit_type": "cell"}, "has_geometry", False),
-        ({"spatial_unit_type": "versioned-cell"}, "has_geometry", True),
+        ({"spatial_unit_type": "cell"}, "has_geography", False),
+        ({"spatial_unit_type": "versioned-cell"}, "has_geography", True),
         ({"spatial_unit_type": "admin", "level": 3}, "has_lat_lon_columns", False),
         ({"spatial_unit_type": "lat-lon"}, "has_lat_lon_columns", True),
         ({"spatial_unit_type": "admin", "level": 3}, "is_network_object", False),

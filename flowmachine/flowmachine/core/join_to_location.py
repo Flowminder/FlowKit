@@ -51,11 +51,8 @@ class JoinToLocation(Query):
     """
 
     def __init__(self, left, *, spatial_unit, time_col="time"):
-        if spatial_unit == CellSpatialUnit():
-            # Nothing to join in this case
-            raise ValueError(
-                "CellSpatialUnit is not a valid spatial unit type for JoinToLocation"
-            )
+        # No need to join if spatial_unit has no geography information (i.e. just cell ID)
+        spatial_unit.verify_criterion("has_geography")
         self.spatial_unit = spatial_unit
         self.left = left
         self.time_col = time_col
@@ -113,7 +110,7 @@ class JoinToLocation(Query):
 def location_joined_query(left, *, spatial_unit, time_col="time"):
     """
     Helper function which returns JoinToLocation(left_query, spatial_unit, time_col)
-    unless spatial_unit == CellSpatialUnit(), in which case this returns left_query.
+    if spatial_unit has geography information, otherwise returns left_query.
 
     Parameters
     ----------
@@ -133,7 +130,7 @@ def location_joined_query(left, *, spatial_unit, time_col="time"):
     flowmachine.Query
         Either a JoinToLocation object, or the input parameter 'left'
     """
-    if spatial_unit == CellSpatialUnit():
-        return left
-    else:
+    if spatial_unit.has_geography:
         return JoinToLocation(left, spatial_unit=spatial_unit, time_col=time_col)
+    else:
+        return left

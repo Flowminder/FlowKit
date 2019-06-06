@@ -30,9 +30,9 @@ class SpatialUnitMixin:
         return list(self._loc_cols)
 
     @property
-    def has_geometry(self):
+    def has_geography(self):
         """
-        True if spatial unit has geometry information.
+        True if spatial unit has geography information.
         """
         return hasattr(self, "get_geom_query")
 
@@ -68,7 +68,7 @@ class SpatialUnitMixin:
         ----------
         criterion : str
             One of:
-                'has_geometry'
+                'has_geography'
                 'has_lat_lon_columns'
                 'is_network_object'
                 'is_polygon'
@@ -84,9 +84,9 @@ class SpatialUnitMixin:
             if criterion is not recognised
         """
         criteria = {
-            "has_geometry": {
-                "property": self.has_geometry,
-                "message": f"{'has' if negate else 'does not have'} geometry information.",
+            "has_geography": {
+                "property": self.has_geography,
+                "message": f"{'has' if negate else 'does not have'} geography information.",
             },
             "has_lat_lon_columns": {
                 "property": self.has_lat_lon_columns,

@@ -17,6 +17,7 @@ from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin, GraphMixin
+from ...core.errors import InvalidSpatialUnitError
 
 import structlog
 
@@ -43,7 +44,7 @@ class Flows(GeoDataMixin, GraphMixin, Query):
         """
 
         if loc1.spatial_unit != loc2.spatial_unit:
-            raise ValueError(
+            raise InvalidSpatialUnitError(
                 "You cannot compute flows for locations on different spatial units"
             )
 
@@ -116,6 +117,8 @@ class Flows(GeoDataMixin, GraphMixin, Query):
         str
             A version of this query with geom and gid columns
         """
+        self.spatial_unit.verify_criterion("has_geography")
+
         loc_cols = self.spatial_unit.location_columns
         loc_cols_string = ",".join(loc_cols)
         loc_cols_from_string = ",".join([f"{col}_from" for col in loc_cols])
@@ -152,20 +155,12 @@ class Flows(GeoDataMixin, GraphMixin, Query):
         USING ({loc_cols_string})
         """
 
-        try:
-            geom_query = self.spatial_unit.get_geom_query()
-        except AttributeError:
-            raise ValueError(
-                f"Query {self} with spatial_unit {self.spatial_unit} has no "
-                "geography information."
-            )
-
         joined_query = f"""
         SELECT
             row_number() over() AS gid,
             *
         FROM ({agg_qry}) AS Q
-        LEFT JOIN ({geom_query}) AS G
+        LEFT JOIN ({self.spatial_unit.get_geom_query()}) AS G
         USING ({loc_cols_string})
         """
 

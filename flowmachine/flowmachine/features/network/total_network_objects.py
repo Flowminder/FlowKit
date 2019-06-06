@@ -16,7 +16,7 @@ from typing import List
 from ...core.mixins import GeoDataMixin
 from ...core import location_joined_query
 from ...core.query import Query
-from ...core.spatial_unit import CellSpatialUnit, admin_spatial_unit
+from ...core.spatial_unit import make_spatial_unit
 from ..utilities import EventsTablesUnion
 
 valid_stats = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
@@ -37,15 +37,15 @@ class TotalNetworkObjects(GeoDataMixin, Query):
     total_by : {'second', 'minute', 'hour', 'day', 'month', 'year'}
         A period definition to group data by.
     table : str
-        Either 'calls', 'sms', or other table under `events.*`. If
-        no specific table is provided this will collect
-        statistics from all tables.
-    network_object : {Cell,VersionedCell,VersionedSite}SpatialUnit, default CellSpatialUnit()
+        Either 'calls', 'sms', or other table under `events.*`. If no specific
+        table is provided this will collect statistics from all tables.
+    network_object : flowmachine.core.spatial_unit.*SpatialUnit, default cell
         Objects to track, defaults to CellSpatialUnit(), the unversioned lowest
         level of infrastructure available.
-    spatial_unit : flowmachine.core.spatial_unit.SpatialUnit,
-                   default admin_spatial_unit(level=0)
+        Must have network_object.is_network_object == True.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin0
         Spatial unit to facet on.
+        Must have spatial_unit.is_network_object == False.
 
     Other Parameters
     ----------------
@@ -69,7 +69,7 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         *,
         table="all",
         total_by="day",
-        network_object=CellSpatialUnit(),
+        network_object=make_spatial_unit("cell"),
         spatial_unit=None,
         hours="all",
         subscriber_subset=None,
@@ -90,29 +90,15 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         if self.table != "all" and not self.table.startswith("events"):
             self.table = "events.{}".format(self.table)
 
-        def is_allowed_network_object(spatial_unit):
-            return (
-                "location_id" in spatial_unit.location_columns
-                or "site_id" in spatial_unit.location_columns
-            )
-
+        network_object.verify_criterion("is_network_object")
         self.network_object = network_object
-        if not is_allowed_network_object(self.network_object):
-            raise ValueError(
-                "{} is not a valid network object.".format(self.network_object)
-            )
 
         if spatial_unit is None:
-            self.spatial_unit = admin_spatial_unit(level=0)
+            self.spatial_unit = make_spatial_unit("admin", level=0)
         else:
             self.spatial_unit = spatial_unit
-        if is_allowed_network_object(self.spatial_unit):
-            # No sense in aggregating network object to network object
-            raise ValueError(
-                "{} is not a valid spatial unit for TotalNetworkObjects".format(
-                    self.spatial_unit
-                )
-            )
+        # No sense in aggregating network object to network object
+        self.spatial_unit.verify_criterion("is_network_object", negate=True)
 
         events = location_joined_query(
             EventsTablesUnion(

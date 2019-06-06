@@ -11,7 +11,7 @@ from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GraphMixin
-from ...core.spatial_unit import versioned_cell_spatial_unit
+from ...core.spatial_unit import make_spatial_unit
 
 
 class DistanceMatrix(GraphMixin, Query):
@@ -25,10 +25,10 @@ class DistanceMatrix(GraphMixin, Query):
 
     Parameters
     ----------
-    spatial_unit : flowmachine.core.spatial_unit.SpatialUnit, default versioned_cell_spatial_unit()
+    spatial_unit : flowmachine.core.spatial_unit.SpatialUnit, default versioned-cell
         Locations to compute distances for.
-        Note: only point locations (i.e. spatial units with "lat" and "lon"
-        included in location_columns) are supported at this time.
+        Note: only point locations (i.e. spatial_unit.has_lat_lon_columns) are
+        supported at this time.
     return_geometry : bool
         If True, geometries are returned in query
         (represented as WKB in a dataframe). This
@@ -39,15 +39,11 @@ class DistanceMatrix(GraphMixin, Query):
 
     def __init__(self, spatial_unit=None, return_geometry=False):
         if spatial_unit is None:
-            self.spatial_unit = versioned_cell_spatial_unit()
+            self.spatial_unit = make_spatial_unit("versioned-cell")
         else:
             self.spatial_unit = spatial_unit
 
-        if not (
-            "lat" in self.spatial_unit.location_columns
-            and "lon" in self.spatial_unit.location_columns
-        ):
-            raise ValueError("Only point locations are supported at this time.")
+        self.spatial_unit.verify_criterion("has_lat_lon_columns")
 
         self.return_geometry = return_geometry
 

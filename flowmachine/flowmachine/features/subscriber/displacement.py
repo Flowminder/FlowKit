@@ -115,23 +115,14 @@ class Displacement(SubscriberFeature):
 
         self.start = start
 
-        def is_allowed_spatial_unit(spatial_unit):
-            return (
-                "lat" in spatial_unit.location_columns
-                and "lon" in spatial_unit.location_columns
-            )
-
         if modal_locations:
-            if isinstance(modal_locations, ModalLocation) and is_allowed_spatial_unit(
-                modal_locations.spatial_unit
-            ):
+            if isinstance(modal_locations, ModalLocation):
                 hl = modal_locations
             else:
                 raise ValueError(
-                    "Argument 'modal_locations' should be an instance of "
-                    "ModalLocation class with 'lat' and 'lon' in "
-                    "spatial_unit.location_columns"
+                    "Argument 'modal_locations' should be an instance of ModalLocation class"
                 )
+            hl.spatial_unit.verify_criterion("has_lat_lon_columns")
         else:
             hl = ModalLocation(
                 *[
