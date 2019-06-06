@@ -23,6 +23,11 @@ def signin():
     if user is not None:
         current_app.logger.debug(f"{user.username}:{user.id} trying to log in.")
         if user.is_correct_password(json["password"]):
+            two_factor = user.two_factor_auth
+            if two_factor is not None and two_factor.enabled:
+                if "two_factor_code" not in json:
+                    raise InvalidUsage("Must supply a two-factor authentication code.")
+                two_factor.validate(json["two_factor_code"])
             login_user(user, remember=False)
             identity_changed.send(
                 current_app._get_current_object(), identity=Identity(user.id)

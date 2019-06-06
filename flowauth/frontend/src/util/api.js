@@ -61,7 +61,7 @@ export async function getUser(user_id) {
 }
 
 export async function getUserGroup(user_id) {
-  return await getResponseDefault("/admin/users/" + user_id + "/user_group");
+  return await getResponseDefault("/admin/users/" + user_id + "/tokens_group");
 }
 
 export async function editPassword(oldPassword, newPassword) {
@@ -154,15 +154,15 @@ export async function getGroupsForUser(user_id) {
 }
 
 export async function getMyServers() {
-  return await getResponseDefault("/user/servers");
+  return await getResponseDefault("/tokens/servers");
 }
 
 export async function getMyTokensForServer(server_id) {
-  return await getResponseDefault("/user/tokens/" + server_id);
+  return await getResponseDefault("/tokens/tokens/" + server_id);
 }
 
 export async function getMyRightsForServer(server_id) {
-  return await getResponseDefault("/user/servers/" + server_id);
+  return await getResponseDefault("/tokens/servers/" + server_id);
 }
 
 export async function getCapabilities(server_id) {
@@ -315,7 +315,7 @@ export async function createToken(name, server_id, expiry, claims) {
     method: "POST",
     body: JSON.stringify({ name: name, expiry: expiry, claims: claims })
   };
-  return await getResponse("/user/tokens/" + server_id, dat);
+  return await getResponse("/tokens/tokens/" + server_id, dat);
 }
 
 export async function login(username, password) {

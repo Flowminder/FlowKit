@@ -16,46 +16,6 @@ from zxcvbn import zxcvbn
 blueprint = Blueprint(__name__, __name__)
 
 
-@blueprint.route("/password", methods=["PATCH"])
-@login_required
-def set_password():
-    """
-    Set a new password for the logged in user..
-
-    Notes
-    -----
-    Expects json containing 'password' and 'newPassword' keys.
-    Checks the password is the same as the existing one and that
-    the new password is strong.
-    """
-    edits = request.get_json()
-    current_app.logger.debug(f"User {current_user.username} tried to change password.")
-    try:
-        old_pass = edits["password"]
-    except KeyError:
-        raise InvalidUsage("Missing old password.", payload={"bad_field": "password"})
-    try:
-        new_pass = edits["newPassword"]
-    except KeyError:
-        raise InvalidUsage(
-            "Missing new password.", payload={"bad_field": "newPassword"}
-        )
-
-    if current_user.is_correct_password(old_pass):
-        if len(new_pass) == 0 or zxcvbn(new_pass)["score"] < 4:
-            raise InvalidUsage(
-                "Password not complex enough.", payload={"bad_field": "newPassword"}
-            )
-        current_user.password = new_pass
-        db.session.add(current_user)
-        db.session.commit()
-        current_app.logger.debug(f"User {current_user.username} password changed.")
-        return jsonify({}), 200
-    else:
-
-        raise InvalidUsage("Password incorrect.", payload={"bad_field": "password"})
-
-
 @blueprint.route("/groups")
 @login_required
 def list_my_groups():
