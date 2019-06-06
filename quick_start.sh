@@ -5,7 +5,9 @@
 set -e
 set -a
 
-
+#
+# Helper functions to ask user for confirmation
+#
 
 # Read a single char from /dev/tty, prompting with "$*"
 # Note: pressing enter will return a null string. Perhaps a version terminated with X and then remove it in caller?
@@ -45,10 +47,13 @@ function confirm {
   get_yes_keypress "$prompt" 1
 }
 
-export CONTAINER_TAG=$CONTAINER_TAG
+#
+# Set git revision or branch name to be used
+#
 if [ "$CI" = "true" ]; then
-    export CONTAINER_TAG=$CIRCLE_SHA1
-    export BRANCH=$CIRCLE_SHA1
+    export GIT_REV_OR_BRANCH=$CIRCLE_SHA1
+else
+    export GIT_REV_OR_BRANCH=${GIT_REV_OR_BRANCH:-master}
 fi
 
 if [ $# -gt 0 ] && [ "$1" = "larger_data" ] || [ "$2" = "larger_data" ]
@@ -91,18 +96,18 @@ if [ $# -gt 0 ] && [ "$1" = "stop" ]
 then
     export DOCKER_FLOWDB_HOST=flowdb_testdata
     echo "Stopping containers"
-    source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - down -v
+    source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REV_OR_BRANCH}/development_environment)"
+    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REV_OR_BRANCH}/docker-compose.yml | docker-compose -f - down -v
 else
-    source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/development_environment)"
+    source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REV_OR_BRANCH}/development_environment)"
      echo "Starting containers (this may take a few minutes)"
-    RUNNING=`curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - ps -q $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
+    RUNNING=`curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REV_OR_BRANCH}/docker-compose.yml | docker-compose -f - ps -q $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
     if [[ "$RUNNING" != "" ]]; then
         confirm "Existing containers are running and will be replaced. Are you sure?" || exit 1
     fi
     DOCKER_SERVICES="$DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES"
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - pull $DOCKER_SERVICES
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${BRANCH:-master}/docker-compose.yml | docker-compose -f - up -d $DOCKER_SERVICES
+    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REV_OR_BRANCH}/docker-compose.yml | docker-compose -f - pull $DOCKER_SERVICES
+    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REV_OR_BRANCH}/docker-compose.yml | docker-compose -f - up -d $DOCKER_SERVICES
     echo "Waiting for containers to be ready.."
     docker exec ${DOCKER_FLOWDB_HOST} bash -c 'i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
     echo "FlowDB ready."
