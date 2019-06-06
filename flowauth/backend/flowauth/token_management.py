@@ -239,11 +239,13 @@ def add_token(server):
 # there because the module is outside the docker build context for flowauth).
 # Duplicated in FlowAuth (cannot use this implementation there because
 # this module is outside the docker build context for FlowAuth).
+# Duplicated in FlowAuth (cannot use this implementation there because
+# this module is outside the docker build context for FlowAuth).
 def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
     username: str,
-    private_key: str,
+    private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
     claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
 ) -> str:
@@ -253,7 +255,7 @@ def generate_token(
     ----------
     username : str
         Username for the token
-    private_key : str
+    private_key : str or _RSAPrivateKey
         Private key to use to sign the token
     lifetime : datetime.timedelta
         Lifetime from now of the token
@@ -264,7 +266,7 @@ def generate_token(
 
     Examples
     --------
-    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key="SECRET",lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key=rsa_private_key,lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
             "spatial_aggregation": ["admin3"]}})
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
 
