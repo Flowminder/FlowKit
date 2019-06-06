@@ -469,6 +469,7 @@ jobs:
         environment:
           DB_URI: postgres://flowauth:flowauth@localhost:5432/flowauth
           DEMO_MODE: true
+          PRIVATE_JWT_SIGNING_KEY: $PRIVATE_JWT_SIGNING_KEY
           <<: *flowauth_env
       - image: postgres
         environment:
