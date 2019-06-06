@@ -169,11 +169,20 @@ def test_get_secrets_default(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "column_name, alias",
-    [("column", "column"), ("column AS alias", "alias"), ("column as alias", "alias")],
+    "column_name, name, alias",
+    [
+        ("column", "column", "column"),
+        ("column AS alias", "column", "alias"),
+        ("column as alias", "column", "alias"),
+        ("table.column", "table.column", "column"),
+        ("table.column AS alias", "table.column", "alias"),
+    ],
 )
-def test_get_name_and_alias(column_name, alias):
-    assert ("column", alias) == get_name_and_alias(column_name)
+def test_get_name_and_alias(column_name, name, alias):
+    """
+    Test that get_name_and_alias correctly splits a column name into name and alias.
+    """
+    assert (name, alias) == get_name_and_alias(column_name)
 
 
 def test_convert_dict_keys_to_strings():
@@ -224,10 +233,7 @@ def test_print_dependency_tree():
         )
     )
     q = daily_location(
-        date="2016-01-02",
-        level="admin2",
-        method="most-common",
-        subscriber_subset=subscriber_subsetter,
+        date="2016-01-02", method="most-common", subscriber_subset=subscriber_subsetter
     )
 
     expected_output = textwrap.dedent(
@@ -244,8 +250,10 @@ def test_print_dependency_tree():
                       - <Query of type: CustomQuery, query_id: 'xxxxx'>
                       - <Table: 'events.calls', query_id: 'xxxxx'>
                          - <Table: 'events.calls', query_id: 'xxxxx'>
-             - <Query of type: CellToAdmin, query_id: 'xxxxx'>
-                - <Query of type: CellToPolygon, query_id: 'xxxxx'>
+             - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+                - <Table: 'geography.admin3', query_id: 'xxxxx'>
+          - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+             - <Table: 'geography.admin3', query_id: 'xxxxx'>
         """
     )
 
@@ -276,7 +284,7 @@ def test_plot_dependency_graph():
     """
     Test that plot_dependency_graph() runs and returns the expected IPython.display objects.
     """
-    query = daily_location(date="2016-01-02", level="admin2", method="most-common")
+    query = daily_location(date="2016-01-02")
     output_svg = plot_dependency_graph(query, format="svg")
     output_png = plot_dependency_graph(query, format="png", width=600, height=200)
 

@@ -317,10 +317,14 @@ def get_name_and_alias(column_name):
       ('col', 'alias')
     >>> get_name_and_alias("col")
       ('col', 'col')
+    >>> get_name_and_alias("table.col")
+      ('table.col', 'col')
+    >>> get_name_and_alias("table.col as alias")
+      ('table.col', 'alias')
     """
     column_name_split = re.split(" as ", column_name, flags=re.IGNORECASE)
     if len(column_name_split) == 1:
-        return column_name_split[0].strip(), column_name_split[0].strip()
+        return column_name_split[0].strip(), column_name_split[0].strip().split(".")[-1]
     else:
         return column_name_split[0].strip(), column_name_split[-1].strip()
 
