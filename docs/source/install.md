@@ -332,7 +332,8 @@ echo "flowapi_server" | docker secret create FLOWAPI_IDENTIFIER -
 openssl req -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/CN=flow.api" \
     -extensions SAN \
     -config <( \
-        cat $(   ( [[ -e /System/Library/OpenSSL/openssl.cnf ]] && echo "/System/Library/OpenSSL/openssl.cnf" ) \
+        cat $(   ( [[ -e /System/Library/OpenSSL/openssl.cnf ]] \
+              && echo "/System/Library/OpenSSL/openssl.cnf" ) \
               || ( [[ -e /etc/ssl/openssl.cnf ]] && echo "/etc/ssl/openssl.cnf" ) \
               || ( [[ -e /etc/pki/tls/openssl.cnf ]] && echo "/etc/pki/tls/openssl.cnf" ) ) \
     <(printf "[SAN]\nsubjectAltName='DNS.1:localhost,DNS.2:flow.api'")) \
