@@ -85,7 +85,7 @@ def load_private_key(key_string: str) -> _RSAPrivateKey:
         try:
             return load_private_key(base64.b64decode(key_string).decode())
         except (binhex.Error, ValueError):
-            raise ValueError("Failed to load key.")
+            raise ValueError("Failed to load private key.")
 
 
 def get_config():
