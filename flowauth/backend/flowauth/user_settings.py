@@ -62,6 +62,9 @@ def enable_two_factor():
     provisioning_url = pyotp.totp.TOTP(secret).provisioning_uri(
         current_user.username, issuer_name="FlowAuth"
     )
+    old_auth = current_user.two_factor_auth
+    if old_auth is not None:
+        db.session.delete(old_auth)
     auth = TwoFactorAuth(user=current_user)
     auth.secret_key = secret
     db.session.add(auth)

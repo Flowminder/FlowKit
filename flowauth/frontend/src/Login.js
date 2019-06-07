@@ -13,7 +13,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
-import { login, isLoggedIn } from "./util/api";
+import { twoFactorlogin, isLoggedIn } from "./util/api";
 import ErrorDialog from "./ErrorDialog";
 
 const styles = theme => ({
@@ -64,7 +64,11 @@ class Login extends React.Component {
 
   handleSubmit = async event => {
     event.preventDefault();
-    login(this.state.username, this.state.password)
+    twoFactorlogin(
+      this.state.username,
+      this.state.password,
+      this.state.two_factor_code
+    )
       .then(json => {
         this.props.setLoggedIn(json.is_admin);
       })
@@ -72,7 +76,7 @@ class Login extends React.Component {
         if (err.need_two_factor) {
           this.setState({ need_two_factor: true });
         }
-        this.setState({ hasError: true, error: err });
+        this.setState({ hasError: true, error: err, need_two_factor: false });
       });
   };
 

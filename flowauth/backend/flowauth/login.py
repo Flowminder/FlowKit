@@ -25,7 +25,7 @@ def signin():
         if user.is_correct_password(json["password"]):
             two_factor = user.two_factor_auth
             if two_factor is not None and two_factor.enabled:
-                if "two_factor_code" not in json:
+                if "two_factor_code" not in json or json["two_factor_code"] == "":
                     raise InvalidUsage(
                         "Must supply a two-factor authentication code.",
                         payload={"need_two_factor": True},

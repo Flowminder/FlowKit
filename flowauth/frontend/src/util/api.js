@@ -326,6 +326,32 @@ export async function login(username, password) {
   return await getResponse("/signin", dat);
 }
 
+export async function twoFactorlogin(username, password, two_factor_code) {
+  var dat = {
+    method: "POST",
+    body: JSON.stringify({
+      username: username,
+      password: password,
+      two_factor_code: two_factor_code
+    })
+  };
+  return await getResponse("/signin", dat);
+}
+
+export async function startTwoFactorSetup() {
+  var dat = {
+    method: "POST"
+  };
+  return await getResponse("/user/enable_two_factor", dat);
+}
+
+export async function getTwoFactorBackups() {
+  var dat = {
+    method: "POST"
+  };
+  return await getResponse("/user/generate_two_factor_backups", dat);
+}
+
 export async function isLoggedIn() {
   return await getResponseDefault("/is_signed_in");
 }

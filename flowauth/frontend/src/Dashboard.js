@@ -26,6 +26,7 @@ import CapabilityList from "./CapabilityList";
 import AggregationUnitList from "./AggregationUnitList";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { logout } from "./util/api";
+import TwoFactorConfirm from "./TwoFactorConfirm";
 
 const drawerWidth = 240;
 
@@ -159,6 +160,8 @@ class Dashboard extends React.Component {
         return <CapabilityList />;
       case "aggregation_unit_admin":
         return <AggregationUnitList />;
+      case "enable_two_factor":
+        return <TwoFactorConfirm />;
       default:
         return <div />;
     }
