@@ -30,6 +30,10 @@ const styles = theme => ({
 });
 
 class TokenDetails extends React.Component {
+  constructor(props) {
+    super(props);
+    this.nameRef = React.createRef();
+  }
   state = {
     nickName: {},
     rights: {},
@@ -51,6 +55,11 @@ class TokenDetails extends React.Component {
           cancel();
         }
       );
+    } else if (!name) {
+      this.setState({
+        name_helper_text: "Token name cannot be blank."
+      });
+      this.scrollToRef(this.nameRef);
     }
   };
 
@@ -71,6 +80,7 @@ class TokenDetails extends React.Component {
     }
     this.setState(Object.assign(this.state, { rights: rights }));
   };
+  scrollToRef = ref => ref.current.scrollIntoView();
 
   handleAggUnitChange = (claim_id, claim, unit) => event => {
     var rights = this.state.rights;
@@ -239,6 +249,7 @@ class TokenDetails extends React.Component {
 
     return (
       <React.Fragment>
+        <div ref={this.nameRef} />
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">
             Token Name
@@ -253,7 +264,7 @@ class TokenDetails extends React.Component {
             value={name}
             onChange={this.handleNameChange}
             margin="normal"
-            error={this.state.name_helper_text}
+            error={this.state.name_helper_text !== ""}
             helperText={this.state.name_helper_text}
           />
         </Grid>
@@ -263,13 +274,17 @@ class TokenDetails extends React.Component {
           </Typography>
         </Grid>
         <Divider />
-        <Grid item xs={12}>
+        <Grid item xs>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DateTimePicker
               value={expiry}
               onChange={this.handleDateChange}
               disablePast={true}
               maxDate={latest_expiry}
+              format="yyyy/MM/dd HH:mm:ss"
+              ampm={false}
+              margin="normal"
+              helperText={new Date().toTimeString().slice(9)} // Display the timezone
             />
           </MuiPickersUtilsProvider>
         </Grid>

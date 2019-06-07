@@ -21,10 +21,10 @@
       pyenv_owner: "{{ ansible_user }}"
       pyenv_global: "{{ pyenv_global_python_version }}"
       pyenv_python_versions:
-       - "{{ pyenv_global_python_version }}"
+        - "{{ pyenv_global_python_version }}"
       pyenv_virtualenvs:
-       - venv_name: "v{{ pyenv_global_python_version }}"
-         py_version: "{{ pyenv_global_python_version }}"
+        - venv_name: "v{{ pyenv_global_python_version }}"
+          py_version: "{{ pyenv_global_python_version }}"
 
   tasks:
     - name: "Install pipenv"
@@ -39,3 +39,11 @@
         dest: "~{{ username }}/code/FlowKit"
         version: master
         update: no
+    - name: "Generate ssh keys for user '{{ username }}'"
+      become: yes
+      become_user: "{{ username }}"
+      openssh_keypair:
+        path: "~{{ username }}/.ssh/id_rsa"
+        type: rsa
+        size: 4096
+        comment: "{{ username }}@{{ ansible_hostname }}"

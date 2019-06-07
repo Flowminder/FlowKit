@@ -126,16 +126,16 @@
         },
         "pglast": {
             "hashes": [
-                "sha256:10a6a44fa6ecf61370720786bb86507ee277cda29fc97622f42a45ac827e70bd",
-                "sha256:1442ae2cfc6427e9a8fcc2dc18d9ecfcaa1b16eba237fdcf0b2b13912eab9a86",
-                "sha256:8fbd6fc8d2f7c9c2969f2f1de6d863b29a55e258468819fc89c3b0066c34fbf8",
-                "sha256:a903bc2f4ba668ec96f3dba8b17eedf4a4b4599d2ac8614e1e2cce8b6d198eb1",
-                "sha256:c13310af90f35af58082481f26e12bd93ef571f587832fc235ea6a4ec4f060d3",
-                "sha256:c96a8f3f78fbd8a773fa0e76a937b572e1682386f44e626365cfd542a878bf9b",
-                "sha256:d9bd96cdc573c3fff37752c171613e2e47497a1bce9f84e0fa24709f363d689e"
+                "sha256:369a7ab5aa9b50d047f3e48f54496993ec14b8f8814c9649f15747947589b516",
+                "sha256:3be62523565af3f63b910cf13a8a3621a844f090940509c5bc7e2106fe501df8",
+                "sha256:4632f00f6e6c7b58dd7c4a052d5148f006a1c121a337af33a5473f9b787823b0",
+                "sha256:69565f07f8119e19b996fe60d9c91518db5e1214629e28b7909f563c0fe8c5a3",
+                "sha256:6dbac4f7a59a8cb6897a604e309bd87ba1b9ff7a731e7aedbfbfa5076bb15651",
+                "sha256:c4b8cbfe70522a19ee67b8fef7e5112c2fde3e920cc335b7c2bc97733816b02b",
+                "sha256:e98dcfeb43efb35b673e369f776229b8b770613b8b56be95f18d7442e5f2208f"
             ],
             "index": "pypi",
-            "version": "==1.4"
+            "version": "==1.5"
         },
         "psycopg2-binary": {
             "hashes": [
@@ -730,11 +730,11 @@
         },
         "pre-commit": {
             "hashes": [
-                "sha256:6ca409d1f22d444af427fb023a33ca8b69625d508a50e1b7eaabd59247c93043",
-                "sha256:94dd519597f5bff06a4b0df194a79c524b78f4b1534c1ce63241a9d4fb23b926"
+                "sha256:92e406d556190503630fd801958379861c94884693a032ba66629d0351fdccd4",
+                "sha256:cccc39051bc2457b0c0f7152a411f8e05e3ba2fe1a5613e4ee0833c1c1985ce3"
             ],
             "index": "pypi",
-            "version": "==1.16.1"
+            "version": "==1.17.0"
         },
         "prompt-toolkit": {
             "hashes": [
