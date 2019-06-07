@@ -352,6 +352,16 @@ export async function getTwoFactorBackups() {
   return await getResponse("/user/generate_two_factor_backups", dat);
 }
 
+export async function confirmTwoFactor(two_factor_code) {
+  var dat = {
+    method: "POST",
+    body: JSON.stringify({
+      two_factor_code: two_factor_code
+    })
+  };
+  return await getResponse("/user/confirm_two_factor", dat);
+}
+
 export async function isLoggedIn() {
   return await getResponseDefault("/is_signed_in");
 }

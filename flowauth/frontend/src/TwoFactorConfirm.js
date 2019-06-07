@@ -8,7 +8,11 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { QRCode } from "react-qr-svg";
 import ErrorDialog from "./ErrorDialog";
-import { startTwoFactorSetup, getTwoFactorBackups } from "./util/api";
+import {
+  startTwoFactorSetup,
+  getTwoFactorBackups,
+  confirmTwoFactor
+} from "./util/api";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import PropTypes from "prop-types";
@@ -95,6 +99,13 @@ class TwoFactorConfirm extends React.Component {
       confirming: this.state.backupsCollected && this.state.backup_codes.length
     });
 
+  confirm = () => {
+    this.setState({ activating: true });
+    confirmTwoFactor(this.state.two_factor_code).then(json =>
+      this.setState(json)
+    );
+  };
+
   render() {
     const { classes } = this.props;
     if (this.state.hasError) throw this.state.error;
@@ -149,7 +160,12 @@ class TwoFactorConfirm extends React.Component {
                 />
               </Grid>
               <Grid item xs={1}>
-                <Button type="submit" variant="contained" color="primary">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  onClick={this.confirm}
+                >
                   Activate
                 </Button>
               </Grid>
