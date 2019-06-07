@@ -6,6 +6,7 @@
 """
 Conftest for flowetl integration tests
 """
+import docker
 import os
 import shutil
 import logging
@@ -19,7 +20,6 @@ from pendulum import now, Interval
 from airflow.models import DagRun
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from docker import from_env, APIClient
 from docker.types import Mount
 from shutil import rmtree
 
@@ -29,7 +29,7 @@ def docker_client():
     """
     docker client object - used to run containers
     """
-    return from_env()
+    return docker.from_env()
 
 
 @pytest.fixture(scope="session")
@@ -37,7 +37,7 @@ def docker_APIClient():
     """
     docker APIClient object - needed to inspect containers
     """
-    return APIClient()
+    return docker.APIClient()
 
 
 @pytest.fixture(scope="session")
