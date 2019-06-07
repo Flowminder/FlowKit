@@ -79,12 +79,12 @@ def exemplar_level_param(request):
         {
             "spatial_unit_type": "polygon",
             "region_id_column_name": "admin3pcod",
-            "polygon_table": "geography.admin3",
+            "geom_table": "geography.admin3",
         },
         {
             "spatial_unit_type": "polygon",
             "region_id_column_name": "id",
-            "polygon_table": "infrastructure.sites",
+            "geom_table": "infrastructure.sites",
             "geom_column": "geom_point",
         },
     ],

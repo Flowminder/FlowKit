@@ -16,9 +16,7 @@ def test_can_get_pcods(get_dataframe):
         "2016-01-01 13:30:30",
         "2016-01-02 16:25:00",
         spatial_unit=make_spatial_unit(
-            "polygon",
-            region_id_column_name="admin3pcod",
-            polygon_table="geography.admin3",
+            "polygon", region_id_column_name="admin3pcod", geom_table="geography.admin3"
         ),
     )
     df = get_dataframe(subscriber_pcod)

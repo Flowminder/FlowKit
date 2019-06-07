@@ -10,9 +10,9 @@ import pytest
 
 def test_spatial_unit_column_names(exemplar_spatial_unit_param):
     """
-    Test that the SpatialUnit classes have accurate column_names properties.
+    Test that the *SpatialUnit classes have accurate column_names properties.
     """
-    if CellSpatialUnit() == exemplar_spatial_unit_param:
+    if isinstance(exemplar_spatial_unit_param, CellSpatialUnit):
         pytest.skip(
             "CellSpatialUnit does not have a column_names property (not a Query)"
         )
@@ -47,7 +47,7 @@ def test_get_geom_query_column_names(
             {
                 "spatial_unit_type": "polygon",
                 "region_id_column_name": "id",
-                "polygon_table": "infrastructure.sites",
+                "geom_table": "infrastructure.sites",
                 "geom_column": "geom_point",
             },
             ["id"],
@@ -56,7 +56,7 @@ def test_get_geom_query_column_names(
             {
                 "spatial_unit_type": "polygon",
                 "region_id_column_name": ["id"],
-                "polygon_table": "infrastructure.sites",
+                "geom_table": "infrastructure.sites",
                 "geom_column": "geom_point",
             },
             ["id"],
@@ -83,7 +83,7 @@ def test_get_geom_query_column_names(
 )
 def test_spatial_unit_location_id_columns(make_spatial_unit_args, loc_cols):
     """
-    Test that the SpatialUnit classes have the correct location_id_columns properties.
+    Test that the *SpatialUnit classes have the correct location_id_columns properties.
     """
     su = make_spatial_unit(**make_spatial_unit_args)
     assert loc_cols == su.location_id_columns
@@ -96,8 +96,8 @@ def test_polygon_spatial_unit_column_list():
     """
     passed_cols = ["id"]
     psu = PolygonSpatialUnit(
-        polygon_column_names=passed_cols,
-        polygon_table="infrastructure.sites",
+        geom_table_column_names=passed_cols,
+        geom_table="infrastructure.sites",
         geom_column="geom_point",
     )
     loc_cols = psu.location_id_columns
@@ -107,17 +107,12 @@ def test_polygon_spatial_unit_column_list():
 
 def test_missing_location_columns_raises_error():
     """
-    Test that a ValueError is raised if the location_column_names passed to
-    SpatialUnit are not a subset of column_names.
+    Test that a ValueError is raised if the location_id_column_names passed to
+    GeomSpatialUnit are not a subset of column_names.
     """
     with pytest.raises(ValueError, match="['NOT_A_COLUMN']"):
-        su = SpatialUnit(
-            selected_column_names=[
-                "id AS location_id",
-                "date_of_first_service",
-                "date_of_last_service",
-            ],
-            location_column_names=["location_id", "NOT_A_COLUMN"],
+        su = LatLonSpatialUnit(
+            location_id_column_names=["location_id", "lat", "lon", "NOT_A_COLUMN"]
         )
 
 
@@ -138,19 +133,19 @@ def test_missing_location_columns_raises_error():
         {
             "spatial_unit_type": "polygon",
             "region_id_column_name": "admin3pcod",
-            "polygon_table": "geography.admin3",
+            "geom_table": "geography.admin3",
         },
         {
             "spatial_unit_type": "polygon",
             "region_id_column_name": "id",
-            "polygon_table": "infrastructure.sites",
+            "geom_table": "infrastructure.sites",
             "geom_column": "geom_point",
         },
     ],
 )
 def test_spatial_unit_equals_itself(make_spatial_unit_args):
     """
-    Test that instances of the SpatialUnit classes are equal to themselves.
+    Test that instances of the *SpatialUnit classes are equal to themselves.
     """
     # Can't use exemplar_spatial_unit_param here because we need to create two
     # different but equal spatial units.
@@ -212,7 +207,7 @@ def test_different_grid_spatial_units_are_not_equal():
         {"spatial_unit_type": "INVALID_SPATIAL_UNIT_TYPE"},
         {"spatial_unit_type": "admin"},
         {"spatial_unit_type": "grid"},
-        {"spatial_unit_type": "polygon", "polygon_table": "geography.admin3"},
+        {"spatial_unit_type": "polygon", "geom_table": "geography.admin3"},
         {"spatial_unit_type": "polygon", "region_id_column_name": "DUMMY_COLUMN_NAME"},
     ],
 )

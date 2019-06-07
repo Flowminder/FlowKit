@@ -8,26 +8,31 @@ Classes that map cell (or tower or site) IDs to a spatial unit.
 The helper function 'make_spatial_unit' can be used to create spatial unit objects.
 """
 from typing import List
+from abc import ABCMeta, abstractmethod
 
 from flowmachine.utils import get_name_and_alias
 from flowmachine.core.errors import InvalidSpatialUnitError
 from . import Query, Table
 from .grid import Grid
 
+# TODO: Currently most spatial units require a FlowDB connection at init time.
+# It would be useful to remove this requirement wherever possible, and instead
+# implement a method to check whether the required data can be found in the DB.
+
 
 class SpatialUnitMixin:
     """
-    Mixin for SpatialUnit classes, which provides a 'location_columns' property
+    Mixin for spatial unit classes, which provides a 'location_id_columns' property
     and methods for verifying whether a spatial unit meets different criteria
     (useful for checking whether a spatial unit is valid in a given query).
     """
 
     @property
-    def location_columns(self) -> List[str]:
+    def location_id_columns(self) -> List[str]:
         """
         Names of the columns that identify a location.
         """
-        return list(self._loc_cols)
+        return list(self._locid_cols)
 
     @property
     def has_geography(self):
@@ -41,7 +46,7 @@ class SpatialUnitMixin:
         """
         True if spatial unit has lat/lon columns.
         """
-        return "lat" in self.location_columns and "lon" in self.location_columns
+        return "lat" in self.location_id_columns and "lon" in self.location_id_columns
 
     @property
     def is_network_object(self):
@@ -49,7 +54,8 @@ class SpatialUnitMixin:
         True if spatial unit is a network object (cell or site).
         """
         return (
-            "location_id" in self.location_columns or "site_id" in self.location_columns
+            "location_id" in self.location_id_columns
+            or "site_id" in self.location_id_columns
         )
 
     @property
@@ -105,7 +111,7 @@ class SpatialUnitMixin:
             raise ValueError(f"Unrecognised criterion '{criterion}'.")
         if criteria[criterion]["property"] == negate:
             raise InvalidSpatialUnitError(
-                f"Spatial unit {self} with location columns {self.location_columns} "
+                f"Spatial unit {self} with location columns {self.location_id_columns} "
                 + criteria[criterion]["message"]
             )
 
@@ -115,83 +121,81 @@ class CellSpatialUnit(SpatialUnitMixin):
     This class represents the case where no join of cell ID to other data is
     required. As such, this class does not inherit from Query, is not a valid
     parameter to JoinToLocation, and only exists to provide the
-    location_columns property and for consistency with the other spatial units.
+    location_id_columns property and for consistency with the other spatial units.
     """
 
-    _loc_cols = ("location_id",)
+    _locid_cols = ("location_id",)
 
     def __eq__(self, other):
         return isinstance(other, CellSpatialUnit)
 
     def __hash__(self):
-        # We may never need CellSpatialUnits to be hashable, but I'll define
-        # this just in case.
+        # We may never need CellSpatialUnits to be hashable, but we define this
+        # just in case.
         return hash(self.__class__.__name__)
 
 
-class SpatialUnit(SpatialUnitMixin, Query):
+class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
     """
-    Base class for all spatial units except CellSpatialUnit. Selects columns
-    from the location table, and optionally joins to data in another table.
+    Base class for spatial units that map location IDs in
+    connection.location_table to geographic locations.
+
+    Derived classes must implement the _join_clause method, to determine how to
+    join the location table to the table with geography data.
 
     Parameters
     ----------
-    selected_column_names : str or list
-        The name(s) of the column(s) to fetch from the location
-        table in the database.
-    location_column_names : str or list
-        Name(s) of the location-related column(s).
+    geom_table_column_names : str or list
+        Name(s) of the column(s) to fetch from geom_table.
+    location_id_column_names : str or list
+        Name(s) of the column(s) which identify the locations.
         Must be a subset of the column_names for this query.
-    location_info_table : str, optional
-        Fully qualified name of the location info table to select from.
-        Defaults to self.connection.location_table
+    geom_table : str or flowmachine.Query, optional
+        Name of the table containing the geography information.
+        Can be either the name of a table, with the schema, or a
+        flowmachine.Query object.
+        Defaults to connection.location_table
     geom_column : str, default "geom"
-        Name of the column that defines the geometry in location_info_table.
-    join_clause : str, optional
-        Optionally provide a SQL join clause to join data from the
-        location info table to spatial regions in another table.
+        Name of the column in geom_table that defines the geometry.
     """
 
     def __init__(
         self,
         *,
-        selected_column_names,
-        location_column_names,
-        location_info_table=None,
+        geom_table_column_names,
+        location_id_column_names,
+        geom_table=None,
         geom_column="geom",
-        join_clause="",
     ):
-        if type(selected_column_names) is str:
-            self._cols = (selected_column_names,)
+        if isinstance(geom_table_column_names, str):
+            self._geom_table_cols = (geom_table_column_names,)
         else:
-            self._cols = tuple(selected_column_names)
+            self._geom_table_cols = tuple(geom_table_column_names)
 
-        if type(location_column_names) is str:
-            self._loc_cols = (location_column_names,)
+        if isinstance(location_id_column_names, str):
+            self._locid_cols = (location_id_column_names,)
         else:
-            self._loc_cols = tuple(location_column_names)
+            self._locid_cols = tuple(location_id_column_names)
 
-        # Check that _loc_cols is a subset of column_names
-        missing_cols = [c for c in self._loc_cols if not (c in self.column_names)]
+        self._geom_col = geom_column
+
+        # Check that _locid_cols is a subset of column_names
+        missing_cols = [c for c in self._locid_cols if not (c in self.column_names)]
         if missing_cols:
             raise ValueError(
-                f"Location columns {missing_cols} are not in returned columns."
+                f"Location ID columns {missing_cols} are not in returned columns."
             )
 
-        if location_info_table:
-            self.location_info_table = location_info_table
+        if geom_table is None:
+            # Creating a Table object here means that we don't have to handle
+            # tables and Query objects differently in _make_query and get_geom_query
+            self.geom_table = Table(name=self.connection.location_table)
+        elif isinstance(geom_table, Query):
+            self.geom_table = geom_table
         else:
-            self.location_info_table = self.connection.location_table
-
-        self._geom_column = geom_column
-
-        self._join_clause = join_clause
+            self.geom_table = Table(name=geom_table)
 
         super().__init__()
-
-    # TODO: Currently most spatial units require a FlowDB connection at init time.
-    # It would be useful to remove this requirement wherever possible, and instead
-    # implement a method to check whether the required data can be found in the DB.
 
     def __eq__(self, other):
         try:
@@ -203,214 +207,234 @@ class SpatialUnit(SpatialUnitMixin, Query):
         # Must define this because we explicitly define self.__eq__
         return hash(self.md5)
 
+    def _get_aliased_geom_table_cols(self, table_alias):
+        return [f"{table_alias}.{c}" for c in self._geom_table_cols]
+
+    @abstractmethod
+    def _join_clause(self, loc_table_alias, geom_table_alias):
+        """
+        Returns a SQL join clause to join the location table to the geography
+        table. The join clause is not used if self.geom_table and
+        self.connection.location_table are the same table.
+
+        Parameters
+        ----------
+        loc_table_alias : str
+            Table alias for the location table.
+        geom_table_alias : str
+            Table alias for the geography table.
+        
+        Returns
+        -------
+        str
+            SQL join clause
+        """
+        raise NotImplementedError
+
+    def _make_query(self):
+        loc_table_alias = "loc_table"
+
+        if hasattr(self.geom_table, "fully_qualified_table_name") and (
+            self.geom_table.fully_qualified_table_name == self.connection.location_table
+        ):
+            # No need to join location_table to itself
+            geom_table_alias = loc_table_alias
+            join_clause = ""
+        else:
+            geom_table_alias = "geom_table"
+            join_clause = self._join_clause(loc_table_alias, geom_table_alias)
+
+        geom_table_cols_string = ", ".join(
+            self._get_aliased_geom_table_cols(geom_table_alias)
+        )
+
+        sql = f"""
+        SELECT
+            {loc_table_alias}.id AS location_id,
+            {loc_table_alias}.date_of_first_service,
+            {loc_table_alias}.date_of_last_service,
+            {geom_table_cols_string}
+        FROM {self.connection.location_table} AS {loc_table_alias}
+        {join_clause}
+        """
+
+        return sql
+
     @property
     def column_names(self) -> List[str]:
-        return [get_name_and_alias(c)[1].split(".").pop() for c in self._cols]
+        return ["location_id", "date_of_first_service", "date_of_last_service"] + [
+            get_name_and_alias(c)[1]
+            for c in self._get_aliased_geom_table_cols("geom_table")
+        ]
 
     def get_geom_query(self):
         """
         Returns a SQL query which can be used to map locations (identified by
-        the values in self.location_columns) to their geometries (in a column
+        the values in self.location_id_columns) to their geometries (in a column
         named "geom").
         """
+        geom_table_alias = "geom_table"
+
+        # List of column names whose aliases are in self.location_id_columns
         columns = [
-            c for c in self._cols if get_name_and_alias(c)[1] in self.location_columns
-        ] + [f"{self._geom_column} AS geom"]
+            c
+            for c in self._get_aliased_geom_table_cols(geom_table_alias)
+            if get_name_and_alias(c)[1] in self.location_id_columns
+        ] + [f"{self._geom_col} AS geom"]
 
-        sql = f"SELECT {','.join(columns)} FROM {self.location_info_table}"
+        # For versioned-cell spatial unit, the geometry table _is_ the location table.
+        # In this case 'location_id' is one of the location ID columns but
+        # isn't in self._geom_table_cols, so we specify it separately.
+        if "location_id" in self.location_id_columns:
+            columns = [f"{geom_table_alias}.id AS location_id"] + columns
 
-        return sql
-
-    def _make_query(self):
-        columns = ", ".join(self._cols)
-        sql = f"""
-        SELECT
-            {columns}
-        FROM {self.location_info_table}
-        {self._join_clause}
-        """
+        sql = f"SELECT {','.join(columns)} FROM ({self.geom_table.get_query()}) AS {geom_table_alias}"
 
         return sql
 
 
-def lat_lon_spatial_unit():
+class LatLonSpatialUnit(GeomSpatialUnit):
     """
-    Returns a SpatialUnit that maps cell location_id to lat-lon coordinates.
+    Class that provides a mapping from cell/site IDs in the location table to
+    latitude and longitude.
 
-    Returns
-    -------
-    flowmachine.core.spatial_unit.SpatialUnit
+    In addition to the requested geom_table_column_names, this query returns
+    latitude and longitude values in columns "lat" and "lon".
+
+    Parameters
+    ----------
+    geom_table_column_names : str or list
+        Name(s) of the column(s) to fetch from geom_table.
+    location_id_column_names : str or list
+        Name(s) of the column(s) which identify the locations.
+        Must be a subset of the column_names for this query.
+    geom_table : str or flowmachine.Query, optional
+        Name of the table containing the geography information.
+        Can be either the name of a table, with the schema, or a
+        flowmachine.Query object.
+        Defaults to connection.location_table
+    geom_column : str, default "geom_point"
+        Name of the column in geom_table that defines the point geometry from
+        which latitude and longitude will be extracted.
+    geom_table_join_on : str
+        Name of the column from geom_table to join on.
+    location_table_join_on : str
+        Name of the column from connection.location_table to join on.
     """
-    return SpatialUnit(
-        selected_column_names=[
-            "id AS location_id",
-            "date_of_first_service",
-            "date_of_last_service",
-            "ST_X(geom_point::geometry) AS lon",
-            "ST_Y(geom_point::geometry) AS lat",
-        ],
-        location_column_names=["lat", "lon"],
+
+    def __init__(
+        self,
+        *,
+        geom_table_column_names=(),
+        location_id_column_names=("lat", "lon"),
+        geom_table=None,
         geom_column="geom_point",
-    )
-
-
-def versioned_cell_spatial_unit():
-    """
-    Returns a SpatialUnit that maps cell location_id to a cell version and
-    lat-lon coordinates.
-
-    Returns
-    -------
-    flowmachine.core.spatial_unit.SpatialUnit
-    """
-    if Query.connection.location_table != "infrastructure.cells":
-        raise ValueError("Versioned cell spatial unit is unavailable.")
-
-    return SpatialUnit(
-        selected_column_names=[
-            "id AS location_id",
-            "date_of_first_service",
-            "date_of_last_service",
-            "version",
-            "ST_X(geom_point::geometry) AS lon",
-            "ST_Y(geom_point::geometry) AS lat",
-        ],
-        location_column_names=["location_id", "version", "lon", "lat"],
-        location_info_table="infrastructure.cells",
-        geom_column="geom_point",
-    )
-
-
-def versioned_site_spatial_unit():
-    """
-    Returns a SpatialUnit that maps cell location_id to a site version and
-    lat-lon coordinates.
-
-    Returns
-    -------
-    flowmachine.core.spatial_unit.SpatialUnit
-    """
-    location_table = Query.connection.location_table
-
-    sites_alias = "s"
-    if location_table == "infrastructure.sites":
-        cells_alias = sites_alias
-        join_clause = ""
-    elif location_table == "infrastructure.cells":
-        cells_alias = "c"
-        join_clause = f"""
-        RIGHT JOIN
-        infrastructure.cells AS {cells_alias}
-        ON {sites_alias}.id = {cells_alias}.site_id
-        """
-    else:
-        raise ValueError(
-            f"Expected location table to be 'infrastructure.cells' "
-            f"or 'infrastructure.sites', not '{location_table}''"
+        geom_table_join_on=None,
+        location_table_join_on=None,
+    ):
+        self._geom_on = geom_table_join_on
+        self._loc_on = location_table_join_on
+        super().__init__(
+            geom_table_column_names=geom_table_column_names,
+            location_id_column_names=location_id_column_names,
+            geom_table=geom_table,
+            geom_column=geom_column,
         )
 
-    return SpatialUnit(
-        selected_column_names=[
-            f"{cells_alias}.id AS location_id",
-            f"{sites_alias}.id AS site_id",
-            f"{sites_alias}.date_of_first_service AS date_of_first_service",
-            f"{sites_alias}.date_of_last_service AS date_of_last_service",
-            f"{sites_alias}.version AS version",
-            f"ST_X({sites_alias}.geom_point::geometry) AS lon",
-            f"ST_Y({sites_alias}.geom_point::geometry) AS lat",
-        ],
-        location_column_names=["site_id", "version", "lon", "lat"],
-        location_info_table=f"infrastructure.sites AS {sites_alias}",
-        geom_column="geom_point",
-        join_clause=join_clause,
-    )
+    def _get_aliased_geom_table_cols(self, table_alias):
+        return super()._get_aliased_geom_table_cols(table_alias) + [
+            f"ST_X({table_alias}.{self._geom_col}::geometry) AS lon",
+            f"ST_Y({table_alias}.{self._geom_col}::geometry) AS lat",
+        ]
+
+    def _join_clause(self, loc_table_alias, geom_table_alias):
+        if self._loc_on is None or self._geom_on is None:
+            raise ValueError("No columns specified for join.")
+        return f"""
+        LEFT JOIN
+            ({self.geom_table.get_query()}) AS {geom_table_alias}
+        ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
+        """
 
 
-class PolygonSpatialUnit(SpatialUnit):
+class PolygonSpatialUnit(GeomSpatialUnit):
     """
     Class that provides a mapping from cell/site data in the location table to
     spatial regions defined by geography information in a table.
 
     Parameters
     ----------
-    polygon_column_names : str or list
-        The name of the column to fetch from the geometry
-        table in the database. Can also be a list of names.
-    polygon_table : str or flowmachine.Query
-        name of the table containing the geography information.
+    geom_table_column_names : str or list
+        Name(s) of the column(s) to fetch from geom_table.
+        This column or columns will be used to identify the polygons.
+    geom_table : str or flowmachine.Query
+        Name of the table containing the geography information.
         Can be either the name of a table, with the schema, or a
         flowmachine.Query object.
     geom_column : str, default 'geom'
-        Name of the column in polygon_table that defines the geography.
+        Name of the column in geom_table that defines the geography.
     """
 
-    def __init__(self, *, polygon_column_names, polygon_table, geom_column="geom"):
-        if isinstance(polygon_table, Query):
-            self.polygon_table = polygon_table
+    def __init__(self, *, geom_table_column_names, geom_table, geom_column="geom"):
+        if isinstance(geom_table_column_names, str):
+            location_id_column_names = get_name_and_alias(geom_table_column_names)[1]
         else:
-            # Creating a Table object here means that we don't have to handle
-            # admin tables and Grid objects differently in join_clause and self.get_geom_query
-            self.polygon_table = Table(name=polygon_table)
-
-        location_info_table = self.connection.location_table
-
-        locinfo_alias = "locinfo"
-        if hasattr(self.polygon_table, "fully_qualified_table_name") and (
-            location_info_table == self.polygon_table.fully_qualified_table_name
-        ):
-            # if the subscriber wants to select a geometry from the sites table
-            # there is no need to join the table with itself.
-            joined_alias = locinfo_alias
-            join_clause = ""
-        else:
-            joined_alias = "polygon"
-            join_clause = f"""
-            INNER JOIN
-                ({self.polygon_table.get_query()}) AS {joined_alias}
-            ON ST_within(
-                {locinfo_alias}.geom_point::geometry,
-                ST_SetSRID({joined_alias}.{geom_column}, 4326)::geometry
-            )
-            """
-
-        locinfo_column_names = [
-            f"{locinfo_alias}.id AS location_id",
-            f"{locinfo_alias}.version AS version",
-            f"{locinfo_alias}.date_of_first_service AS date_of_first_service",
-            f"{locinfo_alias}.date_of_last_service AS date_of_last_service",
-        ]
-        if type(polygon_column_names) is str:
-            self._polygon_column_names = (polygon_column_names,)
-        else:
-            self._polygon_column_names = tuple(polygon_column_names)
-        all_column_names = locinfo_column_names + [
-            f"{joined_alias}.{c}" for c in self._polygon_column_names
-        ]
-        location_column_names = [
-            get_name_and_alias(c)[1] for c in self._polygon_column_names
-        ]
-
+            location_id_column_names = [
+                get_name_and_alias(c)[1] for c in geom_table_column_names
+            ]
         super().__init__(
-            selected_column_names=all_column_names,
-            location_column_names=location_column_names,
-            location_info_table=f"{location_info_table} AS {locinfo_alias}",
+            geom_table_column_names=geom_table_column_names,
+            location_id_column_names=location_id_column_names,
+            geom_table=geom_table,
             geom_column=geom_column,
-            join_clause=join_clause,
         )
 
-    def get_geom_query(self):
-        """
-        Returns a SQL query which can be used to map locations (identified by
-        the values in self.location_columns) to their geometries (in a column
-        named "geom").
-        """
-        columns = list(self._polygon_column_names) + [f"{self._geom_column} AS geom"]
-
-        sql = f"""
-        SELECT {','.join(columns)} FROM ({self.polygon_table.get_query()}) AS polygon
+    def _join_clause(self, loc_table_alias, geom_table_alias):
+        return f"""
+        INNER JOIN
+            ({self.geom_table.get_query()}) AS {geom_table_alias}
+        ON ST_within(
+            {loc_table_alias}.geom_point::geometry,
+            ST_SetSRID({geom_table_alias}.{self._geom_col}, 4326)::geometry
+        )
         """
 
-        return sql
+
+def versioned_cell_spatial_unit():
+    """
+    Returns a LatLonSpatialUnit that maps cell location_id to a cell version
+    and lat-lon coordinates.
+
+    Returns
+    -------
+    flowmachine.core.spatial_unit.LatLonSpatialUnit
+    """
+    if Query.connection.location_table != "infrastructure.cells":
+        raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
+
+    return LatLonSpatialUnit(
+        geom_table_column_names=["version"],
+        location_id_column_names=["location_id", "version", "lon", "lat"],
+        geom_table="infrastructure.cells",
+    )
+
+
+def versioned_site_spatial_unit():
+    """
+    Returns a LatLonSpatialUnit that maps cell location_id to a site version
+    and lat-lon coordinates.
+
+    Returns
+    -------
+    flowmachine.core.spatial_unit.LatLonSpatialUnit
+    """
+    return LatLonSpatialUnit(
+        geom_table_column_names=["id AS site_id", "version"],
+        location_id_column_names=["site_id", "version", "lon", "lat"],
+        geom_table="infrastructure.sites",
+        geom_table_join_on="id",
+        location_table_join_on="site_id",
+    )
 
 
 def admin_spatial_unit(*, level, region_id_column_name=None):
@@ -444,13 +468,13 @@ def admin_spatial_unit(*, level, region_id_column_name=None):
         col_name = region_id_column_name
     table = f"geography.admin{level}"
 
-    return PolygonSpatialUnit(polygon_column_names=col_name, polygon_table=table)
+    return PolygonSpatialUnit(geom_table_column_names=col_name, geom_table=table)
 
 
 def grid_spatial_unit(*, size):
     """
-    Returns a PolygonSpatialUnit representing a mapping
-    between all the sites in the database and a grid of arbitrary size.
+    Returns a PolygonSpatialUnit that maps all the sites in the database to a
+    grid of arbitrary size.
 
     Parameters
     ----------
@@ -463,8 +487,8 @@ def grid_spatial_unit(*, size):
         Query which maps cell/site IDs to grid squares
     """
     return PolygonSpatialUnit(
-        polygon_column_names=["grid_id"],
-        polygon_table=Grid(size),
+        geom_table_column_names="grid_id",
+        geom_table=Grid(size),
         geom_column="geom_square",
     )
 
@@ -475,7 +499,7 @@ def make_spatial_unit(
     level=None,
     region_id_column_name=None,
     size=None,
-    polygon_table=None,
+    geom_table=None,
     geom_column="geom",
 ):
     """
@@ -497,9 +521,9 @@ def make_spatial_unit(
                 number.
             'polygon'
                 A custom set of polygons that live in the database. In which
-                case you can pass the parameters 'column_name', which is the
-                column or columns you want to return after the join, and
-                'polygon_table', the table where the polygons reside (with the
+                case you can pass the parameters 'region_id_column_name', which
+                is the column or columns you want to return after the join, and
+                'geom_table', the table where the polygons reside (with the
                 schema), and additionally geom_column which is the column with
                 the geometry information (will default to 'geom').
             'admin'
@@ -521,12 +545,12 @@ def make_spatial_unit(
     size : float or int
         Size of the grid in kilometres.
         Required when spatial_unit_type='grid'.
-    polygon_table : str or flowmachine.Query
+    geom_table : str or flowmachine.Query
         Name of the table containing the geography information. Can be either
         the name of a table, with the schema, or a flowmachine.Query object.
         Required when spatial_unit_type='polygon'.
     geom_column : str, default 'geom'
-        Name of the column in polygon_table that defines the geography.
+        Name of the column in geom_table that defines the geography.
         Required when spatial_unit_type='polygon'.
     
     Returns
@@ -535,18 +559,6 @@ def make_spatial_unit(
         An object representing a mapping from location identifiers to a spatial
         unit.
     """
-    valid_spatial_unit_types = {
-        "cell",
-        "versioned-cell",
-        "versioned-site",
-        "lat-lon",
-        "admin",
-        "grid",
-        "polygon",
-    }
-    if not (spatial_unit_type in valid_spatial_unit_types):
-        raise ValueError(f"Unrecognised spatial unit type: {spatial_unit_type}.")
-
     if spatial_unit_type == "cell":
         return CellSpatialUnit()
     elif spatial_unit_type == "versioned-cell":
@@ -554,7 +566,7 @@ def make_spatial_unit(
     elif spatial_unit_type == "versioned-site":
         return versioned_site_spatial_unit()
     elif spatial_unit_type == "lat-lon":
-        return lat_lon_spatial_unit()
+        return LatLonSpatialUnit()
     elif spatial_unit_type == "admin":
         if level is None:
             raise ValueError(
@@ -570,16 +582,18 @@ def make_spatial_unit(
             )
         return grid_spatial_unit(size=size)
     elif spatial_unit_type == "polygon":
-        if polygon_table is None:
+        if geom_table is None:
             raise ValueError(
-                "'polygon_table' parameter is required for spatial unit of type 'polygon'."
+                "'geom_table' parameter is required for spatial unit of type 'polygon'."
             )
         if region_id_column_name is None:
             raise ValueError(
                 "'region_id_column_name' parameter is required for spatial unit of type 'polygon'."
             )
         return PolygonSpatialUnit(
-            polygon_column_names=region_id_column_name,
-            polygon_table=polygon_table,
+            geom_table_column_names=region_id_column_name,
+            geom_table=geom_table,
             geom_column=geom_column,
         )
+    else:
+        raise ValueError(f"Unrecognised spatial unit type: {spatial_unit_type}.")
