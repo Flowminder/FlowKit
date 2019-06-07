@@ -55,6 +55,8 @@ class Login extends React.Component {
     this.state = {
       username: "",
       password: "",
+      two_factor_code: "",
+      need_two_factor: false,
       hasError: false,
       error: { message: "" }
     };
@@ -67,6 +69,9 @@ class Login extends React.Component {
         this.props.setLoggedIn(json.is_admin);
       })
       .catch(err => {
+        if (err.need_two_factor) {
+          this.setState({ need_two_factor: true });
+        }
         this.setState({ hasError: true, error: err });
       });
   };
@@ -93,6 +98,7 @@ class Login extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const { need_two_factor } = this.state;
 
     return (
       <React.Fragment>
@@ -105,28 +111,47 @@ class Login extends React.Component {
             />
             <Typography variant="h5">Sign in</Typography>
             <form className={classes.form} onSubmit={this.handleSubmit}>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="username">Username</InputLabel>
-                <Input
-                  id="username"
-                  name="username"
-                  autoComplete="username"
-                  autoFocus
-                  value={this.state.username}
-                  onChange={this.handleChange}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <Input
-                  name="password"
-                  type="password"
-                  id="password"
-                  value={this.state.password}
-                  onChange={this.handleChange}
-                  autoComplete="current-password"
-                />
-              </FormControl>
+              {!need_two_factor && (
+                <>
+                  <FormControl margin="normal" required fullWidth>
+                    <InputLabel htmlFor="username">Username</InputLabel>
+                    <Input
+                      id="username"
+                      name="username"
+                      autoComplete="username"
+                      autoFocus
+                      value={this.state.username}
+                      onChange={this.handleChange}
+                    />
+                  </FormControl>
+                  <FormControl margin="normal" required fullWidth>
+                    <InputLabel htmlFor="password">Password</InputLabel>
+                    <Input
+                      name="password"
+                      type="password"
+                      id="password"
+                      value={this.state.password}
+                      onChange={this.handleChange}
+                      autoComplete="current-password"
+                    />
+                  </FormControl>
+                </>
+              )}
+
+              {need_two_factor && (
+                <FormControl margin="normal" required fullWidth>
+                  <InputLabel htmlFor="auth_code">
+                    Authorisation code
+                  </InputLabel>
+                  <Input
+                    name="two_factor_code"
+                    type="password"
+                    id="two_factor_code"
+                    value={this.state.two_factor_code}
+                    onChange={this.handleChange}
+                  />
+                </FormControl>
+              )}
               <Button
                 type="submit"
                 fullWidth

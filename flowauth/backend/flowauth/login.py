@@ -26,7 +26,10 @@ def signin():
             two_factor = user.two_factor_auth
             if two_factor is not None and two_factor.enabled:
                 if "two_factor_code" not in json:
-                    raise InvalidUsage("Must supply a two-factor authentication code.")
+                    raise InvalidUsage(
+                        "Must supply a two-factor authentication code.",
+                        payload={"need_two_factor": True},
+                    )
                 two_factor.validate(json["two_factor_code"])
             login_user(user, remember=False)
             identity_changed.send(
