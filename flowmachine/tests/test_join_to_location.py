@@ -9,8 +9,7 @@ from datetime import datetime, timezone
 import numpy as np
 
 from flowmachine.features import subscriber_locations
-from flowmachine.core import JoinToLocation, location_joined_query
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import JoinToLocation, location_joined_query, make_spatial_unit
 
 
 def test_join_to_location_column_names(exemplar_spatial_unit_param):

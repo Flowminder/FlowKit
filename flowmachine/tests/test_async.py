@@ -8,7 +8,7 @@ from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.features.subscriber import *
 from threading import Thread
 import pandas as pd
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 
 
 def test_returns_future():

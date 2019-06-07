@@ -35,7 +35,7 @@ from flowmachine.utils import list_of_dates
 from ..features import ModalLocation
 from ..core.query import Query
 from ..core.model import Model, model_result
-from ..core.spatial_unit import make_spatial_unit
+from ..core import make_spatial_unit
 from ..features.spatial.distance_matrix import DistanceMatrix
 
 import structlog

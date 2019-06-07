@@ -16,7 +16,7 @@ import pytest
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import daily_location
 from flowmachine.utils import proj4string
 

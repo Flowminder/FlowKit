@@ -4,7 +4,7 @@
 
 from flowmachine.features import LocationVisits, daily_location, DayTrajectories
 from flowmachine.utils import list_of_dates
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 
 
 def test_column_names_location_visits(exemplar_spatial_unit_param):

@@ -7,7 +7,7 @@ import os
 import geojson
 import pytest
 
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import daily_location
 from flowmachine.features.location.flows import *
 from flowmachine.features.subscriber.daily_location import locate_subscribers

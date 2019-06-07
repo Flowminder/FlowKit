@@ -10,7 +10,7 @@ Level classes.
 
 import pytest
 
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.features import TotalNetworkObjects, AggregateNetworkObjects
 

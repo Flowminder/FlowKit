@@ -11,7 +11,7 @@ days where an subscriber has made at least one call
 import pytest
 
 
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import CallDays, subscriber_locations
 import numpy as np
 

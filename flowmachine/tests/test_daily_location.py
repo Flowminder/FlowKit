@@ -5,7 +5,7 @@
 import pytest
 
 from flowmachine.core.errors import MissingDateError
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import daily_location, MostFrequentLocation
 
 

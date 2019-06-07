@@ -14,9 +14,8 @@ at the network level.
 from typing import List
 
 from ...core.mixins import GeoDataMixin
-from ...core import location_joined_query
+from ...core import location_joined_query, make_spatial_unit
 from ...core.query import Query
-from ...core.spatial_unit import make_spatial_unit
 from ..utilities import EventsTablesUnion
 
 valid_stats = {"avg", "max", "min", "median", "mode", "stddev", "variance"}

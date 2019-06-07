@@ -5,8 +5,7 @@
 from flowmachine.utils import pretty_sql
 
 from approvaltests.approvals import verify
-from flowmachine.core import CustomQuery
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import CustomQuery, make_spatial_unit
 from flowmachine.features import daily_location
 
 

@@ -17,8 +17,7 @@ from .events_tables_union import EventsTablesUnion
 from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 
 from ...core.query import Query
-from ...core.join_to_location import location_joined_query
-from ...core.spatial_unit import make_spatial_unit
+from ...core import location_joined_query, make_spatial_unit
 
 import structlog
 

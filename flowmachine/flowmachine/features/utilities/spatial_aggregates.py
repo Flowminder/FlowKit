@@ -29,6 +29,7 @@ class SpatialAggregate(GeoDataMixin, Query):
     def __init__(self, *, locations):
 
         self.locations = locations
+        # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = locations.spatial_unit
         super().__init__()
 
@@ -99,6 +100,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     def __init__(self, *, metric, locations, method="mean"):
         self.metric = metric
         self.locations = locations
+        # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = locations.spatial_unit
         self.method = method.lower()
         if self.method not in self.allowed_methods:

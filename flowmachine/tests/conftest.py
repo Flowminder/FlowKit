@@ -18,9 +18,8 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
 )
 
 import flowmachine
-from flowmachine.core import Query
+from flowmachine.core import Query, make_spatial_unit
 from flowmachine.core.cache import reset_cache
-from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features import EventTableSubset
 
 logger = logging.getLogger()

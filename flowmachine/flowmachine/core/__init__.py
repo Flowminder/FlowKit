@@ -13,6 +13,7 @@ from .table import Table
 from .geotable import GeoTable
 from .init import connect
 from .logging import init_logging, set_log_level
+from .spatial_unit import make_spatial_unit
 from .join_to_location import JoinToLocation, location_joined_query
 from .custom_query import CustomQuery
 from .grid import Grid
@@ -25,6 +26,7 @@ methods = [
     "GeoTable",
     "Connection",
     "connect",
+    "make_spatial_unit",
     "JoinToLocation",
     "location_joined_query",
     "CustomQuery",

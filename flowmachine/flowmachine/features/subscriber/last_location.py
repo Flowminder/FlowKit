@@ -12,10 +12,9 @@ at during a specified time period.
 """
 from typing import List
 
-from flowmachine.core import Query
+from flowmachine.core import Query, make_spatial_unit
 from ..utilities.subscriber_locations import BaseLocation
 from ..utilities.subscriber_locations import subscriber_locations
-from flowmachine.core.spatial_unit import make_spatial_unit
 
 
 class LastLocation(BaseLocation, Query):

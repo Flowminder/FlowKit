@@ -4,7 +4,7 @@
 
 
 from flowmachine.features import DayTrajectories, daily_location
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 
 
 def test_column_names_day_trajectories(exemplar_spatial_unit_param):

@@ -16,10 +16,9 @@ import pytest
 from geopandas import GeoSeries
 from shapely.geometry import box, MultiPoint
 
-from flowmachine.core import Table, CustomQuery
+from flowmachine.core import Table, CustomQuery, make_spatial_unit
 from flowmachine.core.query import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.core.spatial_unit import make_spatial_unit
 from flowmachine.features import (
     CallDays,
     HartiganCluster,

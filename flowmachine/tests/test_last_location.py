@@ -4,7 +4,7 @@
 
 import pytest
 
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import LastLocation
 
 

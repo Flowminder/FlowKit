@@ -40,8 +40,7 @@ class Grid(GeoDataMixin, Query):
 
     def _geo_augmented_query(self):
         """
-        Returns one of each geom for non-point levels, with the
-        flows in/out as properties.
+        Returns a version of this query with geom and gid columns.
 
         Returns
         -------

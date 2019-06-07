@@ -11,7 +11,7 @@ from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GraphMixin
-from ...core.spatial_unit import make_spatial_unit
+from ...core import make_spatial_unit
 
 
 class DistanceMatrix(GraphMixin, Query):

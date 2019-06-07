@@ -7,7 +7,7 @@ from flowmachine.features import Displacement, ModalLocation, daily_location
 from numpy import isnan
 
 from flowmachine.utils import list_of_dates
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 
 
 @pytest.mark.parametrize(

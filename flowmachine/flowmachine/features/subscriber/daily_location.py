@@ -13,7 +13,7 @@ representing where an subscriber is on a given day.
 """
 import datetime
 
-from ...core.spatial_unit import make_spatial_unit
+from ...core import make_spatial_unit
 from .last_location import LastLocation
 from .most_frequent_location import MostFrequentLocation
 

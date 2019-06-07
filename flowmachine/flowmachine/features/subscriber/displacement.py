@@ -17,7 +17,7 @@ from .metaclasses import SubscriberFeature
 from . import ModalLocation
 from ..utilities.subscriber_locations import subscriber_locations
 from flowmachine.utils import parse_datestring, get_dist_string, list_of_dates
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 
 from dateutil.relativedelta import relativedelta
 
