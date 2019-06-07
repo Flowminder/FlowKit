@@ -14,6 +14,7 @@ from typing import List
 
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import subscriber_locations
+from flowmachine.core import make_spatial_unit
 
 
 class RadiusOfGyration(SubscriberFeature):
@@ -101,7 +102,7 @@ class RadiusOfGyration(SubscriberFeature):
         self.ul = subscriber_locations(
             self.start,
             self.stop,
-            level="lat-lon",
+            spatial_unit=make_spatial_unit("lat-lon"),
             hours=hours,
             table=table,
             subscriber_subset=subscriber_subset,

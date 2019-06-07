@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import pytest
 
-from flowmachine.core.spatial_unit import make_spatial_unit
+from flowmachine.core import make_spatial_unit
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 from flowmachine.features.subscriber import *
 
