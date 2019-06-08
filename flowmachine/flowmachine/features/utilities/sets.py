@@ -11,8 +11,7 @@ from typing import List
 
 from .event_table_subset import EventTableSubset
 from .events_tables_union import EventsTablesUnion
-from ...core import Query
-from flowmachine.utils import get_columns_for_level
+from ...core import Query, make_spatial_unit
 
 from numpy import inf
 
@@ -137,44 +136,27 @@ class SubscriberLocationSubset(Query):
         Start time to filter query.
     stop : datetime
         Stop time to filter query.
-    geoms : flowmachine.Query
-        An object of type
-    level : str, default 'admin3'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
     min_calls : int
         minimum number of calls a user must have made within a
-    name_col : str
-        Name of column with name associated to geometry
-    geom_col : str
-        Name of column containing geometry
     direction : {'in', 'out', 'both'}, default 'both'
         Whether to consider calls made, received, or both. Defaults to 'both'.
+    hours : 2-tuple of floats, default 'all'
+        Restrict the analysis to only a certain set
+        of hours within each day.
+    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
+        Either msisdn, or imei, the column that identifies the subscriber.
+    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
+        If provided, string or list of string which are msisdn or imeis to limit
+        results to; or, a query or table which has a column with a name matching
+        subscriber_identifier (typically, msisdn), to limit results to.
 
     Examples
     --------
     >>> sls = SubscriberLocationSubset("2016-01-01", "2016-01-07", min_calls=3,
-        direction="both", level="admin3")
+        direction="both", spatial_unit=make_spatial_unit("admin", level=3))
 
     >>> sls.head()
           subscriber     name
@@ -194,13 +176,9 @@ class SubscriberLocationSubset(Query):
         min_calls,
         subscriber_identifier="msisdn",
         direction="both",
-        level="admin3",
-        column_name=None,
+        spatial_unit=None,
         hours="all",
         subscriber_subset=None,
-        size=None,
-        polygon_table=None,
-        geom_col="geom",
     ):
 
         from ...features import PerLocationSubscriberCallDurations
@@ -210,22 +188,20 @@ class SubscriberLocationSubset(Query):
         self.min_calls = min_calls
         self.subscriber_identifier = subscriber_identifier
         self.direction = direction
-        self.level = level
-        self.column_name = column_name
+        if spatial_unit is None:
+            self.spatial_unit = make_spatial_unit("admin", level=3)
+        else:
+            self.spatial_unit = spatial_unit
 
         self.pslds = PerLocationSubscriberCallDurations(
             start=self.start,
             stop=self.stop,
             subscriber_identifier=self.subscriber_identifier,
             direction=self.direction,
-            level=self.level,
+            spatial_unit=self.spatial_unit,
             statistic="count",
-            column_name=self.column_name,
             hours=hours,
             subscriber_subset=subscriber_subset,
-            size=size,
-            polygon_table=polygon_table,
-            geom_col=geom_col,
         )
 
         self.pslds_subset = self.pslds.numeric_subset(
@@ -236,11 +212,11 @@ class SubscriberLocationSubset(Query):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"] + get_columns_for_level(self.level, self.column_name)
+        return ["subscriber"] + self.spatial_unit.location_id_columns
 
     def _make_query(self):
 
-        loc_cols = ", ".join(get_columns_for_level(self.level, self.column_name))
+        loc_cols = ", ".join(self.spatial_unit.location_id_columns)
 
         sql = f"""
         SELECT

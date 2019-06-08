@@ -12,8 +12,7 @@ Total and per-counterpart call durations for subscribers.
 import warnings
 from typing import List
 
-from ...core import JoinToLocation
-from flowmachine.utils import get_columns_for_level
+from ...core import location_joined_query, make_spatial_unit
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -64,16 +63,12 @@ class SubscriberCallDurations(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         subscriber_identifier="msisdn",
         direction="out",
         statistic="sum",
-        *,
         hours="all",
         subscriber_subset=None,
-        level=None,
-        size=None,
-        column_name=None,
-        polygon_table=None,
     ):
         self.start = start
         self.stop = stop
@@ -141,31 +136,9 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         subscriber_identifier (typically, msisdn), to limit results to.
     direction : {'in', 'out', 'both'}, default 'out'
         Whether to consider calls made, received, or both. Defaults to 'out'.
-    level : str, default 'admin3'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
-    column_name : str
-        Optionally specify a non-default column name. Required if level is 'polygon'.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
 
@@ -188,24 +161,22 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         self,
         start,
         stop,
+        *,
         subscriber_identifier="msisdn",
         direction="out",
-        level="admin3",
         statistic="sum",
-        column_name=None,
-        *,
+        spatial_unit=None,
         hours="all",
         subscriber_subset=None,
-        size=None,
-        polygon_table=None,
-        geom_col="geom",
     ):
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
         self.direction = direction
-        self.level = level
-        self.column_name = column_name
+        if spatial_unit is None:
+            self.spatial_unit = make_spatial_unit("admin", level=3)
+        else:
+            self.spatial_unit = spatial_unit
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
             raise ValueError(
@@ -222,48 +193,33 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
             "outgoing",
             "duration",
             "location_id",
+            "datetime",
         ]
-        self.unioned_query = EventsTablesUnion(
-            self.start,
-            self.stop,
-            tables="events.calls",
-            columns=column_list,
-            hours=hours,
-            subscriber_subset=subscriber_subset,
-            subscriber_identifier=subscriber_identifier,
-        )
-        if self.level != "cell":
-            etu = EventsTablesUnion(
+        self.unioned_query = location_joined_query(
+            EventsTablesUnion(
                 self.start,
                 self.stop,
                 tables="events.calls",
-                columns=column_list + ["datetime"],
+                columns=column_list,
                 hours=hours,
                 subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
-            )
-
-            self.unioned_query = JoinToLocation(
-                etu,
-                level=self.level,
-                column_name=self.column_name,
-                time_col="datetime",
-                size=size,
-                polygon_table=polygon_table,
-                geom_col=geom_col,
-            )
+            ),
+            spatial_unit=self.spatial_unit,
+            time_col="datetime",
+        )
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
         return (
             ["subscriber"]
-            + get_columns_for_level(self.level, self.column_name)
+            + self.spatial_unit.location_id_columns
             + [f"duration_{self.statistic}"]
         )
 
     def _make_query(self):
-        loc_cols = ", ".join(get_columns_for_level(self.level, self.column_name))
+        loc_cols = ", ".join(self.spatial_unit.location_id_columns)
         where_clause = ""
         if self.direction != "both":
             where_clause = "WHERE {}outgoing".format(
@@ -319,10 +275,6 @@ class PairedSubscriberCallDurations(SubscriberFeature):
         start,
         stop,
         *,
-        level=None,
-        size=None,
-        column_name=None,
-        polygon_table=None,
         subscriber_identifier="msisdn",
         statistic="sum",
         hours="all",
@@ -390,31 +342,9 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    level : str, default 'admin3'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
-    column_name : str
-        Optionally specify a non-default column name. Required if level is 'polygon'.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to 'sum', aggregation statistic over the durations.
 
@@ -444,22 +374,20 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         self,
         start,
         stop,
-        subscriber_identifier="msisdn",
-        level="admin3",
-        column_name=None,
-        statistic="sum",
         *,
+        subscriber_identifier="msisdn",
+        statistic="sum",
+        spatial_unit=None,
         hours="all",
         subscriber_subset=None,
-        size=None,
-        polygon_table=None,
-        geom_col="geom",
     ):
         self.start = start
         self.stop = stop
         self.subscriber_identifier = subscriber_identifier
-        self.level = level
-        self.column_name = column_name
+        if spatial_unit is None:
+            self.spatial_unit = make_spatial_unit("admin", level=3)
+        else:
+            self.spatial_unit = spatial_unit
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
             raise ValueError(
@@ -475,35 +403,22 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
             "outgoing",
             "duration",
             "location_id",
+            "datetime",
         ]
-        unioned_query = EventsTablesUnion(
-            self.start,
-            self.stop,
-            tables="events.calls",
-            columns=column_list,
-            hours=hours,
-            subscriber_subset=subscriber_subset,
-            subscriber_identifier=self.subscriber_identifier,
-        )
-        if self.level != "cell":
-            etu = EventsTablesUnion(
+        unioned_query = location_joined_query(
+            EventsTablesUnion(
                 self.start,
                 self.stop,
                 tables="events.calls",
-                columns=column_list + ["datetime"],
+                columns=column_list,
                 hours=hours,
                 subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
-            )
-            unioned_query = JoinToLocation(
-                etu,
-                level=self.level,
-                column_name=self.column_name,
-                time_col="datetime",
-                size=size,
-                polygon_table=polygon_table,
-                geom_col=geom_col,
-            )
+            ),
+            spatial_unit=self.spatial_unit,
+            time_col="datetime",
+        )
+
         self.joined = unioned_query.subset("outgoing", "t").join(
             unioned_query.subset("outgoing", "f"),
             on_left="id",
@@ -518,19 +433,15 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
     def column_names(self) -> List[str]:
         return (
             ["subscriber", "msisdn_counterpart"]
-            + get_columns_for_level(self.level, self.column_name)
-            + [
-                f"{x}_counterpart"
-                for x in get_columns_for_level(self.level, self.column_name)
-            ]
+            + self.spatial_unit.location_id_columns
+            + [f"{x}_counterpart" for x in self.spatial_unit.location_id_columns]
             + [f"duration_{self.statistic}"]
         )
 
     def _make_query(self):
-        loc_cols = get_columns_for_level(self.level, self.column_name)
+        loc_cols = self.spatial_unit.location_id_columns
         loc_cols += [
-            "{}_counterpart".format(c)
-            for c in get_columns_for_level(self.level, self.column_name)
+            "{}_counterpart".format(c) for c in self.spatial_unit.location_id_columns
         ]
         loc_cols = ", ".join(loc_cols)
 

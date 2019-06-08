@@ -82,7 +82,7 @@ def exemplar_level_param(request):
         },
         {
             "spatial_unit_type": "polygon",
-            "region_id_column_name": "id",
+            "region_id_column_name": "id AS site_id",
             "geom_table": "infrastructure.sites",
             "geom_column": "geom_point",
         },
