@@ -291,7 +291,7 @@ class HartiganCluster(BaseCluster):
         --------
 
         >>> es = EventScore(start='2016-01-01', stop='2016-01-05',
-        level='versioned-site')
+        spatial_unit=make_spatial_unit('versioned-site'))
 
         >>> cd = CallDays(start='2016-01-01', stop='2016-01-04',
         level='versioned-site')

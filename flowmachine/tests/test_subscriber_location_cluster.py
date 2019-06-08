@@ -49,7 +49,11 @@ def test_joined_hartigan_column_names(get_column_names_from_run):
         )
     )
     hartigan = HartiganCluster(calldays=cd, radius=50)
-    es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
+    es = EventScore(
+        start="2016-01-01",
+        stop="2016-01-05",
+        spatial_unit=make_spatial_unit("versioned-site"),
+    )
     joined = hartigan.join_to_cluster_components(es)
     assert get_column_names_from_run(joined) == joined.column_names
 
@@ -260,7 +264,11 @@ def test_join_returns_the_same_clusters():
 
     hartigan = HartiganCluster(calldays=cd, radius=50)
     har_df = hartigan.to_geopandas()
-    es = EventScore(start="2016-01-01", stop="2016-01-04", level="versioned-site")
+    es = EventScore(
+        start="2016-01-01",
+        stop="2016-01-04",
+        spatial_unit=make_spatial_unit("versioned-site"),
+    )
 
     joined = (
         hartigan.join_to_cluster_components(es)

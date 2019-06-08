@@ -43,7 +43,9 @@ def test_column_names_meaningful_locations(get_column_names_from_run):
             radius=1,
         ),
         scores=EventScore(
-            start="2016-01-01", stop="2016-01-02", level="versioned-site"
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("versioned-site"),
         ),
         labels=labels,
         label="evening",
@@ -73,7 +75,9 @@ def test_column_names_meaningful_locations_aggregate(
                 radius=1,
             ),
             scores=EventScore(
-                start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                start="2016-01-01",
+                stop="2016-01-02",
+                spatial_unit=make_spatial_unit("versioned-site"),
             ),
             labels=labels,
             label="evening",
@@ -101,7 +105,9 @@ def test_meaningful_locations_aggregate_disallowed_level_raises():
                     radius=1,
                 ),
                 scores=EventScore(
-                    start="2016-01-01", stop="2016-01-02", level="versioned-site"
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    spatial_unit=make_spatial_unit("versioned-site"),
                 ),
                 labels=labels,
                 label="evening",
@@ -130,7 +136,9 @@ def test_column_names_meaningful_locations_od(
             radius=1,
         ),
         scores=EventScore(
-            start="2016-01-01", stop="2016-01-02", level="versioned-site"
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("versioned-site"),
         ),
         labels=labels,
         label="evening",
@@ -148,7 +156,9 @@ def test_column_names_meaningful_locations_od(
             radius=1,
         ),
         scores=EventScore(
-            start="2016-01-01", stop="2016-01-02", level="versioned-site"
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("versioned-site"),
         ),
         labels=labels,
         label="unknown",
@@ -184,7 +194,9 @@ def test_meaningful_locations_results(
             radius=1,
         ),
         scores=EventScore(
-            start="2016-01-01", stop="2016-01-02", level="versioned-site"
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("versioned-site"),
         ),
         labels=labels,
         label=label,
@@ -218,7 +230,9 @@ def test_meaningful_locations_aggregation_results(exemplar_level_param, get_data
             radius=1,
         ),
         scores=EventScore(
-            start="2016-01-01", stop="2016-01-02", level="versioned-site"
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("versioned-site"),
         ),
         labels=labels,
         label="evening",
@@ -252,7 +266,9 @@ def test_meaningful_locations_od_raises_for_bad_level(
             radius=1,
         ),
         scores=EventScore(
-            start="2016-01-01", stop="2016-01-02", level="versioned-site"
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("versioned-site"),
         ),
         labels=labels,
         label="evening",
@@ -282,7 +298,9 @@ def test_meaningful_locations_od_results(get_dataframe):
             radius=1,
         ),
         scores=EventScore(
-            start="2016-01-01", stop="2016-01-02", level="versioned-site"
+            start="2016-01-01",
+            stop="2016-01-02",
+            spatial_unit=make_spatial_unit("versioned-site"),
         ),
         labels=labels,
         label="unknown",
@@ -300,7 +318,9 @@ def test_meaningful_locations_od_results(get_dataframe):
             radius=1,
         ),
         scores=EventScore(
-            start="2016-01-02", stop="2016-01-03", level="versioned-site"
+            start="2016-01-02",
+            stop="2016-01-03",
+            spatial_unit=make_spatial_unit("versioned-site"),
         ),
         labels=labels,
         label="unknown",
