@@ -14,6 +14,7 @@ problem in hand.
 from typing import List, Union
 
 from ..utilities import subscriber_locations
+from ...core import make_spatial_unit
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
 from .call_days import CallDays
@@ -133,7 +134,7 @@ def subscriber_location_cluster(
                 start=start,
                 stop=stop,
                 hours=hours,
-                level="versioned-site",
+                spatial_unit=make_spatial_unit("versioned-site"),
                 table=table,
                 subscriber_identifier=subscriber_identifier,
                 ignore_nulls=ignore_nulls,
