@@ -6,8 +6,7 @@
 
 from typing import List
 
-from ...core import JoinToLocation
-from flowmachine.utils import get_columns_for_level
+from ...core import location_joined_query, make_spatial_unit
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -42,29 +41,9 @@ class PerLocationEventStats(SubscriberFeature):
         Can be a string of a single table (with the schema)
         or a list of these. The keyword all is to select all
         subscriber tables
-    level : str, default 'cell'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
 
     Examples
     --------
@@ -88,25 +67,20 @@ class PerLocationEventStats(SubscriberFeature):
         stop,
         statistic="avg",
         *,
-        level="cell",
+        spatial_unit=make_spatial_unit("cell"),
         hours="all",
         tables="all",
         subscriber_identifier="msisdn",
         direction="both",
         subscriber_subset=None,
-        column_name=None,
-        size=None,
-        polygon_table=None,
-        geom_col="geom",
     ):
         self.start = start
         self.stop = stop
-        self.level = level
+        self.spatial_unit = spatial_unit
         self.hours = hours
         self.tables = tables
         self.subscriber_identifier = subscriber_identifier
         self.direction = direction
-        self.column_name = column_name
         self.statistic = statistic
 
         if self.statistic not in valid_stats:
@@ -117,35 +91,30 @@ class PerLocationEventStats(SubscriberFeature):
             )
 
         if self.direction in {"both"}:
-            column_list = [self.subscriber_identifier, "location_id"]
+            column_list = [self.subscriber_identifier, "location_id", "datetime"]
         elif self.direction in {"in", "out"}:
-            column_list = [self.subscriber_identifier, "location_id", "outgoing"]
+            column_list = [
+                self.subscriber_identifier,
+                "location_id",
+                "outgoing",
+                "datetime",
+            ]
         else:
             raise ValueError("{} is not a valid direction.".format(self.direction))
 
-        if self.level != "cell":
-            column_list.append("datetime")
-
-        self.unioned_query = EventsTablesUnion(
-            self.start,
-            self.stop,
-            tables=self.tables,
-            columns=column_list,
-            hours=hours,
-            subscriber_identifier=subscriber_identifier,
-            subscriber_subset=subscriber_subset,
+        self.unioned_query = location_joined_query(
+            EventsTablesUnion(
+                self.start,
+                self.stop,
+                tables=self.tables,
+                columns=column_list,
+                hours=hours,
+                subscriber_identifier=subscriber_identifier,
+                subscriber_subset=subscriber_subset,
+            ),
+            spatial_unit=self.spatial_unit,
+            time_col="datetime",
         )
-
-        if self.level != "cell":
-            self.unioned_query = JoinToLocation(
-                self.unioned_query,
-                level=self.level,
-                column_name=self.column_name,
-                time_col="datetime",
-                size=size,
-                polygon_table=polygon_table,
-                geom_col=geom_col,
-            )
 
         super().__init__()
 
@@ -154,7 +123,7 @@ class PerLocationEventStats(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-        loc_cols = ", ".join(get_columns_for_level(self.level, self.column_name))
+        loc_cols = ", ".join(self.spatial_unit.location_id_columns)
 
         where_clause = ""
         if self.direction != "both":
