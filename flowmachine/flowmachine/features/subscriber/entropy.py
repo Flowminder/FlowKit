@@ -14,7 +14,7 @@ from typing import List
 from .metaclasses import SubscriberFeature
 from .contact_balance import ContactBalance
 from ..utilities.sets import EventsTablesUnion
-from ..utilities.subscriber_locations import subscriber_locations
+from ..utilities.subscriber_locations import SubscriberLocations
 from flowmachine.utils import get_columns_for_level
 
 
@@ -286,7 +286,7 @@ class LocationEntropy(BaseEntropy):
         ignore_nulls=True,
     ):
 
-        self.subscriber_locations = subscriber_locations(
+        self.subscriber_locations = SubscriberLocations(
             start=start,
             stop=stop,
             level=level,

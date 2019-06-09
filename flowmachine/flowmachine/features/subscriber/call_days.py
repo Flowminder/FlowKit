@@ -12,9 +12,8 @@ specified time period.
 """
 from typing import List, Union
 
-from ...core import JoinToLocation
 from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import _SubscriberCells
+from ..utilities.subscriber_locations import SubscriberLocations
 
 
 class CallDays(SubscriberFeature):
@@ -25,7 +24,7 @@ class CallDays(SubscriberFeature):
 
     Parameters
     ----------
-    subscriber_locations : JoinToLocation, _SubscriberCells
+    subscriber_locations : SubscriberLocations
         Locations of subscribers' interactions
 
     See Also
@@ -33,7 +32,7 @@ class CallDays(SubscriberFeature):
     flowmachine.features.subscriber_locations
     """
 
-    def __init__(self, subscriber_locations: Union[JoinToLocation, _SubscriberCells]):
+    def __init__(self, subscriber_locations: SubscriberLocations):
         self.ul = subscriber_locations
         self.spatial_unit = self.ul.spatial_unit
         super().__init__()

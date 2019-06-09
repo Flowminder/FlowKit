@@ -15,7 +15,7 @@ from typing import List
 from flowmachine.features.subscriber import daily_location
 from .metaclasses import SubscriberFeature
 from . import ModalLocation
-from ..utilities.subscriber_locations import subscriber_locations
+from ..utilities.subscriber_locations import SubscriberLocations
 from flowmachine.utils import parse_datestring, get_dist_string, list_of_dates
 from flowmachine.core import make_spatial_unit
 
@@ -140,7 +140,7 @@ class Displacement(SubscriberFeature):
                 ]
             )
 
-        sl = subscriber_locations(
+        sl = SubscriberLocations(
             self.start,
             self.stop_sl,
             spatial_unit=make_spatial_unit("lat-lon"),

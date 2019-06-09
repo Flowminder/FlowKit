@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 
 import numpy as np
 
-from flowmachine.features import subscriber_locations
+from flowmachine.features import SubscriberLocations
 from flowmachine.core import JoinToLocation, location_joined_query, make_spatial_unit
 
 
@@ -16,7 +16,7 @@ def test_join_to_location_column_names(exemplar_spatial_unit_param):
     """ Test that JoinToLocation's column_names property is accurate."""
     if not exemplar_spatial_unit_param.has_geography:
         pytest.skip("JoinToLocation does not accept CellSpatialUnit objects")
-    table = subscriber_locations(
+    table = SubscriberLocations(
         "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
     )
     joined = JoinToLocation(table, spatial_unit=exemplar_spatial_unit_param)
@@ -29,7 +29,7 @@ def test_join_to_location_raises_value_error():
     geography information.
     """
     with pytest.raises(ValueError):
-        table = subscriber_locations(
+        table = SubscriberLocations(
             "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
         )
         joined = JoinToLocation(table, spatial_unit=make_spatial_unit("cell"))
@@ -53,7 +53,7 @@ def test_join_with_versioned_cells(get_dataframe, get_length):
     """
     Test that flowmachine.JoinToLocation can fetch the cell version.
     """
-    ul = subscriber_locations(
+    ul = SubscriberLocations(
         "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
     )
     df = get_dataframe(
@@ -80,7 +80,7 @@ def test_join_with_lat_lon(get_dataframe):
     """
     Test that flowmachine.JoinToLocation can get the lat-lon values of the cell
     """
-    ul = subscriber_locations(
+    ul = SubscriberLocations(
         "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
     )
     df = get_dataframe(JoinToLocation(ul, spatial_unit=make_spatial_unit("lat-lon")))
@@ -106,7 +106,7 @@ def test_join_with_polygon(get_dataframe, get_length):
     Test that flowmachine.JoinToLocation can get the (arbitrary) polygon
     of each cell.
     """
-    ul = subscriber_locations(
+    ul = SubscriberLocations(
         "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
     )
     j = JoinToLocation(
@@ -129,7 +129,7 @@ def test_join_to_admin(get_dataframe, get_length):
     """
     Test that flowmachine.JoinToLocation can join to a admin region.
     """
-    ul = subscriber_locations(
+    ul = SubscriberLocations(
         "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
     )
     df = get_dataframe(
@@ -144,7 +144,7 @@ def test_join_to_grid(get_dataframe, get_length):
     """
     Test that we can join to a grid square
     """
-    ul = subscriber_locations(
+    ul = SubscriberLocations(
         "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
     )
     df = get_dataframe(
@@ -159,7 +159,7 @@ def test_location_joined_query_return_type(exemplar_spatial_unit_param):
     JoinToLocation object when spatial_unit != CellSpatialUnit(), and returns
     query when spatial_unit == CellSpatialUnit().
     """
-    table = subscriber_locations(
+    table = SubscriberLocations(
         "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
     )
     joined = location_joined_query(table, spatial_unit=exemplar_spatial_unit_param)

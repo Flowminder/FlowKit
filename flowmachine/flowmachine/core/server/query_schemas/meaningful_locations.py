@@ -13,7 +13,7 @@ from flowmachine.features import (
     HartiganCluster,
     CallDays,
     EventScore,
-    subscriber_locations,
+    SubscriberLocations,
 )
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import (
@@ -65,7 +65,7 @@ def _make_meaningful_locations_object(
     tower_day_of_week_scores,
     tower_hour_of_day_scores,
 ):
-    q_subscriber_locations = subscriber_locations(
+    q_subscriber_locations = SubscriberLocations(
         start=start_date,
         stop=end_date,
         level="versioned-site",  # note this 'level' is not the same as the exposed parameter 'aggregation_unit'

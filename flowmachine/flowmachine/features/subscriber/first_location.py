@@ -14,7 +14,7 @@ from typing import List
 
 from flowmachine.utils import get_columns_for_level
 from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import subscriber_locations
+from ..utilities.subscriber_locations import SubscriberLocations
 
 
 class FirstLocation(SubscriberFeature):
@@ -82,7 +82,7 @@ class FirstLocation(SubscriberFeature):
         self.stop = stop
         self.location = location
 
-        self.ul = subscriber_locations(
+        self.ul = SubscriberLocations(
             self.start,
             self.stop,
             level=level,

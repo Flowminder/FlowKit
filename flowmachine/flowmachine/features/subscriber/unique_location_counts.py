@@ -14,7 +14,7 @@ it visited
 from typing import List
 
 from flowmachine.utils import get_columns_for_level
-from ..utilities.subscriber_locations import subscriber_locations
+from ..utilities.subscriber_locations import SubscriberLocations
 from .metaclasses import SubscriberFeature
 
 
@@ -103,7 +103,7 @@ class UniqueLocationCounts(SubscriberFeature):
         size=None,
     ):
 
-        self.ul = subscriber_locations(
+        self.ul = SubscriberLocations(
             start=start,
             stop=stop,
             level=level,

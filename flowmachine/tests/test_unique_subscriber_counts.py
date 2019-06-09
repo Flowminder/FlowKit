@@ -10,7 +10,7 @@ import pytest
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import UniqueSubscriberCounts
-from flowmachine.features.utilities import subscriber_locations
+from flowmachine.features.utilities import SubscriberLocations
 
 
 @pytest.mark.usefixtures("skip_datecheck")
@@ -36,7 +36,7 @@ def test_correct_counts(get_dataframe):
     )
     df = get_dataframe(usc)
     dful = get_dataframe(
-        subscriber_locations(
+        SubscriberLocations(
             "2016-01-01",
             "2016-01-02",
             spatial_unit=make_spatial_unit("cell"),

@@ -6,7 +6,7 @@ import pytest
 
 from flowmachine.core.errors import BadLevelError
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import UniqueLocationCounts, subscriber_locations
+from flowmachine.features import UniqueLocationCounts, SubscriberLocations
 
 
 def test_returns_errors():
@@ -32,7 +32,7 @@ def test_correct_counts(get_dataframe):
     ulc = UniqueLocationCounts("2016-01-01", "2016-01-02", level="cell", hours=(5, 17))
     df = get_dataframe(ulc)
     dful = get_dataframe(
-        subscriber_locations(
+        SubscriberLocations(
             "2016-01-01",
             "2016-01-02",
             spatial_unit=make_spatial_unit("cell"),

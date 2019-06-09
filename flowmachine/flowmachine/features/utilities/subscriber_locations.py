@@ -24,110 +24,7 @@ import structlog
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
-class _SubscriberCells(Query):
-    # Passing table='all' means it will look at all tables with location
-    # data.
-    def __init__(
-        self,
-        start,
-        stop,
-        hours="all",
-        table="all",
-        subscriber_identifier="msisdn",
-        ignore_nulls=True,
-        *,
-        subscriber_subset=None,
-    ):
-
-        self.start = start
-        self.stop = stop
-        self.hours = hours
-        self.table = table
-        self.subscriber_identifier = subscriber_identifier
-        self.ignore_nulls = ignore_nulls
-        self.spatial_unit = make_spatial_unit("cell")
-
-        self.tables = table
-        cols = [self.subscriber_identifier, "datetime", "location_id"]
-        self.unioned = EventsTablesUnion(
-            self.start,
-            self.stop,
-            columns=cols,
-            tables=self.table,
-            hours=self.hours,
-            subscriber_subset=subscriber_subset,
-            subscriber_identifier=self.subscriber_identifier,
-        )
-        super().__init__()
-
-    @property
-    def column_names(self) -> List[str]:
-        return ["subscriber", "time", "location_id"]
-
-    def _make_query(self):
-
-        if self.ignore_nulls:
-            where_clause = "WHERE location_id IS NOT NULL AND location_id !=''"
-        else:
-            where_clause = ""
-
-        sql = f"""
-                SELECT
-                    subscriber, datetime as time, location_id
-                FROM
-                    ({self.unioned.get_query()}) AS foo
-                {where_clause}
-                """
-        return sql
-
-
-class BaseLocation:
-    """
-    Mixin for all daily and home location methods.
-    Provides the method to aggregate spatially.
-    """
-
-    def aggregate(self):
-        """
-        Aggregate to the spatial level returning a query object
-        that represents the location, and the total counts of
-        subscribers.
-        """
-        return SpatialAggregate(locations=self)
-
-    def join_aggregate(self, metric, method="avg"):
-        """
-        Join with a metric representing object and aggregate
-        spatially.
-
-        Parameters
-        ----------
-        metric : Query
-        method : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
-
-        Returns
-        -------
-        JoinedSpatialAggregate
-        """
-
-        return JoinedSpatialAggregate(metric=metric, locations=self, method=method)
-
-    def __getitem__(self, item):
-
-        return self.subset(col="subscriber", subset=item)
-
-
-def subscriber_locations(
-    start,
-    stop,
-    *,
-    spatial_unit=make_spatial_unit("cell"),
-    hours="all",
-    table="all",
-    subscriber_identifier="msisdn",
-    ignore_nulls=True,
-    subscriber_subset=None,
-):
+class SubscriberLocations(Query):
     """
     Class representing all the locations for which a subscriber has been found.
     Can be at the level of a tower, lat-lon, or an admin unit.
@@ -170,9 +67,8 @@ def subscriber_locations(
 
     Examples
     --------
-    >>> subscriber_locs = subscriber_locations('2016-01-01 13:30:30',
-                               '2016-01-02 16:25:00'
-                               spatial_unit = None)
+    >>> subscriber_locs = SubscriberLocations('2016-01-01 13:30:30',
+                               '2016-01-02 16:25:00')
     >>> subscriber_locs.head()
      subscriber                 time    cell
     subscriberA  2016-01-01 12:42:11  233241
@@ -181,18 +77,99 @@ def subscriber_locations(
     ...
 
     """
-    # Here we call the hidden class _SubscriberCells which is every spotting
-    # of all subscribers. We then join to the appropriate level if necessary.
-    subscriber_cells = _SubscriberCells(
+
+    def __init__(
+        self,
         start,
         stop,
-        hours,
-        table=table,
-        subscriber_subset=subscriber_subset,
-        subscriber_identifier=subscriber_identifier,
-        ignore_nulls=ignore_nulls,
-    )
+        *,
+        spatial_unit=make_spatial_unit("cell"),
+        hours="all",
+        table="all",
+        subscriber_identifier="msisdn",
+        ignore_nulls=True,
+        subscriber_subset=None,
+    ):
 
-    return location_joined_query(
-        subscriber_cells, spatial_unit=spatial_unit, time_col="time"
-    )
+        self.start = start
+        self.stop = stop
+        self.spatial_unit = spatial_unit
+        self.hours = hours
+        self.table = table
+        self.subscriber_identifier = subscriber_identifier
+        self.ignore_nulls = ignore_nulls
+
+        self.tables = table
+        cols = [self.subscriber_identifier, "datetime", "location_id"]
+        self.unioned = location_joined_query(
+            EventsTablesUnion(
+                self.start,
+                self.stop,
+                columns=cols,
+                tables=self.table,
+                hours=self.hours,
+                subscriber_subset=subscriber_subset,
+                subscriber_identifier=self.subscriber_identifier,
+            ),
+            spatial_unit=self.spatial_unit,
+            time_col="datetime",
+        )
+        super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["subscriber", "time"] + self.spatial_unit.location_id_columns
+
+    def _make_query(self):
+
+        if self.ignore_nulls:
+            where_clause = "WHERE location_id IS NOT NULL AND location_id !=''"
+        else:
+            where_clause = ""
+
+        location_cols = ", ".join(self.spatial_unit.location_id_columns)
+
+        sql = f"""
+                SELECT
+                    subscriber, datetime as time, {location_cols}
+                FROM
+                    ({self.unioned.get_query()}) AS foo
+                {where_clause}
+                """
+        return sql
+
+
+class BaseLocation:
+    """
+    Mixin for all daily and home location methods.
+    Provides the method to aggregate spatially.
+    """
+
+    def aggregate(self):
+        """
+        Aggregate to the spatial level returning a query object
+        that represents the location, and the total counts of
+        subscribers.
+        """
+        return SpatialAggregate(locations=self)
+
+    def join_aggregate(self, metric, method="avg"):
+        """
+        Join with a metric representing object and aggregate
+        spatially.
+
+        Parameters
+        ----------
+        metric : Query
+        method : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+
+        Returns
+        -------
+        JoinedSpatialAggregate
+        """
+
+        return JoinedSpatialAggregate(metric=metric, locations=self, method=method)
+
+    def __getitem__(self, item):
+
+        return self.subset(col="subscriber", subset=item)

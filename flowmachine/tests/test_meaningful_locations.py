@@ -8,7 +8,7 @@ from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
     HartiganCluster,
     CallDays,
-    subscriber_locations,
+    SubscriberLocations,
     EventScore,
 )
 from flowmachine.features.subscriber.meaningful_locations import (
@@ -34,7 +34,7 @@ def test_column_names_meaningful_locations(get_column_names_from_run):
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
-                subscriber_locations=subscriber_locations(
+                subscriber_locations=SubscriberLocations(
                     start="2016-01-01",
                     stop="2016-01-02",
                     spatial_unit=make_spatial_unit("versioned-site"),
@@ -66,7 +66,7 @@ def test_column_names_meaningful_locations_aggregate(
         meaningful_locations=MeaningfulLocations(
             clusters=HartiganCluster(
                 calldays=CallDays(
-                    subscriber_locations=subscriber_locations(
+                    subscriber_locations=SubscriberLocations(
                         start="2016-01-01",
                         stop="2016-01-02",
                         spatial_unit=make_spatial_unit("versioned-site"),
@@ -96,7 +96,7 @@ def test_meaningful_locations_aggregate_disallowed_spatial_unit_raises():
             meaningful_locations=MeaningfulLocations(
                 clusters=HartiganCluster(
                     calldays=CallDays(
-                        subscriber_locations=subscriber_locations(
+                        subscriber_locations=SubscriberLocations(
                             start="2016-01-01",
                             stop="2016-01-02",
                             spatial_unit=make_spatial_unit("versioned-site"),
@@ -127,7 +127,7 @@ def test_column_names_meaningful_locations_od(
     mfl_a = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
-                subscriber_locations=subscriber_locations(
+                subscriber_locations=SubscriberLocations(
                     start="2016-01-01",
                     stop="2016-01-02",
                     spatial_unit=make_spatial_unit("versioned-site"),
@@ -147,7 +147,7 @@ def test_column_names_meaningful_locations_od(
     mfl_b = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
-                subscriber_locations=subscriber_locations(
+                subscriber_locations=SubscriberLocations(
                     start="2016-01-01",
                     stop="2016-01-02",
                     spatial_unit=make_spatial_unit("versioned-site"),
@@ -185,7 +185,7 @@ def test_meaningful_locations_results(
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
-                subscriber_locations=subscriber_locations(
+                subscriber_locations=SubscriberLocations(
                     start="2016-01-01",
                     stop="2016-01-02",
                     spatial_unit=make_spatial_unit("versioned-site"),
@@ -223,7 +223,7 @@ def test_meaningful_locations_aggregation_results(
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
-                subscriber_locations=subscriber_locations(
+                subscriber_locations=SubscriberLocations(
                     start="2016-01-01",
                     stop="2016-01-02",
                     spatial_unit=make_spatial_unit("versioned-site"),
@@ -259,7 +259,7 @@ def test_meaningful_locations_od_raises_for_bad_spatial_unit(
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
-                subscriber_locations=subscriber_locations(
+                subscriber_locations=SubscriberLocations(
                     start="2016-01-01",
                     stop="2016-01-02",
                     spatial_unit=make_spatial_unit("versioned-site"),
@@ -293,7 +293,7 @@ def test_meaningful_locations_od_results(get_dataframe):
     mfl_a = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
-                subscriber_locations=subscriber_locations(
+                subscriber_locations=SubscriberLocations(
                     start="2016-01-01",
                     stop="2016-01-02",
                     spatial_unit=make_spatial_unit("versioned-site"),
@@ -313,7 +313,7 @@ def test_meaningful_locations_od_results(get_dataframe):
     mfl_b = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
-                subscriber_locations=subscriber_locations(
+                subscriber_locations=SubscriberLocations(
                     start="2016-01-02",
                     stop="2016-01-03",
                     spatial_unit=make_spatial_unit("versioned-site"),

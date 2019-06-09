@@ -19,7 +19,7 @@ from ...core.query import Query
 from ...core.mixins import GeoDataMixin
 from ...core import make_spatial_unit
 
-from ..utilities.subscriber_locations import subscriber_locations
+from ..utilities.subscriber_locations import SubscriberLocations
 
 
 class UniqueSubscriberCounts(GeoDataMixin, Query):
@@ -87,7 +87,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         self.spatial_unit = spatial_unit
         self.hours = hours
         self.table = table
-        self.ul = subscriber_locations(
+        self.ul = SubscriberLocations(
             start=self.start,
             stop=self.stop,
             spatial_unit=self.spatial_unit,

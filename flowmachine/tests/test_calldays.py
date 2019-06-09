@@ -12,7 +12,7 @@ import pytest
 
 
 from flowmachine.core import make_spatial_unit
-from flowmachine.features import CallDays, subscriber_locations
+from flowmachine.features import CallDays, SubscriberLocations
 import numpy as np
 
 
@@ -20,7 +20,7 @@ import numpy as np
 def test_calldays_column_names(exemplar_spatial_unit_param):
     """Test that CallDays column_names property is correct"""
     cd = CallDays(
-        subscriber_locations(
+        SubscriberLocations(
             "2016-01-01", "2016-01-03", spatial_unit=exemplar_spatial_unit_param
         )
     )
@@ -39,7 +39,7 @@ def test_call_days_returns_expected_counts_per_subscriber(get_dataframe):
     )
     for (subscriber, start, end, calls) in test_values:
         cd = CallDays(
-            subscriber_locations(
+            SubscriberLocations(
                 start, end, spatial_unit=make_spatial_unit("versioned-site")
             )
         )
@@ -59,7 +59,7 @@ def test_call_days_returns_expected_counts_per_subscriber_tower(get_dataframe):
     )
     for (subscriber, location, start, end, calls) in test_values:
         cd = CallDays(
-            subscriber_locations(
+            SubscriberLocations(
                 start, end, spatial_unit=make_spatial_unit("versioned-site")
             )
         )
@@ -75,7 +75,7 @@ def test_locations_are_only_repeated_once_per_subscriber(get_dataframe):
     """
 
     cd = CallDays(
-        subscriber_locations(
+        SubscriberLocations(
             "2016-01-01", "2016-01-03", spatial_unit=make_spatial_unit("cell")
         )
     )

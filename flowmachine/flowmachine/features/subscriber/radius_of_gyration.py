@@ -13,7 +13,7 @@ can be calculated in `km` or `m`.
 from typing import List
 
 from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import subscriber_locations
+from ..utilities.subscriber_locations import SubscriberLocations
 from flowmachine.core import make_spatial_unit
 
 
@@ -99,7 +99,7 @@ class RadiusOfGyration(SubscriberFeature):
 
         self.start = start
         self.stop = stop
-        self.ul = subscriber_locations(
+        self.ul = SubscriberLocations(
             self.start,
             self.stop,
             spatial_unit=make_spatial_unit("lat-lon"),

@@ -13,7 +13,7 @@ problem in hand.
 
 from typing import List, Union
 
-from ..utilities import subscriber_locations
+from ..utilities import SubscriberLocations
 from ...core import make_spatial_unit
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
@@ -130,7 +130,7 @@ def subscriber_location_cluster(
         buffer = kwargs.pop("buffer", 0)
 
         cd = CallDays(
-            subscriber_locations(
+            SubscriberLocations(
                 start=start,
                 stop=stop,
                 hours=hours,
@@ -192,9 +192,7 @@ class HartiganCluster(BaseCluster):
 
     Examples
     --------
-    >>> cd = CallDays('2016-01-01', '2016-01-04', level='polygon',
-                polygon_table='infrastructure.sites',
-                geom_col='geom_point')
+    >>> cd = CallDays( '2016-01-01', '2016-01-04', spatial_unit=make_spatial_unit('versioned-site'))
 
     >>> har = HartiganCluster(cd, 2.5)
 
@@ -295,7 +293,7 @@ class HartiganCluster(BaseCluster):
         spatial_unit=make_spatial_unit('versioned-site'))
 
         >>> cd = CallDays(start='2016-01-01', stop='2016-01-04',
-        level='versioned-site')
+        spatial_unit=make_spatial_unit('versioned-site'))
 
         >>> har = HartiganCluster(cd, 50, call_threshold=1)
 
