@@ -10,6 +10,7 @@ import numpy as np
 
 from flowmachine.features import SubscriberLocations
 from flowmachine.core import JoinToLocation, location_joined_query, make_spatial_unit
+from flowmachine.core.errors import InvalidSpatialUnitError
 
 
 def test_join_to_location_column_names(exemplar_spatial_unit_param):
@@ -25,10 +26,10 @@ def test_join_to_location_column_names(exemplar_spatial_unit_param):
 
 def test_join_to_location_raises_value_error():
     """
-    Test that JoinToLocation raises a ValueError if spatial_unit does not have
-    geography information.
+    Test that JoinToLocation raises an InvalidSpatialUnitError if spatial_unit
+    does not have geography information.
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidSpatialUnitError):
         table = SubscriberLocations(
             "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
         )
@@ -167,3 +168,15 @@ def test_location_joined_query_return_type(exemplar_spatial_unit_param):
         assert joined is table
     else:
         assert isinstance(joined, JoinToLocation)
+
+
+def test_ocation_joined_query_raises_error():
+    """
+    Test that location_joined_query raises an error if spatial_unit is not a
+    SpatialUnit object.
+    """
+    table = SubscriberLocations(
+        "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
+    )
+    with pytest.raises(InvalidSpatialUnitError):
+        location_joined_query(table, spatial_unit="foo")

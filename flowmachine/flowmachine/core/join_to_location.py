@@ -15,6 +15,8 @@ the original query object otherwise.
 from typing import List
 
 from .query import Query
+from .spatial_unit import SpatialUnitMixin
+from .errors import InvalidSpatialUnitError
 
 
 class JoinToLocation(Query):
@@ -129,6 +131,8 @@ def location_joined_query(left, *, spatial_unit, time_col="time"):
     flowmachine.Query
         Either a JoinToLocation object, or the input parameter 'left'
     """
+    if not isinstance(spatial_unit, SpatialUnitMixin):
+        raise InvalidSpatialUnitError(f"{spatial_unit} is not a spatial unit.")
     if spatial_unit.has_geography:
         return JoinToLocation(left, spatial_unit=spatial_unit, time_col=time_col)
     else:
