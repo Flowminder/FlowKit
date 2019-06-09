@@ -10,13 +10,6 @@ location and its contacts' modal location.
 
 from .metaclasses import SubscriberFeature
 
-from .modal_location import ModalLocation
-from .contact_balance import ContactBalance
-from ..spatial.distance_matrix import DistanceMatrix
-from .daily_location import daily_location
-
-from flowmachine.utils import get_columns_for_level, list_of_dates
-
 valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
 
@@ -31,13 +24,14 @@ class ContactReferenceLocationStats(SubscriberFeature):
         targeted subscribers along with the number of events between them.
     contact_locations: flowmachine.core.Query
         A flowmachine Query instance that contains a subscriber column. In
-        addition to that the query must have a spatial level or the target
+        addition to that the query must have a spatial unit or the target
         geometry column that contains the subscribers' reference locations.
     statistic : {'count', 'sum', 'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}, default 'sum'
         Defaults to sum, aggregation statistic over the durations.
     geom_column:
         The column containing the subscribers' reference locations. This is
-        only required if the Query does not contain a spatial level.
+        required if the Query does not contain a spatial unit with 'lat' and
+        'lon' columns.
 
     Example
     -------
@@ -76,14 +70,13 @@ class ContactReferenceLocationStats(SubscriberFeature):
             )
 
         if self.geom_column is None:
-            level = getattr(self.contact_locations_query, "level", None)
-            if level is None:
-                raise ValueError(
-                    "The contact locations must have a spatial level whenever the geometry column is not specified."
+            try:
+                self.contact_locations_query.spatial_unit.verify_criterion(
+                    "has_lat_lon_columns"
                 )
-            if not level in ["versioned-cell", "versioned-site", "lat-lon"]:
+            except AttributeError:
                 raise ValueError(
-                    f"The {level} for the contact_locations_query is not supported."
+                    "The contact locations must have a spatial unit whenever the geometry column is not specified."
                 )
 
         super().__init__()
