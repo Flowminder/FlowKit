@@ -4,10 +4,8 @@
 
 from typing import Dict, Any, List, Union
 
-from flowmachine.core.errors import BadLevelError
-from ...core import GeoTable, Query, Grid
+from ...core import GeoTable, Query, Grid, make_spatial_unit
 from . import LabelEventScore, HartiganCluster, EventScore
-from flowmachine.utils import get_columns_for_level
 
 
 class MeaningfulLocations(Query):
@@ -78,79 +76,37 @@ class MeaningfulLocationsAggregate(Query):
     ----------
     meaningful_locations : MeaningfulLocations
         A per-subscriber meaningful locations object to aggregate
-    level : {"admin3", "admin2", "admin1", "grid", "polygon"}, default "admin3"
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to aggregate to
-    column_name : str or list of str, default None
-        Optionally specify a non-default column name or names from the spatial unit table
-    polygon_table : str, default None
-        When using the "polygon" level, you must specify the fully qualified name of a table
-        containing polygons.
-    geom_column : str, default "geom"
-        When using the "polygon" level, you must specify the name of column containing geometry
-    size : int, default None
-        When using the "grid" level, you must specify the size of the grid to use in KM
     """
 
-    allowed_levels = {"admin3", "admin2", "admin1", "grid", "polygon"}
-
     def __init__(
-        self,
-        *,
-        meaningful_locations: MeaningfulLocations,
-        level: str = "admin3",
-        column_name: Union[str, None, List[str]] = None,
-        polygon_table: str = None,
-        geom_column: str = "geom",
-        size: int = None,
+        self, *, meaningful_locations: MeaningfulLocations, spatial_unit=None
     ) -> None:
         self.meaningful_locations = meaningful_locations
-        level_cols = get_columns_for_level(level, column_name)
-        self.column_name = column_name
-        self.level = level
-        if level.startswith("admin"):
-            if level_cols == ["pcod"]:
-                level_cols = [f"{level}pcod"]
-            self.aggregator = GeoTable(
-                f"geography.{level}", geom_column="geom", columns=["geom"] + level_cols
-            )
-        elif level == "polygon":
-            self.aggregator = GeoTable(
-                polygon_table,
-                geom_column=geom_column,
-                columns=[geom_column] + level_cols,
-            )
-        elif level == "grid":
-            self.aggregator = Grid(size=size)
+        if spatial_unit is None:
+            self.spatial_unit == make_spatial_unit("admin", level=3)
         else:
-            raise BadLevelError(
-                f"'{level}' is not an allowed level for meaningful locations, must be one of {MeaningfulLocationsOD.allowed_levels}'"
-            )
+            self.spatial_unit = spatial_unit
+        self.spatial_unit.verify_criterion("is_polygon")
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return (
-            ["label"] + get_columns_for_level(self.level, self.column_name) + ["total"]
-        )
+        return ["label"] + self.spatial_unit.location_id_columns + ["total"]
 
     def _make_query(self):
-        agg_query, agg_cols = self.aggregator._geo_augmented_query()
-        level_cols = get_columns_for_level(self.level, self.column_name)
-        level_cols_aliased = level_cols
-        if level_cols == ["pcod"]:
-            level_cols_aliased = [f"{self.level}pcod as pcod"]
+        location_cols = ", ".join(self.spatial_unit.location_id_columns)
 
-        level_cols = ", ".join(level_cols)
-        level_cols_aliased = ", ".join(level_cols_aliased)
         return f"""
-        SELECT label, {level_cols_aliased}, sum(1./n_clusters) as total FROM
+        SELECT label, {location_cols}, sum(1./n_clusters) as total FROM
         ({self.meaningful_locations.get_query()}) meaningful_locations
         LEFT JOIN 
-        ({agg_query}) agg
+        ({self.spatial_unit.get_geom_query()}) agg
         ON ST_Contains(agg.geom::geometry, meaningful_locations.cluster::geometry)
-        GROUP BY label, {level_cols}
+        GROUP BY label, {location_cols}
         HAVING sum(1./n_clusters) > 15
-        ORDER BY label, {level_cols}
+        ORDER BY label, {location_cols}
         """
 
 
@@ -165,31 +121,16 @@ class MeaningfulLocationsOD(Query):
     ----------
     meaningful_locations_a, meaningful_locations_a : MeaningfulLocations
         Per-subscriber meaningful locations objects calculate an OD between
-    level : {"admin3", "admin2", "admin1", "grid", "polygon"}, default "admin3"
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
         Spatial unit to aggregate to
-    column_name : str or list of str, default None
-        Optionally specify a non-default column name or names from the spatial unit table
-    polygon_table : str, default None
-        When using the "polygon" level, you must specify the fully qualified name of a table
-        containing polygons.
-    geom_column : str, default "geom"
-        When using the "polygon" level, you must specify the name of column containing geometry
-    size : int, default None
-        When using the "grid" level, you must specify the size of the grid to use in KM
     """
-
-    allowed_levels = {"admin3", "admin2", "admin1", "grid", "polygon"}
 
     def __init__(
         self,
         *,
         meaningful_locations_a: MeaningfulLocations,
         meaningful_locations_b: MeaningfulLocations,
-        level: str = "admin3",
-        column_name: Union[str, None, List[str]] = None,
-        polygon_table: str = None,
-        geom_column: str = "geom",
-        size: int = None,
+        spatial_unit=None,
     ) -> None:
         self.flow = meaningful_locations_a.join(
             meaningful_locations_b,
@@ -197,60 +138,38 @@ class MeaningfulLocationsOD(Query):
             left_append="_from",
             right_append="_to",
         )
-        level_cols = get_columns_for_level(level, column_name)
-        self.column_name = column_name
-
-        self.level = level
-        if level.startswith("admin"):
-            if level_cols == ["pcod"]:
-                level_cols = [f"{level}pcod"]
-            self.aggregator = GeoTable(
-                f"geography.{level}", geom_column="geom", columns=["geom"] + level_cols
-            )
-        elif level == "polygon":
-            self.aggregator = GeoTable(
-                polygon_table,
-                geom_column=geom_column,
-                columns=[geom_column] + level_cols,
-            )
-        elif level == "grid":
-            self.aggregator = Grid(size=size)
+        if spatial_unit is None:
+            self.spatial_unit = make_spatial_unit("admin", level=3)
         else:
-            raise BadLevelError(
-                f"'{level}' is not an allowed level for meaningful locations, must be one of {MeaningfulLocationsOD.allowed_levels}'"
-            )
+            self.spatial_unit = spatial_unit
+        self.spatial_unit.verify_criterion("is_polygon")
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
         return [
             f"{col}_{direction}"
-            for col in ["label"] + get_columns_for_level(self.level, self.column_name)
+            for col in ["label"] + self.spatial_unit.location_id_columns
             for direction in ("from", "to")
         ] + ["total"]
 
     def _make_query(self):
-        agg_query, agg_cols = self.aggregator._geo_augmented_query()
-        level_cols = [
+        agg_query = self.spatial_unit.get_geom_query()
+        location_cols = [
             f"{col}_{direction}"
-            for col in get_columns_for_level(self.level, self.column_name)
+            for col in self.spatial_unit.location_id_columns
             for direction in ("from", "to")
         ]
-        level_cols_aliased = [
+        location_cols_aliased = [
             f"{direction}_q.{col} as {col}_{direction}"
-            for col in get_columns_for_level(self.level, self.column_name)
+            for col in self.spatial_unit.location_id_columns
             for direction in ("from", "to")
         ]
-        if level_cols == ["pcod_from", "pcod_to"]:
-            level_cols_aliased = [
-                f"from_q.{self.level}pcod as pcod_from",
-                f"to_q.{self.level}pcod as pcod_to",
-            ]
 
-        level_cols = ", ".join(level_cols)
-        level_cols_aliased = ", ".join(level_cols_aliased)
+        location_cols = ", ".join(location_cols)
+        location_cols_aliased = ", ".join(location_cols_aliased)
         return f"""
-        SELECT label_from, label_to, {level_cols_aliased}, sum(1./(n_clusters_from*n_clusters_to)) as total FROM
+        SELECT label_from, label_to, {location_cols_aliased}, sum(1./(n_clusters_from*n_clusters_to)) as total FROM
         ({self.flow.get_query()}) meaningful_locations
         LEFT JOIN 
         ({agg_query}) from_q
@@ -258,7 +177,7 @@ class MeaningfulLocationsOD(Query):
         LEFT JOIN 
         ({agg_query}) to_q
         ON ST_Contains(to_q.geom::geometry, meaningful_locations.cluster_to::geometry)
-        GROUP BY label_from, label_to, {level_cols}
+        GROUP BY label_from, label_to, {location_cols}
         HAVING sum(1./(n_clusters_from*n_clusters_to)) > 15
-        ORDER BY label_from, label_to, {level_cols}
+        ORDER BY label_from, label_to, {location_cols}
         """

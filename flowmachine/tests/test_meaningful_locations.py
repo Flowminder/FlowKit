@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import pytest
 
-from flowmachine.core.errors import BadLevelError
+from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
     HartiganCluster,
@@ -55,12 +55,12 @@ def test_column_names_meaningful_locations(get_column_names_from_run):
 
 
 def test_column_names_meaningful_locations_aggregate(
-    exemplar_level_param, get_column_names_from_run
+    exemplar_spatial_unit_param, get_column_names_from_run
 ):
     """ Test that column_names property matches head(0) for aggregated meaningful locations"""
-    if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
+    if not exemplar_spatial_unit_param.is_polygon:
         pytest.xfail(
-            f'The level "{exemplar_level_param["level"]}" is not supported as an aggregation unit for MeaningfulLocations.'
+            f"The spatial unit {exemplar_spatial_unit_param} is not supported as an aggregation unit for MeaningfulLocations."
         )
     mfl_agg = MeaningfulLocationsAggregate(
         meaningful_locations=MeaningfulLocations(
@@ -82,16 +82,16 @@ def test_column_names_meaningful_locations_aggregate(
             labels=labels,
             label="evening",
         ),
-        **exemplar_level_param,
+        spatial_unit=exemplar_spatial_unit_param,
     )
 
     assert get_column_names_from_run(mfl_agg) == mfl_agg.column_names
 
 
-def test_meaningful_locations_aggregate_disallowed_level_raises():
-    """ Test that a bad level raises a BadLevelError"""
+def test_meaningful_locations_aggregate_disallowed_spatial_unit_raises():
+    """ Test that a bad spatial unit raises an InvalidSpatialUnitError"""
 
-    with pytest.raises(BadLevelError):
+    with pytest.raises(InvalidSpatialUnitError):
         mfl_agg = MeaningfulLocationsAggregate(
             meaningful_locations=MeaningfulLocations(
                 clusters=HartiganCluster(
@@ -112,17 +112,17 @@ def test_meaningful_locations_aggregate_disallowed_level_raises():
                 labels=labels,
                 label="evening",
             ),
-            level="NOT_A_LEVEL",
+            spatial_unit=make_spatial_unit("lat-lon"),
         )
 
 
 def test_column_names_meaningful_locations_od(
-    exemplar_level_param, get_column_names_from_run
+    exemplar_spatial_unit_param, get_column_names_from_run
 ):
     """ Test that column_names property matches head(0) for an od matrix between meaningful locations"""
-    if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
+    if not exemplar_spatial_unit_param.is_polygon:
         pytest.xfail(
-            f'The level "{exemplar_level_param["level"]}" is not supported as an aggregation unit for ODs between MeaningfulLocations.'
+            f"The spatial unit {exemplar_spatial_unit_param} is not supported as an aggregation unit for ODs between MeaningfulLocations."
         )
     mfl_a = MeaningfulLocations(
         clusters=HartiganCluster(
@@ -166,7 +166,7 @@ def test_column_names_meaningful_locations_od(
     mfl_od = MeaningfulLocationsOD(
         meaningful_locations_a=mfl_a,
         meaningful_locations_b=mfl_b,
-        **exemplar_level_param,
+        spatial_unit=exemplar_spatial_unit_param,
     )
 
     assert get_column_names_from_run(mfl_od) == mfl_od.column_names
@@ -210,13 +210,15 @@ def test_meaningful_locations_results(
     assert all(count_clusters.n_clusters == count_clusters.cluster)
 
 
-def test_meaningful_locations_aggregation_results(exemplar_level_param, get_dataframe):
+def test_meaningful_locations_aggregation_results(
+    exemplar_spatial_unit_param, get_dataframe
+):
     """
     Test that aggregating MeaningfulLocations returns expected results and redacts values below 15.
     """
-    if exemplar_level_param["level"] not in MeaningfulLocationsAggregate.allowed_levels:
+    if not exemplar_spatial_unit_param.is_polygon:
         pytest.xfail(
-            f'The level "{exemplar_level_param["level"]}" is not supported as an aggregation unit for MeaningfulLocations.'
+            f"The spatial unit {exemplar_spatial_unit_param} is not supported as an aggregation unit for MeaningfulLocations."
         )
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
@@ -238,7 +240,7 @@ def test_meaningful_locations_aggregation_results(exemplar_level_param, get_data
         label="evening",
     )
     mfl_agg = MeaningfulLocationsAggregate(
-        meaningful_locations=mfl, **exemplar_level_param
+        meaningful_locations=mfl, spatial_unit=exemplar_spatial_unit_param
     )
     mfl_df = get_dataframe(mfl)
     mfl_agg_df = get_dataframe(mfl_agg)
@@ -248,11 +250,11 @@ def test_meaningful_locations_aggregation_results(exemplar_level_param, get_data
     assert mfl_agg_df.total.sum() < mfl_df.subscriber.nunique()
 
 
-def test_meaningful_locations_od_raises_for_bad_level(
-    exemplar_level_param, get_dataframe
+def test_meaningful_locations_od_raises_for_bad_spatial_unit(
+    exemplar_spatial_unit_param, get_dataframe
 ):
     """
-    Test that od on meaningful locations raises a BadLevelError for a bad level.
+    Test that od on meaningful locations raises an InvalidSpatialUnitError for a bad spatial unit.
     """
     mfl = MeaningfulLocations(
         clusters=HartiganCluster(
@@ -274,9 +276,11 @@ def test_meaningful_locations_od_raises_for_bad_level(
         label="evening",
     )
 
-    with pytest.raises(BadLevelError):
+    with pytest.raises(InvalidSpatialUnitError):
         mfl_od = MeaningfulLocationsOD(
-            meaningful_locations_a=mfl, meaningful_locations_b=mfl, level="NOT_A_LEVEL"
+            meaningful_locations_a=mfl,
+            meaningful_locations_b=mfl,
+            spatial_unit=make_spatial_unit("lat-lon"),
         )
 
 
@@ -326,7 +330,9 @@ def test_meaningful_locations_od_results(get_dataframe):
         label="unknown",
     )
     mfl_od = MeaningfulLocationsOD(
-        meaningful_locations_a=mfl_a, meaningful_locations_b=mfl_b, level="admin1"
+        meaningful_locations_a=mfl_a,
+        meaningful_locations_b=mfl_b,
+        spatial_unit=make_spatial_unit("admin", level=1),
     )
     mfl_od_df = get_dataframe(mfl_od)
     # Aggregate should not include any counts below 15
