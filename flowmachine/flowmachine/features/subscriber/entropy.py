@@ -15,7 +15,7 @@ from .metaclasses import SubscriberFeature
 from .contact_balance import ContactBalance
 from ..utilities.sets import EventsTablesUnion
 from ..utilities.subscriber_locations import SubscriberLocations
-from flowmachine.utils import get_columns_for_level
+from flowmachine.core import make_spatial_unit
 
 
 class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
@@ -220,29 +220,9 @@ class LocationEntropy(BaseEntropy):
     ----------
     start, stop : str
          iso-format start and stop datetimes
-    level : str, default 'cell'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -277,8 +257,7 @@ class LocationEntropy(BaseEntropy):
         start,
         stop,
         *,
-        level="cell",
-        column_name=None,
+        spatial_unit=make_spatial_unit("cell"),
         subscriber_identifier="msisdn",
         hours="all",
         subscriber_subset=None,
@@ -289,26 +268,26 @@ class LocationEntropy(BaseEntropy):
         self.subscriber_locations = SubscriberLocations(
             start=start,
             stop=stop,
-            level=level,
-            column_name=column_name,
+            spatial_unit=spatial_unit,
             table=tables,
             hours=hours,
             subscriber_identifier=subscriber_identifier,
             subscriber_subset=subscriber_subset,
             ignore_nulls=ignore_nulls,
         )
-        self.location_cols = ", ".join(
-            get_columns_for_level(level=level, column_name=column_name)
-        )
+
         super().__init__()
 
     @property
     def _absolute_freq_query(self):
+        location_cols = ", ".join(
+            self.subscriber_locations.spatial_unit.location_id_columns
+        )
 
         return f"""
         SELECT subscriber, COUNT(*) AS absolute_freq FROM
         ({self.subscriber_locations.get_query()}) u
-        GROUP BY subscriber, {self.location_cols}
+        GROUP BY subscriber, {location_cols}
         HAVING COUNT(*) > 0
         """
 
