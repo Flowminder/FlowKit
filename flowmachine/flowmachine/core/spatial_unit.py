@@ -8,7 +8,6 @@ Classes that map cell (or tower or site) IDs to a spatial unit.
 The helper function 'make_spatial_unit' can be used to create spatial unit objects.
 """
 from typing import List
-from abc import ABCMeta, abstractmethod
 
 from flowmachine.utils import get_name_and_alias
 from flowmachine.core.errors import InvalidSpatialUnitError
@@ -237,13 +236,10 @@ class CellSpatialUnit(SpatialUnitMixin):
         return hash(self.__class__.__name__)
 
 
-class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
+class GeomSpatialUnit(SpatialUnitMixin, Query):
     """
     Base class for spatial units that map location IDs in
     connection.location_table to geographic locations.
-
-    Derived classes must implement the _join_clause method, to determine how to
-    join the location table to the table with geography data.
 
     Parameters
     ----------
@@ -259,6 +255,12 @@ class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
         Defaults to connection.location_table
     geom_column : str, default "geom"
         Name of the column in geom_table that defines the geometry.
+    geom_table_join_on : str, optional
+        Name of the column from geom_table to join on.
+        Required if geom_table != connection.location_table.
+    location_table_join_on : str, optional
+        Name of the column from connection.location_table to join on.
+        Required if geom_table != connection.location_table.
     """
 
     def __init__(
@@ -268,6 +270,8 @@ class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
         location_id_column_names,
         geom_table=None,
         geom_column="geom",
+        geom_table_join_on=None,
+        location_table_join_on=None,
     ):
         if isinstance(geom_table_column_names, str):
             self._geom_table_cols = (geom_table_column_names,)
@@ -297,6 +301,9 @@ class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
         else:
             self.geom_table = Table(name=geom_table)
 
+        self._geom_on = geom_table_join_on
+        self._loc_on = location_table_join_on
+
         super().__init__()
 
     def __eq__(self, other):
@@ -312,7 +319,6 @@ class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
     def _get_aliased_geom_table_cols(self, table_alias):
         return [f"{table_alias}.{c}" for c in self._geom_table_cols]
 
-    @abstractmethod
     def _join_clause(self, loc_table_alias, geom_table_alias):
         """
         Returns a SQL join clause to join the location table to the geography
@@ -331,7 +337,13 @@ class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
         str
             SQL join clause
         """
-        raise NotImplementedError
+        if self._loc_on is None or self._geom_on is None:
+            raise ValueError("No columns specified for join.")
+        return f"""
+        LEFT JOIN
+            ({self.geom_table.get_query()}) AS {geom_table_alias}
+        ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
+        """
 
     def _make_query(self):
         loc_table_alias = "loc_table"
@@ -459,13 +471,13 @@ class LonLatSpatialUnit(GeomSpatialUnit):
         geom_table_join_on=None,
         location_table_join_on=None,
     ):
-        self._geom_on = geom_table_join_on
-        self._loc_on = location_table_join_on
         super().__init__(
             geom_table_column_names=geom_table_column_names,
             location_id_column_names=location_id_column_names,
             geom_table=geom_table,
             geom_column=geom_column,
+            geom_table_join_on=geom_table_join_on,
+            location_table_join_on=location_table_join_on,
         )
 
     def _get_aliased_geom_table_cols(self, table_alias):
@@ -473,15 +485,6 @@ class LonLatSpatialUnit(GeomSpatialUnit):
             f"ST_X({table_alias}.{self._geom_col}::geometry) AS lon",
             f"ST_Y({table_alias}.{self._geom_col}::geometry) AS lat",
         ]
-
-    def _join_clause(self, loc_table_alias, geom_table_alias):
-        if self._loc_on is None or self._geom_on is None:
-            raise ValueError("No columns specified for join.")
-        return f"""
-        LEFT JOIN
-            ({self.geom_table.get_query()}) AS {geom_table_alias}
-        ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
-        """
 
     @property
     def location_id_columns(self) -> List[str]:
