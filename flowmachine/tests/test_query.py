@@ -145,8 +145,8 @@ def test_query_formatting():
     dl = daily_location("2016-01-01", method="last")
     assert "<Query of type: LastLocation>" == format(dl)
     assert (
-        "<Query of type: LastLocation, level: 'admin3', column_names: ['subscriber', 'pcod']>"
-        == f"{dl:level,column_names}"
+        "<Query of type: LastLocation, spatial_unit: <Query of type: PolygonSpatialUnit, query_id: 'f66078eb6a997995f1846bab147cb263'>, column_names: ['subscriber', 'pcod']>"
+        == f"{dl:spatial_unit,column_names}"
     )
 
     with pytest.raises(
