@@ -23,6 +23,13 @@ from sqlalchemy.orm import sessionmaker
 from docker.types import Mount
 from shutil import rmtree
 
+here = os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture(scope="session")
+def flowetl_mounts_dir():
+    return os.path.abspath(os.path.join(here, "..", "..", "mounts"))
+
 
 @pytest.fixture(scope="session")
 def docker_client():
@@ -126,18 +133,18 @@ def postgres_data_dir_for_tests():
 
 
 @pytest.fixture(scope="function")
-def mounts(postgres_data_dir_for_tests):
+def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
     """
     Various mount objects needed by containers
     """
-    config_mount = Mount("/mounts/config", f"{os.getcwd()}/mounts/config", type="bind")
+    config_mount = Mount("/mounts/config", f"{flowetl_mounts_dir}/config", type="bind")
     archive_mount = Mount(
-        "/mounts/archive", f"{os.getcwd()}/mounts/archive", type="bind"
+        "/mounts/archive", f"{flowetl_mounts_dir}/archive", type="bind"
     )
-    dump_mount = Mount("/mounts/dump", f"{os.getcwd()}/mounts/dump", type="bind")
-    ingest_mount = Mount("/mounts/ingest", f"{os.getcwd()}/mounts/ingest", type="bind")
+    dump_mount = Mount("/mounts/dump", f"{flowetl_mounts_dir}/dump", type="bind")
+    ingest_mount = Mount("/mounts/ingest", f"{flowetl_mounts_dir}/ingest", type="bind")
     quarantine_mount = Mount(
-        "/mounts/quarantine", f"{os.getcwd()}/mounts/quarantine", type="bind"
+        "/mounts/quarantine", f"{flowetl_mounts_dir}/quarantine", type="bind"
     )
     flowetl_mounts = [
         config_mount,
@@ -150,7 +157,7 @@ def mounts(postgres_data_dir_for_tests):
     data_mount = Mount(
         "/var/lib/postgresql/data", postgres_data_dir_for_tests, type="bind"
     )
-    ingest_mount = Mount("/ingest", f"{os.getcwd()}/mounts/ingest", type="bind")
+    ingest_mount = Mount("/ingest", f"{flowetl_mounts_dir}/ingest", type="bind")
     flowdb_mounts = [data_mount, ingest_mount]
 
     return {"flowetl": flowetl_mounts, "flowdb": flowdb_mounts}
@@ -269,15 +276,15 @@ def trigger_dags():
 
 
 @pytest.fixture(scope="function")
-def write_files_to_dump():
+def write_files_to_dump(flowetl_mounts_dir):
     """
     Returns a function that allows for writing a list
     of empty files to the dump location. Also cleans
     up dump, archive and quarantine.
     """
-    dump_dir = f"{os.getcwd()}/mounts/dump"
-    archive_dir = f"{os.getcwd()}/mounts/archive"
-    quarantine_dir = f"{os.getcwd()}/mounts/quarantine"
+    dump_dir = f"{flowetl_mounts_dir}/dump"
+    archive_dir = f"{flowetl_mounts_dir}/archive"
+    quarantine_dir = f"{flowetl_mounts_dir}/quarantine"
 
     def write_files_to_dump_function(*, file_names):
         for file_name in file_names:
