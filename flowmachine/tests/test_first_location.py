@@ -5,6 +5,7 @@
 """
 Tests for the class FirstLocation
 """
+import pytest
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features.subscriber import FirstLocation
@@ -52,3 +53,16 @@ def test_can_be_called_with_any(get_dataframe):
     df = get_dataframe(dfl)
     df.set_index("subscriber", inplace=True)
     assert str(df.loc["0MQ4RYeKn7lryxGa"]) == "2016-01-03 01:38:56+00:00"
+
+
+def test_raises_error_for_bad_parameters():
+    """
+    FirstLocation raises a ValueError if called with location="any" and spatial_unit != cell
+    """
+    with pytest.raises(ValueError):
+        fl = FirstLocation(
+            "2016-01-03",
+            "2016-01-04",
+            location="any",
+            spatial_unit=make_spatial_unit("versioned-site"),
+        )

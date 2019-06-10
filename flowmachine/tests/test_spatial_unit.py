@@ -249,3 +249,75 @@ def test_verify_criterion_raises_value_error():
     su = CellSpatialUnit()
     with pytest.raises(ValueError):
         su.verify_criterion("BAD_CRITERION")
+
+
+@pytest.mark.parametrize("spatial_unit_type", ["cell", "lon-lat"])
+@pytest.mark.parametrize(
+    "locations", [{"BAD_COLUMN": "DUMMY_VALUE"}, [{"BAD_COLUMN": "DUMMY_VALUE"}]]
+)
+def test_location_subset_clause_raises_error(spatial_unit_type, locations):
+    """
+    Test that the location_subset_clause method raises a ValueError if
+    incorrect columns are passed in a dict.
+    """
+    with pytest.raises(ValueError):
+        make_spatial_unit(spatial_unit_type).location_subset_clause(locations)
+
+
+@pytest.mark.parametrize(
+    "spatial_unit_type, locations, expected",
+    [
+        ("cell", "loc", "WHERE location_id = 'loc'"),
+        ("cell", ["loc1", "loc2"], "WHERE location_id IN ('loc1', 'loc2')"),
+        ("cell", {"location_id": "loc"}, "WHERE location_id = 'loc'"),
+        (
+            "cell",
+            [{"location_id": "loc1"}, {"location_id": "loc2"}],
+            "WHERE (location_id = 'loc1') OR (location_id = 'loc2')",
+        ),
+        (
+            "versioned-site",
+            {"site_id": "loc", "version": "v"},
+            "WHERE site_id = 'loc' AND version = 'v'",
+        ),
+        (
+            "versioned-site",
+            [
+                {"site_id": "loc1", "version": "v1"},
+                {"site_id": "loc2", "version": "v2"},
+            ],
+            "WHERE (site_id = 'loc1' AND version = 'v1') OR (site_id = 'loc2' AND version = 'v2')",
+        ),
+        ("versioned-site", "loc", "WHERE site_id = 'loc'"),
+        ("versioned-site", ["loc1", "loc2"], "WHERE site_id IN ('loc1', 'loc2')"),
+        (
+            "versioned-site",
+            [("lon1", "lat1")],
+            "WHERE ST_SetSRID(ST_Point(lon, lat), 4326) = 'ST_SetSRID(ST_Point(lon1, lat1), 4326)'",
+        ),
+        (
+            "versioned-site",
+            [("lon1", "lat1"), ("lon2", "lat2")],
+            "WHERE ST_SetSRID(ST_Point(lon, lat), 4326) IN ('ST_SetSRID(ST_Point(lon1, lat1), 4326)', 'ST_SetSRID(ST_Point(lon2, lat2), 4326)')",
+        ),
+        (
+            "versioned-site",
+            {"lon": "lon1", "lat": "lat1"},
+            "WHERE ST_SetSRID(ST_Point(lon, lat), 4326) = 'ST_SetSRID(ST_Point(lon1, lat1), 4326)'",
+        ),
+        (
+            "versioned-site",
+            [
+                {"site_id": "site1", "lon": "lon1", "lat": "lat1"},
+                {"site_id": "site2", "lon": "lon2", "lat": "lat2"},
+            ],
+            "WHERE (site_id = 'site1' AND ST_SetSRID(ST_Point(lon, lat), 4326) = 'ST_SetSRID(ST_Point(lon1, lat1), 4326)') OR (site_id = 'site2' AND ST_SetSRID(ST_Point(lon, lat), 4326) = 'ST_SetSRID(ST_Point(lon2, lat2), 4326)')",
+        ),
+    ],
+)
+def test_location_subset_clause_return_value(spatial_unit_type, locations, expected):
+    """
+    Test that location_subset_clause returns some correct strings.
+    """
+    su = make_spatial_unit(spatial_unit_type)
+    assert expected == su.location_subset_clause(locations)

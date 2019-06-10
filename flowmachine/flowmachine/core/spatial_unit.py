@@ -492,7 +492,7 @@ class LonLatSpatialUnit(GeomSpatialUnit):
                     the 'lon' and 'lat' columns.
                     Note: cannot pass a single (lon, lat) tuple, as this would
                     be ambiguous (could be a tuple of str, see below). For a
-                    single location, either pass a length-1 tuple ((lon, lat),)
+                    single location, either pass a length-1 list [(lon, lat)]
                     or a dict {"lon": lon, "lat": lat}.
                 str, or list/tuple of str
                     Values correspond to the first column in
