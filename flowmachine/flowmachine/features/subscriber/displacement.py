@@ -122,13 +122,13 @@ class Displacement(SubscriberFeature):
                 raise ValueError(
                     "Argument 'modal_locations' should be an instance of ModalLocation class"
                 )
-            hl.spatial_unit.verify_criterion("has_lat_lon_columns")
+            hl.spatial_unit.verify_criterion("has_lon_lat_columns")
         else:
             hl = ModalLocation(
                 *[
                     daily_location(
                         date,
-                        spatial_unit=make_spatial_unit("lat-lon"),
+                        spatial_unit=make_spatial_unit("lon-lat"),
                         hours=hours,
                         method=method,
                         table=table,
@@ -143,7 +143,7 @@ class Displacement(SubscriberFeature):
         sl = SubscriberLocations(
             self.start,
             self.stop_sl,
-            spatial_unit=make_spatial_unit("lat-lon"),
+            spatial_unit=make_spatial_unit("lon-lat"),
             hours=hours,
             table=table,
             subscriber_identifier=subscriber_identifier,
@@ -178,7 +178,7 @@ class Displacement(SubscriberFeature):
 
     def _make_query(self):
 
-        dist_string = get_dist_string("lat_home_loc", "lon_home_loc", "lat", "lon")
+        dist_string = get_dist_string("lon_home_loc", "lat_home_loc", "lon", "lat")
 
         if self.unit == "km":
             divisor = 1000

@@ -16,7 +16,7 @@ from flowmachine.features import daily_location, ContactBalance, ModalLocation
     [
         ("avg", "gwAynWXp4eWvxGP7", "versioned-cell", 298.7215),
         ("avg", "gwAynWXp4eWvxGP7", "versioned-site", 298.7215),
-        ("avg", "gwAynWXp4eWvxGP7", "lat-lon", 298.7215),
+        ("avg", "gwAynWXp4eWvxGP7", "lon-lat", 298.7215),
         ("stddev", "V7MBRewnwQGE91gY", "versioned-cell", 182.519_128),
     ],
 )

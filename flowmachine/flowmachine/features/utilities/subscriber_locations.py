@@ -27,7 +27,7 @@ logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 class SubscriberLocations(Query):
     """
     Class representing all the locations for which a subscriber has been found.
-    Can be at the level of a tower, lat-lon, or an admin unit.
+    Can be at the level of a tower, lon-lat, or an admin unit.
 
     Parameters
     ----------

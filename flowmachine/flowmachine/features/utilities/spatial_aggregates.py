@@ -136,7 +136,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
 
         # We need to do this because it may be the case that
         # a location is identified by more than one column, as
-        # is the case for lat-lon values
+        # is the case for lon-lat values
         loc_list = ", ".join(f"location.{lc}" for lc in location_cols)
         loc_list_no_schema = ", ".join(location_cols)
 

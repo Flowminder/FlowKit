@@ -73,7 +73,7 @@ def exemplar_level_param(request):
         {"spatial_unit_type": "versioned-site"},
         {"spatial_unit_type": "versioned-cell"},
         {"spatial_unit_type": "cell"},
-        {"spatial_unit_type": "lat-lon"},
+        {"spatial_unit_type": "lon-lat"},
         {"spatial_unit_type": "grid", "size": 5},
         {
             "spatial_unit_type": "polygon",

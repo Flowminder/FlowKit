@@ -149,7 +149,7 @@ def test_reprojection():
 
     """
     dl = daily_location(
-        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lat-lon")
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
     ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
     assert js["features"][0]["geometry"]["coordinates"] == [
@@ -164,7 +164,7 @@ def test_geojson_cache():
     Test geojson is cached locally.
     """
     dl = daily_location(
-        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lat-lon")
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
     ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
     assert js == dl._geojson[proj4string(dl.connection, 2770)]
@@ -173,7 +173,7 @@ def test_geojson_cache():
 def test_geojson_cache_exluded_from_pickle():
     """Test that cached geojson is not going to get pickled."""
     dl = daily_location(
-        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lat-lon")
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
     ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
     assert "_geojson" not in dl.__getstate__()  # Check excluded from pickle
@@ -182,7 +182,7 @@ def test_geojson_cache_exluded_from_pickle():
 def test_geojson_caching_off():
     """Test that switching off caching clears the cache, and doesn't add to it."""
     dl = daily_location(
-        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lat-lon")
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
     ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
     dl.turn_off_caching()  # Check caching for geojson switches off

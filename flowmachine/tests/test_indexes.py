@@ -15,8 +15,8 @@ def test_default_indexes():
         '"subscriber"',
     ]
     assert daily_location(
-        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lat-lon")
-    ).index_cols == [["lat", "lon"], '"subscriber"']
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
+    ).index_cols == [["lon", "lat"], '"subscriber"']
     assert SubscriberDegree("2016-01-01", "2016-01-02").index_cols == ['"subscriber"']
 
 

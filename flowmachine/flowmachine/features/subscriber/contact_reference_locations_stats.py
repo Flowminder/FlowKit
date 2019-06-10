@@ -30,8 +30,8 @@ class ContactReferenceLocationStats(SubscriberFeature):
         Defaults to sum, aggregation statistic over the durations.
     geom_column:
         The column containing the subscribers' reference locations. This is
-        required if the Query does not contain a spatial unit with 'lat' and
-        'lon' columns.
+        required if the Query does not contain a spatial unit with 'lon' and
+        'lat' columns.
 
     Example
     -------
@@ -72,7 +72,7 @@ class ContactReferenceLocationStats(SubscriberFeature):
         if self.geom_column is None:
             try:
                 self.contact_locations_query.spatial_unit.verify_criterion(
-                    "has_lat_lon_columns"
+                    "has_lon_lat_columns"
                 )
             except AttributeError:
                 raise ValueError(

@@ -77,29 +77,29 @@ def test_join_with_versioned_cells(get_dataframe, get_length):
     assert (should_be_version_one.version == 1).all()
 
 
-def test_join_with_lat_lon(get_dataframe):
+def test_join_with_lon_lat(get_dataframe):
     """
-    Test that flowmachine.JoinToLocation can get the lat-lon values of the cell
+    Test that flowmachine.JoinToLocation can get the lon-lat values of the cell
     """
     ul = SubscriberLocations(
         "2016-01-05", "2016-01-07", spatial_unit=make_spatial_unit("cell")
     )
-    df = get_dataframe(JoinToLocation(ul, spatial_unit=make_spatial_unit("lat-lon")))
+    df = get_dataframe(JoinToLocation(ul, spatial_unit=make_spatial_unit("lon-lat")))
 
-    expected_cols = sorted(["subscriber", "time", "location_id", "lat", "lon"])
+    expected_cols = sorted(["subscriber", "time", "location_id", "lon", "lat"])
     assert sorted(df.columns) == expected_cols
     # Pick out one cell that moves location and assert that the
-    # lat-lons are right
+    # lon-lats are right
     focal_cell = "dJb0Wd"
-    lat1, long1 = (27.648837800000003, 83.09284486)
-    lat2, long2 = (27.661443318109132, 83.25769074752517)
+    lon1, lat1 = (83.09284486, 27.648837800000003)
+    lon2, lat2 = (83.25769074752517, 27.661443318109132)
     post_move = df[(df.time > move_date) & (df["location_id"] == focal_cell)]
     pre_move = df[(df.time < move_date) & (df["location_id"] == focal_cell)]
     # And check them all one-by-one
+    np.isclose(pre_move.lon, lon1).all()
     np.isclose(pre_move.lat, lat1).all()
-    np.isclose(pre_move.lon, long1).all()
+    np.isclose(post_move.lon, lon2).all()
     np.isclose(post_move.lat, lat2).all()
-    np.isclose(post_move.lon, long2).all()
 
 
 def test_join_with_polygon(get_dataframe, get_length):

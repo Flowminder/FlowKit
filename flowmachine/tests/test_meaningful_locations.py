@@ -112,7 +112,7 @@ def test_meaningful_locations_aggregate_disallowed_spatial_unit_raises():
                 labels=labels,
                 label="evening",
             ),
-            spatial_unit=make_spatial_unit("lat-lon"),
+            spatial_unit=make_spatial_unit("lon-lat"),
         )
 
 
@@ -280,7 +280,7 @@ def test_meaningful_locations_od_raises_for_bad_spatial_unit(
         mfl_od = MeaningfulLocationsOD(
             meaningful_locations_a=mfl,
             meaningful_locations_b=mfl,
-            spatial_unit=make_spatial_unit("lat-lon"),
+            spatial_unit=make_spatial_unit("lon-lat"),
         )
 
 

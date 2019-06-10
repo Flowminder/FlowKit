@@ -37,7 +37,7 @@ def test_get_geom_query_column_names(
 @pytest.mark.parametrize(
     "make_spatial_unit_args, loc_cols",
     [
-        ({"spatial_unit_type": "lat-lon"}, ["lat", "lon"]),
+        ({"spatial_unit_type": "lon-lat"}, ["lon", "lat"]),
         (
             {"spatial_unit_type": "versioned-cell"},
             ["location_id", "version", "lon", "lat"],
@@ -111,9 +111,7 @@ def test_missing_location_columns_raises_error():
     GeomSpatialUnit are not a subset of column_names.
     """
     with pytest.raises(ValueError, match="['NOT_A_COLUMN']"):
-        su = LatLonSpatialUnit(
-            location_id_column_names=["location_id", "lat", "lon", "NOT_A_COLUMN"]
-        )
+        su = LonLatSpatialUnit(location_id_column_names=["location_id", "NOT_A_COLUMN"])
 
 
 @pytest.mark.parametrize(
@@ -128,7 +126,7 @@ def test_missing_location_columns_raises_error():
         {"spatial_unit_type": "versioned-site"},
         {"spatial_unit_type": "versioned-cell"},
         {"spatial_unit_type": "cell"},
-        {"spatial_unit_type": "lat-lon"},
+        {"spatial_unit_type": "lon-lat"},
         {"spatial_unit_type": "grid", "size": 5},
         {
             "spatial_unit_type": "polygon",
@@ -224,12 +222,12 @@ def test_make_spatial_unit_raises_errors(make_spatial_unit_args):
     [
         ({"spatial_unit_type": "cell"}, "has_geography", False),
         ({"spatial_unit_type": "versioned-cell"}, "has_geography", True),
-        ({"spatial_unit_type": "admin", "level": 3}, "has_lat_lon_columns", False),
-        ({"spatial_unit_type": "lat-lon"}, "has_lat_lon_columns", True),
+        ({"spatial_unit_type": "admin", "level": 3}, "has_lon_lat_columns", False),
+        ({"spatial_unit_type": "lon-lat"}, "has_lon_lat_columns", True),
         ({"spatial_unit_type": "admin", "level": 3}, "is_network_object", False),
         ({"spatial_unit_type": "cell"}, "is_network_object", True),
         ({"spatial_unit_type": "versioned-site"}, "is_network_object", True),
-        ({"spatial_unit_type": "lat-lon"}, "is_polygon", False),
+        ({"spatial_unit_type": "lon-lat"}, "is_polygon", False),
         ({"spatial_unit_type": "grid", "size": 10}, "is_polygon", True),
     ],
 )

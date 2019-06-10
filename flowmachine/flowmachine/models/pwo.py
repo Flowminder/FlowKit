@@ -193,7 +193,7 @@ class PopulationWeightedOpportunities(Model):
         documentation for other available methods.
 
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default versioned-site
-        Note: DistanceMatrix only supports spatial units with 'lat' and 'lon'
+        Note: DistanceMatrix only supports spatial units with 'lon' and 'lat'
         columns at this time.
 
     **kwargs : arguments

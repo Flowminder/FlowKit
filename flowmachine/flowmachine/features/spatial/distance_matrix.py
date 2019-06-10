@@ -25,9 +25,9 @@ class DistanceMatrix(GraphMixin, Query):
 
     Parameters
     ----------
-    spatial_unit : flowmachine.core.spatial_unit.LatLonSpatialUnit, default versioned-cell
+    spatial_unit : flowmachine.core.spatial_unit.LonLatSpatialUnit, default versioned-cell
         Locations to compute distances for.
-        Note: only point locations (i.e. spatial_unit.has_lat_lon_columns) are
+        Note: only point locations (i.e. spatial_unit.has_lon_lat_columns) are
         supported at this time.
     return_geometry : bool
         If True, geometries are returned in query
@@ -43,7 +43,7 @@ class DistanceMatrix(GraphMixin, Query):
         else:
             self.spatial_unit = spatial_unit
 
-        self.spatial_unit.verify_criterion("has_lat_lon_columns")
+        self.spatial_unit.verify_criterion("has_lon_lat_columns")
 
         self.return_geometry = return_geometry
 

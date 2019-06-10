@@ -30,7 +30,7 @@ class FirstLocation(SubscriberFeature):
         String representing the beginning of the focal time period
     stop : str
         String representing the end of the focal period
-    location : str, dict, tuple, list of str, list of dict, or list of tuple
+    location : str, dict, tuple, or list/tuple thereof
         str representing the location of interest. Could be
         a cell or an admin region for instance. You must specify
         spatial_unit to match this. i.e. location='ER0980',
@@ -41,7 +41,7 @@ class FirstLocation(SubscriberFeature):
         first time a subscriber pops up at any location.
         For spatial units with multiple location_id_columns, see
         `SpatialUnitMixin.location_subset_clause` or
-        `LatLonSpatialUnit.location_subset_clause` for a description of the
+        `LonLatSpatialUnit.location_subset_clause` for a description of the
         allowed formats for the location argument.
     spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
         Spatial unit to which subscriber locations will be mapped. See the

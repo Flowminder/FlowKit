@@ -204,17 +204,15 @@ def time_period_add(date, n, unit="days"):
         return date_string
 
 
-def get_dist_string(lo1, la1, lo2, la2):
+def get_dist_string(lon1, lat1, lon2, lat2):
     """
     function for getting the distance
-    query string between to lat-lon points.
+    query string between two lon-lat points.
     """
-    return """
-    ST_Distance(ST_Point({}, {})::geography,
-                ST_point({}, {})::geography)
-    """.format(
-        lo1, la1, lo2, la2
-    )
+    return f"""
+    ST_Distance(ST_Point({lon1}, {lat1})::geography,
+                ST_point({lon2}, {lat2})::geography)
+    """
 
 
 def proj4string(conn, crs=None):

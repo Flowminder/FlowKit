@@ -15,15 +15,15 @@ from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.features import TotalNetworkObjects, AggregateNetworkObjects
 
 
-def test_tno_at_lat_lng(get_dataframe):
+def test_tno_at_lon_lat(get_dataframe):
     """
-    Regression test for #108. TNO should work at lat-lon level.
+    Regression test for #108. TNO should work at lon-lat level.
     """
     tno = TotalNetworkObjects(
         start="2016-01-01",
         stop="2016-01-07",
         network_object=make_spatial_unit("versioned-cell"),
-        spatial_unit=make_spatial_unit("lat-lon"),
+        spatial_unit=make_spatial_unit("lon-lat"),
     )
     assert tno.get_dataframe().sum().value == 330
 
@@ -92,7 +92,7 @@ def test_bad_total_by():
 
 @pytest.mark.parametrize(
     "bad_arg, spatial_unit_type",
-    [("spatial_unit", "cell"), ("network_object", "lat-lon")],
+    [("spatial_unit", "cell"), ("network_object", "lon-lat")],
 )
 def test_bad_spatial_units(bad_arg, spatial_unit_type):
     """

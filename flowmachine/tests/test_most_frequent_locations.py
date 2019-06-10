@@ -37,19 +37,19 @@ def test_vsites(get_dataframe):
     assert "qvkp6J" == df.loc["zvaOknzKbEVD2eME"].site_id
 
 
-def test_lat_lons(get_dataframe):
+def test_lon_lats(get_dataframe):
     """
-    MostFrequentLocations() has the correct values at the lat-lon spatial unit.
+    MostFrequentLocations() has the correct values at the lon-lat spatial unit.
     """
 
     mfl = MostFrequentLocation(
-        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lat-lon")
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
     )
     df = get_dataframe(mfl)
     df.set_index("subscriber", inplace=True)
 
-    assert pytest.approx(28.941925079951545) == float(df.loc["1QBlwRo4Kd5v3Ogz"].lat)
     assert pytest.approx(82.61895799084449) == float(df.loc["1QBlwRo4Kd5v3Ogz"].lon)
+    assert pytest.approx(28.941925079951545) == float(df.loc["1QBlwRo4Kd5v3Ogz"].lat)
 
 
 def test_most_fequent_admin(get_dataframe):

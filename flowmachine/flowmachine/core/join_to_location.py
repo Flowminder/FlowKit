@@ -23,7 +23,7 @@ class JoinToLocation(Query):
     """
     Intermediate class which joins any query object, or python
     string representing a query object, to some geographical level.
-    This can be simply the site with a version a lat-lon value, an
+    This can be simply the site with a version, a lon-lat value, an
     admin region, a gridded map, or any arbitrary polygon. This
     will return everything in the original query, plus an additional 
     column or columns representing the spatial region that the infrastructure

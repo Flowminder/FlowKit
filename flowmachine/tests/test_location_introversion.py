@@ -43,17 +43,17 @@ def test_some_results(get_dataframe):
     )
 
 
-def test_lat_lng_introversion(get_dataframe):
+def test_lon_lat_introversion(get_dataframe):
     df = get_dataframe(
         LocationIntroversion(
-            "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lat-lon")
+            "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
         )
     )
     assert pytest.approx(0.0681818181818182) == df.introversion.max()
     assert 1.0 == df.extroversion.max()
-    assert [28.2715052907426, 83.7762949093138] == df.sort_values("extroversion").iloc[
+    assert [83.7762949093138, 28.2715052907426] == df.sort_values("extroversion").iloc[
         -1
-    ][["lat", "lon"]].tolist()
+    ][["lon", "lat"]].tolist()
 
 
 def test_no_result_is_greater_than_one(get_dataframe):

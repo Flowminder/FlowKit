@@ -42,11 +42,11 @@ class SpatialUnitMixin:
         return hasattr(self, "get_geom_query")
 
     @property
-    def has_lat_lon_columns(self):
+    def has_lon_lat_columns(self):
         """
-        True if spatial unit has lat/lon columns.
+        True if spatial unit has lon/lat columns.
         """
-        return "lat" in self.location_id_columns and "lon" in self.location_id_columns
+        return "lon" in self.location_id_columns and "lat" in self.location_id_columns
 
     @property
     def is_network_object(self):
@@ -75,7 +75,7 @@ class SpatialUnitMixin:
         criterion : str
             One of:
                 'has_geography'
-                'has_lat_lon_columns'
+                'has_lon_lat_columns'
                 'is_network_object'
                 'is_polygon'
         negate : bool, default False
@@ -94,9 +94,9 @@ class SpatialUnitMixin:
                 "property": self.has_geography,
                 "message": f"{'has' if negate else 'does not have'} geography information.",
             },
-            "has_lat_lon_columns": {
-                "property": self.has_lat_lon_columns,
-                "message": f"{'has' if negate else 'does not have'} latitude/longitude columns.",
+            "has_lon_lat_columns": {
+                "property": self.has_lon_lat_columns,
+                "message": f"{'has' if negate else 'does not have'} longitude/latitude columns.",
             },
             "is_network_object": {
                 "property": self.is_network_object,
@@ -143,7 +143,7 @@ class SpatialUnitMixin:
         
         See also
         --------
-        LatLonSpatialUnit.location_subset_clause
+        LonLatSpatialUnit.location_subset_clause
         """
         raise NotImplementedError(
             "location_subset_clause is not fully implemented yet."
@@ -417,13 +417,13 @@ class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
         return sql
 
 
-class LatLonSpatialUnit(GeomSpatialUnit):
+class LonLatSpatialUnit(GeomSpatialUnit):
     """
     Class that provides a mapping from cell/site IDs in the location table to
-    latitude and longitude.
+    longitude and latitude.
 
     In addition to the requested geom_table_column_names, this query returns
-    latitude and longitude values in columns "lat" and "lon".
+    longitude and latitude values in columns "lon" and "lat".
 
     Parameters
     ----------
@@ -440,7 +440,7 @@ class LatLonSpatialUnit(GeomSpatialUnit):
         Defaults to connection.location_table
     geom_column : str, default "geom_point"
         Name of the column in geom_table that defines the point geometry from
-        which latitude and longitude will be extracted.
+        which longitude and latitude will be extracted.
     geom_table_join_on : str, optional
         Name of the column from geom_table to join on.
         Required if geom_table != connection.location_table.
@@ -494,7 +494,7 @@ class LatLonSpatialUnit(GeomSpatialUnit):
         """
         Return a SQL "WHERE" clause to subset a query (joined to this spatial
         unit) to a location or set of locations. This method differs from the
-        default implementation in its handling of lat-lon values, i.e. it returns
+        default implementation in its handling of lon-lat values, i.e. it returns
             WHERE ST_SetSRID(ST_Point(lon, lat), 4326) = ST_SetSRID(ST_Point(<lon_value>, <lat_value>), 4326)'
         instead of
             WHERE lon = '<lon_value>' AND lat = '<lat_value>'
@@ -528,7 +528,7 @@ class LatLonSpatialUnit(GeomSpatialUnit):
         SpatialUnitMixin.location_subset_clause
         """
         raise NotImplementedError(
-            "LatLonSpatialUnit.location_subset_clause is not implemented yet."
+            "LonLatSpatialUnit.location_subset_clause is not implemented yet."
         )
         # TODO: Implement this.
         # Should raise an error if locations is a string or list of string and
@@ -537,7 +537,7 @@ class LatLonSpatialUnit(GeomSpatialUnit):
         # "WHERE ST_SetSRID(ST_Point(lon, lat), 4326) IN (...)") if
         # locations is a tuple or list of tuples.
         # Should return same as SpatialUnitMixin.location_subset_clause if
-        # locations is a dict or list of dict and "lat" and "lon" columns are
+        # locations is a dict or list of dict and "lon" and "lat" columns are
         # not included in keys.
         # If lat" and "lon" are included in the dict keys, should be able to
         # create a new dict with "lat", "lon" keys replaced by
@@ -590,17 +590,17 @@ class PolygonSpatialUnit(GeomSpatialUnit):
 
 def versioned_cell_spatial_unit():
     """
-    Returns a LatLonSpatialUnit that maps cell location_id to a cell version
-    and lat-lon coordinates.
+    Returns a LonLatSpatialUnit that maps cell location_id to a cell version
+    and lon-lat coordinates.
 
     Returns
     -------
-    flowmachine.core.spatial_unit.LatLonSpatialUnit
+    flowmachine.core.spatial_unit.LonLatSpatialUnit
     """
     if Query.connection.location_table != "infrastructure.cells":
         raise InvalidSpatialUnitError("Versioned cell spatial unit is unavailable.")
 
-    return LatLonSpatialUnit(
+    return LonLatSpatialUnit(
         geom_table_column_names=["version"],
         location_id_column_names=["location_id", "version"],
         geom_table="infrastructure.cells",
@@ -609,14 +609,14 @@ def versioned_cell_spatial_unit():
 
 def versioned_site_spatial_unit():
     """
-    Returns a LatLonSpatialUnit that maps cell location_id to a site version
-    and lat-lon coordinates.
+    Returns a LonLatSpatialUnit that maps cell location_id to a site version
+    and lon-lat coordinates.
 
     Returns
     -------
-    flowmachine.core.spatial_unit.LatLonSpatialUnit
+    flowmachine.core.spatial_unit.LonLatSpatialUnit
     """
-    return LatLonSpatialUnit(
+    return LonLatSpatialUnit(
         geom_table_column_names=[
             "date_of_first_service",
             "date_of_last_service",
@@ -704,8 +704,8 @@ def make_spatial_unit(
         Can be one of:
             'cell'
                 The identifier as found in the CDR.
-            'lat-lon'
-                Latitude and longitude of cell/site locations.
+            'lon-lat'
+                Longitude and latitude of cell/site locations.
             'versioned-cell'
                 The identifier as found in the CDR combined with the version
                 from the cells table.
@@ -758,8 +758,8 @@ def make_spatial_unit(
         return versioned_cell_spatial_unit()
     elif spatial_unit_type == "versioned-site":
         return versioned_site_spatial_unit()
-    elif spatial_unit_type == "lat-lon":
-        return LatLonSpatialUnit()
+    elif spatial_unit_type == "lon-lat":
+        return LonLatSpatialUnit()
     elif spatial_unit_type == "admin":
         if level is None:
             raise ValueError(
