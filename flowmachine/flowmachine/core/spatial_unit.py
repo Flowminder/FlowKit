@@ -122,12 +122,16 @@ class SpatialUnitMixin:
 
         Parameters
         ----------
-        locations : str, dict, list of str or list of dict
+        locations : str, dict, or list/tuple thereof
             Location or list of locations to subset to.
-            If this has type str or list of str, the values are assumed to
-            correspond to the first column in self.location_id_columns.
-            If it has type dict or list of dict, the dict keys should
-            correspond to the column names in self.location_id_columns.
+            This should have one of the following formats:
+                str, or list/tuple of str
+                    Values correspond to the first column in
+                    self.location_id_columns.
+                dict, or list/tuple of dict
+                    Dict keys correspond to the column names in
+                    self.location_id_columns, and values correspond to the
+                    values in those columns.
         check_column_names : bool, default True
             If True, check that all dict keys can be found in
             self.location_id_columns.
@@ -346,11 +350,25 @@ class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
             self._get_aliased_geom_table_cols(geom_table_alias)
         )
 
+        loc_table_cols_string = f"{loc_table_alias}.id AS location_id"
+
+        geom_table_col_aliases = [
+            get_name_and_alias(c)[1] for c in self._geom_table_cols
+        ]
+        if not (
+            "date_of_first_service" in geom_table_col_aliases
+            and "date_of_last_service" in geom_table_col_aliases
+        ):
+            # If we're not selecting dates from the geom table, we need to
+            # select them from the location table
+            loc_table_cols_string += f""",
+            {loc_table_alias}.date_of_first_service,
+            {loc_table_alias}.date_of_last_service
+            """
+
         sql = f"""
         SELECT
-            {loc_table_alias}.id AS location_id,
-            {loc_table_alias}.date_of_first_service,
-            {loc_table_alias}.date_of_last_service,
+            {loc_table_cols_string},
             {geom_table_cols_string}
         FROM {self.connection.location_table} AS {loc_table_alias}
         {join_clause}
@@ -360,10 +378,18 @@ class GeomSpatialUnit(SpatialUnitMixin, Query, metaclass=ABCMeta):
 
     @property
     def column_names(self) -> List[str]:
-        return ["location_id", "date_of_first_service", "date_of_last_service"] + [
+        cols = ["location_id"]
+        geom_table_cols = [
             get_name_and_alias(c)[1]
             for c in self._get_aliased_geom_table_cols("geom_table")
         ]
+        if not (
+            "date_of_first_service" in geom_table_cols
+            and "date_of_last_service" in geom_table_cols
+        ):
+            cols += ["date_of_first_service", "date_of_last_service"]
+        cols += geom_table_cols
+        return cols
 
     def get_geom_query(self):
         """
@@ -475,14 +501,19 @@ class LatLonSpatialUnit(GeomSpatialUnit):
 
         Parameters
         ----------
-        locations : str, tuple, dict, list of str, list of tuple or list of dict
+        locations : tuple, str, dict, or list/tuple thereof
             Location or list of locations to subset to.
-            If this has type tuple (length 2) or list of tuple, the values are
-            assumed to correspond to the 'lon' and 'lat' columns.
-            If this has type str or list of str, the values are assumed to
-            correspond to the first column in self.location_id_columns.
-            If it has type dict or list of dict, the dict keys should
-            correspond to the column names in self.location_id_columns.
+            This should have one of the following formats:
+                tuple (length 2), or list/tuple of tuple
+                    Values are (longitude, latitude) pairs, corresponding to
+                    the 'lon' and 'lat' columns.
+                str, or list/tuple of str
+                    Values correspond to the first column in
+                    self.location_id_columns.
+                dict, or list/tuple of dict
+                    Dict keys correspond to the column names in
+                    self.location_id_columns, and values correspond to the
+                    values in those columns.
         check_column_names : bool, default True
             If True, check that all dict keys can be found in
             self.location_id_columns.
@@ -586,7 +617,12 @@ def versioned_site_spatial_unit():
     flowmachine.core.spatial_unit.LatLonSpatialUnit
     """
     return LatLonSpatialUnit(
-        geom_table_column_names=["id AS site_id", "version"],
+        geom_table_column_names=[
+            "date_of_first_service",
+            "date_of_last_service",
+            "id AS site_id",
+            "version",
+        ],
         location_id_column_names=["site_id", "version"],
         geom_table="infrastructure.sites",
         geom_table_join_on="id",
