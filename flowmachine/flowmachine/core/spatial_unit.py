@@ -115,6 +115,104 @@ class SpatialUnitMixin:
                 + criteria[criterion]["message"]
             )
 
+    def location_subset_clause(self, locations, check_column_names=True):
+        """
+        Return a SQL "WHERE" clause to subset a query (joined to this spatial
+        unit) to a location or set of locations.
+
+        Parameters
+        ----------
+        locations : str, dict, list of str or list of dict
+            Location or list of locations to subset to.
+            If this has type str or list of str, the values are assumed to
+            correspond to the first column in self.location_id_columns.
+            If it has type dict or list of dict, the dict keys should
+            correspond to the column names in self.location_id_columns.
+        check_column_names : bool, default True
+            If True, check that all dict keys can be found in
+            self.location_id_columns.
+        
+        Returns
+        -------
+        str
+            SQL where clause.
+        
+        See also
+        --------
+        LatLonSpatialUnit.location_subset_clause
+        """
+        raise NotImplementedError(
+            "location_subset_clause is not fully implemented yet."
+        )
+        if isinstance(locations, list) or isinstance(locations, tuple):
+            if isinstance(locations[0], dict):
+                # multiple locations, multiple columns
+                # TODO: Check keys are subset of self.location_id_columns when check_column_names==True
+                ands = [
+                    " AND ".join(f"{key} = '{value}'" for key, value in loc.items())
+                    for loc in locations
+                ]
+                return "WHERE (" + ") OR (".join(ands) + ")"
+            else:
+                # multiple locations, first column
+                locs_list_string = ", ".join(f"'{l}'" for l in locations)
+                return f"WHERE {self.location_id_columns[0]} IN ({locs_list_string})"
+        elif isinstance(locations, dict):
+            # one location, multiple columns
+            # TODO: Check keys are subset of self.location_id_columns when check_column_names==True
+            return "WHERE " + " AND ".join(
+                f"{key} = '{value}'" for key, value in locations.items()
+            )
+        else:
+            # one location, first column
+            return f"WHERE {self.location_id_columns[0]} = '{locations}'"
+
+        # From FirstLocation._get_locations_clause:
+        # if len(column_name) == 1:  # polygon, admin, cell, grid
+        #     if isinstance(location, tuple) or isinstance(location, list):
+        #         in_list = "('" + "','".join(location) + "')"
+        #         return "WHERE {} in {}".format(column_name[0], in_list)
+        #     else:
+        #         return "WHERE {} = '{}'".format(column_name[0], location)
+        # elif self.ul.level == "lat-lon":
+        #     if isinstance(location, tuple) or isinstance(location, list):
+        #         in_list = (
+        #             "('"
+        #             + "','".join(
+        #                 "ST_SetSRID(ST_Point({}, {}), 4326)".format(lon, lat)
+        #                 for lon, lat in location
+        #             )
+        #             + "')"
+        #         )
+        #         return "WHERE ST_SetSRID(ST_Point(lon, lat), 4326) in {}".format(
+        #             in_list
+        #         )
+        #     else:
+        #         return "WHERE ST_SetSRID(ST_Point(lon, lat), 4326) = 'ST_SetSRID(ST_Point({}, {}), 4326)'".format(
+        #             *location
+        #         )
+        # else:  # Versioned things
+        #     if isinstance(location, str):  # Deal with single string
+        #         location = (location,)
+        #     elif isinstance(
+        #         location, list
+        #     ):  # Deal with possible single strings in list
+        #         location = [l if isinstance(l, tuple) else (l,) for l in location]
+        #     if isinstance(location, tuple):
+        #         return "WHERE " + " AND ".join(
+        #             "{} = '{}'".format(c, l) for c, l in zip(column_name, location)
+        #         )
+        #     else:
+        #         ands = " OR ".join(
+        #             "({})".format(
+        #                 " AND ".join(
+        #                     "{} = '{}'".format(c, l) for c, l in zip(column_name, loc)
+        #                 )
+        #             )
+        #             for loc in location
+        #         )
+        #         return "WHERE " + ands
+
 
 class CellSpatialUnit(SpatialUnitMixin):
     """
@@ -303,9 +401,9 @@ class LatLonSpatialUnit(GeomSpatialUnit):
 
     Parameters
     ----------
-    geom_table_column_names : str or list
+    geom_table_column_names : str or list, default []
         Name(s) of the column(s) to fetch from geom_table.
-    location_id_column_names : str or list
+    location_id_column_names : str or list, default []
         Name(s) of the column(s) which identify the locations.
         Must be a subset of the column_names for this query.
     geom_table : str or flowmachine.Query, optional
@@ -316,17 +414,19 @@ class LatLonSpatialUnit(GeomSpatialUnit):
     geom_column : str, default "geom_point"
         Name of the column in geom_table that defines the point geometry from
         which latitude and longitude will be extracted.
-    geom_table_join_on : str
+    geom_table_join_on : str, optional
         Name of the column from geom_table to join on.
-    location_table_join_on : str
+        Required if geom_table != connection.location_table.
+    location_table_join_on : str, optional
         Name of the column from connection.location_table to join on.
+        Required if geom_table != connection.location_table.
     """
 
     def __init__(
         self,
         *,
         geom_table_column_names=(),
-        location_id_column_names=("lat", "lon"),
+        location_id_column_names=(),
         geom_table=None,
         geom_column="geom_point",
         geom_table_join_on=None,
@@ -336,7 +436,7 @@ class LatLonSpatialUnit(GeomSpatialUnit):
         self._loc_on = location_table_join_on
         super().__init__(
             geom_table_column_names=geom_table_column_names,
-            location_id_column_names=location_id_column_names,
+            location_id_column_names=location_id_column_names + ("lon", "lat"),
             geom_table=geom_table,
             geom_column=geom_column,
         )
@@ -355,6 +455,55 @@ class LatLonSpatialUnit(GeomSpatialUnit):
             ({self.geom_table.get_query()}) AS {geom_table_alias}
         ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
         """
+
+    def location_subset_clause(self, locations, check_column_names=True):
+        """
+        Return a SQL "WHERE" clause to subset a query (joined to this spatial
+        unit) to a location or set of locations. This method differs from the
+        default implementation in its handling of lat-lon values, i.e. it returns
+            WHERE ST_SetSRID(ST_Point(lon, lat), 4326) = ST_SetSRID(ST_Point(<lon_value>, <lat_value>), 4326)'
+        instead of
+            WHERE lon = '<lon_value>' AND lat = '<lat_value>'
+
+        Parameters
+        ----------
+        locations : str, tuple, dict, list of str, list of tuple or list of dict
+            Location or list of locations to subset to.
+            If this has type tuple (length 2) or list of tuple, the values are
+            assumed to correspond to the 'lon' and 'lat' columns.
+            If this has type str or list of str, the values are assumed to
+            correspond to the first column in self.location_id_columns.
+            If it has type dict or list of dict, the dict keys should
+            correspond to the column names in self.location_id_columns.
+        check_column_names : bool, default True
+            If True, check that all dict keys can be found in
+            self.location_id_columns.
+        
+        Returns
+        -------
+        str
+            SQL where clause.
+        
+        See also
+        --------
+        SpatialUnitMixin.location_subset_clause
+        """
+        raise NotImplementedError(
+            "LatLonSpatialUnit.location_subset_clause is not implemented yet."
+        )
+        # TODO: Implement this.
+        # Should raise an error if locations is a string or list of string and
+        # location_id_columns[0] == 'lon'.
+        # Should return example in docstring (or
+        # "WHERE ST_SetSRID(ST_Point(lon, lat), 4326) IN (...)") if
+        # locations is a tuple or list of tuples.
+        # Should return same as SpatialUnitMixin.location_subset_clause if
+        # locations is a dict or list of dict and "lat" and "lon" columns are
+        # not included in keys.
+        # If lat" and "lon" are included in the dict keys, should be able to
+        # create a new dict with "lat", "lon" keys replaced by
+        # "ST_SetSRID(ST_Point(lon, lat), 4326)" (and set corresponding value),
+        # and then call super().location_subset_clause with check_column_names=False
 
 
 class PolygonSpatialUnit(GeomSpatialUnit):
@@ -414,7 +563,7 @@ def versioned_cell_spatial_unit():
 
     return LatLonSpatialUnit(
         geom_table_column_names=["version"],
-        location_id_column_names=["location_id", "version", "lon", "lat"],
+        location_id_column_names=["location_id", "version"],
         geom_table="infrastructure.cells",
     )
 
@@ -430,7 +579,7 @@ def versioned_site_spatial_unit():
     """
     return LatLonSpatialUnit(
         geom_table_column_names=["id AS site_id", "version"],
-        location_id_column_names=["site_id", "version", "lon", "lat"],
+        location_id_column_names=["site_id", "version"],
         geom_table="infrastructure.sites",
         geom_table_join_on="id",
         location_table_join_on="site_id",
