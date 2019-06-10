@@ -6,6 +6,7 @@
 Tests for the class FirstLocation
 """
 
+from flowmachine.core import make_spatial_unit
 from flowmachine.features.subscriber import FirstLocation
 
 
@@ -14,7 +15,10 @@ def test_time_at_first_location_correct(get_dataframe):
     FirstLocation() dataframe contains hand-picked records.
     """
     dfl = FirstLocation(
-        "2016-01-01", "2016-01-04", location="QeBRM8", level="versioned-site"
+        "2016-01-01",
+        "2016-01-04",
+        location="QeBRM8",
+        spatial_unit=make_spatial_unit("versioned-site"),
     )
     df = get_dataframe(dfl)
 
@@ -32,7 +36,7 @@ def test_handles_list_of_locations(get_dataframe):
         "2016-01-01",
         "2016-01-04",
         location=["QeBRM8", "m9jL23" "LVnDQL"],
-        level="versioned-site",
+        spatial_unit=make_spatial_unit("versioned-site"),
     )
     df = get_dataframe(dfl)
 
