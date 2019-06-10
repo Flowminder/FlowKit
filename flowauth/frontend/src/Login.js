@@ -74,9 +74,14 @@ class Login extends React.Component {
       })
       .catch(err => {
         if (err.need_two_factor) {
-          this.setState({ need_two_factor: true });
+          this.setState({ need_two_factor: true, hasError: false });
         } else {
-          this.setState({ hasError: true, error: err, need_two_factor: false });
+          this.setState({
+            hasError: true,
+            error: err,
+            need_two_factor: false,
+            two_factor_code: ""
+          });
         }
       });
   };
