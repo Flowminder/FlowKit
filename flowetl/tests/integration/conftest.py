@@ -45,7 +45,7 @@ def tag():
     """
     Get tag to use for containers
     """
-    return os.environ.get("TAG", "latest")
+    return os.environ.get("FLOWETL_CONTAINERS_TAG", "latest")
 
 
 @pytest.fixture(scope="session")
