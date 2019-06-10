@@ -99,8 +99,15 @@ class TwoFactorConfirm extends React.Component {
 
   advance = () =>
     this.setState({
-      confirming: this.state.backupsCollected && this.state.backup_codes.length
+      confirming:
+        this.state.backupsCollected && this.state.backup_codes.length > 0
     });
+  backstep = () => {
+    const { confirming } = this.state;
+    if (confirming) {
+      this.setState({ confirming: false });
+    }
+  };
 
   confirm = async () => {
     this.setState({ activating: true });
@@ -197,7 +204,8 @@ class TwoFactorConfirm extends React.Component {
                     type="submit"
                     variant="contained"
                     className={classes.button}
-                    onClick={this.cancel}
+                    onClick={this.backstep}
+                    disabled={this.two_factor_enabled}
                   >
                     Cancel
                   </Button>

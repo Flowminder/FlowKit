@@ -42,16 +42,16 @@ class UserAdminDetails extends React.Component {
     pageError: false,
     errors: { message: "" }
   };
-  componentDidMount() {
-    getUser(this.props.item_id)
-      .then(json => {
-        this.setState(Object.assign(json || {}, json && { edit_mode: true }));
-      })
-      .catch(err => {
-        if (err.code !== 404) {
-          this.setState({ hasError: true, error: err });
-        }
-      });
+  async componentDidMount() {
+    const json = getUser(this.props.item_id);
+    try {
+      this.setState(await json);
+      this.setState({ edit_mode: true });
+    } catch (err) {
+      if (err.code !== 404) {
+        this.setState({ hasError: true, error: err });
+      }
+    }
   }
 
   generatePassword = event => {
