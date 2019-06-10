@@ -88,12 +88,17 @@ def container_env():
 @pytest.fixture(scope="session")
 def container_ports():
     """
-    Exposed ports for flowetl_db and flowdb
+    Exposed ports for flowetl_db and flowdb (
     """
+    flowetl_airflow_host_port = 8080
     flowetl_db_host_port = 9000
     flowdb_host_port = 9001
 
-    return {"flowetl_db": flowetl_db_host_port, "flowdb": flowdb_host_port}
+    return {
+        "flowetl_airflow": flowetl_airflow_host_port,
+        "flowetl_db": flowetl_db_host_port,
+        "flowdb": flowdb_host_port,
+    }
 
 
 @pytest.fixture(scope="function")
@@ -217,6 +222,7 @@ def flowetl_container(
     container_env,
     container_network,
     mounts,
+    container_ports,
 ):
     """
     Start (and clean up) flowetl. Setting user to uid/gid of
@@ -230,7 +236,7 @@ def flowetl_container(
         name="flowetl",
         network="testing",
         restart_policy={"Name": "always"},
-        ports={"8080": "8080"},
+        ports={"8080": container_ports["flowetl_airflow"]},
         mounts=mounts["flowetl"],
         user=user,
         detach=True,
