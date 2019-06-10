@@ -17,6 +17,8 @@ import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import PropTypes from "prop-types";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import LockIcon from "@material-ui/icons/Lock";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
 import { withStyles } from "@material-ui/core/styles";
 
 const styles = theme => ({
@@ -37,7 +39,8 @@ class TwoFactorConfirm extends React.Component {
     pageError: false,
     errors: {},
     backupsCollected: false,
-    confirming: false
+    confirming: false,
+    activating: false
   };
   async componentDidMount() {
     try {
@@ -99,11 +102,16 @@ class TwoFactorConfirm extends React.Component {
       confirming: this.state.backupsCollected && this.state.backup_codes.length
     });
 
-  confirm = () => {
+  confirm = async () => {
     this.setState({ activating: true });
-    confirmTwoFactor(this.state.two_factor_code).then(json =>
-      this.setState(json)
-    );
+    const json = confirmTwoFactor(this.state.two_factor_code);
+    try {
+      this.setState(await json);
+    } catch (err) {
+      this.setState({ errors: err });
+      this.setState({ pageError: true });
+    }
+    this.setState({ activating: false });
   };
 
   render() {
@@ -115,7 +123,9 @@ class TwoFactorConfirm extends React.Component {
       backup_codes,
       two_factor_code,
       backupsCollected,
-      confirming
+      confirming,
+      two_factor_enabled,
+      activating
     } = this.state;
     return (
       <Paper>
@@ -159,15 +169,39 @@ class TwoFactorConfirm extends React.Component {
                   variant="outlined"
                 />
               </Grid>
-              <Grid item xs={1}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  onClick={this.confirm}
-                >
-                  Activate
-                </Button>
+              <Grid item xs={12} container justify="space-between">
+                <Grid item xs={2}>
+                  <div className={classes.wrapper}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      onClick={this.confirm}
+                      disabled={
+                        (!backupsCollected && backup_codes.length > 0) ||
+                        activating ||
+                        two_factor_enabled
+                      }
+                    >
+                      {activating && <CircularProgress size={24} />}
+                      {!activating && !two_factor_enabled && (
+                        <LockOpenIcon color="secondary" />
+                      )}
+                      {two_factor_enabled && <LockIcon />} Activate
+                    </Button>
+                  </div>
+                </Grid>
+                <Grid item xs={2}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    className={classes.button}
+                    onClick={this.cancel}
+                  >
+                    Cancel
+                  </Button>
+                </Grid>
               </Grid>
             </>
           )}

@@ -287,10 +287,13 @@ class TwoFactorAuth(db.Model):
 
         """
         for code in self.two_factor_backups:
-            if code.verify(plaintext):
-                db.session.delete(code)
-                db.session.commit()
-                return True
+            try:
+                if code.verify(plaintext):
+                    db.session.delete(code)
+                    db.session.commit()
+                    return True
+            except Unauthorized:
+                pass  # Need to check them all
         raise Unauthorized("Code not valid.")
 
     @hybrid_property
@@ -378,7 +381,7 @@ class TwoFactorBackup(db.Model):
         if argon2.verify(plaintext, self._backup_code):
             return True
         else:
-            raise Unauthorized("Invalid backup code.")
+            raise Unauthorized("Code not valid.")
 
     @hybrid_property
     def backup_code(self):
