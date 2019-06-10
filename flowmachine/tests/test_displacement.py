@@ -12,12 +12,12 @@ from flowmachine.utils import list_of_dates
 @pytest.mark.parametrize(
     "stat, sub_a_expected, sub_b_expected",
     [
-        ("max", 521.925932, 426.989228),
-        ("median", 112.337149, 144.098363),
-        ("stddev", 160.84803, 152.864749),
-        ("avg", 169.926194, 182.776455),
-        ("sum", 5097.785810, 5300.517199),
-        ("variance", 25872091.3161635, 23367631.4344498),
+        ("max", 500.809349, 387.024628),
+        ("median", 130.327306, 151.547503),
+        ("stddev", 132.73844, 131.026341),
+        ("avg", 176.903620, 178.910994),
+        ("sum", 5307.10860, 5188.418836),
+        ("variance", 17619494.3698313, 17167902.1823453),
     ],
 )
 def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataframe):
@@ -28,8 +28,8 @@ def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataf
     df = get_dataframe(
         Displacement("2016-01-01", "2016-01-07", statistic=stat)
     ).set_index("subscriber")
-    assert df.loc[sub_a_id].statistic, pytest.approx(sub_a_expected)
-    assert df.loc[sub_b_id].statistic, pytest.approx(sub_b_expected)
+    assert df.loc[sub_a_id].statistic == pytest.approx(sub_a_expected)
+    assert df.loc[sub_b_id].statistic == pytest.approx(sub_b_expected)
 
 
 def test_min_displacement_zero(get_dataframe):
@@ -61,7 +61,7 @@ def test_pass_modal_location(get_dataframe):
     df = df.set_index("subscriber")
 
     val = df.loc["j6QYNbMJgAwlVORP"].statistic
-    assert val == pytest.approx(169.926194)
+    assert val == pytest.approx(176.903620)
 
 
 def test_error_when_modal_location_not_latlong():

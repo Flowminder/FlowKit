@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - When creating a new token in FlowAuth, the expiry now always shows the year, seconds till expiry, and timezone. [#260](https://github.com/Flowminder/FlowKit/issues/260)
+- Distances in `Displacement` are now calculated with longitude and latitude the corrcet way around. [#913](https://github.com/Flowminder/FlowKit/issues/913)
 
 ### Removed
 
