@@ -235,3 +235,12 @@ def test_daily_location_6_df(get_dataframe, diff_reporter):
     )
     df = get_dataframe(dl)
     verify(df.to_csv(), diff_reporter)
+
+
+def test_versioned_site_sql(diff_reporter):
+    """
+    Verify the SQL for a versioned-site spatial unit.
+    """
+    su = make_spatial_unit("versioned-site")
+    sql = pretty_sql(su.get_query())
+    verify(sql, diff_reporter)
