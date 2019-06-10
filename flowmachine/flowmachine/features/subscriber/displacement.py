@@ -127,7 +127,7 @@ class Displacement(SubscriberFeature):
 
     def _make_query(self):
 
-        dist_string = get_dist_string("lat_home_loc", "lon_home_loc", "lat", "lon")
+        dist_string = get_dist_string("lon_home_loc", "lat_home_loc", "lon", "lat")
 
         if self.unit == "km":
             divisor = 1000
