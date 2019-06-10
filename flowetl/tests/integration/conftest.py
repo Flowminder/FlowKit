@@ -90,9 +90,9 @@ def container_ports():
     """
     Exposed ports for flowetl_db and flowdb (
     """
-    flowetl_airflow_host_port = 8080
-    flowetl_db_host_port = 9000
-    flowdb_host_port = 9001
+    flowetl_airflow_host_port = 28080
+    flowetl_db_host_port = 29000
+    flowdb_host_port = 29001
 
     return {
         "flowetl_airflow": flowetl_airflow_host_port,
