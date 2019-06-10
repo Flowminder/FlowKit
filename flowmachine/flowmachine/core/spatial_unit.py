@@ -406,6 +406,7 @@ class LatLonSpatialUnit(GeomSpatialUnit):
     location_id_column_names : str or list, default []
         Name(s) of the column(s) which identify the locations.
         Must be a subset of the column_names for this query.
+        "lon" and "lat" will be appended to this list of names.
     geom_table : str or flowmachine.Query, optional
         Name of the table containing the geography information.
         Can be either the name of a table, with the schema, or a
@@ -436,7 +437,7 @@ class LatLonSpatialUnit(GeomSpatialUnit):
         self._loc_on = location_table_join_on
         super().__init__(
             geom_table_column_names=geom_table_column_names,
-            location_id_column_names=location_id_column_names + ("lon", "lat"),
+            location_id_column_names=location_id_column_names,
             geom_table=geom_table,
             geom_column=geom_column,
         )
@@ -455,6 +456,13 @@ class LatLonSpatialUnit(GeomSpatialUnit):
             ({self.geom_table.get_query()}) AS {geom_table_alias}
         ON {loc_table_alias}.{self._loc_on} = {geom_table_alias}.{self._geom_on}
         """
+
+    @property
+    def location_id_columns(self) -> List[str]:
+        """
+        Names of the columns that identify a location.
+        """
+        return list(self._locid_cols) + ["lon", "lat"]
 
     def location_subset_clause(self, locations, check_column_names=True):
         """
