@@ -11,6 +11,7 @@ from typing import List
 import pytest
 from sqlalchemy.exc import ProgrammingError
 
+from flowmachine.core import make_spatial_unit
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location
 
@@ -142,10 +143,12 @@ def test_query_formatting():
     Test that query can be formatted as a string, with query attributes
     specified in the `fmt` argument being included.
     """
-    dl = daily_location("2016-01-01", method="last")
+    dl = daily_location(
+        "2016-01-01", spatial_unit=make_spatial_unit("cell"), method="last"
+    )
     assert "<Query of type: LastLocation>" == format(dl)
     assert (
-        "<Query of type: LastLocation, spatial_unit: <Query of type: PolygonSpatialUnit, query_id: 'f66078eb6a997995f1846bab147cb263'>, column_names: ['subscriber', 'pcod']>"
+        "<Query of type: LastLocation, spatial_unit: CellSpatialUnit(), column_names: ['subscriber', 'location_id']>"
         == f"{dl:spatial_unit,column_names}"
     )
 
