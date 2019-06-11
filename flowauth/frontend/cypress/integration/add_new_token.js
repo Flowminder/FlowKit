@@ -54,6 +54,34 @@ describe("Token generation", function() {
     });
     cy.contains("#name-helper-text").should("not.exist");
   });
+  it("API permision checkbox checked", function() {
+    cy.get("#new").click();
+    cy.get("#permissions").check();
+    cy.get("#api-exp").click();
+    cy.get("#permission")
+      .first()
+      .check();
+  });
+  it("API permision checkboxs unchecked", function() {
+    cy.get("#new").click();
+    cy.get("#api-exp").click();
+    cy.get("#permission").uncheck();
+    cy.get("#permissions").uncheck();
+  });
+  it("Aggrigation unit checkbox checked", function() {
+    cy.get("#new").click();
+    cy.get("#unit-exp").click();
+    cy.get("#units").check();
+    cy.get("#unit")
+      .first()
+      .check();
+  });
+  // it("Aggrigation unit checkboxs unchecked", function () {
+  //   cy.get("#new").click();
+  //   cy.get("#unit-exp").click();
+  //   cy.get("#unit").uncheck();
+  //   cy.get("#units").uncheck();
+  // });
   it("Add new token", function() {
     cy.get("#new").click();
     //Add new token

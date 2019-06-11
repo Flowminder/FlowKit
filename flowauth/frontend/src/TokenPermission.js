@@ -44,6 +44,7 @@ class TokenPermission extends React.Component {
               <FormControlLabel
                 control={
                   <Checkbox
+                    id="permission"
                     checked={permissions[key]}
                     onChange={checkedHandler(claim, key)}
                     value={claim + ":" + key}

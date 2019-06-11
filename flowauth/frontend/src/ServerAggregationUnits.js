@@ -58,6 +58,7 @@ class ServerAggregationUnits extends React.Component {
               <FormControlLabel
                 control={
                   <Checkbox
+                    id="unit"
                     checked={
                       ischecked
                         ? units.indexOf(unit.name) !== -1

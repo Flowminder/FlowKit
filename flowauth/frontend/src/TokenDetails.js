@@ -20,6 +20,7 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Checkbox from "@material-ui/core/Checkbox";
+import WarningDialog from "./WarningDialog";
 
 const styles = theme => ({
   root: {
@@ -47,18 +48,33 @@ class TokenDetails extends React.Component {
     isAggregationChecked: true,
     permissionIntermidiate: false,
     aggregateIntermidiate: false,
-    totalAggrigateunits: 0
+    totalAggrigateunits: 0,
+    pageError: false,
+    errors: { message: "" }
   };
 
   handleSubmit = () => {
     const { name, expiry, rights, name_helper_text } = this.state;
     const { serverID, cancel } = this.props;
-    if (name && name_helper_text === "") {
+    const checkedCheckboxes = document.querySelectorAll(
+      'input[type="checkbox"]:checked'
+    );
+    console.log(checkedCheckboxes);
+
+    if (name && name_helper_text === "" && checkedCheckboxes.length != 0) {
       createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
         json => {
           cancel();
         }
       );
+    } else if (checkedCheckboxes.length == 0) {
+      this.setState({
+        pageError: true,
+        errors: {
+          message:
+            "Warning: no permissions will be granted by this token. Are you sure?"
+        }
+      });
     } else if (!name) {
       this.setState({
         name_helper_text: "Token name cannot be blank."
@@ -72,6 +88,7 @@ class TokenDetails extends React.Component {
   };
 
   handleChange = (claim, right) => event => {
+    this.setState({ pageError: false, errors: "" });
     var rights = this.state.rights;
     rights[claim] = Object.assign({}, rights[claim]);
     rights[claim].permissions[right] = event.target.checked;
@@ -92,6 +109,7 @@ class TokenDetails extends React.Component {
   scrollToRef = ref => ref.current.scrollIntoView();
 
   handleAggUnitChange = (claim_id, claim, unit) => event => {
+    this.setState({ pageError: false, errors: "" });
     var rights = this.state.rights;
     rights[claim] = Object.assign({}, rights[claim]);
     if (event.target.checked) {
@@ -117,6 +135,7 @@ class TokenDetails extends React.Component {
     this.setState({ rights: rights });
   };
   handlePermissionCheckbox = event => {
+    this.setState({ pageError: false, errors: "" });
     event.stopPropagation();
     const { rights } = this.state;
     for (const keys in rights) {
@@ -124,15 +143,14 @@ class TokenDetails extends React.Component {
         rights[keys].permissions[key] = this.state.isPermissionChecked;
       }
     }
-    this.setState(
-      Object.assign(this.state, {
-        rights: rights,
-        isPermissionChecked: !this.state.isPermissionChecked,
-        permissionIntermidiate: false
-      })
-    );
+    this.setState({
+      rights: rights,
+      isPermissionChecked: !this.state.isPermissionChecked,
+      permissionIntermidiate: false
+    });
   };
   handleAggregationCheckbox = event => {
+    this.setState({ pageError: false, errors: "" });
     event.stopPropagation();
     var listUnits = [];
     var rights = this.state.rights;
@@ -297,9 +315,10 @@ class TokenDetails extends React.Component {
         </Grid>
         <Grid item xl={12}>
           <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon id="api-exp" />}>
               {this.state.permissionIntermidiate ? (
                 <Checkbox
+                  id="permissions"
                   indeterminate
                   value="checkedB"
                   color="primary"
@@ -308,6 +327,7 @@ class TokenDetails extends React.Component {
               ) : this.state.isPermissionChecked == true &&
                 this.state.permissionIntermidiate == false ? (
                 <Checkbox
+                  id="permissions"
                   value="checkedB"
                   color="primary"
                   onClick={this.handlePermissionCheckbox}
@@ -315,6 +335,7 @@ class TokenDetails extends React.Component {
               ) : this.state.isPermissionChecked == false &&
                 this.state.permissionIntermidiate == false ? (
                 <Checkbox
+                  id="permissions"
                   value="checkedB"
                   color="primary"
                   onClick={this.handlePermissionCheckbox}
@@ -337,9 +358,12 @@ class TokenDetails extends React.Component {
             </ExpansionPanelDetails>
           </ExpansionPanel>
           <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <ExpansionPanelSummary
+              expandIcon={<ExpandMoreIcon id="unit-exp" />}
+            >
               {aggregateIntermidiate ? (
                 <Checkbox
+                  id="units"
                   indeterminate
                   value="checkedB"
                   color="primary"
@@ -347,6 +371,7 @@ class TokenDetails extends React.Component {
                 />
               ) : (
                 <Checkbox
+                  id="units"
                   value="checkedB"
                   color="primary"
                   onClick={this.handleAggregationCheckbox}
@@ -369,6 +394,10 @@ class TokenDetails extends React.Component {
             </ExpansionPanelDetails>
           </ExpansionPanel>
         </Grid>
+        <WarningDialog
+          open={this.state.pageError}
+          message={this.state.errors.message}
+        />
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>
     );
