@@ -25,7 +25,7 @@ async function getResponse(path, dat) {
       "Content-Type": "application/json"
     },
     ...dat
-  }
+  };
   var err;
   var response = await fetch(path, fullDat);
   if (response.ok) {
@@ -166,7 +166,9 @@ export async function getMyRightsForServer(server_id) {
 }
 
 export async function getCapabilities(server_id) {
-  return await getResponseDefault("/admin/servers/" + server_id + "/capabilities");
+  return await getResponseDefault(
+    "/admin/servers/" + server_id + "/capabilities"
+  );
 }
 
 export async function getGroupCapabilities(server_id, group_id) {
@@ -190,7 +192,9 @@ export async function getAllAggregationUnits() {
 }
 
 export async function getTimeLimits(server_id) {
-  return await getResponseDefault("/admin/servers/" + server_id + "/time_limits");
+  return await getResponseDefault(
+    "/admin/servers/" + server_id + "/time_limits"
+  );
 }
 
 export async function createUser(username, password, is_admin) {
@@ -218,7 +222,8 @@ export async function editServerCapabilities(server_id, rights) {
     body: JSON.stringify(rights)
   };
   return await getResponse(
-    "/admin/servers/" + server_id + "/capabilities", dat
+    "/admin/servers/" + server_id + "/capabilities",
+    dat
   );
 }
 
@@ -329,10 +334,11 @@ export async function logout() {
   try {
     return await getResponseDefault("/signout");
   } catch (err) {
-    if(err.code === 401) { // Being logged out is the desired response here
-      return {}
+    if (err.code === 401) {
+      // Being logged out is the desired response here
+      return {};
     } else {
-      throw err
+      throw err;
     }
   }
 }

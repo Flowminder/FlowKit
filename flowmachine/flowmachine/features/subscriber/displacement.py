@@ -16,7 +16,7 @@ from flowmachine.features.subscriber import daily_location
 from .metaclasses import SubscriberFeature
 from . import ModalLocation
 from ..utilities.subscriber_locations import SubscriberLocations
-from flowmachine.utils import parse_datestring, get_dist_string, list_of_dates
+from flowmachine.utils import parse_datestring, get_dist_query_string, list_of_dates
 from flowmachine.core import make_spatial_unit
 
 from dateutil.relativedelta import relativedelta
@@ -178,7 +178,9 @@ class Displacement(SubscriberFeature):
 
     def _make_query(self):
 
-        dist_string = get_dist_string("lon_home_loc", "lat_home_loc", "lon", "lat")
+        dist_string = get_dist_query_string(
+            lon1="lon_home_loc", lat1="lat_home_loc", lon2="lon", lat2="lat"
+        )
 
         if self.unit == "km":
             divisor = 1000

@@ -16,13 +16,13 @@ pip install flowclient
 
 ### Example FlowClient usage
 
-Documentation for FlowClient can be found [here](../flowclient/flowclient/). Example usage of FlowClient to run daily location, modal location and flow queries is provided [here](../flowclient/example_usage/), and worked examples are available [here](../worked_examples/).
+Documentation for FlowClient can be found [here](../flowclient/flowclient/). Example usage of FlowClient to run daily location, modal location and flow queries is provided [here](flowclient/example_usage.ipynb), and worked examples are available [here](worked_examples/index.md).
 
 <a name="flowauth">
 
 ## FlowAuth
 
-To connect FlowClient to FlowAPI, an access token must be generated using FlowAuth. Once an administrator has created a FlowAuth login for a user (see instructions [here](install.md#granting-user-permissions-in-flowauth)), that user can follow these steps to generate a token:
+To connect FlowClient to FlowAPI, an access token must be generated using FlowAuth. Once an administrator has created a FlowAuth login for a user (see instructions [here](administrator.md#granting-user-permissions-in-flowauth)), that user can follow these steps to generate a token:
 
 1. Log into FlowAuth using the username and password created by the administrator.
 
@@ -32,7 +32,7 @@ To connect FlowClient to FlowAPI, an access token must be generated using FlowAu
 
 4. Click the '+' icon to add a token, and give it a name (and optionally change the expiry and permissions). And Save.
 
-5. Click "TOKEN" to display the token string. Take a copy.
+5. Click "COPY" to copy the token string, "DOWNLOAD" to download the token as a text file, or "VIEW" to display the token string.
 
 <a name="flowapi">
 

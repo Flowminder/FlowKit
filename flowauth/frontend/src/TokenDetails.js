@@ -25,24 +25,32 @@ const styles = theme => ({
 });
 
 class TokenDetails extends React.Component {
+  constructor(props) {
+    super(props);
+    this.nameRef = React.createRef();
+  }
   state = {
     nickName: {},
     rights: {},
     expiry: new Date(),
     latest_expiry: new Date(),
-    username_helper_text: "",
+    name_helper_text: ""
   };
 
   handleSubmit = () => {
     const { name, expiry, rights, name_helper_text } = this.state;
     const { serverID, cancel } = this.props;
     if (name && name_helper_text === "") {
-      createToken(name, serverID, new Date(expiry).toISOString(), rights)
-        .then(
-          json => {
-            cancel();
-          }
-        );
+      createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
+        json => {
+          cancel();
+        }
+      );
+    } else if (!name) {
+      this.setState({
+        name_helper_text: "Token name cannot be blank."
+      });
+      this.scrollToRef(this.nameRef);
     }
   };
 
@@ -56,6 +64,7 @@ class TokenDetails extends React.Component {
     rights[claim].permissions[right] = event.target.checked;
     this.setState(Object.assign(this.state, { rights: rights }));
   };
+  scrollToRef = ref => ref.current.scrollIntoView();
 
   handleAggUnitChange = (claim_id, claim, unit) => event => {
     var rights = this.state.rights;
@@ -74,18 +83,24 @@ class TokenDetails extends React.Component {
     var letters = /^[A-Za-z0-9_]+$/;
     let name = event.target.value;
     if (name.match(letters)) {
-      this.setState(Object.assign(this.state, {
-        name_helper_text: ""
-      }));
+      this.setState(
+        Object.assign(this.state, {
+          name_helper_text: ""
+        })
+      );
     } else if (name.length == 0) {
-      this.setState(Object.assign(this.state, {
-        name_helper_text: "Token name cannot be blank."
-      }));
+      this.setState(
+        Object.assign(this.state, {
+          name_helper_text: "Token name cannot be blank."
+        })
+      );
     } else {
-      this.setState(Object.assign(this.state, {
-        name_helper_text:
-          "Token name may only contain letters, numbers and underscores."
-      }));
+      this.setState(
+        Object.assign(this.state, {
+          name_helper_text:
+            "Token name may only contain letters, numbers and underscores."
+        })
+      );
     }
     this.setState({ name: event.target.value });
   };
@@ -172,6 +187,7 @@ class TokenDetails extends React.Component {
 
     return (
       <React.Fragment>
+        <div ref={this.nameRef} />
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">
             Token Name
@@ -186,7 +202,7 @@ class TokenDetails extends React.Component {
             value={name}
             onChange={this.handleNameChange}
             margin="normal"
-            error={this.state.name_helper_text}
+            error={this.state.name_helper_text !== ""}
             helperText={this.state.name_helper_text}
           />
         </Grid>
@@ -196,16 +212,22 @@ class TokenDetails extends React.Component {
           </Typography>
         </Grid>
         <Divider />
-        <Grid item xs={12}>
+        <Grid item xs>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DateTimePicker
               value={expiry}
               onChange={this.handleDateChange}
               disablePast={true}
               maxDate={latest_expiry}
+              format="yyyy/MM/dd HH:mm:ss"
+              ampm={false}
+              margin="normal"
+              helperText={new Date().toTimeString().slice(9)} // Display the timezone
             />
           </MuiPickersUtilsProvider>
         </Grid>
+
+        <Divider />
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">
             API Permissions

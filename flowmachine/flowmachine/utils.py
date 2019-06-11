@@ -204,7 +204,7 @@ def time_period_add(date, n, unit="days"):
         return date_string
 
 
-def get_dist_string(lon1, lat1, lon2, lat2):
+def get_dist_query_string(*, lon1, lat1, lon2, lat2):
     """
     function for getting the distance
     query string between two lon-lat points.

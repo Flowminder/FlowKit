@@ -56,7 +56,14 @@ class ServerAdminDetails extends React.Component {
       maxlife_helper_text
     } = this.state;
     const { item_id, onClick } = this.props;
-    if (name && name_helper_text === "" && secret_key && key_helper_text === "" && max_life && maxlife_helper_text === "") {
+    if (
+      name &&
+      name_helper_text === "" &&
+      secret_key &&
+      key_helper_text === "" &&
+      max_life &&
+      maxlife_helper_text === ""
+    ) {
       var task;
       if (edit_mode) {
         task = editServer(
@@ -85,7 +92,7 @@ class ServerAdminDetails extends React.Component {
           if (err.code === 400) {
             this.setState({ pageError: true, errors: err });
           } else {
-            this.setState({ hasError: true, error: err })
+            this.setState({ hasError: true, error: err });
           }
         });
     }
@@ -149,7 +156,8 @@ class ServerAdminDetails extends React.Component {
         });
       } else if (!servername.match(letters)) {
         state = Object.assign(state, {
-          name_helper_text: "Server name may only contain letters, numbers and underscores."
+          name_helper_text:
+            "Server name may only contain letters, numbers and underscores."
         });
       } else {
         state = Object.assign(state, {
@@ -169,8 +177,7 @@ class ServerAdminDetails extends React.Component {
         state = Object.assign(state, {
           key_helper_text: "Secret key can not be blank."
         });
-      }
-      else {
+      } else {
         state = Object.assign(state, {
           key_helper_text: "Secret key can not contain space."
         });
@@ -189,7 +196,7 @@ class ServerAdminDetails extends React.Component {
       }
     }
     this.setState(state);
-  }
+  };
 
   componentDidMount() {
     const { item_id } = this.props;
@@ -258,7 +265,7 @@ class ServerAdminDetails extends React.Component {
             margin="normal"
             required={true}
             error={this.state.name_helper_text}
-            helperText={(this.state.name_helper_text)}
+            helperText={this.state.name_helper_text}
           />
         </Grid>
         <Grid item xs={6}>
