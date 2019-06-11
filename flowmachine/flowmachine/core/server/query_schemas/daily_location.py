@@ -7,7 +7,8 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features import daily_location
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit, SubscriberSubset
+from .custom_fields import SubscriberSubset
+from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 
@@ -44,7 +45,7 @@ class DailyLocationExposed(BaseExposedQuery):
         """
         return daily_location(
             date=self.date,
-            level=self.aggregation_unit,
+            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             method=self.method,
             subscriber_subset=self.subscriber_subset,
         )

@@ -9,16 +9,6 @@ from marshmallow import fields
 from marshmallow.validate import Range, Length, OneOf
 
 
-class AggregationUnit(fields.String):
-    """
-    A string representing an aggregation unit (for example: "admin0", "admin1", "admin2", ...)
-    """
-
-    def __init__(self, required=True, **kwargs):
-        validate = OneOf(["admin0", "admin1", "admin2", "admin3"])
-        super().__init__(required=required, validate=validate, **kwargs)
-
-
 class EventTypes(fields.List):
     """
     A string representing an event type, for example "calls", "sms", "mds", "topups".

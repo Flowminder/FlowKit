@@ -9,7 +9,7 @@ from marshmallow_oneofschema import OneOfSchema
 from flowmachine.features import AggregateNetworkObjects
 from .base_exposed_query import BaseExposedQuery
 from .total_network_objects import TotalNetworkObjectsSchema, TotalNetworkObjectsExposed
-from .custom_fields import AggregationUnit, Statistic, AggregateBy
+from .custom_fields import Statistic, AggregateBy
 
 __all__ = ["AggregateNetworkObjectsSchema", "AggregateNetworkObjectsExposed"]
 

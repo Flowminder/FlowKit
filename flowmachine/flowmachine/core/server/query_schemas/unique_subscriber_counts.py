@@ -7,7 +7,7 @@ from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import UniqueSubscriberCounts
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit
+from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["UniqueSubscriberCountsSchema", "UniqueSubscriberCountsExposed"]
 
@@ -41,5 +41,7 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
         Query
         """
         return UniqueSubscriberCounts(
-            start=self.start_date, stop=self.end_date, level=self.aggregation_unit
+            start=self.start_date,
+            stop=self.end_date,
+            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
         )

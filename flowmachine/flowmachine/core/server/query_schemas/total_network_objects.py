@@ -8,7 +8,8 @@ from marshmallow.validate import OneOf, Length
 from flowmachine.features import TotalNetworkObjects
 from flowmachine.features.network.total_network_objects import valid_periods
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit, TotalBy
+from .custom_fields import TotalBy
+from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
 
@@ -46,6 +47,6 @@ class TotalNetworkObjectsExposed(BaseExposedQuery):
         return TotalNetworkObjects(
             start=self.start_date,
             stop=self.end_date,
-            level=self.aggregation_unit,
+            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             total_by=self.total_by,
         )

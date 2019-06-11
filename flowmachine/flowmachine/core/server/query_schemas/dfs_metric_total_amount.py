@@ -7,7 +7,8 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features.dfs import DFSTotalMetricAmount
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit, DFSMetric
+from .custom_fields import DFSMetric
+from .aggregation_unit import AggregationUnit
 
 __all__ = ["DFSTotalMetricAmountSchema", "DFSTotalMetricAmountExposed"]
 
@@ -46,5 +47,5 @@ class DFSTotalMetricAmountExposed(BaseExposedQuery):
             metric=self.metric,
             start_date=self.start_date,
             end_date=self.end_date,
-            aggregation_unit=self.aggregation_unit,
+            aggregation_unit=self.aggregation_unit.as_string,
         )
