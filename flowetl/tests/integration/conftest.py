@@ -40,7 +40,7 @@ def docker_client():
 
 
 @pytest.fixture(scope="session")
-def docker_APIClient():
+def docker_api_client():
     """
     docker APIClient object - needed to inspect containers
     """
@@ -175,7 +175,7 @@ def pull_docker_images(docker_client, tag):
 @pytest.fixture(scope="function")
 def flowdb_container(
     docker_client,
-    docker_APIClient,
+    docker_api_client,
     tag,
     container_env,
     container_ports,
@@ -203,7 +203,7 @@ def flowdb_container(
 
     healthy = False
     while not healthy:
-        container_info = docker_APIClient.inspect_container(container.id)
+        container_info = docker_api_client.inspect_container(container.id)
         healthy = container_info["State"]["Health"]["Status"] == "healthy"
 
     yield
