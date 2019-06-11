@@ -47,8 +47,8 @@ class TokenDetails extends React.Component {
     isPermissionChecked: true,
     isAggregationChecked: true,
     permissionIntermidiate: false,
-    aggregateIntermidiate: false,
-    totalAggrigateunits: 0,
+    aggregateIndeterminate: false,
+    totalAggregateunits: 0,
     pageError: false,
     errors: { message: "" }
   };
@@ -89,29 +89,24 @@ class TokenDetails extends React.Component {
 
   handleChange = (claim, right) => event => {
     this.setState({ pageError: false, errors: "" });
-    var rights = this.state.rights;
-    rights[claim] = Object.assign({}, rights[claim]);
+    const { rights } = this.state;
+
     rights[claim].permissions[right] = event.target.checked;
-    var permissionList = [];
+    const permissionSet = new Set();
     for (const keys in rights) {
       for (const key in rights[keys].permissions) {
-        permissionList.push(rights[keys].permissions[key]);
+        permissionSet.add(rights[keys].permissions[key]);
       }
     }
-    var intermediate = permissionList.filter(list => list == false);
-    if (intermediate.length > 0) {
-      this.state.permissionIntermidiate = true;
-    } else {
-      this.state.permissionIntermidiate = false;
-    }
-    this.setState(Object.assign(this.state, { rights: rights }));
+    const indeterminate = permissionSet.size > 1;
+
+    this.setState({ rights: rights, permissionIntermidiate: indeterminate });
   };
   scrollToRef = ref => ref.current.scrollIntoView();
 
   handleAggUnitChange = (claim_id, claim, unit) => event => {
     this.setState({ pageError: false, errors: "" });
-    var rights = this.state.rights;
-    rights[claim] = Object.assign({}, rights[claim]);
+    const { rights, totalAggregateunits } = this.state;
     if (event.target.checked) {
       rights[claim].spatial_aggregation.push(unit);
     } else {
@@ -120,32 +115,31 @@ class TokenDetails extends React.Component {
       ].spatial_aggregation.filter(u => u != unit);
     }
     console.log(rights);
-    var listUnits = [];
+    const listUnits = [];
     for (const key in rights) {
       for (const keys in rights[key].spatial_aggregation) {
         listUnits.push(keys);
       }
     }
-    if (this.state.totalAggrigateunits != listUnits.length) {
-      this.state.aggregateIntermidiate = true;
-    } else {
-      this.state.aggregateIntermidiate = false;
-    }
 
-    this.setState({ rights: rights });
+    this.setState({
+      rights: rights,
+      aggregateIndeterminate: totalAggregateunits != listUnits.length
+    });
   };
   handlePermissionCheckbox = event => {
-    this.setState({ pageError: false, errors: "" });
     event.stopPropagation();
+    this.setState({ pageError: false, errors: "" });
     const { rights } = this.state;
+    const toCheck = event.target.checked;
     for (const keys in rights) {
       for (const key in rights[keys].permissions) {
-        rights[keys].permissions[key] = this.state.isPermissionChecked;
+        rights[keys].permissions[key] = toCheck;
       }
     }
     this.setState({
       rights: rights,
-      isPermissionChecked: !this.state.isPermissionChecked,
+      isPermissionChecked: toCheck,
       permissionIntermidiate: false
     });
   };
@@ -153,16 +147,22 @@ class TokenDetails extends React.Component {
     this.setState({ pageError: false, errors: "" });
     event.stopPropagation();
     var listUnits = [];
-    var rights = this.state.rights;
+    const { rights, permitted } = this.state;
     for (const key in rights) {
+      if (event.target.checked) {
+        rights[key].spatial_aggregation = permitted[key].spatial_aggregation;
+      } else {
+        rights[key].spatial_aggregation = [];
+      }
       for (const keys in rights[key].spatial_aggregation) {
         listUnits.push(keys);
       }
     }
     this.setState({
-      isAggregationChecked: !this.state.isAggregationChecked,
-      aggregateIntermidiate: false,
-      totalAggrigateunits: listUnits.length
+      rights: rights,
+      isAggregationChecked: event.target.checked,
+      aggregateIndeterminate: false,
+      totalAggregateunits: listUnits.length
     });
   };
   handleNameChange = event => {
@@ -199,11 +199,18 @@ class TokenDetails extends React.Component {
   componentDidMount() {
     getMyRightsForServer(this.props.serverID)
       .then(json => {
+        const listUnits = [];
+        for (const key in json.allowed_claims) {
+          for (const keys in json.allowed_claims[key].spatial_aggregation) {
+            listUnits.push(keys);
+          }
+        }
         this.setState({
           rights: JSON.parse(JSON.stringify(json.allowed_claims || {})),
           permitted: json.allowed_claims || {},
           expiry: json.latest_expiry,
-          latest_expiry: json.latest_expiry
+          latest_expiry: json.latest_expiry,
+          totalAggregateunits: listUnits.length
         });
       })
       .catch(err => {
@@ -246,7 +253,6 @@ class TokenDetails extends React.Component {
         <ServerAggregationUnits
           units={rights[key].spatial_aggregation}
           claim={key}
-          ischecked={!isAggregationChecked}
           checkedHandler={this.handleAggUnitChange}
           permitted={this.isAggUnitPermitted}
         />,
@@ -269,7 +275,15 @@ class TokenDetails extends React.Component {
   render() {
     if (this.state.hasError) throw this.state.error;
 
-    const { expiry, latest_expiry, name, aggregateIntermidiate } = this.state;
+    const {
+      expiry,
+      latest_expiry,
+      name,
+      aggregateIndeterminate,
+      isAggregationChecked,
+      isPermissionChecked,
+      permissionIntermidiate
+    } = this.state;
     const { classes, onClick } = this.props;
 
     return (
@@ -316,31 +330,14 @@ class TokenDetails extends React.Component {
         <Grid item xl={12}>
           <ExpansionPanel>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon id="api-exp" />}>
-              {this.state.permissionIntermidiate ? (
-                <Checkbox
-                  id="permissions"
-                  indeterminate
-                  value="checkedB"
-                  color="primary"
-                  onClick={this.handlePermissionCheckbox}
-                />
-              ) : this.state.isPermissionChecked == true &&
-                this.state.permissionIntermidiate == false ? (
-                <Checkbox
-                  id="permissions"
-                  value="checkedB"
-                  color="primary"
-                  onClick={this.handlePermissionCheckbox}
-                />
-              ) : this.state.isPermissionChecked == false &&
-                this.state.permissionIntermidiate == false ? (
-                <Checkbox
-                  id="permissions"
-                  value="checkedB"
-                  color="primary"
-                  onClick={this.handlePermissionCheckbox}
-                />
-              ) : null}
+              <Checkbox
+                checked={isPermissionChecked}
+                indeterminate={permissionIntermidiate}
+                id="permissions"
+                value="checkedB"
+                color="primary"
+                onClick={this.handlePermissionCheckbox}
+              />
 
               <Grid item xs={2}>
                 <Typography
@@ -361,22 +358,14 @@ class TokenDetails extends React.Component {
             <ExpansionPanelSummary
               expandIcon={<ExpandMoreIcon id="unit-exp" />}
             >
-              {aggregateIntermidiate ? (
-                <Checkbox
-                  id="units"
-                  indeterminate
-                  value="checkedB"
-                  color="primary"
-                  onClick={this.handleAggregationCheckbox}
-                />
-              ) : (
-                <Checkbox
-                  id="units"
-                  value="checkedB"
-                  color="primary"
-                  onClick={this.handleAggregationCheckbox}
-                />
-              )}
+              <Checkbox
+                id="units"
+                checked={isAggregationChecked}
+                indeterminate={aggregateIndeterminate}
+                value="checkedB"
+                color="primary"
+                onClick={this.handleAggregationCheckbox}
+              />
 
               <Grid item xs={3}>
                 <Typography
