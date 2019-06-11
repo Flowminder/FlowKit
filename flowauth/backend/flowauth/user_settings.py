@@ -119,3 +119,26 @@ def reset_backup_codes():
     """
     new_codes = TwoFactorBackup.generate(current_user.id)
     return jsonify(new_codes), 200
+
+
+@blueprint.route("/two_factor_required")
+@login_required
+def is_two_factor_required():
+    """
+    Check if (for this user), two factor authentication is required.
+    """
+    return jsonify({"require_two_factor": current_user.require_two_factor})
+
+
+@blueprint.route("/two_factor_active")
+@login_required
+def is_two_factor_active():
+    """
+    Check if (for this user), two factor authentication is activated.
+    """
+    return jsonify(
+        {
+            "two_factor_active": current_user.two_factor_auth
+            and current_user.two_factor_auth.enabled
+        }
+    )
