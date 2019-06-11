@@ -24,6 +24,8 @@ from docker.types import Mount
 from shutil import rmtree
 
 here = os.path.dirname(os.path.abspath(__file__))
+logger = logging.getLogger("flowetl-tests")
+logger.setLevel("INFO")
 
 
 @pytest.fixture(scope="session")
@@ -165,11 +167,11 @@ def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
 
 @pytest.fixture(scope="session", autouse=True)
 def pull_docker_images(docker_client, tag):
-    print("[DDD] Pulling docker images...")
+    logger.info(f"Pulling docker images (tag='{tag}')...")
     docker_client.images.pull("postgres", tag="11.0")
     docker_client.images.pull("flowminder/flowdb", tag=tag)
     docker_client.images.pull("flowminder/flowetl", tag=tag)
-    print("[DDD] Done pulling docker images.")
+    print("Done pulling docker images.")
 
 
 @pytest.fixture(scope="function")
@@ -501,7 +503,7 @@ def flowetl_db_connection_engine(container_env, container_ports):
     Engine for flowetl_db
     """
     conn_str = f"postgresql://{container_env['flowetl_db']['POSTGRES_USER']}:{container_env['flowetl_db']['POSTGRES_PASSWORD']}@localhost:{container_ports['flowetl_db']}/{container_env['flowetl_db']['POSTGRES_DB']}"
-    logging.info(conn_str)
+    logger.info(conn_str)
     engine = create_engine(conn_str)
 
     return engine
