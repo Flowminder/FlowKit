@@ -207,13 +207,19 @@ class CellSpatialUnit(SpatialUnitMixin):
 
     _locid_cols = ("location_id",)
 
+    def __repr__(self):
+        # Define this so that str(CellSpatialUnit()) will always return the
+        # same string (otherwise 2 identical queries with different instances
+        # of this spatial unit will have different query_ids).
+        return self.__class__.__name__ + "()"
+
     def __eq__(self, other):
         return isinstance(other, CellSpatialUnit)
 
     def __hash__(self):
         # We may never need CellSpatialUnits to be hashable, but we define this
         # just in case.
-        return hash(self.__class__.__name__)
+        return hash(str(self))
 
 
 class GeomSpatialUnit(SpatialUnitMixin, Query):
