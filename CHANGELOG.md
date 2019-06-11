@@ -9,10 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - The dev provisioning Ansible playbook now automatically generates an SSH key pair for the `flowkit` user. [#892](https://github.com/Flowminder/FlowKit/issues/892)
+- Added new classes to represent spatial units in FlowMachine.
+- Added a `Geography` query class, to get geography data for a spatial unit.
 
 ### Changed
 
 - The quick-start script now only pulls the docker images for the services that are actually started up. [#898](https://github.com/Flowminder/FlowKit/issues/898)
+- Location-related FlowMachine queries now take a `spatial_unit` parameter instead of `level`.
 
 ### Fixed
 
@@ -20,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Distances in `Displacement` are now calculated with longitude and latitude the corrcet way around. [#913](https://github.com/Flowminder/FlowKit/issues/913)
 
 ### Removed
+- Removed `cell_mappings.py`, `get_columns_for_level` and `BadLevelError`.
 
 ## [0.6.4]
 
