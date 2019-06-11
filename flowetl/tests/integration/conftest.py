@@ -163,6 +163,15 @@ def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
     return {"flowetl": flowetl_mounts, "flowdb": flowdb_mounts}
 
 
+@pytest.fixture(scope="session", autouse=True)
+def pull_docker_images(docker_client, tag):
+    print("[DDD] Pulling docker images...")
+    docker_client.images.pull("postgres", tag="11.0")
+    docker_client.images.pull("flowminder/flowdb", tag=tag)
+    docker_client.images.pull("flowminder/flowetl", tag=tag)
+    print("[DDD] Done pulling docker images.")
+
+
 @pytest.fixture(scope="function")
 def flowdb_container(
     docker_client,
