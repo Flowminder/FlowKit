@@ -5,7 +5,7 @@
 from marshmallow import Schema, post_load, fields
 from marshmallow.validate import OneOf
 
-from flowmachine.core import CustomQuery
+from flowmachine.features import Geography
 from .base_exposed_query import BaseExposedQuery
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
@@ -36,8 +36,4 @@ class GeographyExposed(BaseExposedQuery):
         -------
         Query
         """
-        spatial_unit = get_spatial_unit_obj(self.aggregation_unit)
-        return CustomQuery(
-            sql=spatial_unit.get_geom_query(),
-            column_names=spatial_unit.location_id_columns + ["geom"],
-        )
+        return Geography(get_spatial_unit_obj(self.aggregation_unit))

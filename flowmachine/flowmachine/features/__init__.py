@@ -80,6 +80,7 @@ spat = [
     "LocationArea",
     "LocationCluster",
     "DistanceMatrix",
+    "Geography",
     "VersionedInfrastructure",
     "Grid",
     "Circle",
