@@ -3,18 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import { QRCode } from "react-qr-svg";
 import ErrorDialog from "./ErrorDialog";
-import { startTwoFactorSetup, confirmTwoFactor } from "./util/api";
-import Button from "@material-ui/core/Button";
+import { startTwoFactorSetup } from "./util/api";
 import Paper from "@material-ui/core/Paper";
 import PropTypes from "prop-types";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import LockIcon from "@material-ui/icons/Lock";
-import LockOpenIcon from "@material-ui/icons/LockOpen";
 import { withStyles } from "@material-ui/core/styles";
 import BackupCodes from "./BackupCodes";
 import TwoFactorActivate from "./TwoFactorActivate";
@@ -67,20 +59,26 @@ class TwoFactorConfirm extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, finish, cancel } = this.props;
     if (this.state.hasError) throw this.state.error;
 
     const { provisioning_url, confirming } = this.state;
     return (
-      <Paper>
-        {confirming && (
-          <TwoFactorActivate
-            cancel={this.backstep}
-            provisioning_url={provisioning_url}
-          />
+      <Paper className={classes.paper}>
+        {provisioning_url !== "" && (
+          <>
+            {confirming && (
+              <TwoFactorActivate
+                cancel={this.backstep}
+                finish={finish}
+                provisioning_url={provisioning_url}
+              />
+            )}
+            {!confirming && (
+              <BackupCodes advance={this.advance} cancel={cancel} />
+            )}{" "}
+          </>
         )}
-
-        {!confirming && <BackupCodes advance={this.advance} />}
         <ErrorDialog
           open={this.state.pageError}
           message={this.state.errors.message}

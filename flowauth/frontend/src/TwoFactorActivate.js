@@ -14,6 +14,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import LockIcon from "@material-ui/icons/Lock";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import { withStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 
 const styles = theme => ({
   button: {
@@ -34,10 +35,14 @@ class TwoFactorActivate extends React.Component {
   };
 
   confirm = async () => {
+    const { finish } = this.props;
     this.setState({ activating: true, pageError: false });
     const json = confirmTwoFactor(this.state.two_factor_code);
     try {
       this.setState(await json);
+      if ((await json).two_factor_enabled && finish) {
+        finish();
+      }
     } catch (err) {
       this.setState({ errors: err });
       this.setState({ pageError: true });
@@ -58,7 +63,13 @@ class TwoFactorActivate extends React.Component {
         justify="center"
         alignItems="center"
       >
-        <Grid item xs={5}>
+        <Grid item xs={8}>
+          <Typography>
+            Scan the code below using your authenticator app, and enter the code
+            it generates in the box below to complete setup.
+          </Typography>
+        </Grid>
+        <Grid item xs={8}>
           <QRCode
             bgColor="#FFFFFF"
             fgColor="#000000"
@@ -68,7 +79,7 @@ class TwoFactorActivate extends React.Component {
           />
         </Grid>
 
-        <Grid item xs={2}>
+        <Grid item xs={8}>
           <TextField
             id="auth_code"
             label="Authorisation Code"
@@ -78,7 +89,7 @@ class TwoFactorActivate extends React.Component {
             variant="outlined"
           />
         </Grid>
-        <Grid item xs={12} container justify="space-between">
+        <Grid item xs={8} container justify="space-between">
           <Grid item xs={2}>
             <div className={classes.wrapper}>
               <Button

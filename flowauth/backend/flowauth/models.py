@@ -99,6 +99,7 @@ class User(db.Model):
         cascade="all, delete, delete-orphan",
         uselist=False,
     )
+    require_two_factor = db.Column(db.Boolean, default=True)
 
     def is_authenticated(self):
         return True

@@ -36,7 +36,16 @@ def signin():
                 current_app._get_current_object(), identity=Identity(user.id)
             )
             session.modified = True
-            return jsonify({"logged_in": True, "is_admin": user.is_admin})
+            return jsonify(
+                {
+                    "logged_in": True,
+                    "is_admin": user.is_admin,
+                    "require_two_factor_setup": (
+                        user.two_factor_auth is None or not user.two_factor_auth.enabled
+                    )
+                    and user.require_two_factor,
+                }
+            )
     current_app.logger.debug(f"{json['username']} failed to log in.")
     raise Unauthorized("Incorrect username or password.")
 
@@ -44,7 +53,16 @@ def signin():
 @blueprint.route("/is_signed_in")
 @login_required
 def is_signed_in():
-    return jsonify({"logged_in": True, "is_admin": current_user.is_admin})
+    return jsonify(
+        {
+            "logged_in": True,
+            "is_admin": current_user.is_admin,
+            "require_two_factor_setup": (
+                current_user.two_factor_auth is None
+                or not current_user.two_factor_auth.enabled
+            ),
+        }
+    )
 
 
 @blueprint.route("/signout")

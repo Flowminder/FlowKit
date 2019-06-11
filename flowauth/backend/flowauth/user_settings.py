@@ -56,7 +56,7 @@ def set_password():
 @login_required
 def enable_two_factor():
     """
-    Switch two factor auth off for the currently logged in user.
+    Switch two factor auth on for the currently logged in user.
     """
     secret = pyotp.random_base32()
     provisioning_url = pyotp.totp.TOTP(secret).provisioning_uri(

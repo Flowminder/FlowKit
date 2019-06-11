@@ -86,9 +86,19 @@ class BackupCodes extends React.Component {
           </>
         )) || (
           <>
+            <Grid item xs={5}>
+              <Typography>Backup codes</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography>
+                Make sure to note these down - each code will grant you _one_
+                access to your account if your authenticator device is not
+                available.
+              </Typography>
+            </Grid>
             <BackupCodesBlock backup_codes={backup_codes} />
 
-            <Grid item xs={5}>
+            <Grid item xs={12}>
               <Button
                 type="submit"
                 variant="contained"
@@ -108,7 +118,7 @@ class BackupCodes extends React.Component {
               </Button>
             </Grid>
 
-            <Grid item xs={12} container justify="space-between">
+            <Grid item xs={8} container justify="space-between">
               <Grid item xs={2}>
                 <Button
                   type="submit"
