@@ -50,7 +50,7 @@ def docker_api_client():
 
 
 @pytest.fixture(scope="session")
-def tag():
+def container_tag():
     """
     Get tag to use for containers
     """
@@ -166,11 +166,11 @@ def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def pull_docker_images(docker_client, tag):
-    logger.info(f"Pulling docker images (tag='{tag}')...")
+def pull_docker_images(docker_client, container_tag):
+    logger.info(f"Pulling docker images (tag='{container_tag}')...")
     docker_client.images.pull("postgres", tag="11.0")
-    docker_client.images.pull("flowminder/flowdb", tag=tag)
-    docker_client.images.pull("flowminder/flowetl", tag=tag)
+    docker_client.images.pull("flowminder/flowdb", tag=container_tag)
+    docker_client.images.pull("flowminder/flowetl", tag=container_tag)
     print("Done pulling docker images.")
 
 
@@ -178,7 +178,7 @@ def pull_docker_images(docker_client, tag):
 def flowdb_container(
     docker_client,
     docker_api_client,
-    tag,
+    container_tag,
     container_env,
     container_ports,
     container_network,
@@ -192,7 +192,7 @@ def flowdb_container(
     """
     user = f"{os.getuid()}:{os.getgid()}"
     container = docker_client.containers.run(
-        f"flowminder/flowdb:{tag}",
+        f"flowminder/flowdb:{container_tag}",
         environment=container_env["flowdb"],
         ports={"5432": container_ports["flowdb"]},
         name="flowdb",
@@ -238,7 +238,7 @@ def flowetl_container(
     flowdb_container,
     flowetl_db_container,
     docker_client,
-    tag,
+    container_tag,
     container_env,
     container_network,
     mounts,
@@ -251,7 +251,7 @@ def flowetl_container(
     """
     user = f"{os.getuid()}:{os.getgid()}"
     container = docker_client.containers.run(
-        f"flowminder/flowetl:{tag}",
+        f"flowminder/flowetl:{container_tag}",
         environment=container_env["flowetl"],
         name="flowetl",
         network="testing",
