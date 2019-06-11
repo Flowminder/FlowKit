@@ -112,7 +112,7 @@ def container_network(docker_client):
 
 
 @pytest.fixture(scope="function")
-def data_dir():
+def postgres_data_dir_for_tests():
     """
     Creates and cleans up a directory for storing pg data.
     Used by Flowdb because on unix changing flowdb user is
@@ -126,7 +126,7 @@ def data_dir():
 
 
 @pytest.fixture(scope="function")
-def mounts(data_dir):
+def mounts(postgres_data_dir_for_tests):
     """
     Various mount objects needed by containers
     """
@@ -147,7 +147,9 @@ def mounts(data_dir):
         quarantine_mount,
     ]
 
-    data_mount = Mount("/var/lib/postgresql/data", data_dir, type="bind")
+    data_mount = Mount(
+        "/var/lib/postgresql/data", postgres_data_dir_for_tests, type="bind"
+    )
     ingest_mount = Mount("/ingest", f"{os.getcwd()}/mounts/ingest", type="bind")
     flowdb_mounts = [data_mount, ingest_mount]
 
