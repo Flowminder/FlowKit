@@ -19,7 +19,7 @@ from subprocess import DEVNULL, Popen
 from pendulum import now, Interval
 from airflow.models import DagRun
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker
 from docker.types import Mount
 from shutil import rmtree
 
