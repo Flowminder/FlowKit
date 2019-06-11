@@ -42,7 +42,7 @@
       ]
     }
   },
-  "d87422eb50797c91bbd00b8af93a72aa": {
+  "07784743904211f6ad33c26c668df5d0": {
     "query_kind": "geography",
     "aggregation_unit": "admin3"
   },
