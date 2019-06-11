@@ -9,10 +9,10 @@ plugins:
       modules:
         flowmachine:
           section: flowmachine
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowmachine"
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine"
         flowclient:
           section: flowclient
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowclient"
   - mknotebooks:
       execute: true
       preamble: "notebook_preamble.py"
