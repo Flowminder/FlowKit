@@ -732,6 +732,8 @@ def edit_user(user_id):
             )
         else:
             user.is_admin = edits["is_admin"]
+    if "require_two_factor" in edits:
+        user.require_two_factor = edits["require_two_factor"]
     db.session.add(user)
     db.session.commit()
     return jsonify({"id": user.id, "group_id": user_group.id})
@@ -762,6 +764,7 @@ def user_details(user_id):
             "is_admin": user.is_admin,
             "has_two_factor": user.two_factor_auth is not None
             and user.two_factor_auth.enabled,
+            "require_two_factor": user.require_two_factor,
             "groups": [{"id": group.id, "name": group.name} for group in user.groups],
             "servers": [
                 {

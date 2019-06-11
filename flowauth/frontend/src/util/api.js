@@ -75,13 +75,20 @@ export async function editPassword(oldPassword, newPassword) {
   return await getResponse("/user/password", dat);
 }
 
-export async function editUser(user_id, username, password, is_admin) {
+export async function editUser(
+  user_id,
+  username,
+  password,
+  is_admin,
+  require_two_factor
+) {
   var dat = {
     method: "PATCH",
     body: JSON.stringify({
       username: username,
       password: password,
-      is_admin: is_admin
+      is_admin: is_admin,
+      require_two_factor: require_two_factor
     })
   };
   return await getResponse("/admin/users/" + user_id, dat);
@@ -197,13 +204,19 @@ export async function getTimeLimits(server_id) {
   );
 }
 
-export async function createUser(username, password, is_admin) {
+export async function createUser(
+  username,
+  password,
+  is_admin,
+  require_two_factor
+) {
   var dat = {
     method: "POST",
     body: JSON.stringify({
       username: username,
       password: password,
-      is_admin: is_admin
+      is_admin: is_admin,
+      require_two_factor: require_two_factor
     })
   };
   return await getResponse("/admin/users", dat);

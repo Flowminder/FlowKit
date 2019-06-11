@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import BackupCodes from "./BackupCodes";
 import TwoFactorActivate from "./TwoFactorActivate";
+import { Typography } from "@material-ui/core";
 
 const styles = theme => ({
   button: {
@@ -65,6 +66,10 @@ class TwoFactorConfirm extends React.Component {
     const { provisioning_url, confirming } = this.state;
     return (
       <Paper className={classes.paper}>
+        <Typography variant="h5" component="h1">
+          Two-factor authentication setup
+        </Typography>
+        <br />
         {provisioning_url !== "" && (
           <>
             {confirming && (

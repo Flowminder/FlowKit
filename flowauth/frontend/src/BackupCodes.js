@@ -91,9 +91,9 @@ class BackupCodes extends React.Component {
             </Grid>
             <Grid item xs={12}>
               <Typography>
-                Make sure to note these down - each code will grant you _one_
-                access to your account if your authenticator device is not
-                available.
+                Make sure to note these down - each code will grant you access
+                to your account <em>once</em> if your authenticator device is
+                not available.
               </Typography>
             </Grid>
             <BackupCodesBlock backup_codes={backup_codes} />
