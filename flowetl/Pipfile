@@ -12,6 +12,7 @@ docker = "*"
 ipython = "*"
 etl = {editable = true,path = "./etl"}
 pytest-cov = "*"
+structlog = "*"
 
 [packages]
 
