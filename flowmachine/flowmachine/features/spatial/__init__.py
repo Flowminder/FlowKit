@@ -7,6 +7,7 @@ Utilities for working with spatial datasets in FlowMachine.
 """
 from .location_area import LocationArea
 from .distance_matrix import DistanceMatrix
+from .geography import Geography
 from .location_cluster import LocationCluster
 from .versioned_infrastructure import VersionedInfrastructure
 from .circles import Circle, CircleGeometries
@@ -14,6 +15,7 @@ from .circles import Circle, CircleGeometries
 __all__ = [
     "LocationArea",
     "DistanceMatrix",
+    "Geography",
     "LocationCluster",
     "VersionedInfrastructure",
     "Circle",
