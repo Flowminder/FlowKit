@@ -624,7 +624,7 @@ jobs:
       image: circleci/classic:201808-01
     working_directory: /home/circleci/project
     environment:
-      BRANCH: $CIRCLE_BRANCH
+      GIT_REVISION: $CIRCLE_SHA1
     steps:
       - checkout:
           path: /home/circleci/project/
