@@ -311,6 +311,19 @@ def write_files_to_dump(flowetl_mounts_dir):
     [file.unlink() for file in files_to_remove]
 
 
+@pytest.fixture(scope="session", autouse=True)
+def ensure_required_env_vars_are_set():
+    if "AIRFLOW_HOME" not in os.environ:
+        raise RuntimeError(
+            "Must set environment variable AIRFLOW_HOME to run the flowetl tests."
+        )
+
+    if "true" != os.getenv("TESTING", "false").lower():
+        raise RuntimeError(
+            "Must set environment variable TESTING='true' to run the flowetl tests."
+        )
+
+
 @pytest.fixture(scope="module")
 def airflow_local_setup():
     """
