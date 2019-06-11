@@ -307,9 +307,9 @@ def airflow_local_setup():
     }
     env = {**os.environ, **extra_env}
     # make test Airflow home dir
-    test_airflow_home_dir = os.environ["AIRFLOW_HOME"]
-    if not os.path.exists(test_airflow_home_dir):
-        os.makedirs(test_airflow_home_dir)
+    airflow_home_dir_for_tests = os.environ["AIRFLOW_HOME"]
+    if not os.path.exists(airflow_home_dir_for_tests):
+        os.makedirs(airflow_home_dir_for_tests)
 
     initdb = Popen(
         ["airflow", "initdb"], shell=False, stdout=DEVNULL, stderr=DEVNULL, env=env
@@ -327,7 +327,7 @@ def airflow_local_setup():
 
     scheduler.terminate()
 
-    shutil.rmtree(test_airflow_home_dir)
+    shutil.rmtree(airflow_home_dir_for_tests)
     os.unlink("./scheduler.log")
 
 
@@ -339,11 +339,11 @@ def airflow_local_pipeline_run():
     subsequent trigger of the etl dag.
     """
     scheduler_to_clean_up = None
-    test_airflow_home_dir = None
+    airflow_home_dir_for_tests = None
 
     def run_func(extra_env):
         nonlocal scheduler_to_clean_up
-        nonlocal test_airflow_home_dir
+        nonlocal airflow_home_dir_for_tests
         default_env = {
             "AIRFLOW__CORE__DAGS_FOLDER": "./dags",
             "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
@@ -351,9 +351,9 @@ def airflow_local_pipeline_run():
         env = {**os.environ, **default_env, **extra_env}
 
         # make test Airflow home dir
-        test_airflow_home_dir = os.environ["AIRFLOW_HOME"]
-        if not os.path.exists(test_airflow_home_dir):
-            os.makedirs(test_airflow_home_dir)
+        airflow_home_dir_for_tests = os.environ["AIRFLOW_HOME"]
+        if not os.path.exists(airflow_home_dir_for_tests):
+            os.makedirs(airflow_home_dir_for_tests)
 
         initdb = Popen(
             ["airflow", "initdb"], shell=False, stdout=DEVNULL, stderr=DEVNULL, env=env
@@ -398,7 +398,7 @@ def airflow_local_pipeline_run():
 
     scheduler_to_clean_up.terminate()
 
-    shutil.rmtree(test_airflow_home_dir)
+    shutil.rmtree(airflow_home_dir_for_tests)
     os.unlink("./scheduler.log")
 
 
