@@ -47,5 +47,5 @@ class DFSTotalMetricAmountExposed(BaseExposedQuery):
             metric=self.metric,
             start_date=self.start_date,
             end_date=self.end_date,
-            aggregation_unit=self.aggregation_unit.as_string,
+            aggregation_unit=self.aggregation_unit,
         )

@@ -25,12 +25,5 @@ def get_spatial_unit_obj(aggregation_unit_string):
     """
     if "admin" in aggregation_unit_string:
         level = int(aggregation_unit_string[-1])
-        spatial_unit_args = {
-            "spatial_unit_type": "admin",
-            "level": level,
-            "region_id_column_name": [
-                f"{aggregation_unit_string}name",
-                f"{aggregation_unit_string}pcod",
-            ],
-        }
+        spatial_unit_args = {"spatial_unit_type": "admin", "level": level}
     return make_spatial_unit(**spatial_unit_args)
