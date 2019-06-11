@@ -393,6 +393,7 @@ def airflow_local_pipeline_run():
             stderr=DEVNULL,
             env=env,
         )
+        p.wait()
 
     yield run_func
 
