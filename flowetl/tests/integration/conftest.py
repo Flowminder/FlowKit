@@ -434,21 +434,17 @@ def wait_for_completion():
         # you want to use - need to not pass at all if you want airflow to pick
         # up correct session using it's provide_session decorator...
         if session is None:
-            t0 = now()
-            while len(DagRun.find(dag_id, state=end_state)) != 1:
-                sleep(1)
-                t1 = now()
-                if (t1 - t0) > time_out:
-                    raise TimeoutError
-            return end_state
+            kwargs = {"dag_id": dag_id, "state": end_state}
         else:
-            t0 = now()
-            while len(DagRun.find(dag_id, state=end_state, session=session)) != 1:
-                sleep(1)
-                t1 = now()
-                if (t1 - t0) > time_out:
-                    raise TimeoutError
-            return end_state
+            kwargs = {"dag_id": dag_id, "state": end_state, "session": session}
+
+        t0 = now()
+        while len(DagRun.find(**kwargs)) != 1:
+            sleep(1)
+            t1 = now()
+            if (t1 - t0) > time_out:
+                raise TimeoutError
+        return end_state
 
     return wait_func
 
