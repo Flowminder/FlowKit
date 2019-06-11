@@ -40,10 +40,7 @@ def signin():
                 {
                     "logged_in": True,
                     "is_admin": user.is_admin,
-                    "require_two_factor_setup": (
-                        user.two_factor_auth is None or not user.two_factor_auth.enabled
-                    )
-                    and user.require_two_factor,
+                    "require_two_factor_setup": current_user.two_factor_setup_required,
                 }
             )
     current_app.logger.debug(f"{json['username']} failed to log in.")
@@ -57,10 +54,7 @@ def is_signed_in():
         {
             "logged_in": True,
             "is_admin": current_user.is_admin,
-            "require_two_factor_setup": (
-                current_user.two_factor_auth is None
-                or not current_user.two_factor_auth.enabled
-            ),
+            "require_two_factor_setup": current_user.two_factor_setup_required,
         }
     )
 

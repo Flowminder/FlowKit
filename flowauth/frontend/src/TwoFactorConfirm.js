@@ -65,7 +65,7 @@ class TwoFactorConfirm extends React.Component {
 
     const { provisioning_url, confirming } = this.state;
     return (
-      <Paper className={classes.paper}>
+      <Paper className={classes.root}>
         <Typography variant="h5" component="h1">
           Two-factor authentication setup
         </Typography>

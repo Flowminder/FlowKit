@@ -138,7 +138,7 @@ def is_two_factor_active():
     """
     return jsonify(
         {
-            "two_factor_active": current_user.two_factor_auth
+            "two_factor_enabled": current_user.two_factor_auth
             and current_user.two_factor_auth.enabled
         }
     )

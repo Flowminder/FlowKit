@@ -39,9 +39,6 @@ class AdminMenu extends React.Component {
           <ListItem button onClick={() => onClick("aggregation_unit_admin")}>
             <ListItemText primary="Aggregation Units" />
           </ListItem>
-          <ListItem button onClick={() => onClick("enable_two_factor")}>
-            <ListItemText primary="Two Factor" />
-          </ListItem>
         </List>
       </React.Fragment>
     );

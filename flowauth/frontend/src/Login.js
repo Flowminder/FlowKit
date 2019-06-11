@@ -28,7 +28,7 @@ const styles = theme => ({
       marginRight: "auto"
     }
   },
-  paper: {
+  root: {
     marginTop: theme.spacing.unit * 8,
     display: "flex",
     flexDirection: "column",
@@ -134,7 +134,7 @@ class Login extends React.Component {
         <CssBaseline />
         <main className={classes.layout}>
           {!require_two_factor_setup && (
-            <Paper className={classes.paper}>
+            <Paper className={classes.root}>
               <Avatar
                 className={classes.avatar}
                 src={require("./img/flowminder_logo.png")}

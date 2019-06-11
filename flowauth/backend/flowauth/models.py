@@ -101,6 +101,12 @@ class User(db.Model):
     )
     require_two_factor = db.Column(db.Boolean, default=True)
 
+    @property
+    def two_factor_setup_required(self):
+        return (
+            self.two_factor_auth is None or not self.two_factor_auth.enabled
+        ) and self.require_two_factor
+
     def is_authenticated(self):
         return True
 

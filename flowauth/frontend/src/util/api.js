@@ -375,6 +375,13 @@ export async function confirmTwoFactor(two_factor_code) {
   return await getResponse("/user/confirm_two_factor", dat);
 }
 
+export async function disableTwoFactor() {
+  var dat = {
+    method: "POST"
+  };
+  return await getResponse("/user/disable_two_factor", dat);
+}
+
 export async function isLoggedIn() {
   return await getResponseDefault("/is_signed_in");
 }
