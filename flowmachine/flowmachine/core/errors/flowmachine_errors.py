@@ -84,6 +84,7 @@ class NotConnectedError(Exception):
     def __init__(self):
         Exception.__init__(
             self, "No connection found. Do you need to call flowmachine.connect()?"
+        )
 
 
 class InvalidSpatialUnitError(ValueError):
