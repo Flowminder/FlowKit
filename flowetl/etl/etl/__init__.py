@@ -4,6 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
+import json
 import structlog
 
 
@@ -16,7 +17,7 @@ structlog.configure(
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
-        structlog.processors.JSONRenderer(serializer=rapidjson.dumps),
+        structlog.processors.JSONRenderer(serializer=json.dumps),
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),
     wrapper_class=structlog.stdlib.BoundLogger,
