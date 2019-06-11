@@ -9,7 +9,6 @@ Custom Errors
 from .flowmachine_errors import (
     NameTooLongError,
     NotConnectedError,
-    BadLevelError,
     InvalidSpatialUnitError,
     MissingDateError,
 )
@@ -17,7 +16,6 @@ from .flowmachine_errors import (
 __all__ = [
     "NameTooLongError",
     "NotConnectedError",
-    "BadLevelError",
     "InvalidSpatialUnitError",
     "MissingDateError",
 ]

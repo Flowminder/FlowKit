@@ -82,9 +82,6 @@ spat = [
     "DistanceMatrix",
     "VersionedInfrastructure",
     "Grid",
-    "CellToAdmin",
-    "CellToPolygon",
-    "CellToGrid",
     "Circle",
     "CircleGeometries",
 ]

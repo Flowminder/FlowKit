@@ -84,26 +84,6 @@ class NotConnectedError(Exception):
     def __init__(self):
         Exception.__init__(
             self, "No connection found. Do you need to call flowmachine.connect()?"
-        )
-
-
-class BadLevelError(Exception):
-    """
-    Raised when any class is given an error it does not recognise.
-
-    Parameters
-    ----------
-    level : str
-        The bad level.
-    allowed_levels : list of str, optional
-        List of allowed levels that the user may pass.
-    """
-
-    def __init__(self, level, allowed_levels=None):
-        msg = "Unrecognised level {}".format(level)
-        if allowed_levels is not None:
-            msg += ", level must be one of {}".format(allowed_levels)
-        Exception.__init__(self, msg)
 
 
 class InvalidSpatialUnitError(ValueError):

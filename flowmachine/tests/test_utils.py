@@ -15,7 +15,6 @@ from io import StringIO
 
 from flowmachine.core import CustomQuery
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
-from flowmachine.core.errors import BadLevelError
 from flowmachine.features import daily_location, EventTableSubset
 from flowmachine.utils import *
 from flowmachine.utils import _makesafe
@@ -109,32 +108,6 @@ def test_sql_validation():
     sql = "elect foo from mooses"
     with pytest.raises(pglast.parser.ParseError):
         pretty_sql(sql)
-
-
-@pytest.mark.parametrize(
-    "level, column_name, error",
-    [
-        ("polygon", None, ValueError),
-        ("polygon", 9, TypeError),
-        ("badlevel", None, BadLevelError),
-    ],
-)
-def test_columns_for_level_errors(level, column_name, error):
-    """
-    Test that get_columns_for_level raises correct errors
-    """
-    with pytest.raises(error):
-        get_columns_for_level(level, column_name)
-
-
-def test_column_list():
-    """
-    Test that supplying the column name as a list returns it as a new list.
-    """
-    passed_cols = ["frogs", "dogs"]
-    returned_cols = get_columns_for_level("admin0", passed_cols)
-    assert passed_cols == returned_cols
-    assert id(passed_cols) != id(returned_cols)
 
 
 def test_datestring_parse_error():

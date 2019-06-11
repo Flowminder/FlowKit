@@ -30,40 +30,6 @@ flowkit_toplevel_dir = os.path.join(here, "..", "..")
 
 @pytest.fixture(
     params=[
-        {"level": "admin2"},
-        {"level": "admin2", "column_name": "admin2name"},
-        {"level": "versioned-site"},
-        {"level": "versioned-cell"},
-        {"level": "cell"},
-        {"level": "lat-lon"},
-        {"level": "grid", "size": 5},
-        {
-            "level": "polygon",
-            "column_name": "admin3pcod",
-            "polygon_table": "geography.admin3",
-        },
-    ],
-    ids=lambda x: x["level"],
-)
-def exemplar_level_param(request):
-    """
-    A fixture which yields a succession of plausible default parameter
-    combinations for levels.
-
-    Parameters
-    ----------
-    request
-
-    Yields
-    ------
-    dict
-
-    """
-    yield request.param
-
-
-@pytest.fixture(
-    params=[
         {"spatial_unit_type": "admin", "level": 2},
         {
             "spatial_unit_type": "admin",

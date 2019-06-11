@@ -21,8 +21,6 @@ from psycopg2._psycopg import adapt
 from time import sleep
 from typing import List, Union
 
-from flowmachine.core.errors import BadLevelError
-
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
@@ -48,60 +46,6 @@ def getsecret(key: str, default: str) -> str:
             return fin.read().strip()
     except FileNotFoundError:
         return default
-
-
-def get_columns_for_level(
-    level: str, column_name: Union[str, List[str]] = None
-) -> List[str]:
-    """
-    Get a list of the location related columns
-
-    Parameters
-    ----------
-    level : {'cell', 'versioned-cell', 'versioned-site', 'lat-lon', 'grid', 'adminX'}
-        Level to get location columns for
-    column_name : str, or list of strings, optional
-        name of the column or list of column names. None by default
-        if this is not none then the function trivially returns the
-        column name as a list.
-    Returns
-    -------
-    relevant_columns : list
-        A list of the database columns for this level
-
-    Examples
-    --------
-    >>> get_columns_for_level("admin3") 
-    ['name']
-
-    """
-    if level == "polygon" and not column_name:
-        raise ValueError("Must pass a column name for level=polygon")
-
-    if column_name:
-        if isinstance(column_name, str):
-            relevant_columns = [column_name]
-        elif isinstance(column_name, list):
-            relevant_columns = list(column_name)
-        else:
-            raise TypeError("column name should be a list or a string")
-        return relevant_columns
-
-    if level.startswith("admin"):
-        return ["pcod"]
-
-    returns = {
-        "cell": ["location_id"],
-        "versioned-cell": ["location_id", "version", "lon", "lat"],
-        "versioned-site": ["site_id", "version", "lon", "lat"],
-        "lat-lon": ["lat", "lon"],
-        "grid": ["grid_id"],
-    }
-
-    try:
-        return returns[level]
-    except KeyError:
-        raise BadLevelError(level)
 
 
 def parse_datestring(
