@@ -93,7 +93,7 @@ def test_find_files_default_filter(tmpdir):
     assert set([file.name for file in files]) == set(["A.txt", "B.txt"])
 
 
-def test_find_files_default_filter(tmpdir):
+def test_find_files_non_default_filter(tmpdir):
     """
     Test that find files returns correct files
     with non-default filter argument.
