@@ -168,7 +168,7 @@ commuting_patterns_queries = [
             ),
             label=label,
         ),
-        level="admin3",
+        spatial_unit=admin3_spatial_unit,
     )
     for label in ["home", "work"]
 ] + [
