@@ -30,7 +30,10 @@ def signin():
                         "Must supply a two-factor authentication code.",
                         payload={"need_two_factor": True},
                     )
-                two_factor.validate(json["two_factor_code"])
+                try:
+                    two_factor.validate(json["two_factor_code"])
+                except Unauthorized:
+                    two_factor.validate_backup_code(json["two_factor_code"])
             login_user(user, remember=False)
             identity_changed.send(
                 current_app._get_current_object(), identity=Identity(user.id)

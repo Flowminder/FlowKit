@@ -16,9 +16,15 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { editPassword } from "./util/api";
+import {
+  editPassword,
+  isTwoFactorActive,
+  isTwoFactorRequired,
+  disableTwoFactor
+} from "./util/api";
 import ErrorDialog from "./ErrorDialog";
 import MessageSnackbar from "./MessageSnackbar";
+import TwoFactorConfirm from "./TwoFactorConfirm";
 var zxcvbn = require("zxcvbn");
 
 const styles = theme => ({
@@ -26,6 +32,9 @@ const styles = theme => ({
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
     paddingBottom: theme.spacing.unit * 2
+  },
+  button: {
+    margin: theme.spacing.unit
   }
 });
 
@@ -36,6 +45,9 @@ class UserDetails extends React.Component {
     newPasswordB: "",
     password_strength: null,
     passwordChanged: false,
+    two_factor_enabled: false,
+    require_two_factor: false,
+    two_factor_setup: false,
     hasError: false,
     error: { message: "" }
   };
@@ -82,6 +94,14 @@ class UserDetails extends React.Component {
     }
     this.setState(state);
   };
+  editTwoFactor = () => this.setState({ two_factor_setup: true });
+  finishEditTwoFactor = () => this.setState({ two_factor_setup: false });
+  disableTwoFactor = async () => this.setState(await disableTwoFactor());
+
+  async componentDidMount() {
+    this.setState(await isTwoFactorActive());
+    this.setState(await isTwoFactorRequired());
+  }
 
   render() {
     const { classes } = this.props;
@@ -89,98 +109,146 @@ class UserDetails extends React.Component {
       oldPassword,
       newPasswordA,
       newPasswordB,
-      password_strength
+      password_strength,
+      require_two_factor,
+      two_factor_enabled,
+      two_factor_setup
     } = this.state;
 
-    return (
-      <Paper className={classes.root}>
-        <Grid container spacing={16} alignItems="center">
-          <Grid item xs={12}>
-            <Typography variant="h5" component="h1">
-              Reset password
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <form className={classes.form} onSubmit={this.handleSubmit}>
-              <Grid item xs={3}>
-                <FormControl margin="normal" required fullWidth>
-                  <InputLabel htmlFor="oldPassword">Old Password</InputLabel>
-                  <Input
-                    id="oldPassword"
-                    name="oldPassword"
-                    type="password"
-                    value={oldPassword}
-                    onChange={this.handleTextChange("oldPassword")}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={9} />
-              <Grid item xs={3}>
-                <FormControl margin="normal" required fullWidth>
-                  <InputLabel htmlFor="newPasswordA">New Password</InputLabel>
-                  <Input
-                    id="newPasswordA"
-                    name="newPasswordA"
-                    type="password"
-                    value={newPasswordA}
-                    onChange={this.handleTextChange("newPasswordA")}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        {(password_strength || password_strength === 0) &&
-                          ((password_strength > 3 && <LockIcon />) || (
-                            <LockOpenIcon color="secondary" />
-                          ))}
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={9} />
-              <Grid item xs={3}>
-                <FormControl
-                  margin="normal"
-                  required
-                  fullWidth
-                  error={newPasswordA !== newPasswordB}
-                >
-                  <InputLabel htmlFor="newPasswordB">New Password</InputLabel>
-                  <Input
-                    id="newPasswordB"
-                    name="newPasswordB"
-                    type="password"
-                    value={newPasswordB}
-                    onChange={this.handleTextChange("newPasswordB")}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={9} />
-              <Grid item xs={12} container direction="row-reverse">
-                <Grid item>
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                  >
-                    Save
-                  </Button>
+    if (!two_factor_setup) {
+      return (
+        <Paper className={classes.root}>
+          <Grid container spacing={16} alignItems="center">
+            <Grid item xs={12}>
+              <Typography variant="h5" component="h1">
+                Reset password
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <form className={classes.form} onSubmit={this.handleSubmit}>
+                <Grid item xs={3}>
+                  <FormControl margin="normal" required fullWidth>
+                    <InputLabel htmlFor="oldPassword">Old Password</InputLabel>
+                    <Input
+                      id="oldPassword"
+                      name="oldPassword"
+                      type="password"
+                      value={oldPassword}
+                      onChange={this.handleTextChange("oldPassword")}
+                    />
+                  </FormControl>
                 </Grid>
-              </Grid>
-            </form>
+                <Grid item xs={9} />
+                <Grid item xs={3}>
+                  <FormControl margin="normal" required fullWidth>
+                    <InputLabel htmlFor="newPasswordA">New Password</InputLabel>
+                    <Input
+                      id="newPasswordA"
+                      name="newPasswordA"
+                      type="password"
+                      value={newPasswordA}
+                      onChange={this.handleTextChange("newPasswordA")}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          {(password_strength || password_strength === 0) &&
+                            ((password_strength > 3 && <LockIcon />) || (
+                              <LockOpenIcon color="secondary" />
+                            ))}
+                        </InputAdornment>
+                      }
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={9} />
+                <Grid item xs={3}>
+                  <FormControl
+                    margin="normal"
+                    required
+                    fullWidth
+                    error={newPasswordA !== newPasswordB}
+                  >
+                    <InputLabel htmlFor="newPasswordB">New Password</InputLabel>
+                    <Input
+                      id="newPasswordB"
+                      name="newPasswordB"
+                      type="password"
+                      value={newPasswordB}
+                      onChange={this.handleTextChange("newPasswordB")}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={9} />
+                <Grid item xs={12} container direction="row-reverse">
+                  <Grid item>
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      className={classes.submit}
+                    >
+                      Save
+                    </Button>
+                  </Grid>
+                </Grid>
+              </form>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h5" component="h1">
+                Two-factor authentication
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                onClick={this.editTwoFactor}
+              >
+                {two_factor_enabled ? "Reset" : "Enable"}
+              </Button>
+              <Button
+                disabled={!two_factor_enabled}
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={classes.button}
+              >
+                Regenerate backup codes
+              </Button>
+              <Button
+                disabled={require_two_factor || !two_factor_enabled}
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                onClick={this.disableTwoFactor}
+              >
+                Disable
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
-        <ErrorDialog
-          open={this.state.hasError}
-          message={this.state.error.message}
+          <ErrorDialog
+            open={this.state.hasError}
+            message={this.state.error.message}
+          />
+          <MessageSnackbar
+            open={this.state.passwordChanged}
+            variant="success"
+            message="Password changed"
+          />
+        </Paper>
+      );
+    } else {
+      return (
+        <TwoFactorConfirm
+          classes={classes}
+          finish={this.finishEditTwoFactor}
+          cancel={this.finishEditTwoFactor}
         />
-        <MessageSnackbar
-          open={this.state.passwordChanged}
-          variant="success"
-          message="Password changed"
-        />
-      </Paper>
-    );
+      );
+    }
   }
 }
 UserDetails.propTypes = {

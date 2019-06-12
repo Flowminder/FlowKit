@@ -62,13 +62,6 @@ def enable_two_factor():
     provisioning_url = pyotp.totp.TOTP(secret).provisioning_uri(
         current_user.username, issuer_name="FlowAuth"
     )
-    old_auth = current_user.two_factor_auth
-    if old_auth is not None:
-        db.session.delete(old_auth)
-    auth = TwoFactorAuth(user=current_user)
-    auth.secret_key = secret
-    db.session.add(auth)
-    db.session.commit()
     return (
         jsonify(
             {
@@ -87,10 +80,17 @@ def confirm_two_factor():
     json = request.get_json()
     if "two_factor_code" not in json:
         raise InvalidUsage("Must supply a two-factor authentication code.")
+    if "secret" not in json:
+        raise InvalidUsage("Must supply a two-factor authentication secret.")
     code = json["two_factor_code"]
+    secret = json["secret"]
 
-    if current_user.two_factor_auth is None:
-        raise InvalidUsage("Two factor must be enabled first.")
+    old_auth = current_user.two_factor_auth
+    if old_auth is not None:
+        db.session.delete(old_auth)
+    auth = TwoFactorAuth(user=current_user)
+    auth.secret_key = secret
+
     if len(current_user.two_factor_auth.two_factor_backups) == 0:
         raise InvalidUsage("Must view backup codes first.")
     current_user.two_factor_auth.validate(code)

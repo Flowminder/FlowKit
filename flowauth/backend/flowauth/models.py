@@ -277,7 +277,7 @@ class TwoFactorAuth(db.Model):
             db.session.commit()
             return True
         else:
-            self.validate_backup_code(code)
+            raise Unauthorized("Code not valid.")
 
     def validate_backup_code(self, plaintext):
         """
