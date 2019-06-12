@@ -13,6 +13,7 @@ __all__ = ["GeographySchema", "GeographyExposed"]
 
 
 class GeographySchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["geography"]))
     aggregation_unit = AggregationUnit()
 
@@ -37,3 +38,12 @@ class GeographyExposed(BaseExposedQuery):
         Query
         """
         return Geography(get_spatial_unit_obj(self.aggregation_unit))
+
+    @property
+    def geojson_sql(self):
+        """
+        Return a SQL string for getting the geography as GeoJSON.
+        """
+        # Explicitly project to WGS84 (SRID=4326) to conform with GeoJSON standard
+        sql = self._flowmachine_query_obj.geojson_query(crs=4326)
+        return sql
