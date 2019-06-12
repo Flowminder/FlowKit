@@ -18,6 +18,7 @@ class InputToModalLocationSchema(OneOfSchema):
 
 
 class ModalLocationSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["modal_location"]))
     locations = fields.Nested(
         InputToModalLocationSchema, many=True, validate=Length(min=1)

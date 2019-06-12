@@ -13,6 +13,7 @@ __all__ = ["LocationIntroversionSchema", "LocationIntroversionExposed"]
 
 
 class LocationIntroversionSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["location_introversion"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)

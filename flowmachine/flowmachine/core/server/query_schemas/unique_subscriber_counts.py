@@ -13,6 +13,7 @@ __all__ = ["UniqueSubscriberCountsSchema", "UniqueSubscriberCountsExposed"]
 
 
 class UniqueSubscriberCountsSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["unique_subscriber_counts"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)

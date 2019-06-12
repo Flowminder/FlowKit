@@ -14,6 +14,7 @@ __all__ = ["DFSTotalMetricAmountSchema", "DFSTotalMetricAmountExposed"]
 
 
 class DFSTotalMetricAmountSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["dfs_metric_total_amount"]))
     metric = DFSMetric()
     start_date = fields.Date(required=True)

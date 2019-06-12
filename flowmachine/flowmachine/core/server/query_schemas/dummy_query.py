@@ -16,6 +16,7 @@ class DummyQuerySchema(Schema):
     Dummy query useful for testing.
     """
 
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["dummy_query"]))
     dummy_param = fields.String(required=True)
 

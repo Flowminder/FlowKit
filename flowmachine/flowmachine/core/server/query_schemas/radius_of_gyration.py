@@ -13,6 +13,7 @@ __all__ = ["RadiusOfGyrationSchema", "RadiusOfGyrationExposed"]
 
 
 class RadiusOfGyrationSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["radius_of_gyration"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)

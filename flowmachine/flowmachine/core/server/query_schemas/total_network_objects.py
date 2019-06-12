@@ -15,6 +15,7 @@ __all__ = ["TotalNetworkObjectsSchema", "TotalNetworkObjectsExposed"]
 
 
 class TotalNetworkObjectsSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["total_network_objects"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)

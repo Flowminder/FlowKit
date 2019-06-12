@@ -14,6 +14,7 @@ __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 
 
 class DailyLocationSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["daily_location"]))
     date = fields.Date(required=True)
     method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
