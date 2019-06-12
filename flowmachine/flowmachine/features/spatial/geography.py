@@ -39,14 +39,8 @@ class Geography(GeoDataMixin, Query):
         return self.spatial_unit.location_id_columns + ["geom"]
 
     def _geo_augmented_query(self):
-        locid_columns = self.spatial_unit.location_id_columns
-        if len(locid_columns) == 1:
-            gid = f"{locid_columns[0]} AS gid"
-        else:
-            gid = "row_number() over() AS gid"
-
         sql = f"""
-        SELECT {gid}, *
+        SELECT row_number() over() AS gid, *
         FROM ({self.get_query()}) AS Q
         """
 

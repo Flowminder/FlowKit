@@ -1,6 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+"""
+Definition of a custom marshmallow field for aggregation units, and function
+for getting the corresponding SpatialUnit object.
+"""
 
 from flowmachine.core import make_spatial_unit
 
