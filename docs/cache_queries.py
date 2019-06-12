@@ -18,8 +18,8 @@ print("Constructing query objects")
 
 admin1_spatial_unit = flowmachine.core.make_spatial_unit("admin", level=1)
 admin3_spatial_unit = flowmachine.core.make_spatial_unit("admin", level=3)
-versioned_site_spatial_unit = flowmachine.core.make_spatial_unit("versioned-site")
-versioned_cell_spatial_unit = flowmachine.core.make_spatial_unit("versioned-cell")
+vsite_spatial_unit = flowmachine.core.make_spatial_unit("versioned-site")
+vcell_spatial_unit = flowmachine.core.make_spatial_unit("versioned-cell")
 
 # FlowClient example usage
 example_usage_queries = [
@@ -148,10 +148,10 @@ commuting_patterns_queries = [
         meaningful_locations=flowmachine.features.MeaningfulLocations(
             clusters=flowmachine.features.HartiganCluster(
                 calldays=flowmachine.features.CallDays(
-                    subscriber_locations=flowmachine.features.subscriber_locations(
+                    subscriber_locations=flowmachine.features.SubscriberLocations(
                         start="2016-01-01",
                         stop="2016-01-07",
-                        spatial_unit=versioned_site_spatial_unit,
+                        spatial_unit=vsite_spatial_unit,
                     )
                 ),
                 radius=1.0,
@@ -164,7 +164,7 @@ commuting_patterns_queries = [
                 stop="2016-01-07",
                 score_hour=hour_scores,
                 score_dow=day_scores,
-                spatial_unit=versioned_site_spatial_unit,
+                spatial_unit=vsite_spatial_unit,
             ),
             label=label,
         ),
@@ -176,10 +176,10 @@ commuting_patterns_queries = [
         meaningful_locations_a=flowmachine.features.MeaningfulLocations(
             clusters=flowmachine.features.HartiganCluster(
                 calldays=flowmachine.features.CallDays(
-                    subscriber_locations=flowmachine.features.subscriber_locations(
+                    subscriber_locations=flowmachine.features.SubscriberLocations(
                         start="2016-01-01",
                         stop="2016-01-07",
-                        spatial_unit=versioned_site_spatial_unit,
+                        spatial_unit=vsite_spatial_unit,
                     )
                 ),
                 radius=1.0,
@@ -192,17 +192,17 @@ commuting_patterns_queries = [
                 stop="2016-01-07",
                 score_hour=hour_scores,
                 score_dow=day_scores,
-                spatial_unit=versioned_site_spatial_unit,
+                spatial_unit=vsite_spatial_unit,
             ),
             label="home",
         ),
         meaningful_locations_b=flowmachine.features.MeaningfulLocations(
             clusters=flowmachine.features.HartiganCluster(
                 calldays=flowmachine.features.CallDays(
-                    subscriber_locations=flowmachine.features.subscriber_locations(
+                    subscriber_locations=flowmachine.features.SubscriberLocations(
                         start="2016-01-01",
                         stop="2016-01-07",
-                        spatial_unit=versioned_site_spatial_unit,
+                        spatial_unit=vsite_spatial_unit,
                     )
                 ),
                 radius=1.0,
@@ -215,7 +215,7 @@ commuting_patterns_queries = [
                 stop="2016-01-07",
                 score_hour=hour_scores,
                 score_dow=day_scores,
-                spatial_unit=versioned_site_spatial_unit,
+                spatial_unit=vsite_spatial_unit,
             ),
             label="work",
         ),
@@ -229,7 +229,7 @@ mobile_data_usage_queries = [
         start="2016-01-01",
         stop="2016-01-07",
         table="events.mds",
-        spatial_unit=versioned_cell_spatial_unit,
+        spatial_unit=vcell_spatial_unit,
         interval="hour",
     )
 ]
