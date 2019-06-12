@@ -60,13 +60,18 @@ describe("Token generation", function() {
     cy.get("#api-exp").click();
     cy.get("#permission")
       .first()
-      .check();
+      .check({
+        force: true
+      });
   });
   it("API permision checkboxs unchecked", function() {
     cy.get("#new").click();
     cy.get("#api-exp").click();
-    cy.get("#permission").uncheck();
-    cy.get("#permissions").uncheck();
+    cy.get("[data-cy=permission-nested]").click({
+      multiple: true,
+      force: true
+    });
+    cy.get("[data-cy=permissions-top-level]").should("not.be.checked");
   });
   it("Aggrigation unit checkbox checked", function() {
     cy.get("#new").click();
@@ -76,12 +81,12 @@ describe("Token generation", function() {
       .first()
       .check();
   });
-  // it("Aggrigation unit checkboxs unchecked", function () {
-  //   cy.get("#new").click();
-  //   cy.get("#unit-exp").click();
-  //   cy.get("#unit").uncheck();
-  //   cy.get("#units").uncheck();
-  // });
+  it("Aggrigation unit checkboxs unchecked", function() {
+    cy.get("#new").click();
+    cy.get("#unit-exp").click();
+    cy.get("#unit").uncheck();
+    cy.get("#units").uncheck();
+  });
   it("Add new token", function() {
     cy.get("#new").click();
     //Add new token

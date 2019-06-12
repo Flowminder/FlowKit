@@ -50,7 +50,8 @@ class TokenDetails extends React.Component {
     aggregateIndeterminate: false,
     totalAggregateunits: 0,
     pageError: false,
-    errors: { message: "" }
+    errors: { message: "" },
+    select: "open"
   };
 
   handleSubmit = () => {
@@ -99,7 +100,7 @@ class TokenDetails extends React.Component {
       }
     }
     const indeterminate = permissionSet.size > 1;
-
+    console.log(permissionSet);
     this.setState({ rights: rights, permissionIntermidiate: indeterminate });
   };
   scrollToRef = ref => ref.current.scrollIntoView();
@@ -333,6 +334,7 @@ class TokenDetails extends React.Component {
               <Checkbox
                 checked={isPermissionChecked}
                 indeterminate={permissionIntermidiate}
+                data-cy="permissions-top-level"
                 id="permissions"
                 value="checkedB"
                 color="primary"
@@ -383,10 +385,13 @@ class TokenDetails extends React.Component {
             </ExpansionPanelDetails>
           </ExpansionPanel>
         </Grid>
-        <WarningDialog
-          open={this.state.pageError}
-          message={this.state.errors.message}
-        />
+        {confirm => (
+          <WarningDialog
+            open={this.state.pageError}
+            message={this.state.errors.message}
+            onClick={confirm(this.handleSubmit)}
+          />
+        )}
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>
     );
