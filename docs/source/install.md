@@ -356,7 +356,7 @@ This will bring up a single node swarm, create random 16 character passwords for
 
 For convenience, you can also do `pipenv run secrets_quickstart` from the `secrets_quickstart` directory.
 
-Note that if you wish to deploy a branch other than master, you should set the `CONTAINER_TAG` environment variable before running, to ensure that Docker pulls the correct tags.
+Note that if you wish to deploy a branch other than `master`, you should set the `CONTAINER_TAG` environment variable before running, to ensure that Docker pulls the correct tags.
 
 You can then provide the certificate to `flowclient`, and finally connect via https:
 

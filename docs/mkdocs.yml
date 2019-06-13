@@ -9,10 +9,10 @@ plugins:
       modules:
         flowmachine:
           section: flowmachine
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowmachine"
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowmachine"
         flowclient:
           section: flowclient
-          source_repo: "https://github.com/Flowminder/FlowKit/tree/$BRANCH/flowclient"
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowclient"
   - mknotebooks:
       execute: true
       preamble: "notebook_preamble.py"
@@ -23,17 +23,17 @@ nav:
   - install.md
   - analyst.md
   - Developer:
-    - developer/developer.md
-    - developer/dev_environment_setup.md
-    - Architectural Decision Records (ADR):
-       - developer/adr/README.md
-       - developer/adr/0001-pipenv-for-package-and-dependency-management.md
-       - developer/adr/0002-pytest-for-testing.md
-       - developer/adr/0003-http-api.md
-       - developer/adr/0004-http-framework.md
-       - developer/adr/0005-IPC-methods.md
-       - developer/adr/0006-JWTs.md
-       - developer/adr/0007-mapbox-for-worked-examples.md
+      - developer/developer.md
+      - developer/dev_environment_setup.md
+      - Architectural Decision Records (ADR):
+          - developer/adr/README.md
+          - developer/adr/0001-pipenv-for-package-and-dependency-management.md
+          - developer/adr/0002-pytest-for-testing.md
+          - developer/adr/0003-http-api.md
+          - developer/adr/0004-http-framework.md
+          - developer/adr/0005-IPC-methods.md
+          - developer/adr/0006-JWTs.md
+          - developer/adr/0007-mapbox-for-worked-examples.md
   - administrator.md
   - Worked examples:
       - worked_examples/index.md
