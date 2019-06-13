@@ -150,6 +150,7 @@ describe("Token generation", function() {
   });
   it("Aggregation unit sub-level checkboxes checked", function() {
     cy.get("#new").click();
+    cy.wait(500);
     //unchecked aggregation unit top-level checkbox
     cy.get("#units").click();
     //check aggregation unit top-level checkbox
