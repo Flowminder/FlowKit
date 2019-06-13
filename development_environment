@@ -135,7 +135,6 @@ FLOWETL_POSTGRES_HOST=flowetl_db
 FLOWETL_POSTGRES_DB=flowetl
 FLOWETL_POSTGRES_PORT=9001
 
-MOUNT_HOME=/mounts
 HOST_CONFIG_DIR=./flowetl/mounts/config
 HOST_DUMP_DIR=./flowetl/mounts/dump
 HOST_ARCHIVE_DIR=./flowetl/mounts/archive

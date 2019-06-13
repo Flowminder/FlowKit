@@ -40,7 +40,7 @@ else:
 
     # read and validate the config file before creating the DAGs
     global_config_dict = get_config_from_file(
-        config_filepath=os.environ["MOUNT_HOME"] / Path("config/config.yml")
+        config_filepath=Path("/mounts/config/config.yml")
     )
     validate_config(global_config_dict=global_config_dict)
 
