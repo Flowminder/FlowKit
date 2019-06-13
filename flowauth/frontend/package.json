@@ -38,7 +38,7 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged"
+      "pre-commit": "pretty-quick --staged --pattern \"**/*.*(js|jsx|json)\""
     }
   }
 }
