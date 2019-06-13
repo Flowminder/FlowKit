@@ -202,7 +202,7 @@ describe("Token generation", function() {
       });
     cy.get("#units").should("not.be.checked");
   });
-  it("Top-level Aggrigation unit checkbox intermidiate", function() {
+  it("Top-level Aggregation unit checkbox indeterminate", function() {
     cy.get("#new").click();
     cy.get("#unit-exp").click();
     //uncheck first sub-level checkbox
