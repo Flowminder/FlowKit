@@ -60,9 +60,9 @@ describe("Token generation", function() {
     cy.get("#name").type("TOKEN_TEST02", {
       force: true
     });
-    //unchecking permission top level checkbox
+    //unchecked permission top level checkbox
     cy.get("#permissions").click();
-    //uncheck aggrigation unit top-level checkbox
+    //unchecked aggregation unit top-level checkbox
     cy.get("#units").click();
     cy.contains("Save").click();
     cy.get("#warning-dialog-description").should(
@@ -73,7 +73,7 @@ describe("Token generation", function() {
     cy.contains("TOKEN_TEST02").should("be.visible");
   });
 
-  it("API permisions sub-level checkboxs checked", function() {
+  it("API permissions sub-level checkboxes checked", function() {
     cy.get("#new").click();
     //unchecking permission top level checkbox
     cy.get("#permissions").click();
@@ -86,7 +86,7 @@ describe("Token generation", function() {
       .should("be.checked");
   });
 
-  it("API permision sub-level checkboxs unchecked", function() {
+  it("API permission sub-level checkboxes unchecked", function() {
     cy.get("#new").click();
 
     //unchecking permission top level checkbox
@@ -97,10 +97,10 @@ describe("Token generation", function() {
       .first()
       .should("not.be.checked");
   });
-  it("Top-level API permisions checkbox checked", function() {
+  it("Top-level API permissions checkbox checked", function() {
     cy.get("#new").click();
     cy.get("#api-exp").click();
-    //unchecking first sub-level checkbox
+    //unchecked first sub-level checkbox
     cy.get("#permission")
       .first()
       .click({
@@ -115,7 +115,7 @@ describe("Token generation", function() {
     //checking top-level permission checkbox
     cy.get("#permissions").should("be.checked");
   });
-  it("Top-level API permisions checkbox unchecked", function() {
+  it("Top-level API permissions checkbox unchecked", function() {
     cy.get("#new").click();
     //unchecking permission top level checkbox
     cy.get("#permissions").click();
@@ -135,7 +135,7 @@ describe("Token generation", function() {
 
     cy.get("#permissions").should("not.be.checked");
   });
-  it("Top-level API permisions checkbox intermidiate", function() {
+  it("Top-level API permissions checkbox intermediate", function() {
     cy.get("#new").click();
     cy.get("#api-exp").click();
     //checking first sub-level permission checkbox
@@ -146,30 +146,30 @@ describe("Token generation", function() {
       });
     cy.get("#permissions").should("have.attr", "data-indeterminate", "true");
   });
-  it("Aggrigation unit sub-level checkboxs checked", function() {
+  it("Aggregation unit sub-level checkboxes checked", function() {
     cy.get("#new").click();
-    //uncheck aggrigation unit top-level checkbox
+    //unchecked aggregation unit top-level checkbox
     cy.get("#units").click();
-    //check aggrigation unit top-level checkbox
+    //check aggregation unit top-level checkbox
     cy.get("#units").click();
     cy.get("#unit-exp").click();
     cy.get("#unit")
       .first()
       .should("be.checked");
   });
-  it("Aggrigation unit sub-level checkboxs unchecked", function() {
+  it("Aggregation unit sub-level checkboxes unchecked", function() {
     cy.get("#new").click();
-    //uncheck aggrigation unit top-level checkbox
+    //unchecked aggregation unit top-level checkbox
     cy.get("#units").click();
     cy.get("#unit-exp").click();
     cy.get("#unit")
       .first()
       .should("not.be.checked");
   });
-  it("Top-level Aggrigation unit checkbox checked", function() {
+  it("Top-level Aggregation unit checkbox checked", function() {
     cy.get("#new").click();
     cy.get("#unit-exp").click();
-    //uncheck first sub-level checkbox
+    //unchecked first sub-level checkbox
     cy.get("#unit")
       .first()
       .click({
@@ -183,9 +183,9 @@ describe("Token generation", function() {
       });
     cy.get("#units").should("be.checked");
   });
-  it("Top-level Aggrigation unit checkbox unchecked", function() {
+  it("Top-level Aggregation unit checkbox unchecked", function() {
     cy.get("#new").click();
-    //uncheck aggrigation unit top-level checkbox
+    //unchecked aggregation unit top-level checkbox
     cy.get("#units").click();
     cy.get("#unit-exp").click();
     //check first sub-level checkbox

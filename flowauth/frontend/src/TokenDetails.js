@@ -46,9 +46,9 @@ class TokenDetails extends React.Component {
     username_helper_text: "",
     isPermissionChecked: true,
     isAggregationChecked: true,
-    permissionIntermidiate: false,
+    permissionIntermediate: false,
     aggregateIndeterminate: false,
-    totalAggregateunits: 0,
+    totalAggregateUnits: 0,
     pageError: false,
     errors: { message: "" }
   };
@@ -110,13 +110,13 @@ class TokenDetails extends React.Component {
     }
     const indeterminate = permissionSet.size > 1;
     console.log(permissionSet);
-    this.setState({ rights: rights, permissionIntermidiate: indeterminate });
+    this.setState({ rights: rights, permissionIntermediate: indeterminate });
   };
   scrollToRef = ref => ref.current.scrollIntoView();
 
   handleAggUnitChange = (claim_id, claim, unit) => event => {
     this.setState({ pageError: false, errors: "" });
-    const { rights, totalAggregateunits } = this.state;
+    const { rights, totalAggregateUnits } = this.state;
     if (event.target.checked) {
       rights[claim].spatial_aggregation.push(unit);
     } else {
@@ -134,7 +134,7 @@ class TokenDetails extends React.Component {
 
     this.setState({
       rights: rights,
-      aggregateIndeterminate: totalAggregateunits != listUnits.length
+      aggregateIndeterminate: totalAggregateUnits != listUnits.length
     });
   };
   handlePermissionCheckbox = event => {
@@ -150,7 +150,7 @@ class TokenDetails extends React.Component {
     this.setState({
       rights: rights,
       isPermissionChecked: toCheck,
-      permissionIntermidiate: false
+      permissionIntermediate: false
     });
   };
   handleAggregationCheckbox = event => {
@@ -172,7 +172,7 @@ class TokenDetails extends React.Component {
       rights: rights,
       isAggregationChecked: event.target.checked,
       aggregateIndeterminate: false,
-      totalAggregateunits: listUnits.length
+      totalAggregateUnits: listUnits.length
     });
   };
   handleNameChange = event => {
@@ -220,7 +220,7 @@ class TokenDetails extends React.Component {
           permitted: json.allowed_claims || {},
           expiry: json.latest_expiry,
           latest_expiry: json.latest_expiry,
-          totalAggregateunits: listUnits.length
+          totalAggregateUnits: listUnits.length
         });
       })
       .catch(err => {
@@ -292,7 +292,7 @@ class TokenDetails extends React.Component {
       aggregateIndeterminate,
       isAggregationChecked,
       isPermissionChecked,
-      permissionIntermidiate
+      permissionIntermediate
     } = this.state;
     const { classes, onClick } = this.props;
 
@@ -342,7 +342,7 @@ class TokenDetails extends React.Component {
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon id="api-exp" />}>
               <Checkbox
                 checked={isPermissionChecked}
-                indeterminate={permissionIntermidiate}
+                indeterminate={permissionIntermediate}
                 data-cy="permissions-top-level"
                 id="permissions"
                 value="checkedB"
