@@ -5,12 +5,13 @@ verify_ssl = true
 
 [dev-packages]
 black = "==19.3b0"
-apache-airflow = "==1.10.3"
+apache-airflow = {extras = ["postgres"],version = "==1.10.3"}
 pylint = "*"
 pytest = "*"
 docker = "*"
 ipython = "*"
 etl = {editable = true,path = "./etl"}
+pytest-cov = "*"
 
 [packages]
 

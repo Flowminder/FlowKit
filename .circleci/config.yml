@@ -83,7 +83,7 @@ executors:
         default: "2015-01-01"
       disaster_end_date:
         type: string
-        default: "2015-01-01" 
+        default: "2015-01-01"
     environment:
         POSTGRES_PASSWORD: flowflow
         MPLBACKEND: "agg"
@@ -560,8 +560,8 @@ jobs:
             docker push flowminder/<<parameters.component>>:$CIRCLE_SHA1
 
   run_flowetl_tests:
-    docker:
-      - image: circleci/python:3.7
+    machine:
+      image: circleci/classic:201808-01
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       TESTING: "true"
@@ -569,7 +569,6 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - setup_remote_docker
       - restore_cache:
           key: flowetl-deps-1-{{ checksum "flowetl/Pipfile.lock"}}
       - run:
@@ -583,7 +582,7 @@ jobs:
           name: run flowetl integration tests
           command: |
             cd flowetl
-            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
+            TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
       - run:
           name: run etl module unit tests
           command: |
@@ -874,6 +873,7 @@ workflows:
       - run_flowetl_tests:
           requires:
             - build_flowetl
+            - build_flowdb
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel

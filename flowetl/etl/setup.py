@@ -13,5 +13,5 @@ setup(
     include_package_data=True,
     zip_safe=False,
     # pinning airflow version so that it is the same as in the Dockerfile
-    install_requires=["apache-airflow==1.10.3"],
+    install_requires=["apache-airflow[postgres]==1.10.3"],
 )

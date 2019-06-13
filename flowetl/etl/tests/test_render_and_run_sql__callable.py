@@ -69,3 +69,46 @@ def test_render_and_run_sql__callable(tmpdir, create_fake_dag_run):
     # assert that the db_hook was called with correct sql
     _, _, kwargs = mock_pghook.mock_calls[0]
     assert kwargs == {"sql": f"select {conf['number']}"}
+
+
+def test_render_and_run_sql__callable_with_fixed_sql(tmpdir, create_fake_dag_run):
+    """
+    Test that the render sql callable, when fixed_sql=True, is able to
+    construct the correct sql from a template in the correct
+    location and issues this sql to the db_hook run command.
+    """
+    config_dir = tmpdir.mkdir("config")
+    fixed_sql_dir = config_dir.mkdir("fixed_sql")
+
+    template_name = "clean"
+    init_template_path = fixed_sql_dir.join(f"{template_name}.sql")
+    init_template = "select {{number}}"
+    init_template_path.write(init_template)
+
+    # Mocks so we can use the templating feature of the operator this
+    # callable runs in and a mock of the db_hook which will run the sql
+    fake_dag = DAG(dag_id="testing", default_args={"start_date": "2016-01-01"})
+    fake_task_op = BaseOperator(task_id="testing", dag=fake_dag)
+    mock_pghook = Mock()
+
+    # Mock of the config passed to the dag_run
+    conf = {"number": 23}
+    fake_dag_run = create_fake_dag_run(conf=conf)
+
+    # make sure the mock has not been called some other way
+    assert mock_pghook.mock_calls == []
+
+    render_and_run_sql__callable(
+        dag_run=fake_dag_run,
+        db_hook=mock_pghook,
+        task=fake_task_op,
+        config_path=Path(config_dir),
+        template_name=template_name,
+        fixed_sql=True,
+    )
+
+    assert len(mock_pghook.mock_calls) == 1
+
+    # assert that the db_hook was called with correct sql
+    _, _, kwargs = mock_pghook.mock_calls[0]
+    assert kwargs == {"sql": f"select {conf['number']}"}
