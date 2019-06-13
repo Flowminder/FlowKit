@@ -206,8 +206,8 @@ class TokenDetails extends React.Component {
     return permitted[claim].spatial_aggregation.indexOf(key) !== -1;
   };
 
-  componentDidMount() {
-    getMyRightsForServer(this.props.serverID)
+  async componentDidMount() {
+    await getMyRightsForServer(this.props.serverID)
       .then(json => {
         const listUnits = [];
         for (const key in json.allowed_claims) {
