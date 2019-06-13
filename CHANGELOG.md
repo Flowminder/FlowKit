@@ -7,32 +7,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- Buttons to copy token to clipboard and download token as file added to token list page.[#704](https://github.com/Flowminder/FlowKit/issues/704)
--  Two new worked examples: "Cell Towers Per Region" and "Unique Subscriber Counts". [#633](https://github.com/Flowminder/FlowKit/issues/633), [#634](https://github.com/Flowminder/FlowKit/issues/634)
+
+- The dev provisioning Ansible playbook now automatically generates an SSH key pair for the `flowkit` user. [#892](https://github.com/Flowminder/FlowKit/issues/892)
 
 ### Changed
+
+- The quick-start script now only pulls the docker images for the services that are actually started up. [#898](https://github.com/Flowminder/FlowKit/issues/898)
+- The quick-start script now uses the environment variable `GIT_REVISION` to control the version to be deployed.
+
+### Fixed
+
+- When creating a new token in FlowAuth, the expiry now always shows the year, seconds till expiry, and timezone. [#260](https://github.com/Flowminder/FlowKit/issues/260)
+- Distances in `Displacement` are now calculated with longitude and latitude the corrcet way around. [#913](https://github.com/Flowminder/FlowKit/issues/913)
+- The quick-start script now works correctly with branches. [#902](https://github.com/Flowminder/FlowKit/issues/902)
+
+### Removed
+
+## [0.6.4]
+
+### Added
+
+- Buttons to copy token to clipboard and download token as file added to token list page. [#704](https://github.com/Flowminder/FlowKit/issues/704)
+- Two new worked examples: "Cell Towers Per Region" and "Unique Subscriber Counts". [#633](https://github.com/Flowminder/FlowKit/issues/633), [#634](https://github.com/Flowminder/FlowKit/issues/634)
+
+### Changed
+
 - The `FLOWDB_DEBUG` environment variable has been renamed to `FLOWDB_ENABLE_POSTGRES_DEBUG_MODE`.
 - FlowAuth will now automatically set up the database when started without needing to trigger via the cli.
 - FlowAuth now requires that at least one administrator account is created by providing env vars or secrets for:
-    - `FLOWAUTH_ADMIN_PASSWORD`
-    - `FLOWAUTH_ADMIN_USERNAME`
+  - `FLOWAUTH_ADMIN_PASSWORD`
+  - `FLOWAUTH_ADMIN_USERNAME`
 
 ### Fixed
+
 - The `FLOWDB_DEBUG` environment variable used to have no effect. This has been fixed. [#811](https://github.com/Flowminder/FlowKit/issues/811)
 - Previously, queries could be stuck in an executing state if writing their cache metadata failed, they will now correctly show as having errored. [#833](https://github.com/Flowminder/FlowKit/issues/833)
-- Fixed an issue where `Table` objects could be in an inconsistent cache state after resetting cache [#832](https://github.com/Flowminder/FlowKit/issues/832) 
-- FlowAuth's docker container can now be used with a Postgres backing database. [#825](https://github.com/Flowminder/FlowKit/issues/825) 
+- Fixed an issue where `Table` objects could be in an inconsistent cache state after resetting cache [#832](https://github.com/Flowminder/FlowKit/issues/832)
+- FlowAuth's docker container can now be used with a Postgres backing database. [#825](https://github.com/Flowminder/FlowKit/issues/825)
 - FlowAPI now starts up successfully when following the "Secrets Quickstart" instructions in the docs. [#836](https://github.com/Flowminder/FlowKit/issues/836)
 - The command to generate an SSL certificate in the "Secrets Quickstart" section in the docs has been fixed and made more robust [#837](https://github.com/Flowminder/FlowKit/issues/837)
 - FlowAuth will no longer try to initialise the database or create demo data multiple times when running under uwsgi with multiple workers [#844](https://github.com/Flowminder/FlowKit/issues/844)
 - Fixed issue of Multiple tokens don't line up on FlowAuth "Tokens" page [#849](https://github.com/Flowminder/FlowKit/issues/849)
 
 ### Removed
+
 - The `FLOWDB_SERVICES` environment variable has been removed from the toplevel Makefile, so that now `DOCKER_SERVICES` is the only environment variable that controls which services are spun up when running `make up`. [#827](https://github.com/Flowminder/FlowKit/issues/827)
 
 ## [0.6.3]
 
 ### Added
+
 - FlowKit's worked examples are now Dockerized, and available as part of the quick setup script [#614](https://github.com/Flowminder/FlowKit/issues/614)
 - Skeleton for Airflow based ETL system added with basic ETL DAG specification and tests.
 - The docs now contain information about required versions of installation prerequisites [#703](https://github.com/Flowminder/FlowKit/issues/703)
@@ -43,15 +67,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The function `print_dependency_tree()` now takes an optional argument `show_stored` to display information whether dependent queries have been stored or not [#804](https://github.com/Flowminder/FlowKit/issues/804)
 - A new function `plot_dependency_graph()` has been added which allows to conveniently plot and visualise a dependency graph for use in Jupyter notebooks (this requires IPython and pygraphviz to be installed) [#786](https://github.com/Flowminder/FlowKit/issues/786)
 
-
 ### Changed
+
 - Parameter names in `flowmachine.connect()` have been renamed as follows to be consistent with the associated environment variables [#728](https://github.com/Flowminder/FlowKit/issues/728):
-    - `db_port -> flowdb_port`
-    - `db_user -> flowdb_user`
-    - `db_pass -> flowdb_password`
-    - `db_host -> flowdb_host`
-    - `db_connection_pool_size -> flowdb_connection_pool_size`
-    - `db_connection_pool_overflow -> flowdb_connection_pool_overflow`
+  - `db_port -> flowdb_port`
+  - `db_user -> flowdb_user`
+  - `db_pass -> flowdb_password`
+  - `db_host -> flowdb_host`
+  - `db_connection_pool_size -> flowdb_connection_pool_size`
+  - `db_connection_pool_overflow -> flowdb_connection_pool_overflow`
 - FlowAPI and FlowAuth now expect an audience key to be present in tokens [#727](https://github.com/Flowminder/FlowKit/issues/727)
 - Dependent queries are now only included once in the md5 calculation of a given query (in particular, it changes the query ids compared to previous FlowKit versions).
 - Error is displayed in the add user form of Flowauth if username is alredy exists. [#690](https://github.com/Flowminder/FlowKit/issues/690)
@@ -60,6 +84,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The class `SubscriberSubsetterBase` in FlowMachine no longer inherits from `Query` [#740](https://github.com/Flowminder/FlowKit/issues/740) (this changes the query ids compared to previous FlowKit versions).
 
 ### Fixed
+
 - FlowClient docs rendered to website now show the options available for arguments that require a string from some set of possibilities [#695](https://github.com/Flowminder/FlowKit/issues/695).
 - The Flowmachine loggers are now initialised only once when flowmachine is imported, with a call to `connect()` only changing the log level [#691](https://github.com/Flowminder/FlowKit/issues/691)
 - The FERNET_KEY environment variable for FlowAuth is now named FLOWAUTH_FERNET_KEY
@@ -71,6 +96,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.6.2]
 
 ### Added
+
 - Added a new module, `flowkit-jwt-generator`, which generates test JWT tokens for use with FlowAPI [#564](https://github.com/Flowminder/FlowKit/issues/564)
 - A new Ansible playbook was added in `deployment/provision-dev.yml`. In addition to the standard provisioning
   this installs pyenv, Python 3.7, pipenv and clones the FlowKit repository, which is useful for development purposes.
@@ -382,8 +408,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-
-[Unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.3...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.4...master
+[0.6.4]: https://github.com/Flowminder/FlowKit/compare/0.6.3...0.6.4
 [0.6.3]: https://github.com/Flowminder/FlowKit/compare/0.6.2...0.6.3
 [0.6.2]: https://github.com/Flowminder/FlowKit/compare/0.6.1...0.6.2
 [0.6.1]: https://github.com/Flowminder/FlowKit/compare/0.6.0...0.6.1
