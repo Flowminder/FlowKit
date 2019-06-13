@@ -86,7 +86,7 @@ def test_find_files_default_filter(tmpdir):
     tmpdir.join("B.txt").write("content")
     tmpdir.join("README.md").write("content")
 
-    tmpdir_path_obj = Path(dump_path=tmpdir)
+    tmpdir_path_obj = Path(tmpdir)
 
     files = find_files(dump_path=tmpdir_path_obj)
 
