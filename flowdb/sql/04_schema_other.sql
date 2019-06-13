@@ -69,15 +69,12 @@ Schema used for temp storage during etl.
 
 CREATE SCHEMA IF NOT EXISTS etl;
 
-CREATE TYPE cdrtype AS ENUM ('voice', 'sms', 'mds', 'topups');
-CREATE TYPE etl_status AS ENUM ('in_process', 'done', 'quarantine');
-CREATE TABLE etl.etl (
+CREATE TABLE etl.etl_records (
 	id SERIAL NOT NULL,
-	file_name VARCHAR,
-	cdr_type cdrtype,
+	cdr_type VARCHAR,
 	cdr_date DATE,
-	status etl_status,
-	time_stamp TIMESTAMP WITH TIME ZONE,
+	state VARCHAR,
+	timestamp TIMESTAMP WITH TIME ZONE,
 	PRIMARY KEY (id)
 );
 
