@@ -590,9 +590,12 @@ jobs:
       - run:
           name: run etl module unit tests
           command: |
-            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml ./etl/tests
+            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml --cov=./etl/etl \
+            --cov-report xml \
+            --cov-report term ./etl/tests
       - store_test_results:
           path: test_results
+      - run: bash <(curl -s https://codecov.io/bash) -F flowetl_unit_tests
 
   integration_tests:
     executor:
