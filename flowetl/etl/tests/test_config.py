@@ -88,7 +88,7 @@ def test_find_files_default_filter(tmpdir):
 
     tmpdir_path_obj = Path(dump_path=tmpdir)
 
-    files = find_files(tmpdir_path_obj)
+    files = find_files(dump_path=tmpdir_path_obj)
 
     assert set([file.name for file in files]) == set(["A.txt", "B.txt"])
 
