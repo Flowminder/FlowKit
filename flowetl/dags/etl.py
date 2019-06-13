@@ -6,8 +6,8 @@
 """
 Skeleton specification for ETL DAG
 """
-import logging
 import os
+import structlog
 
 from pathlib import Path
 
@@ -22,12 +22,13 @@ from etl.dag_task_callable_mappings import (
 from etl.etl_utils import construct_etl_dag, CDRType
 from etl.config_parser import validate_config, get_config_from_file
 
+logger = structlog.get_logger("flowetl")
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
 # Determine if we are in a testing environment - use dummy callables if so
 if os.environ.get("TESTING", "") == "true":
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
-    logging.info("running in testing environment")
+    logger.info("running in testing environment")
     dag = construct_etl_dag(
         task_callable_mapping=task_callable_mapping,
         default_args=default_args,
@@ -35,7 +36,7 @@ if os.environ.get("TESTING", "") == "true":
     )
 else:
     task_callable_mapping = PRODUCTION_ETL_TASK_CALLABLES
-    logging.info("running in production environment")
+    logger.info("running in production environment")
 
     # read and validate the config file before creating the DAGs
     global_config_dict = get_config_from_file(

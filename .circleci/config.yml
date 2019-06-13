@@ -586,7 +586,7 @@ jobs:
           command: |
             pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
           environment:
-            TAG: $CIRCLE_SHA1
+            FLOWETL_TESTS_CONTAINERS_TAG: $CIRCLE_SHA1
       - run:
           name: run etl module unit tests
           command: |

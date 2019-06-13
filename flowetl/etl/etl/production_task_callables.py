@@ -6,8 +6,8 @@
 """
 Contains the definition of callables to be used in the production ETL dag.
 """
-import logging
 import shutil
+import structlog
 
 from pathlib import Path
 from uuid import uuid1
@@ -25,6 +25,9 @@ from etl.etl_utils import (
     get_config,
     generate_table_names,
 )
+
+logger = structlog.get_logger("flowetl")
+
 
 # pylint: disable=unused-argument
 def render_and_run_sql__callable(
@@ -138,7 +141,7 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
         for task_id in ["init", "extract", "transform", "load"]
     ]
 
-    logging.info(dag_run)
+    logger.info(dag_run)
 
     if any(previous_task_failures):
         branch = "quarantine"
@@ -166,24 +169,24 @@ def trigger__callable(
     """
 
     found_files = find_files(dump_path=dump_path)
-    logging.info(found_files)
+    logger.info(found_files)
 
     # remove files that either do not match a pattern
     # or have been processed successfully allready...
     filtered_files = filter_files(
         found_files=found_files, cdr_type_config=cdr_type_config
     )
-    logging.info(filtered_files)
+    logger.info(filtered_files)
 
     # what to do with these!?
     bad_files = list(set(found_files) - set(filtered_files))
-    logging.info(bad_files)
+    logger.info(bad_files)
 
     configs = [
         (file, get_config(file_name=file.name, cdr_type_config=cdr_type_config))
         for file in filtered_files
     ]
-    logging.info(configs)
+    logger.info(configs)
 
     for file, config in configs:
 

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "77a73b1040d7ed3b315e08413f50ede39822c98b24eda3ea9b9558290bc6c61a"
+            "sha256": "a95c071887e12a5af975415020281382444f29f0a98e3203314b77a8e6df1b79"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -40,14 +40,6 @@
                 "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"
             ],
             "version": "==1.4.3"
-        },
-        "appnope": {
-            "hashes": [
-                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
-                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
-            ],
-            "markers": "sys_platform == 'darwin'",
-            "version": "==0.1.0"
         },
         "astroid": {
             "hashes": [
@@ -809,6 +801,14 @@
                 "sha256:5bb2c4fc2bcc3447ad45716c66581eab982c007dcf925482498d8733f86f17c7"
             ],
             "version": "==1.2.19"
+        },
+        "structlog": {
+            "hashes": [
+                "sha256:5feae03167620824d3ae3e8915ea8589fc28d1ad6f3edf3cc90ed7c7cb33fab5",
+                "sha256:db441b81c65b0f104a7ce5d86c5432be099956b98b8a2c8be0b3fb3a7a0b1536"
+            ],
+            "index": "pypi",
+            "version": "==19.1.0"
         },
         "tabulate": {
             "hashes": [
