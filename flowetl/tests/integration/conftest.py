@@ -25,7 +25,6 @@ from shutil import rmtree
 
 here = os.path.dirname(os.path.abspath(__file__))
 logger = logging.getLogger("flowetl-tests")
-logger.setLevel("INFO")
 
 
 @pytest.fixture(scope="session")
