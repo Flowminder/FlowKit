@@ -582,7 +582,7 @@ jobs:
           name: run flowetl integration tests
           command: |
             cd flowetl
-            FLOWETL_CONTAINERS_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
+            FLOWETL_TESTS_CONTAINERS_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
       - run:
           name: run etl module unit tests
           command: |
