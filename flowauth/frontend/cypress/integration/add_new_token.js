@@ -4,7 +4,6 @@
 
 describe("Token generation", function() {
   Cypress.Cookies.debug(true);
-
   beforeEach(function() {
     // Log in and navigate to user details screen
     cy.login();
@@ -56,28 +55,10 @@ describe("Token generation", function() {
     });
     cy.contains("#name-helper-text").should("not.exist");
   });
-  it("Submit without any permissions checked", function() {
-    cy.get("#new").click();
-    //add token name
-    cy.get("#name").type("TOKEN_TEST02", {
-      force: true
-    });
-    //unchecked permission top level checkbox
-    cy.get("#permissions").click();
-    //unchecked aggregation unit top-level checkbox
-    cy.get("#units").click();
-    cy.contains("Save").click();
-    cy.get("#warning-dialog-description").should(
-      "have.text",
-      "Warning: no permissions will be granted by this token. Are you sure?"
-    );
-    cy.get("#warning-dialog-yes").click();
-    cy.contains("TOKEN_TEST02").should("be.visible");
-  });
 
   it("API permissions sub-level checkboxes checked", function() {
     cy.get("#new").click();
-    //unchecking permission top level checkbox
+    //unchecked permission top level checkbox
     cy.get("#permissions").click();
     //checking permission top level checkbox
     cy.get("#permissions").click();
@@ -91,7 +72,7 @@ describe("Token generation", function() {
   it("API permission sub-level checkboxes unchecked", function() {
     cy.get("#new").click();
     cy.get("#api-exp").click();
-    //unchecking permission top level checkbox
+    //unchecked permission top level checkbox
     cy.get("#permissions").click({
       force: true
     });
@@ -109,7 +90,7 @@ describe("Token generation", function() {
       .click({
         force: true
       });
-    //unchecking first sub-level checkbox
+    //unchecked first sub-level checkbox
     cy.get("#permission")
       .first()
       .click({
@@ -120,7 +101,7 @@ describe("Token generation", function() {
   });
   it("Top-level API permissions checkbox unchecked", function() {
     cy.get("#new").click();
-    //unchecking permission top level checkbox
+    //unchecked permission top level checkbox
     cy.get("#permissions").click();
     cy.get("#api-exp").click();
     //checking first sub-level checkbox
@@ -200,7 +181,7 @@ describe("Token generation", function() {
       .click({
         force: true
       });
-    //uncheck first sub-level checkbox
+    //unchecked first sub-level checkbox
     cy.get("#unit")
       .first()
       .click({
@@ -219,6 +200,25 @@ describe("Token generation", function() {
       });
     cy.get("#units").should("have.attr", "data-indeterminate", "true");
   });
+  it("Submit without any permissions checked", function() {
+    cy.get("#new").click();
+    //add token name
+    cy.get("#name").type("TOKEN_TEST02", {
+      force: true
+    });
+    //unchecked permission top level checkbox
+    cy.get("#permissions").click();
+    //unchecked aggregation unit top-level checkbox
+    cy.get("#units").click();
+    cy.contains("Save").click();
+    cy.get("#warning-dialog-description").should(
+      "have.text",
+      "Warning: no permissions will be granted by this token. Are you sure?"
+    );
+    cy.get("#warning-dialog-yes").click();
+    cy.contains("TOKEN_TEST02").should("be.visible");
+  });
+
   it("Add new token", function() {
     cy.get("#new").click();
     //Add new token

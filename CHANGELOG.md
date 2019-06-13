@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - The quick-start script now only pulls the docker images for the services that are actually started up. [#898](https://github.com/Flowminder/FlowKit/issues/898)
 - The quick-start script now uses the environment variable `GIT_REVISION` to control the version to be deployed.
+  -Changes in create token page to rearrange permission checkboxes.[#854](https://github.com/Flowminder/FlowKit/pull/854)
 
 ### Fixed
 
