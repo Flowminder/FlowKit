@@ -50,24 +50,33 @@ class TokenDetails extends React.Component {
     aggregateIndeterminate: false,
     totalAggregateunits: 0,
     pageError: false,
-    errors: { message: "" },
-    select: "open"
+    errors: { message: "" }
   };
-
-  handleSubmit = () => {
-    const { name, expiry, rights, name_helper_text } = this.state;
+  completeToken = () => {
+    const { name, expiry, rights, pageError, errors } = this.state;
     const { serverID, cancel } = this.props;
+    createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
+      json => {
+        cancel();
+      }
+    );
+  };
+  handleSubmit = () => {
+    const { name, expiry, rights, name_helper_text, pageError } = this.state;
+    const { serverID, cancel } = this.props;
+
     const checkedCheckboxes = document.querySelectorAll(
       'input[type="checkbox"]:checked'
     );
-    console.log(checkedCheckboxes);
+    console.log("handlesubmit");
 
     if (name && name_helper_text === "" && checkedCheckboxes.length != 0) {
-      createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
-        json => {
-          cancel();
-        }
-      );
+      // createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
+      //   json => {
+      //     cancel();
+      //   }
+      // );
+      this.completeToken();
     } else if (checkedCheckboxes.length == 0) {
       this.setState({
         pageError: true,
@@ -385,13 +394,11 @@ class TokenDetails extends React.Component {
             </ExpansionPanelDetails>
           </ExpansionPanel>
         </Grid>
-        {confirm => (
-          <WarningDialog
-            open={this.state.pageError}
-            message={this.state.errors.message}
-            onClick={confirm(this.handleSubmit)}
-          />
-        )}
+        <WarningDialog
+          open={this.state.pageError}
+          message={this.state.errors.message}
+          handleClick={this.completeToken}
+        />
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>
     );

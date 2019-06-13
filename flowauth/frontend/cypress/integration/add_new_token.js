@@ -54,6 +54,25 @@ describe("Token generation", function() {
     });
     cy.contains("#name-helper-text").should("not.exist");
   });
+  it("Submit without any permissions checked", function() {
+    cy.get("#new").click();
+    //add token name
+    cy.get("#name").type("TOKEN_TEST02", {
+      force: true
+    });
+    //unchecking permission top level checkbox
+    cy.get("#permissions").click();
+    //uncheck aggrigation unit top-level checkbox
+    cy.get("#units").click();
+    cy.contains("Save").click();
+    cy.get("#warning-dialog-description").should(
+      "have.text",
+      "Warning: no permissions will be granted by this token. Are you sure?"
+    );
+    cy.get("#warning-dialog-yes").click();
+    cy.contains("TOKEN_TEST02").should("be.visible");
+  });
+
   it("API permisions sub-level checkboxs checked", function() {
     cy.get("#new").click();
     //unchecking permission top level checkbox
@@ -77,11 +96,6 @@ describe("Token generation", function() {
     cy.get("#permission")
       .first()
       .should("not.be.checked");
-    // cy.get("[data-cy=permission-nested]").click({
-    //   multiple: true,
-    //   force: true
-    // });
-    // cy.get("[data-cy=permissions-top-level]").should("not.be.checked");
   });
   it("Top-level API permisions checkbox checked", function() {
     cy.get("#new").click();

@@ -12,77 +12,51 @@ import Button from "@material-ui/core/Button";
 
 class WarningDialog extends React.Component {
   state = {
-    open: this.props.open,
-    callback: null
+    open: this.props.open
   };
 
   handleClose = () => {
-    this.setState({ open: false, callback: null });
-  };
-  hide = () => this.setState({ open: false, callback: null });
-  confirm = () => {
-    console.log("confirm");
-    this.state.callback();
-    this.hide();
-  };
-  show = callback => event => {
-    console.log("show");
-    event.preventDefault();
-
-    event = {
-      ...event,
-      target: { ...event.target, value: event.target.value }
-    };
-
-    this.setState({
-      open: true,
-      callback: () => callback(event)
-    });
+    this.setState({ open: false });
   };
 
   render() {
-    const { message, open } = this.props;
+    const { message, open, handleClick } = this.props;
 
     return (
-      <React.Fragment>
-        {this.props.children(this.show)}
-        {this.state.open && (
-          <Dialog
-            // open={this.state.open}
-            // onClose={this.handleClose}
-            aria-labelledby="warning-dialog-title"
-            aria-describedby="warning-dialog-description"
-            id="warning-dialog"
+      <Dialog
+        open={this.state.open}
+        onClose={this.handleClose}
+        aria-labelledby="warning-dialog-title"
+        aria-describedby="warning-dialog-description"
+        id="warning-dialog"
+      >
+        <DialogTitle id="warning-dialog-title">{"Warning"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="warning-dialog-description">
+            {message}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={this.handleClose}
+            color="danger"
+            id="warning-dialog-cancle"
           >
-            <DialogTitle id="warning-dialog-title">{"Warning"}</DialogTitle>
-            <DialogContent>
-              <DialogContentText id="warning-dialog-description">
-                {message}
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={this.hide} color="danger" id="warning-dialog-ok">
-                Cancle
-              </Button>
-              <Button
-                onClick={this.confirm}
-                color="primary"
-                id="warning-dialog-ok"
-              >
-                Yes
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
-      </React.Fragment>
+            Cancle
+          </Button>
+          <Button onClick={handleClick} color="primary" id="warning-dialog-yes">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     );
   }
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (this.props.open !== prevState.open) {
-  //     this.setState({ open: this.props.open });
-  //   }
-  // }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.open !== prevState.open) {
+      this.setState({ open: this.props.open });
+    }
+  }
 }
 
 export default WarningDialog;
