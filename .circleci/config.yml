@@ -564,6 +564,7 @@ jobs:
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       TESTING: "true"
+      FLOWETL_TESTS_CONTAINER_TAG: $CIRCLE_SHA1
     working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:
@@ -585,8 +586,6 @@ jobs:
           name: run flowetl integration tests
           command: |
             pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
-          environment:
-            FLOWETL_TESTS_CONTAINER_TAG: $CIRCLE_SHA1
       - run:
           name: run etl module unit tests
           command: |
