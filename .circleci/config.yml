@@ -582,7 +582,7 @@ jobs:
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run:
-          name: Set FLOWETL_TESTS_CONTAINER_TAG env var
+          name: Set FLOWETL_TESTS_CONTAINER_TAG environment variable
           command: |
             echo "export FLOWETL_TESTS_CONTAINER_TAG=${CIRCLE_SHA1}" >> $BASH_ENV
       - run:
@@ -634,7 +634,7 @@ jobs:
       - checkout:
           path: /home/circleci/project/
       - run:
-          name: Set GIT_REVISION env var
+          name: Set GIT_REVISION environment variable
           command: |
             echo "export GIT_REVISION=${CIRCLE_SHA1}" >> $BASH_ENV
       - run: ./quick_start.sh <<parameters.start_arguments>>
