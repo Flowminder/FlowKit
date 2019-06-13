@@ -40,9 +40,9 @@ class WarningDialog extends React.Component {
           <Button
             onClick={this.handleClose}
             color="danger"
-            id="warning-dialog-cancle"
+            id="warning-dialog-cancel"
           >
-            Cancle
+            Cancel
           </Button>
           <Button onClick={handleClick} color="primary" id="warning-dialog-yes">
             Yes

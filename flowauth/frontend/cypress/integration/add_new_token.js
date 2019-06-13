@@ -8,6 +8,8 @@ describe("Token generation", function() {
   beforeEach(function() {
     // Log in and navigate to user details screen
     cy.login();
+    //adding wait time to load permissions
+    cy.wait(250);
     cy.goto("/");
     cy.get("#servers").click();
   });
@@ -89,7 +91,6 @@ describe("Token generation", function() {
   it("API permission sub-level checkboxes unchecked", function() {
     cy.get("#new").click();
     cy.get("#api-exp").click();
-    cy.wait(500);
     //unchecking permission top level checkbox
     cy.get("#permissions").click({
       force: true
@@ -150,7 +151,6 @@ describe("Token generation", function() {
   });
   it("Aggregation unit sub-level checkboxes checked", function() {
     cy.get("#new").click();
-    cy.wait(500);
     //unchecked aggregation unit top-level checkbox
     cy.get("#units").click();
     //check aggregation unit top-level checkbox
@@ -162,7 +162,6 @@ describe("Token generation", function() {
   });
   it("Aggregation unit sub-level checkboxes unchecked", function() {
     cy.get("#new").click();
-    cy.wait(500);
     cy.get("#unit-exp").click();
     //unchecked aggregation unit top-level checkbox
     cy.get("#units").click({
