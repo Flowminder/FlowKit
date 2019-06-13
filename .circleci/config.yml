@@ -582,11 +582,13 @@ jobs:
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run:
+          name: Set FLOWETL_TESTS_CONTAINER_TAG environment variable
+          command: |
+            echo "export FLOWETL_TESTS_CONTAINER_TAG=${CIRCLE_SHA1}" >> $BASH_ENV
+      - run:
           name: run flowetl integration tests
           command: |
             pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
-          environment:
-            FLOWETL_TESTS_CONTAINERS_TAG: $CIRCLE_SHA1
       - run:
           name: run etl module unit tests
           command: |
@@ -628,11 +630,13 @@ jobs:
     machine:
       image: circleci/classic:201808-01
     working_directory: /home/circleci/project
-    environment:
-      GIT_REVISION: $CIRCLE_SHA1
     steps:
       - checkout:
           path: /home/circleci/project/
+      - run:
+          name: Set GIT_REVISION environment variable
+          command: |
+            echo "export GIT_REVISION=${CIRCLE_SHA1}" >> $BASH_ENV
       - run: ./quick_start.sh <<parameters.start_arguments>>
       - run: ./quick_start.sh stop
       - run:

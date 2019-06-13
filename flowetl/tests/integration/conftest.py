@@ -27,6 +27,25 @@ here = os.path.dirname(os.path.abspath(__file__))
 logger = logging.getLogger("flowetl-tests")
 
 
+@pytest.fixture(scope="session", autouse=True)
+def ensure_required_env_vars_are_set():
+    if "AIRFLOW_HOME" not in os.environ:
+        raise RuntimeError(
+            "Must set environment variable AIRFLOW_HOME to run the flowetl tests."
+        )
+
+    if "true" != os.getenv("TESTING", "false").lower():
+        raise RuntimeError(
+            "Must set environment variable TESTING='true' to run the flowetl tests."
+        )
+
+    if "FLOWETL_TESTS_CONTAINER_TAG" not in os.environ:
+        raise RuntimeError(
+            "Must explicitly set environment variable FLOWETL_TESTS_CONTAINER_TAG to run the flowetl tests. "
+            "(Use `FLOWETL_TESTS_CONTAINER_TAG=latest` if you don't need a specific version.)"
+        )
+
+
 @pytest.fixture(scope="session")
 def flowetl_mounts_dir():
     return os.path.abspath(os.path.join(here, "..", "..", "mounts"))
@@ -53,7 +72,7 @@ def container_tag():
     """
     Get tag to use for containers
     """
-    return os.environ.get("FLOWETL_TESTS_CONTAINER_TAG", "latest")
+    return os.environ["FLOWETL_TESTS_CONTAINER_TAG"]
 
 
 @pytest.fixture(scope="session")
@@ -82,7 +101,6 @@ def container_env():
         "AIRFLOW__CORE__FERNET_KEY": "ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=",
         "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
         "AIRFLOW_CONN_FLOWDB": f"postgres://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
-        "MOUNT_HOME": "/mounts",
         "POSTGRES_USER": "flowetl",
         "POSTGRES_PASSWORD": "flowetl",
         "POSTGRES_DB": "flowetl",
@@ -310,19 +328,6 @@ def write_files_to_dump(flowetl_mounts_dir):
     files_to_remove = filter(lambda file: file.name != "README.md", files_to_remove)
 
     [file.unlink() for file in files_to_remove]
-
-
-@pytest.fixture(scope="session", autouse=True)
-def ensure_required_env_vars_are_set():
-    if "AIRFLOW_HOME" not in os.environ:
-        raise RuntimeError(
-            "Must set environment variable AIRFLOW_HOME to run the flowetl tests."
-        )
-
-    if "true" != os.getenv("TESTING", "false").lower():
-        raise RuntimeError(
-            "Must set environment variable TESTING='true' to run the flowetl tests."
-        )
 
 
 @pytest.fixture(scope="module")

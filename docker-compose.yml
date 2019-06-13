@@ -194,11 +194,11 @@ services:
     ports:
       - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
     volumes:
-      - ${HOST_CONFIG_DIR:?Must set HOST_CONFIG_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/config:ro
-      - ${HOST_DUMP_DIR:?Must set HOST_DUMP_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/dump:rw
-      - ${HOST_ARCHIVE_DIR:?Must set HOST_ARCHIVE_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/archive:rw
-      - ${HOST_QUARANTINE_DIR:?Must set HOST_QUARANTINE_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/quarantine:rw
-      - ${HOST_INGEST_DIR:?Must set HOST_INGEST_DIR env var}:${MOUNT_HOME:?Must set MOUNT_HOME env var}/ingest:rw
+      - ${HOST_CONFIG_DIR:?Must set HOST_CONFIG_DIR env var}:/mounts/config:ro
+      - ${HOST_DUMP_DIR:?Must set HOST_DUMP_DIR env var}:/mounts/dump:rw
+      - ${HOST_ARCHIVE_DIR:?Must set HOST_ARCHIVE_DIR env var}:/mounts/archive:rw
+      - ${HOST_QUARANTINE_DIR:?Must set HOST_QUARANTINE_DIR env var}:/mounts/quarantine:rw
+      - ${HOST_INGEST_DIR:?Must set HOST_INGEST_DIR env var}:/mounts/ingest:rw
 
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -209,7 +209,6 @@ services:
       POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
       POSTGRES_HOST: ${FLOWETL_POSTGRES_HOST:?Must set FLOWETL_POSTGRES_HOST env var}
       POSTGRES_DB: ${FLOWETL_POSTGRES_DB:?Must set FLOWETL_POSTGRES_DB env var}
-      MOUNT_HOME: ${MOUNT_HOME:?Must set MOUNT_HOME env var}
 
     networks:
       - db
