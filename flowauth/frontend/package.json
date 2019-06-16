@@ -28,7 +28,7 @@
     "cypress": "^3.3.1",
     "husky": "^2.4.1",
     "prettier": "^1.18.2",
-    "pretty-quick": "^1.11.0"
+    "pretty-quick": "^1.11.1"
   },
   "browserslist": [
     ">0.2%",
