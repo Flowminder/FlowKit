@@ -9,7 +9,7 @@ Conftest for flowetl integration tests
 import docker
 import os
 import shutil
-import logging
+import structlog
 import pytest
 
 from itertools import chain
@@ -24,7 +24,7 @@ from docker.types import Mount
 from shutil import rmtree
 
 here = os.path.dirname(os.path.abspath(__file__))
-logger = logging.getLogger("flowetl-tests")
+logger = structlog.get_logger("flowetl-tests")
 
 
 @pytest.fixture(scope="session", autouse=True)
