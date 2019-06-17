@@ -37,6 +37,7 @@ setup(
         "zxcvbn",
         "cryptography",
         "pyotp",
+        "itsdangerous",
     ],
     extras_require={"test": ["pytest", "coverage"], "postgres": ["psycopg2-binary"]},
 )

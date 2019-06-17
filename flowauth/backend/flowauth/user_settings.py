@@ -4,6 +4,12 @@
 import pyotp
 from flask import jsonify, Blueprint, request
 from flask_login import login_required, current_user
+from itsdangerous import (
+    TimestampSigner,
+    BadSignature,
+    SignatureExpired,
+    TimedSerializer,
+)
 
 from .models import *
 from .invalid_usage import InvalidUsage
@@ -62,12 +68,22 @@ def enable_two_factor():
     provisioning_url = pyotp.totp.TOTP(secret).provisioning_uri(
         current_user.username, issuer_name="FlowAuth"
     )
+    signed_secret = TimestampSigner(current_app.config["SECRET_KEY"]).sign(secret)
+    backup_codes = [
+        "".join(random.choices(string.ascii_letters + string.digits, k=10))
+        for i in range(16)
+    ]
+    serialised_codes = TimedSerializer(current_app.config["SECRET_KEY"]).dumps(
+        backup_codes
+    )
     return (
         jsonify(
             {
                 "provisioning_url": provisioning_url,
-                "secret": secret,
+                "secret": signed_secret.decode(),
                 "issuer": "FlowAuth",
+                "backup_codes": backup_codes,
+                "backup_codes_signature": serialised_codes,
             }
         ),
         200,
@@ -82,20 +98,43 @@ def confirm_two_factor():
         raise InvalidUsage("Must supply a two-factor authentication code.")
     if "secret" not in json:
         raise InvalidUsage("Must supply a two-factor authentication secret.")
+    if "backup_codes_signature" not in json:
+        raise InvalidUsage("Must supply signed backup codes.")
     code = json["two_factor_code"]
-    secret = json["secret"]
+    try:
+        secret = (
+            TimestampSigner(current_app.config["SECRET_KEY"])
+            .unsign(json["secret"], max_age=86400)
+            .decode()
+        )
+    except BadSignature:
+        raise Unauthorized("Two-factor setup attempt has been tampered with.")
+    except SignatureExpired:
+        raise Unauthorized("Two-factor setup attempt has expired.")
+
+    try:
+        backup_codes = TimedSerializer(current_app.config["SECRET_KEY"]).loads(
+            json["backup_codes_signature"], max_age=86400
+        )
+    except BadSignature:
+        raise Unauthorized("Two-factor setup attempt has been tampered with.")
+    except SignatureExpired:
+        raise Unauthorized("Two-factor setup attempt has expired.")
 
     old_auth = current_user.two_factor_auth
     if old_auth is not None:
         db.session.delete(old_auth)
     auth = TwoFactorAuth(user=current_user)
     auth.secret_key = secret
+    print(secret)
 
-    if len(current_user.two_factor_auth.two_factor_backups) == 0:
-        raise InvalidUsage("Must view backup codes first.")
-    current_user.two_factor_auth.validate(code)
-    current_user.two_factor_auth.enabled = True
-    db.session.add(current_user.two_factor_auth)
+    auth.validate(code)
+    auth.enabled = True
+    db.session.add(auth)
+    for backup_code in backup_codes:
+        backup = TwoFactorBackup(auth_id=auth.user_id)
+        backup.backup_code = backup_code
+        db.session.add(backup)
     db.session.commit()
     return jsonify({"two_factor_enabled": True}), 200
 
@@ -115,9 +154,23 @@ def disable_two_factor():
 @login_required
 def reset_backup_codes():
     """
-    Generate a new list of two-factor auth backup codes for the currently logged in user.
+    Generate a new list of two-factor auth backup codes for the currently logged in user and
+    replace any existing backup codes.
     """
-    new_codes = TwoFactorBackup.generate(current_user.id)
+    auth = TwoFactorAuth.query.filter(
+        TwoFactorAuth.user_id == current_user.id
+    ).first_or_404()
+    for code in auth.two_factor_backups:
+        db.session.delete(code)
+    new_codes = [
+        "".join(random.choices(string.ascii_letters + string.digits, k=10))
+        for i in range(16)
+    ]
+    for code in new_codes:
+        backup = TwoFactorBackup(auth_id=auth.user_id)
+        backup.backup_code = code
+        db.session.add(backup)
+    db.session.commit()
     return jsonify(new_codes), 200
 
 

@@ -35,9 +35,13 @@ class TwoFactorActivate extends React.Component {
   };
 
   confirm = async () => {
-    const { finish } = this.props;
+    const { finish, secret, backup_codes_signature } = this.props;
     this.setState({ activating: true, pageError: false });
-    const json = confirmTwoFactor(this.state.two_factor_code);
+    const json = confirmTwoFactor(
+      this.state.two_factor_code,
+      secret,
+      backup_codes_signature
+    );
     try {
       this.setState(await json);
       if ((await json).two_factor_enabled && finish) {

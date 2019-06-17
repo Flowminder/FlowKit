@@ -231,12 +231,7 @@ class TwoFactorAuth(db.Model):
     user = db.relationship("User", back_populates="two_factor_auth", lazy=True)
     enabled = db.Column(db.Boolean, nullable=False, default=False)
     _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
-    last_used_two_factor_code = db.relationship(
-        "LastUsedTwoFactorCode",
-        back_populates="auth",
-        cascade="all, delete, delete-orphan",
-        uselist=False,
-    )
+    last_used_two_factor_code = db.Column(db.String(), nullable=False)
     two_factor_backups = db.relationship(
         "TwoFactorBackup", back_populates="auth", cascade="all, delete, delete-orphan"
     )
@@ -265,15 +260,13 @@ class TwoFactorAuth(db.Model):
         """
         is_valid = pyotp.totp.TOTP(self.secret_key).verify(code)
         if is_valid:
-            last_used = self.last_used_two_factor_code
-            if last_used is None:
-                last_used = LastUsedTwoFactorCode(user_id=self.user_id, code=code)
+            if (
+                self.last_used_two_factor_code == code
+            ):  # Reject if the code is being reused
+                raise Unauthorized("Code not valid.")
             else:
-                if last_used.code == code:  # Reject if the code is being reused
-                    raise Unauthorized("Code not valid.")
-                else:
-                    last_used.code = code
-            db.session.add(last_used)
+                self.last_used_two_factor_code = code
+            db.session.add(self)
             db.session.commit()
             return True
         else:
@@ -335,23 +328,6 @@ class TwoFactorAuth(db.Model):
         self._secret_key = get_fernet().encrypt(plaintext.encode())
 
 
-class LastUsedTwoFactorCode(db.Model):
-    """
-    Last two factor code used by a user.
-    """
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey(TwoFactorAuth.user_id),
-        nullable=False,
-        primary_key=True,
-    )
-    auth = db.relationship(
-        "TwoFactorAuth", back_populates="last_used_two_factor_code", lazy=True
-    )
-    code = db.Column(db.String(), nullable=False)
-
-
 class TwoFactorBackup(db.Model):
     """
     Back up login codes for two-factor auth.
@@ -397,37 +373,6 @@ class TwoFactorBackup(db.Model):
     @backup_code.setter
     def backup_code(self, plaintext):
         self._backup_code = argon2.hash(plaintext)
-
-    @classmethod
-    def generate(cls, user_id: int) -> List[str]:
-        """
-        Generate a new set of backup codes for a user and
-        remove all existing ones.
-
-        Parameters
-        ----------
-        user_id : int
-            UID of the user to generate codes for
-
-        Returns
-        -------
-        list of str
-            The new backup codes
-        """
-        auth = TwoFactorAuth.query.filter(
-            TwoFactorAuth.user_id == user_id
-        ).first_or_404()
-        for code in auth.two_factor_backups:
-            db.session.delete(code)
-        codes = []
-        for i in range(16):
-            code = "".join(random.choices(string.ascii_letters + string.digits, k=10))
-            codes.append(code)
-            backup = TwoFactorBackup(auth_id=auth.user_id)
-            backup.backup_code = code
-            db.session.add(backup)
-        db.session.commit()
-        return codes
 
 
 class Token(db.Model):

@@ -29,7 +29,6 @@ class TwoFactorConfirm extends React.Component {
     hasError: false,
     pageError: false,
     errors: {},
-    backupsCollected: false,
     confirming: false,
     activating: false
   };
@@ -63,7 +62,13 @@ class TwoFactorConfirm extends React.Component {
     const { classes, finish, cancel } = this.props;
     if (this.state.hasError) throw this.state.error;
 
-    const { provisioning_url, confirming } = this.state;
+    const {
+      provisioning_url,
+      confirming,
+      backup_codes,
+      secret,
+      backup_codes_signature
+    } = this.state;
     return (
       <Paper className={classes.root}>
         <Typography variant="h5" component="h1">
@@ -77,10 +82,16 @@ class TwoFactorConfirm extends React.Component {
                 cancel={this.backstep}
                 finish={finish}
                 provisioning_url={provisioning_url}
+                secret={secret}
+                backup_codes_signature={backup_codes_signature}
               />
             )}
             {!confirming && (
-              <BackupCodes advance={this.advance} cancel={cancel} />
+              <BackupCodes
+                advance={this.advance}
+                backup_codes={backup_codes}
+                cancel={cancel}
+              />
             )}{" "}
           </>
         )}

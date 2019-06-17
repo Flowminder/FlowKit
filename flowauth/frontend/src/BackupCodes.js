@@ -24,26 +24,16 @@ const styles = theme => ({
 
 class BackupCodes extends React.Component {
   state = {
-    backup_codes: [],
     hasError: false,
     pageError: false,
     errors: {},
     backupsCollected: false
   };
-  async componentDidMount() {
-    try {
-      this.setState({ backup_codes: await getTwoFactorBackups() });
-    } catch (err) {
-      if (err.code !== 404) {
-        this.setState({ hasError: true, error: err });
-      }
-    }
-  }
 
   copyToClipboard = event => {
     var textField = document.createElement("textarea");
     textField.style.whiteSpace = "pre-wrap";
-    textField.value = this.state.backup_codes.join("\n");
+    textField.value = this.props.backup_codes.join("\n");
     document.body.appendChild(textField);
     textField.select();
     document.execCommand("copy");
@@ -52,7 +42,7 @@ class BackupCodes extends React.Component {
   };
   downloadTxtFile = () => {
     const element = document.createElement("a");
-    const file = new Blob([this.state.backup_codes.join("\n")], {
+    const file = new Blob([this.props.backup_codes.join("\n")], {
       type: "text/plain"
     });
     element.href = URL.createObjectURL(file);
@@ -63,10 +53,10 @@ class BackupCodes extends React.Component {
   };
 
   render() {
-    const { classes, cancel, advance } = this.props;
+    const { classes, cancel, advance, backup_codes } = this.props;
     if (this.state.hasError) throw this.state.error;
 
-    const { backup_codes, backupsCollected } = this.state;
+    const { backupsCollected } = this.state;
     return (
       <Grid
         container
