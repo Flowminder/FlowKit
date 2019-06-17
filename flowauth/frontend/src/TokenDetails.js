@@ -110,7 +110,7 @@ class TokenDetails extends React.Component {
     }
     const indeterminate = permissionSet.size > 1;
     console.log(permissionSet);
-    this.setState({ rights: rights, permissionIntermediate: indeterminate });
+    this.setState({ rights: rights, permissionIndeterminate: indeterminate });
   };
   scrollToRef = ref => ref.current.scrollIntoView();
 
