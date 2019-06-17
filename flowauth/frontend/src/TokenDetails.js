@@ -62,20 +62,12 @@ class TokenDetails extends React.Component {
     );
   };
   handleSubmit = () => {
-    const { name, expiry, rights, name_helper_text, pageError } = this.state;
-    const { serverID, cancel } = this.props;
+    const { name, name_helper_text } = this.state;
 
     const checkedCheckboxes = document.querySelectorAll(
       'input[type="checkbox"]:checked'
     );
-    console.log("handlesubmit");
-
     if (name && name_helper_text === "" && checkedCheckboxes.length != 0) {
-      // createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
-      //   json => {
-      //     cancel();
-      //   }
-      // );
       this.completeToken();
     } else if (checkedCheckboxes.length == 0) {
       this.setState({
@@ -109,8 +101,8 @@ class TokenDetails extends React.Component {
       }
     }
     const indeterminate = permissionSet.size > 1;
-    console.log(permissionSet);
-    this.setState({ rights: rights, permissionIndeterminate: indeterminate });
+    console.log(indeterminate);
+    this.setState({ rights: rights, permissionIntermediate: indeterminate });
   };
   scrollToRef = ref => ref.current.scrollIntoView();
 
@@ -171,8 +163,7 @@ class TokenDetails extends React.Component {
     this.setState({
       rights: rights,
       isAggregationChecked: event.target.checked,
-      aggregateIndeterminate: false,
-      totalAggregateUnits: listUnits.length
+      aggregateIndeterminate: false
     });
   };
   handleNameChange = event => {
@@ -206,8 +197,8 @@ class TokenDetails extends React.Component {
     return permitted[claim].spatial_aggregation.indexOf(key) !== -1;
   };
 
-  async componentDidMount() {
-    await getMyRightsForServer(this.props.serverID)
+  componentDidMount() {
+    getMyRightsForServer(this.props.serverID)
       .then(json => {
         const listUnits = [];
         for (const key in json.allowed_claims) {

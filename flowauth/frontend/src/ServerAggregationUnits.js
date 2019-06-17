@@ -45,8 +45,7 @@ class ServerAggregationUnits extends React.Component {
       claim,
       units,
       checkedHandler,
-      permitted,
-      ischecked
+      permitted
     } = this.props;
 
     return (

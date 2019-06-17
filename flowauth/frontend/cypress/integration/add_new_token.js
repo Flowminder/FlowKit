@@ -218,7 +218,24 @@ describe("Token generation", function() {
     cy.get("#warning-dialog-yes").click();
     cy.contains("TOKEN_TEST02").should("be.visible");
   });
-
+  it("Click Cancel on warning box", function() {
+    cy.get("#new").click();
+    //add token name
+    cy.get("#name").type("TOKEN_TEST02", {
+      force: true
+    });
+    //unchecked permission top level checkbox
+    cy.get("#permissions").click();
+    //unchecked aggregation unit top-level checkbox
+    cy.get("#units").click();
+    cy.contains("Save").click();
+    cy.get("#warning-dialog-description").should(
+      "have.text",
+      "Warning: no permissions will be granted by this token. Are you sure?"
+    );
+    cy.get("#warning-dialog-cancel").click();
+    cy.contains("TOKEN_TEST02").should("not.be.visible");
+  });
   it("Add new token", function() {
     cy.get("#new").click();
     //Add new token
