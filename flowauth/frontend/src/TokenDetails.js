@@ -337,7 +337,7 @@ class TokenDetails extends React.Component {
             />
           </MuiPickersUtilsProvider>
         </Grid>
-        <Grid item xl={12}>
+        <Grid item xs={12}>
           <ExpansionPanel>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon id="api-exp" />}>
               <Checkbox
