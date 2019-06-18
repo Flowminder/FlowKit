@@ -119,7 +119,7 @@ describe("Token generation", function() {
 
     cy.get("#permissions").should("not.be.checked");
   });
-  it("Top-level API permissions checkbox intermediate", function() {
+  it("Top-level API permissions checkbox indeterminate", function() {
     cy.get("#new").click();
     cy.get("#api-exp").click();
     //checking first sub-level permission checkbox

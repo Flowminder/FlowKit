@@ -46,7 +46,7 @@ class TokenDetails extends React.Component {
     name_helper_text: "",
     isPermissionChecked: true,
     isAggregationChecked: true,
-    permissionIntermediate: false,
+    permissionIndeterminate: false,
     aggregateIndeterminate: false,
     totalAggregateUnits: 0,
     uiReady: new Promise(() => {}),
@@ -103,7 +103,7 @@ class TokenDetails extends React.Component {
     }
     const indeterminate = permissionSet.size > 1;
     console.log(indeterminate);
-    this.setState({ rights: rights, permissionIntermediate: indeterminate });
+    this.setState({ rights: rights, permissionIndeterminate: indeterminate });
   };
   scrollToRef = ref => ref.current.scrollIntoView();
 
@@ -143,7 +143,7 @@ class TokenDetails extends React.Component {
     this.setState({
       rights: rights,
       isPermissionChecked: toCheck,
-      permissionIntermediate: false
+      permissionIndeterminate: false
     });
   };
   handleAggregationCheckbox = event => {
@@ -285,7 +285,7 @@ class TokenDetails extends React.Component {
       aggregateIndeterminate,
       isAggregationChecked,
       isPermissionChecked,
-      permissionIntermediate,
+      permissionIndeterminate,
       name_helper_text
     } = this.state;
     const { classes, onClick } = this.props;
@@ -336,7 +336,7 @@ class TokenDetails extends React.Component {
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon id="api-exp" />}>
               <Checkbox
                 checked={isPermissionChecked}
-                indeterminate={permissionIntermediate}
+                indeterminate={permissionIndeterminate}
                 data-cy="permissions-top-level"
                 id="permissions"
                 value="checkedB"
