@@ -104,4 +104,8 @@ def test_password_reset(client, auth, test_user):
     response, _ = auth.login(
         username, new_password
     )  # Should be able to log with new password
-    assert {"logged_in": True, "is_admin": False} == response.get_json()
+    assert {
+        "logged_in": True,
+        "is_admin": False,
+        "require_two_factor_setup": False,
+    } == response.get_json()

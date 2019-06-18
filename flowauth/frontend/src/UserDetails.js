@@ -25,6 +25,7 @@ import {
 import ErrorDialog from "./ErrorDialog";
 import MessageSnackbar from "./MessageSnackbar";
 import TwoFactorConfirm from "./TwoFactorConfirm";
+import GenerateBackupCodes from "./GenerateBackupCodes";
 var zxcvbn = require("zxcvbn");
 
 const styles = theme => ({
@@ -95,6 +96,8 @@ class UserDetails extends React.Component {
     this.setState(state);
   };
   editTwoFactor = () => this.setState({ two_factor_setup: true });
+  newBackups = () => this.setState({ new_backups: true });
+  finishNewBackups = () => this.setState({ new_backups: false });
   finishEditTwoFactor = () => this.setState({ two_factor_setup: false });
   disableTwoFactor = async () => this.setState(await disableTwoFactor());
 
@@ -111,11 +114,12 @@ class UserDetails extends React.Component {
       newPasswordB,
       password_strength,
       require_two_factor,
+      new_backups,
       two_factor_enabled,
       two_factor_setup
     } = this.state;
 
-    if (!two_factor_setup) {
+    if (!two_factor_setup && !new_backups) {
       return (
         <Paper className={classes.root}>
           <Grid container spacing={16} alignItems="center">
@@ -214,6 +218,7 @@ class UserDetails extends React.Component {
                 variant="contained"
                 color="primary"
                 className={classes.button}
+                onClick={this.newBackups}
               >
                 Regenerate backup codes
               </Button>
@@ -240,12 +245,19 @@ class UserDetails extends React.Component {
           />
         </Paper>
       );
-    } else {
+    } else if (!new_backups) {
       return (
         <TwoFactorConfirm
           classes={classes}
           finish={this.finishEditTwoFactor}
           cancel={this.finishEditTwoFactor}
+        />
+      );
+    } else {
+      return (
+        <GenerateBackupCodes
+          finish={this.finishNewBackups}
+          cancel={this.finishNewBackups}
         />
       );
     }

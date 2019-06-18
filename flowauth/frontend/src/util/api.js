@@ -360,7 +360,17 @@ export async function startTwoFactorSetup() {
 
 export async function getTwoFactorBackups() {
   var dat = {
-    method: "POST"
+    method: "GET"
+  };
+  return await getResponse("/user/generate_two_factor_backups", dat);
+}
+
+export async function confirmTwoFactorBackups(backup_codes_signature) {
+  var dat = {
+    method: "POST",
+    body: JSON.stringify({
+      backup_codes_signature: backup_codes_signature
+    })
   };
   return await getResponse("/user/generate_two_factor_backups", dat);
 }

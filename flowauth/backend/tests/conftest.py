@@ -22,6 +22,7 @@ from flowauth import (
     TwoFactorAuth,
     TwoFactorBackup,
 )
+from flowauth.user_settings import generate_backup_codes
 
 TestUser = namedtuple("TestUser", ["id", "username", "password"])
 TestTwoFactorUser = namedtuple(
@@ -113,7 +114,12 @@ def test_two_factor_auth_user(app):
         db.session.add(auth)
         db.session.add(ug)
         db.session.commit()
-        backup_codes = TwoFactorBackup.generate(user.id)
+        backup_codes = generate_backup_codes()
+        for code in backup_codes:
+            backup = TwoFactorBackup(auth_id=auth.user_id)
+            backup.backup_code = code
+            db.session.add(backup)
+        db.session.commit()
         return TestTwoFactorUser(
             user.id, user.username, "TEST_USER_PASSWORD", otp_generator, backup_codes
         )

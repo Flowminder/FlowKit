@@ -1,11 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from typing import List
 
-import string
-
-import random
 
 import datetime
 import pyotp
@@ -99,7 +95,7 @@ class User(db.Model):
         cascade="all, delete, delete-orphan",
         uselist=False,
     )
-    require_two_factor = db.Column(db.Boolean, default=True)
+    require_two_factor = db.Column(db.Boolean, default=False)
 
     @property
     def two_factor_setup_required(self):
@@ -231,7 +227,7 @@ class TwoFactorAuth(db.Model):
     user = db.relationship("User", back_populates="two_factor_auth", lazy=True)
     enabled = db.Column(db.Boolean, nullable=False, default=False)
     _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
-    last_used_two_factor_code = db.Column(db.String(), nullable=False)
+    last_used_two_factor_code = db.Column(db.String(), nullable=True)
     two_factor_backups = db.relationship(
         "TwoFactorBackup", back_populates="auth", cascade="all, delete, delete-orphan"
     )

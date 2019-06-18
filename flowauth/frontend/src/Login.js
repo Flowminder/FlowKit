@@ -63,6 +63,12 @@ class Login extends React.Component {
     };
   }
 
+  postLogin = () => {
+    const { setLoggedIn } = this.props;
+    const { is_admin } = this.state;
+    setLoggedIn(is_admin);
+  };
+
   handleSubmit = async event => {
     event.preventDefault();
     const { username, password, two_factor_code } = this.state;
@@ -71,7 +77,7 @@ class Login extends React.Component {
       if (json.require_two_factor_setup) {
         this.setState({
           require_two_factor_setup: true,
-          postLogin: () => this.props.setLoggedIn(json.is_admin)
+          is_admin: json.is_admin
         });
       } else {
         this.props.setLoggedIn(json.is_admin);
@@ -125,8 +131,7 @@ class Login extends React.Component {
       two_factor_code,
       require_two_factor_setup,
       username,
-      password,
-      postLogin
+      password
     } = this.state;
 
     return (
@@ -171,7 +176,7 @@ class Login extends React.Component {
           {require_two_factor_setup && (
             <TwoFactorConfirm
               classes={classes}
-              finish={postLogin}
+              finish={this.postLogin}
               cancel={this.resetTwoFactor}
             />
           )}

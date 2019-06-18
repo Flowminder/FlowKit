@@ -1,6 +1,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import random
+
+import string
+
+from typing import List
+
 import pyotp
 from flask import jsonify, Blueprint, request
 from flask_login import login_required, current_user
@@ -69,10 +75,7 @@ def enable_two_factor():
         current_user.username, issuer_name="FlowAuth"
     )
     signed_secret = TimestampSigner(current_app.config["SECRET_KEY"]).sign(secret)
-    backup_codes = [
-        "".join(random.choices(string.ascii_letters + string.digits, k=10))
-        for i in range(16)
-    ]
+    backup_codes = generate_backup_codes()
     serialised_codes = TimedSerializer(current_app.config["SECRET_KEY"]).dumps(
         backup_codes
     )
@@ -126,7 +129,6 @@ def confirm_two_factor():
         db.session.delete(old_auth)
     auth = TwoFactorAuth(user=current_user)
     auth.secret_key = secret
-    print(secret)
 
     auth.validate(code)
     auth.enabled = True
@@ -150,28 +152,54 @@ def disable_two_factor():
     return jsonify({"two_factor_enabled": False}), 200
 
 
-@blueprint.route("/generate_two_factor_backups", methods=["POST"])
+@blueprint.route("/generate_two_factor_backups", methods=["GET"])
 @login_required
 def reset_backup_codes():
+    """
+    Generate a new list of two-factor auth backup codes for the currently logged in user.
+    """
+    backup_codes = generate_backup_codes()
+    serialised_codes = TimedSerializer(current_app.config["SECRET_KEY"]).dumps(
+        backup_codes
+    )
+    return (
+        jsonify(
+            {"backup_codes": backup_codes, "backup_codes_signature": serialised_codes}
+        ),
+        200,
+    )
+
+
+@blueprint.route("/generate_two_factor_backups", methods=["POST"])
+@login_required
+def confirm_reset_backup_codes():
     """
     Generate a new list of two-factor auth backup codes for the currently logged in user and
     replace any existing backup codes.
     """
+    json = request.get_json()
+    if "backup_codes_signature" not in json:
+        raise InvalidUsage("Must supply signed backup codes.")
+    try:
+        backup_codes = TimedSerializer(current_app.config["SECRET_KEY"]).loads(
+            json["backup_codes_signature"], max_age=86400
+        )
+    except BadSignature:
+        raise Unauthorized("Backup codes been tampered with.")
+    except SignatureExpired:
+        raise Unauthorized("Backup codes reset has expired.")
+
     auth = TwoFactorAuth.query.filter(
         TwoFactorAuth.user_id == current_user.id
     ).first_or_404()
     for code in auth.two_factor_backups:
         db.session.delete(code)
-    new_codes = [
-        "".join(random.choices(string.ascii_letters + string.digits, k=10))
-        for i in range(16)
-    ]
-    for code in new_codes:
+    for code in backup_codes:
         backup = TwoFactorBackup(auth_id=auth.user_id)
         backup.backup_code = code
         db.session.add(backup)
     db.session.commit()
-    return jsonify(new_codes), 200
+    return jsonify({"backups_reset": True}), 200
 
 
 @blueprint.route("/two_factor_required")
@@ -195,3 +223,25 @@ def is_two_factor_active():
             and current_user.two_factor_auth.enabled
         }
     )
+
+
+def generate_backup_codes(*, num_codes: int = 16, num_digits: int = 10) -> List[str]:
+    """
+    Utility function which generates backup login codes.
+
+    Parameters
+    ----------
+    num_codes : int, default 16
+        Number of backup codes to generate
+    num_digits : int, default 10
+        Length of each backup code
+
+    Returns
+    -------
+
+    """
+
+    return [
+        "".join(random.choices(string.ascii_letters + string.digits, k=num_digits))
+        for i in range(num_codes)
+    ]

@@ -2,11 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import pyotp
-from flowauth import User, db, LastUsedTwoFactorCode
+import pytest
+from flowauth import User, Unauthorized, db
+from itsdangerous import TimestampSigner
 
 
 def test_two_factor_enabled_but_not_confirmed(client, auth, test_user):
-    """Test that enabling two factor creates it, but doesn't confirm it."""
+    """Test that enabling two factor doesn't enable it."""
     uid, username, password = test_user
     # Log in first
     response, csrf_cookie = auth.login(username, password)
@@ -23,13 +25,14 @@ def test_two_factor_enabled_but_not_confirmed(client, auth, test_user):
         assert "provisioning_url" in json
         assert "secret" in json
         assert "issuer" in json
+        assert "backup_codes" in json
+        assert "backup_codes_signature" in json
         db_user = User.query.filter(User.id == uid).first()
-        assert db_user.two_factor_auth is not None
-        assert not db_user.two_factor_auth.enabled
+        assert db_user.two_factor_auth is None
 
 
-def test_two_factor_confirm_requires_codes(client, auth, test_user):
-    """Test that we can't confirm two factor without backup codes being generated."""
+def test_two_factor_confirmed(app, client, auth, test_user):
+    """Test that confirming two factor enables it."""
     uid, username, password = test_user
     # Log in first
     response, csrf_cookie = auth.login(username, password)
@@ -43,94 +46,102 @@ def test_two_factor_confirm_requires_codes(client, auth, test_user):
         assert 200 == response.status_code  # Should get an error
 
         json = response.get_json()
-        assert "secret" in json
-        assert "issuer" in json
-        db_user = User.query.filter(User.id == uid).first()
-        assert db_user.two_factor_auth is not None
-        assert not db_user.two_factor_auth.enabled
-        response = client.post(
-            "/user/confirm_two_factor",
-            headers={"X-CSRF-Token": csrf_cookie},
-            json={"two_factor_code": 0},
+        secret = (
+            TimestampSigner(app.config["SECRET_KEY"])
+            .unsign(json["secret"], max_age=86400)
+            .decode()
         )
-        assert response.status_code == 400
-        assert response.json["message"] == "Must view backup codes first."
+        json["two_factor_code"] = pyotp.totp.TOTP(secret).now()
+        response = client.post(
+            "/user/confirm_two_factor", headers={"X-CSRF-Token": csrf_cookie}, json=json
+        )
+        assert response.status_code == 200
+        assert response.json == {"two_factor_enabled": True}
 
 
-def test_backup_code_generation(client, auth, test_user):
-    """Test that we can't confirm two factor without backup codes being generated."""
-    uid, username, password = test_user
+def test_backup_code_generation(client, auth, test_two_factor_auth_user):
+    """Test that we can generate backup codes."""
+    uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
+    otp_code = otp_generator.now()
+    # Log in once
+    response, csrf_cookie = auth.two_factor_login(
+        username=username, password=password, otp_code=otp_code
+    )
     # Log in first
     response, csrf_cookie = auth.login(username, password)
     with client:
-        client.get("/")
-        db_user = User.query.filter(User.id == uid).first()
-        assert db_user.two_factor_auth is None
-        response = client.post(
-            "/user/enable_two_factor", headers={"X-CSRF-Token": csrf_cookie}
-        )
-        assert 200 == response.status_code  # Should get an error
-
-        json = response.get_json()
-        assert "secret" in json
-        assert "issuer" in json
-        db_user = User.query.filter(User.id == uid).first()
-        assert db_user.two_factor_auth is not None
-        assert not db_user.two_factor_auth.enabled
-        response = client.post(
+        response = client.get(
             "/user/generate_two_factor_backups", headers={"X-CSRF-Token": csrf_cookie}
         )
         assert response.status_code == 200
-        assert len(response.json) > 0
-        assert isinstance(response.json[0], str)
+        assert len(response.json["backup_codes"]) == 16
+        assert len(response.json["backup_codes"][0]) == 10
+        assert "backup_codes_signature" in response.json
+        new_backup_codes = response.json["backup_codes"]
+        # Backup codes should not yet be reset
+        assert (
+            User.query.filter(User.id == uid)
+            .first()
+            .two_factor_auth.validate_backup_code(backup_codes[0])
+        )
+        response = client.post(
+            "/user/generate_two_factor_backups",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json=response.json,
+        )
+        assert response.status_code == 200
+        # Original backup codes should no longer be valid
+        with pytest.raises(Unauthorized):
+            User.query.filter(
+                User.id == uid
+            ).first().two_factor_auth.validate_backup_code(backup_codes[2])
+        assert (
+            User.query.filter(User.id == uid)
+            .first()
+            .two_factor_auth.validate_backup_code(new_backup_codes[0])
+        )
 
 
-def test_two_factor_login(client, auth, test_user):
+@pytest.mark.parametrize(
+    "data, expected_status",
+    [({}, 400), ({"backup_codes_signature": "BAD_SIGNATURE"}, 401)],
+)
+def test_backup_code_confirm_errors(
+    data, expected_status, client, auth, test_two_factor_auth_user
+):
+    """Test expected error statuses come back when bad data is sent to confirm code reset.."""
+    uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
+    otp_code = otp_generator.now()
+    # Log in once
+    response, csrf_cookie = auth.two_factor_login(
+        username=username, password=password, otp_code=otp_code
+    )
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    with client:
+
+        response = client.post(
+            "/user/generate_two_factor_backups",
+            headers={"X-CSRF-Token": csrf_cookie},
+            json=data,
+        )
+        assert response.status_code == expected_status
+
+
+def test_two_factor_login(client, auth, test_two_factor_auth_user):
     """Test that we can log in with two factor.."""
-    uid, username, password = test_user
-    # Log in first
-    response, csrf_cookie = auth.login(username, password)
-    with client:
-        client.get("/")
-        db_user = User.query.filter(User.id == uid).first()
-        assert db_user.two_factor_auth is None
-        response = client.post(
-            "/user/enable_two_factor", headers={"X-CSRF-Token": csrf_cookie}
-        )
-        assert 200 == response.status_code  # Should get an error
-
-        json = response.get_json()
-        assert "secret" in json
-        assert "issuer" in json
-        secret = json["secret"]
-        db_user = User.query.filter(User.id == uid).first()
-        assert db_user.two_factor_auth is not None
-        assert not db_user.two_factor_auth.enabled
-        response = client.post(
-            "/user/generate_two_factor_backups", headers={"X-CSRF-Token": csrf_cookie}
-        )
-        backup_codes = response.json
-        response = client.post(
-            "/user/confirm_two_factor",
-            headers={"X-CSRF-Token": csrf_cookie},
-            json={"two_factor_code": pyotp.TOTP(secret).now()},
-        )
-        assert response.json["two_factor_enabled"]
-        # Remove the code we just used because it will no longer be valid and we don't
-        # want to wait for a new one
-        db.session.delete(LastUsedTwoFactorCode.query.all()[0])
-        db.session.commit()
-        auth.logout()
-        response = client.post(
-            "signin",
-            json={
-                "username": username,
-                "password": password,
-                "two_factor_code": pyotp.TOTP(secret).now(),
-            },
-        )
-        assert response.status_code == 200
-        assert response.json == {"logged_in": True, "is_admin": False}
+    uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
+    otp_code = otp_generator.now()
+    # Log in once
+    response, csrf_cookie = auth.two_factor_login(
+        username=username, password=password, otp_code=otp_code
+    )
+    assert response.status_code == 200
+    assert response.json == {
+        "logged_in": True,
+        "is_admin": False,
+        "require_two_factor_setup": False,
+    }
 
 
 def test_two_factor_login_no_reuse(client, auth, test_two_factor_auth_user):
@@ -182,7 +193,7 @@ def test_two_factor_login_no_backup_reuse(client, auth, test_two_factor_auth_use
         username=username, password=password, otp_code=backup_codes[0]
     )
     assert response.status_code == 401
-    assert response.json["message"] == "Invalid backup code."
+    assert response.json["message"] == "Code not valid."
 
 
 def test_disable_two_factor_login(client, auth, test_two_factor_auth_user):
@@ -202,3 +213,41 @@ def test_disable_two_factor_login(client, auth, test_two_factor_auth_user):
 
     assert response.status_code == 200
     assert response.json["logged_in"]
+
+
+def test_two_factor_status(client, auth, test_two_factor_auth_user):
+    """Test two factor status accurately reported;."""
+    uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
+
+    # Log in once with a backup code
+    response, csrf_cookie = auth.two_factor_login(
+        username=username, password=password, otp_code=otp_generator.now()
+    )
+    with client:
+        response = client.get(
+            "/user/two_factor_active", headers={"X-CSRF-Token": csrf_cookie}
+        )
+        assert response.json["two_factor_enabled"]
+
+
+def test_two_factor_require(client, auth, test_two_factor_auth_user):
+    """Test two factor is not required unless set as such."""
+    uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
+
+    # Log in once with a backup code
+    response, csrf_cookie = auth.two_factor_login(
+        username=username, password=password, otp_code=otp_generator.now()
+    )
+    with client:
+        response = client.get(
+            "/user/two_factor_required", headers={"X-CSRF-Token": csrf_cookie}
+        )
+        assert not response.json["require_two_factor"]
+        user = User.query.filter(User.id == uid).first()
+        user.require_two_factor = True
+        db.session.add(user)
+        db.session.commit()
+        response = client.get(
+            "/user/two_factor_required", headers={"X-CSRF-Token": csrf_cookie}
+        )
+        assert response.json["require_two_factor"]
