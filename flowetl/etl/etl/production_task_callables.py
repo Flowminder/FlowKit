@@ -58,7 +58,7 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
         for task_id in ["init", "extract", "transform", "load"]
     ]
 
-    logger.info(dag_run)
+    logger.info(f"Dag run: {dag_run}")
 
     if any(previous_task_failures):
         branch = "quarantine"
@@ -87,25 +87,28 @@ def trigger__callable(
 
     found_files = find_files(files_path=files_path)
     logger.info(found_files)
+    logger.info(f"Files found: {found_files}")
 
     # remove files that either do not match a pattern
-    # or have been processed successfully allready...
+    # or have been processed successfully already...
     filtered_files = filter_files(
         found_files=found_files, cdr_type_config=cdr_type_config
     )
-    logger.info(filtered_files)
+    logger.info(
+        f"Files found that match the filename pattern and have not been processed: {filtered_files}"
+    )
 
     # what to do with these!?
     bad_files = list(set(found_files) - set(filtered_files))
-    logger.info(bad_files)
+    logger.info(f"Bad files found: {bad_files}")
 
-    configs = [
+    files_and_associated_configs = [
         (file, get_config(file_name=file.name, cdr_type_config=cdr_type_config))
         for file in filtered_files
     ]
-    logger.info(configs)
+    logger.info(f"Files and associated configs: {files_and_associated_configs}")
 
-    for file, config in configs:
+    for file, config in files_and_associated_configs:
 
         cdr_type = config["cdr_type"]
         cdr_date = config["cdr_date"]
