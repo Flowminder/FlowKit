@@ -55,7 +55,13 @@ class TwoFactorActivate extends React.Component {
   };
 
   render() {
-    const { provisioning_url, two_factor_code, cancel, classes } = this.props;
+    const {
+      provisioning_url,
+      secret,
+      two_factor_code,
+      cancel,
+      classes
+    } = this.props;
     if (this.state.hasError) throw this.state.error;
 
     const { two_factor_enabled, activating } = this.state;
@@ -80,6 +86,7 @@ class TwoFactorActivate extends React.Component {
             level="Q"
             style={{ width: 256 }}
             value={provisioning_url}
+            data-secret={secret}
           />
         </Grid>
 
