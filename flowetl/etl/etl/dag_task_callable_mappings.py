@@ -27,14 +27,14 @@ from etl.production_task_callables import (
 )
 
 mount_paths = {
-    "dump": Path(f"{os.environ.get('MOUNT_HOME','')}/dump"),
-    "ingest": Path(f"{os.environ.get('MOUNT_HOME','')}/ingest"),
-    "archive": Path(f"{os.environ.get('MOUNT_HOME','')}/archive"),
-    "quarantine": Path(f"{os.environ.get('MOUNT_HOME','')}/quarantine"),
+    "dump": Path("/mounts/dump"),
+    "ingest": Path("/mounts/ingest"),
+    "archive": Path("/mounts/archive"),
+    "quarantine": Path("/mounts/quarantine"),
 }
 
 db_hook = PostgresHook(postgres_conn_id="flowdb")
-config_path = Path(f"{os.environ.get('MOUNT_HOME','')}/config")
+config_path = Path("/mounts/config")
 try:
     config = get_config_from_file(config_filepath=config_path / "config.yml")
 except FileNotFoundError:
