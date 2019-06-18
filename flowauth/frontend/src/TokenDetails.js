@@ -43,17 +43,18 @@ class TokenDetails extends React.Component {
     rights: {},
     expiry: new Date(),
     latest_expiry: new Date(),
-    username_helper_text: "",
+    name_helper_text: "",
     isPermissionChecked: true,
     isAggregationChecked: true,
     permissionIntermediate: false,
     aggregateIndeterminate: false,
     totalAggregateUnits: 0,
+    uiReady: new Promise(() => {}),
     pageError: false,
     errors: { message: "" }
   };
   completeToken = () => {
-    const { name, expiry, rights, pageError, errors } = this.state;
+    const { name, expiry, rights } = this.state;
     const { serverID, cancel } = this.props;
     createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
       json => {
@@ -61,9 +62,9 @@ class TokenDetails extends React.Component {
       }
     );
   };
-  handleSubmit = () => {
-    const { name, name_helper_text } = this.state;
-
+  handleSubmit = async () => {
+    const { name, name_helper_text, uiReady } = this.state;
+    await uiReady;
     const checkedCheckboxes = document.querySelectorAll(
       'input[type="checkbox"]:checked'
     );
@@ -198,25 +199,26 @@ class TokenDetails extends React.Component {
   };
 
   componentDidMount() {
-    getMyRightsForServer(this.props.serverID)
-      .then(json => {
-        const listUnits = [];
-        for (const key in json.allowed_claims) {
-          for (const keys in json.allowed_claims[key].spatial_aggregation) {
-            listUnits.push(keys);
-          }
-        }
-        this.setState({
-          rights: JSON.parse(JSON.stringify(json.allowed_claims || {})),
-          permitted: json.allowed_claims || {},
-          expiry: json.latest_expiry,
-          latest_expiry: json.latest_expiry,
-          totalAggregateUnits: listUnits.length
-        });
-      })
-      .catch(err => {
-        this.setState({ hasError: true, error: err });
-      });
+    this.setState({
+      uiReady: getMyRightsForServer(this.props.serverID)
+        .then(json => {
+          const totalAggUnits = Object.keys(json.allowed_claims).reduce(
+            (acc, k) => acc + json.allowed_claims[k].spatial_aggregation.length,
+            0
+          );
+
+          this.setState({
+            rights: JSON.parse(JSON.stringify(json.allowed_claims || {})),
+            permitted: json.allowed_claims || {},
+            expiry: json.latest_expiry,
+            latest_expiry: json.latest_expiry,
+            totalAggregateUnits: totalAggUnits
+          });
+        })
+        .catch(err => {
+          this.setState({ hasError: true, error: err });
+        })
+    });
   }
 
   renderRights = () => {
@@ -283,7 +285,8 @@ class TokenDetails extends React.Component {
       aggregateIndeterminate,
       isAggregationChecked,
       isPermissionChecked,
-      permissionIntermediate
+      permissionIntermediate,
+      name_helper_text
     } = this.state;
     const { classes, onClick } = this.props;
 
@@ -304,8 +307,8 @@ class TokenDetails extends React.Component {
             value={name}
             onChange={this.handleNameChange}
             margin="normal"
-            error={this.state.name_helper_text !== ""}
-            helperText={this.state.name_helper_text}
+            error={name_helper_text !== ""}
+            helperText={name_helper_text}
           />
         </Grid>
         <Grid item xs={12}>
