@@ -559,37 +559,45 @@ jobs:
             docker push flowminder/<<parameters.component>>:$CIRCLE_SHA1
 
   run_flowetl_tests:
-    docker:
-      - image: circleci/python:3.7
+    machine:
+      image: circleci/classic:201808-01
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       TESTING: "true"
-    working_directory: /home/circleci/project/
+    working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:
           path: /home/circleci/project/
-      - setup_remote_docker
       - restore_cache:
-          key: flowetl-deps-1-{{ checksum "flowetl/Pipfile.lock"}}
+          key: flowetl-deps-1-{{ checksum "Pipfile.lock"}}
       - run:
           name: Install pipenv
           command: pip install --upgrade pip pipenv
       - run:
           name: Install python dependencies
           command: |
-            PIPENV_PIPFILE=flowetl/Pipfile pipenv install --deploy --dev
+            pipenv install --deploy --dev
+      - save_cache:
+          key: flowetl-deps1-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
+      - run:
+          name: Set FLOWETL_TESTS_CONTAINER_TAG environment variable
+          command: |
+            echo "export FLOWETL_TESTS_CONTAINER_TAG=${CIRCLE_SHA1}" >> $BASH_ENV
       - run:
           name: run flowetl integration tests
           command: |
-            cd flowetl
-            FLOWETL_TAG=$CIRCLE_SHA1 pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
+            pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
       - run:
           name: run etl module unit tests
           command: |
-            cd flowetl
-            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml ./etl/tests
+            pipenv run pytest --junit-xml=test_results/pytest/results_unit_etl_module.xml --cov=./etl/etl \
+            --cov-report xml \
+            --cov-report term-missing ./etl/tests
       - store_test_results:
-          path: flowetl/test_results
+          path: test_results
+      - run: bash <(curl -s https://codecov.io/bash) -F flowetl_unit_tests
 
   integration_tests:
     executor:
@@ -622,11 +630,13 @@ jobs:
     machine:
       image: circleci/classic:201808-01
     working_directory: /home/circleci/project
-    environment:
-      GIT_REVISION: $CIRCLE_SHA1
     steps:
       - checkout:
           path: /home/circleci/project/
+      - run:
+          name: Set GIT_REVISION environment variable
+          command: |
+            echo "export GIT_REVISION=${CIRCLE_SHA1}" >> $BASH_ENV
       - run: ./quick_start.sh <<parameters.start_arguments>>
       - run: ./quick_start.sh stop
       - run:
@@ -868,6 +878,7 @@ workflows:
       - run_flowetl_tests:
           requires:
             - build_flowetl
+            - build_flowdb
           <<: *run_always_org_context
       - build_python_wheel:
           name: build_flowclient_wheel
@@ -913,7 +924,7 @@ workflows:
           requires: &retag_requirements
             - test_quickstart
             - test_quickstart_examples_with_smaller_data
-            #            - test_quickstart_with_larger_data
+            # - test_quickstart_with_larger_data
             - integration_tests
             - build_docs
             - run_flowkit_api_tests

@@ -28,8 +28,9 @@ class FakeTaskInstance:
     A fake TaskInstance object
     """
 
-    def __init__(self, task_id):
+    def __init__(self, task_id=None, state=None):
         self.task_id = task_id
+        self.state = state
 
 
 @pytest.fixture(scope="function")
@@ -52,8 +53,8 @@ def create_fake_task_instance():
     with specific task_id
     """
 
-    def fake_task_instance(*, task_id):
-        return FakeTaskInstance(task_id=task_id)
+    def fake_task_instance(*, task_id=None, state=None):
+        return FakeTaskInstance(task_id=task_id, state=state)
 
     return fake_task_instance
 
