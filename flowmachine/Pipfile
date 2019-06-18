@@ -40,7 +40,6 @@ cachey = "*"
 approvaltests = "*"
 watchdog = "*"
 ipdb = "*"
-pygraphviz = "*"
 
 [requires]
 python_version = "3.7"
