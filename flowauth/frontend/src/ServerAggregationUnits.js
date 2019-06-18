@@ -57,6 +57,7 @@ class ServerAggregationUnits extends React.Component {
               <FormControlLabel
                 control={
                   <Checkbox
+                    id="unit"
                     checked={units.indexOf(unit.name) !== -1}
                     onChange={checkedHandler(claim_id, claim, unit.name)}
                     value={claim + ":" + unit.name}
