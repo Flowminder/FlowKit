@@ -57,6 +57,56 @@ def test_two_factor_confirmed(app, client, auth, test_user):
         )
         assert response.status_code == 200
         assert response.json == {"two_factor_enabled": True}
+        assert (
+            User.query.filter(User.id == uid).first().two_factor_auth.secret_key
+            == secret
+        )
+
+
+@pytest.mark.parametrize(
+    "data, expected_status, expected_message",
+    [
+        ({}, 400, "Must supply a two-factor authentication code."),
+        (
+            {"two_factor_code": "", "backup_codes_signature": "BAD_SIGNATURE"},
+            400,
+            "Must supply a two-factor authentication secret.",
+        ),
+        (
+            {"secret": "", "two_factor_code": ""},
+            400,
+            "Must supply signed backup codes.",
+        ),
+        (
+            {
+                "secret": "",
+                "two_factor_code": "",
+                "backup_codes_signature": "BAD_SIGNATURE",
+            },
+            401,
+            "Two-factor setup attempt has been tampered with.",
+        ),
+    ],
+)
+def test_confirm_errors(
+    data, expected_status, expected_message, client, auth, test_two_factor_auth_user
+):
+    """Test expected error statuses come back when bad data is sent to confirm code reset.."""
+    uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
+    otp_code = otp_generator.now()
+    # Log in once
+    response, csrf_cookie = auth.two_factor_login(
+        username=username, password=password, otp_code=otp_code
+    )
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    with client:
+
+        response = client.post(
+            "/user/confirm_two_factor", headers={"X-CSRF-Token": csrf_cookie}, json=data
+        )
+        assert response.status_code == expected_status
+        assert response.json["message"] == expected_message
 
 
 def test_backup_code_generation(client, auth, test_two_factor_auth_user):
