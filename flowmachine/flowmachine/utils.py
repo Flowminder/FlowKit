@@ -562,6 +562,9 @@ def plot_dependency_graph(
             "http://pygraphviz.github.io/",
         )
 
+    if format not in ["png", "svg"]:
+        raise ValueError(f"Unsupported output format: '{format}'")
+
     G = calculate_dependency_graph(query_obj, analyse=analyse)
     A = nx.nx_agraph.to_agraph(G)
     s = BytesIO()
