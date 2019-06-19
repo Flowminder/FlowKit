@@ -568,7 +568,7 @@ jobs:
       image: circleci/classic:201808-01
     environment:
       AIRFLOW_HOME: ./test_airflow_home
-      TESTING: "true"
+      FLOWETL_RUNTIME_CONFIG: "testing"
     working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:

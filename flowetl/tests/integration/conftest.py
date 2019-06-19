@@ -36,9 +36,9 @@ def ensure_required_env_vars_are_set():
             "Must set environment variable AIRFLOW_HOME to run the flowetl tests."
         )
 
-    if "true" != os.getenv("TESTING", "false").lower():
+    if "testing" != os.getenv("FLOWETL_RUNTIME_CONFIG", "").lower():
         raise RuntimeError(
-            "Must set environment variable TESTING='true' to run the flowetl tests."
+            "Must set environment variable FLOWETL_RUNTIME_CONFIG='testing' to run the flowetl tests."
         )
 
     if "FLOWETL_TESTS_CONTAINER_TAG" not in os.environ:

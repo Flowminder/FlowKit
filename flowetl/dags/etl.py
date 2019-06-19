@@ -25,15 +25,26 @@ from etl.config_parser import validate_config, get_config_from_file
 logger = structlog.get_logger("flowetl")
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
+try:
+    flowetl_runtime_config = os.environ["FLOWETL_RUNTIME_CONFIG"]
+except KeyError:
+    raise RuntimeError("Must set FLOWETL_RUNTIME_CONFIG env var.")
+
+ETL_TASK_CALLABLES = {
+    "testing": TEST_ETL_TASK_CALLABLES,
+    "production": PRODUCTION_ETL_TASK_CALLABLES,
+}
+
+
 # Determine if we are in a testing environment - use dummy callables if so
-if os.environ.get("TESTING", "") == "true":
+if flowetl_runtime_config == "testing":
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
     logger.info("running in testing environment")
 
     dag = construct_etl_dag(
         **task_callable_mapping, default_args=default_args, cdr_type="testing"
     )
-else:
+elif flowetl_runtime_config == "production":
     task_callable_mapping = PRODUCTION_ETL_TASK_CALLABLES
     logger.info("running in production environment")
 
@@ -54,3 +65,8 @@ else:
         globals()[f"etl_{cdr_type}"] = construct_etl_dag(
             **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
         )
+else:
+    raise ValueError(
+        f"Invalid config name: '{flowetl_runtime_config}'. "
+        f"Valid config names are: {list(ETL_TASK_CALLABLES.keys())}"
+    )
