@@ -130,11 +130,14 @@ class TokenDetails extends React.Component {
       aggregateIndeterminate: totalAggregateUnits != listUnits.length
     });
   };
-  handlePermissionCheckbox = event => {
+  handlePermissionCheckbox = async event => {
+    const toCheck = event.target.checked;
     event.stopPropagation();
+    const { uiReady } = this.state;
+    await uiReady; // Wait to make sure checkboxes exist
     this.setState({ pageError: false, errors: "" });
     const { rights } = this.state;
-    const toCheck = event.target.checked;
+
     for (const keys in rights) {
       for (const key in rights[keys].permissions) {
         rights[keys].permissions[key] = toCheck;
@@ -146,13 +149,16 @@ class TokenDetails extends React.Component {
       permissionIndeterminate: false
     });
   };
-  handleAggregationCheckbox = event => {
+  handleAggregationCheckbox = async event => {
+    const toCheck = event.target.checked;
     this.setState({ pageError: false, errors: "" });
     event.stopPropagation();
+    const { uiReady } = this.state;
+    await uiReady; // Wait to make sure checkboxes exist
     var listUnits = [];
     const { rights, permitted } = this.state;
     for (const key in rights) {
-      if (event.target.checked) {
+      if (toCheck) {
         rights[key].spatial_aggregation = permitted[key].spatial_aggregation;
       } else {
         rights[key].spatial_aggregation = [];
@@ -163,7 +169,7 @@ class TokenDetails extends React.Component {
     }
     this.setState({
       rights: rights,
-      isAggregationChecked: event.target.checked,
+      isAggregationChecked: toCheck,
       aggregateIndeterminate: false
     });
   };
