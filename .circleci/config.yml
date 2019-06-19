@@ -294,15 +294,15 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
+          key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
       # Need to install graphviz and pygraphviz manually because it was removed from the Pipfile
       # (see https://github.com/Flowminder/FlowKit/issues/952)
+      - run: cd flowmachine && sudo apt-get install -y graphviz && pipenv run pip install pygraphviz
       - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
       - save_cache:
-          key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
+          key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/flowmachine-caaCcVrN
-      - run: cd flowmachine && sudo apt-get install -y graphviz && pipenv run pip install pygraphviz
 
   lint_python:
     docker: *base_docker
