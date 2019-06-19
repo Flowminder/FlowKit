@@ -549,11 +549,12 @@ def plot_dependency_graph(
     -------
     IPython.display.Image or IPython.display.SVG
     """
-    try:
+    try:  # pragma: no cover
         from IPython.display import Image, SVG
     except ImportError:
         raise ImportError("requires IPython ", "https://ipython.org/")
-    try:
+
+    try:  # pragma: no cover
         import pygraphviz
     except ImportError:
         raise ImportError(
