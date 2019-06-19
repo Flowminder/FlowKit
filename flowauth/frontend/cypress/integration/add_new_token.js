@@ -147,9 +147,11 @@ describe("Token generation", function() {
     cy.get("#new").click();
     cy.get("#unit-exp").click();
     //unchecked aggregation unit top-level checkbox
-    cy.get("#units").click({
-      force: true
-    });
+    cy.get("#units")
+      .click({
+        force: true
+      })
+      .should("not.be.checked");
 
     cy.get("#unit")
       .first()
