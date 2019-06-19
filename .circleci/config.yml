@@ -310,7 +310,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: flowmachine-deps-1-{{ checksum "flowmachine/Pipfile.lock" }}
+          key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
       - run:
           name: Linting files with black
           command: PIPENV_PIPFILE=flowmachine/Pipfile pipenv run black --check .
@@ -349,7 +349,7 @@ jobs:
       - attach_workspace:
           at: /home/circleci/
       - restore_cache:
-          key: flowmachine-deps-1-{{ checksum "Pipfile.lock" }}
+          key: flowmachine-deps-2-{{ checksum "Pipfile.lock" }}
       - run:
           name: Install graphviz
           command: sudo apt-get install -y xvfb graphviz
