@@ -68,7 +68,7 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
     return branch
 
 
-def trigger__callable(
+def production_trigger__callable(
     *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
 ):
     """

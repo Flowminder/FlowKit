@@ -11,7 +11,7 @@ from uuid import uuid1
 from etl.model import ETLRecord
 from etl.etl_utils import CDRType
 from etl.config_constant import config
-from etl.production_task_callables import trigger__callable
+from etl.production_task_callables import production_trigger__callable
 
 
 def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
@@ -37,7 +37,7 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
     monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
-    trigger__callable(
+    production_trigger__callable(
         dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
     )
 
@@ -96,7 +96,7 @@ def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkey
     monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
-    trigger__callable(
+    production_trigger__callable(
         dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
     )
 
@@ -157,7 +157,7 @@ def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
     monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
-    trigger__callable(
+    production_trigger__callable(
         dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
     )
 
@@ -203,7 +203,7 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
     monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
-    trigger__callable(
+    production_trigger__callable(
         dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
     )
 
