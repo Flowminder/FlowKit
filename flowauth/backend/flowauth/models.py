@@ -254,6 +254,7 @@ class TwoFactorAuth(db.Model):
         Unauthorized
             Raised if the code is invalid, or has just been used.
         """
+        current_app.logger.debug(f"Verifying {code} using {self.secret_key}")
         is_valid = pyotp.totp.TOTP(self.secret_key).verify(code)
         if is_valid:
             if (
