@@ -188,7 +188,7 @@ def pull_docker_images(docker_client, container_tag):
     docker_client.images.pull("postgres", tag="11.0")
     docker_client.images.pull("flowminder/flowdb", tag=container_tag)
     docker_client.images.pull("flowminder/flowetl", tag=container_tag)
-    print("Done pulling docker images.")
+    logger.info("Done pulling docker images.")
 
 
 @pytest.fixture(scope="function")
