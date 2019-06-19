@@ -66,7 +66,7 @@ def construct_etl_dag(
     clean: Callable,
     fail: Callable,
     default_args: dict,
-    cdr_type: str
+    cdr_type: str,
 ) -> DAG:
     """
     This function returns an Airflow DAG object of the structure
@@ -111,24 +111,16 @@ def construct_etl_dag(
     ) as dag:
 
         init = PythonOperator(
-            task_id="init",
-            python_callable=init,
-            provide_context=True,
+            task_id="init", python_callable=init, provide_context=True
         )
         extract = PythonOperator(
-            task_id="extract",
-            python_callable=extract,
-            provide_context=True,
+            task_id="extract", python_callable=extract, provide_context=True
         )
         transform = PythonOperator(
-            task_id="transform",
-            python_callable=transform,
-            provide_context=True,
+            task_id="transform", python_callable=transform, provide_context=True
         )
         load = PythonOperator(
-            task_id="load",
-            python_callable=load,
-            provide_context=True,
+            task_id="load", python_callable=load, provide_context=True
         )
         success_branch = BranchPythonOperator(
             task_id="success_branch",
@@ -137,14 +129,10 @@ def construct_etl_dag(
             trigger_rule="all_done",
         )
         archive = PythonOperator(
-            task_id="archive",
-            python_callable=archive,
-            provide_context=True,
+            task_id="archive", python_callable=archive, provide_context=True
         )
         quarantine = PythonOperator(
-            task_id="quarantine",
-            python_callable=quarantine,
-            provide_context=True,
+            task_id="quarantine", python_callable=quarantine, provide_context=True
         )
         clean = PythonOperator(
             task_id="clean",
@@ -153,9 +141,7 @@ def construct_etl_dag(
             trigger_rule="all_done",
         )
         fail = PythonOperator(
-            task_id="fail",
-            python_callable=fail,
-            provide_context=True,
+            task_id="fail", python_callable=fail, provide_context=True
         )
 
         # Define upstream/downstream relationships between airflow tasks
