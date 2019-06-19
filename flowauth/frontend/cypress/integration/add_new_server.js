@@ -17,6 +17,7 @@ describe("Server management", function() {
     cy.get("#name").type("Server ", {
       force: true
     });
+    cy.get("#name").type("Server ", { force: true });
     //checking validation text
     cy.get("#name-helper-text").should(
       "have.text",
@@ -29,52 +30,42 @@ describe("Server management", function() {
       .clear({
         force: true
       });
-    cy.get("#name").type("SERVER_TEST01", {
-      force: true
-    });
+    cy.get("#name")
+      .type("SERVER_TEST01", {
+        force: true
+      })
+      .type(" ", { force: true })
+      .clear({ force: true });
+    cy.get("#name").type("SERVER_TEST01", { force: true });
     cy.contains("#name-helper-text").should("not.exist");
   });
   it("Add blank server name", function() {
     cy.get("#new").click();
     //adding blank username
     cy.get("#name")
-      .type(" ", {
-        force: true
-      })
-      .clear({
-        force: true
-      });
+      .type(" ", { force: true })
+      .clear({ force: true });
     //checking validation text
     cy.get("#name-helper-text").should(
       "have.text",
       "Server name can not be blank."
     );
-    cy.get("#name").type("SERVER_TEST01", {
-      force: true
-    });
+    cy.get("#name").type("SERVER_TEST01", { force: true });
     cy.contains("#name-helper-text").should("not.exist");
   });
   it("Add server name more than 120 characters", function() {
     cy.get("#new").click();
     //adding username
-    cy.get("#name").type("a".repeat(121), {
-      force: true
-    });
+    cy.get("#name").type("a".repeat(121), { force: true });
     //checking validation text
     cy.get("#name-helper-text").should(
       "have.text",
       "Server name must be 120 characters or less."
     );
     cy.get("#name")
-      .type(" ", {
-        force: true
-      })
-      .clear({
-        force: true
-      });
-    cy.get("#name").type("SERVER_TEST01", {
-      force: true
-    });
+      .type(" ", { force: true })
+      .clear({ force: true });
+    cy.get("#name").type("SERVER_TEST01", { force: true });
     cy.contains("#name-helper-text").should("not.exist");
   });
 
@@ -82,27 +73,19 @@ describe("Server management", function() {
     cy.get("#new").click();
     //Add blank maximum lifetime minutes
     cy.get("#max-life")
-      .type(" ", {
-        force: true
-      })
-      .clear({
-        force: true
-      });
+      .type(" ", { force: true })
+      .clear({ force: true });
     cy.get("#max-life-helper-text").should(
       "have.text",
       "Maximum lifetime minutes can not be blank."
     );
-    cy.get("#max-life").type("1234", {
-      force: true
-    });
+    cy.get("#max-life").type("1234", { force: true });
     cy.get("#max-life-helper-text").should("not.exist");
   });
   it("Add duplicate Server name", function() {
     cy.get("#new").click();
-    //adding existing server name
-    cy.get("#name").type("TEST_SERVER", {
-      force: true
-    });
+    //adding existing server name and new secret key
+    cy.get("#name").type("TEST_SERVER", { force: true });
     cy.contains("Save").click();
     //checking error dialogue text
     cy.get("#error-dialog-description").should(
