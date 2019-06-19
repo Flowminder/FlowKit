@@ -86,6 +86,7 @@ class TwoFactorActivate extends React.Component {
             level="Q"
             style={{ width: 256 }}
             value={provisioning_url}
+            data-id="qr_code"
             data-secret={secret}
           />
         </Grid>
@@ -110,6 +111,7 @@ class TwoFactorActivate extends React.Component {
                 className={classes.button}
                 onClick={this.confirm}
                 disabled={activating || two_factor_enabled}
+                data-button-id="submit"
               >
                 {activating && <CircularProgress size={24} />}
                 {!activating && !two_factor_enabled && (
@@ -121,6 +123,7 @@ class TwoFactorActivate extends React.Component {
           </Grid>
           <Grid item xs={2}>
             <Button
+              data-button-id="cancel"
               type="submit"
               variant="contained"
               className={classes.button}

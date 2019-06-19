@@ -19,6 +19,7 @@ class BackupCodesBlock extends React.Component {
           variant="body2"
           align="center"
           className={this.props.classes.codeBlock}
+          data-cy="backup_code"
         >
           <span className="trailing_dash">
             {code.slice(0, code.length / 2)}

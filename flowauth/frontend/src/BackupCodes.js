@@ -90,19 +90,19 @@ class BackupCodes extends React.Component {
 
             <Grid item xs={12}>
               <Button
-                type="submit"
                 variant="contained"
                 className={classes.button}
                 onClick={this.downloadTxtFile}
+                data-button-id="download"
               >
                 Download
               </Button>
 
               <Button
-                type="submit"
                 variant="contained"
                 className={classes.button}
                 onClick={this.copyToClipboard}
+                data-button-id="copy"
               >
                 Copy
               </Button>
@@ -112,6 +112,7 @@ class BackupCodes extends React.Component {
               <Grid item xs={2}>
                 <Button
                   type="submit"
+                  data-button-id="submit"
                   variant="contained"
                   className={classes.button}
                   onClick={advance}
@@ -122,7 +123,8 @@ class BackupCodes extends React.Component {
               </Grid>
               <Grid item xs={2}>
                 <Button
-                  type="submit"
+                  data-button-id="cancel"
+                  type="cancel"
                   variant="contained"
                   className={classes.button}
                   onClick={cancel}
