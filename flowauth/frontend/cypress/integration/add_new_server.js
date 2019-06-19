@@ -43,10 +43,7 @@ describe("Server management", function() {
   it("Add server name more than 120 characters", function() {
     cy.get("#new").click();
     //adding username
-    cy.get("#name").type(
-      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      { force: true }
-    );
+    cy.get("#name").type("a".repeat(121), { force: true });
     //checking validation text
     cy.get("#name-helper-text").should(
       "have.text",
