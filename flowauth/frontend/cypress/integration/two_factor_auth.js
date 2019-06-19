@@ -16,7 +16,7 @@ describe("Two-factor setup", function() {
       .goto("/");
   });
 
-  it("Two factor setup as part of login can be successfully completed.", function() {
+  it("Two factor setup flow.", function() {
     cy.get("#username")
       .type(username)
       .get("#password")
@@ -24,24 +24,42 @@ describe("Two-factor setup", function() {
       .get("button")
       .click()
       .get("[data-button-id=submit]")
-      .should("be.disabled")
-      .get("[data-button-id=copy]")
-      .click()
-      .get("[data-button-id=submit]")
-      .should("not.be.disabled")
-      .click()
-      .get("[data-id=qr_code]")
-      .invoke("attr", "data-secret")
-      .then(secret => {
-        cy.exec("npx otp-cli totp generate -k " + secret.split(".")[0]).then(
-          mfaCode => {
-            cy.get("input")
-              .type(mfaCode.stdout)
-              .get("[data-button-id=submit")
-              .click();
-            cy.contains("My Servers").should("be.visible");
-          }
-        );
+      .should("be.disabled");
+    cy.get("[data-cy=backup_code]") // Get a backup code for use later
+      .first()
+      .invoke("text")
+      .then(text => {
+        cy.get("[data-button-id=copy]")
+          .click()
+          .get("[data-button-id=submit]")
+          .should("not.be.disabled")
+          .click()
+          .get("[data-id=qr_code]")
+          .invoke("attr", "data-secret")
+          .then(secret => {
+            const mfasecret = secret.split(".")[0];
+            cy.exec("npx otp-cli totp generate -k " + mfasecret).then(
+              mfaCode => {
+                cy.get("input")
+                  .type(mfaCode.stdout)
+                  .get("[data-button-id=submit]")
+                  .click();
+                cy.contains("My Servers").should("be.visible");
+              }
+            );
+          });
+        cy.get("#logout").click();
+        cy.get("#username")
+          .type(username)
+          .get("#password")
+          .type(password)
+          .get("button")
+          .click()
+          .get("#two_factor_code")
+          .type(text) // Log in using backup code because we don't want to wait for a new mfa code
+          .get("button")
+          .click();
+        cy.contains("My Servers").should("be.visible");
       });
   });
 
