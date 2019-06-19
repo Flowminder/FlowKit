@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import binascii
 
 from flask import request, jsonify, Blueprint, current_app, session
 from flask_login import login_user, logout_user, login_required, current_user
@@ -32,7 +33,7 @@ def signin():
                     )
                 try:
                     two_factor.validate(json["two_factor_code"])
-                except Unauthorized:
+                except (Unauthorized, binascii.Error):
                     two_factor.validate_backup_code(json["two_factor_code"])
             login_user(user, remember=False)
             identity_changed.send(
