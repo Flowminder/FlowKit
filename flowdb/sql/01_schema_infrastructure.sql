@@ -20,7 +20,6 @@ includes tables data about TACs.
 
 Available tables are:
 
-  - countries:  with the country codes in ISO format.
   - sites:      with sites information.
   - cells:      with cell information.
   - tacs:       with the TAC codes for devices.
@@ -28,14 +27,6 @@ Available tables are:
 --------------------------------------------------------
 */
 CREATE SCHEMA IF NOT EXISTS infrastructure;
-
-    CREATE TABLE IF NOT EXISTS infrastructure.countries(
-
-        id NUMERIC,
-        name NUMERIC,
-        iso VARCHAR(3)
-
-        );
 
     CREATE TABLE IF NOT EXISTS infrastructure.sites(
 
