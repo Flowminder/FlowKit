@@ -734,6 +734,8 @@ def edit_user(user_id):
             user.is_admin = edits["is_admin"]
     if "require_two_factor" in edits:
         user.require_two_factor = edits["require_two_factor"]
+    if "has_two_factor" in edits and not edits["has_two_factor"]:
+        db.session.delete(user.two_factor_auth)
     db.session.add(user)
     db.session.commit()
     return jsonify({"id": user.id, "group_id": user_group.id})
