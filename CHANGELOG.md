@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 
+- The FlowDB tables `infrastructure.countries` and `infrastructure.operators` have been removed. [#958](https://github.com/Flowminder/FlowKit/issues/958)
+
 ## [0.6.4]
 
 ### Added
