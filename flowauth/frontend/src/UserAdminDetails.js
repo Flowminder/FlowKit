@@ -261,7 +261,7 @@ class UserAdminDetails extends React.Component {
             }
             label={
               (require_two_factor && "Two-factor authentication required") ||
-              "Two-factor authentication required"
+              "Two-factor authentication not required"
             }
           />
         </Grid>
