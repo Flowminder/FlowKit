@@ -15,15 +15,12 @@ INFRASTRUCTURE -----------------------------------------
 
 This schema represents the telecommunications
 infrastructure, that is, the physical things
-that make a mobile network work. This schem also
-includes tables data about countries, operators, 
-and TACs.
+that make a mobile network work. This schema also
+includes tables data about TACs.
 
 Available tables are:
 
   - countries:  with the country codes in ISO format.
-  - operators:  with information about telecom 
-                operators from around the world.
   - sites:      with sites information.
   - cells:      with cell information.
   - tacs:       with the TAC codes for devices.
@@ -36,15 +33,6 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
 
         id NUMERIC,
         name NUMERIC,
-        iso VARCHAR(3)
-
-        );
-
-    CREATE TABLE IF NOT EXISTS infrastructure.operators(
-
-        id NUMERIC,
-        name TEXT,
-        country TEXT,
         iso VARCHAR(3)
 
         );
