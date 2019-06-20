@@ -223,15 +223,15 @@ class State(str, Enum):
     QUARANTINE = "quarantine"
 
 
-def find_files(*, dump_path: Path, ignore_filenames=["README.md"]) -> List[Path]:
+def find_files(*, files_path: Path, ignore_filenames=["README.md"]) -> List[Path]:
     """
     Returns a list of Path objects for all files
-    found in the dump location.
+    found in the files location.
 
     Parameters
     ----------
-    dump_path : Path
-        The location of the dump path
+    files_path : Path
+        The location of the files path
 
     ignore_filenames : Path
         List of filenames to ignore
@@ -241,7 +241,7 @@ def find_files(*, dump_path: Path, ignore_filenames=["README.md"]) -> List[Path]
     List[Path]
         List of files found
     """
-    files = filter(lambda file: file.name not in ignore_filenames, dump_path.glob("*"))
+    files = filter(lambda file: file.name not in ignore_filenames, files_path.glob("*"))
     return list(files)
 
 

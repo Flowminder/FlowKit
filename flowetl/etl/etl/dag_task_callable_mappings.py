@@ -20,21 +20,15 @@ from etl.dummy_task_callables import (
     dummy_trigger__callable,
 )
 from etl.production_task_callables import (
-    move_file_and_record_ingestion_state__callable,
+    record_ingestion_state__callable,
     render_and_run_sql__callable,
     success_branch__callable,
     trigger__callable,
 )
 
-mount_paths = {
-    "dump": Path("/mounts/dump"),
-    "ingest": Path("/mounts/ingest"),
-    "archive": Path("/mounts/archive"),
-    "quarantine": Path("/mounts/quarantine"),
-}
-
 db_hook = PostgresHook(postgres_conn_id="flowdb")
 config_path = Path("/mounts/config")
+files_path = Path("/mounts/files")
 try:
     config = get_config_from_file(config_filepath=config_path / "config.yml")
 except FileNotFoundError:
@@ -58,10 +52,8 @@ TEST_ETL_TASK_CALLABLES = {
 # callables to be used in production
 PRODUCTION_ETL_TASK_CALLABLES = {
     "init": partial(
-        move_file_and_record_ingestion_state__callable,
-        mount_paths=mount_paths,
-        from_dir="dump",
-        to_dir="ingest",
+        record_ingestion_state__callable,
+        to_state="ingest",
     ),
     "extract": partial(
         render_and_run_sql__callable,
@@ -84,16 +76,12 @@ PRODUCTION_ETL_TASK_CALLABLES = {
     ),
     "success_branch": success_branch__callable,
     "archive": partial(
-        move_file_and_record_ingestion_state__callable,
-        mount_paths=mount_paths,
-        from_dir="ingest",
-        to_dir="archive",
+        record_ingestion_state__callable,
+        to_state="archive",
     ),
     "quarantine": partial(
-        move_file_and_record_ingestion_state__callable,
-        mount_paths=mount_paths,
-        from_dir="ingest",
-        to_dir="quarantine",
+        record_ingestion_state__callable,
+        to_state="quarantine",
     ),
     "clean": partial(
         render_and_run_sql__callable,
@@ -108,6 +96,6 @@ PRODUCTION_ETL_TASK_CALLABLES = {
 TEST_ETL_SENSOR_TASK_CALLABLE = dummy_trigger__callable
 PRODUCTION_ETL_SENSOR_TASK_CALLABLE = partial(
     trigger__callable,
-    dump_path=mount_paths["dump"],
+    files_path=files_path,
     cdr_type_config=config.get("etl", {}),
 )
