@@ -55,30 +55,44 @@ def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
 
 
 def construct_etl_dag(
-    *, task_callable_mapping: dict, default_args: dict, cdr_type: str
+    *,
+    init: Callable,
+    extract: Callable,
+    transform: Callable,
+    load: Callable,
+    success_branch: Callable,
+    archive: Callable,
+    quarantine: Callable,
+    clean: Callable,
+    fail: Callable,
+    default_args: dict,
+    cdr_type: str,
 ) -> DAG:
     """
     This function returns an Airflow DAG object of the structure
-    required for ETL. By passing a dictionary mapping task ID to
-    a python callable we can change the functionality of the
-    individual tasks whilst maintaining the desired structure
-    of the DAG.
+    required for ETL. The individual tasks are passed as python
+    Callables.
 
     Parameters
     ----------
-    task_callable_mapping : dict
-         Must contain the following keys;
-            "init"
-            "extract"
-            "transform"
-            "load"
-            "success_branch"
-            "archive"
-            "quarantine"
-            "clean"
-            "fail"
-        The value for each key should be a python callable with at a minimum
-        the following signature foo(*,**kwargs).
+    init : Callable
+        The init task callable.
+    extract : Callable
+        The extract task callable.
+    transform : Callable
+        The transform task callable.
+    load : Callable
+        The load task callable.
+    success_branch : Callable
+        The success_branch task callable.
+    archive : Callable
+        The archive task callable.
+    quarantine : Callable
+        The quarantine task callable.
+    clean : Callable
+        The clean task callable.
+    fail : Callable
+        The fail task callable.
     default_args : dict
         A set of default args to pass to all callables.
         Must containt at least "owner" key and "start" key (which must be a
@@ -90,81 +104,44 @@ def construct_etl_dag(
     -------
     DAG
         Specification of Airflow DAG for ETL
-
-    Raises
-    ------
-    TypeError
-        Exception raised if required keys in task_callable_mapping are not
-        present.
     """
-
-    # make sure we have the correct keys
-    expected_keys = set(
-        [
-            "init",
-            "extract",
-            "transform",
-            "load",
-            "success_branch",
-            "archive",
-            "quarantine",
-            "clean",
-            "fail",
-        ]
-    )
-    if set(task_callable_mapping.keys()) != expected_keys:
-        raise TypeError("task_callable_mapping argument does not contain correct keys")
 
     with DAG(
         dag_id=f"etl_{cdr_type}", schedule_interval=None, default_args=default_args
     ) as dag:
 
         init = PythonOperator(
-            task_id="init",
-            python_callable=task_callable_mapping["init"],
-            provide_context=True,
+            task_id="init", python_callable=init, provide_context=True
         )
         extract = PythonOperator(
-            task_id="extract",
-            python_callable=task_callable_mapping["extract"],
-            provide_context=True,
+            task_id="extract", python_callable=extract, provide_context=True
         )
         transform = PythonOperator(
-            task_id="transform",
-            python_callable=task_callable_mapping["transform"],
-            provide_context=True,
+            task_id="transform", python_callable=transform, provide_context=True
         )
         load = PythonOperator(
-            task_id="load",
-            python_callable=task_callable_mapping["load"],
-            provide_context=True,
+            task_id="load", python_callable=load, provide_context=True
         )
         success_branch = BranchPythonOperator(
             task_id="success_branch",
-            python_callable=task_callable_mapping["success_branch"],
+            python_callable=success_branch,
             provide_context=True,
             trigger_rule="all_done",
         )
         archive = PythonOperator(
-            task_id="archive",
-            python_callable=task_callable_mapping["archive"],
-            provide_context=True,
+            task_id="archive", python_callable=archive, provide_context=True
         )
         quarantine = PythonOperator(
-            task_id="quarantine",
-            python_callable=task_callable_mapping["quarantine"],
-            provide_context=True,
+            task_id="quarantine", python_callable=quarantine, provide_context=True
         )
         clean = PythonOperator(
             task_id="clean",
-            python_callable=task_callable_mapping["clean"],
+            python_callable=clean,
             provide_context=True,
             trigger_rule="all_done",
         )
         fail = PythonOperator(
-            task_id="fail",
-            python_callable=task_callable_mapping["fail"],
-            provide_context=True,
+            task_id="fail", python_callable=fail, provide_context=True
         )
 
         # Define upstream/downstream relationships between airflow tasks
