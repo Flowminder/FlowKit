@@ -136,10 +136,7 @@ FLOWETL_POSTGRES_DB=flowetl
 FLOWETL_POSTGRES_PORT=9001
 
 HOST_CONFIG_DIR=./flowetl/mounts/config
-HOST_DUMP_DIR=./flowetl/mounts/dump
-HOST_ARCHIVE_DIR=./flowetl/mounts/archive
-HOST_QUARANTINE_DIR=./flowetl/mounts/quarantine
-HOST_INGEST_DIR=./flowetl/mounts/ingest
+HOST_FILES_DIR=./flowetl/mounts/files
 
 # Worked examples
 WORKED_EXAMPLES_PORT=8888
