@@ -549,10 +549,21 @@ def plot_dependency_graph(
     -------
     IPython.display.Image or IPython.display.SVG
     """
-    try:
+    try:  # pragma: no cover
         from IPython.display import Image, SVG
     except ImportError:
         raise ImportError("requires IPython ", "https://ipython.org/")
+
+    try:  # pragma: no cover
+        import pygraphviz
+    except ImportError:
+        raise ImportError(
+            "requires the Python package `pygraphviz` (as well as the system package `graphviz`) - make sure both are installed ",
+            "http://pygraphviz.github.io/",
+        )
+
+    if format not in ["png", "svg"]:
+        raise ValueError(f"Unsupported output format: '{format}'")
 
     G = calculate_dependency_graph(query_obj, analyse=analyse)
     A = nx.nx_agraph.to_agraph(G)

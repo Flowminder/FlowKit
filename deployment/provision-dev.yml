@@ -21,10 +21,10 @@
       pyenv_owner: "{{ ansible_user }}"
       pyenv_global: "{{ pyenv_global_python_version }}"
       pyenv_python_versions:
-       - "{{ pyenv_global_python_version }}"
+        - "{{ pyenv_global_python_version }}"
       pyenv_virtualenvs:
-       - venv_name: "v{{ pyenv_global_python_version }}"
-         py_version: "{{ pyenv_global_python_version }}"
+        - venv_name: "v{{ pyenv_global_python_version }}"
+          py_version: "{{ pyenv_global_python_version }}"
 
   tasks:
     - name: "Install pipenv"

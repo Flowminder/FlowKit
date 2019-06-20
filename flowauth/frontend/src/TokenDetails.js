@@ -15,15 +15,24 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import SubmitButtons from "./SubmitButtons";
 import ServerAggregationUnits from "./ServerAggregationUnits";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Checkbox from "@material-ui/core/Checkbox";
+import WarningDialog from "./WarningDialog";
 
 const styles = theme => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
     paddingBottom: theme.spacing.unit * 2
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(18),
+    fontWeight: theme.typography.alignCenter
   }
 });
-
 class TokenDetails extends React.Component {
   constructor(props) {
     super(props);
@@ -34,18 +43,41 @@ class TokenDetails extends React.Component {
     rights: {},
     expiry: new Date(),
     latest_expiry: new Date(),
-    name_helper_text: ""
+    name_helper_text: "",
+    isPermissionChecked: true,
+    isAggregationChecked: true,
+    permissionIndeterminate: false,
+    aggregateIndeterminate: false,
+    totalAggregateUnits: 0,
+    uiReady: new Promise(() => {}),
+    pageError: false,
+    errors: { message: "" }
   };
-
-  handleSubmit = () => {
-    const { name, expiry, rights, name_helper_text } = this.state;
+  completeToken = () => {
+    const { name, expiry, rights } = this.state;
     const { serverID, cancel } = this.props;
-    if (name && name_helper_text === "") {
-      createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
-        json => {
-          cancel();
+    createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
+      json => {
+        cancel();
+      }
+    );
+  };
+  handleSubmit = async () => {
+    const { name, name_helper_text, uiReady } = this.state;
+    await uiReady;
+    const checkedCheckboxes = document.querySelectorAll(
+      'input[type="checkbox"]:checked'
+    );
+    if (name && name_helper_text === "" && checkedCheckboxes.length != 0) {
+      this.completeToken();
+    } else if (checkedCheckboxes.length == 0) {
+      this.setState({
+        pageError: true,
+        errors: {
+          message:
+            "Warning: no permissions will be granted by this token. Are you sure?"
         }
-      );
+      });
     } else if (!name) {
       this.setState({
         name_helper_text: "Token name cannot be blank."
@@ -59,16 +91,25 @@ class TokenDetails extends React.Component {
   };
 
   handleChange = (claim, right) => event => {
-    var rights = this.state.rights;
-    rights[claim] = Object.assign({}, rights[claim]);
+    this.setState({ pageError: false, errors: "" });
+    const { rights } = this.state;
+
     rights[claim].permissions[right] = event.target.checked;
-    this.setState(Object.assign(this.state, { rights: rights }));
+    const permissionSet = new Set();
+    for (const keys in rights) {
+      for (const key in rights[keys].permissions) {
+        permissionSet.add(rights[keys].permissions[key]);
+      }
+    }
+    const indeterminate = permissionSet.size > 1;
+    console.log(indeterminate);
+    this.setState({ rights: rights, permissionIndeterminate: indeterminate });
   };
   scrollToRef = ref => ref.current.scrollIntoView();
 
   handleAggUnitChange = (claim_id, claim, unit) => event => {
-    var rights = this.state.rights;
-    rights[claim] = Object.assign({}, rights[claim]);
+    this.setState({ pageError: false, errors: "" });
+    const { rights, totalAggregateUnits } = this.state;
     if (event.target.checked) {
       rights[claim].spatial_aggregation.push(unit);
     } else {
@@ -76,9 +117,62 @@ class TokenDetails extends React.Component {
         claim
       ].spatial_aggregation.filter(u => u != unit);
     }
-    this.setState({ rights: rights });
-  };
+    console.log(rights);
+    const listUnits = [];
+    for (const key in rights) {
+      for (const keys in rights[key].spatial_aggregation) {
+        listUnits.push(keys);
+      }
+    }
 
+    this.setState({
+      rights: rights,
+      aggregateIndeterminate: totalAggregateUnits != listUnits.length
+    });
+  };
+  handlePermissionCheckbox = async event => {
+    const toCheck = event.target.checked;
+    event.stopPropagation();
+    const { uiReady } = this.state;
+    await uiReady; // Wait to make sure checkboxes exist
+    this.setState({ pageError: false, errors: "" });
+    const { rights } = this.state;
+
+    for (const keys in rights) {
+      for (const key in rights[keys].permissions) {
+        rights[keys].permissions[key] = toCheck;
+      }
+    }
+    this.setState({
+      rights: rights,
+      isPermissionChecked: toCheck,
+      permissionIndeterminate: false
+    });
+  };
+  handleAggregationCheckbox = async event => {
+    const toCheck = event.target.checked;
+    this.setState({ pageError: false, errors: "" });
+    event.stopPropagation();
+    const { uiReady } = this.state;
+    await uiReady; // Wait to make sure checkboxes exist
+    var listUnits = [];
+    const { rights, permitted } = this.state;
+    for (const key in rights) {
+      if (toCheck) {
+        rights[key].spatial_aggregation = permitted[key].spatial_aggregation;
+      } else {
+        rights[key].spatial_aggregation = [];
+      }
+      for (const keys in rights[key].spatial_aggregation) {
+        listUnits.push(keys);
+      }
+    }
+    this.setState({
+      rights: rights,
+      isAggregationChecked: toCheck,
+      aggregateIndeterminate: false
+    });
+  };
   handleNameChange = event => {
     var letters = /^[A-Za-z0-9_]+$/;
     let name = event.target.value;
@@ -111,18 +205,26 @@ class TokenDetails extends React.Component {
   };
 
   componentDidMount() {
-    getMyRightsForServer(this.props.serverID)
-      .then(json => {
-        this.setState({
-          rights: JSON.parse(JSON.stringify(json.allowed_claims || {})),
-          permitted: json.allowed_claims || {},
-          expiry: json.latest_expiry,
-          latest_expiry: json.latest_expiry
-        });
-      })
-      .catch(err => {
-        this.setState({ hasError: true, error: err });
-      });
+    this.setState({
+      uiReady: getMyRightsForServer(this.props.serverID)
+        .then(json => {
+          const totalAggUnits = Object.keys(json.allowed_claims).reduce(
+            (acc, k) => acc + json.allowed_claims[k].spatial_aggregation.length,
+            0
+          );
+
+          this.setState({
+            rights: JSON.parse(JSON.stringify(json.allowed_claims || {})),
+            permitted: json.allowed_claims || {},
+            expiry: json.latest_expiry,
+            latest_expiry: json.latest_expiry,
+            totalAggregateUnits: totalAggUnits
+          });
+        })
+        .catch(err => {
+          this.setState({ hasError: true, error: err });
+        })
+    });
   }
 
   renderRights = () => {
@@ -154,7 +256,7 @@ class TokenDetails extends React.Component {
 
   renderAggUnits = () => {
     var perms = [];
-    const { rights, permitted } = this.state;
+    const { rights, permitted, isAggregationChecked } = this.state;
     for (const key in rights) {
       perms.push([
         <ServerAggregationUnits
@@ -182,7 +284,16 @@ class TokenDetails extends React.Component {
   render() {
     if (this.state.hasError) throw this.state.error;
 
-    const { expiry, latest_expiry, name } = this.state;
+    const {
+      expiry,
+      latest_expiry,
+      name,
+      aggregateIndeterminate,
+      isAggregationChecked,
+      isPermissionChecked,
+      permissionIndeterminate,
+      name_helper_text
+    } = this.state;
     const { classes, onClick } = this.props;
 
     return (
@@ -202,8 +313,8 @@ class TokenDetails extends React.Component {
             value={name}
             onChange={this.handleNameChange}
             margin="normal"
-            error={this.state.name_helper_text !== ""}
-            helperText={this.state.name_helper_text}
+            error={name_helper_text !== ""}
+            helperText={name_helper_text}
           />
         </Grid>
         <Grid item xs={12}>
@@ -226,22 +337,68 @@ class TokenDetails extends React.Component {
             />
           </MuiPickersUtilsProvider>
         </Grid>
+        <Grid item xs={12}>
+          <ExpansionPanel>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon id="api-exp" />}>
+              <Checkbox
+                checked={isPermissionChecked}
+                indeterminate={permissionIndeterminate}
+                data-cy="permissions-top-level"
+                id="permissions"
+                value="checkedB"
+                color="primary"
+                onClick={this.handlePermissionCheckbox}
+              />
 
-        <Divider />
-        <Grid item xs={12}>
-          <Typography variant="h5" component="h1">
-            API Permissions
-          </Typography>
+              <Grid item xs={2}>
+                <Typography
+                  className={classes.heading}
+                  style={{ paddingTop: 10 }}
+                >
+                  API Permissions
+                </Typography>
+              </Grid>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Grid container spacing={5}>
+                {this.renderRights()}
+              </Grid>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+          <ExpansionPanel>
+            <ExpansionPanelSummary
+              expandIcon={<ExpandMoreIcon id="unit-exp" />}
+            >
+              <Checkbox
+                id="units"
+                checked={isAggregationChecked}
+                indeterminate={aggregateIndeterminate}
+                value="checkedB"
+                color="primary"
+                onClick={this.handleAggregationCheckbox}
+              />
+
+              <Grid item xs={3}>
+                <Typography
+                  className={classes.heading}
+                  style={{ paddingTop: 10 }}
+                >
+                  Aggregation Units
+                </Typography>
+              </Grid>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Grid container spacing={5}>
+                {this.renderAggUnits()}
+              </Grid>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
         </Grid>
-        <Divider />
-        {this.renderRights()}
-        <Grid item xs={12}>
-          <Typography variant="h5" component="h1">
-            Aggregation Units
-          </Typography>
-        </Grid>
-        <Divider />
-        {this.renderAggUnits()}
+        <WarningDialog
+          open={this.state.pageError}
+          message={this.state.errors.message}
+          handleClick={this.completeToken}
+        />
         <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>
     );
