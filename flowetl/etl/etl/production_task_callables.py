@@ -87,9 +87,7 @@ def render_and_run_sql__callable(
 
 
 # pylint: disable=unused-argument
-def record_ingestion_state__callable(
-    *, dag_run: DagRun, to_state: str, **kwargs
-):
+def record_ingestion_state__callable(*, dag_run: DagRun, to_state: str, **kwargs):
     """
     Function to deal with recording the state of the ingestion. The actual
     change to the DB to record new state is accomplished in the

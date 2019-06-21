@@ -51,10 +51,7 @@ TEST_ETL_TASK_CALLABLES = {
 
 # callables to be used in production
 PRODUCTION_ETL_TASK_CALLABLES = {
-    "init": partial(
-        record_ingestion_state__callable,
-        to_state="ingest",
-    ),
+    "init": partial(record_ingestion_state__callable, to_state="ingest"),
     "extract": partial(
         render_and_run_sql__callable,
         db_hook=db_hook,
@@ -75,14 +72,8 @@ PRODUCTION_ETL_TASK_CALLABLES = {
         fixed_sql=True,
     ),
     "success_branch": success_branch__callable,
-    "archive": partial(
-        record_ingestion_state__callable,
-        to_state="archive",
-    ),
-    "quarantine": partial(
-        record_ingestion_state__callable,
-        to_state="quarantine",
-    ),
+    "archive": partial(record_ingestion_state__callable, to_state="archive"),
+    "quarantine": partial(record_ingestion_state__callable, to_state="quarantine"),
     "clean": partial(
         render_and_run_sql__callable,
         db_hook=db_hook,
@@ -95,7 +86,5 @@ PRODUCTION_ETL_TASK_CALLABLES = {
 
 TEST_ETL_SENSOR_TASK_CALLABLE = dummy_trigger__callable
 PRODUCTION_ETL_SENSOR_TASK_CALLABLE = partial(
-    trigger__callable,
-    files_path=files_path,
-    cdr_type_config=config.get("etl", {}),
+    trigger__callable, files_path=files_path, cdr_type_config=config.get("etl", {})
 )
