@@ -114,8 +114,10 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "locations": flowclient.daily_location(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.radius_of_gyration(
-                    start_date="2016-01-01", end_date="2016-01-02"
+                "metric": flowclient.unique_location_counts(
+                    start_date="2016-01-01",
+                    end_date="2016-01-02",
+                    aggregation_unit="admin3",
                 ),
             },
         ),
