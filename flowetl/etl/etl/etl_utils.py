@@ -22,6 +22,7 @@ from sqlalchemy.orm import sessionmaker
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
+from airflow.operators.postgres_operator import PostgresOperator
 
 from etl import model
 
@@ -106,21 +107,33 @@ def construct_etl_dag(
         Specification of Airflow DAG for ETL
     """
 
+    config_path = Path("/mounts/config")
+    fixed_sql_path = config_path / "fixed_sql"
+
     with DAG(
-        dag_id=f"etl_{cdr_type}", schedule_interval=None, default_args=default_args
+        dag_id=f"etl_{cdr_type}",
+        schedule_interval=None,
+        default_args=default_args,
+        template_searchpath=str(fixed_sql_path)
     ) as dag:
 
         init = PythonOperator(
             task_id="init", python_callable=init, provide_context=True
         )
         extract = PythonOperator(
-            task_id="extract", python_callable=extract, provide_context=True
+            postgres_conn_id="flowdb",
+            sql="/extract.sql",
+            task_id="extract",
         )
-        transform = PythonOperator(
-            task_id="transform", python_callable=transform, provide_context=True
+        transform = PostgresOperator(
+            postgres_conn_id="flowdb",
+            sql="/transform.sql",
+            task_id="transform",
         )
-        load = PythonOperator(
-            task_id="load", python_callable=load, provide_context=True
+        load = PostgresOperator(
+            postgres_conn_id="flowdb",
+            sql="/load.sql",
+            task_id="load",
         )
         success_branch = BranchPythonOperator(
             task_id="success_branch",
@@ -134,10 +147,10 @@ def construct_etl_dag(
         quarantine = PythonOperator(
             task_id="quarantine", python_callable=quarantine, provide_context=True
         )
-        clean = PythonOperator(
+        clean = PostgresOperator(
+            postgres_conn_id="flowdb",
+            sql="/clean.sql",
             task_id="clean",
-            python_callable=clean,
-            provide_context=True,
             trigger_rule="all_done",
         )
         fail = PythonOperator(
