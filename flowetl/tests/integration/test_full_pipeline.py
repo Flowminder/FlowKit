@@ -41,27 +41,16 @@ def test_single_file_previously_quarantined(
     )
 
     # set CALLS_20160101 as archived and SMS_20160101 as quarantined
-    CALLS_20160101_record = {
-        "cdr_type": "calls",
-        "cdr_date": parse("2016-01-01").date(),
-        "state": "archive",
-    }
     ETLRecord.set_state(
-        cdr_type=CALLS_20160101_record["cdr_type"],
-        cdr_date=CALLS_20160101_record["cdr_date"],
-        state=CALLS_20160101_record["state"],
+        cdr_type="calls",
+        cdr_date=parse("2016-01-01").date(),
+        state="archive",
         session=flowdb_session,
     )
-
-    SMS_20160101_record = {
-        "cdr_type": "sms",
-        "cdr_date": parse("2016-01-01").date(),
-        "state": "quarantine",
-    }
     ETLRecord.set_state(
-        cdr_type=SMS_20160101_record["cdr_type"],
-        cdr_date=SMS_20160101_record["cdr_date"],
-        state=SMS_20160101_record["state"],
+        cdr_type="sms",
+        cdr_date=parse("2016-01-01").date(),
+        state="quarantine",
         session=flowdb_session,
     )
 
