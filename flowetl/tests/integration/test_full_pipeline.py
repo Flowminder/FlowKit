@@ -82,6 +82,7 @@ def test_single_file_previously_quarantined(
         """
         Return True if the expected table exists in flowdb, otherwise False.
         """
+
         connection, _ = flowdb_connection
         sql = """
         select
@@ -105,6 +106,7 @@ def test_single_file_previously_quarantined(
         """
         Return the ETL states present for the given cdr type and date.
         """
+
         res = (
             flowdb_session.query(ETLRecord.state)
             .filter(ETLRecord.cdr_type == cdr_type, ETLRecord.cdr_date == cdr_date)
