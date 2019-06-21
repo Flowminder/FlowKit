@@ -198,7 +198,7 @@ def trigger__callable(
         )
         trigger_dag(
             f"etl_{cdr_type}",
-            execution_date=utcnow(),
+            execution_date=cdr_date,
             run_id=f"{file.name}-{str(uuid)}",
             conf={**config, **table_names},
             replace_microseconds=False,
