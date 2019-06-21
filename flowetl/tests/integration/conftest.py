@@ -254,7 +254,7 @@ def flowetl_container(
     """
     user = f"{os.getuid()}:{os.getgid()}"
     container = docker_client.containers.run(
-        f"flowminder/flowetl:testing12344321",
+        f"flowminder/flowetl:{container_tag}",
         environment=container_env["flowetl"],
         name="flowetl",
         network="testing",
