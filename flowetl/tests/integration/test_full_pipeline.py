@@ -78,74 +78,61 @@ def test_single_file_previously_quarantined(
 
     assert set(all_files) == (set(files) - set(["README.md"]))
 
-    # make sure tables expected exist in flowdb
-    connection, _ = flowdb_connection
-    sql = """
-    select
-        count(*)
-    from
-        information_schema.tables
-    where
-        table_schema = 'events'
-        and
-        table_name = '{table_name}'
-    """
-    # calls_20160102
-    res = connection.execute(sql.format(table_name="calls_20160102")).fetchone()[0]
-    assert res == 1
+    def expected_table_exists(*, table_name):
+        """
+        Return True if the expected table exists in flowdb, otherwise False.
+        """
+        connection, _ = flowdb_connection
+        sql = """
+        select
+            count(*)
+        from
+            information_schema.tables
+        where
+            table_schema = 'events'
+            and
+            table_name = '{table_name}'
+        """
+        res = connection.execute(sql.format(table_name=table_name)).fetchone()[0]
+        return res == 1
 
-    # sms_20160101
-    res = connection.execute(sql.format(table_name="sms_20160101")).fetchone()[0]
-    assert res == 1
+    assert expected_table_exists(table_name="calls_20160102")
+    assert expected_table_exists(table_name="sms_20160101")
+    assert expected_table_exists(table_name="mds_20160101")
+    assert expected_table_exists(table_name="topups_20160101")
 
-    # mds_20160101
-    res = connection.execute(sql.format(table_name="mds_20160101")).fetchone()[0]
-    assert res == 1
-
-    # topups_20160101
-    res = connection.execute(sql.format(table_name="topups_20160101")).fetchone()[0]
-    assert res == 1
-
-    # make sure etl_records table is what we expect
+    def get_etl_states(*, cdr_type, cdr_date):
+        """
+        Return the ETL states present for the given cdr type and date.
+        """
+        res = (
+            flowdb_session.query(ETLRecord.state)
+            .filter(ETLRecord.cdr_type == cdr_type, ETLRecord.cdr_date == cdr_date)
+            .all()
+        )
+        return sorted([row[0] for row in res])
 
     # calls,20160101 -> archive
-    res = (
-        flowdb_session.query(ETLRecord.state)
-        .filter(ETLRecord.cdr_type == "calls", ETLRecord.cdr_date == "2016-01-01")
-        .all()
-    )
-    assert set([row[0] for row in res]) == set(["archive"])
+    etl_states = set(get_etl_states(cdr_type="calls", cdr_date="2016-01-01"))
+    etl_states_expected = set(["archive"])
+    assert etl_states_expected == etl_states
 
     # calls,20160102 -> ingest + archive
-    res = (
-        flowdb_session.query(ETLRecord.state)
-        .filter(ETLRecord.cdr_type == "calls", ETLRecord.cdr_date == "2016-01-02")
-        .all()
-    )
-    assert sorted([row[0] for row in res]) == sorted(["ingest", "archive"])
+    etl_states = get_etl_states(cdr_type="calls", cdr_date="2016-01-02")
+    etl_states_expected = ["archive", "ingest"]
+    assert etl_states_expected == etl_states
 
     # sms,20160101 -> quarantine + ingest + archive
-    res = (
-        flowdb_session.query(ETLRecord.state)
-        .filter(ETLRecord.cdr_type == "sms", ETLRecord.cdr_date == "2016-01-01")
-        .all()
-    )
-    assert sorted([row[0] for row in res]) == sorted(
-        ["quarantine", "ingest", "archive"]
-    )
+    etl_states = get_etl_states(cdr_type="sms", cdr_date="2016-01-01")
+    etl_states_expected = ["archive", "ingest", "quarantine"]
+    assert etl_states_expected == etl_states
 
     # mds,20160101 -> ingest + archive
-    res = (
-        flowdb_session.query(ETLRecord.state)
-        .filter(ETLRecord.cdr_type == "mds", ETLRecord.cdr_date == "2016-01-01")
-        .all()
-    )
-    assert sorted([row[0] for row in res]) == sorted(["ingest", "archive"])
+    etl_states = get_etl_states(cdr_type="mds", cdr_date="2016-01-01")
+    etl_states_expected = ["archive", "ingest"]
+    assert etl_states_expected == etl_states
 
     # topups,20160101 -> ingest + archive
-    res = (
-        flowdb_session.query(ETLRecord.state)
-        .filter(ETLRecord.cdr_type == "topups", ETLRecord.cdr_date == "2016-01-01")
-        .all()
-    )
-    assert sorted([row[0] for row in res]) == sorted(["ingest", "archive"])
+    etl_states = get_etl_states(cdr_type="topups", cdr_date="2016-01-01")
+    etl_states_expected = ["archive", "ingest"]
+    assert etl_states_expected == etl_states
