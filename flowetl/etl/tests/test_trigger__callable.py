@@ -5,7 +5,7 @@
 # -*- coding: utf-8 -*-
 from unittest.mock import Mock
 from pathlib import Path
-from pendulum import utcnow, parse
+from pendulum import parse
 from uuid import uuid1
 
 from etl.model import ETLRecord
@@ -30,12 +30,10 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
     cdr_type_config = config["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
-    now = utcnow()
     uuid = uuid1()
     uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.production_task_callables.utcnow", lambda: now)
     monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
@@ -60,7 +58,7 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
     trigger_dag_mock.assert_called_with(
         "etl_sms",
         conf=expected_conf,
-        execution_date=now,
+        execution_date=cdr_date,
         run_id=f"SMS_20160101.csv.gz-{uuid}",
         replace_microseconds=False,
     )
@@ -94,12 +92,10 @@ def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkey
     cdr_type_config = config["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
-    now = utcnow()
     uuid = uuid1()
     uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.production_task_callables.utcnow", lambda: now)
     monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
@@ -124,7 +120,7 @@ def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkey
     trigger_dag_mock.assert_called_with(
         "etl_sms",
         conf=expected_conf,
-        execution_date=now,
+        execution_date=cdr_date,
         run_id=f"SMS_20160101.csv.gz-{uuid}",
         replace_microseconds=False,
     )
@@ -160,12 +156,10 @@ def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
     cdr_type_config = config["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
-    now = utcnow()
     uuid = uuid1()
     uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.production_task_callables.utcnow", lambda: now)
     monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
@@ -190,7 +184,7 @@ def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
     trigger_dag_mock.assert_called_with(
         "etl_sms",
         conf=expected_conf,
-        execution_date=now,
+        execution_date=cdr_date,
         run_id=f"SMS_20160102.csv.gz-{uuid}",
         replace_microseconds=False,
     )
@@ -211,12 +205,10 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
     cdr_type_config = config["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
-    now = utcnow()
     uuid = uuid1()
     uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.production_task_callables.utcnow", lambda: now)
     monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
@@ -253,7 +245,7 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
     trigger_dag_mock.assert_any_call(
         "etl_sms",
         conf=expected_conf_file1,
-        execution_date=now,
+        execution_date=cdr_date_file1,
         run_id=f"SMS_20160101.csv.gz-{uuid}",
         replace_microseconds=False,
     )
@@ -261,7 +253,7 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
     trigger_dag_mock.assert_any_call(
         "etl_calls",
         conf=expected_conf_file2,
-        execution_date=now,
+        execution_date=cdr_date_file2,
         run_id=f"CALLS_20160102.csv.gz-{uuid}",
         replace_microseconds=False,
     )

@@ -11,6 +11,7 @@ from pendulum import parse
 from pendulum.parsing.exceptions import ParserError
 
 from airflow.exceptions import AirflowException
+from airflow.operators.python_operator import PythonOperator
 
 from etl.etl_utils import construct_etl_dag
 from etl.dag_task_callable_mappings import (
@@ -35,7 +36,9 @@ def test_construct_etl_dag_with_test_callables():
 
     assert dag.dag_id == f"etl_{cdr_type}"
 
-    dag_task_callable_mapping = {t.task_id: t.python_callable for t in dag.tasks}
+    dag_task_callable_mapping = {
+        t.task_id: t.python_callable for t in dag.tasks if isinstance(t, PythonOperator)
+    }
     assert dag_task_callable_mapping == TEST_ETL_TASK_CALLABLES
 
 
@@ -55,7 +58,9 @@ def test_construct_etl_dag_with_production_callables():
 
     assert dag.dag_id == f"etl_{cdr_type}"
 
-    dag_task_callable_mapping = {t.task_id: t.python_callable for t in dag.tasks}
+    dag_task_callable_mapping = {
+        t.task_id: t.python_callable for t in dag.tasks if isinstance(t, PythonOperator)
+    }
     assert dag_task_callable_mapping == PRODUCTION_ETL_TASK_CALLABLES
 
 
