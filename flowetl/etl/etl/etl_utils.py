@@ -64,6 +64,7 @@ def construct_etl_dag(
     fail: Callable,
     default_args: dict,
     cdr_type: str,
+    config_path: str = "/mounts/config",
 ) -> DAG:
     """
     This function returns an Airflow DAG object of the structure
@@ -88,14 +89,14 @@ def construct_etl_dag(
         pendulum date object)
     cdr_type : str
         The type of CDR that this ETL DAG will process.
+    config_path : str
+        The config path used to look for the sql templates.
 
     Returns
     -------
     DAG
         Specification of Airflow DAG for ETL
     """
-
-    config_path = "/mounts/config"
 
     with DAG(
         dag_id=f"etl_{cdr_type}",

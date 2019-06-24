@@ -74,18 +74,25 @@ from airflow.models import DagRun
     ],
 )
 def test_quarantine_branch(
-    airflow_local_pipeline_run, wait_for_completion, task_to_fail, expected_task_states
+    create_postgres_templates_for_dag,
+    airflow_local_pipeline_run,
+    wait_for_completion,
+    task_to_fail,
+    expected_task_states,
 ):
     """
     Tests that correct tasks run, with correct end state, when ETL is
     not successful. We fail each of the tasks init, extract, transform and load.
     """
     end_state = "failed"
+    dag_type = "testing"
+
+    create_postgres_templates_for_dag(dag_type=dag_type)
     airflow_local_pipeline_run({"TASK_TO_FAIL": task_to_fail})
-    final_etl_state = wait_for_completion(end_state, dag_id="etl_testing")
+    final_etl_state = wait_for_completion(end_state, dag_id="etl_{dag_type}")
     assert final_etl_state == end_state
 
-    etl_dag = DagRun.find("etl_testing", state=end_state)[0]
+    etl_dag = DagRun.find(f"etl_{dag_type}", state=end_state)[0]
 
     task_states = {task.task_id: task.state for task in etl_dag.get_task_instances()}
     assert task_states == expected_task_states

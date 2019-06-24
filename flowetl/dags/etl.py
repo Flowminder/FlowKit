@@ -29,16 +29,24 @@ default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 if os.environ.get("TESTING", "") == "true":
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
     logger.info("running in testing environment")
+
+    config_path = f"{os.getcwd()}/mounts/config_test"
+
     dag = construct_etl_dag(
-        **task_callable_mapping, default_args=default_args, cdr_type="testing"
+        **task_callable_mapping,
+        default_args=default_args,
+        cdr_type="testing",
+        config_path=config_path,
     )
 else:
     task_callable_mapping = PRODUCTION_ETL_TASK_CALLABLES
     logger.info("running in production environment")
 
+    config_path = Path("/mounts/config")
+
     # read and validate the config file before creating the DAGs
     global_config_dict = get_config_from_file(
-        config_filepath=Path("/mounts/config/config.yml")
+        config_filepath=config_path / "config.yml"
     )
     validate_config(global_config_dict=global_config_dict)
 
@@ -48,5 +56,8 @@ else:
     for cdr_type in CDRType:
 
         globals()[f"etl_{cdr_type}"] = construct_etl_dag(
-            **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
+            **task_callable_mapping,
+            default_args=default_args,
+            cdr_type=cdr_type,
+            config_path=str(config_path)
         )
