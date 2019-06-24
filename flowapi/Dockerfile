@@ -6,7 +6,7 @@ FROM python:3.7-alpine
 
 ARG SOURCE_VERSION
 WORKDIR /${SOURCE_VERSION}/flowapi
-COPY Pipfile* /
+COPY Pipfile* .
 RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-base gcc wget git musl-dev zeromq-dev && \
     pip install --no-cache-dir pipenv Cython && pipenv install --clear --deploy && \
     apk del build-dependencies
