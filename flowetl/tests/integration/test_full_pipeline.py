@@ -8,7 +8,7 @@ from etl.model import ETLRecord
 
 def test_single_file_previously_quarantined(
     flowetl_container,
-    write_files_to_dump,
+    write_files_to_files,
     trigger_dags,
     wait_for_completion,
     flowetl_db_session,
@@ -18,7 +18,7 @@ def test_single_file_previously_quarantined(
     """
     Test for full pipeline. We want to test the following things;
 
-    1. Do files in the dump location get picked up?
+    1. Do files in the files location get picked up?
     2. Do files that do not match a configuration pattern get ignored?
     3. Do files (cdr_type, cdr_date pairs) that have a state of archive
     in etl.etl_records get ignored?
@@ -29,7 +29,7 @@ def test_single_file_previously_quarantined(
     6. Do child tables get created under the associated parent table in
     the events schema?
     """
-    write_files_to_dump(
+    write_files_to_files(
         file_names=[
             "CALLS_20160101.csv.gz",
             "CALLS_20160102.csv.gz",
@@ -76,27 +76,18 @@ def test_single_file_previously_quarantined(
 
     # make sure files are where they should be
 
-    dump_files = ["CALLS_20160101.csv.gz", "bad_file.bad"]  # should have been ignored
-    archive_files = [
+    all_files = [
+        "CALLS_20160101.csv.gz",
+        "bad_file.bad",
         "CALLS_20160102.csv.gz",
         "SMS_20160101.csv.gz",
         "MDS_20160101.csv.gz",
         "TOPUPS_20160101.csv.gz",
-    ]  # ingested so now in archive
+    ]  # all files
 
-    dump = [file.name for file in Path(f"{os.getcwd()}/mounts/dump").glob("*")]
-    archive = [file.name for file in Path(f"{os.getcwd()}/mounts/archive").glob("*")]
-    quarantine = [
-        file.name for file in Path(f"{os.getcwd()}/mounts/quarantine").glob("*")
-    ]
-    ingest = [file.name for file in Path(f"{os.getcwd()}/mounts/ingest").glob("*")]
+    files = [file.name for file in Path(f"{os.getcwd()}/mounts/files").glob("*")]
 
-    assert set(dump_files) == (set(dump) - set(["README.md"]))
-    assert set(archive_files) == (set(archive) - set(["README.md"]))
-
-    # quarantine and ingest should be empty
-    assert set() == (set(quarantine) - set(["README.md"]))
-    assert set() == (set(ingest) - set(["README.md"]))
+    assert set(all_files) == (set(files) - set(["README.md"]))
 
     # make sure tables expected exist in flowdb
     connection, _ = flowdb_connection
