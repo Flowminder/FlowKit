@@ -41,7 +41,7 @@ def get_config():
     cfg.VCS = "git"
     cfg.style = "pep440"
     cfg.tag_prefix = ""
-    cfg.parentdir_prefix = ""
+    cfg.parentdir_prefix = "FlowKit-"
     cfg.versionfile_source = "flowapi/_version.py"
     cfg.verbose = False
     return cfg
