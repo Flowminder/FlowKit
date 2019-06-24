@@ -197,10 +197,7 @@ services:
       - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
     volumes:
       - ${HOST_CONFIG_DIR:?Must set HOST_CONFIG_DIR env var}:/mounts/config:ro
-      - ${HOST_DUMP_DIR:?Must set HOST_DUMP_DIR env var}:/mounts/dump:rw
-      - ${HOST_ARCHIVE_DIR:?Must set HOST_ARCHIVE_DIR env var}:/mounts/archive:rw
-      - ${HOST_QUARANTINE_DIR:?Must set HOST_QUARANTINE_DIR env var}:/mounts/quarantine:rw
-      - ${HOST_INGEST_DIR:?Must set HOST_INGEST_DIR env var}:/mounts/ingest:rw
+      - ${HOST_FILES_DIR:?Must set HOST_FILES_DIR env var}:/mounts/files:rw
 
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor

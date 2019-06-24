@@ -11,33 +11,23 @@ from pathlib import Path
 
 import pendulum
 
-from etl.production_task_callables import move_file_and_record_ingestion_state__callable
+from etl.production_task_callables import record_ingestion_state__callable
 
 # pylint: disable=too-many-locals
-def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_run):
+def test_record_ingestion_state__callable(tmpdir, create_fake_dag_run):
     """
-    Tests that we are able to move a file from `from_dir` to `to_dir` and that we
-    issue the command to set new state of the file within the ingestion process.
+    Tests that we are able to issue the command to set the new state of the file
+    within the ingestion process.
     """
-    from_dir = tmpdir.mkdir("from_dir")
-    to_dir = tmpdir.mkdir("to_dir")
-
+    to_state = "archive"
     file_name = "file_to_move"
     cdr_type = "calls"
     cdr_date = pendulum.parse("2016-01-01").date()
-    file = from_dir.join(file_name)
-
-    file_contents = """
-    Some contents in
-    a file...
-    """
-    file.write(file_contents)
 
     fake_dag_run = create_fake_dag_run(
         conf={"file_name": file_name, "cdr_type": cdr_type, "cdr_date": cdr_date}
     )
 
-    mount_paths = {"ingest": Path(from_dir), "archive": Path(to_dir)}
     mock_ETLRecord__set_state = Mock()
 
     # don't actually need a real session
@@ -51,12 +41,7 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_
         "etl.production_task_callables.ETLRecord.set_state", mock_ETLRecord__set_state
     ):
         with patch("etl.production_task_callables.get_session", mock_get_session):
-            move_file_and_record_ingestion_state__callable(
-                dag_run=fake_dag_run,
-                mount_paths=mount_paths,
-                from_dir="ingest",
-                to_dir="archive",
-            )
+            record_ingestion_state__callable(dag_run=fake_dag_run, to_state=to_state)
 
     assert len(mock_ETLRecord__set_state.mock_calls) == 1
     assert len(mock_get_session.mock_calls) == 1
@@ -65,11 +50,6 @@ def test_move_file_and_record_ingestion_state__callable(tmpdir, create_fake_dag_
     assert kwargs == {
         "cdr_type": cdr_type,
         "cdr_date": cdr_date,
-        "state": Path(to_dir).name,
+        "state": to_state,
         "session": "session",
     }
-    assert from_dir.listdir() == []
-    assert len(to_dir.listdir()) == 1
-
-    moved_file = to_dir.listdir()[0]
-    assert moved_file.read() == file_contents

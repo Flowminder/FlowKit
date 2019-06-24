@@ -87,41 +87,21 @@ def render_and_run_sql__callable(
 
 
 # pylint: disable=unused-argument
-def move_file_and_record_ingestion_state__callable(
-    *, dag_run: DagRun, mount_paths: dict, from_dir: str, to_dir: str, **kwargs
-):
+def record_ingestion_state__callable(*, dag_run: DagRun, to_state: str, **kwargs):
     """
-    Function to deal with moving files between various mount directories along
-    with recording the state of the ingestion. Since the directory structure
-    reflects the state of ingestion we make use of the to_dir location to specify
-    the next state of the file being ingested. The actual change to the DB to record
-    new state is accomplished in the record_etl_state function.
+    Function to deal with recording the state of the ingestion. The actual
+    change to the DB to record new state is accomplished in the
+    ETLRecord.set_state function.
 
     Parameters
     ----------
     dag_run : DagRun
         Passed as part of the Dag context - contains the config.
-    mount_paths : dict
-        A dictionary that stores the locations of each of the various
-        mount directories
-    from_dir : str
-        The location from which the file should be moved
-    to_dir : str
-        The location to which the file is being moved and the resulting state
-        of the file
+    to_state : str
+        The the resulting state of the file
     """
-    from_path = mount_paths[from_dir]
-    to_path = mount_paths[to_dir]
-
-    file_name = dag_run.conf["file_name"]
     cdr_type = dag_run.conf["cdr_type"]
     cdr_date = dag_run.conf["cdr_date"]
-
-    file_to_move = from_path / file_name
-    shutil.copy(str(file_to_move), str(to_path))
-    file_to_move.unlink()
-
-    to_state = to_path.name
 
     session = get_session()
     ETLRecord.set_state(
@@ -152,23 +132,23 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
 
 
 def trigger__callable(
-    *, dag_run: DagRun, dump_path: Path, cdr_type_config: dict, **kwargs
+    *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
 ):
     """
-    Function that determines which files in dump should be processed
+    Function that determines which files in files/ should be processed
     and triggers the correct ETL dag with config based on filename.
 
     Parameters
     ----------
     dag_run : DagRun
         Passed as part of the Dag context - contains the config.
-    dump_path : Path
-        Location of dump directory
+    files_path : Path
+        Location of files directory
     cdr_type_config : dict
         ETL config for each cdr type
     """
 
-    found_files = find_files(dump_path=dump_path)
+    found_files = find_files(files_path=files_path)
     logger.info(found_files)
 
     # remove files that either do not match a pattern
