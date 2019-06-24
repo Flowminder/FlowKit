@@ -62,7 +62,6 @@ describe("Token generation", function() {
     cy.get("#permissions")
       .click()
       //checking permission top level checkbox
-      .get("#permissions")
       .click();
     cy.get("#api-exp").click();
     //checking first sub-level permission checkbox
@@ -140,7 +139,6 @@ describe("Token generation", function() {
     cy.get("#units")
       .click()
       //check aggregation unit top-level checkbox
-      .get("#units")
       .click();
     cy.get("#unit-exp").click();
     cy.get("#unit")
