@@ -58,13 +58,9 @@ def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
 def construct_etl_dag(
     *,
     init: Callable,
-    extract: Callable,
-    transform: Callable,
-    load: Callable,
     success_branch: Callable,
     archive: Callable,
     quarantine: Callable,
-    clean: Callable,
     fail: Callable,
     default_args: dict,
     cdr_type: str,
@@ -78,20 +74,12 @@ def construct_etl_dag(
     ----------
     init : Callable
         The init task callable.
-    extract : Callable
-        The extract task callable.
-    transform : Callable
-        The transform task callable.
-    load : Callable
-        The load task callable.
     success_branch : Callable
         The success_branch task callable.
     archive : Callable
         The archive task callable.
     quarantine : Callable
         The quarantine task callable.
-    clean : Callable
-        The clean task callable.
     fail : Callable
         The fail task callable.
     default_args : dict
@@ -107,33 +95,30 @@ def construct_etl_dag(
         Specification of Airflow DAG for ETL
     """
 
-    config_path = Path("/mounts/config")
-    fixed_sql_path = config_path / "fixed_sql"
+    config_path = "/mounts/config"
 
     with DAG(
         dag_id=f"etl_{cdr_type}",
         schedule_interval=None,
         default_args=default_args,
-        template_searchpath=str(fixed_sql_path)
+        template_searchpath=config_path,
     ) as dag:
 
         init = PythonOperator(
             task_id="init", python_callable=init, provide_context=True
         )
-        extract = PythonOperator(
+        extract = PostgresOperator(
             postgres_conn_id="flowdb",
-            sql="/extract.sql",
+            sql=f"/etl/{cdr_type}/extract.sql",
             task_id="extract",
         )
         transform = PostgresOperator(
             postgres_conn_id="flowdb",
-            sql="/transform.sql",
+            sql=f"/etl/{cdr_type}/transform.sql",
             task_id="transform",
         )
         load = PostgresOperator(
-            postgres_conn_id="flowdb",
-            sql="/load.sql",
-            task_id="load",
+            postgres_conn_id="flowdb", sql="/fixed_sql/load.sql", task_id="load"
         )
         success_branch = BranchPythonOperator(
             task_id="success_branch",
@@ -149,7 +134,7 @@ def construct_etl_dag(
         )
         clean = PostgresOperator(
             postgres_conn_id="flowdb",
-            sql="/clean.sql",
+            sql="/fixed_sql/clean.sql",
             task_id="clean",
             trigger_rule="all_done",
         )

@@ -21,7 +21,6 @@ from etl.dummy_task_callables import (
 )
 from etl.production_task_callables import (
     move_file_and_record_ingestion_state__callable,
-    render_and_run_sql__callable,
     success_branch__callable,
     trigger__callable,
 )
@@ -45,13 +44,9 @@ except FileNotFoundError:
 # callables to be used when testing the structure of the ETL DAG
 TEST_ETL_TASK_CALLABLES = {
     "init": dummy__callable,
-    "extract": dummy__callable,
-    "transform": dummy__callable,
-    "load": dummy__callable,
     "success_branch": success_branch__callable,
     "archive": dummy__callable,
     "quarantine": dummy__callable,
-    "clean": dummy__callable,
     "fail": dummy_failing__callable,
 }
 
@@ -62,25 +57,6 @@ PRODUCTION_ETL_TASK_CALLABLES = {
         mount_paths=mount_paths,
         from_dir="dump",
         to_dir="ingest",
-    ),
-    "extract": partial(
-        render_and_run_sql__callable,
-        db_hook=db_hook,
-        config_path=config_path,
-        template_name="extract",
-    ),
-    "transform": partial(
-        render_and_run_sql__callable,
-        db_hook=db_hook,
-        config_path=config_path,
-        template_name="transform",
-    ),
-    "load": partial(
-        render_and_run_sql__callable,
-        db_hook=db_hook,
-        config_path=config_path,
-        template_name="load",
-        fixed_sql=True,
     ),
     "success_branch": success_branch__callable,
     "archive": partial(
@@ -94,13 +70,6 @@ PRODUCTION_ETL_TASK_CALLABLES = {
         mount_paths=mount_paths,
         from_dir="ingest",
         to_dir="quarantine",
-    ),
-    "clean": partial(
-        render_and_run_sql__callable,
-        db_hook=db_hook,
-        config_path=config_path,
-        template_name="clean",
-        fixed_sql=True,
     ),
     "fail": dummy_failing__callable,
 }
