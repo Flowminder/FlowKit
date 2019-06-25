@@ -34,9 +34,9 @@ def test_correct_counts(get_dataframe):
         subscriber_locations("2016-01-01", "2016-01-02", level="cell", hours=(5, 17))
     )
     assert [
-        df["unique_location_counts"][0],
-        df["unique_location_counts"][1],
-        df["unique_location_counts"][2],
+        df["value"][0],
+        df["value"][1],
+        df["value"][2],
     ] == [
         len(dful[dful["subscriber"] == df["subscriber"][0]]["location_id"].unique()),
         len(dful[dful["subscriber"] == df["subscriber"][1]]["location_id"].unique()),
