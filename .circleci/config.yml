@@ -556,7 +556,8 @@ jobs:
           name: Build <<parameters.component>> image
           command: |
             echo "Tagging as $CIRCLE_SHA1"
-            docker build --build-arg SOURCE_VERSION=$(git describe --tags --dirty --always --long --match "*") -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 <<parameters.component_path>>
+            export SOURCE_VERSION=$(git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g)
+            docker build --build-arg SOURCE_VERSION=$SOURCE_VERSION -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 <<parameters.component_path>>
       - run:
           name: Push images to Docker cloud
           command: |
