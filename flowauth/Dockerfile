@@ -25,6 +25,8 @@ ENV PIPENV_COLORBLIND=1
 WORKDIR /app/static
 COPY --from=builder /build .
 ARG SOURCE_VERSION
-WORKDIR /${SOURCE_VERSION}/flowauth
+ENV SOURCE_VERSION=${SOURCE_VERSION}
+ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
+WORKDIR /${SOURCE_TREE}/flowauth
 COPY backend .
 RUN python setup.py install

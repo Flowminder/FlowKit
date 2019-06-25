@@ -11,13 +11,14 @@ FROM jupyter/scipy-notebook
 RUN rm -rf /home/$NB_USER/work
 ARG SOURCE_VERSION
 ENV SOURCE_VERSION=${SOURCE_VERSION}
-COPY docs/source/worked_examples/*.ipynb /home/$NB_USER/
-COPY flowmachine /${SOURCE_TREE}/flowmachine
-COPY flowclient /${SOURCE_VERSION}/flowclient
-RUN cd /${SOURCE_VERSION}/flowclient && python setup.py bdist_wheel && \
-    cd /${SOURCE_VERSION}/flowmachine && python setup.py bdist_wheel
-RUN pip install geopandas mapboxgl /${SOURCE_VERSION}/flowclient/dist/*.whl \
-     /${SOURCE_VERSION}/flowmachine/dist/*.whl && \
+ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
+COPY --chown=$NB_USER:$NB_USER docs/source/worked_examples/*.ipynb /home/$NB_USER/
+COPY --chown=$NB_USER:$NB_USER flowmachine /${SOURCE_TREE}/flowmachine
+COPY --chown=$NB_USER:$NB_USER flowclient /${SOURCE_TREE}/flowclient
+RUN cd /${SOURCE_TREE}/flowclient && python setup.py bdist_wheel && \
+    cd /${SOURCE_TREE}/flowmachine && python setup.py bdist_wheel
+RUN pip install geopandas mapboxgl /${SOURCE_TREE}/flowclient/dist/*.whl \
+     /${SOURCE_TREE}/flowmachine/dist/*.whl && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER && \
     cd /home/$NB_USER/ && jupyter trust -y *

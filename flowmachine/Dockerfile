@@ -5,7 +5,9 @@
 FROM python:3.7-slim
 
 ARG SOURCE_VERSION
-WORKDIR /${SOURCE_VERSION}/flowmachine
+ENV SOURCE_VERSION=${SOURCE_VERSION}
+ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
+WORKDIR /${SOURCE_TREE}/flowmachine
 COPY Pipfile* ./
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
@@ -13,7 +15,7 @@ RUN apt-get update && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
-COPY . /${SOURCE_VERSION}/flowmachine
+COPY . /${SOURCE_TREE}/flowmachine
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
         pipenv run python setup.py install && \
