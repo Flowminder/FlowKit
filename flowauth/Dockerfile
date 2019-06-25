@@ -30,3 +30,5 @@ ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 WORKDIR /${SOURCE_TREE}/flowauth
 COPY backend .
 RUN python setup.py install
+WORKDIR /app
+COPY backend/uwsgi.ini .
