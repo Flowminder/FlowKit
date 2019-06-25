@@ -22,20 +22,14 @@ from etl.dummy_task_callables import (
     dummy_trigger__callable,
 )
 from etl.production_task_callables import (
-    move_file_and_record_ingestion_state__callable,
+    record_ingestion_state__callable,
     success_branch__callable,
     trigger__callable,
 )
 
-mount_paths = {
-    "dump": Path("/mounts/dump"),
-    "ingest": Path("/mounts/ingest"),
-    "archive": Path("/mounts/archive"),
-    "quarantine": Path("/mounts/quarantine"),
-}
-
 db_hook = PostgresHook(postgres_conn_id="flowdb")
 config_path = Path("/mounts/config")
+files_path = Path("/mounts/files")
 try:
     config = get_config_from_file(config_filepath=config_path / "config.yml")
 except FileNotFoundError:
@@ -81,12 +75,7 @@ PRODUCTION_ETL_TASK_CALLABLES = {
     "init": partial(
         PythonOperator,
         provide_context=True,
-        python_callable=partial(
-            move_file_and_record_ingestion_state__callable,
-            mount_paths=mount_paths,
-            from_dir="dump",
-            to_dir="ingest",
-        ),
+        python_callable=partial(record_ingestion_state__callable, to_state="ingest"),
     ),
     "extract": partial(PostgresOperator, postgres_conn_id="flowdb"),
     "transform": partial(PostgresOperator, postgres_conn_id="flowdb"),
@@ -99,21 +88,13 @@ PRODUCTION_ETL_TASK_CALLABLES = {
     "archive": partial(
         PythonOperator,
         provide_context=True,
-        python_callable=partial(
-            move_file_and_record_ingestion_state__callable,
-            mount_paths=mount_paths,
-            from_dir="ingest",
-            to_dir="archive",
-        ),
+        python_callable=partial(record_ingestion_state__callable, to_state="archive"),
     ),
     "quarantine": partial(
         PythonOperator,
         provide_context=True,
         python_callable=partial(
-            move_file_and_record_ingestion_state__callable,
-            mount_paths=mount_paths,
-            from_dir="ingest",
-            to_dir="quarantine",
+            record_ingestion_state__callable, to_state="quarantine"
         ),
     ),
     "clean": partial(PostgresOperator, postgres_conn_id="flowdb"),
@@ -124,7 +105,5 @@ PRODUCTION_ETL_TASK_CALLABLES = {
 
 TEST_ETL_SENSOR_TASK_CALLABLE = dummy_trigger__callable
 PRODUCTION_ETL_SENSOR_TASK_CALLABLE = partial(
-    trigger__callable,
-    dump_path=mount_paths["dump"],
-    cdr_type_config=config.get("etl", {}),
+    trigger__callable, files_path=files_path, cdr_type_config=config.get("etl", {})
 )

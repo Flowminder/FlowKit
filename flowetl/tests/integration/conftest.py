@@ -12,7 +12,6 @@ import shutil
 import structlog
 import pytest
 
-from itertools import chain
 from pathlib import Path
 from time import sleep
 from subprocess import DEVNULL, Popen
@@ -157,27 +156,14 @@ def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
     Various mount objects needed by containers
     """
     config_mount = Mount("/mounts/config", f"{flowetl_mounts_dir}/config", type="bind")
-    archive_mount = Mount(
-        "/mounts/archive", f"{flowetl_mounts_dir}/archive", type="bind"
-    )
-    dump_mount = Mount("/mounts/dump", f"{flowetl_mounts_dir}/dump", type="bind")
-    ingest_mount = Mount("/mounts/ingest", f"{flowetl_mounts_dir}/ingest", type="bind")
-    quarantine_mount = Mount(
-        "/mounts/quarantine", f"{flowetl_mounts_dir}/quarantine", type="bind"
-    )
-    flowetl_mounts = [
-        config_mount,
-        archive_mount,
-        dump_mount,
-        ingest_mount,
-        quarantine_mount,
-    ]
+    files_mount = Mount("/mounts/files", f"{flowetl_mounts_dir}/files", type="bind")
+    flowetl_mounts = [config_mount, files_mount]
 
     data_mount = Mount(
         "/var/lib/postgresql/data", postgres_data_dir_for_tests, type="bind"
     )
-    ingest_mount = Mount("/ingest", f"{flowetl_mounts_dir}/ingest", type="bind")
-    flowdb_mounts = [data_mount, ingest_mount]
+    files_mount = Mount("/files", f"{flowetl_mounts_dir}/files", type="bind")
+    flowdb_mounts = [data_mount, files_mount]
 
     return {"flowetl": flowetl_mounts, "flowdb": flowdb_mounts}
 
@@ -304,27 +290,21 @@ def trigger_dags():
 
 
 @pytest.fixture(scope="function")
-def write_files_to_dump(flowetl_mounts_dir):
+def write_files_to_files(flowetl_mounts_dir):
     """
     Returns a function that allows for writing a list
-    of empty files to the dump location. Also cleans
-    up dump, archive and quarantine.
+    of empty files to the files location. Also cleans
+    up the files location.
     """
-    dump_dir = f"{flowetl_mounts_dir}/dump"
-    archive_dir = f"{flowetl_mounts_dir}/archive"
-    quarantine_dir = f"{flowetl_mounts_dir}/quarantine"
+    files_dir = f"{flowetl_mounts_dir}/files"
 
-    def write_files_to_dump_function(*, file_names):
+    def write_files_to_files_function(*, file_names):
         for file_name in file_names:
-            Path(f"{dump_dir}/{file_name}").touch()
+            Path(f"{files_dir}/{file_name}").touch()
 
-    yield write_files_to_dump_function
+    yield write_files_to_files_function
 
-    files_to_remove = chain(
-        Path(dump_dir).glob("*"),
-        Path(archive_dir).glob("*"),
-        Path(quarantine_dir).glob("*"),
-    )
+    files_to_remove = Path(files_dir).glob("*")
     files_to_remove = filter(lambda file: file.name != "README.md", files_to_remove)
 
     [file.unlink() for file in files_to_remove]
@@ -462,7 +442,10 @@ def wait_for_completion():
             sleep(1)
             t1 = now()
             if (t1 - t0) > time_out:
-                raise TimeoutError
+                raise TimeoutError(
+                    f"DAG '{dag_id}' did not reach desired state {end_state}. This may be"
+                    "due to missing config settings or syntax errors in one of its task."
+                )
         return end_state
 
     return wait_func
