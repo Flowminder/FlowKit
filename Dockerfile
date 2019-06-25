@@ -12,9 +12,9 @@ RUN rm -rf /home/$NB_USER/work
 ARG SOURCE_VERSION
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-COPY --chown=$NB_USER:$NB_USER docs/source/worked_examples/*.ipynb /home/$NB_USER/
-COPY --chown=$NB_USER:$NB_USER flowmachine /${SOURCE_TREE}/flowmachine
-COPY --chown=$NB_USER:$NB_USER flowclient /${SOURCE_TREE}/flowclient
+COPY --chown=$NB_UID:$NB_GID docs/source/worked_examples/*.ipynb /home/$NB_USER/
+COPY --chown=$NB_UID:$NB_GID flowmachine /${SOURCE_TREE}/flowmachine
+COPY --chown=$NB_UID:$NB_GID flowclient /${SOURCE_TREE}/flowclient
 RUN cd /${SOURCE_TREE}/flowclient && python setup.py bdist_wheel && \
     cd /${SOURCE_TREE}/flowmachine && python setup.py bdist_wheel
 RUN pip install geopandas mapboxgl /${SOURCE_TREE}/flowclient/dist/*.whl \
