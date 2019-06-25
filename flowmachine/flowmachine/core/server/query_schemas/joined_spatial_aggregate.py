@@ -24,7 +24,10 @@ __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 
 class JoinableMetrics(OneOfSchema):
     type_field = "query_kind"
-    type_schemas = {"radius_of_gyration": RadiusOfGyrationSchema,"unique_location_counts":UniqueLocationCountsSchema}
+    type_schemas = {
+        "radius_of_gyration": RadiusOfGyrationSchema,
+        "unique_location_counts": UniqueLocationCountsSchema,
+    }
 
 
 class JoinedSpatialAggregateSchema(Schema):
