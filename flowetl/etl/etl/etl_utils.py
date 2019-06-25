@@ -58,9 +58,13 @@ def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
 def construct_etl_dag(
     *,
     init: Callable,
+    extract: Callable,
+    transform: Callable,
+    load: Callable,
     success_branch: Callable,
     archive: Callable,
     quarantine: Callable,
+    clean: Callable,
     fail: Callable,
     default_args: dict,
     cdr_type: str,
@@ -75,12 +79,20 @@ def construct_etl_dag(
     ----------
     init : Callable
         The init task callable.
+    extract : Callable
+        The extract task callable.
+    transform : Callable
+        The transform task callable.
+    load : Callable
+        The load task callable.
     success_branch : Callable
         The success_branch task callable.
     archive : Callable
         The archive task callable.
     quarantine : Callable
         The quarantine task callable.
+    clean : Callable
+        The clean task callable.
     fail : Callable
         The fail task callable.
     default_args : dict
@@ -105,43 +117,19 @@ def construct_etl_dag(
         template_searchpath=config_path,
     ) as dag:
 
-        init = PythonOperator(
-            task_id="init", python_callable=init, provide_context=True
+        init = init(task_id="init")
+        extract = extract(task_id="extract", sql=f"/etl/{cdr_type}/extract.sql")
+        transform = transform(task_id="transform", sql=f"/etl/{cdr_type}/transform.sql")
+        load = load(task_id="load", sql="/fixed_sql/load.sql")
+        success_branch = success_branch(
+            task_id="success_branch", trigger_rule="all_done"
         )
-        extract = PostgresOperator(
-            postgres_conn_id="flowdb",
-            sql=f"/etl/{cdr_type}/extract.sql",
-            task_id="extract",
+        archive = archive(task_id="archive")
+        quarantine = quarantine(task_id="quarantine")
+        clean = clean(
+            task_id="clean", sql="/fixed_sql/clean.sql", trigger_rule="all_done"
         )
-        transform = PostgresOperator(
-            postgres_conn_id="flowdb",
-            sql=f"/etl/{cdr_type}/transform.sql",
-            task_id="transform",
-        )
-        load = PostgresOperator(
-            postgres_conn_id="flowdb", sql="/fixed_sql/load.sql", task_id="load"
-        )
-        success_branch = BranchPythonOperator(
-            task_id="success_branch",
-            python_callable=success_branch,
-            provide_context=True,
-            trigger_rule="all_done",
-        )
-        archive = PythonOperator(
-            task_id="archive", python_callable=archive, provide_context=True
-        )
-        quarantine = PythonOperator(
-            task_id="quarantine", python_callable=quarantine, provide_context=True
-        )
-        clean = PostgresOperator(
-            postgres_conn_id="flowdb",
-            sql="/fixed_sql/clean.sql",
-            task_id="clean",
-            trigger_rule="all_done",
-        )
-        fail = PythonOperator(
-            task_id="fail", python_callable=fail, provide_context=True
-        )
+        fail = fail(task_id="fail")
 
         # Define upstream/downstream relationships between airflow tasks
         init >> extract >> transform >> load >> success_branch  # pylint: disable=pointless-statement

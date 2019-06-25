@@ -9,9 +9,10 @@ Tests for the construction of the ETL DAG
 import pytest
 from pendulum import parse
 from pendulum.parsing.exceptions import ParserError
+from unittest.mock import Mock
 
 from airflow.exceptions import AirflowException
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.postgres_operator import PostgresOperator
 
 from etl.etl_utils import construct_etl_dag
 from etl.dag_task_callable_mappings import (
@@ -27,7 +28,9 @@ def test_construct_etl_dag_with_test_callables():
     mapping.
     """
     default_args = {"owner": "bob", "start_date": parse("1900-01-01")}
-    task_callable_mapping = TEST_ETL_TASK_CALLABLES
+    task_callable_mapping = {
+        t: Mock(wraps=v) for (t, v) in TEST_ETL_TASK_CALLABLES.items()
+    }
     cdr_type = "spaghetti"
 
     dag = construct_etl_dag(
@@ -37,9 +40,17 @@ def test_construct_etl_dag_with_test_callables():
     assert dag.dag_id == f"etl_{cdr_type}"
 
     dag_task_callable_mapping = {
-        t.task_id: t.python_callable for t in dag.tasks if isinstance(t, PythonOperator)
+        t.task_id: t.python_callable
+        for t in dag.tasks
+        if not isinstance(t, PostgresOperator)
     }
-    assert dag_task_callable_mapping == TEST_ETL_TASK_CALLABLES
+    expected_dag_task_callable_mapping = {
+        t.task_id: TEST_ETL_TASK_CALLABLES[t.task_id](task_id=t.task_id).python_callable
+        for t in dag.tasks
+        if not isinstance(t, PostgresOperator)
+    }
+    assert dag_task_callable_mapping == expected_dag_task_callable_mapping
+    [t.assert_called_once() for _, t in task_callable_mapping.items()]
 
 
 def test_construct_etl_dag_with_production_callables():
@@ -49,7 +60,9 @@ def test_construct_etl_dag_with_production_callables():
     mapping.
     """
     default_args = {"owner": "bob", "start_date": parse("1900-01-01")}
-    task_callable_mapping = PRODUCTION_ETL_TASK_CALLABLES
+    task_callable_mapping = {
+        t: Mock(wraps=v) for (t, v) in PRODUCTION_ETL_TASK_CALLABLES.items()
+    }
     cdr_type = "spaghetti"
 
     dag = construct_etl_dag(
@@ -59,9 +72,19 @@ def test_construct_etl_dag_with_production_callables():
     assert dag.dag_id == f"etl_{cdr_type}"
 
     dag_task_callable_mapping = {
-        t.task_id: t.python_callable for t in dag.tasks if isinstance(t, PythonOperator)
+        t.task_id: t.python_callable
+        for t in dag.tasks
+        if not isinstance(t, PostgresOperator)
     }
-    assert dag_task_callable_mapping == PRODUCTION_ETL_TASK_CALLABLES
+    expected_dag_task_callable_mapping = {
+        t.task_id: PRODUCTION_ETL_TASK_CALLABLES[t.task_id](
+            task_id=t.task_id
+        ).python_callable
+        for t in dag.tasks
+        if not isinstance(t, PostgresOperator)
+    }
+    assert dag_task_callable_mapping == expected_dag_task_callable_mapping
+    [t.assert_called_once() for _, t in task_callable_mapping.items()]
 
 
 def test_construct_etl_dag_fails_with_no_start_date():

@@ -74,11 +74,7 @@ from airflow.models import DagRun
     ],
 )
 def test_quarantine_branch(
-    create_postgres_templates_for_dag,
-    airflow_local_pipeline_run,
-    wait_for_completion,
-    task_to_fail,
-    expected_task_states,
+    airflow_local_pipeline_run, wait_for_completion, task_to_fail, expected_task_states
 ):
     """
     Tests that correct tasks run, with correct end state, when ETL is
@@ -87,9 +83,8 @@ def test_quarantine_branch(
     end_state = "failed"
     dag_type = "testing"
 
-    create_postgres_templates_for_dag(dag_type=dag_type)
     airflow_local_pipeline_run({"TASK_TO_FAIL": task_to_fail})
-    final_etl_state = wait_for_completion(end_state, dag_id="etl_{dag_type}")
+    final_etl_state = wait_for_completion(end_state, dag_id=f"etl_{dag_type}")
     assert final_etl_state == end_state
 
     etl_dag = DagRun.find(f"etl_{dag_type}", state=end_state)[0]
