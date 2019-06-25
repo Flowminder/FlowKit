@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The quick-start script now uses the environment variable `GIT_REVISION` to control the version to be deployed.
 - Create token page permission and spatial aggregation checkboxes are now hidden by default.[#834](https://github.com/Flowminder/FlowKit/issues/834)
 - The flowetl mounted directories `archive, dump, ingest, quarantine` were replaced with a single `files` directory and files are no longer moved. [#946](https://github.com/Flowminder/FlowKit/issues/946)
+- FlowDB's postgresql has been updated to [11.4](https://www.postgresql.org/about/news/1949/), which addresses several bugs and one major vulnerability.
 
 ### Fixed
 
