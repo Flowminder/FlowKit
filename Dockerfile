@@ -9,11 +9,15 @@
 FROM jupyter/scipy-notebook
 
 RUN rm -rf /home/$NB_USER/work
-
+ARG SOURCE_VERSION
+ENV SOURCE_VERSION=${SOURCE_VERSION}
 COPY docs/source/worked_examples/*.ipynb /home/$NB_USER/
-COPY flowmachine /flowmachine
-COPY flowclient /flowclient
-RUN pip install geopandas mapboxgl /flowclient /flowmachine && \
+COPY flowmachine /${SOURCE_TREE}/flowmachine
+COPY flowclient /${SOURCE_VERSION}/flowclient
+RUN cd /${SOURCE_VERSION}/flowclient && python setup.py bdist_wheel && \
+    cd /${SOURCE_VERSION}/flowmachine && python setup.py bdist_wheel && \
+    pip install geopandas mapboxgl /${SOURCE_VERSION}/flowclient/dist/*.whl \
+     /${SOURCE_VERSION}/flowmachine/dist/*.whl && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER && \
     cd /home/$NB_USER/ && jupyter trust -y *
