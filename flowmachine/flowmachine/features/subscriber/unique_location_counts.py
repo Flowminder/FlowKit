@@ -122,7 +122,7 @@ class UniqueLocationCounts(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "value"]
+        return ["subscriber", "Value"]
 
     def _make_query(self):
         """
