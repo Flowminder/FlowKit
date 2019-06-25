@@ -15,8 +15,8 @@ COPY docs/source/worked_examples/*.ipynb /home/$NB_USER/
 COPY flowmachine /${SOURCE_TREE}/flowmachine
 COPY flowclient /${SOURCE_VERSION}/flowclient
 RUN cd /${SOURCE_VERSION}/flowclient && python setup.py bdist_wheel && \
-    cd /${SOURCE_VERSION}/flowmachine && python setup.py bdist_wheel && \
-    pip install geopandas mapboxgl /${SOURCE_VERSION}/flowclient/dist/*.whl \
+    cd /${SOURCE_VERSION}/flowmachine && python setup.py bdist_wheel
+RUN pip install geopandas mapboxgl /${SOURCE_VERSION}/flowclient/dist/*.whl \
      /${SOURCE_VERSION}/flowmachine/dist/*.whl && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER && \
