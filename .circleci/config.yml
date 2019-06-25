@@ -547,7 +547,8 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 18.09.3
       - run:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
