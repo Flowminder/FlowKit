@@ -30,7 +30,7 @@ function getCookieValue(a) {
 }
 
 Cypress.Commands.add("login", () =>
-  cy.request("POST", "/signin", {
+  cy.goto("/").request("POST", "/signin", {
     username: "TEST_USER",
     password: "DUMMY_PASSWORD"
   })
