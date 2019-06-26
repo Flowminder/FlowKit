@@ -263,7 +263,8 @@ def flowetl_container(
         # arbitrarily 3 minutes.. Fails with a TimeoutError if it can't reach the
         # endpoint during the attempts.
         t0 = now()
-        while True:
+        healthy = False
+        while not healthy:
             try:
                 resp = requests.get(
                     f"http://localhost:{container_ports['flowetl_airflow']}/health",
@@ -271,20 +272,18 @@ def flowetl_container(
                 ).json()
 
                 # retry if scheduler is still not healthy
-                if resp["scheduler"]["status"] != "healthy":
-                    raise ConnectionError(
-                        "Airflow is up but scheduler is not healthy yet."
-                    )
+                if resp["scheduler"]["status"] == "healthy":
+                    healthy = True
+            except RequestException:
+                pass
 
-                return True
-            except (ConnectionError, RequestException):
-                sleep(1)
-                t1 = now()
-                if (t1 - t0) > time_out:
-                    raise TimeoutError(
-                        "Flowetl container did not start properly. This may be due to"
-                        "missing config settings or syntax errors in one of its task."
-                    )
+            sleep(0.1)
+            t1 = now()
+            if (t1 - t0) > time_out:
+                raise TimeoutError(
+                    "Flowetl container did not start properly. This may be due to "
+                    "missing config settings or syntax errors in one of its task."
+                )
 
     user = f"{os.getuid()}:{os.getgid()}"
     container = docker_client.containers.run(
