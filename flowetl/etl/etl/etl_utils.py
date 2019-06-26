@@ -114,20 +114,20 @@ def construct_etl_dag(
         dag_id=f"etl_{cdr_type}",
         schedule_interval=None,
         default_args=default_args,
-        template_searchpath=config_path,
+        template_searchpath=config_path, # template paths will be relative to this
     ) as dag:
 
         init = init(task_id="init")
-        extract = extract(task_id="extract", sql=f"/etl/{cdr_type}/extract.sql")
-        transform = transform(task_id="transform", sql=f"/etl/{cdr_type}/transform.sql")
-        load = load(task_id="load", sql="/fixed_sql/load.sql")
+        extract = extract(task_id="extract", sql=f"etl/{cdr_type}/extract.sql")
+        transform = transform(task_id="transform", sql=f"etl/{cdr_type}/transform.sql")
+        load = load(task_id="load", sql="fixed_sql/load.sql")
         success_branch = success_branch(
             task_id="success_branch", trigger_rule="all_done"
         )
         archive = archive(task_id="archive")
         quarantine = quarantine(task_id="quarantine")
         clean = clean(
-            task_id="clean", sql="/fixed_sql/clean.sql", trigger_rule="all_done"
+            task_id="clean", sql="fixed_sql/clean.sql", trigger_rule="all_done"
         )
         fail = fail(task_id="fail")
 
