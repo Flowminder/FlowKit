@@ -12,7 +12,7 @@ from pendulum.parsing.exceptions import ParserError
 from unittest.mock import Mock
 
 from airflow.exceptions import AirflowException
-from airflow.operators.postgres_operator import PostgresOperator
+from airflow.operators.python_operator import PythonOperator, BranchPythonOperator
 
 from etl.etl_utils import construct_etl_dag
 from etl.dag_task_callable_mappings import (
@@ -42,12 +42,12 @@ def test_construct_etl_dag_with_test_callables():
     dag_task_callable_mapping = {
         t.task_id: t.python_callable
         for t in dag.tasks
-        if not isinstance(t, PostgresOperator)
+        if isinstance(t, PythonOperator) or isinstance(t, BranchPythonOperator)
     }
     expected_dag_task_callable_mapping = {
         t.task_id: TEST_ETL_TASK_CALLABLES[t.task_id](task_id=t.task_id).python_callable
         for t in dag.tasks
-        if not isinstance(t, PostgresOperator)
+        if isinstance(t, PythonOperator) or isinstance(t, BranchPythonOperator)
     }
     assert dag_task_callable_mapping == expected_dag_task_callable_mapping
     [t.assert_called_once() for _, t in task_callable_mapping.items()]
@@ -74,14 +74,14 @@ def test_construct_etl_dag_with_production_callables():
     dag_task_callable_mapping = {
         t.task_id: t.python_callable
         for t in dag.tasks
-        if not isinstance(t, PostgresOperator)
+        if isinstance(t, PythonOperator) or isinstance(t, BranchPythonOperator)
     }
     expected_dag_task_callable_mapping = {
         t.task_id: PRODUCTION_ETL_TASK_CALLABLES[t.task_id](
             task_id=t.task_id
         ).python_callable
         for t in dag.tasks
-        if not isinstance(t, PostgresOperator)
+        if isinstance(t, PythonOperator) or isinstance(t, BranchPythonOperator)
     }
     assert dag_task_callable_mapping == expected_dag_task_callable_mapping
     [t.assert_called_once() for _, t in task_callable_mapping.items()]
