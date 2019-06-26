@@ -1252,7 +1252,11 @@ def aggregate_network_objects(
 
 
 def unique_location_counts(
-    *, start_date, end_date, aggregation_unit, subscriber_subset=None
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
     Return query spec for unique location count
