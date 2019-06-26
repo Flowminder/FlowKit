@@ -23,6 +23,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from docker.types import Mount
 from shutil import rmtree
+from requests.exceptions import RequestException
 
 here = os.path.dirname(os.path.abspath(__file__))
 logger = structlog.get_logger("flowetl-tests")
@@ -267,14 +268,21 @@ def flowetl_container(
                 resp = requests.get(
                     f"http://localhost:{container_ports['flowetl_airflow']}/health",
                     timeout=time_out_per_request.seconds,
-                )
+                ).json()
+
+                # retry if scheduler is still not healthy
+                if resp["scheduler"]["status"] != "healthy":
+                    raise ConnectionError(
+                        "Airflow is up but scheduler is not healthy yet."
+                    )
+
                 return True
-            except Exception as e:
+            except (ConnectionError, RequestException):
                 sleep(1)
                 t1 = now()
                 if (t1 - t0) > time_out:
                     raise TimeoutError(
-                        f"Flowetl container did not start properly. This may be due to"
+                        "Flowetl container did not start properly. This may be due to"
                         "missing config settings or syntax errors in one of its task."
                     )
 
