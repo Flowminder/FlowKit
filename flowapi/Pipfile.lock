@@ -143,10 +143,10 @@
                 "asymmetric-crypto"
             ],
             "hashes": [
-                "sha256:69d683b51cc85f3a0beb187787e8456a1cfe60e3f8d9da00dc0d7c34e38b698a"
+                "sha256:583a6e363ea51434c4189e35d3832a23949cfa5203d60a8287b6be137a75528d"
             ],
             "index": "pypi",
-            "version": "==3.18.2"
+            "version": "==3.19.0"
         },
         "h11": {
             "hashes": [
@@ -391,11 +391,11 @@
         },
         "typing-extensions": {
             "hashes": [
-                "sha256:07b2c978670896022a43c4b915df8958bec4a6b84add7f2c87b2b728bda3ba64",
-                "sha256:f3f0e67e1d42de47b5c67c32c9b26641642e9170fe7e292991793705cd5fef7c",
-                "sha256:fb2cd053238d33a8ec939190f30cfd736c00653a85a2919415cecf7dc3d9da71"
+                "sha256:2ed632b30bb54fc3941c382decfd0ee4148f5c591651c9272473fea2c6397d95",
+                "sha256:b1edbbf0652660e32ae780ac9433f4231e7339c7f9a8057d0f042fcbcea49b87",
+                "sha256:d8179012ec2c620d3791ca6fe2bf7979d979acdbef1fca0bc56b37411db682ed"
             ],
-            "version": "==3.7.2"
+            "version": "==3.7.4"
         },
         "werkzeug": {
             "hashes": [
