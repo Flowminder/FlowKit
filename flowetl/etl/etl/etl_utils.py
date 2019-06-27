@@ -21,7 +21,7 @@ from sqlalchemy.orm import sessionmaker
 
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
-from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
+from airflow.operators.python_operator import PythonOperator
 
 from etl import model
 
@@ -67,6 +67,7 @@ def construct_etl_dag(
     fail: Callable,
     default_args: dict,
     cdr_type: str,
+    config_path: str = "/mounts/config",
 ) -> DAG:
     """
     This function returns an Airflow DAG object of the structure
@@ -99,6 +100,8 @@ def construct_etl_dag(
         pendulum date object)
     cdr_type : str
         The type of CDR that this ETL DAG will process.
+    config_path : str
+        The config path used to look for the sql templates.
 
     Returns
     -------
@@ -107,42 +110,25 @@ def construct_etl_dag(
     """
 
     with DAG(
-        dag_id=f"etl_{cdr_type}", schedule_interval=None, default_args=default_args
+        dag_id=f"etl_{cdr_type}",
+        schedule_interval=None,
+        default_args=default_args,
+        template_searchpath=config_path,  # template paths will be relative to this
     ) as dag:
 
-        init = PythonOperator(
-            task_id="init", python_callable=init, provide_context=True
+        init = init(task_id="init")
+        extract = extract(task_id="extract", sql=f"etl/{cdr_type}/extract.sql")
+        transform = transform(task_id="transform", sql=f"etl/{cdr_type}/transform.sql")
+        load = load(task_id="load", sql="fixed_sql/load.sql")
+        success_branch = success_branch(
+            task_id="success_branch", trigger_rule="all_done"
         )
-        extract = PythonOperator(
-            task_id="extract", python_callable=extract, provide_context=True
+        archive = archive(task_id="archive")
+        quarantine = quarantine(task_id="quarantine")
+        clean = clean(
+            task_id="clean", sql="fixed_sql/clean.sql", trigger_rule="all_done"
         )
-        transform = PythonOperator(
-            task_id="transform", python_callable=transform, provide_context=True
-        )
-        load = PythonOperator(
-            task_id="load", python_callable=load, provide_context=True
-        )
-        success_branch = BranchPythonOperator(
-            task_id="success_branch",
-            python_callable=success_branch,
-            provide_context=True,
-            trigger_rule="all_done",
-        )
-        archive = PythonOperator(
-            task_id="archive", python_callable=archive, provide_context=True
-        )
-        quarantine = PythonOperator(
-            task_id="quarantine", python_callable=quarantine, provide_context=True
-        )
-        clean = PythonOperator(
-            task_id="clean",
-            python_callable=clean,
-            provide_context=True,
-            trigger_rule="all_done",
-        )
-        fail = PythonOperator(
-            task_id="fail", python_callable=fail, provide_context=True
-        )
+        fail = fail(task_id="fail")
 
         # Define upstream/downstream relationships between airflow tasks
         init >> extract >> transform >> load >> success_branch  # pylint: disable=pointless-statement
