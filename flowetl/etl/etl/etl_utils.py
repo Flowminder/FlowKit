@@ -21,8 +21,7 @@ from sqlalchemy.orm import sessionmaker
 
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
-from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
-from airflow.operators.postgres_operator import PostgresOperator
+from airflow.operators.python_operator import PythonOperator
 
 from etl import model
 
@@ -114,7 +113,7 @@ def construct_etl_dag(
         dag_id=f"etl_{cdr_type}",
         schedule_interval=None,
         default_args=default_args,
-        template_searchpath=config_path, # template paths will be relative to this
+        template_searchpath=config_path,  # template paths will be relative to this
     ) as dag:
 
         init = init(task_id="init")
