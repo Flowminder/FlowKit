@@ -81,11 +81,13 @@ def test_quarantine_branch(
     not successful. We fail each of the tasks init, extract, transform and load.
     """
     end_state = "failed"
+    dag_type = "testing"
+
     airflow_local_pipeline_run({"TASK_TO_FAIL": task_to_fail})
-    final_etl_state = wait_for_completion(end_state, dag_id="etl_testing")
+    final_etl_state = wait_for_completion(end_state, dag_id=f"etl_{dag_type}")
     assert final_etl_state == end_state
 
-    etl_dag = DagRun.find("etl_testing", state=end_state)[0]
+    etl_dag = DagRun.find(f"etl_{dag_type}", state=end_state)[0]
 
     task_states = {task.task_id: task.state for task in etl_dag.get_task_instances()}
     assert task_states == expected_task_states
