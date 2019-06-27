@@ -106,6 +106,17 @@ def test_bad_spatial_units(bad_arg, spatial_unit_type):
         )
 
 
+def test_bad_aggregate_by():
+    """Test that invalid 'aggregate_by' param raises value error."""
+    with pytest.raises(ValueError):
+        AggregateNetworkObjects(
+            total_network_objects=TotalNetworkObjects(
+                start="2016-01-01", stop="2016-12-30", table="calls"
+            ),
+            aggregate_by="BAD_AGGREGATE_BY",
+        )
+
+
 def test_bad_statistic():
     """Test that invalid stat for aggregate raises value error."""
     with pytest.raises(ValueError):
