@@ -20,7 +20,7 @@ class DummyQuerySchema(Schema):
     dummy_param = fields.String(required=True)
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return DummyQueryExposed(**params)
 
 
