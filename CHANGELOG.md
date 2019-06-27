@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - The dev provisioning Ansible playbook now automatically generates an SSH key pair for the `flowkit` user. [#892](https://github.com/Flowminder/FlowKit/issues/892)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes unique location counts.[#949](https://github.com/Flowminder/FlowKit/issues/949)
+- Flowdb now contains an auxiliary table to record outcomes of queries that can be run as part of the regular ETL process [#988](https://github.com/Flowminder/FlowKit/issues/988)
 
 ### Changed
 
