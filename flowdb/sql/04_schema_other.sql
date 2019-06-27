@@ -87,8 +87,8 @@ CREATE TABLE etl.post_etl_queries (
 );
 
 COMMENT ON TABLE etl.post_etl_queries
-        IS 'Records outcomes of queries (e.g. simple quality checks) that are run as part '
-           'of the regular ETL process, after data has been ingested.';
+        IS 'Records outcomes of queries (e.g. simple quality checks) that are run '
+           'as part of the regular ETL process, after data has been ingested.';
 
 /*
 
