@@ -78,6 +78,18 @@ CREATE TABLE etl.etl_records (
 	PRIMARY KEY (id)
 );
 
+CREATE TABLE etl.post_etl_queries (
+    cdr_date DATE,
+    cdr_type TEXT,
+    type_of_query_or_check TEXT,
+    outcome TEXT,
+    optional_comment_or_description TEXT
+);
+
+COMMENT ON TABLE etl.post_etl_queries
+        IS 'Records outcomes of queries (e.g. simple quality checks) that are run as part '
+           'of the regular ETL process, after data has been ingested.';
+
 /*
 
 Schema used for record keeping of aggregate calculations.
