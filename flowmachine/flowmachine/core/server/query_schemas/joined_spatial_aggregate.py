@@ -9,6 +9,9 @@ from marshmallow_oneofschema import OneOfSchema
 from flowmachine.core.server.query_schemas.radius_of_gyration import (
     RadiusOfGyrationSchema,
 )
+from flowmachine.core.server.query_schemas.unique_location_counts import (
+    UniqueLocationCountsSchema,
+)
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     InputToSpatialAggregate,
 )
@@ -21,7 +24,10 @@ __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
 
 class JoinableMetrics(OneOfSchema):
     type_field = "query_kind"
-    type_schemas = {"radius_of_gyration": RadiusOfGyrationSchema}
+    type_schemas = {
+        "radius_of_gyration": RadiusOfGyrationSchema,
+        "unique_location_counts": UniqueLocationCountsSchema,
+    }
 
 
 class JoinedSpatialAggregateSchema(Schema):

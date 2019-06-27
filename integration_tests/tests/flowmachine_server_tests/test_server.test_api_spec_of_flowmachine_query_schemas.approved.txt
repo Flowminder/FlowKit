@@ -326,13 +326,17 @@
   "JoinableMetrics": {
     "discriminator": {
       "mapping": {
-        "radius_of_gyration": "#/components/schemas/RadiusOfGyration"
+        "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
+        "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
       },
       "propertyName": "query_kind"
     },
     "oneOf": [
       {
         "$ref": "#/components/schemas/RadiusOfGyration"
+      },
+      {
+        "$ref": "#/components/schemas/UniqueLocationCounts"
       }
     ]
   },
@@ -856,6 +860,46 @@
           "second",
           "year"
         ],
+        "type": "string"
+      }
+    },
+    "required": [
+      "aggregation_unit",
+      "end_date",
+      "start_date"
+    ],
+    "type": "object"
+  },
+  "UniqueLocationCounts": {
+    "properties": {
+      "aggregation_unit": {
+        "enum": [
+          "admin0",
+          "admin1",
+          "admin2",
+          "admin3"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "unique_location_counts"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
         "type": "string"
       }
     },

@@ -122,7 +122,7 @@ class UniqueLocationCounts(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "unique_location_counts"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
         """
@@ -133,15 +133,14 @@ class UniqueLocationCounts(SubscriberFeature):
         relevant_columns = ",".join(
             get_columns_for_level(self.ul.level, self.ul.column_name)
         )
-        sql = """
-        SELECT 
-            subscriber, 
-            COUNT(*) as unique_location_counts  
+        sql = f"""
+        SELECT
+            subscriber,
+            COUNT(*) as value
             FROM
-        (SELECT DISTINCT subscriber, {rc} 
-          FROM ({all_locs}) AS all_locs) AS _
-        GROUP BY subscriber  
-        """.format(
-            all_locs=self.ul.get_query(), rc=relevant_columns
-        )
+        (SELECT DISTINCT subscriber, {relevant_columns}
+          FROM ({self.ul.get_query()}) AS all_locs) AS _
+        GROUP BY subscriber
+        """
+
         return sql
