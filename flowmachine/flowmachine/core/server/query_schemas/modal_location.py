@@ -25,7 +25,7 @@ class ModalLocationSchema(Schema):
     subscriber_subset = SubscriberSubset(required=False)
 
     @post_load
-    def make_query_object(self, data):
+    def make_query_object(self, data, **kwargs):
         return ModalLocationExposed(**data)
 
 

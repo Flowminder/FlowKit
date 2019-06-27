@@ -49,7 +49,7 @@ class MeaningfulLocationsAggregateSchema(Schema):
     subscriber_subset = SubscriberSubset(required=False)
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return MeaningfulLocationsAggregateExposed(**params)
 
 
@@ -166,7 +166,7 @@ class MeaningfulLocationsBetweenLabelODMatrixSchema(Schema):
     subscriber_subset = SubscriberSubset(required=False)
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return MeaningfulLocationsBetweenLabelODMatrixExposed(**params)
 
 
@@ -251,7 +251,7 @@ class MeaningfulLocationsBetweenDatesODMatrixSchema(Schema):
     subscriber_subset = SubscriberSubset(required=False)
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return MeaningfulLocationsBetweenDatesODMatrixExposed(**params)
 
 

@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `PRIVATE_JWT_SIGNING_KEY` environment variable/secret added to FlowAuth, which should be a PEM encoded RSA private key, optionally base64 encoded if supplied as an environment variable.
 - `PUBLIC_JWT_SIGNING_KEY` environment variable/secret added to FlowAPI, which should be a PEM encoded RSA public key, optionally base64 encoded if supplied as an environment variable.
 - The dev provisioning Ansible playbook now automatically generates an SSH key pair for the `flowkit` user. [#892](https://github.com/Flowminder/FlowKit/issues/892)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes unique location counts.[#949](https://github.com/Flowminder/FlowKit/issues/949)
 
 ### Changed
 
