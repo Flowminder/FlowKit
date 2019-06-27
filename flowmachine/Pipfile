@@ -19,8 +19,8 @@ structlog = "*"
 shapely = "*"
 finist = "*"
 python-rapidjson = "*"
-marshmallow = {editable = true,ref = "3.0.0rc6",git = "https://github.com/marshmallow-code/marshmallow.git"} # Temporarily required while there's a marshmallow versions conflict
-marshmallow-oneofschema = {editable = true,ref = "8195dc3e595fa33a5f007f10ba7cfc08f2177515",git = "https://github.com/marshmallow-code/marshmallow-oneofschema.git"} # Temporarily required while there's a marshmallow versions conflict
+marshmallow = {editable = true,ref = "3.0.0rc7",git = "https://github.com/marshmallow-code/marshmallow.git"} # Temporarily required while there's a marshmallow versions conflict
+marshmallow-oneofschema = "*"
 apispec-oneofschema = "*"
 
 [dev-packages]
