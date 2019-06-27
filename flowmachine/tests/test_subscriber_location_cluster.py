@@ -350,7 +350,7 @@ def test_joined_hartigan_cluster_bad_query_column_names_raises_error():
             "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
         )
     )
-    HartiganCluster(calldays=cd, radius=50)
+    hartigan = HartiganCluster(calldays=cd, radius=50)
     es = EventScore(
         start="2016-01-01", stop="2016-01-04", spatial_unit=make_spatial_unit("lon-lat")
     )
