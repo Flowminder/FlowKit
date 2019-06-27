@@ -4,6 +4,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-eval $( fixuid )
+if [ "$(id -u)" = '0' ]; then
+    chown -R airflow: /mounts/
 
-/bin/bash /defaultentrypoint.sh "$@"
+    exec gosu airflow "$BASH_SOURCE" "$@"
+fi;
+
+exec /defaultentrypoint.sh "$@"

@@ -14,15 +14,20 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 USER root
 WORKDIR /usr/src/deps
 
-# This allows us to start airflow as a specified UID/GID - shouldn't really use in
-# production so should perhaps rebuild for specific server when used in production
-RUN USER=airflow && \
-        GROUP=airflow && \
-        curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.4/fixuid-0.4-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
-        chown root:root /usr/local/bin/fixuid && \
-        chmod 4755 /usr/local/bin/fixuid && \
-        mkdir -p /etc/fixuid && \
-        printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
+# GOSU allows drop-down from root privileges when running the airflow binary
+ENV GOSU_VERSION 1.11
+RUN set -x \
+        && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget gnupg dirmngr && rm -rf /var/lib/apt/lists/* \
+        && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
+        && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
+        && export GNUPGHOME="$(mktemp -d)" \
+        && gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+        && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+        && { command -v gpgconf > /dev/null && gpgconf --kill all || :; } \
+        && rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
+        && chmod +x /usr/local/bin/gosu \
+        && gosu nobody true \
+        && apt-get purge -y --auto-remove ca-certificates wget gnupg dirmngr
 
 RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY ./entrypoint.sh /entrypoint.sh
@@ -30,10 +35,9 @@ COPY ./entrypoint.sh /entrypoint.sh
 COPY ./etl /opt/etl
 RUN pip install /opt/etl
 
-USER airflow
 COPY --chown=airflow:airflow ./dags/* ${AIRFLOW_HOME}/src/
 WORKDIR ${AIRFLOW_HOME}
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["gosu", "airflow", "/entrypoint.sh"]
 CMD ["webserver"] # set default arg for entrypoint
 
 
