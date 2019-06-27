@@ -295,6 +295,20 @@ def test_unlisted_methods_raises_error():
         )
 
 
+def test_bad_subscriber_identifier_raises_error():
+    """
+    Test that passing an invalid subscriber_identifier raises an error.
+    """
+    with pytest.raises(ValueError):
+        subscriber_location_cluster(
+            method="hartigan",
+            start="2016-01-01",
+            stop="2016-01-04",
+            radius=1,
+            subscriber_identifier="BAD_SUBSCRIBER_ID",
+        )
+
+
 def test_lack_of_radius_with_hartigan_raises_error():
     """
     Test whether not passing a radius raises when choosing `hartigan` as a method raises an error
@@ -312,3 +326,33 @@ def test_subscriber_location_clusters_defaults():
     )
     assert 0 == clus.buffer
     assert 0 == clus.call_threshold
+
+
+def test_hartigan_cluster_bad_calldays_column_names_raises_error():
+    """
+    Test that using calldays without 'site_id' and 'version' columns raises an error.
+    """
+    cd = CallDays(
+        SubscriberLocations(
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("lon-lat")
+        )
+    )
+    with pytest.raises(ValueError):
+        HartiganCluster(calldays=cd, radius=50)
+
+
+def test_joined_hartigan_cluster_bad_query_column_names_raises_error():
+    """
+    Test that joining a HartiganCluster to a query without 'site_id' and 'version' columns raises an error.
+    """
+    cd = CallDays(
+        SubscriberLocations(
+            "2016-01-01", "2016-01-04", spatial_unit=make_spatial_unit("versioned-site")
+        )
+    )
+    HartiganCluster(calldays=cd, radius=50)
+    es = EventScore(
+        start="2016-01-01", stop="2016-01-04", spatial_unit=make_spatial_unit("lon-lat")
+    )
+    with pytest.raises(ValueError):
+        hartigan.join_to_cluster_components(es)
