@@ -267,3 +267,6 @@ def test_plot_dependency_graph():
     assert isinstance(output_png, IPython.display.Image)
     assert output_png.width == 600
     assert output_png.height == 200
+
+    with pytest.raises(ValueError, match="Unsupported output format: 'foobar'"):
+        plot_dependency_graph(query, format="foobar")

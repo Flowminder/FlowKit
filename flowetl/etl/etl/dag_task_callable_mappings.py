@@ -7,11 +7,37 @@
 Mapping task id to a python callable. Allows for the specification of a set of
 dummy callables to be used for testing.
 """
-from etl.dummy_task_callables import dummy__callable, dummy_failing__callable
-from etl.production_task_callables import success_branch__callable
+import os
+from functools import partial
+from pathlib import Path
+
+from airflow.hooks.postgres_hook import PostgresHook
+
+from etl.config_parser import get_config_from_file
+from etl.dummy_task_callables import (
+    dummy__callable,
+    dummy_failing__callable,
+    dummy_trigger__callable,
+)
+from etl.production_task_callables import (
+    record_ingestion_state__callable,
+    render_and_run_sql__callable,
+    success_branch__callable,
+    trigger__callable,
+)
+
+db_hook = PostgresHook(postgres_conn_id="flowdb")
+config_path = Path("/mounts/config")
+files_path = Path("/mounts/files")
+try:
+    config = get_config_from_file(config_filepath=config_path / "config.yml")
+except FileNotFoundError:
+    # If we are testing then there will be no config file and we
+    # don't actually need any!
+    config = {}
 
 # callables to be used when testing the structure of the ETL DAG
-TEST_TASK_CALLABLES = {
+TEST_ETL_TASK_CALLABLES = {
     "init": dummy__callable,
     "extract": dummy__callable,
     "transform": dummy__callable,
@@ -24,14 +50,41 @@ TEST_TASK_CALLABLES = {
 }
 
 # callables to be used in production
-PRODUCTION_TASK_CALLABLES = {
-    "init": dummy__callable,
-    "extract": dummy__callable,
-    "transform": dummy__callable,
-    "load": dummy__callable,
+PRODUCTION_ETL_TASK_CALLABLES = {
+    "init": partial(record_ingestion_state__callable, to_state="ingest"),
+    "extract": partial(
+        render_and_run_sql__callable,
+        db_hook=db_hook,
+        config_path=config_path,
+        template_name="extract",
+    ),
+    "transform": partial(
+        render_and_run_sql__callable,
+        db_hook=db_hook,
+        config_path=config_path,
+        template_name="transform",
+    ),
+    "load": partial(
+        render_and_run_sql__callable,
+        db_hook=db_hook,
+        config_path=config_path,
+        template_name="load",
+        fixed_sql=True,
+    ),
     "success_branch": success_branch__callable,
-    "archive": dummy__callable,
-    "quarantine": dummy__callable,
-    "clean": dummy__callable,
+    "archive": partial(record_ingestion_state__callable, to_state="archive"),
+    "quarantine": partial(record_ingestion_state__callable, to_state="quarantine"),
+    "clean": partial(
+        render_and_run_sql__callable,
+        db_hook=db_hook,
+        config_path=config_path,
+        template_name="clean",
+        fixed_sql=True,
+    ),
     "fail": dummy_failing__callable,
 }
+
+TEST_ETL_SENSOR_TASK_CALLABLE = dummy_trigger__callable
+PRODUCTION_ETL_SENSOR_TASK_CALLABLE = partial(
+    trigger__callable, files_path=files_path, cdr_type_config=config.get("etl", {})
+)

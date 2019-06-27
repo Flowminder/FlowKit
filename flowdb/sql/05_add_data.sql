@@ -10,16 +10,10 @@ ADD DATA: -----------------------------------------------------------
 Here we add data from local sources to `flowdb`.
 The data added at the moment is:
 
-  - operator_database.csv:
   - tac_database.:
 
 ---------------------------------------------------------------------
 */
-COPY infrastructure.operators(id, name, country, iso)
-    FROM '/docker-entrypoint-initdb.d/data/csv/operator_database.csv'
-        WITH DELIMITER ','
-        CSV HEADER;
-
 COPY infrastructure.tacs(id, brand, model, width, height, depth,
     weight, display_type, display_colors, display_width,
     display_height, mms_receiver, mms_built_in_camera,

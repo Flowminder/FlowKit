@@ -11,12 +11,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The dev provisioning Ansible playbook now automatically generates an SSH key pair for the `flowkit` user. [#892](https://github.com/Flowminder/FlowKit/issues/892)
 - Added new classes to represent spatial units in FlowMachine.
 - Added a `Geography` query class, to get geography data for a spatial unit.
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes unique location counts.[#949](https://github.com/Flowminder/FlowKit/issues/949)
 
 ### Changed
 
 - The quick-start script now only pulls the docker images for the services that are actually started up. [#898](https://github.com/Flowminder/FlowKit/issues/898)
 - Location-related FlowMachine queries now take a `spatial_unit` parameter instead of `level`.
 - The quick-start script now uses the environment variable `GIT_REVISION` to control the version to be deployed.
+- Create token page permission and spatial aggregation checkboxes are now hidden by default.[#834](https://github.com/Flowminder/FlowKit/issues/834)
+- The flowetl mounted directories `archive, dump, ingest, quarantine` were replaced with a single `files` directory and files are no longer moved. [#946](https://github.com/Flowminder/FlowKit/issues/946)
+- FlowDB's postgresql has been updated to [11.4](https://www.postgresql.org/about/news/1949/), which addresses several bugs and one major vulnerability.
 
 ### Fixed
 
@@ -26,6 +30,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 - Removed `cell_mappings.py`, `get_columns_for_level` and `BadLevelError`.
+
+- The FlowDB tables `infrastructure.countries` and `infrastructure.operators` have been removed. [#958](https://github.com/Flowminder/FlowKit/issues/958)
 
 ## [0.6.4]
 
