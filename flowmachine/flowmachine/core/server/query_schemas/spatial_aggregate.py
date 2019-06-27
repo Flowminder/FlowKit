@@ -32,7 +32,7 @@ class SpatialAggregateSchema(Schema):
     locations = fields.Nested(InputToSpatialAggregate, required=True)
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return SpatialAggregateExposed(**params)
 
 

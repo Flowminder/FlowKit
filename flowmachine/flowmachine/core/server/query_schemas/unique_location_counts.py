@@ -20,7 +20,7 @@ class UniqueLocationCountsSchema(Schema):
     subscriber_subset = SubscriberSubset()
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return UniqueLocationCountsExposed(**params)
 
 

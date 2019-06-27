@@ -22,7 +22,7 @@ class LocationIntroversionSchema(Schema):
     )  # TODO: use a globally defined enum for this
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return LocationIntroversionExposed(**params)
 
 
