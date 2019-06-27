@@ -111,12 +111,24 @@ class UserObject:
                 location_spec = self._get_query_kinds_and_aggregation_units(
                     query_json=query_json["locations"]
                 )[0]
-                # Because metric specs don't have an aggregation unit, we stitch on the one
-                # from the locations
+                # If the metric spec doesn't have an aggregation unit, we stitch on the one
+                # from the locations.
+                # TODO: This is a bit of a hack, we should tidy this up soon!
+                metric_query_json = query_json["metric"].copy()
+                location_aggregation_unit = location_spec[1]
+                if "aggregation_unit" not in metric_query_json.keys():
+                    metric_query_json["aggregation_unit"] = location_aggregation_unit
+                else:
+                    if (
+                        metric_query_json["aggregation_unit"]
+                        != location_aggregation_unit
+                    ):
+                        # TODO: add support for different aggregation units
+                        raise ValueError(
+                            "Different aggregation units for metric and location are not currently supported."
+                        )
                 metric_spec = self._get_query_kinds_and_aggregation_units(
-                    query_json=dict(
-                        **query_json["metric"], aggregation_unit=location_spec[1]
-                    )
+                    query_json=metric_query_json
                 )[0]
                 return [location_spec, metric_spec]
         except (KeyError, SyntaxError):
