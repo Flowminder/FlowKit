@@ -111,18 +111,12 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
         (
             "joined_spatial_aggregate",
             {
-                "locations": {
-                    "query_kind": "daily_location",
-                    "date": "2016-01-01",
-                    "aggregation_unit": "admin3",
-                    "method": "last",
-                },
-                "metric": {
-                    "query_kind": "subscriber_degree",
-                    "start": "2016-01-01",
-                    "stop": "2016-01-02",
-                    "direction": "both",
-                },
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.radius_of_gyration(
+                    start_date="2016-01-01", end_date="2016-01-02"
+                ),
             },
         ),
         (
@@ -131,8 +125,8 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "locations": flowclient.daily_location(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
-                "metric": flowclient.radius_of_gyration(
-                    start_date="2016-01-01", end_date="2016-01-02"
+                "metric": flowclient.subscriber_degree(
+                    start="2016-01-01", stop="2016-01-02", direction="both"
                 ),
             },
         ),
