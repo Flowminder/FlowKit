@@ -59,9 +59,10 @@ describe("Token generation", function() {
   it("API permissions sub-level checkboxes checked", function() {
     cy.get("#new").click();
     //unchecked permission top level checkbox
-    cy.get("#permissions").click();
-    //checking permission top level checkbox
-    cy.get("#permissions").click();
+    cy.get("#permissions")
+      .click()
+      //checking permission top level checkbox
+      .click();
     cy.get("#api-exp").click();
     //checking first sub-level permission checkbox
     cy.get("#permission")
@@ -135,9 +136,10 @@ describe("Token generation", function() {
   it("Aggregation unit sub-level checkboxes checked", function() {
     cy.get("#new").click();
     //unchecked aggregation unit top-level checkbox
-    cy.get("#units").click();
-    //check aggregation unit top-level checkbox
-    cy.get("#units").click();
+    cy.get("#units")
+      .click()
+      //check aggregation unit top-level checkbox
+      .click();
     cy.get("#unit-exp").click();
     cy.get("#unit")
       .first()

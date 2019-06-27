@@ -290,6 +290,9 @@
         "oneOf": [
           {
             "$ref": "#/components/schemas/RadiusOfGyration"
+          },
+          {
+            "$ref": "#/components/schemas/UniqueLocationCounts"
           }
         ]
       },
@@ -822,6 +825,47 @@
               "second",
               "year"
             ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "aggregation_unit",
+          "end_date",
+          "query_kind",
+          "start_date"
+        ],
+        "type": "object"
+      },
+      "UniqueLocationCounts": {
+        "properties": {
+          "aggregation_unit": {
+            "enum": [
+              "admin0",
+              "admin1",
+              "admin2",
+              "admin3"
+            ],
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "unique_location_counts"
+            ],
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
             "type": "string"
           }
         },

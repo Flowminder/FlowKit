@@ -134,8 +134,13 @@ class TokenDetails extends React.Component {
     const toCheck = event.target.checked;
     event.stopPropagation();
     const { uiReady } = this.state;
+    this.setState({
+      isPermissionChecked: toCheck,
+      permissionIndeterminate: false,
+      pageError: false,
+      errors: ""
+    });
     await uiReady; // Wait to make sure checkboxes exist
-    this.setState({ pageError: false, errors: "" });
     const { rights } = this.state;
 
     for (const keys in rights) {
@@ -144,14 +149,17 @@ class TokenDetails extends React.Component {
       }
     }
     this.setState({
-      rights: rights,
-      isPermissionChecked: toCheck,
-      permissionIndeterminate: false
+      rights: rights
     });
   };
   handleAggregationCheckbox = async event => {
     const toCheck = event.target.checked;
-    this.setState({ pageError: false, errors: "" });
+    this.setState({
+      pageError: false,
+      errors: "",
+      isAggregationChecked: toCheck,
+      aggregateIndeterminate: false
+    });
     event.stopPropagation();
     const { uiReady } = this.state;
     await uiReady; // Wait to make sure checkboxes exist
@@ -168,9 +176,7 @@ class TokenDetails extends React.Component {
       }
     }
     this.setState({
-      rights: rights,
-      isAggregationChecked: toCheck,
-      aggregateIndeterminate: false
+      rights: rights
     });
   };
   handleNameChange = event => {
