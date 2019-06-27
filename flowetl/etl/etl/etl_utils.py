@@ -116,9 +116,10 @@ def construct_etl_dag(
         default_args=default_args,
         template_searchpath=config_path,  # template paths will be relative to this
         user_defined_macros={
-            "extract_table": "etl.x{{ cdr_type }}_{{ ds_nodash }}",
-            "transform_table": "etl.t{{ cdr_type }}_{{ ds_nodash }}",
-            "load_table": "events.{{ cdr_type }}_{{ ds_nodash }}",
+            "extract_table": lambda execution_time: f"etl.x{ cdr_type }_{ execution_time }",
+            "transform_table": lambda execution_time: f"etl.t{ cdr_type }_{ execution_time }",
+            "load_table": lambda execution_time: f"events.{ cdr_type }_{ execution_time }",
+            "cdr_type": cdr_type.lower(),
         },
     ) as dag:
 
