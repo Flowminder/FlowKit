@@ -29,6 +29,7 @@ default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 if os.environ.get("TESTING", "") == "true":
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
     logger.info("running in testing environment")
+
     dag = construct_etl_dag(
         **task_callable_mapping, default_args=default_args, cdr_type="testing"
     )
