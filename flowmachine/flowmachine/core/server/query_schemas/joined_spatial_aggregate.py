@@ -9,6 +9,7 @@ from marshmallow_oneofschema import OneOfSchema
 from flowmachine.core.server.query_schemas.radius_of_gyration import (
     RadiusOfGyrationSchema,
 )
+from flowmachine.core.server.query_schemas.subscriber_degree import SubscriberDegree
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
@@ -27,6 +28,7 @@ class JoinableMetrics(OneOfSchema):
     type_schemas = {
         "radius_of_gyration": RadiusOfGyrationSchema,
         "unique_location_counts": UniqueLocationCountsSchema,
+        "subscriber_degree": SubscriberDegree,
     }
 
 

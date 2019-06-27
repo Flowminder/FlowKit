@@ -1285,3 +1285,39 @@ def unique_location_counts(
         "aggregation_unit": aggregation_unit,
         "subscriber_subset": subscriber_subset,
     }
+
+
+def subscriber_degree(
+    *,
+    start: str,
+    stop: str,
+    direction: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for subscriber degree
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    direction : {"in", "out", "both"}, default "both"
+        Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "subscriber_degree",
+        "start": start,
+        "stop": stop,
+        "direction": direction,
+        "subscriber_subset": subscriber_subset,
+    }
