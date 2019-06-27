@@ -33,6 +33,18 @@ def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataf
     assert df.loc[sub_b_id].statistic == pytest.approx(sub_b_expected)
 
 
+def test_returns_expected_result_for_unit_m(get_dataframe):
+    """
+    Test that we get expected results when unit='m'.
+    """
+    sub_a_id, sub_b_id = "j6QYNbMJgAwlVORP", "NG1km5NzBg5JD8nj"
+    df = get_dataframe(
+        Displacement("2016-01-01", "2016-01-07", statistic="max", unit="m")
+    ).set_index("subscriber")
+    assert df.loc[sub_a_id].statistic == pytest.approx(500809.349)
+    assert df.loc[sub_b_id].statistic == pytest.approx(387024.628)
+
+
 def test_min_displacement_zero(get_dataframe):
     """
     When time period for diplacement and home location are the same min displacement
@@ -77,6 +89,23 @@ def test_error_when_modal_location_not_lon_lat():
 
     with pytest.raises(ValueError):
         Displacement("2016-01-01", "2016-01-02", modal_locations=ml, statistic="avg")
+
+
+def test_error_when_not_modal_location():
+    """
+    Test that error is raised if modal_locations is not a ModalLocation.
+    """
+    dl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    with pytest.raises(ValueError):
+        Displacement("2016-01-01", "2016-01-02", modal_locations=dl, statistic="avg")
+
+
+def test_invalid_statistic_raises_error():
+    """
+    Test that passing an invalid statistic raises an error.
+    """
+    with pytest.raises(ValueError):
+        Displacement("2016-01-01", "2016-01-07", statistic="BAD_STATISTIC")
 
 
 def test_get_all_users_in_modal_location(get_dataframe):
