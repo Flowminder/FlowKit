@@ -14,8 +14,8 @@ __all__ = ["SubscriberDegreeSchema", "SubscriberDegreeExposed"]
 
 class SubscriberDegreeSchema(Schema):
     query_kind = fields.String(validate=OneOf(["subscriber_degree"]))
-    start_date = fields.Date(required=True)
-    end_date = fields.Date(required=True)
+    start = fields.Date(required=True)
+    stop = fields.Date(required=True)
     direction = fields.String(
         required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this
@@ -27,11 +27,11 @@ class SubscriberDegreeSchema(Schema):
 
 
 class SubscriberDegreeExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, direction, subscriber_subset=None):
+    def __init__(self, *, start, stop, direction, subscriber_subset=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.start_date = start_date
-        self.end_date = end_date
+        self.start = start
+        self.stop = stop
         self.direction = direction
         self.subscriber_subset = subscriber_subset
 
@@ -45,8 +45,8 @@ class SubscriberDegreeExposed(BaseExposedQuery):
         Query
         """
         return SubscriberDegree(
-            start=self.start_date,
-            stop=self.end_date,
+            start=self.start,
+            stop=self.stop,
             direction=self.direction,
             subscriber_subset=self.subscriber_subset,
         )
