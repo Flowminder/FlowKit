@@ -6,7 +6,7 @@ Definition of a custom marshmallow field for aggregation units, and function
 for getting the corresponding SpatialUnit object.
 """
 
-from flowmachine.core import make_
+from flowmachine.core import make_spatial_unit
 from flowmachine.core.spatial_unit import GeomSpatialUnit
 
 from marshmallow.fields import String
