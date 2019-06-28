@@ -99,13 +99,8 @@ def production_trigger__callable(
     bad_files = list(set(found_files) - set(filtered_files))
     logger.info(f"Bad files found: {bad_files}")
 
-    files_and_associated_configs = [
-        (file, get_config(file_name=file.name, cdr_type_config=cdr_type_config))
-        for file in filtered_files
-    ]
-    logger.info(f"Files and associated configs: {files_and_associated_configs}")
-
-    for file, config in files_and_associated_configs:
+    for file in filtered_files:
+        config = get_config(file_name=file.name, cdr_type_config=cdr_type_config)
 
         cdr_type = config["cdr_type"]
         cdr_date = config["cdr_date"]
