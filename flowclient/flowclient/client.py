@@ -454,12 +454,12 @@ def get_geography(*, connection: Connection, aggregation_unit: str) -> dict:
         API connection to use
     aggregation_unit : str
         aggregation unit, e.g. 'admin3'
-    
+
     Returns
     -------
     dict
         geography data as a GeoJSON FeatureCollection
-    
+
     """
     logger.info(
         f"Getting {connection.url}/api/{connection.api_version}/geography/{aggregation_unit}"
@@ -1248,4 +1248,40 @@ def aggregate_network_objects(
         "total_network_objects": total_network_objs,
         "statistic": statistic,
         "aggregate_by": aggregate_by,
+    }
+
+
+def unique_location_counts(
+    *,
+    start_date: str,
+    end_date: str,
+    aggregation_unit: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for unique location count
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    level : str
+        Unit of aggregation, e.g. "admin3"
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "unique_location_counts",
+        "start_date": start_date,
+        "end_date": end_date,
+        "aggregation_unit": aggregation_unit,
+        "subscriber_subset": subscriber_subset,
     }
