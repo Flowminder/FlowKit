@@ -24,7 +24,8 @@ default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 try:
     flowetl_runtime_config = os.environ["FLOWETL_RUNTIME_CONFIG"]
 except KeyError:
-    raise RuntimeError("Must set FLOWETL_RUNTIME_CONFIG env var.")
+    # raise RuntimeError("Must set FLOWETL_RUNTIME_CONFIG env var.")
+    flowetl_runtime_config = "production"
 
 ETL_SENSOR_TASK_CALLABLES = {
     "testing": TEST_ETL_SENSOR_TASK_CALLABLE,
