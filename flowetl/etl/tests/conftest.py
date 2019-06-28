@@ -6,12 +6,17 @@
 """
 conftest for unit tests
 """
+import os
 import pytest
+import yaml
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from etl.model import Base, ETLRecord  # pylint: disable=unused-import
+
+here = os.path.dirname(os.path.abspath(__file__))
+
 
 # pylint: disable=too-few-public-methods
 class FakeDagRun:
@@ -72,3 +77,16 @@ def session():
     returned_session = Session()
     yield returned_session
     returned_session.close()
+
+
+@pytest.fixture(scope="session")
+def sample_config_dict():
+    """
+    Return sample config loaded from the file `flowetl/mounts/config/config.yml`.
+    """
+    sample_config_file = os.path.join(
+        here, "..", "..", "mounts", "config", "config.yml"
+    )
+    with open(sample_config_file, "r") as f:
+        cfg_dict = yaml.load(f.read(), Loader=yaml.SafeLoader)
+    return cfg_dict
