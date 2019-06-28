@@ -12,7 +12,7 @@ import warnings
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+valid_stats = {"count", "sum", "avg", "max", "min", "median", "mode", "stddev", "variance"}
 
 
 class TopUpBalance(SubscriberFeature):
@@ -214,6 +214,17 @@ class TopUpBalance(SubscriberFeature):
             GROUP BY subscriber
             """
             return sql
+
+        if self.statistic in {"mode"}:
+            sql = f"""
+            SELECT DISTINCT ON (subscriber) subscriber, balance AS value
+            FROM (
+                SELECT subscriber, balance, SUM(weight * balance) AS total_weight
+                FROM ({weight_extraction_query}) U
+                GROUP BY subscriber, balance
+                ORDER BY subscriber, DESC total_weight
+            ) U
+            """
 
         sql = f"""
         WITH W AS ({weight_extraction_query})
