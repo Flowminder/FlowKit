@@ -6,15 +6,12 @@
 """
 Contains the definition of callables to be used in the production ETL dag.
 """
-import shutil
 import structlog
 
 from pathlib import Path
 from uuid import uuid1
-from pendulum import utcnow
 
-from airflow.models import DagRun, BaseOperator
-from airflow.hooks.dbapi_hook import DbApiHook
+from airflow.models import DagRun
 from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 from etl.model import ETLRecord
