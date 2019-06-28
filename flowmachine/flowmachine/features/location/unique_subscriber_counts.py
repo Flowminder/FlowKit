@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List
+from typing import List, Union
 
 """
 Class for UniqueSubscriberCounts. UniqueSubscriberCounts counts
@@ -18,6 +18,7 @@ visited in a given period of time.
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
 from ...core import make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 
 from ..utilities.subscriber_locations import SubscriberLocations
 
@@ -74,7 +75,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         self,
         start,
         stop,
-        spatial_unit=make_spatial_unit("cell"),
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours="all",
         table="all",
     ):

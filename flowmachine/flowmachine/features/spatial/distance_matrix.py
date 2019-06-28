@@ -7,11 +7,12 @@ Utility methods for calculating a distance
 matrix from a given point collection.
 
 """
-from typing import List
+from typing import List, Optional
 
 from ...core.query import Query
 from ...core.mixins import GraphMixin
 from ...core import make_spatial_unit
+from ...core.spatial_unit import LonLatSpatialUnit
 
 
 class DistanceMatrix(GraphMixin, Query):
@@ -37,7 +38,11 @@ class DistanceMatrix(GraphMixin, Query):
 
     """
 
-    def __init__(self, spatial_unit=None, return_geometry=False):
+    def __init__(
+        self,
+        spatial_unit: Optional[LonLatSpatialUnit] = None,
+        return_geometry: bool = False,
+    ):
         if spatial_unit is None:
             self.spatial_unit = make_spatial_unit("versioned-cell")
         else:

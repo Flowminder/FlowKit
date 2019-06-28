@@ -7,7 +7,7 @@ Classes that map cell (or tower or site) IDs to a spatial unit.
 
 The helper function 'make_spatial_unit' can be used to create spatial unit objects.
 """
-from typing import List
+from typing import Union, List, Iterable, Optional
 
 from flowmachine.utils import get_name_and_alias
 from flowmachine.core.errors import InvalidSpatialUnitError
@@ -49,21 +49,21 @@ class SpatialUnitMixin:
         return list(self._locid_cols)
 
     @property
-    def has_geography(self):
+    def has_geography(self) -> bool:
         """
         True if spatial unit has geography information.
         """
         return hasattr(self, "get_geom_query")
 
     @property
-    def has_lon_lat_columns(self):
+    def has_lon_lat_columns(self) -> bool:
         """
         True if spatial unit has lon/lat columns.
         """
         return "lon" in self.location_id_columns and "lat" in self.location_id_columns
 
     @property
-    def is_network_object(self):
+    def is_network_object(self) -> bool:
         """
         True if spatial unit is a network object (cell or site).
         """
@@ -73,13 +73,13 @@ class SpatialUnitMixin:
         )
 
     @property
-    def is_polygon(self):
+    def is_polygon(self) -> bool:
         """
         True if spatial unit's geographies are polygons.
         """
         return isinstance(self, PolygonSpatialUnit)
 
-    def verify_criterion(self, criterion, negate=False):
+    def verify_criterion(self, criterion, negate=False) -> None:
         """
         Check whether this spatial unit meets a criterion, and raise an
         InvalidSpatialUnitError if not.
@@ -129,7 +129,7 @@ class SpatialUnitMixin:
                 + criteria[criterion]["message"]
             )
 
-    def location_subset_clause(self, locations, check_column_names=True):
+    def location_subset_clause(self, locations, check_column_names: bool = True) -> str:
         """
         Return a SQL "WHERE" clause to subset a query (joined to this spatial
         unit) to a location or set of locations.
@@ -252,12 +252,12 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
     def __init__(
         self,
         *,
-        geom_table_column_names,
-        location_id_column_names,
-        geom_table=None,
-        geom_column="geom",
-        geom_table_join_on=None,
-        location_table_join_on=None,
+        geom_table_column_names: Union[str, Iterable[str]],
+        location_id_column_names: Union[str, Iterable[str]],
+        geom_table: Optional[Union[Query, str]] = None,
+        geom_column: str = "geom",
+        geom_table_join_on: Optional[str] = None,
+        location_table_join_on: Optional[str] = None,
     ):
         if isinstance(geom_table_column_names, str):
             self._geom_table_cols = (geom_table_column_names,)
@@ -302,10 +302,10 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         # Must define this because we explicitly define self.__eq__
         return hash(self.md5)
 
-    def _get_aliased_geom_table_cols(self, table_alias):
+    def _get_aliased_geom_table_cols(self, table_alias: str) -> List[str]:
         return [f"{table_alias}.{c}" for c in self._geom_table_cols]
 
-    def _join_clause(self, loc_table_alias, geom_table_alias):
+    def _join_clause(self, loc_table_alias: str, geom_table_alias: str) -> str:
         """
         Returns a SQL join clause to join the location table to the geography
         table. The join clause is not used if self.geom_table and
@@ -389,7 +389,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         cols += geom_table_cols
         return cols
 
-    def get_geom_query(self):
+    def get_geom_query(self) -> str:
         """
         Returns a SQL query which can be used to map locations (identified by
         the values in self.location_id_columns) to their geometries (in a column
@@ -450,12 +450,12 @@ class LonLatSpatialUnit(GeomSpatialUnit):
     def __init__(
         self,
         *,
-        geom_table_column_names=(),
-        location_id_column_names=(),
-        geom_table=None,
-        geom_column="geom_point",
-        geom_table_join_on=None,
-        location_table_join_on=None,
+        geom_table_column_names: Union[str, Iterable[str]] = (),
+        location_id_column_names: Union[str, Iterable[str]] = (),
+        geom_table: Optional[Union[Query, str]] = None,
+        geom_column: str = "geom_point",
+        geom_table_join_on: Optional[str] = None,
+        location_table_join_on: Optional[str] = None,
     ):
         super().__init__(
             geom_table_column_names=geom_table_column_names,
@@ -466,7 +466,7 @@ class LonLatSpatialUnit(GeomSpatialUnit):
             location_table_join_on=location_table_join_on,
         )
 
-    def _get_aliased_geom_table_cols(self, table_alias):
+    def _get_aliased_geom_table_cols(self, table_alias: str) -> List[str]:
         return super()._get_aliased_geom_table_cols(table_alias) + [
             f"ST_X({table_alias}.{self._geom_col}::geometry) AS lon",
             f"ST_Y({table_alias}.{self._geom_col}::geometry) AS lat",
@@ -479,7 +479,7 @@ class LonLatSpatialUnit(GeomSpatialUnit):
         """
         return list(self._locid_cols) + ["lon", "lat"]
 
-    def location_subset_clause(self, locations, check_column_names=True):
+    def location_subset_clause(self, locations, check_column_names: bool = True) -> str:
         """
         Return a SQL "WHERE" clause to subset a query (joined to this spatial
         unit) to a location or set of locations. This method differs from the
@@ -591,7 +591,13 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         Name of the column in geom_table that defines the geography.
     """
 
-    def __init__(self, *, geom_table_column_names, geom_table, geom_column="geom"):
+    def __init__(
+        self,
+        *,
+        geom_table_column_names: Union[str, Iterable[str]],
+        geom_table: Union[Query, str],
+        geom_column: str = "geom",
+    ):
         if isinstance(geom_table_column_names, str):
             location_id_column_names = get_name_and_alias(geom_table_column_names)[1]
         else:
@@ -605,7 +611,7 @@ class PolygonSpatialUnit(GeomSpatialUnit):
             geom_column=geom_column,
         )
 
-    def _join_clause(self, loc_table_alias, geom_table_alias):
+    def _join_clause(self, loc_table_alias: str, geom_table_alias: str) -> str:
         return f"""
         INNER JOIN
             ({self.geom_table.get_query()}) AS {geom_table_alias}
@@ -616,7 +622,7 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         """
 
 
-def versioned_cell_spatial_unit():
+def versioned_cell_spatial_unit() -> LonLatSpatialUnit:
     """
     Returns a LonLatSpatialUnit that maps cell location_id to a cell version
     and lon-lat coordinates.
@@ -635,7 +641,7 @@ def versioned_cell_spatial_unit():
     )
 
 
-def versioned_site_spatial_unit():
+def versioned_site_spatial_unit() -> LonLatSpatialUnit:
     """
     Returns a LonLatSpatialUnit that maps cell location_id to a site version
     and lon-lat coordinates.
@@ -658,7 +664,9 @@ def versioned_site_spatial_unit():
     )
 
 
-def admin_spatial_unit(*, level, region_id_column_name=None):
+def admin_spatial_unit(
+    *, level: int, region_id_column_name: Optional[str] = None
+) -> PolygonSpatialUnit:
     """
     Returns a PolygonSpatialUnit object that maps all cells (aka sites) to an
     admin region. This assumes that you have geography data in the standard
@@ -692,7 +700,7 @@ def admin_spatial_unit(*, level, region_id_column_name=None):
     return PolygonSpatialUnit(geom_table_column_names=col_name, geom_table=table)
 
 
-def grid_spatial_unit(*, size):
+def grid_spatial_unit(*, size: Union[float, int]) -> PolygonSpatialUnit:
     """
     Returns a PolygonSpatialUnit that maps all the sites in the database to a
     grid of arbitrary size.
@@ -714,15 +722,18 @@ def grid_spatial_unit(*, size):
     )
 
 
+AnySpatialUnit = Union[CellSpatialUnit, GeomSpatialUnit]
+
+
 def make_spatial_unit(
-    spatial_unit_type,
+    spatial_unit_type: str,
     *,
-    level=None,
-    region_id_column_name=None,
-    size=None,
-    geom_table=None,
-    geom_column="geom",
-):
+    level: Optional[int] = None,
+    region_id_column_name: Optional[Union[str, Iterable[str]]] = None,
+    size: Union[float, int] = None,
+    geom_table: Optional[Union[Query, str]] = None,
+    geom_column: str = "geom",
+) -> Union[CellSpatialUnit, GeomSpatialUnit]:
     """
     Helper function to create an object representing a spatial unit.
 

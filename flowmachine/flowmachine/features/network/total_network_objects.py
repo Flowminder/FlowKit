@@ -11,10 +11,11 @@ at the network level.
 
 """
 
-from typing import List
+from typing import List, Optional
 
 from ...core.mixins import GeoDataMixin
 from ...core import location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from ...core.query import Query
 from ..utilities import EventsTablesUnion
 
@@ -68,8 +69,8 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         *,
         table="all",
         total_by="day",
-        network_object=make_spatial_unit("cell"),
-        spatial_unit=None,
+        network_object: AnySpatialUnit = make_spatial_unit("cell"),
+        spatial_unit: Optional[AnySpatialUnit] = None,
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",

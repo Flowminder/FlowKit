@@ -7,6 +7,7 @@
 from typing import List
 
 from ...core import location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -67,7 +68,7 @@ class PerLocationEventStats(SubscriberFeature):
         stop,
         statistic="avg",
         *,
-        spatial_unit=make_spatial_unit("cell"),
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours="all",
         tables="all",
         subscriber_identifier="msisdn",

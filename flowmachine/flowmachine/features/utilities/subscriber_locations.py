@@ -18,6 +18,7 @@ from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 
 from ...core.query import Query
 from ...core import location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 
 import structlog
 
@@ -83,7 +84,7 @@ class SubscriberLocations(Query):
         start,
         stop,
         *,
-        spatial_unit=make_spatial_unit("cell"),
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours="all",
         table="all",
         subscriber_identifier="msisdn",

@@ -13,6 +13,7 @@ is seen within a specified time period.
 from typing import List
 
 from flowmachine.core import make_spatial_unit
+from flowmachine.core.spatial_unit import AnySpatialUnit
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations
 
@@ -64,7 +65,7 @@ class FirstLocation(SubscriberFeature):
         stop,
         *,
         location,
-        spatial_unit=make_spatial_unit("cell"),
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours="all",
         table="all",
         subscriber_identifier="msisdn",

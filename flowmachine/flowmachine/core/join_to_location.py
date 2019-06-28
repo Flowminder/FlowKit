@@ -12,10 +12,10 @@ so we also define the helper function location_joined_query
 to return a JoinToLocation object if a join is required, or
 the original query object otherwise.
 """
-from typing import List
+from typing import List, Union
 
 from .query import Query
-from .spatial_unit import SpatialUnitMixin
+from .spatial_unit import SpatialUnitMixin, AnySpatialUnit, GeomSpatialUnit
 from .errors import InvalidSpatialUnitError
 
 
@@ -51,7 +51,9 @@ class JoinToLocation(Query):
 
     """
 
-    def __init__(self, left, *, spatial_unit, time_col="time"):
+    def __init__(
+        self, left: Query, *, spatial_unit: GeomSpatialUnit, time_col: str = "time"
+    ):
         # No need to join if spatial_unit has no geography information (i.e. just cell ID)
         spatial_unit.verify_criterion("has_geography")
         self.spatial_unit = spatial_unit
@@ -108,7 +110,9 @@ class JoinToLocation(Query):
         return sql
 
 
-def location_joined_query(left, *, spatial_unit, time_col="time"):
+def location_joined_query(
+    left: Query, *, spatial_unit: AnySpatialUnit, time_col: str = "time"
+):
     """
     Helper function which returns JoinToLocation(left_query, spatial_unit, time_col)
     if spatial_unit has geography information, otherwise returns left_query.

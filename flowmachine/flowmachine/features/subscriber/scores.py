@@ -8,12 +8,13 @@ Calculates an event score for each event based
 on a scoring dictionary.
 """
 
-from typing import Dict, Union, Tuple
+from typing import Dict, Union, Tuple, Optional
 
 from typing import List
 
 from ..utilities import EventsTablesUnion
 from ...core import Query, location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 
 
 class EventScore(Query):
@@ -78,7 +79,7 @@ class EventScore(Query):
         *,
         start: str,
         stop: str,
-        spatial_unit=None,
+        spatial_unit: Optional[AnySpatialUnit] = None,
         hours: Union[str, Tuple[int, int]] = "all",
         table: Union[str, List[str]] = "all",
         score_hour: List[float] = [

@@ -11,6 +11,7 @@ from typing import List
 
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
+from ...core.spatial_unit import GeomSpatialUnit
 
 
 class Geography(GeoDataMixin, Query):
@@ -29,7 +30,7 @@ class Geography(GeoDataMixin, Query):
         make_spatial_unit for more information.
     """
 
-    def __init__(self, spatial_unit):
+    def __init__(self, spatial_unit: GeomSpatialUnit):
         spatial_unit.verify_criterion("has_geography")
         self.spatial_unit = spatial_unit
         super().__init__()

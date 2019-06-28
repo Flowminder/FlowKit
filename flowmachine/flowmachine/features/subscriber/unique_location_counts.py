@@ -14,6 +14,7 @@ it visited
 from typing import List
 
 from flowmachine.core import make_spatial_unit
+from flowmachine.core.spatial_unit import AnySpatialUnit
 from ..utilities.subscriber_locations import SubscriberLocations
 from .metaclasses import SubscriberFeature
 
@@ -73,7 +74,7 @@ class UniqueLocationCounts(SubscriberFeature):
         start,
         stop,
         *,
-        spatial_unit=make_spatial_unit("cell"),
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours="all",
         tables="all",
         subscriber_identifier="msisdn",

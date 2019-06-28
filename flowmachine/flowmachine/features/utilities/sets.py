@@ -7,11 +7,12 @@ Utility classes for subsetting CDRs.
 
 """
 
-from typing import List
+from typing import List, Optional
 
 from .event_table_subset import EventTableSubset
 from .events_tables_union import EventsTablesUnion
 from ...core import Query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 
 from numpy import inf
 
@@ -176,7 +177,7 @@ class SubscriberLocationSubset(Query):
         min_calls,
         subscriber_identifier="msisdn",
         direction="both",
-        spatial_unit=None,
+        spatial_unit: Optional[AnySpatialUnit] = None,
         hours="all",
         subscriber_subset=None,
     ):

@@ -2,9 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, List, Union, Optional
 
 from ...core import GeoTable, Query, Grid, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from . import LabelEventScore, HartiganCluster, EventScore
 
 
@@ -81,7 +82,10 @@ class MeaningfulLocationsAggregate(Query):
     """
 
     def __init__(
-        self, *, meaningful_locations: MeaningfulLocations, spatial_unit=None
+        self,
+        *,
+        meaningful_locations: MeaningfulLocations,
+        spatial_unit: Optional[AnySpatialUnit] = None,
     ) -> None:
         self.meaningful_locations = meaningful_locations
         if spatial_unit is None:
@@ -130,7 +134,7 @@ class MeaningfulLocationsOD(Query):
         *,
         meaningful_locations_a: MeaningfulLocations,
         meaningful_locations_b: MeaningfulLocations,
-        spatial_unit=None,
+        spatial_unit: Optional[AnySpatialUnit] = None,
     ) -> None:
         self.flow = meaningful_locations_a.join(
             meaningful_locations_b,

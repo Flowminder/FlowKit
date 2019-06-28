@@ -16,6 +16,7 @@ from .contact_balance import ContactBalance
 from ..utilities.sets import EventsTablesUnion
 from ..utilities.subscriber_locations import SubscriberLocations
 from flowmachine.core import make_spatial_unit
+from flowmachine.core.spatial_unit import AnySpatialUnit
 
 
 class BaseEntropy(SubscriberFeature, metaclass=ABCMeta):
@@ -257,7 +258,7 @@ class LocationEntropy(BaseEntropy):
         start,
         stop,
         *,
-        spatial_unit=make_spatial_unit("cell"),
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         subscriber_identifier="msisdn",
         hours="all",
         subscriber_subset=None,

@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List
+from typing import List, Union
 
 """
 Location introversion [1]_ calculates the proportion
@@ -24,6 +24,7 @@ from ...core.mixins import GeoDataMixin
 
 
 from ...core import location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from ..utilities import EventsTablesUnion
 
 
@@ -71,12 +72,12 @@ class LocationIntroversion(GeoDataMixin, Query):
 
     def __init__(
         self,
-        start,
-        stop,
+        start: str,
+        stop: str,
         *,
-        table="all",
-        spatial_unit=make_spatial_unit("cell"),
-        direction="both",
+        table: str = "all",
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
+        direction: str = "both",
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",

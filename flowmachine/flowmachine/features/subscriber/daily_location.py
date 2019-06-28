@@ -12,8 +12,10 @@ representing where an subscriber is on a given day.
 
 """
 import datetime
+from typing import Optional
 
 from ...core import make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from .last_location import LastLocation
 from .most_frequent_location import MostFrequentLocation
 
@@ -21,7 +23,7 @@ from .most_frequent_location import MostFrequentLocation
 def locate_subscribers(
     start,
     stop,
-    spatial_unit=None,
+    spatial_unit: Optional[AnySpatialUnit] = None,
     hours="all",
     method="last",
     table="all",
@@ -130,7 +132,7 @@ def daily_location(
     date,
     stop=None,
     *,
-    spatial_unit=None,
+    spatial_unit: Optional[AnySpatialUnit] = None,
     hours="all",
     method="last",
     table="all",

@@ -10,9 +10,10 @@ Total and per-counterpart call durations for subscribers.
 
 """
 import warnings
-from typing import List
+from typing import List, Optional
 
 from ...core import location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
@@ -165,7 +166,7 @@ class PerLocationSubscriberCallDurations(SubscriberFeature):
         subscriber_identifier="msisdn",
         direction="out",
         statistic="sum",
-        spatial_unit=None,
+        spatial_unit: Optional[AnySpatialUnit] = None,
         hours="all",
         subscriber_subset=None,
     ):
@@ -377,7 +378,7 @@ class PairedPerLocationSubscriberCallDurations(SubscriberFeature):
         *,
         subscriber_identifier="msisdn",
         statistic="sum",
-        spatial_unit=None,
+        spatial_unit: Optional[AnySpatialUnit] = None,
         hours="all",
         subscriber_subset=None,
     ):

@@ -14,6 +14,7 @@ during a specified time period.
 
 """
 from ...core import location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from ..utilities import EventsTablesUnion
 
 from ...core import Query
@@ -54,7 +55,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         stop: str,
         *,
         table: Union[None, List[str]] = None,
-        spatial_unit=make_spatial_unit("cell"),
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         interval: str = "hour",
         direction: str = "both",
         hours="all",

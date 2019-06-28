@@ -6,7 +6,8 @@ Definition of a custom marshmallow field for aggregation units, and function
 for getting the corresponding SpatialUnit object.
 """
 
-from flowmachine.core import make_spatial_unit
+from flowmachine.core import make_
+from flowmachine.core.spatial_unit import GeomSpatialUnit
 
 from marshmallow.fields import String
 from marshmallow.validate import OneOf
@@ -22,7 +23,7 @@ class AggregationUnit(String):
         super().__init__(required=required, validate=validate, **kwargs)
 
 
-def get_spatial_unit_obj(aggregation_unit_string):
+def get_spatial_unit_obj(aggregation_unit_string) -> GeomSpatialUnit:
     """
     Given an aggregation unit string (as validated by AggregationUnit()),
     return a FlowMachine spatial unit object.

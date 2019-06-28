@@ -26,7 +26,7 @@ References
 """
 
 import warnings
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 
@@ -36,6 +36,7 @@ from ..features import ModalLocation
 from ..core.query import Query
 from ..core.model import Model, model_result
 from ..core import make_spatial_unit
+from ..core.spatial_unit import LonLatSpatialUnit
 from ..features.spatial.distance_matrix import DistanceMatrix
 
 import structlog
@@ -51,19 +52,16 @@ class _populationBuffer(Query):
 
     Parameters
     ----------
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit
-        Spatial unit to which subscriber locations are mapped. See the
-        docstring of spatial_unit.py for more information.
     population_object : flowmachine.features.utilities.spatial_aggregates.SpatialAggregate
         An aggregated subscriber locating object
     distance_matrix : flowmachine.features.spatial.distance_matrix.DistanceMatrix
         A distance matrix
     """
 
-    def __init__(self, spatial_unit, population_object, distance_matrix):
-        self.spatial_unit = spatial_unit
+    def __init__(self, population_object, distance_matrix):
         self.population_object = population_object
         self.distance_matrix = distance_matrix
+        self.spatial_unit = self.distance_matrix.spatial_unit
 
         super().__init__()
 
@@ -238,7 +236,12 @@ class PopulationWeightedOpportunities(Model):
     """
 
     def __init__(
-        self, start, stop, method="home-location", spatial_unit=None, **kwargs
+        self,
+        start,
+        stop,
+        method="home-location",
+        spatial_unit: Optional[LonLatSpatialUnit] = None,
+        **kwargs,
     ):
 
         warnings.warn(
@@ -268,7 +271,6 @@ class PopulationWeightedOpportunities(Model):
             ).aggregate()
 
         self.population_buffer_object = _populationBuffer(
-            spatial_unit=self.spatial_unit,
             population_object=self.population_object,
             distance_matrix=self.distance_matrix,
         )

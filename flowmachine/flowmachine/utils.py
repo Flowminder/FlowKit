@@ -19,7 +19,7 @@ from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
 from time import sleep
-from typing import List, Union
+from typing import List, Union, Tuple
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -248,7 +248,7 @@ def _makesafe(x):
     return adapt(x).getquoted().decode()
 
 
-def get_name_and_alias(column_name):
+def get_name_and_alias(column_name: str) -> Tuple(str):
     """
     Given a column name string, return the column name and alias (if there is
     one), or return the provided column name twice if there is no alias.
