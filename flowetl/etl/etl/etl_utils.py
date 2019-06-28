@@ -304,8 +304,10 @@ def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
     """
     file_cdr_type, file_cdr_date = None, None
     for cdr_type in CDRType:
-        pattern = cdr_type_config[cdr_type]["pattern"]
-        m = re.fullmatch(pattern, file_name)
+        source_type = cdr_type_config[cdr_type]["source"]["source_type"]
+        assert source_type == "csv"
+        filename_pattern = cdr_type_config[cdr_type]["source"]["filename_pattern"]
+        m = re.fullmatch(filename_pattern, file_name)
         if m:
             file_cdr_type = cdr_type
             file_cdr_date = parse(m.groups()[0])

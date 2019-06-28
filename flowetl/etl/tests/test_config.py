@@ -61,7 +61,7 @@ def test_config_validation_fails_bad_etl_subsection(sample_config_dict):
     does not contain correct keys.
     """
     bad_config = deepcopy(sample_config_dict)
-    bad_config["etl"]["calls"].pop("pattern")
+    bad_config["etl"]["calls"].pop("source")
 
     with pytest.raises(ValueError) as raised_exception:
         validate_config(global_config_dict=bad_config)
