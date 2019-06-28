@@ -23,7 +23,7 @@ class TotalNetworkObjectsSchema(Schema):
     aggregation_unit = AggregationUnit()
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return TotalNetworkObjectsExposed(**params)
 
 

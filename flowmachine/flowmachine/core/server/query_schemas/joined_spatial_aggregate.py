@@ -40,7 +40,7 @@ class JoinedSpatialAggregateSchema(Schema):
     )
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return JoinedSpatialAggregateExposed(**params)
 
 

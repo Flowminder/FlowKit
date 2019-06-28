@@ -12,6 +12,8 @@ from functools import partial
 from pathlib import Path
 
 from airflow.hooks.postgres_hook import PostgresHook
+from airflow.operators.postgres_operator import PostgresOperator
+from airflow.operators.python_operator import BranchPythonOperator, PythonOperator
 
 from etl.config_parser import get_config_from_file
 from etl.dummy_task_callables import (
@@ -21,7 +23,6 @@ from etl.dummy_task_callables import (
 )
 from etl.production_task_callables import (
     record_ingestion_state__callable,
-    render_and_run_sql__callable,
     success_branch__callable,
     trigger__callable,
 )
@@ -38,50 +39,68 @@ except FileNotFoundError:
 
 # callables to be used when testing the structure of the ETL DAG
 TEST_ETL_TASK_CALLABLES = {
-    "init": dummy__callable,
-    "extract": dummy__callable,
-    "transform": dummy__callable,
-    "load": dummy__callable,
-    "success_branch": success_branch__callable,
-    "archive": dummy__callable,
-    "quarantine": dummy__callable,
-    "clean": dummy__callable,
-    "fail": dummy_failing__callable,
+    "init": partial(
+        PythonOperator, provide_context=True, python_callable=dummy__callable
+    ),
+    "extract": partial(
+        PythonOperator, provide_context=True, python_callable=dummy__callable
+    ),
+    "transform": partial(
+        PythonOperator, provide_context=True, python_callable=dummy__callable
+    ),
+    "load": partial(
+        PythonOperator, provide_context=True, python_callable=dummy__callable
+    ),
+    "success_branch": partial(
+        BranchPythonOperator,
+        provide_context=True,
+        python_callable=success_branch__callable,
+    ),
+    "archive": partial(
+        PythonOperator, provide_context=True, python_callable=dummy__callable
+    ),
+    "quarantine": partial(
+        PythonOperator, provide_context=True, python_callable=dummy__callable
+    ),
+    "clean": partial(
+        PythonOperator, provide_context=True, python_callable=dummy__callable
+    ),
+    "fail": partial(
+        PythonOperator, provide_context=True, python_callable=dummy_failing__callable
+    ),
 }
 
 # callables to be used in production
 PRODUCTION_ETL_TASK_CALLABLES = {
-    "init": partial(record_ingestion_state__callable, to_state="ingest"),
-    "extract": partial(
-        render_and_run_sql__callable,
-        db_hook=db_hook,
-        config_path=config_path,
-        template_name="extract",
+    "init": partial(
+        PythonOperator,
+        provide_context=True,
+        python_callable=partial(record_ingestion_state__callable, to_state="ingest"),
     ),
-    "transform": partial(
-        render_and_run_sql__callable,
-        db_hook=db_hook,
-        config_path=config_path,
-        template_name="transform",
+    "extract": partial(PostgresOperator, postgres_conn_id="flowdb"),
+    "transform": partial(PostgresOperator, postgres_conn_id="flowdb"),
+    "load": partial(PostgresOperator, postgres_conn_id="flowdb"),
+    "success_branch": partial(
+        BranchPythonOperator,
+        provide_context=True,
+        python_callable=success_branch__callable,
     ),
-    "load": partial(
-        render_and_run_sql__callable,
-        db_hook=db_hook,
-        config_path=config_path,
-        template_name="load",
-        fixed_sql=True,
+    "archive": partial(
+        PythonOperator,
+        provide_context=True,
+        python_callable=partial(record_ingestion_state__callable, to_state="archive"),
     ),
-    "success_branch": success_branch__callable,
-    "archive": partial(record_ingestion_state__callable, to_state="archive"),
-    "quarantine": partial(record_ingestion_state__callable, to_state="quarantine"),
-    "clean": partial(
-        render_and_run_sql__callable,
-        db_hook=db_hook,
-        config_path=config_path,
-        template_name="clean",
-        fixed_sql=True,
+    "quarantine": partial(
+        PythonOperator,
+        provide_context=True,
+        python_callable=partial(
+            record_ingestion_state__callable, to_state="quarantine"
+        ),
     ),
-    "fail": dummy_failing__callable,
+    "clean": partial(PostgresOperator, postgres_conn_id="flowdb"),
+    "fail": partial(
+        PythonOperator, provide_context=True, python_callable=dummy_failing__callable
+    ),
 }
 
 TEST_ETL_SENSOR_TASK_CALLABLE = dummy_trigger__callable

@@ -33,7 +33,7 @@ class FlowsSchema(Schema):
     aggregation_unit = AggregationUnit(required=True)
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, params, **kwargs):
         return FlowsExposed(**params)
 
 
