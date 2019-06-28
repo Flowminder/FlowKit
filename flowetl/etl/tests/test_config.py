@@ -11,7 +11,6 @@ import yaml
 
 from copy import deepcopy
 from pathlib import Path
-from unittest.mock import Mock, patch
 from uuid import uuid1
 from pendulum import parse
 
