@@ -118,7 +118,7 @@ def construct_etl_dag(
             "get_extract_table": lambda execution_date: f"etl.x{ cdr_type }_{ execution_date }",
             "get_transform_table": lambda execution_date: f"etl.t{ cdr_type }_{ execution_date }",
             "get_load_table": lambda execution_date: f"events.{ cdr_type }_{ execution_date }",
-            "cdr_type": cdr_type.lower(),
+            "cdr_type": cdr_type,
         },
     ) as dag:
 
