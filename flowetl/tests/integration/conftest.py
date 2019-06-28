@@ -476,8 +476,9 @@ def wait_for_completion():
             t1 = now()
             if (t1 - t0) > time_out:
                 raise TimeoutError(
-                    f"DAG '{dag_id}' did not reach desired state {end_state}. This may be"
-                    "due to missing config settings or syntax errors in one of its task."
+                    f"DAG '{dag_id}' did not reach desired state {end_state}. This may be "
+                    "due to missing config settings, syntax errors in one of its task, or "
+                    "similar runtime errors."
                 )
         return end_state
 
