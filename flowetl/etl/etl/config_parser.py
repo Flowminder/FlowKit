@@ -43,11 +43,11 @@ def validate_config(*, global_config_dict: dict) -> Exception:
         )
 
     for key, value in global_config_dict.get("etl", {}).items():
-        if set(list(value.keys())) != set(["pattern", "concurrency"]):
-            exc_msg = f"""
-                    Each etl subsection must contain a pattern and concurrency
-                    subsection - not present for {key}.
-            """
+        if set(list(value.keys())) != set(["source", "concurrency"]):
+            exc_msg = (
+                "Each etl subsection must contain a 'source' and 'concurrency' "
+                "subsection - not present for '{key}'."
+            )
             exceptions.append(ValueError(exc_msg))
 
     if exceptions != []:
