@@ -21,5 +21,5 @@ class ActionRequest(Schema):
     params = fields.Dict(required=False, missing={})
 
     @post_load
-    def make_action(self, data):
+    def make_action(self, data, **kwargs):
         return namedtuple("Action", self.fields.keys())(**data)
