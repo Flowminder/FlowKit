@@ -15,25 +15,24 @@ from uuid import uuid1
 from pendulum import parse
 
 from etl.model import ETLRecord
-from etl.config_constant import config
 from etl.config_parser import validate_config, get_config_from_file
 from etl.etl_utils import CDRType, find_files, parse_file_name, filter_files
 
 
-def test_config_validation():
+def test_config_validation(sample_config_dict):
     """
     Check that with valid config dict we get no exception
     """
-    validate_config(global_config_dict=config)
+    validate_config(global_config_dict=sample_config_dict)
 
 
-def test_config_validation_fails_no_etl_section():
+def test_config_validation_fails_no_etl_section(sample_config_dict):
     """
     Check that we get an exception raised if etl subsection
     missing. The exception will also contain two other exceptions.
     One for missing etl section and one for missing etl subsections.
     """
-    bad_config = deepcopy(config)
+    bad_config = deepcopy(sample_config_dict)
     bad_config.pop("etl")
 
     with pytest.raises(ValueError) as raised_exception:
@@ -42,12 +41,12 @@ def test_config_validation_fails_no_etl_section():
     assert len(raised_exception.value.args[0]) == 2
 
 
-def test_config_validation_fails_no_default_args_section():
+def test_config_validation_fails_no_default_args_section(sample_config_dict):
     """
     Check that we get an exception raised if default args
     subsection missing.
     """
-    bad_config = deepcopy(config)
+    bad_config = deepcopy(sample_config_dict)
     bad_config.pop("default_args")
 
     with pytest.raises(ValueError) as raised_exception:
@@ -56,12 +55,12 @@ def test_config_validation_fails_no_default_args_section():
     assert len(raised_exception.value.args[0]) == 1
 
 
-def test_config_validation_fails_bad_etl_subsection():
+def test_config_validation_fails_bad_etl_subsection(sample_config_dict):
     """
     Check that we get an exception raised if an etl subsection
     does not contain correct keys.
     """
-    bad_config = deepcopy(config)
+    bad_config = deepcopy(sample_config_dict)
     bad_config["etl"]["calls"].pop("pattern")
 
     with pytest.raises(ValueError) as raised_exception:
@@ -123,28 +122,28 @@ def test_find_files_non_default_filter(tmpdir):
         ),
     ],
 )
-def test_parse_file_name(file_name, want):
+def test_parse_file_name(file_name, want, sample_config_dict):
     """
     Test we can parse cdr_type and cdr_date
     from filenames based on cdr type config.
     """
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     got = parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
     assert got == want
 
 
-def test_parse_file_name_exception():
+def test_parse_file_name_exception(sample_config_dict):
     """
     Test that we get a value error if filename does
     not match any pattern
     """
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     file_name = "bob.csv"
     with pytest.raises(ValueError):
         parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
 
 
-def test_filter_files(session, monkeypatch):
+def test_filter_files(session, sample_config_dict, monkeypatch):
     """
     testing the filter files function
 
@@ -153,7 +152,7 @@ def test_filter_files(session, monkeypatch):
     - no record for sms 20160101 so should not be filtered
     - bad_file.bad doesn't match any pattern so should  be filtered
     """
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
 
     file1 = Path("./CALLS_20160101.csv.gz")
     file2 = Path("./CALLS_20160102.csv.gz")

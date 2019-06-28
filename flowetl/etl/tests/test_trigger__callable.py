@@ -10,11 +10,12 @@ from uuid import uuid1
 
 from etl.model import ETLRecord
 from etl.etl_utils import CDRType
-from etl.config_constant import config
 from etl.production_task_callables import production_trigger__callable
 
 
-def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
+def test_trigger__callable_bad_file_filtered(
+    tmpdir, session, sample_config_dict, monkeypatch
+):
     """
     Test that the trigger callable picks up files in files and suitably filters
     them. In this case we have one unseen file and one file that matches no
@@ -27,7 +28,7 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
     file2 = files.join("bad_file.bad")
     file2.write("blah")
 
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
     uuid = uuid1()
@@ -61,7 +62,9 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
     )
 
 
-def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkeypatch):
+def test_trigger__callable_quarantined_file_not_filtered(
+    tmpdir, session, sample_config_dict, monkeypatch
+):
     """
     Test that the trigger callable picks up files in files and suitably filters
     them. In this case we have one previously seen and quarantined file.
@@ -86,7 +89,7 @@ def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkey
         session=session,
     )
 
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
     uuid = uuid1()
@@ -120,7 +123,9 @@ def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkey
     )
 
 
-def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
+def test_trigger__callable_archive_file_filtered(
+    tmpdir, session, sample_config_dict, monkeypatch
+):
     """
     Test that the trigger callable picks up files in files and suitably filters
     them. In this case we have one previously seen file and one never seen file.
@@ -147,7 +152,7 @@ def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
         session=session,
     )
 
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
     uuid = uuid1()
@@ -181,7 +186,9 @@ def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
     )
 
 
-def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
+def test_trigger__callable_multiple_triggers(
+    tmpdir, session, sample_config_dict, monkeypatch
+):
     """
     Test that the trigger callable picks up files in files and is able to trigger
     multiple etl dag runs.
@@ -193,7 +200,7 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
     file2 = files.join("CALLS_20160102.csv.gz")
     file2.write("blah")
 
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
     uuid = uuid1()
