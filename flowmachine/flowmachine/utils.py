@@ -248,7 +248,7 @@ def _makesafe(x):
     return adapt(x).getquoted().decode()
 
 
-def get_name_and_alias(column_name: str) -> Tuple(str):
+def get_name_and_alias(column_name: str) -> Tuple[str]:
     """
     Given a column name string, return the column name and alias (if there is
     one), or return the provided column name twice if there is no alias.
