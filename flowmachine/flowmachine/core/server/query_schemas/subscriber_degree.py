@@ -22,7 +22,7 @@ class SubscriberDegreeSchema(Schema):
     subscriber_subset = SubscriberSubset()
 
     @post_load
-    def make_query_object(self, params):
+    def make_query_object(self, **params):
         return SubscriberDegreeExposed(**params)
 
 
