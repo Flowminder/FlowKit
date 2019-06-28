@@ -214,6 +214,25 @@ def flowdb_container(
         container_info = docker_api_client.inspect_container(container.id)
         healthy = container_info["State"]["Health"]["Status"] == "healthy"
 
+    from sqlalchemy import create_engine
+
+    engine = create_engine(
+        f"postgresql://flowdb:flowflow@localhost:{container_ports['flowdb']}/flowdb"
+    )
+    engine.execute(
+        """
+        CREATE TABLE IF NOT EXISTS sms_raw_data_dump_fdw (
+            imei TEXT,
+            msisdn TEXT,
+            event_time TIMESTAMPTZ,
+            cell_id TEXT
+        );
+
+        INSERT INTO sms_raw_data_dump_fdw VALUES
+        ('BDED3095A2759089134DDA5CB7968764', '9824B87CDEEAD5ED5AC959D74F3C81C5', '2018-01-03 13:23:29', 'C44BEF');
+        """
+    )
+
     yield
     container.kill()
     container.remove()
