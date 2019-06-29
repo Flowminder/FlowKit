@@ -5,6 +5,7 @@
 # -*- coding: utf-8 -*-
 
 from flowmachine.features.subscriber.topup_balance import *
+from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 import pytest
 
@@ -38,3 +39,13 @@ def test_topup_balance_errors(kwarg):
 
     with pytest.raises(ValueError):
         query = TopUpBalance("2016-01-03", "2016-01-05", **{kwarg: "error"})
+
+def test_can_be_joined(get_dataframe):
+    """
+    TopUpBalance() can be joined with a location type metric.
+    """
+    topup_balance = TopUpBalance("2016-01-01", "2016-01-02", statistic="avg")
+    dl = locate_subscribers("2016-01-01", "2016-01-02", level="admin3")
+    topup_balance_JA = topup_balance.join_aggregate(dl)
+    df = get_dataframe(topup_balance_JA)
+    assert topup_balance_JA.column_names == ["pcod", "value"]
