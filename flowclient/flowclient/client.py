@@ -1285,3 +1285,11 @@ def unique_location_counts(
         "aggregation_unit": aggregation_unit,
         "subscriber_subset": subscriber_subset,
     }
+
+    def topup_balance(*, start_date:str, end_date: str, subscriber_subset: Union[dict, None] = None) -> dict:
+    return {
+        "query_kind": "topup_balance",
+        "start_date": start_date,
+        "end_date": end_date,
+        "subscriber_subset": subscriber_subset,
+    }
