@@ -13,6 +13,9 @@ from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
+    TopUpBalanceSchema,
+)
+from flowmachine.core.server.query_schemas.spatial_aggregate import (
     InputToSpatialAggregate,
 )
 from flowmachine.features.utilities.spatial_aggregates import JoinedSpatialAggregate
@@ -27,6 +30,7 @@ class JoinableMetrics(OneOfSchema):
     type_schemas = {
         "radius_of_gyration": RadiusOfGyrationSchema,
         "unique_location_counts": UniqueLocationCountsSchema,
+        "topup_balance": TopUpBalanceSchema,
     }
 
 

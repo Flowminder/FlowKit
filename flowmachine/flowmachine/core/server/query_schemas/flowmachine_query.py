@@ -27,6 +27,7 @@ from .location_introversion import LocationIntroversionSchema
 from .total_network_objects import TotalNetworkObjectsSchema
 from .radius_of_gyration import RadiusOfGyrationSchema
 from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
+from .topup_balance import TopUpBalanceSchema
 
 
 class FlowmachineQuerySchema(OneOfSchema):
@@ -46,4 +47,5 @@ class FlowmachineQuerySchema(OneOfSchema):
         "dfs_metric_total_amount": DFSTotalMetricAmountSchema,
         "spatial_aggregate": SpatialAggregateSchema,
         "joined_spatial_aggregate": JoinedSpatialAggregateSchema,
+        "topup_balance": TopUpBalanceSchema,
     }
