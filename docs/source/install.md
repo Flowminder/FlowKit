@@ -161,9 +161,7 @@ openssl genrsa -out flowauth-private-key.key 4096
 
 And then create a public key from the key file (`openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub`), or download it from FlowAuth once started. Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. `base64 -i flowauth-private-key.key`). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.
 
-By default, `SECRET_KEY` will be set to `secret`. You should supply this to ensure a secure system.
-
-While `SECRET_KEY` can be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.
+By defaul`SECRET_KEY` may be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.
 
 ### Running with Secrets
 
