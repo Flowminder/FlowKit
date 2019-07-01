@@ -13,7 +13,7 @@ class EventTypes(fields.List):
     """
     A list of strings representing an event type, for example "calls", "sms", "mds", "topups".
 
-    When deserialised, will be uniqueified, and prefixed with "events."
+    When deserialised, will be deduped, and prefixed with "events."
     """
 
     def __init__(self, required=False, validate=None, **kwargs):
