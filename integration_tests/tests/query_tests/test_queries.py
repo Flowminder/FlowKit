@@ -353,7 +353,8 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "event_types": ["calls", "sms"],
                 "subscriber_subset": None,
             },
-        )(
+        ),
+        (
             "location_event_counts",
             {
                 "start_date": "2016-01-01",
