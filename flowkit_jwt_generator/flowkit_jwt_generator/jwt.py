@@ -238,19 +238,19 @@ def print_token(username, private_key, lifetime, audience):
     For example:
 
 
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER all-access http://localhost:9090
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER all-access -u http://localhost:9090
 
     Or,
 
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER query -a admin0 -a admin1 -p run -p get_result daily_location --query -a admin0 -p get_result flows
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER query -a admin0 -a admin1 -p run -p get_result -q daily_location query -a admin0 -p get_result -q flows
 
     \b
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER all-access http://localhost:9090
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER all-access -u http://localhost:9090
 
     Or,
 
     \b
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER query -a admin0 -a admin1 -p run -p get_result daily_location query -a admin0 -p get_result flows
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER query -a admin0 -a admin1 -p run -p get_result -q daily_location query -a admin0 -p get_result -q flows
     """
     pass
 
@@ -269,7 +269,9 @@ def output_token(claims, username, private_key, lifetime, audience):
 
 
 @print_token.command("query")
-@click.option("--query-name", type=str, help="Name of the query type.", required=True)
+@click.option(
+    "--query-name", "-q", type=str, help="Name of the query type.", required=True
+)
 @click.option(
     "--permission",
     "-p",
@@ -301,6 +303,7 @@ def named_query(query_name, permission, aggregation):
 @print_token.command("all-access")
 @click.option(
     "--flowapi-url",
+    "-u",
     type=str,
     required=True,
     help="URL of the FlowAPI server to grant access to.",
