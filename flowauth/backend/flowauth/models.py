@@ -565,6 +565,8 @@ def make_demodata():
         "total_network_objects",
         "aggregate_network_objects",
         "radius_of_gyration",
+        "unique_location_counts",
+        "subscriber_degree",
     ):
         c = Capability(name=c)
         db.session.add(c)
