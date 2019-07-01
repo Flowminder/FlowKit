@@ -417,16 +417,16 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     "end_date": "2016-01-02",
                     "statistic": "avg",
                 },
-            }
+            },
         ),
         (
             "joined_spatial_aggregate",
             {
                 "locations": flowclient.daily_location(
-                    date="2016-01-01", aggregation_unit="admin3", method="last",
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
                 "metric": flowclient.topup_balance(
-                    start_date="2016-01-01", end_date="2016-01-02", statistic="avg",
+                    start_date="2016-01-01", end_date="2016-01-02", statistic="avg"
                 ),
             },
         ),

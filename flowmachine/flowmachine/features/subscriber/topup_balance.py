@@ -12,7 +12,17 @@ import warnings
 from ..utilities.sets import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "mode", "stddev", "variance"}
+valid_stats = {
+    "count",
+    "sum",
+    "avg",
+    "max",
+    "min",
+    "median",
+    "mode",
+    "stddev",
+    "variance",
+}
 
 
 class TopUpBalance(SubscriberFeature):

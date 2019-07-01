@@ -40,6 +40,7 @@ def test_topup_balance_errors(kwarg):
     with pytest.raises(ValueError):
         query = TopUpBalance("2016-01-03", "2016-01-05", **{kwarg: "error"})
 
+
 def test_can_be_joined(get_dataframe):
     """
     TopUpBalance() can be joined with a location type metric.

@@ -1286,7 +1286,14 @@ def unique_location_counts(
         "subscriber_subset": subscriber_subset,
     }
 
-def topup_balance(*, start_date:str, end_date: str, statistic: str, subscriber_subset: Union[dict, None] = None) -> dict:
+
+def topup_balance(
+    *,
+    start_date: str,
+    end_date: str,
+    statistic: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
     """
     Return query spec for top-up balance.
 
@@ -1314,6 +1321,7 @@ def topup_balance(*, start_date:str, end_date: str, statistic: str, subscriber_s
         "end_date": end_date,
         "subscriber_subset": subscriber_subset,
     }
+
 
 def subscriber_degree(
     *,

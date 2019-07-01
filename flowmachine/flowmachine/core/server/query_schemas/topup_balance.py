@@ -11,6 +11,7 @@ from .custom_fields import Statistic, SubscriberSubset
 
 __all__ = ["TopUpBalanceSchema", "TopUpBalanceExposed"]
 
+
 class TopUpBalanceSchema(Schema):
     query_kind = fields.String(validate=OneOf(["topup_balance"]))
     start_date = fields.Date(required=True)
@@ -22,8 +23,11 @@ class TopUpBalanceSchema(Schema):
     def make_query_object(self, params, **kwargs):
         return TopUpBalanceExposed(**params)
 
+
 class TopUpBalanceExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, statistic="avg", subscriber_subset=None):
+    def __init__(
+        self, *, start_date, end_date, statistic="avg", subscriber_subset=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
