@@ -11,6 +11,8 @@ import os
 import shutil
 import structlog
 import pytest
+import requests
+import json
 
 from pathlib import Path
 from time import sleep
@@ -21,6 +23,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from docker.types import Mount
 from shutil import rmtree
+from requests.exceptions import RequestException
 
 here = os.path.dirname(os.path.abspath(__file__))
 logger = structlog.get_logger("flowetl-tests")
@@ -252,6 +255,36 @@ def flowetl_container(
     user running the tests - necessary for moving files between
     host directories.
     """
+
+    def wait_for_container(
+        *, time_out=Interval(minutes=3), time_out_per_request=Interval(seconds=1)
+    ):
+        # Tries to make constant requests to the health check endpoint for quite
+        # arbitrarily 3 minutes.. Fails with a TimeoutError if it can't reach the
+        # endpoint during the attempts.
+        t0 = now()
+        healthy = False
+        while not healthy:
+            try:
+                resp = requests.get(
+                    f"http://localhost:{container_ports['flowetl_airflow']}/health",
+                    timeout=time_out_per_request.seconds,
+                ).json()
+
+                # retry if scheduler is still not healthy
+                if resp["scheduler"]["status"] == "healthy":
+                    healthy = True
+            except RequestException:
+                pass
+
+            sleep(0.1)
+            t1 = now()
+            if (t1 - t0) > time_out:
+                raise TimeoutError(
+                    "Flowetl container did not start properly. This may be due to "
+                    "missing config settings or syntax errors in one of its task."
+                )
+
     user = f"{os.getuid()}:{os.getgid()}"
     container = docker_client.containers.run(
         f"flowminder/flowetl:{container_tag}",
@@ -264,7 +297,7 @@ def flowetl_container(
         user=user,
         detach=True,
     )
-    sleep(10)  # BADDD but no clear way to know that airflow scheduler is ready!
+    wait_for_container()
     yield container
     container.kill()
     container.remove()
