@@ -391,6 +391,22 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 },
             },
         ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "topup_balance",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                },
+            }
+        ),
     ],
 )
 def test_run_query(query_kind, params, universal_access_token, flowapi_url):
