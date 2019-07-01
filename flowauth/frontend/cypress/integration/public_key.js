@@ -19,7 +19,7 @@ describe("Public key viewing", function() {
   });
   it("Public key is shown", function() {
     cy.get("#public_key_body").should(
-      "to.have.text",
+      "have.text",
       public_key.replace(/\n|\r/g, "")
     );
   });
