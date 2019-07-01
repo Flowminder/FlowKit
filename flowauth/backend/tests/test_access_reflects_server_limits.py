@@ -20,7 +20,6 @@ def test_disallow_right_on_server_disallows_for_group(app):
             name="TEST_SERVER",
             longest_token_life=2880,
             latest_token_expiry=datetime.datetime(2020, 1, 1),
-            secret_key="TEST_SECRET",
         )
         capability = Capability(name="TEST_ROUTE")
         server_capability = ServerCapability(
@@ -52,7 +51,6 @@ def test_token_time_limits_reflect_server_limits(app):
             name="TEST_SERVER",
             longest_token_life=2880,
             latest_token_expiry=datetime.datetime(2020, 1, 1),
-            secret_key="TEST_SECRET",
         )
         token_limits = GroupServerTokenLimits(
             group=user_group,

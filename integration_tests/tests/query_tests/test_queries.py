@@ -343,6 +343,30 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
             },
         ),
         (
+            "location_event_counts",
+            {
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-02",
+                "count_interval": "day",
+                "aggregation_unit": "admin3",
+                "direction": "both",
+                "event_types": ["calls", "sms"],
+                "subscriber_subset": None,
+            },
+        ),
+        (
+            "location_event_counts",
+            {
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-02",
+                "count_interval": "day",
+                "aggregation_unit": "admin3",
+                "direction": "both",
+                "event_types": None,
+                "subscriber_subset": None,
+            },
+        ),
+        (
             "meaningful_locations_between_dates_od_matrix",
             {
                 "start_date_a": "2016-01-01",

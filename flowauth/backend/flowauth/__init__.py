@@ -13,6 +13,7 @@ from flask_principal import Principal, identity_loaded, UserNeed, RoleNeed
 from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
 from flowauth.config import get_config
 
+from .config import get_config
 from .invalid_usage import InvalidUsage
 from .models import *
 from .admin import blueprint as admin_blueprint
