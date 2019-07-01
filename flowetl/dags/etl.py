@@ -47,6 +47,9 @@ else:
 
     # create DAG for each cdr_type
     for cdr_type in CDRType:
+        # Ensure `cdr_type` is a string (e.g. "sms", instead of the raw value `CDRType.SMS`)
+        # so that interpolation in SQL templates works as expected.
+        cdr_type = cdr_type.value
 
         globals()[f"etl_{cdr_type}"] = construct_etl_dag(
             **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
