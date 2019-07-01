@@ -18,13 +18,7 @@ from pendulum import parse
 from etl.model import ETLRecord
 from etl.config_constant import config
 from etl.config_parser import validate_config, get_config_from_file
-from etl.etl_utils import (
-    CDRType,
-    find_files,
-    generate_table_names,
-    parse_file_name,
-    filter_files,
-)
+from etl.etl_utils import CDRType, find_files, parse_file_name, filter_files
 
 
 def test_config_validation():
@@ -107,26 +101,6 @@ def test_find_files_non_default_filter(tmpdir):
     files = find_files(files_path=tmpdir_path_obj, ignore_filenames=["B.txt", "A.txt"])
 
     assert set([file.name for file in files]) == set(["README.md"])
-
-
-@pytest.mark.parametrize(
-    "cdr_type", [CDRType("calls"), CDRType("sms"), CDRType("mds"), CDRType("topups")]
-)
-def test_generate_table_names(cdr_type):
-    """
-    Test that we are able to generate correct temp table names for each cdr_type
-    """
-    uuid = uuid1()
-    cdr_date = parse("2016-01-01")
-
-    table_names = generate_table_names(uuid=uuid, cdr_type=cdr_type, cdr_date=cdr_date)
-
-    uuid_sans_underscore = str(uuid).replace("-", "")
-    assert table_names == {
-        "extract_table": f"etl.x{uuid_sans_underscore}",
-        "transform_table": f"etl.t{uuid_sans_underscore}",
-        "load_table": f"events.{cdr_type}_{str(cdr_date.date()).replace('-','')}",
-    }
 
 
 @pytest.mark.parametrize(
