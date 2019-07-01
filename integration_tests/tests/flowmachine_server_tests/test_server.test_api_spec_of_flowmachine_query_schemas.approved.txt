@@ -328,6 +328,7 @@
       "mapping": {
         "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
         "subscriber_degree": "#/components/schemas/SubscriberDegree",
+        "topup_balance": "#/components/schemas/TopUpBalance",
         "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
       },
       "propertyName": "query_kind"
@@ -338,6 +339,9 @@
       },
       {
         "$ref": "#/components/schemas/SubscriberDegree"
+      },
+      {
+        "$ref": "#/components/schemas/TopUpBalance"
       },
       {
         "$ref": "#/components/schemas/UniqueLocationCounts"
@@ -864,6 +868,49 @@
     "required": [
       "start",
       "stop"
+    ],
+    "type": "object"
+  },
+  "TopUpBalance": {
+    "properties": {
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "topup_balance"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "statistic": {
+        "enum": [
+          "avg",
+          "max",
+          "median",
+          "min",
+          "mode",
+          "stddev",
+          "variance"
+        ],
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "end_date",
+      "start_date",
+      "statistic"
     ],
     "type": "object"
   },
