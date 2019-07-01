@@ -347,7 +347,7 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
             {
                 "start_date": "2016-01-01",
                 "end_date": "2016-01-02",
-                "interval": "day",
+                "count_interval": "day",
                 "aggregation_unit": "admin3",
                 "direction": "both",
                 "event_types": ["calls", "sms"],
@@ -359,7 +359,7 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
             {
                 "start_date": "2016-01-01",
                 "end_date": "2016-01-02",
-                "interval": "day",
+                "count_interval": "day",
                 "aggregation_unit": "admin3",
                 "direction": "both",
                 "event_types": None,
