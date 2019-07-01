@@ -50,6 +50,6 @@ class EventCountExposed(BaseExposedQuery):
             start=self.start,
             stop=self.stop,
             direction=self.direction,
-            event_count=self.event_types,
+            event_types=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
