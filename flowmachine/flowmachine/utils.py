@@ -8,6 +8,9 @@ Various simple utilities.
 """
 
 import datetime
+import logging
+import re
+from contextlib import contextmanager
 import networkx as nx
 import structlog
 import sys
@@ -16,9 +19,7 @@ from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
 from time import sleep
-from typing import List, Union
-
-from flowmachine.core.errors import BadLevelError
+from typing import List, Union, Tuple
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -45,60 +46,6 @@ def getsecret(key: str, default: str) -> str:
             return fin.read().strip()
     except FileNotFoundError:
         return default
-
-
-def get_columns_for_level(
-    level: str, column_name: Union[str, List[str]] = None
-) -> List[str]:
-    """
-    Get a list of the location related columns
-
-    Parameters
-    ----------
-    level : {'cell', 'versioned-cell', 'versioned-site', 'lat-lon', 'grid', 'adminX'}
-        Level to get location columns for
-    column_name : str, or list of strings, optional
-        name of the column or list of column names. None by default
-        if this is not none then the function trivially returns the
-        column name as a list.
-    Returns
-    -------
-    relevant_columns : list
-        A list of the database columns for this level
-
-    Examples
-    --------
-    >>> get_columns_for_level("admin3") 
-    ['name']
-
-    """
-    if level == "polygon" and not column_name:
-        raise ValueError("Must pass a column name for level=polygon")
-
-    if column_name:
-        if isinstance(column_name, str):
-            relevant_columns = [column_name]
-        elif isinstance(column_name, list):
-            relevant_columns = list(column_name)
-        else:
-            raise TypeError("column name should be a list or a string")
-        return relevant_columns
-
-    if level.startswith("admin"):
-        return ["pcod"]
-
-    returns = {
-        "cell": ["location_id"],
-        "versioned-cell": ["location_id", "version", "lon", "lat"],
-        "versioned-site": ["site_id", "version", "lon", "lat"],
-        "lat-lon": ["lat", "lon"],
-        "grid": ["grid_id"],
-    }
-
-    try:
-        return returns[level]
-    except KeyError:
-        raise BadLevelError(level)
 
 
 def parse_datestring(
@@ -204,14 +151,12 @@ def time_period_add(date, n, unit="days"):
 def get_dist_query_string(*, lon1, lat1, lon2, lat2):
     """
     function for getting the distance
-    query string between to lat-lon points.
+    query string between two lon-lat points.
     """
-    return """
-    ST_Distance(ST_Point({}, {})::geography,
-                ST_point({}, {})::geography)
-    """.format(
-        lon1, lat1, lon2, lat2
-    )
+    return f"""
+    ST_Distance(ST_Point({lon1}, {lat1})::geography,
+                ST_point({lon2}, {lat2})::geography)
+    """
 
 
 def proj4string(conn, crs=None):
@@ -301,6 +246,29 @@ def _makesafe(x):
     Function that converts input into a PostgreSQL readable.
     """
     return adapt(x).getquoted().decode()
+
+
+def get_name_and_alias(column_name: str) -> Tuple[str]:
+    """
+    Given a column name string, return the column name and alias (if there is
+    one), or return the provided column name twice if there is no alias.
+
+    Examples
+    --------
+    >>> get_name_and_alias("col AS alias")
+      ('col', 'alias')
+    >>> get_name_and_alias("col")
+      ('col', 'col')
+    >>> get_name_and_alias("table.col")
+      ('table.col', 'col')
+    >>> get_name_and_alias("table.col as alias")
+      ('table.col', 'alias')
+    """
+    column_name_split = re.split(" as ", column_name, flags=re.IGNORECASE)
+    if len(column_name_split) == 1:
+        return column_name_split[0].strip(), column_name_split[0].strip().split(".")[-1]
+    else:
+        return column_name_split[0].strip(), column_name_split[-1].strip()
 
 
 def _sleep(seconds_to_sleep):

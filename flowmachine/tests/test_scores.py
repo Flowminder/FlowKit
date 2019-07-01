@@ -9,15 +9,15 @@ Tests classes in the `features/subscriber/scores` modules such as EventScore
 
 import pytest
 
-from flowmachine.core import JoinToLocation
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import EventScore
 
 
 @pytest.mark.usefixtures("skip_datecheck")
-def test_event_score_column_names(exemplar_level_param):
-    if exemplar_level_param["level"] not in JoinToLocation.allowed_levels:
-        pytest.skip(f'{exemplar_level_param["level"]} not valid for this test')
-    es = EventScore(start="2016-01-01", stop="2016-01-05", **exemplar_level_param)
+def test_event_score_column_names(exemplar_spatial_unit_param):
+    es = EventScore(
+        start="2016-01-01", stop="2016-01-05", spatial_unit=exemplar_spatial_unit_param
+    )
     assert es.head(0).columns.tolist() == es.column_names
 
 
@@ -25,7 +25,11 @@ def test_whether_scores_are_within_score_bounds(get_dataframe):
     """
     Test whether the scores are within the bounds of maximum and minimum scores.
     """
-    es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
+    es = EventScore(
+        start="2016-01-01",
+        stop="2016-01-05",
+        spatial_unit=make_spatial_unit("versioned-site"),
+    )
     df = get_dataframe(es)
     max_score = df[["score_hour", "score_dow"]].max()
     min_score = df[["score_hour", "score_dow"]].min()
@@ -57,7 +61,10 @@ def test_out_of_bounds_score_raises(scorer, out_of_bounds_val, flowmachine_conne
     scorers[scorer][scorers[scorer].popitem()[0]] = out_of_bounds_val
     with pytest.raises(ValueError):
         es = EventScore(
-            start="2016-01-01", stop="2016-01-05", level="versioned-site", **scorers
+            start="2016-01-01",
+            stop="2016-01-05",
+            spatial_unit=make_spatial_unit("versioned-site"),
+            **scorers
         )
 
 
@@ -81,7 +88,7 @@ def test_whether_zero_score_returns_only_zero(get_dataframe):
             },
             0,
         ),
-        level="versioned-site",
+        spatial_unit=make_spatial_unit("versioned-site"),
     )
     df = get_dataframe(es)
     valid = df[["score_hour", "score_dow"]] == 0

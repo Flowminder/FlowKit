@@ -156,3 +156,9 @@ def create_app(test_config=None):
     app.cli.add_command(init_db_command)
     app.cli.add_command(add_admin_command)
     return app
+
+
+from ._version import get_versions
+
+__version__ = get_versions()["version"]
+del get_versions

@@ -5,22 +5,23 @@
 from flowmachine.features.subscriber.contact_reference_locations_stats import *
 
 import pytest
-from flowmachine.core import CustomQuery
+from flowmachine.core import CustomQuery, make_spatial_unit
+from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.utils import list_of_dates
-from flowmachine.features import daily_location, ContactBalance
+from flowmachine.features import daily_location, ContactBalance, ModalLocation
 
 
 @pytest.mark.parametrize(
-    "statistic,msisdn,level,want",
+    "statistic,msisdn,spatial_unit_type,want",
     [
         ("avg", "gwAynWXp4eWvxGP7", "versioned-cell", 298.7215),
         ("avg", "gwAynWXp4eWvxGP7", "versioned-site", 298.7215),
-        ("avg", "gwAynWXp4eWvxGP7", "lat-lon", 298.7215),
+        ("avg", "gwAynWXp4eWvxGP7", "lon-lat", 298.7215),
         ("stddev", "V7MBRewnwQGE91gY", "versioned-cell", 182.519_128),
     ],
 )
 def test_contact_reference_location_stats(
-    get_dataframe, statistic, msisdn, level, want
+    get_dataframe, statistic, msisdn, spatial_unit_type, want
 ):
     """ Test a few hand-picked ContactReferenceLocationStats. """
     cb = ContactBalance("2016-01-01", "2016-01-03")
@@ -28,7 +29,7 @@ def test_contact_reference_location_stats(
         *[
             daily_location(
                 d,
-                level=level,
+                spatial_unit=make_spatial_unit(spatial_unit_type),
                 subscriber_subset=cb.counterparts_subset(include_subscribers=True),
             )
             for d in list_of_dates("2016-01-01", "2016-01-03")
@@ -48,7 +49,7 @@ def test_contact_reference_location_stats_custom_geometry(get_dataframe):
         *[
             daily_location(
                 d,
-                level="versioned-cell",
+                spatial_unit=make_spatial_unit("versioned-cell"),
                 subscriber_subset=cb.counterparts_subset(include_subscribers=True),
             )
             for d in list_of_dates("2016-01-01", "2016-01-03")
@@ -72,7 +73,7 @@ def test_contact_reference_location_stats_false_statistic_raises():
         *[
             daily_location(
                 d,
-                level="versioned-cell",
+                spatial_unit=make_spatial_unit("versioned-cell"),
                 subscriber_subset=cb.counterparts_subset(include_subscribers=True),
             )
             for d in list_of_dates("2016-01-01", "2016-01-03")
@@ -82,33 +83,36 @@ def test_contact_reference_location_stats_false_statistic_raises():
         query = ContactReferenceLocationStats(cb, ml, statistic="error")
 
 
-def test_contact_reference_location_false_level_raises():
-    """ Test ValueError is raised for contact_location with non-compliant level. """
+def test_contact_reference_location_bad_spatial_unit_raises():
+    """
+    Test InvalidSpatialUnitError is raised for contact_location with
+    non-compliant spatial unit.
+    """
     cb = ContactBalance("2016-01-01", "2016-01-03")
     ml = ModalLocation(
         *[
             daily_location(
                 d,
-                level="admin3",
+                spatial_unit=make_spatial_unit("admin", level=3),
                 subscriber_subset=cb.counterparts_subset(include_subscribers=True),
             )
             for d in list_of_dates("2016-01-01", "2016-01-03")
         ]
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(InvalidSpatialUnitError):
         query = ContactReferenceLocationStats(cb, ml)
 
 
-def test_contact_reference_location_no_level_raises():
-    """ Test ValueError is raised for contact_location without level attribute. """
+def test_contact_reference_location_no_spatial_unit_raises():
+    """ Test ValueError is raised for contact_location without spatial_unit attribute. """
     cb = ContactBalance("2016-01-01", "2016-01-03")
-    # by encapsulating ModalLocations in a CustomQuery we remove the level
+    # by encapsulating ModalLocations in a CustomQuery we remove the spatial_unit
     # attribute from it which should raise an error
     ml = ModalLocation(
         *[
             daily_location(
                 d,
-                level="versioned-cell",
+                spatial_unit=make_spatial_unit("versioned-cell"),
                 subscriber_subset=cb.counterparts_subset(include_subscribers=True),
             )
             for d in list_of_dates("2016-01-01", "2016-01-03")
