@@ -49,5 +49,5 @@ else:
     for cdr_type in CDRType:
 
         globals()[f"etl_{cdr_type}"] = construct_etl_dag(
-            **task_callable_mapping, default_args=default_args, cdr_type=cdr_type.name
+            **task_callable_mapping, default_args=default_args, cdr_type=cdr_type.value
         )
