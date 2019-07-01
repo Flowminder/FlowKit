@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - When creating a new token in FlowAuth, the expiry now always shows the year, seconds till expiry, and timezone. [#260](https://github.com/Flowminder/FlowKit/issues/260)
 - Distances in `Displacement` are now calculated with longitude and latitude the corrcet way around. [#913](https://github.com/Flowminder/FlowKit/issues/913)
 - The quick-start script now works correctly with branches. [#902](https://github.com/Flowminder/FlowKit/issues/902)
+- Fixed `location_event_counts` failing to work when specifying a subset of event types [#1015](https://github.com/Flowminder/FlowKit/issues/1015)
 
 ### Removed
 - Removed `cell_mappings.py`, `get_columns_for_level` and `BadLevelError`.
