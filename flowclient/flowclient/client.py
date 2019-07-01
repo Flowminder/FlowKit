@@ -1319,6 +1319,7 @@ def topup_balance(
         "query_kind": "topup_balance",
         "start_date": start_date,
         "end_date": end_date,
+        "statistic": statistic,
         "subscriber_subset": subscriber_subset,
     }
 
