@@ -12,10 +12,8 @@ specified time period.
 """
 from typing import List, Union
 
-from ...core import JoinToLocation
-from flowmachine.utils import get_columns_for_level
 from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import _SubscriberCells
+from ..utilities.subscriber_locations import SubscriberLocations
 
 
 class CallDays(SubscriberFeature):
@@ -26,7 +24,7 @@ class CallDays(SubscriberFeature):
 
     Parameters
     ----------
-    subscriber_locations : JoinToLocation, _SubscriberCells
+    subscriber_locations : SubscriberLocations
         Locations of subscribers' interactions
 
     See Also
@@ -34,17 +32,14 @@ class CallDays(SubscriberFeature):
     flowmachine.features.subscriber_locations
     """
 
-    def __init__(self, subscriber_locations: Union[JoinToLocation, _SubscriberCells]):
+    def __init__(self, subscriber_locations: SubscriberLocations):
         self.ul = subscriber_locations
+        self.spatial_unit = self.ul.spatial_unit
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return (
-            ["subscriber"]
-            + get_columns_for_level(self.ul.level, self.ul.column_name)
-            + ["calldays"]
-        )
+        return ["subscriber"] + self.spatial_unit.location_id_columns + ["calldays"]
 
     def _make_query(self):
         """
@@ -52,21 +47,19 @@ class CallDays(SubscriberFeature):
         metaclass Query().
         Returns a sorted calldays table.
         """
-        relevant_columns = ", ".join(
-            get_columns_for_level(self.ul.level, self.ul.column_name)
-        )
+        location_columns = ", ".join(self.spatial_unit.location_id_columns)
 
         sql = f"""
         SELECT * FROM (
             SELECT
                 connections.subscriber,
-                {relevant_columns},
+                {location_columns},
                 COUNT(*) AS calldays
             FROM (
-                SELECT DISTINCT locations.subscriber, {relevant_columns}, locations.time::date
+                SELECT DISTINCT locations.subscriber, {location_columns}, locations.time::date
                 FROM ({self.ul.get_query()}) AS locations
             ) AS connections
-            GROUP BY connections.subscriber, {relevant_columns}
+            GROUP BY connections.subscriber, {location_columns}
         ) calldays
         ORDER BY calldays.subscriber ASC, calldays.calldays DESC
         """

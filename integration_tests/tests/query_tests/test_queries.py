@@ -125,6 +125,17 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "locations": flowclient.daily_location(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
+                "metric": flowclient.subscriber_degree(
+                    start="2016-01-01", stop="2016-01-02", direction="both"
+                ),
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
                 "metric": flowclient.unique_location_counts(
                     start_date="2016-01-01",
                     end_date="2016-01-02",
@@ -424,8 +435,7 @@ def test_get_geography(access_token_builder, flowapi_url):
     assert 0 < len(result_geojson["features"])
     feature0 = result_geojson["features"][0]
     assert "Feature" == feature0["type"]
-    assert "admin3name" in feature0["properties"]
-    assert "admin3pcod" in feature0["properties"]
+    assert "pcod" in feature0["properties"]
     assert "MultiPolygon" == feature0["geometry"]["type"]
     assert list == type(feature0["geometry"]["coordinates"])
     assert 0 < len(feature0["geometry"]["coordinates"])

@@ -16,7 +16,6 @@ from functools import reduce
 
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
-from flowmachine.utils import get_columns_for_level
 from ..utilities.multilocation import MultiLocation
 
 
@@ -30,14 +29,14 @@ class ModalLocation(MultiLocation, BaseLocation, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"] + get_columns_for_level(self.level, self.column_name)
+        return ["subscriber"] + self.spatial_unit.location_id_columns
 
     def _make_query(self):
         """
         Default query method implemented in the
         metaclass Query().
         """
-        relevant_columns = self._get_relevant_columns()
+        location_columns_string = ", ".join(self.spatial_unit.location_id_columns)
 
         # This query represents the concatenated locations of the
         # subscribers
@@ -45,24 +44,20 @@ class ModalLocation(MultiLocation, BaseLocation, Query):
             lambda x, y: x.union(y), (self._append_date(dl) for dl in self._all_dls)
         )
 
-        times_visited = """
-        SELECT all_locs.subscriber, {rc}, count(*) AS total, max(all_locs.date) as date
-        FROM ({all_locs}) AS all_locs
-        GROUP BY all_locs.subscriber, {rc}
-        """.format(
-            all_locs=all_locs.get_query(), rc=relevant_columns
-        )
+        times_visited = f"""
+        SELECT all_locs.subscriber, {location_columns_string}, count(*) AS total, max(all_locs.date) as date
+        FROM ({all_locs.get_query()}) AS all_locs
+        GROUP BY all_locs.subscriber, {location_columns_string}
+        """
 
-        sql = """
-        SELECT ranked.subscriber, {rc}
+        sql = f"""
+        SELECT ranked.subscriber, {location_columns_string}
         FROM
-             (SELECT times_visited.subscriber, {rc},
+             (SELECT times_visited.subscriber, {location_columns_string},
              row_number() OVER (PARTITION BY times_visited.subscriber
                  ORDER BY total DESC, times_visited.date DESC) AS rank
              FROM ({times_visited}) AS times_visited) AS ranked
         WHERE rank = 1
-        """.format(
-            times_visited=times_visited, rc=relevant_columns
-        )
+        """
 
         return sql

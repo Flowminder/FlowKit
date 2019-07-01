@@ -36,6 +36,7 @@ from .client import (
     joined_spatial_aggregate,
     radius_of_gyration,
     unique_location_counts,
+    subscriber_degree,
 )
 
 __all__ = [
@@ -64,4 +65,5 @@ __all__ = [
     "joined_spatial_aggregate",
     "radius_of_gyration",
     "unique_location_counts",
+    "subscriber_degree",
 ]

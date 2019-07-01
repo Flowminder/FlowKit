@@ -9,17 +9,16 @@ Tests for the LocationIntroversion() class.
 
 import pytest
 
+from flowmachine.core import make_spatial_unit
 from flowmachine.features.location import LocationIntroversion
 
 
 @pytest.mark.usefixtures("skip_datecheck")
-def test_location_introversion_column_names(exemplar_level_param):
+def test_location_introversion_column_names(exemplar_spatial_unit_param):
     """ Test that column_names property matches head(0)"""
-    if exemplar_level_param["level"] == "versioned-site":
-        pytest.skip(
-            'The level "versioned-site" is currently not supported in the `LocationIntroversion()` class.'
-        )
-    li = LocationIntroversion("2016-01-01", "2016-01-07", **exemplar_level_param)
+    li = LocationIntroversion(
+        "2016-01-01", "2016-01-07", spatial_unit=exemplar_spatial_unit_param
+    )
     assert li.head(0).columns.tolist() == li.column_names
 
 
@@ -27,7 +26,11 @@ def test_some_results(get_dataframe):
     """
     LocationIntroversion() returns a dataframe that contains hand-picked results.
     """
-    df = get_dataframe(LocationIntroversion("2016-01-01", "2016-01-07", level="admin3"))
+    df = get_dataframe(
+        LocationIntroversion(
+            "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("admin", level=3)
+        )
+    )
     set_df = df.set_index("pcod")
     assert round(set_df.loc["524 4 12 62"]["introversion"], 6) == pytest.approx(
         0.108517
@@ -40,22 +43,28 @@ def test_some_results(get_dataframe):
     )
 
 
-def test_lat_lng_introversion(get_dataframe):
+def test_lon_lat_introversion(get_dataframe):
     df = get_dataframe(
-        LocationIntroversion("2016-01-01", "2016-01-07", level="lat-lon")
+        LocationIntroversion(
+            "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
+        )
     )
     assert pytest.approx(0.0681818181818182) == df.introversion.max()
     assert 1.0 == df.extroversion.max()
-    assert [28.2715052907426, 83.7762949093138] == df.sort_values("extroversion").iloc[
+    assert [83.7762949093138, 28.2715052907426] == df.sort_values("extroversion").iloc[
         -1
-    ][["lat", "lon"]].tolist()
+    ][["lon", "lat"]].tolist()
 
 
 def test_no_result_is_greater_than_one(get_dataframe):
     """
     No results from LocationIntroversion()['introversion'] is greater than 1.
     """
-    df = get_dataframe(LocationIntroversion("2016-01-01", "2016-01-07", level="admin3"))
+    df = get_dataframe(
+        LocationIntroversion(
+            "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("admin", level=3)
+        )
+    )
     results = df[df["introversion"] > 1]
     assert len(results) == 0
 
@@ -64,14 +73,10 @@ def test_introversion_plus_extroversion_equals_one(get_dataframe):
     """
     LocationIntroversion()['introversion'] + ['extroversion'] equals 1.
     """
-    df = get_dataframe(LocationIntroversion("2016-01-01", "2016-01-07", level="admin3"))
+    df = get_dataframe(
+        LocationIntroversion(
+            "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("versioned-site")
+        )
+    )
     df["addition"] = df["introversion"] + df["extroversion"]
     assert df["addition"].sum() == len(df)
-
-
-def test_introversion_raises_notimplemented_error_with_versioned_site():
-    """
-    LocationIntroversion(level='versioned-site') raises a NotImplementedError.
-    """
-    with pytest.raises(NotImplementedError):
-        LocationIntroversion("2016-01-01", "2016-01-07", level="versioned-site")

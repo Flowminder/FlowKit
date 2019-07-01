@@ -4,7 +4,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import List
+from typing import List, Union
 
 """
 Location introversion [1]_ calculates the proportion
@@ -23,7 +23,8 @@ from ...core import Query
 from ...core.mixins import GeoDataMixin
 
 
-from ...core import JoinToLocation
+from ...core import location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from ..utilities import EventsTablesUnion
 
 
@@ -44,29 +45,9 @@ class LocationIntroversion(GeoDataMixin, Query):
         Specifies a table of cdr data on which to base the analysis. Table must
         exist in events schema. If 'ALL' then we use all tables specified in
         flowmachine.yml.
-    level : str
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
     direction : str, default 'both'.
         Determines if query should filter only outgoing
         events ('out'), incoming events ('in'), or both ('both').
@@ -91,88 +72,45 @@ class LocationIntroversion(GeoDataMixin, Query):
 
     def __init__(
         self,
-        start,
-        stop,
+        start: str,
+        stop: str,
         *,
-        table="all",
-        level="cell",
-        direction="both",
+        table: str = "all",
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
+        direction: str = "both",
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
-        size=None,
-        polygon_table=None,
-        geom_col="geom",
-        column_name=None,
     ):
-
-        self.query_columns = ["id", "outgoing", "location_id", "datetime"]
         self.start = start
         self.stop = stop
         self.table = table
-        self.level = level
+        self.spatial_unit = spatial_unit
         self.direction = direction
 
-        if self.level == "versioned-site":
-            raise NotImplementedError(
-                'The level "versioned-site" is currently not'
-                + "supported in the `LocationIntroversion()` class."
-            )
-
-        self.unioned_query = EventsTablesUnion(
-            self.start,
-            self.stop,
-            columns=self.query_columns,
-            tables=self.table,
-            hours=hours,
-            subscriber_subset=subscriber_subset,
-            subscriber_identifier=subscriber_identifier,
+        self.unioned_query = location_joined_query(
+            EventsTablesUnion(
+                self.start,
+                self.stop,
+                columns=["id", "outgoing", "location_id", "datetime"],
+                tables=self.table,
+                hours=hours,
+                subscriber_subset=subscriber_subset,
+                subscriber_identifier=subscriber_identifier,
+            ),
+            spatial_unit=self.spatial_unit,
+            time_col="datetime",
         )
-        self.level_columns = ["location_id"]
 
-        if self.level not in ("cell"):
-            self.join_to_location = JoinToLocation(
-                self.unioned_query,
-                level=self.level,
-                time_col="datetime",
-                column_name=column_name,
-                size=size,
-                polygon_table=polygon_table,
-                geom_col=geom_col,
-            )
-            cols = set(self.join_to_location.column_names)
-            if self.level != "lat-lon":
-                cols -= {"lat", "lon"}
-            self.level_columns = list(cols.difference(self.query_columns))
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return self.level_columns + ["introversion", "extroversion"]
+        return self.spatial_unit.location_id_columns + ["introversion", "extroversion"]
 
-    def __build_query(self, location_columns, union):
-        """
-        Private method for building feature query. This
-        is abstracted for readability. It's only called
-        by _make_query()
+    def _make_query(self):
+        location_columns = self.spatial_unit.location_id_columns
 
-        Parameters
-        ----------
-        location_columns: str
-            Relevant location column to make join to.
-            This 
-
-        union: str
-            SQL query representing an union table query.
-            This query either comes from the EventsTablesUnion()
-            or the JoinToLocation() class.
-
-        Returns
-        -------
-        sql: str
-            SQL string with query representation.
-
-        """
         if self.direction == "both":
             sql_direction = ""
         elif self.direction == "in":
@@ -185,7 +123,7 @@ class LocationIntroversion(GeoDataMixin, Query):
             """
 
         sql = f"""
-        WITH unioned_table AS ({union})
+        WITH unioned_table AS ({self.unioned_query.get_query()})
         SELECT *, 1-introversion as extroversion FROM
         (SELECT {', '.join(location_columns)}, sum(introverted::integer)/count(*)::float as introversion FROM (
             SELECT
@@ -200,20 +138,5 @@ class LocationIntroversion(GeoDataMixin, Query):
         GROUP BY {', '.join(location_columns)}) _
         ORDER BY introversion DESC
         """
-
-        return sql
-
-    def _make_query(self):
-
-        if self.level == "cell":
-            sql = self.__build_query(
-                location_columns=self.level_columns,
-                union=self.unioned_query.get_query(),
-            )
-        else:
-            sql = self.__build_query(
-                location_columns=self.level_columns,
-                union=self.join_to_location.get_query(),
-            )
 
         return sql

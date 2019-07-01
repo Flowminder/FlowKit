@@ -38,7 +38,7 @@ class LabelEventScore(Query):
 
     Examples
     --------
-    >>> es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
+    >>> es = EventScore(start="2016-01-01", stop="2016-01-05", spatial_unit=make_spatial_unit("versioned-site"))
     >>> es.head()
              subscriber site_id  version        lon        lat  score_hour  score_dow
     0  ZYPxqVGLzlQy6l7n  QeBRM8        0  82.914285  29.358975         1.0       -1.0
