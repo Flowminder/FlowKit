@@ -11,7 +11,9 @@ from marshmallow.validate import Range, Length, OneOf
 
 class EventTypes(fields.List):
     """
-    A string representing an event type, for example "calls", "sms", "mds", "topups".
+    A list of strings representing an event type, for example "calls", "sms", "mds", "topups".
+
+    When deserialised, will be uniqueified, and prefixed with "events."
     """
 
     def __init__(self, required=False, validate=None, **kwargs):
@@ -28,6 +30,12 @@ class EventTypes(fields.List):
             allow_none=True,
             **kwargs,
         )
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        return [
+            f"events.{event_type}"
+            for event_type in set(super()._deserialize(value, attr, data, **kwargs))
+        ]
 
 
 class TotalBy(fields.String):
