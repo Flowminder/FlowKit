@@ -70,12 +70,16 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
     Parameters
     ----------
     audience : str, default None
-        Optionally specify an audience for the token
+        Optionally specify an audience for the token, e.g. "TEST_SERVER".
+        If not given will use the value of the FLOWAPI_IDENTIFIER env var if
+        available, or None otherwise.
+
 
     Returns
     -------
     function
         Function which returns a token encoding the specified claims.
+
     """
 
     if audience is None and "FLOWAPI_IDENTIFIER" in os.environ:
