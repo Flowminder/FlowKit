@@ -1322,42 +1322,43 @@ def subscriber_degree(
         "subscriber_subset": subscriber_subset,
     }
 
-    def event_count(
-        *,
-        start: str,
-        stop: str,
-        direction: str = "both",
-        event_types: Union[None, List[str]] = None,
-        subscriber_subset: Union[dict, None] = None,
-    ) -> dict:
-        """
-        Return query spec for event count
 
-        Parameters
-        ----------
-        start : str
-            ISO format date of the first day of the count, e.g. "2016-01-01"
-        stop : str
-            ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
-        direction : {"in", "out", "both"}, default "both"
-            Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
-        event_types : list of str, optional
-            The event types for which to return available dates (for example: ["calls", "sms"]).
-            If None, return available dates for all available event types.
-        subscriber_subset : dict or None, default None
-            Subset of subscribers to include in event counts. Must be None
-            (= all subscribers) or a dictionary with the specification of a
-            subset query.
-        Returns
-        -------
-        dict
-            Dict which functions as the query specification
-        """
-        return {
-            "query_kind": "event_count",
-            "start": start,
-            "stop": stop,
-            "direction": direction,
-            "event_types": event_types,
-            "subscriber_subset": subscriber_subset,
-        }
+def event_count(
+    *,
+    start: str,
+    stop: str,
+    direction: str = "both",
+    event_types: Union[None, List[str]] = None,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for event count
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    direction : {"in", "out", "both"}, default "both"
+        Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
+    event_types : list of str, optional
+        The event types for which to return available dates (for example: ["calls", "sms"]).
+        If None, return available dates for all available event types.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "event_count",
+        "start": start,
+        "stop": stop,
+        "direction": direction,
+        "event_types": event_types,
+        "subscriber_subset": subscriber_subset,
+    }

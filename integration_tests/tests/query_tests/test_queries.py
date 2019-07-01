@@ -153,7 +153,7 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     start="2016-01-01",
                     stop="2016-01-02",
                     direction="both",
-                    event_types=["calls", "sms"],
+                    event_count=["sms", "forwards"],
                 ),
             },
         ),
