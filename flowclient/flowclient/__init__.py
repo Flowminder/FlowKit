@@ -37,6 +37,7 @@ from .client import (
     radius_of_gyration,
     unique_location_counts,
     subscriber_degree,
+    topup_amount,
 )
 
 __all__ = [
@@ -66,4 +67,5 @@ __all__ = [
     "radius_of_gyration",
     "unique_location_counts",
     "subscriber_degree",
+    "topup_amount",
 ]

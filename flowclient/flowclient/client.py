@@ -1267,7 +1267,7 @@ def unique_location_counts(
         ISO format date of the first day of the count, e.g. "2016-01-01"
     end_date : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
-    level : str
+    aggrigate_unit : str
         Unit of aggregation, e.g. "admin3"
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
@@ -1319,5 +1319,41 @@ def subscriber_degree(
         "start": start,
         "stop": stop,
         "direction": direction,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def topup_amount(
+    *,
+    start: str,
+    stop: str,
+    aggregation_unit: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for topup amount
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    aggrigate_unit : str
+        Unit of aggregation, e.g. "admin3"
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "topup_amount",
+        "start": start,
+        "stop": stop,
+        "aggregation_unit": aggregation_unit,
         "subscriber_subset": subscriber_subset,
     }
