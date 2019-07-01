@@ -426,7 +426,6 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 },
             },
         ),
-        (),
     ],
 )
 def test_run_query(query_kind, params, universal_access_token, flowapi_url):
