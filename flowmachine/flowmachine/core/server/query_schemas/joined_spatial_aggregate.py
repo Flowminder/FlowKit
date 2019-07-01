@@ -9,6 +9,9 @@ from marshmallow_oneofschema import OneOfSchema
 from flowmachine.core.server.query_schemas.radius_of_gyration import (
     RadiusOfGyrationSchema,
 )
+from flowmachine.core.server.query_schemas.subscriber_degree import (
+    SubscriberDegreeSchema,
+)
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
@@ -27,10 +30,12 @@ class JoinableMetrics(OneOfSchema):
     type_schemas = {
         "radius_of_gyration": RadiusOfGyrationSchema,
         "unique_location_counts": UniqueLocationCountsSchema,
+        "subscriber_degree": SubscriberDegreeSchema,
     }
 
 
 class JoinedSpatialAggregateSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
     locations = fields.Nested(InputToSpatialAggregate, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)

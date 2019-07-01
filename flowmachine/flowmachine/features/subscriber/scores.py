@@ -8,14 +8,13 @@ Calculates an event score for each event based
 on a scoring dictionary.
 """
 
-from typing import Dict, Union, Tuple
+from typing import Dict, Union, Tuple, Optional
 
 from typing import List
 
 from ..utilities import EventsTablesUnion
-from ...core import Query
-from ...core import JoinToLocation
-from flowmachine.utils import get_columns_for_level
+from ...core import Query, location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 
 
 class EventScore(Query):
@@ -27,7 +26,7 @@ class EventScore(Query):
     based on its signature. Such type of analysis reduces the dimensionality of
     the problem by projecting a given event pattern onto the real line.
 
-    This class returns a table with scores averaged across the requested level
+    This class returns a table with scores averaged across the requested spatial unit
     per subscriber.
 
     Parameters
@@ -42,29 +41,9 @@ class EventScore(Query):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    level : str, default 'admin3'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -79,15 +58,11 @@ class EventScore(Query):
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    column_name : str, optional
-        Option, none-standard, name of the column that identifies the
-        spatial level, i.e. could pass admin3pcod to use the admin 3 pcode
-        as opposed to the name of the region.
 
     Examples
     --------
     >>> es = EventScore(start='2016-01-01', stop='2016-01-05',
-                level='versioned-site')
+                spatial_unit=make_spatial_unit('versioned-site'))
     >>> es.head()
                  subscriber location_id  version  score_hour  score_dow
     3EgqzplqPYDyGRVK      DbWg4K        0         0.0       -1.0
@@ -104,7 +79,7 @@ class EventScore(Query):
         *,
         start: str,
         stop: str,
-        level: str = "admin3",
+        spatial_unit: Optional[AnySpatialUnit] = None,
         hours: Union[str, Tuple[int, int]] = "all",
         table: Union[str, List[str]] = "all",
         score_hour: List[float] = [
@@ -143,10 +118,7 @@ class EventScore(Query):
             "sunday": -1,
         },
         subscriber_identifier: str = "msisdn",
-        column_name: Union[str, List[str]] = None,
         subscriber_subset=None,
-        polygon_table=None,
-        size=None,
     ):
         if set(score_dow.keys()) != {
             "monday",
@@ -162,7 +134,7 @@ class EventScore(Query):
             )
         if len(score_hour) != 24:
             raise ValueError(
-                f"Hour of day score dictionary must have 24 hours. Got {len(score_hour)}"
+                f"Hour of day score list must have 24 hours. Got {len(score_hour)}"
             )
         if not all([-1 <= float(x) <= 1 for x in score_hour]):
             raise ValueError(f"Hour of day scores must be floats between -1 and 1.")
@@ -170,13 +142,15 @@ class EventScore(Query):
             raise ValueError(f"Day of week scores must be floats between -1 and 1.")
         self.score_hour = score_hour
         self.score_dow = score_dow
-        self.level = level
+        if spatial_unit is None:
+            self.spatial_unit = make_spatial_unit("admin", level=3)
+        else:
+            self.spatial_unit = spatial_unit
         self.start = start
         self.stop = stop
         self.hours = hours
         self.subscriber_identifier = subscriber_identifier
-        self.column_name = column_name
-        self.sds = JoinToLocation(
+        self.sds = location_joined_query(
             EventsTablesUnion(
                 start=start,
                 stop=stop,
@@ -186,11 +160,8 @@ class EventScore(Query):
                 subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
             ),
-            level=self.level,
+            spatial_unit=self.spatial_unit,
             time_col="datetime",
-            column_name=self.column_name,
-            polygon_table=polygon_table,
-            size=size,
         )
 
         super().__init__()
@@ -212,7 +183,7 @@ class EventScore(Query):
                 {" ".join(f"WHEN dow='{dow}' THEN {score}" for dow, score in self.score_dow.items())}
                 END)"""
 
-        location_cols = get_columns_for_level(self.level, self.column_name)
+        location_cols = self.spatial_unit.location_id_columns
 
         query = f"""
         SELECT subscriber, {", ".join(location_cols)}, datetime,
@@ -241,6 +212,6 @@ class EventScore(Query):
     def column_names(self) -> List[str]:
         return (
             ["subscriber"]
-            + get_columns_for_level(self.level, self.column_name)
+            + self.spatial_unit.location_id_columns
             + ["score_hour", "score_dow"]
         )

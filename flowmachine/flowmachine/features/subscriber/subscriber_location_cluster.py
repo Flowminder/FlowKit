@@ -13,7 +13,8 @@ problem in hand.
 
 from typing import List, Union
 
-from ..utilities import subscriber_locations
+from ..utilities import SubscriberLocations
+from ...core import make_spatial_unit
 from ...core.query import Query
 from ...core.mixins import GeoDataMixin
 from .call_days import CallDays
@@ -37,6 +38,8 @@ def subscriber_location_cluster(
     hours="all",
     table="all",
     subscriber_identifier="msisdn",
+    subscriber_subset=None,
+    ignore_nulls=True,
     **kwargs,
 ):
     """
@@ -49,6 +52,11 @@ def subscriber_location_cluster(
 
     Parameters
     ----------
+    method : str
+        'hartigan':
+            Uses the Hartigan Clustering algorithm which clusters locations
+            based on a ranked listed of call days. This method requires
+            that `radius` be specified and optionally the `call_threshold`.
     start : str
         ISO format date range for the beginning of the time frame,
         e.g. 2016-01-01 or 2016-01-01 14:03:01
@@ -59,21 +67,22 @@ def subscriber_location_cluster(
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
+    table : str, default 'all'
+        Schema qualified name of the table which the analysis is based
+        upon. If 'all' it will pull together all of the tables specified as
+        flowmachine.yml under 'location_tables'.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    method : str
-        'hartigan':
-            Uses the Hartigan Clustering algorithm which clusters locations
-            based on a ranked listed of call days. This method requires
-            that `radius` be specified and optionally the `call_threshold`.
-    table : str, default 'all'
-        Schema qualified name of the table which the analysis is based
-        upon. If 'all' it will pull together all of the tables specified as
-        flowmachine.yml under 'location_tables'.
+    ignore_nulls : bool, default True
+        ignores those values that are null. Sometime data appears for which
+        the cell is null. If set to true this will ignore those lines. If false
+        these lines with null cells should still be present, although they contain
+        no information on the subscribers location, they still tell us that the subscriber made
+        a call at that time.
 
     Other Parameters
     ----------------
@@ -113,28 +122,28 @@ def subscriber_location_cluster(
         raise ValueError("Unidentified clustering method: {}".format(method))
 
     if method == "hartigan":
-        if "radius" not in kwargs:
+        try:
+            radius = kwargs.pop("radius")
+        except KeyError:
             raise ValueError("`radius` must be defined when using method: `hartigan`")
         call_threshold = kwargs.pop("call_threshold", 0)
         buffer = kwargs.pop("buffer", 0)
 
         cd = CallDays(
-            subscriber_locations(
+            SubscriberLocations(
                 start=start,
                 stop=stop,
                 hours=hours,
-                level="versioned-site",
+                spatial_unit=make_spatial_unit("versioned-site"),
                 table=table,
                 subscriber_identifier=subscriber_identifier,
-                **kwargs,
+                ignore_nulls=ignore_nulls,
+                subscriber_subset=subscriber_subset,
             )
         )
 
         return HartiganCluster(
-            calldays=cd,
-            radius=kwargs["radius"],
-            buffer=buffer,
-            call_threshold=call_threshold,
+            calldays=cd, radius=radius, buffer=buffer, call_threshold=call_threshold
         )
 
 
@@ -183,9 +192,7 @@ class HartiganCluster(BaseCluster):
 
     Examples
     --------
-    >>> cd = CallDays('2016-01-01', '2016-01-04', level='polygon',
-                polygon_table='infrastructure.sites',
-                geom_col='geom_point')
+    >>> cd = CallDays( '2016-01-01', '2016-01-04', spatial_unit=make_spatial_unit('versioned-site'))
 
     >>> har = HartiganCluster(cd, 2.5)
 
@@ -283,10 +290,10 @@ class HartiganCluster(BaseCluster):
         --------
 
         >>> es = EventScore(start='2016-01-01', stop='2016-01-05',
-        level='versioned-site')
+        spatial_unit=make_spatial_unit('versioned-site'))
 
         >>> cd = CallDays(start='2016-01-01', stop='2016-01-04',
-        level='versioned-site')
+        spatial_unit=make_spatial_unit('versioned-site'))
 
         >>> har = HartiganCluster(cd, 50, call_threshold=1)
 

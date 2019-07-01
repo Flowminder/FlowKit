@@ -547,7 +547,8 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 18.09.3
       - run:
           name: Log in to docker cloud
           command: docker login --username $DOCKER_CLOUD_USER --password $DOCKER_CLOUD_PASSWORD
@@ -555,7 +556,8 @@ jobs:
           name: Build <<parameters.component>> image
           command: |
             echo "Tagging as $CIRCLE_SHA1"
-            docker build -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 <<parameters.component_path>>
+            export SOURCE_VERSION=$(git describe --tags --dirty --always | sed s/"-"/"+"/ | sed s/"-"/"."/g)
+            docker build --build-arg SOURCE_VERSION=$SOURCE_VERSION -t flowminder/<<parameters.component>>:$CIRCLE_SHA1 <<parameters.component_path>>
       - run:
           name: Push images to Docker cloud
           command: |

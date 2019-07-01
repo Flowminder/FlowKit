@@ -12,6 +12,7 @@
 !Pipfile
 !Pipfile.lock
 !flowapi/
+!MANIFEST.in
 !setup.cfg
 !setup.py
 !versioneer.py

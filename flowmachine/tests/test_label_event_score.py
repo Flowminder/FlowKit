@@ -4,18 +4,18 @@
 
 import pytest
 
-from flowmachine.core import JoinToLocation
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import EventScore
 from flowmachine.features.subscriber.label_event_score import LabelEventScore
 
 
 @pytest.mark.usefixtures("skip_datecheck")
 def test_labelled_event_score_column_names(
-    exemplar_level_param, get_column_names_from_run
+    exemplar_spatial_unit_param, get_column_names_from_run
 ):
-    if exemplar_level_param["level"] not in JoinToLocation.allowed_levels:
-        pytest.skip(f'{exemplar_level_param["level"]} not valid for this test')
-    es = EventScore(start="2016-01-01", stop="2016-01-05", **exemplar_level_param)
+    es = EventScore(
+        start="2016-01-01", stop="2016-01-05", spatial_unit=exemplar_spatial_unit_param
+    )
     labelled = LabelEventScore(scores=es, required="evening")
     assert get_column_names_from_run(labelled) == labelled.column_names
 
@@ -24,7 +24,11 @@ def test_locations_are_labelled_correctly(get_dataframe):
     """
     Test whether locations are labelled corrected.
     """
-    es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
+    es = EventScore(
+        start="2016-01-01",
+        stop="2016-01-05",
+        spatial_unit=make_spatial_unit("versioned-site"),
+    )
 
     ls = LabelEventScore(
         scores=es,
@@ -43,7 +47,11 @@ def test_whether_passing_reserved_label_fails():
     """
     Test whether passing the reserved label 'unknown' fails.
     """
-    es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
+    es = EventScore(
+        start="2016-01-01",
+        stop="2016-01-05",
+        spatial_unit=make_spatial_unit("versioned-site"),
+    )
 
     with pytest.raises(ValueError):
         ls = LabelEventScore(
@@ -69,7 +77,11 @@ def test_whether_required_label_relabels(get_dataframe):
     """
     Test whether required label relabel the location of subscribers who did not originally have the required label.
     """
-    es = EventScore(start="2016-01-01", stop="2016-01-05", level="versioned-site")
+    es = EventScore(
+        start="2016-01-01",
+        stop="2016-01-05",
+        spatial_unit=make_spatial_unit("versioned-site"),
+    )
 
     ls = LabelEventScore(
         scores=es,

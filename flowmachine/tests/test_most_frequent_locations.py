@@ -4,15 +4,20 @@
 
 import pytest
 
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import MostFrequentLocation
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
 
-def test_most_frequent_locations_column_names(get_dataframe, exemplar_level_param):
+def test_most_frequent_locations_column_names(
+    get_dataframe, exemplar_spatial_unit_param
+):
     """
     MostFrequentLocations().get_dataframe() returns a dataframe.
     """
-    mfl = MostFrequentLocation("2016-01-01", "2016-01-02", **exemplar_level_param)
+    mfl = MostFrequentLocation(
+        "2016-01-01", "2016-01-02", spatial_unit=exemplar_spatial_unit_param
+    )
     df = get_dataframe(mfl)
     assert df.columns.tolist() == mfl.column_names
 
@@ -22,7 +27,9 @@ def test_vsites(get_dataframe):
     MostFrequentLocation() returns the correct locations.
     """
 
-    mfl = MostFrequentLocation("2016-01-01", "2016-01-02", level="versioned-site")
+    mfl = MostFrequentLocation(
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("versioned-site")
+    )
     df = get_dataframe(mfl)
     df.set_index("subscriber", inplace=True)
 
@@ -30,26 +37,30 @@ def test_vsites(get_dataframe):
     assert "qvkp6J" == df.loc["zvaOknzKbEVD2eME"].site_id
 
 
-def test_lat_lons(get_dataframe):
+def test_lon_lats(get_dataframe):
     """
-    MostFrequentLocations() has the correct values at the lat-lon level.
+    MostFrequentLocations() has the correct values at the lon-lat spatial unit.
     """
 
-    mfl = MostFrequentLocation("2016-01-01", "2016-01-02", level="lat-lon")
+    mfl = MostFrequentLocation(
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
+    )
     df = get_dataframe(mfl)
     df.set_index("subscriber", inplace=True)
 
-    assert pytest.approx(28.941925079951545) == float(df.loc["1QBlwRo4Kd5v3Ogz"].lat)
     assert pytest.approx(82.61895799084449) == float(df.loc["1QBlwRo4Kd5v3Ogz"].lon)
+    assert pytest.approx(28.941925079951545) == float(df.loc["1QBlwRo4Kd5v3Ogz"].lat)
 
 
 def test_most_fequent_admin(get_dataframe):
     """
     Test that the most frequent admin3 is correctly calculated.
     """
-
     mfl = locate_subscribers(
-        "2016-01-01", "2016-01-02", level="admin3", method="most-common"
+        "2016-01-01",
+        "2016-01-02",
+        spatial_unit=make_spatial_unit("admin", level=3),
+        method="most-common",
     )
     df = get_dataframe(mfl)
     # A few hand picked values

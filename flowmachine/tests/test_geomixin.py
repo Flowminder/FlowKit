@@ -16,7 +16,8 @@ import pytest
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
-from flowmachine.features import daily_location, Flows
+from flowmachine.core import make_spatial_unit
+from flowmachine.features import daily_location
 from flowmachine.utils import proj4string
 
 
@@ -68,24 +69,29 @@ def test_massive_geojson():
     ManyRows().to_geojson()  # This will error if the geojson couldn't be constructed
 
 
-def test_valid_geojson():
+def test_valid_geojson(exemplar_spatial_unit_param):
     """
     Check that valid geojson is returned.
 
     """
-    test_geojson = [
-        daily_location("2016-01-01", "2016-01-02").aggregate(),
-        daily_location("2016-01-01", "2016-01-02", level="grid", size=100).aggregate(),
-        daily_location("2016-01-01", "2016-01-02", level="lat-lon").aggregate(),
-        daily_location("2016-01-01", "2016-01-02", level="versioned-site").aggregate(),
-        daily_location("2016-01-01", "2016-01-02", level="versioned-cell").aggregate(),
-        daily_location("2016-01-01", "2016-01-02", level="admin2").aggregate(),
-        daily_location(
-            "2016-01-01", "2016-01-02", level="admin2", column_name="admin2name"
-        ).aggregate(),
-    ]
-    for o in test_geojson:
-        assert geojson.loads(o.to_geojson_string()).is_valid
+    if not exemplar_spatial_unit_param.has_geography:
+        pytest.skip("Query with spatial_unit=CellSpatialUnit() has no geometry.")
+    dl = daily_location(
+        "2016-01-01", "2016-01-02", spatial_unit=exemplar_spatial_unit_param
+    ).aggregate()
+    assert geojson.loads(dl.to_geojson_string()).is_valid
+
+
+def test_geo_augmented_query_raises_error():
+    """
+    Test that a ValueError is raised when attempting to get geojson for a query
+    with no geography data.
+    """
+    dl = daily_location(
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("cell")
+    ).aggregate()
+    with pytest.raises(ValueError):
+        dl.to_geojson_string()
 
 
 def test_correct_geojson():
@@ -93,7 +99,9 @@ def test_correct_geojson():
     Check that the geojson actually contains the right features. 
     """
     js = (
-        daily_location("2016-01-01", "2016-01-02", level="admin2")
+        daily_location(
+            "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("admin", level=2)
+        )
         .aggregate()
         .to_geojson()
     )
@@ -118,7 +126,7 @@ def test_geojson_file_output(tmpdir):
     js_file = tmpdir / "geojson_test.json"
 
     daily_location(
-        "2016-01-01", "2016-01-02", level="admin2"
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("admin", level=2)
     ).aggregate().to_geojson_file(js_file)
     with open(js_file) as fin:
         js = json.load(fin)
@@ -135,32 +143,14 @@ def test_geojson_file_output(tmpdir):
     assert found
 
 
-def test_flows_geojson(get_dataframe):
-    """
-    Test geojson works for flows with non-standard column names.
-    """
-
-    dl = daily_location("2016-01-01", level="admin2", column_name="admin2name")
-    dl2 = daily_location("2016-01-02", level="admin2", column_name="admin2name")
-    fl = Flows(dl, dl2)
-    js = fl.to_geojson()
-    df = get_dataframe(fl)
-    check_features = [js["features"][0], js["features"][5], js["features"][7]]
-    for feature in check_features:
-        outflows = feature["properties"]["outflows"]
-        df_src = df[
-            df.admin2name_from == feature["properties"]["admin2name"]
-        ].set_index("admin2name_to")
-        for dest, tot in outflows.items():
-            assert tot == df_src.loc[dest]["count"]
-
-
 def test_reprojection():
     """
     Test that in db reprojection works.
 
     """
-    dl = daily_location("2016-01-01", "2016-01-02", level="lat-lon").aggregate()
+    dl = daily_location(
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
+    ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
     assert js["features"][0]["geometry"]["coordinates"] == [
         -8094697.51781301,
@@ -173,21 +163,27 @@ def test_geojson_cache():
     """
     Test geojson is cached locally.
     """
-    dl = daily_location("2016-01-01", "2016-01-02", level="lat-lon").aggregate()
+    dl = daily_location(
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
+    ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
     assert js == dl._geojson[proj4string(dl.connection, 2770)]
 
 
 def test_geojson_cache_exluded_from_pickle():
     """Test that cached geojson is not going to get pickled."""
-    dl = daily_location("2016-01-01", "2016-01-02", level="lat-lon").aggregate()
+    dl = daily_location(
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
+    ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
     assert "_geojson" not in dl.__getstate__()  # Check excluded from pickle
 
 
 def test_geojson_caching_off():
     """Test that switching off caching clears the cache, and doesn't add to it."""
-    dl = daily_location("2016-01-01", "2016-01-02", level="lat-lon").aggregate()
+    dl = daily_location(
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
+    ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
     dl.turn_off_caching()  # Check caching for geojson switches off
     with pytest.raises(KeyError):
