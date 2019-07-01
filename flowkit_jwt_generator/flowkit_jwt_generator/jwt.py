@@ -237,11 +237,12 @@ def print_token(username, private_key, lifetime, audience):
 
     For example:
 
-
+    \b
     generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER all-access -u http://localhost:9090
 
     Or,
 
+    \b
     generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER query -a admin0 -a admin1 -p run -p get_result -q daily_location query -a admin0 -p get_result -q flows
 
     \b
