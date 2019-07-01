@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import pytest
 
+from flowmachine.core import make_spatial_unit
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 from flowmachine.features.subscriber import *
 
@@ -56,7 +57,9 @@ def test_can_be_joined(get_dataframe):
     RadiusOfGyration() can be joined with a location type metric.
     """
     RoG = RadiusOfGyration("2016-01-01", "2016-01-02")
-    dl = locate_subscribers("2016-01-01", "2016-01-02", level="admin3")
+    dl = locate_subscribers(
+        "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("admin", level=3)
+    )
     rog_JA = RoG.join_aggregate(dl)
     df = get_dataframe(rog_JA)
     assert isinstance(df, pd.DataFrame)

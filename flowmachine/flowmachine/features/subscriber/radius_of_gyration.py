@@ -13,7 +13,8 @@ can be calculated in `km` or `m`.
 from typing import List
 
 from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import subscriber_locations
+from ..utilities.subscriber_locations import SubscriberLocations
+from flowmachine.core import make_spatial_unit
 
 
 class RadiusOfGyration(SubscriberFeature):
@@ -98,10 +99,10 @@ class RadiusOfGyration(SubscriberFeature):
 
         self.start = start
         self.stop = stop
-        self.ul = subscriber_locations(
+        self.ul = SubscriberLocations(
             self.start,
             self.stop,
-            level="lat-lon",
+            spatial_unit=make_spatial_unit("lon-lat"),
             hours=hours,
             table=table,
             subscriber_subset=subscriber_subset,
@@ -120,15 +121,15 @@ class RadiusOfGyration(SubscriberFeature):
         av_dist = f"""
         SELECT 
             subscriber_locs.subscriber, 
-            avg(lat) AS av_lat, 
-            avg(lon) AS av_long
+            avg(lon) AS av_lon, 
+            avg(lat) AS av_lat
         FROM ({self.ul.get_query()}) AS subscriber_locs
         GROUP BY subscriber_locs.subscriber
         """
 
         distance_string = """
         ST_Distance(ST_Point(locs.lon, locs.lat)::geography,
-                    ST_point(mean.av_long, mean.av_lat)::geography)
+                    ST_point(mean.av_lon, mean.av_lat)::geography)
         """
 
         # It seems like I'm creating the sub query twice here

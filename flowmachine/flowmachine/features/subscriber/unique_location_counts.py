@@ -13,8 +13,9 @@ it visited
 """
 from typing import List
 
-from flowmachine.utils import get_columns_for_level
-from ..utilities.subscriber_locations import subscriber_locations
+from flowmachine.core import make_spatial_unit
+from flowmachine.core.spatial_unit import AnySpatialUnit
+from ..utilities.subscriber_locations import SubscriberLocations
 from .metaclasses import SubscriberFeature
 
 
@@ -31,29 +32,9 @@ class UniqueLocationCounts(SubscriberFeature):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    level : str, default 'cell'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default cell
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
     hours : tuple of ints, default 'all'
         subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -79,7 +60,8 @@ class UniqueLocationCounts(SubscriberFeature):
     Examples
     --------
         >>> ulc = UniqueLocationCounts('2016-01-01', '2016-01-04',
-                                level = 'admin3', method = 'last', hours = (5,17))
+                                spatial_unit=make_spatial_unit('admin', level=3),
+                                method='last', hours=(5,17))
         >>> ulc.head(4)
                 subscriber                unique_location_counts
             0   038OVABN11Ak4W5P    3
@@ -92,31 +74,23 @@ class UniqueLocationCounts(SubscriberFeature):
         start,
         stop,
         *,
-        level="cell",
+        spatial_unit: AnySpatialUnit = make_spatial_unit("cell"),
         hours="all",
         tables="all",
         subscriber_identifier="msisdn",
         ignore_nulls=True,
-        column_name=None,
         subscriber_subset=None,
-        polygon_table=None,
-        size=None,
-        radius=None,
     ):
 
-        self.ul = subscriber_locations(
+        self.ul = SubscriberLocations(
             start=start,
             stop=stop,
-            level=level,
+            spatial_unit=spatial_unit,
             hours=hours,
             table=tables,
             subscriber_identifier=subscriber_identifier,
             ignore_nulls=ignore_nulls,
-            column_name=column_name,
             subscriber_subset=subscriber_subset,
-            polygon_table=polygon_table,
-            size=size,
-            radius=radius,
         )
         super().__init__()
 
@@ -130,17 +104,15 @@ class UniqueLocationCounts(SubscriberFeature):
         metaclass Query().
         """
 
-        relevant_columns = ",".join(
-            get_columns_for_level(self.ul.level, self.ul.column_name)
-        )
+        location_columns = ",".join(self.ul.spatial_unit.location_id_columns)
         sql = f"""
-        SELECT
-            subscriber,
-            COUNT(*) as value
+        SELECT 
+            subscriber, 
+            COUNT(*) as value  
             FROM
-        (SELECT DISTINCT subscriber, {relevant_columns}
+        (SELECT DISTINCT subscriber, {location_columns} 
           FROM ({self.ul.get_query()}) AS all_locs) AS _
-        GROUP BY subscriber
+        GROUP BY subscriber  
         """
 
         return sql

@@ -4,18 +4,21 @@
 
 FROM python:3.7-slim
 
-WORKDIR /app
-COPY Pipfile* /app/
+ARG SOURCE_VERSION=0+unknown
+ENV SOURCE_VERSION=${SOURCE_VERSION}
+ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
+WORKDIR /${SOURCE_TREE}/flowmachine
+COPY Pipfile* ./
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
         pip install --no-cache-dir pipenv && pipenv install --clear --deploy && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*
-COPY . /app/
+COPY . /${SOURCE_TREE}/flowmachine
 RUN apt-get update && \
         apt-get install -y --no-install-recommends git && \
-        pipenv install --clear --skip-lock . && \
+        pipenv run python setup.py install && \
         apt-get -y remove git && \
         apt purge -y --auto-remove && \
         rm -rf /var/lib/apt/lists/*

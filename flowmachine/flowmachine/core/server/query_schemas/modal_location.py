@@ -7,7 +7,8 @@ from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit, SubscriberSubset
+from .custom_fields import SubscriberSubset
+from .aggregation_unit import AggregationUnit
 from .daily_location import DailyLocationSchema, DailyLocationExposed
 
 
@@ -17,6 +18,7 @@ class InputToModalLocationSchema(OneOfSchema):
 
 
 class ModalLocationSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["modal_location"]))
     locations = fields.Nested(
         InputToModalLocationSchema, many=True, validate=Length(min=1)
