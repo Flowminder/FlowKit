@@ -1,9 +1,15 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import base64
+import binascii
 import logging
 import os
 from pathlib import Path
+
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.backends.openssl.rsa import _RSAPublicKey
+from cryptography.hazmat.primitives import serialization
 
 
 class UndefinedConfigOption(Exception):
@@ -45,8 +51,37 @@ def get_secret_or_env_var(key: str) -> str:
             )
 
 
+# Duplicated in flowkit_jwt_generator (cannot re-use the implementation
+# there because the module is outside the docker build context for flowauth).
+def load_public_key(key_string: str) -> _RSAPublicKey:
+    """
+    Load a public key from a string, which may be base64 encoded.
+
+    Parameters
+    ----------
+    key_string : str
+        String containing the key, optionally base64 encoded
+
+    Returns
+    -------
+    _RSAPubliceKey
+        The public key
+    """
+    try:
+        return serialization.load_pem_public_key(
+            key_string.encode(), backend=default_backend()
+        )
+    except ValueError:
+        try:
+            return load_public_key(base64.b64decode(key_string).decode())
+        except (binascii.Error, ValueError):
+            raise ValueError("Failed to load public key.")
+
+
 def get_config():
-    jwt_secret_key = get_secret_or_env_var("JWT_SECRET_KEY")
+
+    jwt_public_key = load_public_key(get_secret_or_env_var("PUBLIC_JWT_SIGNING_KEY"))
+
     log_level = logging.getLevelName(os.getenv("FLOWAPI_LOG_LEVEL", "error").upper())
 
     flowmachine_host = get_secret_or_env_var("FLOWMACHINE_HOST")
@@ -59,7 +94,8 @@ def get_config():
     flowapi_server_id = get_secret_or_env_var("FLOWAPI_IDENTIFIER")
 
     return dict(
-        JWT_SECRET_KEY=jwt_secret_key,
+        JWT_PUBLIC_KEY=jwt_public_key,
+        JWT_ALGORITHM="RS256",
         FLOWAPI_LOG_LEVEL=log_level,
         FLOWMACHINE_HOST=flowmachine_host,
         FLOWMACHINE_PORT=flowmachine_port,
