@@ -33,42 +33,6 @@ class GeoDataMixin:
     type queries.
     """
 
-    def _get_location_join(self):
-        """
-        Utility method which searches the query tree for location
-        information.
-        
-        Returns
-        -------
-        JoinToLocation
-            The first JoinToLocation object encountered in the query tree.
-
-        """
-        open = set(self.dependencies)
-        closed = set()
-        while True:
-            try:
-                qur = open.pop()
-                closed.add(qur)
-
-                #
-                #  This will check if the passed query
-                #  is an instance of the JoinToLocation class.
-                #  We don't check for the instance directly
-                #  because of import issues. This isn't an
-                #  ideal solution.
-                #
-                #  - Luis Capelo, June 22, 2017
-                #
-                if "JoinToLocation" in str(getattr(qur, "__class__", lambda: None)):
-                    return qur
-
-                open.update(qur.dependencies - closed)
-
-            except KeyError:
-                logger.warning("No JoinToLocation object found.")
-                break
-
     def _geo_augmented_query(self):
         """
         Creates a version of this query augmented with a geom column,
@@ -82,87 +46,20 @@ class GeoDataMixin:
         list
             The columns this query contains
         """
-        loc_join = self._get_location_join()
-        level = loc_join.level
-        if level == "lat-lon":
-            # Need to recreate a point
-            joined_query = """
+        join_columns_string = ",".join(self.spatial_unit.location_id_columns)
 
-                SELECT 
-                    row_number() over() AS gid,
-                    *, 
-                    ST_SetSRID(ST_Point(lon, lat), 4326) AS geom
-                FROM ({}) AS L
+        self.spatial_unit.verify_criterion("has_geography")
 
-            """.format(
-                self.get_query()
-            )
-        elif level == "versioned-site":
-            joined_query = """
-
-                SELECT 
-                    row_number() OVER () AS gid, 
-                    geom_point AS geom, 
-                    U.*
-                FROM ({qur}) AS U
-                LEFT JOIN infrastructure.sites AS S
-                    ON U.site_id = S.id AND
-                       U.version = S.version
-
-            """.format(
-                qur=self.get_query()
-            )
-        elif level == "versioned-cell":
-            joined_query = """
-
-                SELECT 
-                    row_number() OVER () AS gid, 
-                    geom_point AS geom, 
-                    U.*
-                FROM ({qur}) AS U
-                LEFT JOIN infrastructure.cells AS S
-                    ON U.location_id = S.id AND
-                       U.version = S.version
-
-            """.format(
-                qur=self.get_query()
-            )
-        else:
-            mapping = loc_join.right_query.mapping
-            col_name = mapping.column_name[0]
-            geom_col = mapping.geom_col
-            poly_query = mapping.polygon_table
-
-            #
-            #  Same as comment above on JoinToLocations.
-            #  This also needs to deal with grids. This
-            #  solution isn't good.
-            #
-            if isinstance(poly_query, Query):
-                sql_polygon_query = poly_query.get_query()
-
-            else:
-                sql_polygon_query = "SELECT * FROM {}".format(poly_query)
-
-            joined_query = """
-
-                SELECT 
-                    row_number() OVER () as gid, 
-                    {geom_col} as geom, 
-                    U.*
-                FROM ({qur}) AS U
-                LEFT JOIN ({poly_query}) AS G
-                    ON U.{l_col_name} = G.{r_col_name}
-
-            """.format(
-                qur=self.get_query(),
-                poly_query=sql_polygon_query,
-                geom_col=geom_col,
-                l_col_name=self.column_names[0],
-                r_col_name=col_name,
-            )
+        sql = f"""
+        SELECT
+            row_number() over() AS gid,
+            *
+        FROM ({self.get_query()}) AS Q
+        LEFT JOIN ({self.spatial_unit.get_geom_query()}) AS G
+        USING ({join_columns_string})
+        """
         cols = list(set(self.column_names + ["gid", "geom"]))
-        return joined_query, cols
+        return sql, cols
 
     def geojson_query(self, crs=None):
         """

@@ -16,7 +16,6 @@ from typing import List
 
 from flowmachine.core import Query
 from flowmachine.features.utilities.subscriber_locations import BaseLocation
-from flowmachine.utils import get_columns_for_level
 from ..utilities.multilocation import MultiLocation
 
 
@@ -26,8 +25,13 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
     
     Examples
     --------
-    >>> dt = DayTrajectories('2016-01-01', '2016-01-04',
-                             level = 'admin3', method = 'last', hours = (5,17))
+    >>> dt = DayTrajectories(
+            '2016-01-01',
+            '2016-01-04',
+            spatial_unit = admin_spatial_unit(level=3),
+            method = 'last',
+            hours = (5,17),
+        )
     >>> dt.head(4)
             subscriber                name       date
         0   038OVABN11Ak4W5P    Dolpa      2016-01-01
@@ -38,18 +42,14 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return (
-            ["subscriber"]
-            + get_columns_for_level(self.level, self.column_name)
-            + ["date"]
-        )
+        return ["subscriber"] + self.spatial_unit.location_id_columns + ["date"]
 
     def _make_query(self):
         """
         Default query method implemented in the
         metaclass Query().
         """
-        relevant_columns = self._get_relevant_columns()
+        location_columns_string = ", ".join(self.spatial_unit.location_id_columns)
 
         # This query represents the concatenated locations of the
         # subscribers. Similar to the first step when calculating
@@ -58,15 +58,13 @@ class DayTrajectories(MultiLocation, BaseLocation, Query):
             lambda x, y: x.union(y), (self._append_date(dl) for dl in self._all_dls)
         )
 
-        sql = """
+        sql = f"""
         SELECT 
             all_locs.subscriber, 
-            {rc},
+            {location_columns_string},
             all_locs.date
-        FROM ({all_locs}) AS all_locs
+        FROM ({all_locs.get_query()}) AS all_locs
         ORDER BY all_locs.subscriber, all_locs.date
-        """.format(
-            all_locs=all_locs.get_query(), rc=relevant_columns
-        )
+        """
 
         return sql

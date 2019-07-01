@@ -10,19 +10,20 @@ Level classes.
 
 import pytest
 
-import flowmachine.features.network as network
+from flowmachine.core import make_spatial_unit
+from flowmachine.core.errors import InvalidSpatialUnitError
 from flowmachine.features import TotalNetworkObjects, AggregateNetworkObjects
 
 
-def test_tno_at_lat_lng(get_dataframe):
+def test_tno_at_lon_lat(get_dataframe):
     """
-    Regression test for #108. TNO should work at lat-lon level.
+    Regression test for #108. TNO should work at lon-lat level.
     """
     tno = TotalNetworkObjects(
         start="2016-01-01",
         stop="2016-01-07",
-        network_object="versioned-cell",
-        level="lat-lon",
+        network_object=make_spatial_unit("versioned-cell"),
+        spatial_unit=make_spatial_unit("lon-lat"),
     )
     assert tno.get_dataframe().sum().value == 330
 
@@ -44,8 +45,8 @@ def test_aggregate_returns_correct_values(stat, expected, get_dataframe):
     AggregateNetworkObjects returns correct values.
 
     """
-    instance = network.AggregateNetworkObjects(
-        total_network_objects=network.TotalNetworkObjects(
+    instance = AggregateNetworkObjects(
+        total_network_objects=TotalNetworkObjects(
             start="2016-01-01", stop="2016-12-30", table="calls", total_by="hour"
         ),
         statistic=stat,
@@ -65,7 +66,7 @@ def test_count_returns_correct_values(get_dataframe):
     TotalNetworkObjects returns correct values.
 
     """
-    instance = network.TotalNetworkObjects(
+    instance = TotalNetworkObjects(
         start="2016-01-01", stop="2016-12-30", table="calls", total_by="hour"
     )
     df = get_dataframe(instance)
@@ -78,15 +79,41 @@ def test_count_returns_correct_values(get_dataframe):
     assert df.value[34] == 31
 
 
-@pytest.mark.parametrize(
-    "bad_arg, bad_val",
-    [("total_by", "BAD_TOTAL_BY"), ("level", "cell"), ("network_object", "BAD_OBJECT")],
-)
-def test_bad_params(bad_arg, bad_val):
-    """Test value errors are raised for bad params"""
+def test_bad_total_by():
+    """Test value errors are raised for bad 'total_by' param"""
     with pytest.raises(ValueError):
         TotalNetworkObjects(
-            start="2016-01-01", stop="2016-12-30", table="calls", **{bad_arg: bad_val}
+            start="2016-01-01",
+            stop="2016-12-30",
+            table="calls",
+            total_by="BAD_TOTAL_BY",
+        )
+
+
+@pytest.mark.parametrize(
+    "bad_arg, spatial_unit_type",
+    [("spatial_unit", "cell"), ("network_object", "lon-lat")],
+)
+def test_bad_spatial_units(bad_arg, spatial_unit_type):
+    """
+    Test InvalidSpatialUnitErrors are raised for bad 'network_object' or
+    'spatial_unit' params.
+    """
+    su = make_spatial_unit(spatial_unit_type)
+    with pytest.raises(InvalidSpatialUnitError):
+        TotalNetworkObjects(
+            start="2016-01-01", stop="2016-12-30", table="calls", **{bad_arg: su}
+        )
+
+
+def test_bad_aggregate_by():
+    """Test that invalid 'aggregate_by' param raises value error."""
+    with pytest.raises(ValueError):
+        AggregateNetworkObjects(
+            total_network_objects=TotalNetworkObjects(
+                start="2016-01-01", stop="2016-12-30", table="calls"
+            ),
+            aggregate_by="BAD_AGGREGATE_BY",
         )
 
 
@@ -108,7 +135,9 @@ def test_median_returns_correct_values(get_dataframe):
     """
     instance = AggregateNetworkObjects(
         total_network_objects=TotalNetworkObjects(
-            table="calls", total_by="hour", network_object="versioned-site"
+            table="calls",
+            total_by="hour",
+            network_object=make_spatial_unit("versioned-site"),
         ),
         aggregate_by="day",
         statistic="median",
@@ -132,7 +161,7 @@ def test_mean_returns_correct_values(get_dataframe):
             start="2016-01-01",
             stop="2016-12-30",
             total_by="hour",
-            network_object="versioned-site",
+            network_object=make_spatial_unit("versioned-site"),
         ),
         aggregate_by="day",
     )

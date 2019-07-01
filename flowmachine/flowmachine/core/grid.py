@@ -10,7 +10,7 @@ from typing import List
 
 from flowmachine.core.mixins import GeoDataMixin
 
-from ...core.query import Query
+from .query import Query
 
 
 class Grid(GeoDataMixin, Query):
@@ -40,8 +40,7 @@ class Grid(GeoDataMixin, Query):
 
     def _geo_augmented_query(self):
         """
-        Returns one of each geom for non-point levels, with the
-        flows in/out as properties.
+        Returns a version of this query with geom and gid columns.
 
         Returns
         -------
@@ -50,13 +49,13 @@ class Grid(GeoDataMixin, Query):
         """
 
         return (
-            f"SELECT grid_id, geom_square as geom, row_number() OVER (ORDER BY latitude, longitude) as gid FROM ({self.get_query()}) as x",
+            f"SELECT grid_id, geom_square as geom, row_number() OVER (ORDER BY longitude, latitude) as gid FROM ({self.get_query()}) as x",
             ["grid_id", "geom", "gid"],
         )
 
     @property
     def column_names(self) -> List[str]:
-        return ["grid_id", "geom_square", "geom_point", "latitude", "longitude"]
+        return ["grid_id", "geom_square", "geom_point", "longitude", "latitude"]
 
     def _make_query(self):
 
@@ -76,11 +75,11 @@ class Grid(GeoDataMixin, Query):
 
         sql = f"""
         SELECT
-            '{str(self.size).replace(".", "_")}' || '_' || row_number() OVER (ORDER BY latitude, longitude) AS grid_id,
+            '{str(self.size).replace(".", "_")}' || '_' || row_number() OVER (ORDER BY longitude, latitude) AS grid_id,
             geom_square,
             geom_point,
-            latitude,
-            longitude
+            longitude,
+            latitude
         FROM
             ({grid_sql}) AS grid
         """

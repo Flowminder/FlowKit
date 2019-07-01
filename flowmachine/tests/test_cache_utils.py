@@ -471,7 +471,7 @@ def test_cache_reset_protects_tables(flowmachine_connect):
     Resetting the cache should preserve Table entries.
     """
     # Regression test for https://github.com/Flowminder/FlowKit/issues/832
-    dl_query = daily_location(date="2016-01-03", level="admin3", method="last")
+    dl_query = daily_location(date="2016-01-03", method="last")
     reset_cache(flowmachine_connect, dl_query.redis)
     for dep in dl_query._get_stored_dependencies():
         assert dep.md5 in [x.md5 for x in Query.get_stored()]
@@ -499,7 +499,7 @@ def test_cache_metadata_write_error(flowmachine_connect, dummy_redis, monkeypatc
     # Regression test for https://github.com/Flowminder/FlowKit/issues/833
 
     writer_mock = Mock(side_effect=TestException)
-    dl_query = daily_location(date="2016-01-03", level="admin3", method="last")
+    dl_query = daily_location(date="2016-01-03", method="last")
     assert not dl_query.is_stored
     monkeypatch.setattr("flowmachine.core.cache.write_cache_metadata", writer_mock)
 
