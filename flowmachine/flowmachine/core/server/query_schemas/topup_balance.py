@@ -45,8 +45,8 @@ class TopUpBalanceExposed(BaseExposedQuery):
         Query
         """
         return TopUpBalance(
-            start=start,
-            stop=stop,
-            statistic=statistic,
-            subscriber_subset=subscriber_subset,
+            start=self.start_date,
+            stop=self.end_date,
+            statistic=self.statistic,
+            subscriber_subset=self.subscriber_subset,
         )
