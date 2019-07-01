@@ -14,20 +14,21 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 USER root
 WORKDIR /usr/src/deps
 
-# GOSU allows drop-down from root privileges when running the airflow binary
-ENV GOSU_VERSION 1.11
-RUN set -x \
-        && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget gnupg dirmngr && rm -rf /var/lib/apt/lists/* \
-        && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
-        && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
-        && export GNUPGHOME="$(mktemp -d)" \
-        && gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-        && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-        && { command -v gpgconf > /dev/null && gpgconf --kill all || :; } \
-        && rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
-        && chmod +x /usr/local/bin/gosu \
-        && gosu nobody true \
-        && apt-get purge -y --auto-remove ca-certificates wget gnupg dirmngr
+# Needed for custom users passed through docker's --user argument, otherwise it's /
+ENV HOME ${AIRFLOW_HOME}
+
+# Use "nss_wrapper" to fake "/etc/passwd" and "/etc/group" for Airflow when
+# running under a different user for development purposes. Related uses:
+# https://github.com/docker-library/postgres/issues/359
+# https://cwrap.org/nss_wrapper.html
+RUN set -eux; \
+        apt-get update; \
+        apt-get install -y --no-install-recommends libnss-wrapper; \
+        rm -rf /var/lib/apt/lists/*
+
+ENV LD_PRELOAD /usr/lib/libnss_wrapper.so
+ENV NSS_WRAPPER_PASSWD /tmp/nsspasswd
+ENV NSS_WRAPPER_GROUP /tmp/nssgroup
 
 RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY ./entrypoint.sh /entrypoint.sh
@@ -35,9 +36,15 @@ COPY ./entrypoint.sh /entrypoint.sh
 COPY ./etl /opt/etl
 RUN pip install /opt/etl
 
+USER airflow
 COPY --chown=airflow:airflow ./dags/* ${AIRFLOW_HOME}/src/
+
+# Needed on $AIRFLOW_HOME so that different users passed through --user
+# have the permission to create and use their files for Airflow
+RUN chmod -R 777 ${AIRFLOW_HOME}
+
 WORKDIR ${AIRFLOW_HOME}
-ENTRYPOINT ["gosu", "airflow", "/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["webserver"] # set default arg for entrypoint
 
 
