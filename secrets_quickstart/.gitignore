@@ -2,3 +2,4 @@
 *.pem
 *.crt
 *.key
+*.pub

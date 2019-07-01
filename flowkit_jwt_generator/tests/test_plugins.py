@@ -5,7 +5,7 @@
 
 def test_plugin_errors_with_missing_env_var(testdir, monkeypatch):
     """
-    Plugin should raise environment error if JWT_SECRET_KEY not set
+    Plugin should raise environment error if PRIVATE_JWT_SIGNING_KEY not set
     """
     testdir.makepyfile(
         """
@@ -13,13 +13,13 @@ def test_plugin_errors_with_missing_env_var(testdir, monkeypatch):
             assert True
     """
     )
-    monkeypatch.delenv("JWT_SECRET_KEY")
+    monkeypatch.delenv("PRIVATE_JWT_SIGNING_KEY")
     result = testdir.runpytest()
 
     result.assert_outcomes(error=1)
 
 
-def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi):
+def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi, public_key_bytes):
     """Universal access token plugin should pick up url from flowapi fixture."""
 
     # create a temporary conftest.py file
@@ -43,9 +43,9 @@ def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi):
             decoded = jwt.decode(
                 jwt=universal_access_token,
                 audience=os.environ["FLOWAPI_IDENTIFIER"],
-                key=os.environ["JWT_SECRET_KEY"],
+                key={public_key_bytes},
                 verify=True,
-                algorithms=["HS256"],
+                algorithms=["RS256"],
             )
             assert decoded["user_claims"] == {dummy_flowapi}
     """
@@ -57,7 +57,9 @@ def test_plugin_works_with_flowapi_fixture(testdir, dummy_flowapi):
     result.assert_outcomes(passed=1)
 
 
-def test_plugin_works_with_no_audience(testdir, dummy_flowapi, monkeypatch):
+def test_plugin_works_with_no_audience(
+    testdir, dummy_flowapi, monkeypatch, public_key_bytes
+):
     """
     Universal access token plugin should not include audience key if not supplied or env var not set.
     """
@@ -75,6 +77,7 @@ def test_plugin_works_with_no_audience(testdir, dummy_flowapi, monkeypatch):
     )
 
     # create a temporary pytest test file
+
     testdir.makepyfile(
         f"""
         import jwt
@@ -83,14 +86,13 @@ def test_plugin_works_with_no_audience(testdir, dummy_flowapi, monkeypatch):
         def test_all_access_plugin(universal_access_token):
             decoded = jwt.decode(
                 jwt=universal_access_token,
-                key=os.environ["JWT_SECRET_KEY"],
+                key={public_key_bytes},
                 verify=True,
-                algorithms=["HS256"],
+                algorithms=["RS256"],
             )
             assert decoded["user_claims"] == {dummy_flowapi}
     """
     )
-
     # run all tests with pytest
     result = testdir.runpytest()
 

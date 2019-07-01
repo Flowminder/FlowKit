@@ -1,10 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey
+from flask import jsonify, Blueprint, request, current_app
 import jwt
 import uuid
-from flask import jsonify, Blueprint, request
 from flask.json import JSONEncoder
 from flask_login import login_required, current_user
 from typing import Dict, List, Union, Optional
@@ -12,6 +12,8 @@ from typing import Dict, List, Union, Optional
 from .models import *
 from .invalid_usage import InvalidUsage, Unauthorized
 from zxcvbn import zxcvbn
+import jwt
+import uuid
 
 blueprint = Blueprint(__name__, __name__)
 
@@ -146,7 +148,9 @@ def add_token(server):
     """
     server = Server.query.filter(Server.id == server).first_or_404()
     json = request.get_json()
+
     current_app.logger.debug(json)
+
     if "name" not in json:
         raise InvalidUsage("No name.", payload={"bad_field": "name"})
     expiry = datetime.datetime.strptime(json["expiry"], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -155,6 +159,7 @@ def add_token(server):
     if expiry > latest_lifetime:
         raise InvalidUsage("Token lifetime too long", payload={"bad_field": "expiry"})
     allowed_claims = current_user.allowed_claims(server)
+
     current_app.logger.debug(allowed_claims)
     for claim, rights in json["claims"].items():
         if claim not in allowed_claims:
@@ -169,13 +174,15 @@ def add_token(server):
                 raise Unauthorized(
                     f"You do not have access to {claim} at {agg_unit} on {server.name}"
                 )
+
     token_string = generate_token(
         username=current_user.username,
-        secret=server.secret_key,
         flowapi_identifier=server.name,
         lifetime=lifetime,
         claims=json["claims"],
+        private_key=current_app.config["PRIVATE_JWT_SIGNING_KEY"],
     )
+
     token = Token(
         name=json["name"],
         token=token_string,
@@ -190,11 +197,15 @@ def add_token(server):
 
 # Duplicated in flowkit_jwt_generator (cannot re-use the implementation
 # there because the module is outside the docker build context for flowauth).
+# Duplicated in FlowAuth (cannot use this implementation there because
+# this module is outside the docker build context for FlowAuth).
+# Duplicated in FlowAuth (cannot use this implementation there because
+# this module is outside the docker build context for FlowAuth).
 def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
     username: str,
-    secret: str,
+    private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
     claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
 ) -> str:
@@ -204,8 +215,9 @@ def generate_token(
     ----------
     username : str
         Username for the token
-    secret : str
-        Shared secret to sign the token with
+    private_key : str or _RSAPrivateKey
+        Private key to use to sign the token.  May be an _RSAPrivateKey object, or a string
+        containing a PEM encoded key
     lifetime : datetime.timedelta
         Lifetime from now of the token
     claims : dict
@@ -215,7 +227,7 @@ def generate_token(
 
     Examples
     --------
-    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",secret="SECRET",lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key=rsa_private_key,lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
             "spatial_aggregation": ["admin3"]}})
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
 
@@ -238,5 +250,5 @@ def generate_token(
     if flowapi_identifier is not None:
         token_data["aud"] = flowapi_identifier
     return jwt.encode(
-        payload=token_data, key=secret, algorithm="HS256", json_encoder=JSONEncoder
+        payload=token_data, key=private_key, algorithm="RS256", json_encoder=JSONEncoder
     ).decode("utf-8")

@@ -32,7 +32,7 @@ setup(
     description="Common test JWT generator for FlowKit.",
     entry_points={
         "console_scripts": ["generate-jwt = flowkit_jwt_generator.jwt:print_token"],
-        "pytest11": ["flowkit_jwt_generator = flowkit_jwt_generator.jwt"],
+        "pytest11": ["flowkit_jwt_generator = flowkit_jwt_generator.fixtures"],
     },
     author=__author__,
     author_email=__email__,

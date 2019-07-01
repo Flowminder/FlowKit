@@ -255,6 +255,9 @@
             "version": "==1.0.3"
         },
         "flask-jwt-extended": {
+            "extras": [
+                "asymmetric_crypto"
+            ],
             "hashes": [
                 "sha256:583a6e363ea51434c4189e35d3832a23949cfa5203d60a8287b6be137a75528d"
             ],

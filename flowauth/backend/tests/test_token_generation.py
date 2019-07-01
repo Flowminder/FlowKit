@@ -1,14 +1,15 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from os import environ
 
 import datetime
 
-import jwt
 import pytest
 import jwt
 from flowauth.token_management import generate_token as flowauth_generate_token
 from flowkit_jwt_generator import generate_token as jwt_generator_generate_token
+from flowkit_jwt_generator import load_public_key
 
 from pytest import approx
 
@@ -42,7 +43,7 @@ def test_reject_when_claim_not_allowed(client, auth, test_user):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_token_generation(client, auth, app, test_user):
+def test_token_generation(client, auth, app, test_user, public_key):
 
     # Log in first
     uid, uname, upass = test_user
@@ -64,9 +65,9 @@ def test_token_generation(client, auth, app, test_user):
     assert 200 == response.status_code
     token_json = response.get_json()
     decoded_token = jwt.decode(
-        token_json["token"].encode(),
-        "DUMMY_SERVER_A_KEY",
-        algorithms=["HS256"],
+        jwt=token_json["token"].encode(),
+        key=public_key,
+        algorithms=["RS256"],
         audience="DUMMY_SERVER_A",
     )
     assert {
@@ -134,12 +135,12 @@ def test_token_rejected_for_bad_right_claim(client, auth, app, test_user):
     )
 
 
-def test_against_general_generator():
+def test_against_general_generator(app, public_key):
     """Test that the token generator in FlowAuth and the one in flowkit-jwt-generator produce same results."""
     flowauth_token = jwt.decode(
         flowauth_generate_token(
             username="TEST_USER",
-            secret="SECRET",
+            private_key=app.config["PRIVATE_JWT_SIGNING_KEY"],
             lifetime=datetime.timedelta(5),
             flowapi_identifier="TEST_SERVER",
             claims={
@@ -149,13 +150,13 @@ def test_against_general_generator():
                 }
             },
         ),
-        key="SECRET",
+        key=public_key,
         audience="TEST_SERVER",
     )
     generator_token = jwt.decode(
         jwt_generator_generate_token(
             username="TEST_USER",
-            secret="SECRET",
+            private_key=app.config["PRIVATE_JWT_SIGNING_KEY"],
             lifetime=datetime.timedelta(5),
             flowapi_identifier="TEST_SERVER",
             claims={
@@ -165,7 +166,7 @@ def test_against_general_generator():
                 }
             },
         ),
-        key="SECRET",
+        key=public_key,
         audience="TEST_SERVER",
     )
     assert generator_token["aud"] == flowauth_token["aud"]

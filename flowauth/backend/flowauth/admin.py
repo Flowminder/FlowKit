@@ -1,8 +1,8 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-from flask import jsonify, Blueprint, request
+from cryptography.hazmat.primitives import serialization
+from flask import jsonify, Blueprint, request, current_app
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 from zxcvbn import zxcvbn
@@ -36,9 +36,7 @@ def get_server(server_id):
     Responds with {"id":<server_id>, "name":<server_name>, "secret_key":<secret_key>}
     """
     server = Server.query.filter(Server.id == server_id).first_or_404()
-    return jsonify(
-        {"id": server.id, "name": server.name, "secret_key": server.secret_key}
-    )
+    return jsonify({"id": server.id, "name": server.name})
 
 
 @blueprint.route("/capabilities")
@@ -875,3 +873,25 @@ def list_all_tokens():
             for token in Token.query.all()
         ]
     )
+
+
+@blueprint.route("/public_key")
+@login_required
+@admin_permission.require(http_exception=401)
+def get_public_key():
+    """
+    Get the public key which can be used to verify tokens for this
+    flowauth server.
+    """
+    key = (
+        current_app.config["PRIVATE_JWT_SIGNING_KEY"]
+        .public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        .decode()
+        .strip()
+    )
+    current_app.logger.debug(key)
+    return jsonify({"public_key": key})

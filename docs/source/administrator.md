@@ -14,7 +14,7 @@ FlowAuth is the tool which analysts will use to generate tokens which will allow
 
 3. Under "Aggregation Units", add any applicable aggregation units (e.g. `admin3`).
 
-3. Under "Servers", add a new server and give it a name and secret key. Note that the name and secret key must match the `FLOWAPI_IDENTIFIER` and `JWT_SECRET_KEY` variables set in the FlowAPI docker container on this server.
+3. Under "Servers", add a new server and give it a name. Note that the name must match the `FLOWAPI_IDENTIFIER` variable set in the FlowAPI docker container on this server.
 
 4. Enable any permissions for this server under "API Permissions", and aggregation units under "Aggregation Units".
 
