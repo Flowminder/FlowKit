@@ -1291,7 +1291,7 @@ def subscriber_degree(
     *,
     start: str,
     stop: str,
-    direction: str,
+    direction: str = "both",
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
