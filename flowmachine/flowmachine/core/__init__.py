@@ -13,8 +13,10 @@ from .table import Table
 from .geotable import GeoTable
 from .init import connect
 from .logging import init_logging, set_log_level
-from .join_to_location import JoinToLocation
+from .spatial_unit import make_spatial_unit
+from .join_to_location import JoinToLocation, location_joined_query
 from .custom_query import CustomQuery
+from .grid import Grid
 
 sub_modules = ["errors", "mixins", "api"]
 
@@ -24,8 +26,11 @@ methods = [
     "GeoTable",
     "Connection",
     "connect",
+    "make_spatial_unit",
     "JoinToLocation",
+    "location_joined_query",
     "CustomQuery",
+    "Grid",
 ]
 
 __all__ = methods + sub_modules

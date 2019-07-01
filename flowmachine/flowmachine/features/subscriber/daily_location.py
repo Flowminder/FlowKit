@@ -12,7 +12,10 @@ representing where an subscriber is on a given day.
 
 """
 import datetime
+from typing import Optional
 
+from ...core import make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from .last_location import LastLocation
 from .most_frequent_location import MostFrequentLocation
 
@@ -20,54 +23,30 @@ from .most_frequent_location import MostFrequentLocation
 def locate_subscribers(
     start,
     stop,
-    level="admin3",
+    spatial_unit: Optional[AnySpatialUnit] = None,
     hours="all",
     method="last",
     table="all",
     subscriber_identifier="msisdn",
-    column_name=None,
     *,
     ignore_nulls=True,
     subscriber_subset=None,
-    polygon_table=None,
-    size=None,
-    radius=None,
 ):
     """
     Return a class representing the location of an individual. This can be called
     with a number of different methods.
 
     Find the last/most-frequent location for every subscriber within the given time
-    frame. Specify a level.
+    frame. Specify a spatial unit.
 
     Parameters
     ----------
     start, stop : str
         iso format date range for the the time frame,
         e.g. 2016-01-01 or 2016-01-01 14:03:01
-    level : str, default 'admin3'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -89,14 +68,8 @@ def locate_subscribers(
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    column_name : str, optional
-        Option, none-standard, name of the column that identifies the
-        spatial level, i.e. could pass admin3pcod to use the admin 3 pcode
-        as opposed to the name of the region.
     kwargs :
         Eventually passed to flowmachine.spatial_metrics.spatial_helpers.
-        JoinToLocation. Here you can specify a non standard set of polygons.
-        See the doc string of JoinToLocation for more details.
 
     Notes
     -----
@@ -111,7 +84,7 @@ def locate_subscribers(
 
     >>> last_locs = locate_subscribers('2016-01-01 13:30:30',
                                 '2016-01-02 16:25:00'
-                                 level = 'cell'
+                                 spatial_unit = CellSpatialUnit
                                  method='last')
     >>> last_locs.head()
                 subscriber    |    cell
@@ -122,39 +95,33 @@ def locate_subscribers(
                         .
                         .
     """
+    if spatial_unit is None:
+        spatial_unit = make_spatial_unit("admin", level=3)
 
     if method == "last":
         return LastLocation(
             start,
             stop,
-            level,
+            spatial_unit,
             hours,
             table=table,
             subscriber_identifier=subscriber_identifier,
-            column_name=column_name,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,
-            polygon_table=polygon_table,
-            size=size,
-            radius=radius,
         )
     elif method == "most-common":
         return MostFrequentLocation(
             start,
             stop,
-            level,
+            spatial_unit,
             hours,
             table=table,
-            column_name=column_name,
             subscriber_identifier=subscriber_identifier,
             ignore_nulls=ignore_nulls,
             subscriber_subset=subscriber_subset,
-            polygon_table=polygon_table,
-            size=size,
-            radius=radius,
         )
     # elif self.method == 'first':
-    #     _obj = FirstLocation(start, stop, level, hours)
+    #     _obj = FirstLocation(start, stop, spatial_unit, hours)
     else:
         raise ValueError(
             f"Unrecognised method '{method}', must be either 'most-common' or 'last'"
@@ -165,17 +132,13 @@ def daily_location(
     date,
     stop=None,
     *,
-    level="admin3",
+    spatial_unit: Optional[AnySpatialUnit] = None,
     hours="all",
     method="last",
     table="all",
     subscriber_identifier="msisdn",
-    column_name=None,
     ignore_nulls=True,
     subscriber_subset=None,
-    polygon_table=None,
-    size=None,
-    radius=None,
 ):
     """
     Return a query for locating all subscribers on a single day of data.
@@ -188,29 +151,9 @@ def daily_location(
     stop : str
         optionally specify a stop datetime in iso format date for the day in question,
         e.g. 2016-01-02 06:00:00
-    level : str, default 'admin3'
-        Levels can be one of:
-            'cell':
-                The identifier as it is found in the CDR itself
-            'versioned-cell':
-                The identifier as found in the CDR combined with the version from
-                the cells table.
-            'versioned-site':
-                The ID found in the sites table, coupled with the version
-                number.
-            'polygon':
-                A custom set of polygons that live in the database. In which
-                case you can pass the parameters column_name, which is the column
-                you want to return after the join, and table_name, the table where
-                the polygons reside (with the schema), and additionally geom_col
-                which is the column with the geometry information (will default to
-                'geom')
-            'admin*':
-                An admin region of interest, such as admin3. Must live in the
-                database in the standard location.
-            'grid':
-                A square in a regular grid, in addition pass size to
-                determine the size of the polygon.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -232,10 +175,6 @@ def daily_location(
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
-    column_name : str, optional
-        Option, none-standard, name of the column that identifies the
-        spatial level, i.e. could pass admin3pcod to use the admin 3 pcode
-        as opposed to the name of the region.
 
     Notes
     -----
@@ -246,6 +185,8 @@ def daily_location(
     * Use 24 hr format!
 
     """
+    if spatial_unit is None:
+        spatial_unit = make_spatial_unit("admin", level=3)
 
     # Temporary band-aid; marshmallow deserialises date strings
     # to date objects, so we convert it back here because the
@@ -262,15 +203,11 @@ def daily_location(
     return locate_subscribers(
         start=date,
         stop=stop,
-        level=level,
+        spatial_unit=spatial_unit,
         hours=hours,
         method=method,
         table=table,
         subscriber_identifier=subscriber_identifier,
-        column_name=column_name,
         ignore_nulls=ignore_nulls,
         subscriber_subset=subscriber_subset,
-        polygon_table=polygon_table,
-        size=size,
-        radius=radius,
     )

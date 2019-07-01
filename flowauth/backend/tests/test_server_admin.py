@@ -27,11 +27,7 @@ def test_get_server(client, auth, app):
 
     response = client.get("/admin/servers/1", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
-    assert {
-        "id": 1,
-        "name": "DUMMY_SERVER_A",
-        "secret_key": "DUMMY_SERVER_A_KEY",
-    } == response.get_json()
+    assert {"id": 1, "name": "DUMMY_SERVER_A"} == response.get_json()
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -59,7 +55,6 @@ def test_create_server(client, auth, test_admin):
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
             "longest_token_life": 1440,
-            "secret_key": "DUMMY_SECRET_KEY",
             "name": "DUMMY_SERVER_Z",
         },
     )
@@ -135,7 +130,6 @@ def test_create_server_errors_with_same_name(client, auth, test_admin):
             json={
                 "latest_token_expiry": "2019-01-01T00:00:00.0Z",
                 "longest_token_life": 1440,
-                "secret_key": "DUMMY_SECRET_KEY",
                 "name": "TEST_SERVER",
             },
         )
@@ -170,7 +164,6 @@ def test_edit_server(client, auth, test_admin):
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
             "longest_token_life": 1440,
-            "secret_key": "DUMMY_SECRET_KEY",
             "name": "DUMMY_SERVER_Z",
         },
     )
@@ -180,17 +173,12 @@ def test_edit_server(client, auth, test_admin):
         json={
             "latest_token_expiry": "2020-01-01T00:00:00.0Z",
             "longest_token_life": 1,
-            "secret_key": "DUMMY_SECRET_KEY_X",
             "name": "DUMMY_SERVER_X",
         },
     )
     assert 200 == response.status_code
     response = client.get("/admin/servers/1", headers={"X-CSRF-Token": csrf_cookie})
-    assert {
-        "id": 1,
-        "name": "DUMMY_SERVER_X",
-        "secret_key": "DUMMY_SECRET_KEY_X",
-    } == response.get_json()
+    assert {"id": 1, "name": "DUMMY_SERVER_X"} == response.get_json()
     response = client.get(
         "/admin/servers/1/time_limits", headers={"X-CSRF-Token": csrf_cookie}
     )

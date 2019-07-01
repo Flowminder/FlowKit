@@ -19,5 +19,6 @@
 !backend/flowauth
 !backend/README.md
 !backend/setup.cfg
+!backend/MANIFEST.in
 !backend/setup.py
 !backend/versioneer.py

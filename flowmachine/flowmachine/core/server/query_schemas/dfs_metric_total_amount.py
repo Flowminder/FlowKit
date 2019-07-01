@@ -7,12 +7,14 @@ from marshmallow.validate import OneOf
 
 from flowmachine.features.dfs import DFSTotalMetricAmount
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit, DFSMetric
+from .custom_fields import DFSMetric
+from .aggregation_unit import AggregationUnit
 
 __all__ = ["DFSTotalMetricAmountSchema", "DFSTotalMetricAmountExposed"]
 
 
 class DFSTotalMetricAmountSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["dfs_metric_total_amount"]))
     metric = DFSMetric()
     start_date = fields.Date(required=True)

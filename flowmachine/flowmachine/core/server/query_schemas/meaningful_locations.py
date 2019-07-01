@@ -6,6 +6,7 @@ from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf
 from typing import Union, Dict, List
 
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
     MeaningfulLocations,
     MeaningfulLocationsOD,
@@ -13,15 +14,11 @@ from flowmachine.features import (
     HartiganCluster,
     CallDays,
     EventScore,
-    subscriber_locations,
+    SubscriberLocations,
 )
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import (
-    AggregationUnit,
-    SubscriberSubset,
-    TowerHourOfDayScores,
-    TowerDayOfWeekScores,
-)
+from .custom_fields import SubscriberSubset, TowerHourOfDayScores, TowerDayOfWeekScores
+from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = [
     "MeaningfulLocationsAggregateSchema",
@@ -34,6 +31,7 @@ __all__ = [
 
 
 class MeaningfulLocationsAggregateSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["meaningful_locations_aggregate"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
@@ -65,10 +63,12 @@ def _make_meaningful_locations_object(
     tower_day_of_week_scores,
     tower_hour_of_day_scores,
 ):
-    q_subscriber_locations = subscriber_locations(
+    q_subscriber_locations = SubscriberLocations(
         start=start_date,
         stop=end_date,
-        level="versioned-site",  # note this 'level' is not the same as the exposed parameter 'aggregation_unit'
+        spatial_unit=make_spatial_unit(
+            "versioned-site"
+        ),  # note this 'spatial_unit' is not the same as the exposed parameter 'aggregation_unit'
         subscriber_subset=subscriber_subset,
     )
     q_call_days = CallDays(subscriber_locations=q_subscriber_locations)
@@ -83,7 +83,9 @@ def _make_meaningful_locations_object(
         stop=end_date,
         score_hour=tower_hour_of_day_scores,
         score_dow=tower_day_of_week_scores,
-        level="versioned-site",  # note this 'level' is not the same as the exposed parameter 'aggregation_unit'
+        spatial_unit=make_spatial_unit(
+            "versioned-site"
+        ),  # note this 'spatial_unit' is not the same as the exposed parameter 'aggregation_unit'
         subscriber_subset=subscriber_subset,
     )
     q_meaningful_locations = MeaningfulLocations(
@@ -132,7 +134,8 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
             tower_hour_of_day_scores=tower_hour_of_day_scores,
         )
         self.q_meaningful_locations_aggreate = MeaningfulLocationsAggregate(
-            meaningful_locations=q_meaningful_locations, level=aggregation_unit
+            meaningful_locations=q_meaningful_locations,
+            spatial_unit=get_spatial_unit_obj(aggregation_unit),
         )
 
     @property
@@ -216,7 +219,7 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         self.q_meaningful_locations_od = MeaningfulLocationsOD(
             meaningful_locations_a=locs_a,
             meaningful_locations_b=locs_b,
-            level=aggregation_unit,
+            spatial_unit=get_spatial_unit_obj(aggregation_unit),
         )
 
     @property
@@ -306,7 +309,7 @@ class MeaningfulLocationsBetweenDatesODMatrixExposed(BaseExposedQuery):
         self.q_meaningful_locations_od = MeaningfulLocationsOD(
             meaningful_locations_a=locs_a,
             meaningful_locations_b=locs_b,
-            level=aggregation_unit,
+            spatial_unit=get_spatial_unit_obj(aggregation_unit),
         )
 
     @property

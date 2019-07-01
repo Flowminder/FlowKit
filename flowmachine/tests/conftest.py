@@ -18,7 +18,7 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
 )
 
 import flowmachine
-from flowmachine.core import Query
+from flowmachine.core import Query, make_spatial_unit
 from flowmachine.core.cache import reset_cache
 from flowmachine.features import EventTableSubset
 
@@ -30,36 +30,42 @@ flowkit_toplevel_dir = os.path.join(here, "..", "..")
 
 @pytest.fixture(
     params=[
-        {"level": "admin2"},
-        {"level": "admin2", "column_name": "admin2name"},
-        {"level": "versioned-site"},
-        {"level": "versioned-cell"},
-        {"level": "cell"},
-        {"level": "lat-lon"},
-        {"level": "grid", "size": 5},
+        {"spatial_unit_type": "admin", "level": 2},
         {
-            "level": "polygon",
-            "column_name": "admin3pcod",
-            "polygon_table": "geography.admin3",
+            "spatial_unit_type": "admin",
+            "level": 2,
+            "region_id_column_name": "admin2name",
+        },
+        {"spatial_unit_type": "versioned-site"},
+        {"spatial_unit_type": "versioned-cell"},
+        {"spatial_unit_type": "cell"},
+        {"spatial_unit_type": "lon-lat"},
+        {"spatial_unit_type": "grid", "size": 5},
+        {
+            "spatial_unit_type": "polygon",
+            "region_id_column_name": "admin3pcod",
+            "geom_table": "geography.admin3",
+        },
+        {
+            "spatial_unit_type": "polygon",
+            "region_id_column_name": "id AS site_id",
+            "geom_table": "infrastructure.sites",
+            "geom_column": "geom_point",
         },
     ],
-    ids=lambda x: x["level"],
+    ids=lambda x: str(x),
 )
-def exemplar_level_param(request):
+def exemplar_spatial_unit_param(request):
     """
-    A fixture which yields a succession of plausible default parameter
-    combinations for levels.
-
-    Parameters
-    ----------
-    request
+    A fixture which yields a succession of plausible values for the
+    spatial_unit parameter.
 
     Yields
     ------
-    dict
+    flowmachine.core.spatial_unit.*SpatialUnit
 
     """
-    yield request.param
+    yield make_spatial_unit(**request.param)
 
 
 def get_string_with_test_parameter_values(item):

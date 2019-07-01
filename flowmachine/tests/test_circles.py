@@ -127,9 +127,9 @@ def test_circle_column_names():
 
 def test_circle_string_rep():
     """Test that Circle objects have correct string representation."""
-    lat, lon, radius, name = 2, 3, 4, "bob"
+    lon, lat, radius, name = 2, 3, 4, "bob"
     cl = Circle(lon, lat, radius, name)
-    assert f"Circle(lat={lat},long={lon},radius={radius},name={name})" == str(cl)
+    assert f"Circle(lon={lon},lat={lat},radius={radius},name={name})" == str(cl)
 
 
 def test_circle_loc_creation():

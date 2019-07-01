@@ -33,7 +33,6 @@ class ServerAdminDetails extends React.Component {
     name: "",
     rights: {},
     max_life: 1440,
-    secret_key: "",
     latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
     edit_mode: false,
     name_helper_text: "",
@@ -50,7 +49,6 @@ class ServerAdminDetails extends React.Component {
       latest_expiry,
       max_life,
       rights,
-      secret_key,
       name_helper_text,
       key_helper_text,
       maxlife_helper_text
@@ -59,7 +57,6 @@ class ServerAdminDetails extends React.Component {
     if (
       name &&
       name_helper_text === "" &&
-      secret_key &&
       key_helper_text === "" &&
       max_life &&
       maxlife_helper_text === ""
@@ -69,14 +66,12 @@ class ServerAdminDetails extends React.Component {
         task = editServer(
           item_id,
           name,
-          secret_key,
           new Date(latest_expiry).toISOString(),
           max_life
         );
       } else {
         task = createServer(
           name,
-          secret_key,
           new Date(latest_expiry).toISOString(),
           max_life
         );
@@ -104,13 +99,6 @@ class ServerAdminDetails extends React.Component {
     } else {
       return false;
     }
-  };
-
-  generatePassword = event => {
-    this.setState({
-      secret_key: generate({ length: 16, numbers: true, symbols: true }),
-      key_helper_text: ""
-    });
   };
 
   handleDateChange = date => {
@@ -166,23 +154,6 @@ class ServerAdminDetails extends React.Component {
       }
     }
 
-    if (name === "secret_key") {
-      var spaces = /^[a-zA-Z0-9.,#-\S]+$/;
-      let secret_key = event.target.value;
-      if (secret_key.match(spaces)) {
-        state = Object.assign(state, {
-          key_helper_text: ""
-        });
-      } else if (secret_key.length == 0) {
-        state = Object.assign(state, {
-          key_helper_text: "Secret key can not be blank."
-        });
-      } else {
-        state = Object.assign(state, {
-          key_helper_text: "Secret key can not contain space."
-        });
-      }
-    }
     if (name === "max_life") {
       let maxlife = event.target.value;
       if (maxlife.length == 0) {
@@ -200,12 +171,11 @@ class ServerAdminDetails extends React.Component {
 
   componentDidMount() {
     const { item_id } = this.props;
-    var name, rights, secret_key;
-    if (item_id != -1) {
+    var name, rights;
+    if (item_id !== -1) {
       getServer(item_id)
         .then(json => {
           name = json.name;
-          secret_key = json.secret_key;
           return getCapabilities(item_id);
         })
         .then(json => {
@@ -216,7 +186,6 @@ class ServerAdminDetails extends React.Component {
           this.setState({
             name: name,
             rights: rights,
-            secret_key: secret_key,
             latest_expiry: json.latest_token_expiry,
             max_life: json.longest_token_life,
             edit_mode: true
@@ -229,8 +198,7 @@ class ServerAdminDetails extends React.Component {
       getAllCapabilities()
         .then(json => {
           this.setState({
-            rights: json,
-            secret_key: generate({ length: 16, numbers: true, symbols: true })
+            rights: json
           });
         })
         .catch(err => {
@@ -268,33 +236,7 @@ class ServerAdminDetails extends React.Component {
             helperText={this.state.name_helper_text}
           />
         </Grid>
-        <Grid item xs={6}>
-          <TextField
-            id="secret-key"
-            className={classes.textField}
-            label="Secret Key"
-            value={secret_key}
-            onChange={this.handleTextChange("secret_key")}
-            margin="normal"
-            required={true}
-            error={this.state.key_helper_text}
-            helperText={this.state.key_helper_text}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    color="inherit"
-                    className={classes.button}
-                    aria-label="New password"
-                    onClick={this.generatePassword}
-                  >
-                    <RefreshIcon />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Grid>
+        <Grid item xs={6} />
         <Divider />
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">

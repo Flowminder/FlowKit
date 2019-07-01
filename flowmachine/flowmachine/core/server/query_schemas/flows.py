@@ -11,7 +11,7 @@ from flowmachine.features import Flows
 from .base_exposed_query import BaseExposedQuery
 from .daily_location import DailyLocationSchema, DailyLocationExposed
 from .modal_location import ModalLocationSchema, ModalLocationExposed
-from .custom_fields import AggregationUnit
+from .aggregation_unit import AggregationUnit
 
 __all__ = ["FlowsSchema", "FlowsExposed"]
 
@@ -25,6 +25,7 @@ class InputToFlowsSchema(OneOfSchema):
 
 
 class FlowsSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["flows"]))
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
