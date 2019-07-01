@@ -9,7 +9,7 @@
 FROM jupyter/scipy-notebook
 
 RUN rm -rf /home/$NB_USER/work
-ARG SOURCE_VERSION=0+uknown
+ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 COPY docs/source/worked_examples/*.ipynb /home/$NB_USER/
