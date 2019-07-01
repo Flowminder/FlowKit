@@ -39,6 +39,13 @@ class AdminMenu extends React.Component {
           <ListItem button onClick={() => onClick("aggregation_unit_admin")}>
             <ListItemText primary="Aggregation Units" />
           </ListItem>
+          <ListItem
+            button
+            onClick={() => onClick("public_key_admin")}
+            id="public_key"
+          >
+            <ListItemText primary="Public Key" />
+          </ListItem>
         </List>
       </React.Fragment>
     );

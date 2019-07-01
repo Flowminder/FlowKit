@@ -17,6 +17,7 @@ argon2_cffi = "*"
 psycopg2-binary = "*"
 cryptography = "*"
 
+
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"

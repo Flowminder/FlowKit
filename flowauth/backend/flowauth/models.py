@@ -265,7 +265,6 @@ class Server(db.Model):
     name = db.Column(db.String(), unique=True, nullable=False)
     latest_token_expiry = db.Column(db.DateTime, nullable=False)
     longest_token_life = db.Column(db.Integer, nullable=False)
-    _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
     tokens = db.relationship(
         "Token", back_populates="server", cascade="all, delete, delete-orphan"
     )
@@ -279,37 +278,6 @@ class Server(db.Model):
         back_populates="server",
         cascade="all, delete, delete-orphan",
     )
-
-    @hybrid_property
-    def secret_key(self):
-        """
-        Hybrid property which allows for the server's secret key to
-        be encrypted in db, but decrypted when read.
-
-        Returns
-        -------
-        InstrumentedProperty or str
-            Returns the underlying prop when called by sqlalchemy at class level
-            but the decrypted secret key when called on an instance
-        """
-        key = self._secret_key
-        try:
-            key.decode()
-        except AttributeError:
-            return key
-        return get_fernet().decrypt(key).decode()
-
-    @secret_key.setter
-    def secret_key(self, plaintext):
-        """
-        Encrypt, then store to the database the server's secret key.
-
-        Parameters
-        ----------
-        plaintext: str
-            Key to encrypt.
-        """
-        self._secret_key = get_fernet().encrypt(plaintext.encode())
 
     def __repr__(self):
         return f"<Server {self.name}>"
@@ -606,7 +574,6 @@ def make_demodata():
         name="TEST_SERVER",
         longest_token_life=2880,
         latest_token_expiry=datetime.datetime.now() + datetime.timedelta(days=365),
-        secret_key="secret",
     )
 
     db.session.add(test_server)
