@@ -7,7 +7,7 @@ from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import TopUpBalance
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit, Statistic, SubscriberSubset
+from .custom_fields import Statistic, SubscriberSubset
 
 __all__ = ["TopUpBalanceSchema", "TopUpBalanceExposed"]
 
