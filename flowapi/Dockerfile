@@ -9,7 +9,7 @@ ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 WORKDIR /${SOURCE_TREE}/flowapi
 COPY Pipfile* ./
-RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-base gcc wget git musl-dev zeromq-dev && \
+RUN apk update && apk add libzmq && apk add --virtual build-dependencies build-base libffi-dev gcc wget git musl-dev zeromq-dev && \
     pip install --no-cache-dir pipenv Cython && pipenv install --clear --deploy && \
     apk del build-dependencies
 COPY . /${SOURCE_TREE}/flowapi/
