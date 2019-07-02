@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS {{ dag_run.conf.extract_table }};
-CREATE TABLE {{ dag_run.conf.extract_table }} (LIKE events.{{dag_run.conf.cdr_type.name.lower()}} INCLUDING ALL)
+DROP TABLE IF EXISTS {{ get_extract_table(ds_nodash) }};
+CREATE TABLE {{ get_extract_table(ds_nodash) }} (LIKE events.{{cdr_type}} INCLUDING ALL)

@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS {{ dag_run.conf.extract_table }};
-DROP TABLE IF EXISTS {{ dag_run.conf.transform_table }};
+DROP TABLE IF EXISTS {{ get_extract_table(ds_nodash) }};
+DROP TABLE IF EXISTS {{ get_transform_table(ds_nodash) }};
