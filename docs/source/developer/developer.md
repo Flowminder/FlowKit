@@ -136,6 +136,9 @@ At present, the following query types are accessible through FlowAPI:
     
     Count of mobile phone cells per area active based on CDR traffic within a time period, broken down into time buckets.
 
+-`event_count`
+
+    Count of event for individual subscribers in a time period.
 
 ### FlowAPI Access tokens
 
