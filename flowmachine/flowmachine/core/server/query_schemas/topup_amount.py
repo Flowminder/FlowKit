@@ -8,13 +8,13 @@ from marshmallow.validate import OneOf, Length
 from flowmachine.features import TopUpAmount
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
-from .aggregation_unit import AggregationUnit
+from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]
 
 
 class TopUpAmountSchema(Schema):
-    query_kind = fields.String(validate=OneOf(["subscriber_degree"]))
+    query_kind = fields.String(validate=OneOf(["topup_amount"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
     aggregation_unit = AggregationUnit()
@@ -44,8 +44,8 @@ class TopUpAmountExposed(BaseExposedQuery):
         Query
         """
         return TopUpAmount(
-            start=self.start_date,
-            stop=self.end_date,
+            start=self.start,
+            stop=self.stop,
             spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             subscriber_subset=self.subscriber_subset,
         )
