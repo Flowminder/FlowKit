@@ -169,9 +169,6 @@ def production_trigger__callable(
             filename_pattern = cfg["source"]["filename_pattern"]
             print(f"Filename pattern: {filename_pattern!r}")
             all_files_found = sorted([file.name for file in files_path.glob("*")])
-            #         filename_matches = [re.fullmatch(filename_pattern, file) for file in filenames if file not in ignore_filenames]
-            #         found_dates = [m.group(1) for m in filename_matches if m is not None]
-            #         unprocessed_dates = [date for date in found_dates if ETLRecord.can_process(cdr_type=cdr_type, cdr_date=date, session=session)]
             unprocessed_files_and_dates = find_unprocessed_dates_from_files(
                 all_files_found, filename_pattern, cdr_type, session
             )
@@ -187,7 +184,6 @@ def production_trigger__callable(
                 trigger_dag(
                     f"etl_{cdr_type}",
                     execution_date=cdr_date,
-                    # run_id=f"{file.name}-{str(uuid)}",
                     run_id=f"{cdr_type.upper()}_{cdr_date_str}-{str(uuid)}",
                     conf=config,
                     replace_microseconds=False,
