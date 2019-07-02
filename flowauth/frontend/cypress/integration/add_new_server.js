@@ -14,6 +14,9 @@ describe("Server management", function() {
   it("Add server name with space", function() {
     cy.get("#new").click();
     // adding username with space
+    cy.get("#name").type("Server ", {
+      force: true
+    });
     cy.get("#name").type("Server ", { force: true });
     //checking validation text
     cy.get("#name-helper-text").should(
@@ -21,6 +24,16 @@ describe("Server management", function() {
       "Server name may only contain letters, numbers and underscores."
     );
     cy.get("#name")
+      .type(" ", {
+        force: true
+      })
+      .clear({
+        force: true
+      });
+    cy.get("#name")
+      .type("SERVER_TEST01", {
+        force: true
+      })
       .type(" ", { force: true })
       .clear({ force: true });
     cy.get("#name").type("SERVER_TEST01", { force: true });
@@ -55,35 +68,8 @@ describe("Server management", function() {
     cy.get("#name").type("SERVER_TEST01", { force: true });
     cy.contains("#name-helper-text").should("not.exist");
   });
-  it("Add blank secret key", function() {
-    cy.get("#new").click();
-    //Add blank secret key
-    cy.get("#secret-key")
-      .type(" ", { force: true })
-      .clear({ force: true });
-    cy.get("#secret-key-helper-text").should(
-      "have.text",
-      "Secret key can not be blank."
-    );
-    cy.get("#secret-key").type("C>K,7|~44]44:ibK", { force: true });
-    cy.get("#secret-key-helper-text").should("not.exist");
-  });
-  it("Add secret key with space", function() {
-    cy.get("#new").click();
-    //Add secret key with space
-    cy.get("#secret-key").type("C>K,7 |~44]44:ibK", { force: true });
-    cy.get("#secret-key-helper-text").should(
-      "have.text",
-      "Secret key can not contain space."
-    );
-    cy.get("#secret-key")
-      .type(" ", { force: true })
-      .clear({ force: true });
-    cy.get("#secret-key").type("C>K,7|~44]44:ibK", { force: true });
-    cy.get("#secret-key-helper-text").should("not.exist");
-  });
 
-  it("Add blank maximum liftime minutes", function() {
+  it("Add blank maximum lifetime minutes", function() {
     cy.get("#new").click();
     //Add blank maximum lifetime minutes
     cy.get("#max-life")
@@ -100,7 +86,6 @@ describe("Server management", function() {
     cy.get("#new").click();
     //adding existing server name and new secret key
     cy.get("#name").type("TEST_SERVER", { force: true });
-    cy.get("#secret-key").type("C>K,7|~44]44:ibK", { force: true });
     cy.contains("Save").click();
     //checking error dialogue text
     cy.get("#error-dialog-description").should(
@@ -116,9 +101,12 @@ describe("Server management", function() {
     const server_name = Math.random()
       .toString(36)
       .substring(2, 15);
-    cy.get("#name").type(server_name, { force: true });
-    cy.get("#secret-key").type("C>K,7|~44]44:ibK", { force: true });
-    cy.get("#max-life").type("1234", { force: true });
+    cy.get("#name").type(server_name, {
+      force: true
+    });
+    cy.get("#max-life").type("1234", {
+      force: true
+    });
     cy.contains("Save").click();
     cy.contains(server_name).should("be.visible");
   });

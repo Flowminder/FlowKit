@@ -9,8 +9,13 @@ Custom Errors
 from .flowmachine_errors import (
     NameTooLongError,
     NotConnectedError,
-    BadLevelError,
+    InvalidSpatialUnitError,
     MissingDateError,
 )
 
-__all__ = ["NameTooLongError", "NotConnectedError", "BadLevelError", "MissingDateError"]
+__all__ = [
+    "NameTooLongError",
+    "NotConnectedError",
+    "InvalidSpatialUnitError",
+    "MissingDateError",
+]

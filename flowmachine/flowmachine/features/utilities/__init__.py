@@ -6,7 +6,7 @@
 Utilities for working with features.
 """
 from .group_values import GroupValues
-from .subscriber_locations import subscriber_locations
+from .subscriber_locations import SubscriberLocations
 from .feature_collection import feature_collection
 
 

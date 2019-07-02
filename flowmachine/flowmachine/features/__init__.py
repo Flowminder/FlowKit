@@ -80,11 +80,9 @@ spat = [
     "LocationArea",
     "LocationCluster",
     "DistanceMatrix",
+    "Geography",
     "VersionedInfrastructure",
     "Grid",
-    "CellToAdmin",
-    "CellToPolygon",
-    "CellToGrid",
     "Circle",
     "CircleGeometries",
 ]
@@ -92,7 +90,7 @@ spat = [
 ut = [
     "GroupValues",
     "feature_collection",
-    "subscriber_locations",
+    "SubscriberLocations",
     "EventTableSubset",
     "UniqueSubscribers",
     "EventsTablesUnion",

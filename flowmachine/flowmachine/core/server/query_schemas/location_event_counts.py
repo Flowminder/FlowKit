@@ -7,12 +7,14 @@ from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import TotalLocationEvents
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit, EventTypes, SubscriberSubset
+from .custom_fields import EventTypes, SubscriberSubset
+from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["LocationEventCountsSchema", "LocationEventCountsExposed"]
 
 
 class LocationEventCountsSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["location_event_counts"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
@@ -68,6 +70,6 @@ class LocationEventCountsExposed(BaseExposedQuery):
             interval=self.interval,
             direction=self.direction,
             table=self.event_types,
-            level=self.aggregation_unit,
+            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             subscriber_subset=self.subscriber_subset,
         )

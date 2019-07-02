@@ -1,3 +1,3 @@
-ALTER TABLE {{dag_run.conf.transform_table}} RENAME TO {{dag_run.conf.load_table.split(".")[-1]}};
-ALTER TABLE etl.{{dag_run.conf.load_table.split(".")[-1]}} SET SCHEMA events;
-ALTER TABLE events.{{dag_run.conf.load_table.split(".")[-1]}} INHERIT events.{{dag_run.conf.cdr_type.name.lower()}};
+ALTER TABLE {{get_transform_table(ds_nodash)}} RENAME TO {{get_load_table(ds_nodash).split(".")[-1]}};
+ALTER TABLE etl.{{get_load_table(ds_nodash).split(".")[-1]}} SET SCHEMA events;
+ALTER TABLE events.{{get_load_table(ds_nodash).split(".")[-1]}} INHERIT events.{{cdr_type}};
