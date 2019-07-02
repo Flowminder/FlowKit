@@ -3,12 +3,29 @@
 All notable changes to FlowKit will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
 ## [Unreleased]
 
 ### Added
 
+
+### Changed
+
+
+### Fixed
+
+
+### Removed
+
+
+## [0.7.0]
+
+### Added
+
+- `PRIVATE_JWT_SIGNING_KEY` environment variable/secret added to FlowAuth, which should be a PEM encoded RSA private key, optionally base64 encoded if supplied as an environment variable.
+- `PUBLIC_JWT_SIGNING_KEY` environment variable/secret added to FlowAPI, which should be a PEM encoded RSA public key, optionally base64 encoded if supplied as an environment variable.
 - The dev provisioning Ansible playbook now automatically generates an SSH key pair for the `flowkit` user. [#892](https://github.com/Flowminder/FlowKit/issues/892)
+- Added new classes to represent spatial units in FlowMachine.
+- Added a `Geography` query class, to get geography data for a spatial unit.
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes unique location counts.[#949](https://github.com/Flowminder/FlowKit/issues/949)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes subscriber degree.[#969](https://github.com/Flowminder/FlowKit/issues/969)
 - Flowdb now contains an auxiliary table to record outcomes of queries that can be run as part of the regular ETL process [#988](https://github.com/Flowminder/FlowKit/issues/988)
@@ -16,6 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - The quick-start script now only pulls the docker images for the services that are actually started up. [#898](https://github.com/Flowminder/FlowKit/issues/898)
+- FlowAuth and FlowAPI are now linked using an RSA keypair, instead of per-server shared secrets. [#89](https://github.com/Flowminder/FlowKit/issues/89)
+- Location-related FlowMachine queries now take a `spatial_unit` parameter instead of `level`.
 - The quick-start script now uses the environment variable `GIT_REVISION` to control the version to be deployed.
 - Create token page permission and spatial aggregation checkboxes are now hidden by default.[#834](https://github.com/Flowminder/FlowKit/issues/834)
 - The flowetl mounted directories `archive, dump, ingest, quarantine` were replaced with a single `files` directory and files are no longer moved. [#946](https://github.com/Flowminder/FlowKit/issues/946)
@@ -26,9 +45,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - When creating a new token in FlowAuth, the expiry now always shows the year, seconds till expiry, and timezone. [#260](https://github.com/Flowminder/FlowKit/issues/260)
 - Distances in `Displacement` are now calculated with longitude and latitude the corrcet way around. [#913](https://github.com/Flowminder/FlowKit/issues/913)
 - The quick-start script now works correctly with branches. [#902](https://github.com/Flowminder/FlowKit/issues/902)
+- Fixed `location_event_counts` failing to work when specifying a subset of event types [#1015](https://github.com/Flowminder/FlowKit/issues/1015)
+- FlowAPI will now show the correct version in the API spec, flowmachine and flowclient will show the correct versions in the worked examples. [#818](https://github.com/Flowminder/FlowKit/issues/818)
 
 ### Removed
+- Removed `cell_mappings.py`, `get_columns_for_level` and `BadLevelError`.
 
+- `JWT_SECRET_KEY` has been removed in favour of RSA keys.
 - The FlowDB tables `infrastructure.countries` and `infrastructure.operators` have been removed. [#958](https://github.com/Flowminder/FlowKit/issues/958)
 
 ## [0.6.4]
@@ -416,7 +439,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.4...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.7.0...master
+[0.7.0]: https://github.com/Flowminder/FlowKit/compare/0.6.4...0.7.0
 [0.6.4]: https://github.com/Flowminder/FlowKit/compare/0.6.3...0.6.4
 [0.6.3]: https://github.com/Flowminder/FlowKit/compare/0.6.2...0.6.3
 [0.6.2]: https://github.com/Flowminder/FlowKit/compare/0.6.1...0.6.2

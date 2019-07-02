@@ -9,19 +9,11 @@ from marshmallow import fields
 from marshmallow.validate import Range, Length, OneOf
 
 
-class AggregationUnit(fields.String):
-    """
-    A string representing an aggregation unit (for example: "admin0", "admin1", "admin2", ...)
-    """
-
-    def __init__(self, required=True, **kwargs):
-        validate = OneOf(["admin0", "admin1", "admin2", "admin3"])
-        super().__init__(required=required, validate=validate, **kwargs)
-
-
 class EventTypes(fields.List):
     """
-    A string representing an event type, for example "calls", "sms", "mds", "topups".
+    A list of strings representing an event type, for example "calls", "sms", "mds", "topups".
+
+    When deserialised, will be deduped, and prefixed with "events."
     """
 
     def __init__(self, required=False, validate=None, **kwargs):
@@ -38,6 +30,13 @@ class EventTypes(fields.List):
             allow_none=True,
             **kwargs,
         )
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        # Temporary workaround for https://github.com/Flowminder/FlowKit/issues/1015 until underlying issue resolved
+        return [
+            f"events.{event_type}"
+            for event_type in set(super()._deserialize(value, attr, data, **kwargs))
+        ]
 
 
 class TotalBy(fields.String):

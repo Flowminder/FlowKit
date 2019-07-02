@@ -7,12 +7,13 @@ from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import LocationIntroversion
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit
+from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["LocationIntroversionSchema", "LocationIntroversionExposed"]
 
 
 class LocationIntroversionSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["location_introversion"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
@@ -47,6 +48,6 @@ class LocationIntroversionExposed(BaseExposedQuery):
         return LocationIntroversion(
             start=self.start_date,
             stop=self.end_date,
-            level=self.aggregation_unit,
+            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             direction=self.direction,
         )

@@ -5,7 +5,7 @@
 from flowmachine.utils import pretty_sql
 
 from approvaltests.approvals import verify
-from flowmachine.core import CustomQuery
+from flowmachine.core import CustomQuery, make_spatial_unit
 from flowmachine.features import daily_location
 
 
@@ -33,11 +33,12 @@ def test_daily_location_2_sql(diff_reporter):
     """
     dl = daily_location(
         "2016-01-04",
-        level="admin2",
+        spatial_unit=make_spatial_unit(
+            "admin", level=2, region_id_column_name="admin2pcod"
+        ),
         hours=(3, 9),
         method="most-common",
         subscriber_identifier="imei",
-        column_name="admin2pcod",
         ignore_nulls=False,
         subscriber_subset=[
             "2GJxeNazvlgZbqj6",
@@ -56,11 +57,10 @@ def test_daily_location_2_df(get_dataframe, diff_reporter):
     """
     dl = daily_location(
         "2016-01-04",
-        level="admin2",
+        spatial_unit=make_spatial_unit("admin", level=2),
         hours=(3, 9),
         method="most-common",
         # subscriber_identifier="imei",
-        # column_name="admin2pcod",
         ignore_nulls=False,
         subscriber_subset=[
             "2GJxeNazvlgZbqj6",
@@ -83,11 +83,10 @@ def test_daily_location_3_sql(diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        level="cell",
+        spatial_unit=make_spatial_unit("cell"),
         hours=(23, 5),
         method="last",
         # subscriber_identifier="imei",
-        # column_name="admin2pcod",
         # ignore_nulls=False,
         subscriber_subset=subset_query,
     )
@@ -105,11 +104,10 @@ def test_daily_location_3_df(get_dataframe, diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        level="cell",
+        spatial_unit=make_spatial_unit("cell"),
         hours=(23, 5),
         method="last",
         # subscriber_identifier="imei",
-        # column_name="admin2pcod",
         # ignore_nulls=False,
         subscriber_subset=subset_query,
     )
@@ -163,11 +161,10 @@ def test_daily_location_5_sql(diff_reporter):
     )
     dl = daily_location(
         "2016-01-05",
-        level="cell",
+        spatial_unit=make_spatial_unit("cell"),
         hours=(23, 5),
         method="last",
         # subscriber_identifier="imei",
-        # column_name="admin2pcod",
         # ignore_nulls=False,
         subscriber_subset=subset_query,
     )
@@ -191,11 +188,10 @@ def test_daily_location_5_df(get_dataframe, diff_reporter):
 
     dl = daily_location(
         "2016-01-02",
-        level="admin3",
+        spatial_unit=make_spatial_unit("admin", level=3),
         hours=(4, 9),
         method="most-common",
         # subscriber_identifier="imei",
-        # column_name="admin2pcod",
         # ignore_nulls=False,
         subscriber_subset=subset_query,
     )
@@ -239,3 +235,12 @@ def test_daily_location_6_df(get_dataframe, diff_reporter):
     )
     df = get_dataframe(dl)
     verify(df.to_csv(), diff_reporter)
+
+
+def test_versioned_site_sql(diff_reporter):
+    """
+    Verify the SQL for a versioned-site spatial unit.
+    """
+    su = make_spatial_unit("versioned-site")
+    sql = pretty_sql(su.get_query())
+    verify(sql, diff_reporter)

@@ -31,7 +31,7 @@ from flowmachine.core.query_info_lookup import (
 from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
-from .query_schemas import FlowmachineQuerySchema
+from .query_schemas import FlowmachineQuerySchema, GeographySchema
 from .zmq_helpers import ZMQReply
 
 __all__ = ["perform_action"]
@@ -247,33 +247,56 @@ def action_handler__get_geography(aggregation_unit: str) -> ZMQReply:
     """
     Handler for the 'get_query_geography' action.
 
-    Returns query parameters of the query with the given `query_id`.
+    Returns SQL to get geography for the given `aggregation_unit` as GeoJSON.
     """
-
-    # TODO: do we still need to validate the aggregation unit or does this happen
-    # before (e.g. through marshmallow?)
-    allowed_aggregation_units = ["admin0", "admin1", "admin2", "admin3", "admin4"]
-    if aggregation_unit not in allowed_aggregation_units:
-        error_msg = (
-            f"Invalid aggregation unit. Must be one of: {allowed_aggregation_units}'"
-        )
-        return ZMQReply(status="error", msg=error_msg)
-
     try:
-        q = GeoTable(
-            name=aggregation_unit,
-            schema="geography",
-            columns=[f"{aggregation_unit}name", f"{aggregation_unit}pcod", "geom"],
-        )
-    except Exception as e:
-        return ZMQReply(status="error", msg=f"{e}")
+        try:
+            try:
+                query_obj = GeographySchema().load(
+                    {"aggregation_unit": aggregation_unit}
+                )
+            except TypeError as exc:
+                # We need to catch TypeError here, otherwise they propagate up to
+                # perform_action() and result in a very misleading error message.
+                orig_error_msg = exc.args[0]
+                error_msg = (
+                    f"Internal flowmachine server error: could not create query object using query schema. "
+                    f"The original error was: '{orig_error_msg}'"
+                )
+                return ZMQReply(
+                    status="error",
+                    msg=error_msg,
+                    payload={
+                        "params": {"aggregation_unit": aggregation_unit},
+                        "orig_error_msg": orig_error_msg,
+                    },
+                )
+        except ValidationError as exc:
+            # The dictionary of marshmallow errors can contain integers as keys,
+            # which will raise an error when converting to JSON (where the keys
+            # must be strings). Therefore we transform the keys to strings here.
+            error_msg = "Parameter validation failed."
+            validation_error_messages = convert_dict_keys_to_strings(exc.messages)
+            return ZMQReply(
+                status="error", msg=error_msg, payload=validation_error_messages
+            )
 
-    # Explicitly project to WGS84 (SRID=4326) to conform with GeoJSON standard
-    sql = q.geojson_query(crs=4326)
-    # TODO: put query_run_log back in!
-    # query_run_log.info("get_geography", **run_log_dict)
-    payload = {"query_state": QueryState.COMPLETED, "sql": sql}
-    return ZMQReply(status="success", payload=payload)
+        # We don't cache the query, because it just selects columns from a
+        # geography table. If we expose an aggregation unit which relies on another
+        # query to create the geometry (e.g. grid), we may want to reconsider this
+        # decision.
+
+        sql = query_obj.geojson_sql
+        # TODO: put query_run_log back in!
+        # query_run_log.info("get_geography", **run_log_dict)
+        payload = {"query_state": QueryState.COMPLETED, "sql": sql}
+        return ZMQReply(status="success", payload=payload)
+    except Exception as exc:
+        # If we don't catch exceptions here, the server will die and FlowAPI will hang indefinitely.
+        error_msg = f"Internal flowmachine server error: '{exc.args[0]}'"
+        return ZMQReply(
+            status="error", msg=error_msg, payload={"error_msg": exc.args[0]}
+        )
 
 
 def action_handler__get_available_dates() -> ZMQReply:

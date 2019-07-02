@@ -4,6 +4,7 @@
 
 import json
 
+from flowmachine.core import make_spatial_unit
 from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
 from flowmachine.features.dfs.total_amount_for_metric import DFSTotalMetricAmount
 from flowmachine.features import daily_location, ModalLocation
@@ -110,7 +111,7 @@ def test_run_daily_location_query(send_zmq_message_and_receive_reply):
         locations=daily_location(
             date="2016-01-01",
             method="most-common",
-            level="admin3",
+            spatial_unit=make_spatial_unit("admin", level=3),
             subscriber_subset=None,
         )
     )
@@ -160,13 +161,13 @@ def test_run_modal_location_query(send_zmq_message_and_receive_reply):
             daily_location(
                 date="2016-01-01",
                 method="most-common",
-                level="admin3",
+                spatial_unit=make_spatial_unit("admin", level=3),
                 subscriber_subset=None,
             ),
             daily_location(
                 date="2016-01-02",
                 method="most-common",
-                level="admin3",
+                spatial_unit=make_spatial_unit("admin", level=3),
                 subscriber_subset=None,
             ),
         )

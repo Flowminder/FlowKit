@@ -11,3 +11,8 @@ from .jwt import (
     load_private_key,
     load_public_key,
 )
+
+from ._version import get_versions
+
+__version__ = get_versions()["version"]
+del get_versions

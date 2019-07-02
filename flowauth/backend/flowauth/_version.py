@@ -41,7 +41,7 @@ def get_config():
     cfg.VCS = "git"
     cfg.style = "pep440"
     cfg.tag_prefix = ""
-    cfg.parentdir_prefix = ""
+    cfg.parentdir_prefix = "FlowKit-"
     cfg.versionfile_source = "flowauth/_version.py"
     cfg.verbose = False
     return cfg
@@ -382,7 +382,7 @@ def render_pep440_post(pieces):
 
     The ".dev0" means dirty. Note that .dev0 sorts backwards
     (a dirty tree will appear "older" than the corresponding clean one),
-    but you shouldn't be releasing software with -dirty anyway.
+    but you shouldn't be releasing software with -dirty anyways.
 
     Exceptions:
     1: no tags. 0.postDISTANCE[.dev0]
