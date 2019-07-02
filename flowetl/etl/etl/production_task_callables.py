@@ -191,8 +191,41 @@ def production_trigger__callable(
         elif source_type == "sql":
             source_table = cfg["source"]["table_name"]
 
-            # TODO: extract unprocessed dates from source_table
-            # unprocessed_dates
-            raise NotImplementedError()
+            # Extract unprocessed dates from source_table
+
+            # TODO: this requires a full parse of the existing data so may not be
+            # the most be efficient if a lot of data is present (esp. data that has
+            # already been processed). If it turns out too sluggish might be good to
+            # think about a more efficient way to determine dates with unprocessed data.
+            dates_present = [
+                pendulum.parse(row["date"].strftime("%Y-%m-%d"))
+                for row in session.execute(
+                    f"SELECT DISTINCT date FROM (SELECT event_time::date as date FROM {source_table}) tmp"
+                ).fetchall()
+            ]
+            unprocessed_dates = [
+                date
+                for date in dates_present
+                if ETLRecord.can_process(
+                    cdr_type=cdr_type, cdr_date=date, session=session
+                )
+            ]
+            logger.info(f"Dates found: {dates_present}")
+            logger.info(f"Unprocessed dates: {unprocessed_dates}")
+
+            for cdr_date in unprocessed_dates:
+                config = {
+                    "cdr_type": cdr_type,
+                    "cdr_date": cdr_date,
+                    "source_table": source_table,
+                }
+                uuid = uuid1()
+                trigger_dag(
+                    f"etl_{cdr_type}",
+                    execution_date=cdr_date,
+                    run_id=f"{cdr_date}-{str(uuid)}",
+                    conf=config,
+                    replace_microseconds=False,
+                )
         else:
             raise NotImplementedError()

@@ -221,15 +221,15 @@ def flowdb_container(
     )
     engine.execute(
         """
-        CREATE TABLE IF NOT EXISTS sms_raw_data_dump_fdw (
+        CREATE TABLE IF NOT EXISTS sms_raw_data_dump (
             imei TEXT,
             msisdn TEXT,
             event_time TIMESTAMPTZ,
             cell_id TEXT
         );
 
-        INSERT INTO sms_raw_data_dump_fdw VALUES
-        ('BDED3095A2759089134DDA5CB7968764', '9824B87CDEEAD5ED5AC959D74F3C81C5', '2018-01-03 13:23:29', 'C44BEF');
+        INSERT INTO sms_raw_data_dump VALUES
+        ('BDED3095A2759089134DDA5CB7968764', '9824B87CDEEAD5ED5AC959D74F3C81C5', '2016-01-01 13:23:29', 'C44BEF');
         """
     )
 
@@ -530,7 +530,7 @@ def flowdb_connection(flowdb_connection_engine):
 @pytest.fixture(scope="function")
 def flowdb_session(flowdb_connection_engine):
     """
-    sqlalchmy session for flowdb - used for ORM models
+    sqlalchemy session for flowdb - used for ORM models
     """
     session = sessionmaker(bind=flowdb_connection_engine)()
     yield session
@@ -552,7 +552,7 @@ def flowetl_db_connection_engine(container_env, container_ports):
 @pytest.fixture(scope="function")
 def flowetl_db_session(flowetl_db_connection_engine):
     """
-    sqlalchmy session for flowetl - used for ORM models
+    sqlalchemy session for flowetl - used for ORM models
     """
     session = sessionmaker(bind=flowetl_db_connection_engine)()
     yield session
