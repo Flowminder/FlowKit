@@ -115,7 +115,7 @@ def construct_etl_dag(
         default_args=default_args,
         template_searchpath=config_path,  # template paths will be relative to this
         user_defined_macros={
-            "get_extract_table": lambda execution_date: f"etl.x{ cdr_type }_{ execution_date }",
+            "get_extract_view": lambda execution_date: f"etl.x{ cdr_type }_{ execution_date }",
             "get_transform_table": lambda execution_date: f"etl.t{ cdr_type }_{ execution_date }",
             "get_load_table": lambda execution_date: f"events.{ cdr_type }_{ execution_date }",
             "cdr_type": cdr_type,
