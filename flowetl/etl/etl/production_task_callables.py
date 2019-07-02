@@ -161,6 +161,7 @@ def production_trigger__callable(
 
     for cdr_type, cfg in cdr_type_config.items():
         cdr_type = CDRType(cdr_type)
+
         source_type = cfg["source"]["source_type"]
         print(f"{cdr_type!r} ({source_type}): {cfg}")
 
@@ -176,6 +177,7 @@ def production_trigger__callable(
             )
             for file, cdr_date in unprocessed_files_and_dates.items():
                 uuid = uuid1()
+                cdr_date_str = cdr_date.strftime("%Y%m%d")
                 config = {
                     "cdr_type": cdr_type,
                     "cdr_date": cdr_date,
@@ -186,7 +188,7 @@ def production_trigger__callable(
                     f"etl_{cdr_type}",
                     execution_date=cdr_date,
                     # run_id=f"{file.name}-{str(uuid)}",
-                    run_id=f"{cdr_type}_{cdr_date}-{str(uuid)}",
+                    run_id=f"{cdr_type.upper()}_{cdr_date_str}-{str(uuid)}",
                     conf=config,
                     replace_microseconds=False,
                 )

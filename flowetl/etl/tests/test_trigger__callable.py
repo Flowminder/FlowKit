@@ -32,10 +32,9 @@ def test_trigger__callable_bad_file_filtered(
     fake_dag_run = {}
     trigger_dag_mock = Mock()
     uuid = uuid1()
-    uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
     production_trigger__callable(
@@ -57,7 +56,7 @@ def test_trigger__callable_bad_file_filtered(
         "etl_sms",
         conf=expected_conf,
         execution_date=cdr_date,
-        run_id=f"SMS_20160101.csv.gz-{uuid}",
+        run_id=f"SMS_20160101-{uuid}",
         replace_microseconds=False,
     )
 
@@ -96,7 +95,7 @@ def test_trigger__callable_quarantined_file_not_filtered(
     uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
     production_trigger__callable(
@@ -118,7 +117,7 @@ def test_trigger__callable_quarantined_file_not_filtered(
         "etl_sms",
         conf=expected_conf,
         execution_date=cdr_date,
-        run_id=f"SMS_20160101.csv.gz-{uuid}",
+        run_id=f"SMS_20160101-{uuid}",
         replace_microseconds=False,
     )
 
@@ -159,7 +158,7 @@ def test_trigger__callable_archive_file_filtered(
     uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
     production_trigger__callable(
@@ -181,7 +180,7 @@ def test_trigger__callable_archive_file_filtered(
         "etl_sms",
         conf=expected_conf,
         execution_date=cdr_date,
-        run_id=f"SMS_20160102.csv.gz-{uuid}",
+        run_id=f"SMS_20160102-{uuid}",
         replace_microseconds=False,
     )
 
@@ -207,7 +206,7 @@ def test_trigger__callable_multiple_triggers(
     uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
     production_trigger__callable(
@@ -238,7 +237,7 @@ def test_trigger__callable_multiple_triggers(
         "etl_sms",
         conf=expected_conf_file1,
         execution_date=cdr_date_file1,
-        run_id=f"SMS_20160101.csv.gz-{uuid}",
+        run_id=f"SMS_20160101-{uuid}",
         replace_microseconds=False,
     )
 
@@ -246,6 +245,6 @@ def test_trigger__callable_multiple_triggers(
         "etl_calls",
         conf=expected_conf_file2,
         execution_date=cdr_date_file2,
-        run_id=f"CALLS_20160102.csv.gz-{uuid}",
+        run_id=f"CALLS_20160102-{uuid}",
         replace_microseconds=False,
     )
