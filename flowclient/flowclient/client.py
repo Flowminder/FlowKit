@@ -11,7 +11,7 @@ import pandas as pd
 import requests
 import time
 from requests import ConnectionError
-from typing import Tuple, Union, Dict, List
+from typing import Tuple, Union, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -1328,7 +1328,7 @@ def event_count(
     start: str,
     stop: str,
     direction: str = "both",
-    event_types: Union[None, List[str]] = None,
+    event_types: Optional[List[str]] = None,
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
