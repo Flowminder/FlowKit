@@ -273,7 +273,8 @@ def get_config(*, file_name: str, cdr_type_config: dict) -> dict:
     Returns
     -------
     dict
-        Dictionary with config for this filename
+        Dictionary with config for this filename:
+            {'cdr_type': ..., 'cdr_date': ..., "file_name": ..., "template_path": ...}
     """
     parsed_file_name_config = parse_file_name(
         file_name=file_name, cdr_type_config=cdr_type_config

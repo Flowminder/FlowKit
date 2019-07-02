@@ -6,6 +6,8 @@
 """
 Contains the definition of callables to be used in the production ETL dag.
 """
+import pendulum
+import re
 import structlog
 
 from pathlib import Path
@@ -15,7 +17,7 @@ from airflow.models import DagRun
 from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 from etl.model import ETLRecord
-from etl.etl_utils import get_session, find_files, filter_files, get_config
+from etl.etl_utils import CDRType, get_session, find_files, filter_files, get_config
 
 logger = structlog.get_logger("flowetl")
 
@@ -65,7 +67,7 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
     return branch
 
 
-def production_trigger__callable(
+def production_trigger__callable__OLD(
     *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
 ):
     """
@@ -112,3 +114,87 @@ def production_trigger__callable(
             conf=config,
             replace_microseconds=False,
         )
+
+
+def find_unprocessed_dates_from_files(
+    files, filename_pattern, cdr_type, session, ignore_filenames=["README.md"]
+):
+    logger.info(f"all_files_found: {files}")
+    filename_matches = {
+        file: re.fullmatch(filename_pattern, str(file))
+        for file in files
+        if file not in ignore_filenames
+    }
+    logger.info(f"filename_matches: {filename_matches}")
+    found_dates = {
+        file: pendulum.parse(m.group(1))
+        for file, m in filename_matches.items()
+        if m is not None
+    }
+    logger.info(f"found_dates: {found_dates}")
+    unprocessed_dates = {
+        file: date
+        for file, date in found_dates.items()
+        if ETLRecord.can_process(cdr_type=cdr_type, cdr_date=date, session=session)
+    }
+    logger.info(f"unprocessed_dates: {unprocessed_dates}")
+    return unprocessed_dates
+
+
+def production_trigger__callable(
+    *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
+):
+    """
+    Function that determines which files in files/ should be processed
+    and triggers the correct ETL dag with config based on filename.
+
+    Parameters
+    ----------
+    dag_run : DagRun
+        Passed as part of the Dag context - contains the config.
+    files_path : Path
+        Location of files directory
+    cdr_type_config : dict
+        ETL config for each cdr type
+    """
+    session = get_session()
+
+    for cdr_type, cfg in cdr_type_config.items():
+        cdr_type = CDRType(cdr_type)
+        source_type = cfg["source"]["source_type"]
+        print(f"{cdr_type!r} ({source_type}): {cfg}")
+
+        if source_type == "csv":
+            filename_pattern = cfg["source"]["filename_pattern"]
+            print(f"Filename pattern: {filename_pattern!r}")
+            all_files_found = sorted([file.name for file in files_path.glob("*")])
+            #         filename_matches = [re.fullmatch(filename_pattern, file) for file in filenames if file not in ignore_filenames]
+            #         found_dates = [m.group(1) for m in filename_matches if m is not None]
+            #         unprocessed_dates = [date for date in found_dates if ETLRecord.can_process(cdr_type=cdr_type, cdr_date=date, session=session)]
+            unprocessed_files_and_dates = find_unprocessed_dates_from_files(
+                all_files_found, filename_pattern, cdr_type, session
+            )
+            for file, cdr_date in unprocessed_files_and_dates.items():
+                uuid = uuid1()
+                config = {
+                    "cdr_type": cdr_type,
+                    "cdr_date": cdr_date,
+                    "file_name": file,
+                    "template_path": f"etl/{cdr_type}",
+                }
+                trigger_dag(
+                    f"etl_{cdr_type}",
+                    execution_date=cdr_date,
+                    # run_id=f"{file.name}-{str(uuid)}",
+                    run_id=f"{cdr_type}_{cdr_date}-{str(uuid)}",
+                    conf=config,
+                    replace_microseconds=False,
+                )
+        elif source_type == "sql":
+            source_table = cfg["source"]["table_name"]
+
+            # TODO: extract unprocessed dates from source_table
+            # unprocessed_dates
+            raise NotImplementedError()
+        else:
+            raise NotImplementedError()
