@@ -53,6 +53,26 @@ def record_ingestion_state__callable(*, dag_run: DagRun, to_state: str, **kwargs
 
 
 # pylint: disable=unused-argument
+def run_postload_queries__callable(*, dag_run: DagRun, **kwargs):
+    """
+    Function to deal with recording the state of the ingestion. The actual
+    change to the DB to record new state is accomplished in the
+    ETLRecord.set_state function.
+
+    Parameters
+    ----------
+    dag_run : DagRun
+        Passed as part of the Dag context - contains the config.
+    """
+    cdr_type = dag_run.conf["cdr_type"]
+    cdr_date = dag_run.conf["cdr_date"]
+
+    session = get_session()
+    # TODO: run queries
+    # TODO: record query outcome
+
+
+# pylint: disable=unused-argument
 def success_branch__callable(*, dag_run: DagRun, **kwargs):
     """
     Function to determine if we should follow the quarantine or

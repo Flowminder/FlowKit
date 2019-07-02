@@ -23,6 +23,7 @@ from etl.dummy_task_callables import (
 )
 from etl.production_task_callables import (
     record_ingestion_state__callable,
+    run_postload_queries__callable,
     success_branch__callable,
     trigger__callable,
 )
@@ -49,6 +50,9 @@ TEST_ETL_TASK_CALLABLES = {
         PythonOperator, provide_context=True, python_callable=dummy__callable
     ),
     "load": partial(
+        PythonOperator, provide_context=True, python_callable=dummy__callable
+    ),
+    "postload": partial(
         PythonOperator, provide_context=True, python_callable=dummy__callable
     ),
     "success_branch": partial(
@@ -80,6 +84,11 @@ PRODUCTION_ETL_TASK_CALLABLES = {
     "extract": partial(PostgresOperator, postgres_conn_id="flowdb"),
     "transform": partial(PostgresOperator, postgres_conn_id="flowdb"),
     "load": partial(PostgresOperator, postgres_conn_id="flowdb"),
+    "postload": partial(
+        PythonOperator,
+        provide_context=True,
+        python_callable=partial(run_postload_queries__callable, to_state="postload"),
+    ),
     "success_branch": partial(
         BranchPythonOperator,
         provide_context=True,

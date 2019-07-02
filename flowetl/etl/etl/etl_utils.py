@@ -60,6 +60,7 @@ def construct_etl_dag(
     extract: Callable,
     transform: Callable,
     load: Callable,
+    postload: Callable,
     success_branch: Callable,
     archive: Callable,
     quarantine: Callable,
@@ -84,6 +85,8 @@ def construct_etl_dag(
         The transform task callable.
     load : Callable
         The load task callable.
+    postload : Callable
+        The postload task callable.
     success_branch : Callable
         The success_branch task callable.
     archive : Callable
@@ -120,6 +123,7 @@ def construct_etl_dag(
         extract = extract(task_id="extract", sql=f"etl/{cdr_type}/extract.sql")
         transform = transform(task_id="transform", sql=f"etl/{cdr_type}/transform.sql")
         load = load(task_id="load", sql="fixed_sql/load.sql")
+        postload = postload(task_id="postload")
         success_branch = success_branch(
             task_id="success_branch", trigger_rule="all_done"
         )
@@ -131,7 +135,7 @@ def construct_etl_dag(
         fail = fail(task_id="fail")
 
         # Define upstream/downstream relationships between airflow tasks
-        init >> extract >> transform >> load >> success_branch  # pylint: disable=pointless-statement
+        init >> extract >> transform >> load >> postload >> success_branch  # pylint: disable=pointless-statement
         success_branch >> archive >> clean  # pylint: disable=pointless-statement
         quarantine >> clean  # pylint: disable=pointless-statement
         success_branch >> quarantine >> fail  # pylint: disable=pointless-statement
