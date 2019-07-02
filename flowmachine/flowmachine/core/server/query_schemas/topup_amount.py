@@ -7,7 +7,8 @@ from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import TopUpAmount
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import AggregationUnit, SubscriberSubset
+from .custom_fields import SubscriberSubset
+from .aggregation_unit import AggregationUnit
 
 __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]
 

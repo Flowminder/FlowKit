@@ -12,6 +12,7 @@ from flowmachine.core.server.query_schemas.radius_of_gyration import (
 from flowmachine.core.server.query_schemas.subscriber_degree import (
     SubscriberDegreeSchema,
 )
+from flowmachine.core.server.query_schemas.topup_amount import TopUpAmountSchema
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
@@ -31,6 +32,7 @@ class JoinableMetrics(OneOfSchema):
         "radius_of_gyration": RadiusOfGyrationSchema,
         "unique_location_counts": UniqueLocationCountsSchema,
         "subscriber_degree": SubscriberDegreeSchema,
+        "topup_amount": TopUpAmountSchema,
     }
 
 
