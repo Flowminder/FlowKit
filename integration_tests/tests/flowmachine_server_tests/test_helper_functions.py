@@ -6,6 +6,7 @@ from flowmachine.core.server.utils import (
     send_zmq_message_and_receive_reply,
     FM_EXAMPLE_MESSAGE,
 )
+from flowmachine.core import make_spatial_unit
 from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
 from flowmachine.features import daily_location
 
@@ -34,7 +35,10 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
 
     q = SpatialAggregate(
         locations=daily_location(
-            date="2016-01-01", method="last", level="admin3", subscriber_subset=None
+            date="2016-01-01",
+            method="last",
+            spatial_unit=make_spatial_unit("admin", level=3),
+            subscriber_subset=None,
         )
     )
     expected_query_id = q.md5

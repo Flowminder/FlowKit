@@ -16,18 +16,23 @@ flowmachine.connect()
 
 print("Constructing query objects")
 
+admin1_spatial_unit = flowmachine.core.make_spatial_unit("admin", level=1)
+admin3_spatial_unit = flowmachine.core.make_spatial_unit("admin", level=3)
+vsite_spatial_unit = flowmachine.core.make_spatial_unit("versioned-site")
+vcell_spatial_unit = flowmachine.core.make_spatial_unit("versioned-cell")
+
 # FlowClient example usage
 example_usage_queries = [
     flowmachine.features.utilities.spatial_aggregates.SpatialAggregate(
         locations=flowmachine.features.daily_location(
-            date="2016-01-01", level="admin3", method="last"
+            date="2016-01-01", spatial_unit=admin3_spatial_unit, method="last"
         )
     ),
     flowmachine.features.utilities.spatial_aggregates.SpatialAggregate(
         locations=flowmachine.features.ModalLocation(
             *[
                 flowmachine.features.daily_location(
-                    date=dl_date, level="admin3", method="last"
+                    date=dl_date, spatial_unit=admin3_spatial_unit, method="last"
                 )
                 for dl_date in pd.date_range("2016-01-01", "2016-01-03", freq="D")
             ]
@@ -35,14 +40,17 @@ example_usage_queries = [
     ),
     flowmachine.features.Flows(
         flowmachine.features.daily_location(
-            date="2016-01-01", level="admin1", method="last"
+            date="2016-01-01", spatial_unit=admin1_spatial_unit, method="last"
         ),
         flowmachine.features.daily_location(
-            date="2016-01-07", level="admin1", method="last"
+            date="2016-01-07", spatial_unit=admin1_spatial_unit, method="last"
         ),
     ),
     flowmachine.features.TotalLocationEvents(
-        start="2016-01-01", stop="2016-01-08", level="admin3", interval="hour"
+        start="2016-01-01",
+        stop="2016-01-08",
+        spatial_unit=admin3_spatial_unit,
+        interval="hour",
     ),
 ]
 
@@ -57,7 +65,9 @@ flows_above_normal_queries = [
         locations=flowmachine.features.ModalLocation(
             *[
                 flowmachine.features.daily_location(
-                    date=dl_date.strftime("%Y-%m-%d"), level="admin3", method="last"
+                    date=dl_date.strftime("%Y-%m-%d"),
+                    spatial_unit=admin3_spatial_unit,
+                    method="last",
                 )
                 for dl_date in dates
             ]
@@ -69,7 +79,9 @@ flows_above_normal_queries = [
         flowmachine.features.ModalLocation(
             *[
                 flowmachine.features.daily_location(
-                    date=dl_date.strftime("%Y-%m-%d"), level="admin3", method="last"
+                    date=dl_date.strftime("%Y-%m-%d"),
+                    spatial_unit=admin3_spatial_unit,
+                    method="last",
                 )
                 for dl_date in date_ranges["benchmark"]
             ]
@@ -77,7 +89,9 @@ flows_above_normal_queries = [
         flowmachine.features.ModalLocation(
             *[
                 flowmachine.features.daily_location(
-                    date=dl_date.strftime("%Y-%m-%d"), level="admin3", method="last"
+                    date=dl_date.strftime("%Y-%m-%d"),
+                    spatial_unit=admin3_spatial_unit,
+                    method="last",
                 )
                 for dl_date in date_ranges[period2]
             ]
@@ -134,8 +148,10 @@ commuting_patterns_queries = [
         meaningful_locations=flowmachine.features.MeaningfulLocations(
             clusters=flowmachine.features.HartiganCluster(
                 calldays=flowmachine.features.CallDays(
-                    subscriber_locations=flowmachine.features.subscriber_locations(
-                        start="2016-01-01", stop="2016-01-07", level="versioned-site"
+                    subscriber_locations=flowmachine.features.SubscriberLocations(
+                        start="2016-01-01",
+                        stop="2016-01-07",
+                        spatial_unit=vsite_spatial_unit,
                     )
                 ),
                 radius=1.0,
@@ -148,11 +164,11 @@ commuting_patterns_queries = [
                 stop="2016-01-07",
                 score_hour=hour_scores,
                 score_dow=day_scores,
-                level="versioned-site",
+                spatial_unit=vsite_spatial_unit,
             ),
             label=label,
         ),
-        level="admin3",
+        spatial_unit=admin3_spatial_unit,
     )
     for label in ["home", "work"]
 ] + [
@@ -160,8 +176,10 @@ commuting_patterns_queries = [
         meaningful_locations_a=flowmachine.features.MeaningfulLocations(
             clusters=flowmachine.features.HartiganCluster(
                 calldays=flowmachine.features.CallDays(
-                    subscriber_locations=flowmachine.features.subscriber_locations(
-                        start="2016-01-01", stop="2016-01-07", level="versioned-site"
+                    subscriber_locations=flowmachine.features.SubscriberLocations(
+                        start="2016-01-01",
+                        stop="2016-01-07",
+                        spatial_unit=vsite_spatial_unit,
                     )
                 ),
                 radius=1.0,
@@ -174,15 +192,17 @@ commuting_patterns_queries = [
                 stop="2016-01-07",
                 score_hour=hour_scores,
                 score_dow=day_scores,
-                level="versioned-site",
+                spatial_unit=vsite_spatial_unit,
             ),
             label="home",
         ),
         meaningful_locations_b=flowmachine.features.MeaningfulLocations(
             clusters=flowmachine.features.HartiganCluster(
                 calldays=flowmachine.features.CallDays(
-                    subscriber_locations=flowmachine.features.subscriber_locations(
-                        start="2016-01-01", stop="2016-01-07", level="versioned-site"
+                    subscriber_locations=flowmachine.features.SubscriberLocations(
+                        start="2016-01-01",
+                        stop="2016-01-07",
+                        spatial_unit=vsite_spatial_unit,
                     )
                 ),
                 radius=1.0,
@@ -195,11 +215,11 @@ commuting_patterns_queries = [
                 stop="2016-01-07",
                 score_hour=hour_scores,
                 score_dow=day_scores,
-                level="versioned-site",
+                spatial_unit=vsite_spatial_unit,
             ),
             label="work",
         ),
-        level="admin3",
+        spatial_unit=admin3_spatial_unit,
     )
 ]
 
@@ -209,7 +229,7 @@ mobile_data_usage_queries = [
         start="2016-01-01",
         stop="2016-01-07",
         table="events.mds",
-        level="versioned-cell",
+        spatial_unit=vcell_spatial_unit,
         interval="hour",
     )
 ]
@@ -217,14 +237,17 @@ mobile_data_usage_queries = [
 # Cell Towers Per Region
 cell_towers_per_region_queries = [
     flowmachine.features.TotalNetworkObjects(
-        start="2016-01-01", stop="2016-01-08", level="admin3", total_by="month"
+        start="2016-01-01",
+        stop="2016-01-08",
+        spatial_unit=admin3_spatial_unit,
+        total_by="month",
     )
 ]
 
 # Unique Subscriber Counts
 unique_subscriber_counts_queries = [
     flowmachine.features.UniqueSubscriberCounts(
-        start="2016-01-01", stop="2016-01-08", level="admin3"
+        start="2016-01-01", stop="2016-01-08", spatial_unit=admin3_spatial_unit
     )
 ]
 

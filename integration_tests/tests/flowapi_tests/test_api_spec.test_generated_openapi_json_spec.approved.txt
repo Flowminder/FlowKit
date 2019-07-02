@@ -335,6 +335,7 @@
         "discriminator": {
           "mapping": {
             "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
+            "subscriber_degree": "#/components/schemas/SubscriberDegree",
             "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
           },
           "propertyName": "query_kind"
@@ -342,6 +343,9 @@
         "oneOf": [
           {
             "$ref": "#/components/schemas/RadiusOfGyration"
+          },
+          {
+            "$ref": "#/components/schemas/SubscriberDegree"
           },
           {
             "$ref": "#/components/schemas/UniqueLocationCounts"
@@ -839,6 +843,45 @@
         "required": [
           "locations",
           "query_kind"
+        ],
+        "type": "object"
+      },
+      "SubscriberDegree": {
+        "properties": {
+          "direction": {
+            "enum": [
+              "both",
+              "in",
+              "out"
+            ],
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "subscriber_degree"
+            ],
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start",
+          "stop"
         ],
         "type": "object"
       },

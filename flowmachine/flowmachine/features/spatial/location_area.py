@@ -215,7 +215,7 @@ class LocationArea(GeoDataMixin, Query):
     Parameters
     ----------
     point_collection : str or list, default 'sites'
-        A point collection with latitude and longitudes.
+        A point collection with longitude and latitudes.
         This parameter can fetch a table in the database (if a
         str is passed) or a list collection of tuples. 
 

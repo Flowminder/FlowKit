@@ -2,10 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.features.subscriber.entropy import *
 
-import numpy as np
 import pytest
+import numpy as np
+
+from flowmachine.core import make_spatial_unit
+from flowmachine.features.subscriber.entropy import *
 
 
 class MockEntropy(BaseEntropy):
@@ -67,7 +69,9 @@ def test_subscriber_location_entropy(get_dataframe):
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["0DB8zw67E9mZAPK2"].entropy == pytest.approx(2.996_587)
 
-    query = LocationEntropy("2016-01-02", "2016-01-05", level="admin1")
+    query = LocationEntropy(
+        "2016-01-02", "2016-01-05", spatial_unit=make_spatial_unit("admin", level=1)
+    )
     df = get_dataframe(query).set_index("subscriber")
     assert df.loc["0DB8zw67E9mZAPK2"].entropy == pytest.approx(1.214_889_6)
 

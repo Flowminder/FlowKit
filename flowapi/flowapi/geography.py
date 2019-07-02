@@ -54,7 +54,11 @@ async def get_geography(aggregation_unit):
     )
 
     if reply["status"] == "error":
-        return jsonify({"status": "Error", "msg": "Internal server error"}), 500
+        try:
+            msg = reply["msg"]
+        except KeyError:
+            msg = "Internal server error"
+        return jsonify({"status": "Error", "msg": msg}), 500
 
     try:
         query_state = reply["payload"]["query_state"]
