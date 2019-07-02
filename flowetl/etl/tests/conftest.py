@@ -11,7 +11,11 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from etl.model import Base, ETLRecord  # pylint: disable=unused-import
+from etl.model import (
+    Base,
+    ETLRecord,
+    ETLPostQueryOutcome,
+)  # pylint: disable=unused-import
 
 # pylint: disable=too-few-public-methods
 class FakeDagRun:
@@ -67,7 +71,9 @@ def session():
     """
     engine = create_engine("sqlite:///:memory:")
     engine.execute(f"ATTACH DATABASE ':memory:' AS etl;")
-    Base.metadata.create_all(bind=engine, tables=[ETLRecord.__table__])
+    Base.metadata.create_all(
+        bind=engine, tables=[ETLRecord.__table__, ETLPostQueryOutcome.__table__]
+    )
     Session = sessionmaker(bind=engine)
     returned_session = Session()
     yield returned_session
