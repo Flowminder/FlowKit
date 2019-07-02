@@ -14,6 +14,7 @@ etl = {editable = true,path = "./etl"}
 pytest-cov = "*"
 structlog = "*"
 requests = "*"
+psycopg2-binary = "*"
 
 [packages]
 
