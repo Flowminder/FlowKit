@@ -17,7 +17,7 @@ from airflow.models import DagRun
 from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 from etl.model import ETLRecord
-from etl.etl_utils import CDRType, get_session, find_files, filter_files, get_config
+from etl.etl_utils import CDRType, get_session
 
 logger = structlog.get_logger("flowetl")
 
