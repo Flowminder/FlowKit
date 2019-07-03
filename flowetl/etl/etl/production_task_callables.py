@@ -95,11 +95,11 @@ def production_trigger__callable(
         cdr_type = CDRType(cdr_type)
 
         source_type = cfg["source"]["source_type"]
-        print(f"{cdr_type!r} ({source_type}): {cfg}")
+        logger.info(f"Config for {cdr_type!r} ({source_type}): {cfg}")
 
         if source_type == "csv":
             filename_pattern = cfg["source"]["filename_pattern"]
-            print(f"Filename pattern: {filename_pattern!r}")
+            logger.info(f"Filename pattern: {filename_pattern!r}")
             all_files_found = find_files_matching_pattern(
                 files_path=files_path, filename_pattern=filename_pattern
             )
