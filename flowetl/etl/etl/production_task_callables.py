@@ -17,7 +17,12 @@ from airflow.models import DagRun
 from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 from etl.model import ETLRecord
-from etl.etl_utils import CDRType, get_session
+from etl.etl_utils import (
+    CDRType,
+    get_session,
+    find_files_matching_pattern,
+    extract_date_from_filename,
+)
 
 logger = structlog.get_logger("flowetl")
 
@@ -119,10 +124,20 @@ def production_trigger__callable(
         if source_type == "csv":
             filename_pattern = cfg["source"]["filename_pattern"]
             print(f"Filename pattern: {filename_pattern!r}")
-            all_files_found = sorted([file.name for file in files_path.glob("*")])
-            unprocessed_files_and_dates = find_unprocessed_dates_from_files(
-                all_files_found, filename_pattern, cdr_type, session
+            all_files_found = find_files_matching_pattern(
+                files_path=files_path, filename_pattern=filename_pattern
             )
+            dates_found = {
+                filename: extract_date_from_filename(filename, filename_pattern)
+                for filename in all_files_found
+            }
+            unprocessed_files_and_dates = {
+                filename: date
+                for filename, date in dates_found.items()
+                if ETLRecord.can_process(
+                    cdr_type=cdr_type, cdr_date=date, session=session
+                )
+            }
             for file, cdr_date in unprocessed_files_and_dates.items():
                 uuid = uuid1()
                 cdr_date_str = cdr_date.strftime("%Y%m%d")

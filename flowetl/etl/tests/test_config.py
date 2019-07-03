@@ -118,24 +118,22 @@ def test_find_files_matching_pattern(tmpdir):
     files = find_files_matching_pattern(
         files_path=tmpdir_path_obj, filename_pattern="(.)_01.txt"
     )
-    assert ["A_01.txt", "B_01.txt"] == [file.name for file in files]
+    assert ["A_01.txt", "B_01.txt"] == files
 
     files = find_files_matching_pattern(
         files_path=tmpdir_path_obj, filename_pattern="A_.*\.txt"
     )
-    assert ["A_01.txt", "A_02.txt"] == [file.name for file in files]
+    assert ["A_01.txt", "A_02.txt"] == files
 
     files = find_files_matching_pattern(
         files_path=tmpdir_path_obj, filename_pattern=".*"
     )
-    assert ["A_01.txt", "A_02.txt", "B_01.txt", "B_02.txt", "README.md"] == [
-        file.name for file in files
-    ]
+    assert ["A_01.txt", "A_02.txt", "B_01.txt", "B_02.txt", "README.md"] == files
 
     files = find_files_matching_pattern(
         files_path=tmpdir_path_obj, filename_pattern="foobar.txt"
     )
-    assert [] == [file.name for file in files]
+    assert [] == files
 
 
 def test_get_config_from_file(tmpdir):

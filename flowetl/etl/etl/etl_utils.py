@@ -212,7 +212,7 @@ def find_files(*, files_path: Path, ignore_filenames=["README.md"]) -> List[Path
 
 def find_files_matching_pattern(
     *, files_path: Path, filename_pattern: str
-) -> List[Path]:
+) -> List[str]:
     """
     Returns a list of Path objects for all files found in the files location that match the given pattern.
 
@@ -225,19 +225,17 @@ def find_files_matching_pattern(
 
     Returns
     -------
-    List[Path]
+    List[str]
         List of matching files found
     """
     all_files = sorted([file for file in files_path.glob("*")])
     matching_files = [
-        file for file in all_files if re.fullmatch(filename_pattern, file.name)
+        file.name for file in all_files if re.fullmatch(filename_pattern, file.name)
     ]
-    return sorted(matching_files, key=lambda file: file.name)
+    return sorted(matching_files)
 
 
-def extract_date_from_filename(
-    *, filename: str, filename_pattern: str
-) -> pendulum.Date:
+def extract_date_from_filename(filename: str, filename_pattern: str) -> pendulum.Date:
     """
     Return date extracted from the given filename based on the pattern.
 
