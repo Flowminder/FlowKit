@@ -21,16 +21,12 @@ logger = structlog.get_logger("flowetl")
 
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
-try:
-    flowetl_runtime_config = os.environ["FLOWETL_RUNTIME_CONFIG"]
-except KeyError:
-    # raise RuntimeError("Must set FLOWETL_RUNTIME_CONFIG env var.")
-    flowetl_runtime_config = "production"
-
 ETL_SENSOR_TASK_CALLABLES = {
     "testing": TEST_ETL_SENSOR_TASK_CALLABLE,
     "production": PRODUCTION_ETL_SENSOR_TASK_CALLABLE,
 }
+
+flowetl_runtime_config = os.environ.get("FLOWETL_RUNTIME_CONFIG", "production")
 
 try:
     etl_sensor_task_callable = ETL_SENSOR_TASK_CALLABLES[flowetl_runtime_config]
