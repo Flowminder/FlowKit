@@ -258,32 +258,6 @@ def filter_files(*, found_files: List, cdr_type_config: dict):
     return filtered_files
 
 
-def get_config(*, file_name: str, cdr_type_config: dict) -> dict:
-    """
-    Create DAG config that is based on filename
-
-    Parameters
-    ----------
-    file_name : str
-        name of file to construct config for
-    cdr_type_config : dict
-        config dict containing patterns for
-        each cdr type
-
-    Returns
-    -------
-    dict
-        Dictionary with config for this filename:
-            {'cdr_type': ..., 'cdr_date': ..., "file_name": ..., "template_path": ...}
-    """
-    parsed_file_name_config = parse_file_name(
-        file_name=file_name, cdr_type_config=cdr_type_config
-    )
-    template_path = f"etl/{parsed_file_name_config['cdr_type']}"
-    other_config = {"file_name": file_name, "template_path": template_path}
-    return {**parsed_file_name_config, **other_config}
-
-
 def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
     """
     Function to parse date of data and cdr type from filename.
