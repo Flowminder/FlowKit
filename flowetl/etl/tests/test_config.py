@@ -6,15 +6,15 @@
 """
 Tests for configuration parsing
 """
+import pendulum
 import pytest
 import yaml
 
 from copy import deepcopy
 from pathlib import Path
-from pendulum import parse
 
 from etl.config_parser import validate_config, get_config_from_file
-from etl.etl_utils import CDRType, find_files
+from etl.etl_utils import find_files, extract_date_from_filename
 
 
 def test_config_validation(sample_config_dict):
@@ -110,3 +110,24 @@ def test_get_config_from_file(tmpdir):
 
     config = get_config_from_file(config_filepath=Path(config_file))
     assert config == sample_dict
+
+
+def test_extract_date_from_filename():
+    filename = "CALLS_20160101.csv.gz"
+    filename_pattern = r"CALLS_(\d{8}).csv.gz"
+    date_expected = pendulum.Date(2016, 1, 1)
+    date = extract_date_from_filename(filename, filename_pattern)
+    assert date_expected == date
+
+    filename = "SMS__2018-04-22.csv.gz"
+    filename_pattern = r"SMS__(\d{4}-[0123]\d-\d{2}).csv.gz"
+    date_expected = pendulum.Date(2018, 4, 22)
+    date = extract_date_from_filename(filename, filename_pattern)
+    assert date_expected == date
+
+    filename = "foobar.csv.gz"
+    filename_pattern = r"SMS_(\d{8}).csv.gz"
+    with pytest.raises(
+        ValueError, match="Filename 'foobar.csv.gz' does not match the pattern"
+    ):
+        extract_date_from_filename(filename, filename_pattern)

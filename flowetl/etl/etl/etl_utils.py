@@ -7,6 +7,8 @@
 Contains utility functions for use in the ETL dag and it's callables
 """
 import os
+import pendulum
+import re
 
 from typing import List, Callable
 from enum import Enum
@@ -206,3 +208,31 @@ def find_files(*, files_path: Path, ignore_filenames=["README.md"]) -> List[Path
     """
     files = filter(lambda file: file.name not in ignore_filenames, files_path.glob("*"))
     return list(files)
+
+
+def extract_date_from_filename(filename, filename_pattern):
+    """
+    Return date extracted from the given filename based on the pattern.
+
+    Note: this assumes that `filename_pattern` contains exactly one group
+    (marked by the `(` and `)` metacharacters) which represents the date.
+
+    Parameters
+    ----------
+    filename : str
+        Filename which includes the date, for example `CALLS_20160101.csv`.
+    filename_pattern : str
+        The pattern used to match the filename and extract the date, e.g. `CALLS_(\d{8}).csv.gz`
+
+    Returns
+    -------
+    pendulum.Date
+        Date extracted from the filename.
+    """
+    m = re.fullmatch(filename_pattern, str(filename))
+    if m is None:
+        raise ValueError(
+            f"Filename '{filename}' does not match the pattern '{filename_pattern}'"
+        )
+    date_str = m.group(1)
+    return pendulum.parse(date_str).date()
