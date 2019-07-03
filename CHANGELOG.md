@@ -3,19 +3,23 @@
 All notable changes to FlowKit will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
 ## [Unreleased]
 
 ### Added
 
+- FlowETL now supports ingesting from a postgres table in addition to CSV files. [#1027](https://github.com/Flowminder/FlowKit/issues/1027)
+- `FLOWETL_RUNTIME_CONFIG` environment variable added to control which DAG definitions the FlowETL integration tests should use (valid values: "testing", "production").
+- `FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES` environment variable added to allow running the FlowETL integration tests against locally built docker images during development.
 
 ### Changed
-
 
 ### Fixed
 
 
 ### Removed
 
+- `TESTING` environment variable was removed (previously used by the FlowETL integration tests).
 
 ## [0.7.0]
 
