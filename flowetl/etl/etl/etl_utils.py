@@ -9,6 +9,7 @@ Contains utility functions for use in the ETL dag and it's callables
 import os
 import pendulum
 import re
+import sqlalchemy
 
 from typing import List, Callable
 from enum import Enum
@@ -261,3 +262,28 @@ def extract_date_from_filename(filename: str, filename_pattern: str) -> pendulum
         )
     date_str = m.group(1)
     return pendulum.parse(date_str).date()
+
+
+def find_distinct_dates_in_table(
+    session: sqlalchemy.orm.Session,
+    source_table: str,
+    event_time_col: str = "event_time",
+) -> List[pendulum.Date]:
+    """
+
+    Parameters
+    ----------
+    session : sqlalchemy.orm.Session
+        SQLAlchemy session to use.
+    source_table : str
+        Name of the table in which to look for dates.
+    event_time_col : str
+        The column in which to look for dates.
+    """
+    dates_found = [
+        pendulum.parse(row["date"].strftime("%Y-%m-%d"))
+        for row in session.execute(
+            f"SELECT DISTINCT date FROM (SELECT {event_time_col}::date as date FROM {source_table}) tmp"
+        ).fetchall()
+    ]
+    return dates_found
