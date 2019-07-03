@@ -73,31 +73,6 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
     return branch
 
 
-def find_unprocessed_dates_from_files(
-    files, filename_pattern, cdr_type, session, ignore_filenames=["README.md"]
-):
-    logger.info(f"all_files_found: {files}")
-    filename_matches = {
-        file: re.fullmatch(filename_pattern, str(file))
-        for file in files
-        if file not in ignore_filenames
-    }
-    logger.info(f"filename_matches: {filename_matches}")
-    found_dates = {
-        file: pendulum.parse(m.group(1))
-        for file, m in filename_matches.items()
-        if m is not None
-    }
-    logger.info(f"found_dates: {found_dates}")
-    unprocessed_dates = {
-        file: date
-        for file, date in found_dates.items()
-        if ETLRecord.can_process(cdr_type=cdr_type, cdr_date=date, session=session)
-    }
-    logger.info(f"unprocessed_dates: {unprocessed_dates}")
-    return unprocessed_dates
-
-
 def production_trigger__callable(
     *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
 ):
