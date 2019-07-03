@@ -7,7 +7,7 @@ from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import TopUpAmount
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import SubscriberSubset
+from .custom_fields import SubscriberSubset, Statistic
 
 __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]
 
@@ -16,7 +16,7 @@ class TopUpAmountSchema(Schema):
     query_kind = fields.String(validate=OneOf(["topup_amount"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
-    statistic = fields.String()
+    statistic = Statistic()
     subscriber_subset = SubscriberSubset()
 
     @post_load
