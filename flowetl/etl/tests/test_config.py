@@ -14,7 +14,7 @@ from pathlib import Path
 from pendulum import parse
 
 from etl.config_parser import validate_config, get_config_from_file
-from etl.etl_utils import CDRType, find_files, parse_file_name
+from etl.etl_utils import CDRType, find_files
 
 
 def test_config_validation(sample_config_dict):
@@ -97,45 +97,6 @@ def test_find_files_non_default_filter(tmpdir):
     files = find_files(files_path=tmpdir_path_obj, ignore_filenames=["B.txt", "A.txt"])
 
     assert set([file.name for file in files]) == set(["README.md"])
-
-
-@pytest.mark.parametrize(
-    "file_name,want",
-    [
-        # Note: we are not testing SMS here because it is ingested from sql instead of csv
-        (
-            "CALLS_20160101.csv.gz",
-            {"cdr_type": CDRType("calls"), "cdr_date": parse("20160101")},
-        ),
-        (
-            "MDS_20160101.csv.gz",
-            {"cdr_type": CDRType("mds"), "cdr_date": parse("20160101")},
-        ),
-        (
-            "TOPUPS_20160101.csv.gz",
-            {"cdr_type": CDRType("topups"), "cdr_date": parse("20160101")},
-        ),
-    ],
-)
-def test_parse_file_name(file_name, want, sample_config_dict):
-    """
-    Test we can parse cdr_type and cdr_date
-    from filenames based on cdr type config.
-    """
-    cdr_type_config = sample_config_dict["etl"]
-    got = parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
-    assert got == want
-
-
-def test_parse_file_name_exception(sample_config_dict):
-    """
-    Test that we get a value error if filename does
-    not match any pattern
-    """
-    cdr_type_config = sample_config_dict["etl"]
-    file_name = "bob.csv"
-    with pytest.raises(ValueError):
-        parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
 
 
 def test_get_config_from_file(tmpdir):

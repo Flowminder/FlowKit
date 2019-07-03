@@ -6,15 +6,11 @@
 """
 Contains utility functions for use in the ETL dag and it's callables
 """
-import re
 import os
 
-from uuid import UUID
 from typing import List, Callable
 from enum import Enum
 from pathlib import Path
-from pendulum import parse
-from pendulum.date import Date as pendulumDate
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -22,8 +18,6 @@ from sqlalchemy.orm import sessionmaker
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import PythonOperator
-
-from etl import model
 
 
 def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
@@ -212,40 +206,3 @@ def find_files(*, files_path: Path, ignore_filenames=["README.md"]) -> List[Path
     """
     files = filter(lambda file: file.name not in ignore_filenames, files_path.glob("*"))
     return list(files)
-
-
-def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
-    """
-    Function to parse date of data and cdr type from filename.
-    Makes use of patterns specified in global config.
-
-    Parameters
-    ----------
-    file_name : str
-        The file name to parse
-    cdr_type_config : dict
-        The config for each CDR type which contains
-        patterns to match against.
-
-    Returns
-    -------
-    dict
-        contains files cdr type and the date associated
-        to the data
-    """
-    file_cdr_type, file_cdr_date = None, None
-    for cdr_type in CDRType:
-        source_type = cdr_type_config[cdr_type]["source"]["source_type"]
-        assert source_type == "csv"
-        filename_pattern = cdr_type_config[cdr_type]["source"]["filename_pattern"]
-        m = re.fullmatch(filename_pattern, file_name)
-        if m:
-            file_cdr_type = cdr_type
-            file_cdr_date = parse(m.groups()[0])
-
-    if file_cdr_type and file_cdr_date:
-        parsed_file_info = {"cdr_type": file_cdr_type, "cdr_date": file_cdr_date}
-    else:
-        raise ValueError("No pattern match found")
-
-    return parsed_file_info
