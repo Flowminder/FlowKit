@@ -67,55 +67,6 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
     return branch
 
 
-def production_trigger__callable__OLD(
-    *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
-):
-    """
-    Function that determines which files in files/ should be processed
-    and triggers the correct ETL dag with config based on filename.
-
-    Parameters
-    ----------
-    dag_run : DagRun
-        Passed as part of the Dag context - contains the config.
-    files_path : Path
-        Location of files directory
-    cdr_type_config : dict
-        ETL config for each cdr type
-    """
-
-    found_files = find_files(files_path=files_path)
-    logger.info(found_files)
-    logger.info(f"Files found: {found_files}")
-
-    # remove files that either do not match a pattern
-    # or have been processed successfully already...
-    filtered_files = filter_files(
-        found_files=found_files, cdr_type_config=cdr_type_config
-    )
-    logger.info(
-        f"Files found that match the filename pattern and have not been processed: {filtered_files}"
-    )
-
-    # what to do with these!?
-    bad_files = list(set(found_files) - set(filtered_files))
-    logger.info(f"Bad files found: {bad_files}")
-
-    for file in filtered_files:
-        config = get_config(file_name=file.name, cdr_type_config=cdr_type_config)
-
-        cdr_type = config["cdr_type"]
-        cdr_date = config["cdr_date"]
-        uuid = uuid1()
-        trigger_dag(
-            f"etl_{cdr_type}",
-            execution_date=cdr_date,
-            run_id=f"{file.name}-{str(uuid)}",
-            conf=config,
-            replace_microseconds=False,
-        )
-
-
 def find_unprocessed_dates_from_files(
     files, filename_pattern, cdr_type, session, ignore_filenames=["README.md"]
 ):
