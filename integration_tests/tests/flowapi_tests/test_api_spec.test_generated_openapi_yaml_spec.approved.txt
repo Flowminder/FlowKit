@@ -959,6 +959,15 @@
             "type": "string"
           },
           "statistic": {
+            "enum": [
+              "avg",
+              "max",
+              "median",
+              "min",
+              "mode",
+              "stddev",
+              "variance"
+            ],
             "type": "string"
           },
           "stop": {
@@ -976,6 +985,7 @@
         "required": [
           "query_kind",
           "start",
+          "statistic",
           "stop"
         ],
         "type": "object"
