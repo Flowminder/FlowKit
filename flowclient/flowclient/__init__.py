@@ -38,6 +38,7 @@ from .client import (
     unique_location_counts,
     subscriber_degree,
     topup_balance,
+    event_count,
 )
 
 __all__ = [
@@ -67,5 +68,9 @@ __all__ = [
     "radius_of_gyration",
     "unique_location_counts",
     "subscriber_degree",
+<<<<<<< HEAD
     "topup_balance",
+=======
+    "event_count",
+>>>>>>> origin/master
 ]

@@ -140,6 +140,9 @@ At present, the following query types are accessible through FlowAPI:
 
     Return top-up balance statistics for specified dates and (optionally, with default "all") for a specified set of subscribers
 
+- `event_count`
+
+    Count of events (optionally of specific types) for individual subscribers in a time period.
 
 ### FlowAPI Access tokens
 

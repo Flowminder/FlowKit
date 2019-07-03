@@ -144,6 +144,20 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
             },
         ),
         (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.event_count(
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    direction="both",
+                    event_types=["sms", "calls"],
+                ),
+            },
+        ),
+        (
             "spatial_aggregate",
             {
                 "locations": flowclient.modal_location_from_dates(

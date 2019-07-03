@@ -150,6 +150,59 @@
         ],
         "type": "object"
       },
+      "EventCount": {
+        "properties": {
+          "direction": {
+            "enum": [
+              "both",
+              "in",
+              "out"
+            ],
+            "type": "string"
+          },
+          "event_types": {
+            "items": {
+              "enum": [
+                "calls",
+                "mds",
+                "sms",
+                "topups"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "nullable": true,
+            "type": "array"
+          },
+          "query_kind": {
+            "enum": [
+              "event_count"
+            ],
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start",
+          "stop"
+        ],
+        "type": "object"
+      },
       "FlowmachineQuerySchema": {
         "oneOf": [
           {
@@ -288,6 +341,9 @@
       },
       "JoinableMetrics": {
         "oneOf": [
+          {
+            "$ref": "#/components/schemas/EventCount"
+          },
           {
             "$ref": "#/components/schemas/RadiusOfGyration"
           },
