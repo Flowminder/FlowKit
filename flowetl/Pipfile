@@ -16,6 +16,7 @@ structlog = "*"
 requests = "*"
 psycopg2-binary = "*"
 testing-postgresql = "*"
+sqlalchemy-utils = "*"
 
 [packages]
 
