@@ -8,7 +8,6 @@ from marshmallow.validate import OneOf, Length
 from flowmachine.features import TopUpAmount
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
-from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
 __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]
 
@@ -17,6 +16,7 @@ class TopUpAmountSchema(Schema):
     query_kind = fields.String(validate=OneOf(["topup_amount"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
+    statistic = fields.String()
     subscriber_subset = SubscriberSubset()
 
     @post_load
@@ -25,11 +25,12 @@ class TopUpAmountSchema(Schema):
 
 
 class TopUpAmountExposed(BaseExposedQuery):
-    def __init__(self, *, start, stop, subscriber_subset=None):
+    def __init__(self, *, start, stop, statistic, subscriber_subset=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
+        self.statistic = statistic
         self.subscriber_subset = subscriber_subset
 
     @property
@@ -42,5 +43,8 @@ class TopUpAmountExposed(BaseExposedQuery):
         Query
         """
         return TopUpAmount(
-            start=self.start, stop=self.stop, subscriber_subset=self.subscriber_subset
+            start=self.start,
+            stop=self.stop,
+            statistic=self.statistic,
+            subscriber_subset=self.subscriber_subset,
         )
