@@ -231,14 +231,14 @@ def flowdb_container(
     )
     engine.execute(
         """
-        CREATE TABLE IF NOT EXISTS sms_raw_data_dump (
+        CREATE TABLE IF NOT EXISTS mds_raw_data_dump (
             imei TEXT,
             msisdn TEXT,
             event_time TIMESTAMPTZ,
             cell_id TEXT
         );
 
-        INSERT INTO sms_raw_data_dump VALUES
+        INSERT INTO mds_raw_data_dump VALUES
         ('BDED3095A2759089134DDA5CB7968764', '9824B87CDEEAD5ED5AC959D74F3C81C5', '2016-01-01 13:23:29', 'C44BEF');
         """
     )
