@@ -958,6 +958,9 @@
             "format": "date",
             "type": "string"
           },
+          "statistic": {
+            "type": "string"
+          },
           "stop": {
             "format": "date",
             "type": "string"
