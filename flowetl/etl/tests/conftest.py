@@ -70,7 +70,7 @@ def postgres_test_db():
     """
     Fixture to yield a PostgreSQL database to be used in the unit tests.
     The database will only be created once per test session, but the
-    etl_records table will be cleared before every test.
+    etl_records table will be cleared for each test.
     """
     postgres_test_db = testing.postgresql.Postgresql()
     engine = create_engine(postgres_test_db.url())
@@ -82,7 +82,6 @@ def postgres_test_db():
         create_database(engine.url)
     engine.execute(CreateSchema("etl"))
     Base.metadata.create_all(bind=engine, tables=[ETLRecord.__table__])
-    # engine.execute("CREATE TABLE sms_raw_data_dump")
     engine.execute(
         """
         CREATE TABLE IF NOT EXISTS mds_raw_data_dump (
@@ -101,7 +100,8 @@ def postgres_test_db():
 @pytest.fixture(scope="function")
 def session(postgres_test_db):
     """
-    Fixture to yield a session to the test PostgreSQL database.
+    Fixture to yield a session to the test PostgreSQL database. This clears
+    the etl_records table for each test.
     """
     engine = create_engine(postgres_test_db.url())
     engine.execute(f"TRUNCATE TABLE {ETLRecord.__table__};")
