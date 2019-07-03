@@ -12,7 +12,6 @@ import shutil
 import structlog
 import pytest
 import requests
-import json
 
 from pathlib import Path
 from time import sleep
@@ -226,8 +225,7 @@ def flowdb_container(
         container_info = docker_api_client.inspect_container(container.id)
         healthy = container_info["State"]["Health"]["Status"] == "healthy"
 
-    from sqlalchemy import create_engine
-
+    # Add a single line of raw SMS data into a postgres table which is used in the full-pipeline test.
     engine = create_engine(
         f"postgresql://flowdb:flowflow@localhost:{container_ports['flowdb']}/flowdb"
     )
