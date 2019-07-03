@@ -214,50 +214,6 @@ def find_files(*, files_path: Path, ignore_filenames=["README.md"]) -> List[Path
     return list(files)
 
 
-def filter_files(*, found_files: List, cdr_type_config: dict):
-    """
-    Takes a list of files and filters them based on two
-    factors;
-    1. Does the filename match any CDR type pattern if not remove
-    2. Has the file been successfully ingested if so remove
-
-    Parameters
-    ----------
-    found_files : List
-        List of found files should be Path objects
-    cdr_type_config : dict
-        config dict containing patterns for
-        each cdr type
-
-
-    Returns
-    -------
-    List
-        Files that can be processed by ETL DAG
-    """
-    filtered_files = []
-    for file in found_files:
-        try:
-            # try to parse file name
-            parsed_file_name_config = parse_file_name(
-                file_name=file.name, cdr_type_config=cdr_type_config
-            )
-        except ValueError:
-            # couldnt parse moving on
-            continue
-
-        cdr_type = parsed_file_name_config["cdr_type"]
-        cdr_date = parsed_file_name_config["cdr_date"]
-
-        session = get_session()
-        if model.ETLRecord.can_process(
-            cdr_type=cdr_type, cdr_date=cdr_date, session=session
-        ):
-            filtered_files.append(file)
-
-    return filtered_files
-
-
 def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
     """
     Function to parse date of data and cdr type from filename.

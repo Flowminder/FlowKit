@@ -11,12 +11,10 @@ import yaml
 
 from copy import deepcopy
 from pathlib import Path
-from uuid import uuid1
 from pendulum import parse
 
-from etl.model import ETLRecord
 from etl.config_parser import validate_config, get_config_from_file
-from etl.etl_utils import CDRType, find_files, parse_file_name, filter_files
+from etl.etl_utils import CDRType, find_files, parse_file_name
 
 
 def test_config_validation(sample_config_dict):
@@ -104,13 +102,10 @@ def test_find_files_non_default_filter(tmpdir):
 @pytest.mark.parametrize(
     "file_name,want",
     [
+        # Note: we are not testing SMS here because it is ingested from sql instead of csv
         (
             "CALLS_20160101.csv.gz",
             {"cdr_type": CDRType("calls"), "cdr_date": parse("20160101")},
-        ),
-        (
-            "SMS_20160101.csv.gz",
-            {"cdr_type": CDRType("sms"), "cdr_date": parse("20160101")},
         ),
         (
             "MDS_20160101.csv.gz",
@@ -141,58 +136,6 @@ def test_parse_file_name_exception(sample_config_dict):
     file_name = "bob.csv"
     with pytest.raises(ValueError):
         parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
-
-
-def test_filter_files(session, sample_config_dict, monkeypatch):
-    """
-    testing the filter files function
-
-    - set calls on 20160101 to quarantine so should not be filtered
-    - set calls on 20160102 to archive so should be filtered
-    - no record for sms 20160101 so should not be filtered
-    - bad_file.bad doesn't match any pattern so should  be filtered
-    """
-    cdr_type_config = sample_config_dict["etl"]
-
-    file1 = Path("./CALLS_20160101.csv.gz")
-    file2 = Path("./CALLS_20160102.csv.gz")
-    file3 = Path("./SMS_20160101.csv.gz")
-    file4 = Path("./bad_file.bad")
-
-    found_files = [file1, file2, file3, file4]
-
-    # add a some etl records
-    file1_data = {
-        "cdr_type": "calls",
-        "cdr_date": parse("2016-01-01").date(),
-        "state": "quarantine",
-    }
-
-    file2_data = {
-        "cdr_type": "calls",
-        "cdr_date": parse("2016-01-02").date(),
-        "state": "archive",
-    }
-
-    ETLRecord.set_state(
-        cdr_type=file1_data["cdr_type"],
-        cdr_date=file1_data["cdr_date"],
-        state=file1_data["state"],
-        session=session,
-    )
-
-    ETLRecord.set_state(
-        cdr_type=file2_data["cdr_type"],
-        cdr_date=file2_data["cdr_date"],
-        state=file2_data["state"],
-        session=session,
-    )
-
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
-    filtered_files = filter_files(
-        found_files=found_files, cdr_type_config=cdr_type_config
-    )
-    assert filtered_files == [file1, file3]
 
 
 def test_get_config_from_file(tmpdir):
