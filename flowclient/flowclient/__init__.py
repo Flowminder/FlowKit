@@ -68,9 +68,6 @@ __all__ = [
     "radius_of_gyration",
     "unique_location_counts",
     "subscriber_degree",
-<<<<<<< HEAD
     "topup_balance",
-=======
     "event_count",
->>>>>>> origin/master
 ]
