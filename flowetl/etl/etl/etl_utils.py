@@ -235,7 +235,9 @@ def find_files_matching_pattern(
     return sorted(matching_files, key=lambda file: file.name)
 
 
-def extract_date_from_filename(filename, filename_pattern):
+def extract_date_from_filename(
+    *, filename: str, filename_pattern: str
+) -> pendulum.Date:
     """
     Return date extracted from the given filename based on the pattern.
 
