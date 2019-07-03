@@ -1,11 +1,11 @@
-DROP TABLE IF EXISTS {{ dag_run.conf.transform_table }};
-CREATE TABLE {{ dag_run.conf.transform_table }} AS (
+DROP TABLE IF EXISTS {{ get_transform_table(ds_nodash) }};
+CREATE TABLE {{ get_transform_table(ds_nodash) }} AS (
     SELECT
         *
     FROM
-        {{ dag_run.conf.extract_table }}
+        {{ get_extract_table(ds_nodash) }}
 );
 
-ALTER TABLE {{dag_run.conf.transform_table}}
+ALTER TABLE {{get_transform_table(ds_nodash)}}
     ALTER COLUMN msisdn SET NOT NULL,
     ALTER COLUMN datetime SET NOT NULL;

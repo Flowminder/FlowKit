@@ -3,8 +3,21 @@
 All notable changes to FlowKit will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
 ## [Unreleased]
+
+### Added
+
+
+### Changed
+
+
+### Fixed
+
+
+### Removed
+
+
+## [0.7.0]
 
 ### Added
 
@@ -427,7 +440,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.6.4...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.7.0...master
+[0.7.0]: https://github.com/Flowminder/FlowKit/compare/0.6.4...0.7.0
 [0.6.4]: https://github.com/Flowminder/FlowKit/compare/0.6.3...0.6.4
 [0.6.3]: https://github.com/Flowminder/FlowKit/compare/0.6.2...0.6.3
 [0.6.2]: https://github.com/Flowminder/FlowKit/compare/0.6.1...0.6.2
