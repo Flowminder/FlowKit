@@ -25,17 +25,12 @@ from etl.config_parser import validate_config, get_config_from_file
 logger = structlog.get_logger("flowetl")
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
-try:
-    flowetl_runtime_config = os.environ["FLOWETL_RUNTIME_CONFIG"]
-except KeyError:
-    # raise RuntimeError("Must set FLOWETL_RUNTIME_CONFIG env var.")
-    flowetl_runtime_config = "production"
-
 ETL_TASK_CALLABLES = {
     "testing": TEST_ETL_TASK_CALLABLES,
     "production": PRODUCTION_ETL_TASK_CALLABLES,
 }
 
+flowetl_runtime_config = os.environ.get("FLOWETL_RUNTIME_CONFIG", "production")
 
 # Determine if we are in a testing environment - use dummy callables if so
 if flowetl_runtime_config == "testing":
