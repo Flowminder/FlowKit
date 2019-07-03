@@ -153,18 +153,19 @@ def production_trigger__callable(
             logger.info(f"Unprocessed dates: {unprocessed_dates}")
 
             for cdr_date in unprocessed_dates:
+                uuid = uuid1()
+                cdr_date_str = cdr_date.strftime("%Y%m%d")
                 config = {
                     "cdr_type": cdr_type,
                     "cdr_date": cdr_date,
                     "source_table": source_table,
                 }
-                uuid = uuid1()
                 trigger_dag(
                     f"etl_{cdr_type}",
                     execution_date=cdr_date,
-                    run_id=f"{cdr_date}-{str(uuid)}",
+                    run_id=f"{cdr_type.upper()}_{cdr_date_str}-{str(uuid)}",
                     conf=config,
                     replace_microseconds=False,
                 )
         else:
-            raise NotImplementedError()
+            raise ValueError(f"Invalid source type: '{source_type}'")
