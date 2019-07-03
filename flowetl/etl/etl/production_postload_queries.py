@@ -7,16 +7,35 @@
 Contains the definition of callables to be used in the production ETL dag.
 """
 import structlog
+from sqlalchemy.orm.session import Session
 from pendulum.date import Date as pendulumDate
 
-from etl.model import ETLPostLoadOutcome
+from etl.model import ETLPostQueryOutcome
 
 logger = structlog.get_logger("flowetl")
 
 
 # pylint: disable=unused-argument
-def num_total_calls__callable(*, cdr_date: pendulumDate, **kwargs):
+def num_total_calls__callable(
+    *,
+    cdr_date: pendulumDate,
+    session: Session,
+    **kwargs
+):
     """
     Function to determine the number of total calls
     """
-    logger.info("got here")
+
+    sql = f"""
+    select
+        count(*)
+    from
+        events.calls
+    """
+    outcome = session.execute(sql).fetchone()[0]
+
+    return {
+        "outcome": outcome,
+        "type_of_query_or_check": "num_total_calls",
+        "optional_comment_or_description": "The number of total calls",
+    }
