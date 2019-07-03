@@ -5,6 +5,7 @@ All notable changes to FlowKit will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes event counts.[#992](https://github.com/Flowminder/FlowKit/issues/992)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes topup amount.[#967](https://github.com/Flowminder/FlowKit/issues/967)
 ### Added
 
 

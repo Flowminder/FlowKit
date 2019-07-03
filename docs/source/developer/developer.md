@@ -135,12 +135,15 @@ At present, the following query types are accessible through FlowAPI:
 - `total_network_objects`
 
     Count of mobile phone cells per area active based on CDR traffic within a time period, broken down into time buckets.
+    
 - `topup_amount`
 
-    Per-subscriber aggregate of topups.
+    Aggregate of topup amount for individual subscribers.
+
 -`event_count`
 
     Count of events (optionally of specific types) for individual subscribers in a time period.
+
 
 ### FlowAPI Access tokens
 
