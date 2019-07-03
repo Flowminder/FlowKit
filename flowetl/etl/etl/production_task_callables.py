@@ -69,7 +69,17 @@ def run_postload_queries__callable(*, dag_run: DagRun, **kwargs):
 
     session = get_session()
     # TODO: run queries
-    # TODO: record query outcome
+    type_of_query_or_check = ""
+    outcome = ""
+    optional_comment_or_description = ""
+    ETLPostLoadOutcome.set_outcome(
+        cdr_type=cdr_type,
+        cdr_date=cdr_date,
+        type_of_query_or_check=type_of_query_or_check,
+        outcome=outcome,
+        optional_comment_or_description=optional_comment_or_description,
+        session=session,
+    )
 
 
 # pylint: disable=unused-argument
