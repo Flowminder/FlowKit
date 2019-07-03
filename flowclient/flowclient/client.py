@@ -1343,8 +1343,8 @@ def event_count(
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts. Can be one of "in", "out" or "both".
     event_types : list of str, optional
-        The event types for which to return available dates (for example: ["calls", "sms"]).
-        If None, return available dates for all available event types.
+        The event types to include in the count (for example: ["calls", "sms"]).
+        If None, include all event types in the count.
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a

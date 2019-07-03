@@ -4,7 +4,7 @@ All notable changes to FlowKit will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
-
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes event counts.[#992](https://github.com/Flowminder/FlowKit/issues/992)
 ### Added
 
 
@@ -28,7 +28,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added a `Geography` query class, to get geography data for a spatial unit.
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes unique location counts.[#949](https://github.com/Flowminder/FlowKit/issues/949)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes subscriber degree.[#969](https://github.com/Flowminder/FlowKit/issues/969)
-- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes event counts.[#992](https://github.com/Flowminder/FlowKit/issues/992)
 - Flowdb now contains an auxiliary table to record outcomes of queries that can be run as part of the regular ETL process [#988](https://github.com/Flowminder/FlowKit/issues/988)
 
 ### Changed

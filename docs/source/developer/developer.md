@@ -138,7 +138,7 @@ At present, the following query types are accessible through FlowAPI:
 
 -`event_count`
 
-    Count of event for individual subscribers in a time period.
+    Count of events (optionally of specific types) for individual subscribers in a time period.
 
 ### FlowAPI Access tokens
 
