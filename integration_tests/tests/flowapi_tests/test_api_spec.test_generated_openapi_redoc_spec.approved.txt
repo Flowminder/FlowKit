@@ -351,6 +351,9 @@
             "$ref": "#/components/schemas/SubscriberDegree"
           },
           {
+            "$ref": "#/components/schemas/TopUpAmount"
+          },
+          {
             "$ref": "#/components/schemas/UniqueLocationCounts"
           }
         ]
@@ -862,6 +865,37 @@
           "query_kind": {
             "enum": [
               "subscriber_degree"
+            ],
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start",
+          "stop"
+        ],
+        "type": "object"
+      },
+      "TopUpAmount": {
+        "properties": {
+          "query_kind": {
+            "enum": [
+              "topup_amount"
             ],
             "type": "string"
           },

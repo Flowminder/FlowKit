@@ -1324,11 +1324,7 @@ def subscriber_degree(
 
 
 def topup_amount(
-    *,
-    start: str,
-    stop: str,
-    aggregation_unit: str,
-    subscriber_subset: Union[dict, None] = None,
+    *, start: str, stop: str, subscriber_subset: Union[dict, None] = None
 ) -> dict:
     """
     Return query spec for topup amount
@@ -1339,8 +1335,6 @@ def topup_amount(
         ISO format date of the first day of the count, e.g. "2016-01-01"
     stop : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
-    aggrigate_unit : str
-        Unit of aggregation, e.g. "admin3"
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
@@ -1354,7 +1348,6 @@ def topup_amount(
         "query_kind": "topup_amount",
         "start": start,
         "stop": stop,
-        "aggregation_unit": aggregation_unit,
         "subscriber_subset": subscriber_subset,
     }
 

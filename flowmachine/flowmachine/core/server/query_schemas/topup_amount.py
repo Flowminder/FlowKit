@@ -17,7 +17,6 @@ class TopUpAmountSchema(Schema):
     query_kind = fields.String(validate=OneOf(["topup_amount"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
-    aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
 
     @post_load
@@ -26,12 +25,11 @@ class TopUpAmountSchema(Schema):
 
 
 class TopUpAmountExposed(BaseExposedQuery):
-    def __init__(self, *, start, stop, aggregation_unit, subscriber_subset=None):
+    def __init__(self, *, start, stop, subscriber_subset=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
-        self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
 
     @property
@@ -44,8 +42,5 @@ class TopUpAmountExposed(BaseExposedQuery):
         Query
         """
         return TopUpAmount(
-            start=self.start,
-            stop=self.stop,
-            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
-            subscriber_subset=self.subscriber_subset,
+            start=self.start, stop=self.stop, subscriber_subset=self.subscriber_subset
         )
