@@ -15,6 +15,7 @@ pytest-cov = "*"
 structlog = "*"
 requests = "*"
 psycopg2-binary = "*"
+testing-postgresql = "*"
 
 [packages]
 
