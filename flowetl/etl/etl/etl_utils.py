@@ -210,6 +210,31 @@ def find_files(*, files_path: Path, ignore_filenames=["README.md"]) -> List[Path
     return list(files)
 
 
+def find_files_matching_pattern(
+    *, files_path: Path, filename_pattern: str
+) -> List[Path]:
+    """
+    Returns a list of Path objects for all files found in the files location that match the given pattern.
+
+    Parameters
+    ----------
+    files_path : Path
+        The location of the files path
+    filename_pattern : str
+        Regular expression to match the filenames against
+
+    Returns
+    -------
+    List[Path]
+        List of matching files found
+    """
+    all_files = sorted([file for file in files_path.glob("*")])
+    matching_files = [
+        file for file in all_files if re.fullmatch(filename_pattern, file.name)
+    ]
+    return sorted(matching_files, key=lambda file: file.name)
+
+
 def extract_date_from_filename(filename, filename_pattern):
     """
     Return date extracted from the given filename based on the pattern.

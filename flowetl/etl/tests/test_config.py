@@ -14,7 +14,11 @@ from copy import deepcopy
 from pathlib import Path
 
 from etl.config_parser import validate_config, get_config_from_file
-from etl.etl_utils import find_files, extract_date_from_filename
+from etl.etl_utils import (
+    find_files,
+    extract_date_from_filename,
+    find_files_matching_pattern,
+)
 
 
 def test_config_validation(sample_config_dict):
@@ -97,6 +101,41 @@ def test_find_files_non_default_filter(tmpdir):
     files = find_files(files_path=tmpdir_path_obj, ignore_filenames=["B.txt", "A.txt"])
 
     assert set([file.name for file in files]) == set(["README.md"])
+
+
+def test_find_files_matching_pattern(tmpdir):
+    """
+    Test that find_files_matching_pattern() returns correct files.
+    """
+    tmpdir.join("A_01.txt").write("content")
+    tmpdir.join("A_02.txt").write("content")
+    tmpdir.join("B_01.txt").write("content")
+    tmpdir.join("B_02.txt").write("content")
+    tmpdir.join("README.md").write("content")
+
+    tmpdir_path_obj = Path(tmpdir)
+
+    files = find_files_matching_pattern(
+        files_path=tmpdir_path_obj, filename_pattern="(.)_01.txt"
+    )
+    assert ["A_01.txt", "B_01.txt"] == [file.name for file in files]
+
+    files = find_files_matching_pattern(
+        files_path=tmpdir_path_obj, filename_pattern="A_.*\.txt"
+    )
+    assert ["A_01.txt", "A_02.txt"] == [file.name for file in files]
+
+    files = find_files_matching_pattern(
+        files_path=tmpdir_path_obj, filename_pattern=".*"
+    )
+    assert ["A_01.txt", "A_02.txt", "B_01.txt", "B_02.txt", "README.md"] == [
+        file.name for file in files
+    ]
+
+    files = find_files_matching_pattern(
+        files_path=tmpdir_path_obj, filename_pattern="foobar.txt"
+    )
+    assert [] == [file.name for file in files]
 
 
 def test_get_config_from_file(tmpdir):
