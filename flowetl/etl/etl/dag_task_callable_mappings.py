@@ -27,6 +27,7 @@ from etl.production_task_callables import (
     success_branch__callable,
     trigger__callable,
 )
+from etl.postetl_queries import POSTETL_QUERIES_FOR_TYPE
 
 db_hook = PostgresHook(postgres_conn_id="flowdb")
 config_path = Path("/mounts/config")
@@ -87,7 +88,10 @@ PRODUCTION_ETL_TASK_CALLABLES = {
     "postload": partial(
         PythonOperator,
         provide_context=True,
-        python_callable=partial(run_postload_queries__callable, to_state="postload"),
+        python_callable=partial(
+            run_postload_queries__callable,
+            queries=POSTETL_QUERIES_FOR_TYPE,
+        ),
     ),
     "success_branch": partial(
         BranchPythonOperator,
