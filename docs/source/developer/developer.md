@@ -138,6 +138,9 @@ At present, the following query types are accessible through FlowAPI:
 - `topup_amount`
 
     Per-subscriber aggregate of topups.
+-`event_count`
+
+    Count of events (optionally of specific types) for individual subscribers in a time period.
 
 ### FlowAPI Access tokens
 
