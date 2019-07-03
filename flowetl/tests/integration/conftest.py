@@ -173,11 +173,23 @@ def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
 
 @pytest.fixture(scope="session", autouse=True)
 def pull_docker_images(docker_client, container_tag):
-    logger.info(f"Pulling docker images (tag='{container_tag}')...")
-    docker_client.images.pull("postgres", tag="11.0")
-    docker_client.images.pull("flowminder/flowdb", tag=container_tag)
-    docker_client.images.pull("flowminder/flowetl", tag=container_tag)
-    logger.info("Done pulling docker images.")
+    disable_pulling_docker_images = (
+        os.getenv(
+            "FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES", "FALSE"
+        ).upper()
+        == "TRUE"
+    )
+    if disable_pulling_docker_images:
+        logger.info(
+            "Not pulling docker images for FlowETL integration tests "
+            "(because FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES=TRUE)."
+        )
+    else:
+        logger.info(f"Pulling docker images (tag='{container_tag}')...")
+        docker_client.images.pull("postgres", tag="11.0")
+        docker_client.images.pull("flowminder/flowdb", tag=container_tag)
+        docker_client.images.pull("flowminder/flowetl", tag=container_tag)
+        logger.info("Done pulling docker images.")
 
 
 @pytest.fixture(scope="function")
