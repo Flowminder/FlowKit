@@ -22,6 +22,7 @@ from etl.etl_utils import (
     get_session,
     find_files_matching_pattern,
     extract_date_from_filename,
+    find_distinct_dates_in_table,
 )
 
 logger = structlog.get_logger("flowetl")
@@ -163,12 +164,9 @@ def production_trigger__callable(
             # the most be efficient if a lot of data is present (esp. data that has
             # already been processed). If it turns out too sluggish might be good to
             # think about a more efficient way to determine dates with unprocessed data.
-            dates_present = [
-                pendulum.parse(row["date"].strftime("%Y-%m-%d"))
-                for row in session.execute(
-                    f"SELECT DISTINCT date FROM (SELECT event_time::date as date FROM {source_table}) tmp"
-                ).fetchall()
-            ]
+            dates_present = find_distinct_dates_in_table(
+                session, source_table, event_time_col="event_time"
+            )
             unprocessed_dates = [
                 date
                 for date in dates_present
