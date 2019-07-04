@@ -25,7 +25,6 @@ from .location_event_counts import LocationEventCountsSchema
 from .unique_subscriber_counts import UniqueSubscriberCountsSchema
 from .location_introversion import LocationIntroversionSchema
 from .total_network_objects import TotalNetworkObjectsSchema
-from .radius_of_gyration import RadiusOfGyrationSchema
 from .dfs_metric_total_amount import DFSTotalMetricAmountSchema
 
 

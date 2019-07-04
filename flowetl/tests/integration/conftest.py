@@ -490,20 +490,25 @@ def wait_for_completion():
     seems OK...) three minutes raises a TimeoutError.
     """
 
-    def wait_func(end_state, dag_id, session=None, time_out=Interval(minutes=3)):
+    def wait_func(
+        end_state, fail_state, dag_id, session=None, time_out=Interval(minutes=10)
+    ):
         # if you actually pass None to DagRun.find it thinks None is the session
         # you want to use - need to not pass at all if you want airflow to pick
         # up correct session using it's provide_session decorator...
         if session is None:
-            kwargs = {"dag_id": dag_id, "state": end_state}
+            kwargs_expected = {"dag_id": dag_id, "state": end_state}
+            kwargs_fail = {"dag_id": dag_id, "state": fail_state}
         else:
-            kwargs = {"dag_id": dag_id, "state": end_state, "session": session}
+            kwargs_expected = {"dag_id": dag_id, "state": end_state, "session": session}
+            kwargs_fail = {"dag_id": dag_id, "state": fail_state, "session": session}
 
         t0 = now()
-        while len(DagRun.find(**kwargs)) != 1:
+        reached_end_state = False
+        while len(DagRun.find(**kwargs_expected)) != 1:
             sleep(1)
             t1 = now()
-            if (t1 - t0) > time_out:
+            if (t1 - t0) > time_out or len(DagRun.find(**kwargs_fail)) == 1:
                 raise TimeoutError(
                     f"DAG '{dag_id}' did not reach desired state {end_state}. This may be "
                     "due to missing config settings, syntax errors in one of its task, or "
