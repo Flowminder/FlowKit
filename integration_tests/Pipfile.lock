@@ -259,10 +259,10 @@
                 "asymmetric_crypto"
             ],
             "hashes": [
-                "sha256:583a6e363ea51434c4189e35d3832a23949cfa5203d60a8287b6be137a75528d"
+                "sha256:062d2cac64f5c02fd689105b99390b2490e550a1c0994cb9d781454ec31bd50c"
             ],
             "index": "pypi",
-            "version": "==3.19.0"
+            "version": "==3.20.0"
         },
         "flowapi": {
             "editable": true,
@@ -518,10 +518,10 @@
         },
         "pbr": {
             "hashes": [
-                "sha256:9181e2a34d80f07a359ff1d0504fad3a47e00e1cf2c475b0aa7dcb030af54c40",
-                "sha256:94bdc84da376b3dd5061aa0c3b6faffe943ee2e56fa4ff9bd63e1643932f34fc"
+                "sha256:36ebd78196e8c9588c972f5571230a059ff83783fabbbbedecc07be263ccd7e6",
+                "sha256:5a03f59455ad54f01a94c15829b8b70065462b7bd8d5d7e983306b59127fc841"
             ],
-            "version": "==5.3.1"
+            "version": "==5.4.0"
         },
         "pglast": {
             "hashes": [
