@@ -13,6 +13,7 @@ from flowmachine.features.subscriber import (
     SubscriberTAC,
     SubscriberHandset,
     SubscriberHandsets,
+    SubscriberHandsetCharacteristic,
     SubscriberPhoneType,
 )
 
@@ -122,4 +123,23 @@ def test_subscriber_phonetype(get_dataframe):
         .loc["YMBqRkzbbxGkX3zA"]
         .handset_type
         == "Feature"
+    )
+
+def test_subscriber_handset_characteristic(get_dataframe):
+    """Check that correct handset characteristic is returned."""
+
+    assert (
+        get_dataframe(SubscriberHandsetCharacteristic("2016-01-01", "2016-01-07", "hnd_type"))
+        .set_index("subscriber")
+        .loc["038OVABN11Ak4W5P"]
+        .value
+        == "Smart"
+    )
+
+    assert (
+        get_dataframe(SubscriberHandsetCharacteristic("2016-01-01", "2016-01-07", "brand",  method="last"))
+        .set_index("subscriber")
+        .loc["YMBqRkzbbxGkX3zA"]
+        .value
+        == "Sony"
     )
