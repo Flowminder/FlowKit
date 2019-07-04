@@ -16,7 +16,7 @@ class NocturnalEventsSchema(Schema):
     query_kind = fields.String(validate=OneOf(["nocturnal_events"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
-    hours = TupleField((fields.Number(required=True), fields.Number(required=True)))
+    hours = fields.Tuple((fields.Integer(), fields.Integer()))
     subscriber_subset = SubscriberSubset()
 
     @post_load
