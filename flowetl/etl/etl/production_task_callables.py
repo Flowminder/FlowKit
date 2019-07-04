@@ -117,6 +117,9 @@ def production_trigger__callable(
             for file, cdr_date in unprocessed_files_and_dates.items():
                 uuid = uuid1()
                 cdr_date_str = cdr_date.strftime("%Y%m%d")
+                execution_date = pendulum.Pendulum(
+                    cdr_date.year, cdr_date.month, cdr_date.day
+                )
                 config = {
                     "cdr_type": cdr_type,
                     "cdr_date": cdr_date,
@@ -125,7 +128,7 @@ def production_trigger__callable(
                 }
                 trigger_dag(
                     f"etl_{cdr_type}",
-                    execution_date=cdr_date,
+                    execution_date=execution_date,
                     run_id=f"{cdr_type.upper()}_{cdr_date_str}-{str(uuid)}",
                     conf=config,
                     replace_microseconds=False,
@@ -155,6 +158,9 @@ def production_trigger__callable(
             for cdr_date in unprocessed_dates:
                 uuid = uuid1()
                 cdr_date_str = cdr_date.strftime("%Y%m%d")
+                execution_date = pendulum.Pendulum(
+                    cdr_date.year, cdr_date.month, cdr_date.day
+                )
                 config = {
                     "cdr_type": cdr_type,
                     "cdr_date": cdr_date,
@@ -162,7 +168,7 @@ def production_trigger__callable(
                 }
                 trigger_dag(
                     f"etl_{cdr_type}",
-                    execution_date=cdr_date,
+                    execution_date=execution_date,
                     run_id=f"{cdr_type.upper()}_{cdr_date_str}-{str(uuid)}",
                     conf=config,
                     replace_microseconds=False,
