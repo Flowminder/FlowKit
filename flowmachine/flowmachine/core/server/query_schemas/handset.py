@@ -12,6 +12,7 @@ from .custom_fields import SubscriberSubset
 
 __all__ = ["HandsetSchema", "HandsetExposed"]
 
+
 class HandsetSchema(Schema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["handset"]))
@@ -19,15 +20,21 @@ class HandsetSchema(Schema):
     end_date = fields.Date(required=True)
     method = field.String(validate=OneOf(["last", "most-common"]))
     subscriber_subset = SubscriberSubset()
-    characteristic = fields.String(validate=OneOf(["hnd_type", "brand", "model",  "software_os_name", "software_os_vendor"]))
-
+    characteristic = fields.String(
+        validate=OneOf(
+            ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"]
+        )
+    )
 
     @post_load
     def make_query_object(self, params, **kwargs):
         return SubscriberHandsetExposed(**params)
 
+
 class HandsetExposed(BaseExposedQuery):
-    def __init__(self, *, start_date, end_date, method, characteristic, subscriber_subset=None):
+    def __init__(
+        self, *, start_date, end_date, method, characteristic, subscriber_subset=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start_date = start_date
@@ -52,4 +59,3 @@ class HandsetExposed(BaseExposedQuery):
             method=self.method,
             subscriber_subset=self.subscriber_subset,
         )
-

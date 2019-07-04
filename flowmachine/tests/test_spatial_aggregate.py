@@ -38,6 +38,7 @@ def test_can_be_aggregated_lon_lat(get_dataframe):
     df = get_dataframe(agg)
     assert ["lon", "lat", "total"] == list(df.columns)
 
+
 def test_can_be_aggregated_admin3_distribution(get_dataframe):
     """
     Categorical queries can be aggregated to a spatial level with 'distribution' method.
@@ -48,10 +49,7 @@ def test_can_be_aggregated_admin3_distribution(get_dataframe):
         spatial_unit=make_spatial_unit("admin", level=3),
         method="most-common",
     )
-    metric = SubscriberPhoneType(
-        "2016-01-01",
-        "2016-01-02",
-    )
+    metric = SubscriberPhoneType("2016-01-01", "2016-01-02")
     agg = JoinedSpatialAggregate(metric=metric, locations=locations, method="dist")
     df = get_dataframe(agg)
     assert ["pcod", "metric", "key", "value"] == list(df.columns)

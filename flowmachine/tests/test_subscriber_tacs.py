@@ -125,11 +125,14 @@ def test_subscriber_phonetype(get_dataframe):
         == "Feature"
     )
 
+
 def test_subscriber_handset_characteristic(get_dataframe):
     """Check that correct handset characteristic is returned."""
 
     assert (
-        get_dataframe(SubscriberHandsetCharacteristic("2016-01-01", "2016-01-07", "hnd_type"))
+        get_dataframe(
+            SubscriberHandsetCharacteristic("2016-01-01", "2016-01-07", "hnd_type")
+        )
         .set_index("subscriber")
         .loc["038OVABN11Ak4W5P"]
         .value
@@ -137,7 +140,11 @@ def test_subscriber_handset_characteristic(get_dataframe):
     )
 
     assert (
-        get_dataframe(SubscriberHandsetCharacteristic("2016-01-01", "2016-01-07", "brand",  method="last"))
+        get_dataframe(
+            SubscriberHandsetCharacteristic(
+                "2016-01-01", "2016-01-07", "brand", method="last"
+            )
+        )
         .set_index("subscriber")
         .loc["YMBqRkzbbxGkX3zA"]
         .value

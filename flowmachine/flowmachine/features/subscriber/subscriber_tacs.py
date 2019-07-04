@@ -17,22 +17,62 @@ from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ...core import Table
 
-valid_characteristics = {'tac', 'syncml_dm_app_browser', 'height',
-'wap_push_ota_settings', 'display_height', 'hardware_bluetooth', 'depth',
-'j2me_midp_20', 'weight', 'hardware_edge', 'syncml_dm_acc_gprs',
-'wap_push_oma_settings', 'wap_push_ota_app_browser', 'display_colors', 'brand',
-'wap_push_ota_bookmarks', 'software_os_version', 'j2me_cldc_11',
-'wap_push_oma_app_ims', 'width', 'syncml_dm_app_java', 'display_width',
-'hardware_gps', 'model', 'wap_push_oma_app_poc', 'hardware_gprs',
-'j2me_cldc_10', 'syncml_dm_app_internet', 'wap_2_0', 'hardware_umts',
-'syncml_dm_app_bookmark', 'software_os_name', 'software_os_vendor',
-'wap_push_oma_app_browser', 'wap_push_oma_cp_bookmarks', 'mms_built_in_camera',
-'syncml_dm_app_mms', 'display_type', 'wap_push_ota_app_mms', 'j2me_midp_10',
-'wap_push_ota_support', 'wap_1_2_1', 'mms_receiver', 'syncml_dm_settings',
-'j2me_cldc_20', 'wap_push_oma_app_internet', 'hnd_type',
-'wap_push_ota_multi_shot', 'wap_push_ota_single_shot',
-'wap_push_ota_app_internet', 'wap_push_oma_app_mms', 'j2me_midp_21',
-'hardware_wifi'}
+valid_characteristics = {
+    "tac",
+    "syncml_dm_app_browser",
+    "height",
+    "wap_push_ota_settings",
+    "display_height",
+    "hardware_bluetooth",
+    "depth",
+    "j2me_midp_20",
+    "weight",
+    "hardware_edge",
+    "syncml_dm_acc_gprs",
+    "wap_push_oma_settings",
+    "wap_push_ota_app_browser",
+    "display_colors",
+    "brand",
+    "wap_push_ota_bookmarks",
+    "software_os_version",
+    "j2me_cldc_11",
+    "wap_push_oma_app_ims",
+    "width",
+    "syncml_dm_app_java",
+    "display_width",
+    "hardware_gps",
+    "model",
+    "wap_push_oma_app_poc",
+    "hardware_gprs",
+    "j2me_cldc_10",
+    "syncml_dm_app_internet",
+    "wap_2_0",
+    "hardware_umts",
+    "syncml_dm_app_bookmark",
+    "software_os_name",
+    "software_os_vendor",
+    "wap_push_oma_app_browser",
+    "wap_push_oma_cp_bookmarks",
+    "mms_built_in_camera",
+    "syncml_dm_app_mms",
+    "display_type",
+    "wap_push_ota_app_mms",
+    "j2me_midp_10",
+    "wap_push_ota_support",
+    "wap_1_2_1",
+    "mms_receiver",
+    "syncml_dm_settings",
+    "j2me_cldc_20",
+    "wap_push_oma_app_internet",
+    "hnd_type",
+    "wap_push_ota_multi_shot",
+    "wap_push_ota_single_shot",
+    "wap_push_ota_app_internet",
+    "wap_push_oma_app_mms",
+    "j2me_midp_21",
+    "hardware_wifi",
+}
+
 
 class SubscriberTACs(SubscriberFeature):
     """
@@ -372,6 +412,7 @@ class SubscriberHandset(SubscriberFeature):
     def _make_query(self):
         return self.joined.get_query()
 
+
 class SubscriberHandsetCharacteristic(SubscriberFeature):
     """
     Class extracting a single characteristic from the handset.
@@ -430,6 +471,7 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
     a particular type of phone, rather than the type of their most commonly
     used phone.
     """
+
     def __init__(
         self,
         start,

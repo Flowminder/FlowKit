@@ -93,7 +93,16 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             ...
     """
 
-    allowed_methods = {"avg", "max", "min", "median", "mode", "stddev", "variance", "dist"}
+    allowed_methods = {
+        "avg",
+        "max",
+        "min",
+        "median",
+        "mode",
+        "stddev",
+        "variance",
+        "dist",
+    }
 
     def __init__(self, *, metric, locations, method="avg"):
         self.metric = metric
@@ -202,9 +211,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     @property
     def column_names(self) -> List[str]:
         if self.method == "dist":
-            return self.spatial_unit.location_id_columns + [
-                "metric", "key", "value",
-            ]
+            return self.spatial_unit.location_id_columns + ["metric", "key", "value"]
         else:
             return self.spatial_unit.location_id_columns + [
                 cn for cn in self.metric.column_names if cn != "subscriber"
