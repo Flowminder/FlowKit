@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes event counts.[#992](https://github.com/Flowminder/FlowKit/issues/992)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up amount.[#967](https://github.com/Flowminder/FlowKit/issues/967)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up balance.[#968](https://github.com/Flowminder/FlowKit/issues/968)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes pareto interactions.[#1012](https://github.com/Flowminder/FlowKit/issues/1012)
 
