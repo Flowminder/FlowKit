@@ -53,9 +53,9 @@ FlowDB details are found [here](#flowdb).
 We are creating FlowKit at [Flowminder](http://flowminder.org).
 
 #### Get involved
-You are welcome to contribute to the FlowKit library. To get started:  
+You are welcome to contribute to the FlowKit library. To get started:
 
-1. Check [Issues](https://github.com/Flowminder/FlowKit/issues) to see what we are working on right now.  
+1. Check [Issues](https://github.com/Flowminder/FlowKit/issues) to see what we are working on right now.
 2. Express your interest in a particular [issue](https://github.com/Flowminder/FlowKit/issues) by submitting a comment, or submit your own [issue](https://github.com/Flowminder/FlowKit/issues).
 3. We will get back to you about working together.
 
@@ -140,7 +140,11 @@ At present, the following query types are accessible through FlowAPI:
 
     Aggregate of topup amount for individual subscribers.
 
--`event_count`
+- `topup_balance`
+
+    Return top-up balance statistics for specified dates and (optionally, with default "all") for a specified set of subscribers
+
+- `event_count`
 
     Count of events (optionally of specific types) for individual subscribers in a time period.
 

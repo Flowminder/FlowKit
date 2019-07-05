@@ -38,6 +38,7 @@ from .client import (
     unique_location_counts,
     subscriber_degree,
     topup_amount,
+    topup_balance,
     event_count,
 )
 
@@ -69,5 +70,6 @@ __all__ = [
     "unique_location_counts",
     "subscriber_degree",
     "topup_amount",
+    "topup_balance",
     "event_count",
 ]
