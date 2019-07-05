@@ -1432,7 +1432,6 @@ def pareto_interactions(
         "query_kind": "pareto_interactions",
         "start": start,
         "stop": stop,
-        "direction": direction,
-        "event_types": event_types,
+        "proportion": proportion,
         "subscriber_subset": subscriber_subset,
     }
