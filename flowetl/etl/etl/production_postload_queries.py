@@ -16,12 +16,7 @@ logger = structlog.get_logger("flowetl")
 
 
 # pylint: disable=unused-argument
-def num_total_calls__callable(
-    *,
-    cdr_date: pendulumDate,
-    session: Session,
-    **kwargs
-):
+def num_total_calls__callable(*, cdr_date: pendulumDate, session: Session, **kwargs):
     """
     Function to determine the number of total calls
     """

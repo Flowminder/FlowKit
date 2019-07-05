@@ -89,8 +89,7 @@ PRODUCTION_ETL_TASK_CALLABLES = {
         PythonOperator,
         provide_context=True,
         python_callable=partial(
-            run_postload_queries__callable,
-            queries=POSTETL_QUERIES_FOR_TYPE,
+            run_postload_queries__callable, queries=POSTETL_QUERIES_FOR_TYPE
         ),
     ),
     "success_branch": partial(
