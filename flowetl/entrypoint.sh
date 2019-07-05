@@ -6,6 +6,19 @@
 
 # Used to fake a user and group when passed to docker and does not already exist
 # https://cwrap.org/nss_wrapper.html
+
+# allow the container to be started with `--user`
+if [ "$1" = 'webserver' ] && [ "$(id -u)" = '0' ]; then
+	  chown -R postgres "$AIRFLOW_HOME"
+	  chmod 700 "$AIRFLOW_HOME"
+fi
+
+if [ "$1" = 'webserver' ]; then
+    # allow to fail if not uid 0
+	  chown -R postgres "$AIRFLOW_HOME" 2>/dev/null || :
+	  chmod 700 "$AIRFLOW_HOME" 2>/dev/null || :
+fi
+
 if ! getent passwd "$(id -u)" &> /dev/null && [ -e /usr/lib/libnss_wrapper.so ]; then
 		echo "airflow:x:$(id -u):$(id -g):Airflow:$HOME:/bin/false" > "$NSS_WRAPPER_PASSWD"
 		echo "airflow:x:$(id -g):" > "$NSS_WRAPPER_GROUP"

@@ -41,6 +41,8 @@ COPY --chown=airflow:airflow ./dags/* ${AIRFLOW_HOME}/src/
 
 # Needed on $AIRFLOW_HOME so that different users passed through --user
 # have the permission to create and use their files for Airflow
+#
+# When possible, this will get changed to 700 at runtime (uid 0)
 RUN chmod -R 777 ${AIRFLOW_HOME}
 
 WORKDIR ${AIRFLOW_HOME}
