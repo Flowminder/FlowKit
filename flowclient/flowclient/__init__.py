@@ -39,6 +39,7 @@ from .client import (
     subscriber_degree,
     topup_balance,
     event_count,
+    pareto_interactions,
 )
 
 __all__ = [
@@ -70,4 +71,5 @@ __all__ = [
     "subscriber_degree",
     "topup_balance",
     "event_count",
+    "pareto_interactions",
 ]
