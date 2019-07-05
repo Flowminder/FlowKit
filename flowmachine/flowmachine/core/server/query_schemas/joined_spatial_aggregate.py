@@ -16,6 +16,9 @@ from flowmachine.core.server.query_schemas.event_count import EventCountSchema
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
+from flowmachine.core.server.query_schemas.pareto_interactions import(
+    ParetoInteractionsSchema,
+)
 from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     InputToSpatialAggregate,
@@ -35,6 +38,7 @@ class JoinableMetrics(OneOfSchema):
         "topup_balance": TopUpBalanceSchema,
         "subscriber_degree": SubscriberDegreeSchema,
         "event_count": EventCountSchema,
+        "pareto_interactions": ParetoInteractionsSchema,
     }
 
 
