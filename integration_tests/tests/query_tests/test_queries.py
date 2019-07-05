@@ -164,9 +164,7 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
                 "metric": flowclient.pareto_interactions(
-                    start="2016-01-01",
-                    stop="2016-01-02",
-                    proportion="0.8",
+                    start="2016-01-01", stop="2016-01-02", proportion="0.8"
                 ),
             },
         ),

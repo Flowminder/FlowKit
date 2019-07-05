@@ -16,7 +16,7 @@ from flowmachine.core.server.query_schemas.event_count import EventCountSchema
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
-from flowmachine.core.server.query_schemas.pareto_interactions import(
+from flowmachine.core.server.query_schemas.pareto_interactions import (
     ParetoInteractionsSchema,
 )
 from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema

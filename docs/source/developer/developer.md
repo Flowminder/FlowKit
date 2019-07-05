@@ -144,6 +144,12 @@ At present, the following query types are accessible through FlowAPI:
 
     Count of events (optionally of specific types) for individual subscribers in a time period.
 
+- `pareto_interactions`
+
+    Returns a two columns, a subscriber, pareto - the proportion
+    of that subscribers contacts who account for the requested
+    proportion (0.8, by default) of their interactions in this time period.
+
 ### FlowAPI Access tokens
 
 As explained in the [quick install guide](../install.md#quickinstall), user authentication and access control are handled through the use of [JSON Web Tokens (JWT)](http://jwt.io). There are two categories of permissions which can be granted to a user:
