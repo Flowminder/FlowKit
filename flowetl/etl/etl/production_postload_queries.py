@@ -6,13 +6,8 @@
 """
 Contains the definition of callables to be used in the production ETL dag.
 """
-import structlog
 from sqlalchemy.orm.session import Session
 from pendulum.date import Date as pendulumDate
-
-from etl.model import ETLPostQueryOutcome
-
-logger = structlog.get_logger("flowetl")
 
 
 # pylint: disable=unused-argument

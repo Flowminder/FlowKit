@@ -102,6 +102,46 @@ def test_single_file_previously_quarantined(
     assert expected_table_exists(table_name="mds_20160101")
     assert expected_table_exists(table_name="topups_20160101")
 
+    def expected_postetl_outcome_exists(
+        *,
+        cdr_type,
+        cdr_date,
+        outcome,
+        type_of_query_or_check,
+        optional_comment_or_description,
+    ):
+        """
+        Return True if the expected outcome exists in flowdb, otherwise False.
+        """
+
+        connection, _ = flowdb_connection
+        sql = f"""
+        select
+            1
+        from
+            etl.post_etl_queries
+        where
+            cdr_type = '{cdr_type}'
+            and
+            cdr_date = '{cdr_date}'
+            and
+            type_of_query_or_check = '{type_of_query_or_check}'
+            and
+            outcome = '{outcome}'
+            and
+            optional_comment_or_description = '{optional_comment_or_description}'
+        """
+        res = connection.execute(sql).fetchone()[0]
+        return res == 1
+
+    assert expected_postetl_outcome_exists(
+        cdr_type="calls",
+        cdr_date="20160102",
+        outcome="0",
+        type_of_query_or_check="num_total_calls",
+        optional_comment_or_description="The number of total calls",
+    )
+
     def get_etl_states(*, cdr_type, cdr_date):
         """
         Return the ETL states present for the given cdr type and date.
