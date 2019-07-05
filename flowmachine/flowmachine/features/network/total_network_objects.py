@@ -11,11 +11,11 @@ at the network level.
 
 """
 
-from typing import List
+from typing import List, Optional
 
 from ...core.mixins import GeoDataMixin
-from ...core import JoinToLocation
-from flowmachine.utils import get_columns_for_level
+from ...core import location_joined_query, make_spatial_unit
+from ...core.spatial_unit import AnySpatialUnit
 from ...core.query import Query
 from ..utilities import EventsTablesUnion
 
@@ -37,18 +37,19 @@ class TotalNetworkObjects(GeoDataMixin, Query):
     total_by : {'second', 'minute', 'hour', 'day', 'month', 'year'}
         A period definition to group data by.
     table : str
-        Either 'calls', 'sms', or other table under `events.*`. If
-        no specific table is provided this will collect
-        statistics from all tables.
-    network_object : {'cell', 'versioned-cell', 'versioned-site'}
-        Objects to track, defaults to 'cells', the unversioned lowest
+        Either 'calls', 'sms', or other table under `events.*`. If no specific
+        table is provided this will collect statistics from all tables.
+    network_object : flowmachine.core.spatial_unit.*SpatialUnit, default cell
+        Objects to track, defaults to CellSpatialUnit(), the unversioned lowest
         level of infrastructure available.
-    level : {'adminN', 'grid', 'polygon'}
-        Level to facet on, defaults to 'admin0'
+        Must have network_object.is_network_object == True.
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin0
+        Spatial unit to facet on.
+        Must have spatial_unit.is_network_object == False.
 
     Other Parameters
     ----------------
-    Passed to JoinToLocation
+    Passed to EventsTablesUnion
 
     Examples
     --------
@@ -68,17 +69,12 @@ class TotalNetworkObjects(GeoDataMixin, Query):
         *,
         table="all",
         total_by="day",
-        network_object="cell",
-        level="admin0",
-        column_name=None,
-        size=None,
-        polygon_table=None,
-        geom_col="geom",
+        network_object: AnySpatialUnit = make_spatial_unit("cell"),
+        spatial_unit: Optional[AnySpatialUnit] = None,
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
     ):
-        self.table = table.lower()
         self.start = (
             self.connection.min_date(table=table).strftime("%Y-%m-%d")
             if start is None
@@ -89,55 +85,37 @@ class TotalNetworkObjects(GeoDataMixin, Query):
             if stop is None
             else stop
         )
+
+        self.table = table.lower()
         if self.table != "all" and not self.table.startswith("events"):
             self.table = "events.{}".format(self.table)
-        self.network_object = network_object.lower()
-        if self.network_object == "cell":
-            events = EventsTablesUnion(
-                self.start,
-                self.stop,
-                tables=self.table,
-                columns=["location_id", "datetime"],
-                hours=hours,
-                subscriber_subset=subscriber_subset,
-                subscriber_identifier=subscriber_identifier,
-            )
-        elif self.network_object in {"versioned-cell", "versioned-site"}:
-            events = EventsTablesUnion(
-                self.start,
-                self.stop,
-                tables=self.table,
-                columns=["location_id", "datetime"],
-                hours=hours,
-                subscriber_subset=subscriber_subset,
-                subscriber_identifier=subscriber_identifier,
-            )
-            events = JoinToLocation(
-                events,
-                level=self.network_object,
-                time_col="datetime",
-                column_name=column_name,
-                size=size,
-                polygon_table=polygon_table,
-                geom_col=geom_col,
-            )
+
+        network_object.verify_criterion("is_network_object")
+        self.network_object = network_object
+
+        if spatial_unit is None:
+            self.spatial_unit = make_spatial_unit("admin", level=0)
         else:
-            raise ValueError("{} is not a valid network object.".format(network_object))
-        self.level = level.lower()
-        if self.level in {
-            "cell",
-            "versioned-cell",
-            "versioned-site",
-        }:  # No sense in aggregating network object to
-            raise ValueError("{} is not a valid level".format(level))  # network object
-        self.joined = JoinToLocation(
-            events,
-            level=level,
+            self.spatial_unit = spatial_unit
+        # No sense in aggregating network object to network object
+        self.spatial_unit.verify_criterion("is_network_object", negate=True)
+
+        events = location_joined_query(
+            EventsTablesUnion(
+                self.start,
+                self.stop,
+                tables=self.table,
+                columns=["location_id", "datetime"],
+                hours=hours,
+                subscriber_subset=subscriber_subset,
+                subscriber_identifier=subscriber_identifier,
+            ),
+            spatial_unit=self.network_object,
             time_col="datetime",
-            column_name=column_name,
-            size=size,
-            polygon_table=polygon_table,
-            geom_col=geom_col,
+        )
+
+        self.joined = location_joined_query(
+            events, spatial_unit=self.spatial_unit, time_col="datetime"
         )
         self.total_by = total_by.lower()
         if self.total_by not in valid_periods:
@@ -147,14 +125,11 @@ class TotalNetworkObjects(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return get_columns_for_level(self.level, self.joined.column_name) + [
-            "value",
-            "datetime",
-        ]
+        return self.spatial_unit.location_id_columns + ["value", "datetime"]
 
     def _make_query(self):
-        cols = get_columns_for_level(self.network_object)
-        group_cols = get_columns_for_level(self.level, self.joined.column_name)
+        cols = self.network_object.location_id_columns
+        group_cols = self.spatial_unit.location_id_columns
         for column in group_cols:
             if column in cols:
                 cols.remove(column)
@@ -180,22 +155,18 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
 
     Parameters
     ----------
-    TotalNetworkObjects
+    total_network_objects : TotalNetworkObjects
 
     statistic : {'avg', 'max', 'min', 'median', 'mode', 'stddev', 'variance'}
         Statistic to calculate, defaults to 'avg'.
 
     aggregate_by : {'second', 'minute', 'hour', 'day', 'month', 'year', 'century'}
         A period definition to calculate statistics over, defaults to the one
-        greater than period.
-
-    Other Parameters
-    ----------------
-    Passed to JoinToLocation
+        greater than total_network_objects.total_by.
 
     Examples
     --------
-    >>> t = AggregateNetworkObjects()
+    >>> t = AggregateNetworkObjects(total_network_objects=TotalNetworkObjects())
     >>> t.get_dataframe()
           name  total                  datetime
     0  Nepal     55 2016-01-01 00:00:00+00:00
@@ -237,21 +208,16 @@ class AggregateNetworkObjects(GeoDataMixin, Query):
             raise ValueError(
                 "{} is not a valid aggregate_by value.".format(self.aggregate_by)
             )
+        self.spatial_unit = self.total_objs.spatial_unit
 
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return get_columns_for_level(
-            self.total_objs.level, self.total_objs.joined.column_name
-        ) + ["value", "datetime"]
+        return self.spatial_unit.location_id_columns + ["value", "datetime"]
 
     def _make_query(self):
-        group_cols = ",".join(
-            get_columns_for_level(
-                self.total_objs.level, self.total_objs.joined.column_name
-            )
-        )
+        group_cols = ",".join(self.spatial_unit.location_id_columns)
         if self.statistic == "mode":
             av_call = f"pg_catalog.mode() WITHIN GROUP(ORDER BY z.value)"
         else:

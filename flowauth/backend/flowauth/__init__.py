@@ -13,6 +13,7 @@ from flask_principal import Principal, identity_loaded, UserNeed, RoleNeed
 from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
 from flowauth.config import get_config
 
+from .config import get_config
 from .invalid_usage import InvalidUsage
 from .models import *
 from .admin import blueprint as admin_blueprint
@@ -154,3 +155,9 @@ def create_app(test_config=None):
     app.cli.add_command(init_db_command)
     app.cli.add_command(add_admin_command)
     return app
+
+
+from ._version import get_versions
+
+__version__ = get_versions()["version"]
+del get_versions

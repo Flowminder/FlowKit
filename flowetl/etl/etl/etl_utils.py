@@ -114,6 +114,12 @@ def construct_etl_dag(
         schedule_interval=None,
         default_args=default_args,
         template_searchpath=config_path,  # template paths will be relative to this
+        user_defined_macros={
+            "get_extract_table": lambda execution_date: f"etl.x{ cdr_type }_{ execution_date }",
+            "get_transform_table": lambda execution_date: f"etl.t{ cdr_type }_{ execution_date }",
+            "get_load_table": lambda execution_date: f"events.{ cdr_type }_{ execution_date }",
+            "cdr_type": cdr_type,
+        },
     ) as dag:
 
         init = init(task_id="init")
@@ -275,41 +281,6 @@ def get_config(*, file_name: str, cdr_type_config: dict) -> dict:
     template_path = f"etl/{parsed_file_name_config['cdr_type']}"
     other_config = {"file_name": file_name, "template_path": template_path}
     return {**parsed_file_name_config, **other_config}
-
-
-def generate_table_names(
-    *, cdr_type: CDRType, cdr_date: pendulumDate, uuid: UUID
-) -> dict:
-    """
-    Generates table names for the various stages of the ETL process.
-
-    Parameters
-    ----------
-    cdr_type : CDRType
-        The type of CDR we are dealing with - used to
-        construct table name for the data's final
-        resting place.
-    cdr_date: pendulumDate
-        The date associated to this files data
-    uuid : UUID
-        A uuid to be used in generating table names
-
-    Returns
-    -------
-    dict
-        [description]
-    """
-    uuid_sans_underscore = str(uuid).replace("-", "")
-
-    extract_table = f"etl.x{uuid_sans_underscore}"
-    transform_table = f"etl.t{uuid_sans_underscore}"
-    load_table = f"events.{cdr_type}_{str(cdr_date.date()).replace('-','')}"
-
-    return {
-        "extract_table": extract_table,
-        "transform_table": transform_table,
-        "load_table": load_table,
-    }
 
 
 def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:

@@ -110,32 +110,6 @@ def test_sql_validation():
         pretty_sql(sql)
 
 
-@pytest.mark.parametrize(
-    "level, column_name, error",
-    [
-        ("polygon", None, ValueError),
-        ("polygon", 9, TypeError),
-        ("badlevel", None, BadLevelError),
-    ],
-)
-def test_columns_for_level_errors(level, column_name, error):
-    """
-    Test that get_columns_for_level raises correct errors
-    """
-    with pytest.raises(error):
-        get_columns_for_level(level, column_name)
-
-
-def test_column_list():
-    """
-    Test that supplying the column name as a list returns it as a new list.
-    """
-    passed_cols = ["frogs", "dogs"]
-    returned_cols = get_columns_for_level("admin0", passed_cols)
-    assert passed_cols == returned_cols
-    assert id(passed_cols) != id(returned_cols)
-
-
 def test_datestring_parse_error():
     """
     Test that correct error is raised when failing to parse a datestring.
@@ -165,6 +139,23 @@ def test_get_secrets_default(monkeypatch):
     the_secret_name = "SECRET"
     secret = getsecret(the_secret_name, the_secret)
     assert the_secret == secret
+
+
+@pytest.mark.parametrize(
+    "column_name, name, alias",
+    [
+        ("column", "column", "column"),
+        ("column AS alias", "column", "alias"),
+        ("column as alias", "column", "alias"),
+        ("table.column", "table.column", "column"),
+        ("table.column AS alias", "table.column", "alias"),
+    ],
+)
+def test_get_name_and_alias(column_name, name, alias):
+    """
+    Test that get_name_and_alias correctly splits a column name into name and alias.
+    """
+    assert (name, alias) == get_name_and_alias(column_name)
 
 
 def test_convert_dict_keys_to_strings():
@@ -215,17 +206,18 @@ def test_print_dependency_tree():
         )
     )
     q = daily_location(
-        date="2016-01-02",
-        level="admin2",
-        method="most-common",
-        subscriber_subset=subscriber_subsetter,
+        date="2016-01-02", method="most-common", subscriber_subset=subscriber_subsetter
     )
 
     expected_output = textwrap.dedent(
         """\
         <Query of type: MostFrequentLocation, query_id: 'xxxxx'>
-          - <Query of type: JoinToLocation, query_id: 'xxxxx'>
-             - <Query of type: _SubscriberCells, query_id: 'xxxxx'>
+          - <Query of type: SubscriberLocations, query_id: 'xxxxx'>
+             - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+                - <Table: 'geography.admin3', query_id: 'xxxxx'>
+             - <Query of type: JoinToLocation, query_id: 'xxxxx'>
+                - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+                   - <Table: 'geography.admin3', query_id: 'xxxxx'>
                 - <Query of type: EventsTablesUnion, query_id: 'xxxxx'>
                    - <Query of type: EventTableSubset, query_id: 'xxxxx'>
                       - <Query of type: CustomQuery, query_id: 'xxxxx'>
@@ -235,8 +227,8 @@ def test_print_dependency_tree():
                       - <Query of type: CustomQuery, query_id: 'xxxxx'>
                       - <Table: 'events.calls', query_id: 'xxxxx'>
                          - <Table: 'events.calls', query_id: 'xxxxx'>
-             - <Query of type: CellToAdmin, query_id: 'xxxxx'>
-                - <Query of type: CellToPolygon, query_id: 'xxxxx'>
+          - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+             - <Table: 'geography.admin3', query_id: 'xxxxx'>
         """
     )
 
@@ -267,7 +259,7 @@ def test_plot_dependency_graph():
     """
     Test that plot_dependency_graph() runs and returns the expected IPython.display objects.
     """
-    query = daily_location(date="2016-01-02", level="admin2", method="most-common")
+    query = daily_location(date="2016-01-02")
     output_svg = plot_dependency_graph(query, format="svg")
     output_png = plot_dependency_graph(query, format="png", width=600, height=200)
 

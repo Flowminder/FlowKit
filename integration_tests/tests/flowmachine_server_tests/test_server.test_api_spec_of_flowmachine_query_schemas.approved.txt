@@ -144,6 +144,58 @@
     ],
     "type": "object"
   },
+  "EventCount": {
+    "properties": {
+      "direction": {
+        "enum": [
+          "both",
+          "in",
+          "out"
+        ],
+        "type": "string"
+      },
+      "event_types": {
+        "items": {
+          "enum": [
+            "calls",
+            "mds",
+            "sms",
+            "topups"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "nullable": true,
+        "type": "array"
+      },
+      "query_kind": {
+        "enum": [
+          "event_count"
+        ],
+        "type": "string"
+      },
+      "start": {
+        "format": "date",
+        "type": "string"
+      },
+      "stop": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "start",
+      "stop"
+    ],
+    "type": "object"
+  },
   "FlowmachineQuerySchema": {
     "discriminator": {
       "mapping": {
@@ -326,14 +378,30 @@
   "JoinableMetrics": {
     "discriminator": {
       "mapping": {
+        "event_count": "#/components/schemas/EventCount",
         "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
+        "subscriber_degree": "#/components/schemas/SubscriberDegree",
+        "topup_amount": "#/components/schemas/TopUpAmount",
+        "topup_balance": "#/components/schemas/TopUpBalance",
         "unique_location_counts": "#/components/schemas/UniqueLocationCounts"
       },
       "propertyName": "query_kind"
     },
     "oneOf": [
       {
+        "$ref": "#/components/schemas/EventCount"
+      },
+      {
         "$ref": "#/components/schemas/RadiusOfGyration"
+      },
+      {
+        "$ref": "#/components/schemas/SubscriberDegree"
+      },
+      {
+        "$ref": "#/components/schemas/TopUpAmount"
+      },
+      {
+        "$ref": "#/components/schemas/TopUpBalance"
       },
       {
         "$ref": "#/components/schemas/UniqueLocationCounts"
@@ -822,6 +890,130 @@
     },
     "required": [
       "locations"
+    ],
+    "type": "object"
+  },
+  "SubscriberDegree": {
+    "properties": {
+      "direction": {
+        "enum": [
+          "both",
+          "in",
+          "out"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "subscriber_degree"
+        ],
+        "type": "string"
+      },
+      "start": {
+        "format": "date",
+        "type": "string"
+      },
+      "stop": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "start",
+      "stop"
+    ],
+    "type": "object"
+  },
+  "TopUpAmount": {
+    "properties": {
+      "query_kind": {
+        "enum": [
+          "topup_amount"
+        ],
+        "type": "string"
+      },
+      "start": {
+        "format": "date",
+        "type": "string"
+      },
+      "statistic": {
+        "enum": [
+          "avg",
+          "max",
+          "median",
+          "min",
+          "mode",
+          "stddev",
+          "variance"
+        ],
+        "type": "string"
+      },
+      "stop": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "start",
+      "statistic",
+      "stop"
+    ],
+    "type": "object"
+  },
+  "TopUpBalance": {
+    "properties": {
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "topup_balance"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "statistic": {
+        "enum": [
+          "avg",
+          "max",
+          "median",
+          "min",
+          "mode",
+          "stddev",
+          "variance"
+        ],
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "end_date",
+      "start_date",
+      "statistic"
     ],
     "type": "object"
   },

@@ -37,5 +37,8 @@ setup(
         "zxcvbn",
         "cryptography",
     ],
-    extras_require={"test": ["pytest", "coverage"], "postgres": ["psycopg2-binary"]},
+    extras_require={
+        "test": ["pytest", "coverage", "flowkit-jwt-generator"],
+        "postgres": ["psycopg2-binary"],
+    },
 )

@@ -58,10 +58,30 @@ def test_single_file_previously_quarantined(
 
     # 1 calls, 1 sms, 1 mds and 1 topups DAG should run and we wait for
     # their completion
-    wait_for_completion("success", "etl_calls", session=flowetl_db_session)
-    wait_for_completion("success", "etl_sms", session=flowetl_db_session)
-    wait_for_completion("success", "etl_mds", session=flowetl_db_session)
-    wait_for_completion("success", "etl_topups", session=flowetl_db_session)
+    wait_for_completion(
+        end_state="success",
+        fail_state="failed",
+        dag_id="etl_calls",
+        session=flowetl_db_session,
+    )
+    wait_for_completion(
+        end_state="success",
+        fail_state="failed",
+        dag_id="etl_sms",
+        session=flowetl_db_session,
+    )
+    wait_for_completion(
+        end_state="success",
+        fail_state="failed",
+        dag_id="etl_mds",
+        session=flowetl_db_session,
+    )
+    wait_for_completion(
+        end_state="success",
+        fail_state="failed",
+        dag_id="etl_topups",
+        session=flowetl_db_session,
+    )
 
     # make sure files are where they should be
 

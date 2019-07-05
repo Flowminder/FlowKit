@@ -14,7 +14,6 @@ by the count of days it appears as a daily_location for that subscriber.
 from typing import List
 
 from flowmachine.features.subscriber.metaclasses import SubscriberFeature
-from flowmachine.utils import get_columns_for_level
 
 
 class LocationVisits(SubscriberFeature):
@@ -25,7 +24,8 @@ class LocationVisits(SubscriberFeature):
     Examples
     --------
             >>> lv = LocationVisits('2016-01-01', '2016-01-04',
-                                    level = 'admin3', method = 'last', hours = (5,17))
+                                    spatial_unit=make_spatial_unit('admin', level=3),
+                                    method='last', hours=(5,17))
             >>> lv.head(4)
                     subscriber                name       dl_count
                 0   038OVABN11Ak4W5P    Dolpa      5
@@ -36,42 +36,33 @@ class LocationVisits(SubscriberFeature):
 
     def __init__(self, day_trajectories):
         self.day_trajectories = day_trajectories
-        self.level = day_trajectories.level
-        self.column_name = day_trajectories.column_name
+        self.spatial_unit = day_trajectories.spatial_unit
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return (
-            ["subscriber"]
-            + get_columns_for_level(self.level, self.column_name)
-            + ["dl_count"]
-        )
+        return ["subscriber"] + self.spatial_unit.location_id_columns + ["dl_count"]
 
     def _make_query(self):
         """
         Default query method implemented in the
         metaclass Query().
         """
-        relevant_columns = ", ".join(
-            get_columns_for_level(self.level, self.column_name)
-        )
+        location_columns = ", ".join(self.spatial_unit.location_id_columns)
 
-        sql = """
+        sql = f"""
         SELECT
             day_trajectories.subscriber,
-            day_trajectories.{rc},
+            day_trajectories.{location_columns},
             COUNT(*) AS dl_count
         FROM
-            ({day_trajectories}) AS day_trajectories
+            ({self.day_trajectories.get_query()}) AS day_trajectories
         GROUP BY 
             day_trajectories.subscriber,
-            day_trajectories.{rc}
+            day_trajectories.{location_columns}
         ORDER BY
             day_trajectories.subscriber,
             COUNT(*) DESC
-        """.format(
-            rc=relevant_columns, day_trajectories=self.day_trajectories.get_query()
-        )
+        """
 
         return sql

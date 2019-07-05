@@ -125,10 +125,46 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "locations": flowclient.daily_location(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
+                "metric": flowclient.subscriber_degree(
+                    start="2016-01-01", stop="2016-01-02", direction="both"
+                ),
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
                 "metric": flowclient.unique_location_counts(
                     start_date="2016-01-01",
                     end_date="2016-01-02",
                     aggregation_unit="admin3",
+                ),
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.topup_amount(
+                    start="2016-01-01", stop="2016-01-02", statistic="avg"
+                ),
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.event_count(
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    direction="both",
+                    event_types=["sms", "calls"],
                 ),
             },
         ),
@@ -332,6 +368,30 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
             },
         ),
         (
+            "location_event_counts",
+            {
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-02",
+                "count_interval": "day",
+                "aggregation_unit": "admin3",
+                "direction": "both",
+                "event_types": ["calls", "sms"],
+                "subscriber_subset": None,
+            },
+        ),
+        (
+            "location_event_counts",
+            {
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-02",
+                "count_interval": "day",
+                "aggregation_unit": "admin3",
+                "direction": "both",
+                "event_types": None,
+                "subscriber_subset": None,
+            },
+        ),
+        (
             "meaningful_locations_between_dates_od_matrix",
             {
                 "start_date_a": "2016-01-01",
@@ -391,6 +451,34 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 },
             },
         ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "topup_balance",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                    "statistic": "avg",
+                },
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.topup_balance(
+                    start_date="2016-01-01", end_date="2016-01-02", statistic="avg"
+                ),
+            },
+        ),
     ],
 )
 def test_run_query(query_kind, params, universal_access_token, flowapi_url):
@@ -424,8 +512,7 @@ def test_get_geography(access_token_builder, flowapi_url):
     assert 0 < len(result_geojson["features"])
     feature0 = result_geojson["features"][0]
     assert "Feature" == feature0["type"]
-    assert "admin3name" in feature0["properties"]
-    assert "admin3pcod" in feature0["properties"]
+    assert "pcod" in feature0["properties"]
     assert "MultiPolygon" == feature0["geometry"]["type"]
     assert list == type(feature0["geometry"]["coordinates"])
     assert 0 < len(feature0["geometry"]["coordinates"])

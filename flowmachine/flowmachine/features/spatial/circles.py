@@ -27,7 +27,7 @@ class Circle:
     Parameters
     ----------
     lon, lat : int
-        The latitude and longitude of the circle centre
+        The longitude and latitude of the circle centre
     radius : float
         The radius in meters to use as the extent of the circle
     names : str
@@ -51,7 +51,7 @@ class Circle:
 
     def __repr__(self):
 
-        return f"Circle(lat={self.lat},long={self.lon},radius={self.radius},name={self.name})"
+        return f"Circle(lon={self.lon},lat={self.lat},radius={self.radius},name={self.name})"
 
 
 class CircleGeometries(GeoDataMixin, Query):
@@ -123,12 +123,12 @@ class CircleGeometries(GeoDataMixin, Query):
 
         Examples
         --------
-        >>> lats = [85.3240,83.9956]
-        >>> lons = [27.7172,28.2380]
+        >>> lons = [85.3240,83.9956]
+        >>> lats = [27.7172,28.2380]
         >>> names = ['Kathmandu','Pokhara']
         >>> radii = [4000,11000]
 
-        >>> circles = [Circle(*vals) for vals in zip(lats,lons,radii,names)]
+        >>> circles = [Circle(*vals) for vals in zip(lons,lats,radii,names)]
         >>> cp = CircleGeometries(circles)
         >>> rs = cp.raster_sum('population.small_nepal_raster')
         >>> rs.get_dataframe()
