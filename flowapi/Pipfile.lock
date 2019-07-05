@@ -28,11 +28,11 @@
                 "yaml"
             ],
             "hashes": [
-                "sha256:427293594699c77753b8fdc6d78d8dfe267c394df5186c236d57f6ef1af95027",
-                "sha256:edad7a67fae5576fd3e97888b05d228573bf75b2dc0d2714d7cea0480662ac19"
+                "sha256:11d1aaf620a80f67ded7688fcaf14fa4fd975d566876b5db69b067ffbfe4d1d9",
+                "sha256:2f4734203e53f6ae6499d1f2168d19e62f04f071d6e4b86c6d6014ebf2ebdf6b"
             ],
             "index": "pypi",
-            "version": "==2.0.1"
+            "version": "==2.0.2"
         },
         "asn1crypto": {
             "hashes": [
@@ -133,10 +133,10 @@
         },
         "flask": {
             "hashes": [
-                "sha256:ad7c6d841e64296b962296c2c2dabc6543752985727af86a975072dea984b6f3",
-                "sha256:e7d32475d1de5facaa55e3958bc4ec66d3762076b074296aa50ef8fdc5b9df61"
+                "sha256:a31adc27de06034c657a8dc091cc5fcb0227f2474798409bff0e9674de31a026",
+                "sha256:b5ae63812021cb04174fcff05d560a98387a44d9cccd4652a2bfa131ba4e4c9b"
             ],
-            "version": "==1.0.3"
+            "version": "==1.1.0"
         },
         "flask-jwt-extended": {
             "extras": [
