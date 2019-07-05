@@ -379,6 +379,7 @@
     "discriminator": {
       "mapping": {
         "event_count": "#/components/schemas/EventCount",
+        "pareto_interactions": "#/components/schemas/ParetoInteractions",
         "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
         "subscriber_degree": "#/components/schemas/SubscriberDegree",
         "topup_balance": "#/components/schemas/TopUpBalance",
@@ -389,6 +390,9 @@
     "oneOf": [
       {
         "$ref": "#/components/schemas/EventCount"
+      },
+      {
+        "$ref": "#/components/schemas/ParetoInteractions"
       },
       {
         "$ref": "#/components/schemas/RadiusOfGyration"
@@ -839,6 +843,41 @@
     },
     "required": [
       "aggregation_unit"
+    ],
+    "type": "object"
+  },
+  "ParetoInteractions": {
+    "properties": {
+      "proportion": {
+        "format": "float",
+        "type": "number"
+      },
+      "query_kind": {
+        "enum": [
+          "pareto_interactions"
+        ],
+        "type": "string"
+      },
+      "start": {
+        "format": "date",
+        "type": "string"
+      },
+      "stop": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "proportion",
+      "start",
+      "stop"
     ],
     "type": "object"
   },
