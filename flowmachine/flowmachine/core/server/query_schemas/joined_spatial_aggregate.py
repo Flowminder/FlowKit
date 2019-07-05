@@ -17,6 +17,7 @@ from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEven
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
+from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     InputToSpatialAggregate,
 )
@@ -32,6 +33,7 @@ class JoinableMetrics(OneOfSchema):
     type_schemas = {
         "radius_of_gyration": RadiusOfGyrationSchema,
         "unique_location_counts": UniqueLocationCountsSchema,
+        "topup_balance": TopUpBalanceSchema,
         "subscriber_degree": SubscriberDegreeSchema,
         "event_count": EventCountSchema,
         "nocturnal_events": NocturnalEventsSchema,
