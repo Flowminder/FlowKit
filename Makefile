@@ -24,6 +24,28 @@ DOCKER_COMPOSE_TESTDATA_FILE ?= docker-compose-testdata.yml
 DOCKER_COMPOSE_SYNTHETICDATA_FILE ?= docker-compose-syntheticdata.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
 DOCKER_SERVICES ?= flowdb_testdata flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
+DOCKER_COMPOSE_UP = docker-compose -f $(DOCKER_COMPOSE_FILE) \
+	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
+	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
+	-f $(DOCKER_COMPOSE_FILE_BUILD) \
+	up -d --build
+DOCKER_COMPOSE_UP_NOBUILD = docker-compose -f $(DOCKER_COMPOSE_FILE) \
+	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
+	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
+	up -d
+DOCKER_COMPOSE_DOWN = docker-compose -f $(DOCKER_COMPOSE_FILE) \
+	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
+	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
+	rm -f -s -v
+DOCKER_COMPOSE_DOWN_ALL = docker-compose -f $(DOCKER_COMPOSE_FILE) \
+	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
+	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
+	down -v
+DOCKER_COMPOSE_BUILD = docker-compose -f $(DOCKER_COMPOSE_FILE) \
+	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
+	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
+	-f $(DOCKER_COMPOSE_FILE_BUILD) \
+	build
 
 # Check that at most one flowdb service is present in DOCKER_SERVICES
 NUM_SPECIFIED_FLOWDB_SERVICES=$(words $(filter flowdb%, $(DOCKER_SERVICES)))
@@ -36,13 +58,13 @@ endif
 all:
 
 up: flowdb-build
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_TESTDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD)  up -d --build $(DOCKER_SERVICES)
+	$(DOCKER_COMPOSE_UP) $(DOCKER_SERVICES)
 
 up-no_build:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_TESTDATA_FILE) up -d $(DOCKER_SERVICES)
+	$(DOCKER_COMPOSE_UP_NO_BUILD) $(DOCKER_SERVICES)
 
 down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_TESTDATA_FILE) down -v
+	$(DOCKER_COMPOSE_DOWN)
 
 
 # Note: the targets below are repetitive and could be simplified by using
@@ -57,92 +79,94 @@ down:
 
 
 flowdb-up: flowdb-build
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowdb
+	$(DOCKER_COMPOSE_UP) flowdb
 
 flowdb-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowdb
+	$(DOCKER_COMPOSE_DOWN) flowdb
 
 flowdb-build:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowdb
+	$(DOCKER_COMPOSE_BUILD) flowdb
 
 
 flowdb_testdata-up: flowdb_testdata-build
-	docker-compose -f $(DOCKER_COMPOSE_TESTDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowdb_testdata
+	$(DOCKER_COMPOSE_UP) flowdb_testdata
 
 flowdb_testdata-down:
-	docker-compose -f $(DOCKER_COMPOSE_TESTDATA_FILE) rm -f -s -v flowdb_testdata
+	$(DOCKER_COMPOSE_DOWN) flowdb_testdata
 
 flowdb_testdata-build: flowdb-build
-	docker-compose -f $(DOCKER_COMPOSE_TESTDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowdb_testdata
+	$(DOCKER_COMPOSE_BUILD) flowdb_testdata
 
 
 flowdb_synthetic_data-up: flowdb_synthetic_data-build
-	docker-compose -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowdb_synthetic_data
+	$(DOCKER_COMPOSE_UP) flowdb_synthetic_data
 
 flowdb_synthetic_data-down:
-	docker-compose -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) rm -f -s -v flowdb_synthetic_data
+	$(DOCKER_COMPOSE_DOWN) flowdb_synthetic_data
 
 flowdb_synthetic_data-build: flowdb-build
-	docker-compose -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowdb_synthetic_data
+	$(DOCKER_COMPOSE_BUILD) flowdb_synthetic_data
 
 
 flowmachine-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowmachine
+	$(DOCKER_COMPOSE_UP) flowmachine
 
 flowmachine-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowmachine
+	$(DOCKER_COMPOSE_DOWN) flowmachine
 
 flowmachine-build:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowmachine
+	$(DOCKER_COMPOSE_BUILD) flowmachine
 
 
 flowapi-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowapi
+	$(DOCKER_COMPOSE_UP) flowapi
 
 flowapi-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowapi
+	$(DOCKER_COMPOSE_DOWN) flowapi
 
 flowapi-build:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowapi
+	$(DOCKER_COMPOSE_BUILD) flowapi
 
 
 flowauth-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowauth
+	$(DOCKER_COMPOSE_UP) flowauth
 
 flowauth-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowauth
+	$(DOCKER_COMPOSE_DOWN) flowauth
 
 flowauth-build:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowauth
+	$(DOCKER_COMPOSE_BUILD) flowauth
 
 
 worked_examples-up: worked_examples-build
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build worked_examples
+	$(DOCKER_COMPOSE_UP) worked_examples
 
 worked_examples-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v worked_examples
+	$(DOCKER_COMPOSE_DOWN) worked_examples
 
 worked_examples-build:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build worked_examples
+	$(DOCKER_COMPOSE_BUILD) worked_examples
 
 
 flowmachine_query_locker-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) up -d flowmachine_query_locker
+	$(DOCKER_COMPOSE_UP_NOBUILD) flowmachine_query_locker
 
 flowmachine_query_locker-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowmachine_query_locker
+	$(DOCKER_COMPOSE_DOWN) flowmachine_query_locker
+
 
 flowetl-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowetl
+	$(DOCKER_COMPOSE_UP) flowetl
 
 flowetl-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowetl
+	$(DOCKER_COMPOSE_DOWN) flowetl
 
 flowetl-build:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowetl
+	$(DOCKER_COMPOSE_BUILD) flowetl
+
 
 flowetl_db-up:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowetl_db
+	$(DOCKER_COMPOSE_UP) flowetl_db
 
 flowetl_db-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowetl_db
+	$(DOCKER_COMPOSE_DOWN) flowetl_db
