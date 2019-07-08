@@ -36,13 +36,13 @@ endif
 all:
 
 up: flowdb-build
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD)  up -d --build $(DOCKER_SERVICES)
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_TESTDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD)  up -d --build $(DOCKER_SERVICES)
 
 up-no_build:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) up -d $(DOCKER_SERVICES)
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_TESTDATA_FILE) up -d $(DOCKER_SERVICES)
 
 down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) down -v
+	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_TESTDATA_FILE) down -v
 
 
 # Note: the targets below are repetitive and could be simplified by using
