@@ -1428,6 +1428,7 @@ def nocturnal_events(
     dict
         Dict which functions as the query specification
     """
+
     return {
         "query_kind": "nocturnal_events",
         "start": start,
