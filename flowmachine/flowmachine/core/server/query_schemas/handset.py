@@ -18,13 +18,13 @@ class HandsetSchema(Schema):
     query_kind = fields.String(validate=OneOf(["handset"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
-    method = field.String(validate=OneOf(["last", "most-common"]))
-    subscriber_subset = SubscriberSubset()
     characteristic = fields.String(
         validate=OneOf(
             ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"]
         )
     )
+    method = fields.String(validate=OneOf(["last", "most-common"]))
+    subscriber_subset = SubscriberSubset()
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -52,7 +52,7 @@ class HandsetExposed(BaseExposedQuery):
         -------
         Query
         """
-        return SubscriberHandset(
+        return SubscriberHandsetCharacteristic(
             start=self.start_date,
             stop=self.end_date,
             characteristic=self.characteristic,
