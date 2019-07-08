@@ -15,7 +15,7 @@ from typing import List
 from flowmachine.features.subscriber import daily_location
 from .metaclasses import SubscriberFeature
 from . import ModalLocation
-from ..utilities.subscriber_locations import SubscriberLocations
+from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 from flowmachine.utils import parse_datestring, get_dist_query_string, list_of_dates
 from flowmachine.core import make_spatial_unit
 
@@ -116,11 +116,12 @@ class Displacement(SubscriberFeature):
         self.start = start
 
         if reference_location:
-            if isinstance(reference_location, ModalLocation):
+            if isinstance(reference_location, BaseLocation):
                 hl = reference_location
             else:
                 raise ValueError(
-                    "Argument 'reference_location' should be an instance of ModalLocation class"
+                    "Argument 'reference_location' should be an instance of BaseLocation class. "
+                    f"Got: {type(reference_location)}"
                 )
             hl.spatial_unit.verify_criterion("has_lon_lat_columns")
         # else:
