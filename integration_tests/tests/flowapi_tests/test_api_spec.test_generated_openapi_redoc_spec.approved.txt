@@ -345,6 +345,9 @@
             "$ref": "#/components/schemas/EventCount"
           },
           {
+            "$ref": "#/components/schemas/NocturnalEvents"
+          },
+          {
             "$ref": "#/components/schemas/RadiusOfGyration"
           },
           {
@@ -803,6 +806,40 @@
         "required": [
           "aggregation_unit",
           "query_kind"
+        ],
+        "type": "object"
+      },
+      "NocturnalEvents": {
+        "properties": {
+          "hours": {
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "nocturnal_events"
+            ],
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start",
+          "stop"
         ],
         "type": "object"
       },
