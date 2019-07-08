@@ -1473,11 +1473,18 @@ def nocturnal_events(
         "subscriber_subset": subscriber_subset,
     }
 
+
 def handset(
     *,
     start: str,
     stop: str,
-    characteristic: str = ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"],
+    characteristic: str = [
+        "hnd_type",
+        "brand",
+        "model",
+        "software_os_name",
+        "software_os_vendor",
+    ],
     method: str = ["last", "most-common"],
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
@@ -1511,4 +1518,3 @@ def handset(
         "method": method,
         "subscriber_subset": subscriber_subset,
     }
-

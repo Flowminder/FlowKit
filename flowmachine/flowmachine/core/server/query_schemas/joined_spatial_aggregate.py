@@ -63,9 +63,7 @@ class JoinedSpatialAggregateSchema(Schema):
             "event_count",
             "nocturnal_events",
         ]
-        qual_metrics = [
-            "handset",
-        ]
+        qual_metrics = ["handset"]
         if obj.metric.type in quant_metrics:
             return "quant"
         elif obj.metric.type in qual_metrics:

@@ -179,9 +179,11 @@ class SpatialAggregateMethod(fields.String):
 
     def _deserialize(self, value, attr, data, **kwargs):
         if data["metric_type"] == "quant":
-            validate = OneOf(["avg", "max", "min", "median", "mode", "stddev", "variance",])
+            validate = OneOf(
+                ["avg", "max", "min", "median", "mode", "stddev", "variance"]
+            )
         elif data["metric_type"] == "qual":
-            validate = OneOf(["dist",])
+            validate = OneOf(["dist"])
         validate(value)
         return super()._deserialize(value, attr, data, **kwargs)
 
@@ -192,4 +194,3 @@ class SpatialAggregateMethod(fields.String):
             elif obj.metric_type == "qual":
                 value = "dist"
         super()._serialize(value, attr, obj, **kwargs)
-
