@@ -58,6 +58,6 @@ class DisplacementExposed(BaseExposedQuery):
             start=self.start,
             stop=self.stop,
             value=self.value,
-            reference_location=self.reference_location,
+            reference_location=self.reference_location._flowmachine_query_obj,
             subscriber_subset=self.subscriber_subset,
         )
