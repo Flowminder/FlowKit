@@ -87,23 +87,12 @@ class NotConnectedError(Exception):
         )
 
 
-class BadLevelError(Exception):
+class InvalidSpatialUnitError(ValueError):
     """
-    Raised when any class is given an error it does not recognise.
-
-    Parameters
-    ----------
-    level : str
-        The bad level.
-    allowed_levels : list of str, optional
-        List of allowed levels that the user may pass.
+    Raised when any class is given a spatial unit that is not valid.
     """
 
-    def __init__(self, level, allowed_levels=None):
-        msg = "Unrecognised level {}".format(level)
-        if allowed_levels is not None:
-            msg += ", level must be one of {}".format(allowed_levels)
-        Exception.__init__(self, msg)
+    pass
 
 
 class MissingDateError(Exception):

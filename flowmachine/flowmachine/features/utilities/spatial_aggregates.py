@@ -29,29 +29,27 @@ class SpatialAggregate(GeoDataMixin, Query):
     def __init__(self, *, locations):
 
         self.locations = locations
-        self.level = locations.level
-        self.column_name = locations.column_name
+        # self.spatial_unit is used in self._geo_augmented_query
+        self.spatial_unit = locations.spatial_unit
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return self.locations.column_names[1:] + ["total"]
+        return self.spatial_unit.location_id_columns + ["total"]
 
     def _make_query(self):
 
-        aggregate_cols = self.locations.column_names[1:]
+        aggregate_cols = ",".join(self.spatial_unit.location_id_columns)
 
-        sql = """
+        sql = f"""
         SELECT
-            {agg_cols},
+            {aggregate_cols},
             count(*) AS total
         FROM
-            ({to_agg}) AS to_agg
+            ({self.locations.get_query()}) AS to_agg
         GROUP BY
-            {agg_cols}
-        """.format(
-            to_agg=self.locations.get_query(), agg_cols=",".join(aggregate_cols)
-        )
+            {aggregate_cols}
+        """
 
         return sql
 
@@ -59,8 +57,8 @@ class SpatialAggregate(GeoDataMixin, Query):
 class JoinedSpatialAggregate(GeoDataMixin, Query):
     """
     Creates spatially aggregated data from two objects, one of which is
-    a metric of subscribers, and the other of which represents the subscribers
-    location.
+    a metric of subscribers, and the other of which represents the subscribers'
+    locations.
 
     A general class that join metric information about a subscriber with location
      information about a subscriber and aggregates to the geometric level.
@@ -69,21 +67,19 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     ----------
     metric : Query
         A query object that represents a subscriber level metric such
-        as radius of gyration. The underlying data must have the
-        first column as 'subscriber'. All subsequent columns must be
-        numeric and will be meaned.
+        as radius of gyration. The underlying data must have a 'subscriber'
+        column. All other columns must be numeric and will be aggregated.
     locations : Query
         A query object that represents the locations of subscribers.
-        The first column should be 'subscriber', and subsequent columns
-        locations.
-    method : {"mean", "median", "mode"}
+        Must have a 'subscriber' column, and a 'spatial_unit' attribute.
+    method : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
             Method of aggregation.
 
     Examples
     --------
         >>>  mfl = subscribers.MostFrequentLocation('2016-01-01',
                                               '2016-01-04',
-                                              level='admin3')
+                                              spatial_unit=admin_spatial_unit(level=3))
         >>> rog = subscribers.RadiusOfGyration('2016-01-01',
                                          '2016-01-04')
         >>> sm = JoinedSpatialAggregate(metric=rog, locations=mfl)
@@ -99,11 +95,11 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
 
     allowed_methods = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
 
-    def __init__(self, *, metric, locations, method="mean"):
+    def __init__(self, *, metric, locations, method="avg"):
         self.metric = metric
         self.locations = locations
-        self.level = locations.level
-        self.column_name = locations.column_name
+        # self.spatial_unit is used in self._geo_augmented_query
+        self.spatial_unit = locations.spatial_unit
         self.method = method.lower()
         if self.method not in self.allowed_methods:
             raise ValueError(
@@ -131,14 +127,15 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     def _make_query(self):
 
         metric_cols = self.metric.column_names
-        location_cols = [cn for cn in self.locations.column_names if cn != "subscriber"]
+        metric_cols_no_subscriber = [cn for cn in metric_cols if cn != "subscriber"]
+        location_cols = self.spatial_unit.location_id_columns
 
         # Make some comma separated strings for use in the SQL query
         metric_list = ", ".join(f"metric.{c}" for c in metric_cols)
 
         # We need to do this because it may be the case that
         # a location is identified by more than one column, as
-        # is the case for lat-lon values
+        # is the case for lon-lat values
         loc_list = ", ".join(f"location.{lc}" for lc in location_cols)
         loc_list_no_schema = ", ".join(location_cols)
 
@@ -159,11 +156,11 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         if self.method == "mode":
             av_cols = ", ".join(
                 f"pg_catalog.mode() WITHIN GROUP(ORDER BY {mc}) AS {mc}"
-                for mc in metric_cols[1:]
+                for mc in metric_cols_no_subscriber
             )
         else:
             av_cols = ", ".join(
-                f"{self.method}({mc}) AS {mc}" for mc in metric_cols[1:]
+                f"{self.method}({mc}) AS {mc}" for mc in metric_cols_no_subscriber
             )
 
         # Now do the group by bit
@@ -179,6 +176,6 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return [
-            cn for cn in self.locations.column_names if cn != "subscriber"
-        ] + self.metric.column_names[1:]
+        return self.spatial_unit.location_id_columns + [
+            cn for cn in self.metric.column_names if cn != "subscriber"
+        ]

@@ -7,26 +7,21 @@ Unit tests for the UniqueSubscriberCounts query
 """
 
 import pytest
+
+from flowmachine.core import make_spatial_unit
 from flowmachine.features import UniqueSubscriberCounts
-from flowmachine.features.utilities import subscriber_locations
-from flowmachine.core.errors import BadLevelError
+from flowmachine.features.utilities import SubscriberLocations
 
 
 @pytest.mark.usefixtures("skip_datecheck")
-def test_unique_subscriber_counts_column_names(exemplar_level_param):
+def test_unique_subscriber_counts_column_names(exemplar_spatial_unit_param):
     """
     Test that column_names property of UniqueSubscriberCounts matches head(0)
     """
-    usc = UniqueSubscriberCounts("2016-01-01", "2016-01-04", **exemplar_level_param)
+    usc = UniqueSubscriberCounts(
+        "2016-01-01", "2016-01-04", spatial_unit=exemplar_spatial_unit_param
+    )
     assert usc.head(0).columns.tolist() == usc.column_names
-
-
-def test_returns_errors():
-    """
-    Test level exists
-    """
-    with pytest.raises(BadLevelError):
-        UniqueSubscriberCounts("2016-01-01", "2016-01-02", level="BAD_LEVEL")
 
 
 def test_correct_counts(get_dataframe):
@@ -34,11 +29,19 @@ def test_correct_counts(get_dataframe):
     UniqueLocationCounts returns correct counts.
     """
     usc = UniqueSubscriberCounts(
-        "2016-01-01", "2016-01-02", level="cell", hours=(5, 17)
+        "2016-01-01",
+        "2016-01-02",
+        spatial_unit=make_spatial_unit("cell"),
+        hours=(5, 17),
     )
     df = get_dataframe(usc)
     dful = get_dataframe(
-        subscriber_locations("2016-01-01", "2016-01-02", level="cell", hours=(5, 17))
+        SubscriberLocations(
+            "2016-01-01",
+            "2016-01-02",
+            spatial_unit=make_spatial_unit("cell"),
+            hours=(5, 17),
+        )
     )
     assert [
         df["unique_subscriber_counts"][0],

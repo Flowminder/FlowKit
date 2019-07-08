@@ -2,26 +2,40 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from flowmachine.features.subscriber.subscriber_call_durations import *
 import pytest
+
+from flowmachine.core import make_spatial_unit
+from flowmachine.features.subscriber.subscriber_call_durations import *
+
+
+@pytest.mark.parametrize(
+    "query", [SubscriberCallDurations, PairedSubscriberCallDurations]
+)
+@pytest.mark.parametrize("stat", valid_stats)
+def test_subscriber_call_durations_column_names(query, stat):
+    """
+    Test that column_names property matches head(0)
+    """
+    query_instance = query("2016-01-01", "2016-01-07", statistic=stat)
+    assert query_instance.head(0).columns.tolist() == query_instance.column_names
 
 
 @pytest.mark.parametrize(
     "query",
-    [
-        SubscriberCallDurations,
-        PairedPerLocationSubscriberCallDurations,
-        PerLocationSubscriberCallDurations,
-        PairedSubscriberCallDurations,
-    ],
+    [PairedPerLocationSubscriberCallDurations, PerLocationSubscriberCallDurations],
 )
 @pytest.mark.parametrize("stat", valid_stats)
-def test_subscriber_call_durations_column_names(query, exemplar_level_param, stat):
+def test_per_location_subscriber_call_durations_column_names(
+    query, exemplar_spatial_unit_param, stat
+):
     """
     Test that column_names property matches head(0)
     """
     query_instance = query(
-        "2016-01-01", "2016-01-07", **exemplar_level_param, statistic=stat
+        "2016-01-01",
+        "2016-01-07",
+        spatial_unit=exemplar_spatial_unit_param,
+        statistic=stat,
     )
     assert query_instance.head(0).columns.tolist() == query_instance.column_names
 
@@ -33,9 +47,9 @@ def test_polygon_tables(get_dataframe):
     per_location_durations = PerLocationSubscriberCallDurations(
         "2016-01-01",
         "2016-01-07",
-        level="polygon",
-        polygon_table="geography.admin3",
-        column_name="admin3name",
+        spatial_unit=make_spatial_unit(
+            "polygon", geom_table="geography.admin3", region_id_column_name="admin3name"
+        ),
     )
     df = get_dataframe(per_location_durations)
 
@@ -55,9 +69,9 @@ def test_polygon_tables(get_dataframe):
     paired_per_location_durations = PairedPerLocationSubscriberCallDurations(
         "2016-01-01",
         "2016-01-07",
-        level="polygon",
-        polygon_table="geography.admin3",
-        column_name="admin3name",
+        spatial_unit=make_spatial_unit(
+            "polygon", geom_table="geography.admin3", region_id_column_name="admin3name"
+        ),
     )
 
     df = get_dataframe(paired_per_location_durations)

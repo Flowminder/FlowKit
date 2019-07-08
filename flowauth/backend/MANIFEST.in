@@ -1,0 +1,2 @@
+include versioneer.py
+include flowauth/_version.py

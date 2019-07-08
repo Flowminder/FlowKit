@@ -28,6 +28,7 @@ class InputToSpatialAggregate(OneOfSchema):
 
 
 class SpatialAggregateSchema(Schema):
+    # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["spatial_aggregate"]))
     locations = fields.Nested(InputToSpatialAggregate, required=True)
 

@@ -18,13 +18,7 @@ from airflow.hooks.dbapi_hook import DbApiHook
 from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 from etl.model import ETLRecord, ETLPostQueryOutcome
-from etl.etl_utils import (
-    get_session,
-    find_files,
-    filter_files,
-    get_config,
-    generate_table_names,
-)
+from etl.etl_utils import get_session, find_files, filter_files, get_config
 
 logger = structlog.get_logger("flowetl")
 
@@ -157,13 +151,10 @@ def trigger__callable(
         cdr_type = config["cdr_type"]
         cdr_date = config["cdr_date"]
         uuid = uuid1()
-        table_names = generate_table_names(
-            cdr_type=cdr_type, cdr_date=cdr_date, uuid=uuid
-        )
         trigger_dag(
             f"etl_{cdr_type}",
             execution_date=cdr_date,
             run_id=f"{file.name}-{str(uuid)}",
-            conf={**config, **table_names},
+            conf=config,
             replace_microseconds=False,
         )

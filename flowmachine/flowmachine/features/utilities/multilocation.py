@@ -12,7 +12,7 @@ dailylocations objects, although they can be.
 """
 
 
-from flowmachine.utils import parse_datestring, get_columns_for_level
+from flowmachine.utils import parse_datestring
 
 from ...core import CustomQuery
 
@@ -63,9 +63,8 @@ class MultiLocation:
 
         # Importing daily_location inputs
         # from first daily_location object.
-        self.level = self._all_dls[0].level
+        self.spatial_unit = self._all_dls[0].spatial_unit
         self.subscriber_identifier = self._all_dls[0].subscriber_identifier
-        self.column_name = self._all_dls[0].column_name
         super().__init__()
 
     def _append_date(self, dl):
@@ -81,13 +80,4 @@ class MultiLocation:
 
         date_string = f"to_date('{dl.start}','YYYY-MM-DD') AS date"
         sql = f"SELECT *, {date_string} FROM ({dl.get_query()}) AS dl"
-        return CustomQuery(
-            sql, get_columns_for_level(self.level, self.column_name) + ["date"]
-        )
-
-    def _get_relevant_columns(self):
-        """
-        Get a string of the location related columns
-        """
-
-        return ", ".join(get_columns_for_level(self.level, self.column_name))
+        return CustomQuery(sql, self.spatial_unit.location_id_columns + ["date"])

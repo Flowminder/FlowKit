@@ -24,6 +24,11 @@ ENV FLASK_APP flowauth
 ENV PIPENV_COLORBLIND=1
 WORKDIR /app/static
 COPY --from=builder /build .
-WORKDIR /app
+ARG SOURCE_VERSION=0+unknown
+ENV SOURCE_VERSION=${SOURCE_VERSION}
+ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
+WORKDIR /${SOURCE_TREE}/flowauth
 COPY backend .
-RUN pip install --no-cache-dir .
+RUN python setup.py bdist_wheel && pip install dist/*.whl
+WORKDIR /app
+COPY backend/uwsgi.ini .

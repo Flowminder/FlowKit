@@ -50,9 +50,6 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
         "cdr_date": cdr_date,
         "file_name": "SMS_20160101.csv.gz",
         "template_path": "etl/sms",
-        "extract_table": f"etl.x{uuid_sans_underscore}",
-        "transform_table": f"etl.t{uuid_sans_underscore}",
-        "load_table": f"events.{cdr_type}_{str(cdr_date.date()).replace('-','')}",
     }
 
     trigger_dag_mock.assert_called_with(
@@ -112,9 +109,6 @@ def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkey
         "cdr_date": cdr_date,
         "file_name": "SMS_20160101.csv.gz",
         "template_path": "etl/sms",
-        "extract_table": f"etl.x{uuid_sans_underscore}",
-        "transform_table": f"etl.t{uuid_sans_underscore}",
-        "load_table": f"events.{cdr_type}_{str(cdr_date.date()).replace('-','')}",
     }
 
     trigger_dag_mock.assert_called_with(
@@ -176,9 +170,6 @@ def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
         "cdr_date": cdr_date,
         "file_name": "SMS_20160102.csv.gz",
         "template_path": "etl/sms",
-        "extract_table": f"etl.x{uuid_sans_underscore}",
-        "transform_table": f"etl.t{uuid_sans_underscore}",
-        "load_table": f"events.{cdr_type}_{str(cdr_date.date()).replace('-','')}",
     }
 
     trigger_dag_mock.assert_called_with(
@@ -225,9 +216,6 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
         "cdr_date": cdr_date_file1,
         "file_name": "SMS_20160101.csv.gz",
         "template_path": "etl/sms",
-        "extract_table": f"etl.x{uuid_sans_underscore}",
-        "transform_table": f"etl.t{uuid_sans_underscore}",
-        "load_table": f"events.{cdr_type_file1}_{str(cdr_date_file1.date()).replace('-','')}",
     }
 
     cdr_type_file2 = CDRType("calls")
@@ -237,9 +225,6 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
         "cdr_date": cdr_date_file2,
         "file_name": "CALLS_20160102.csv.gz",
         "template_path": "etl/calls",
-        "extract_table": f"etl.x{uuid_sans_underscore}",
-        "transform_table": f"etl.t{uuid_sans_underscore}",
-        "load_table": f"events.{cdr_type_file2}_{str(cdr_date_file2.date()).replace('-','')}",
     }
 
     trigger_dag_mock.assert_any_call(
