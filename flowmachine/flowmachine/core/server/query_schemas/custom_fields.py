@@ -155,3 +155,41 @@ class DFSMetric(fields.String):
 
         validate = OneOf(["amount", "commission", "fee", "discount"])
         super().__init__(required=required, validate=validate, **kwargs)
+
+
+class SpatialAggregateMethod(fields.String):
+    """
+    A string representing the method for spatial aggregation. The default and
+    available methods depend on wether the metric of interest is quantitative
+    or qualitative.
+    """
+
+    def __init__(self, default=None, validate=None, **kwargs):
+        if default is not None:
+            raise ValueError(
+                "The SpatialAggregateMethod field provides its own default and"
+                "thus does not accept a 'default' argument."
+            )
+        if validate is not None:
+            raise ValueError(
+                "The SpatialAggregateMethod field provides its own validation and"
+                "thus does not accept a 'validate' argument."
+            )
+        super().__init__(required=True, **kwargs)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        if data["metric_type"] == "quant":
+            validate = OneOf(["avg", "max", "min", "median", "mode", "stddev", "variance",])
+        elif data["metric_type"] == "qual":
+            validate = OneOf(["dist",])
+        validate(value)
+        return super()._deserialize(value, attr, data, **kwargs)
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        if value is None:
+            if obj.metric_type == "quant":
+                value = "avg"
+            elif obj.metric_type == "qual":
+                value = "dist"
+        super()._serialize(value, attr, obj, **kwargs)
+
