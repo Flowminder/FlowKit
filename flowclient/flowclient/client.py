@@ -1416,7 +1416,7 @@ def nocturnal_events(
     start : str
         ISO format date of the first day for which to count nocturnal events, e.g. "2016-01-01"
     stop : str
-        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+        ISO format date of the day _after_ the final date for which to count nocturnal events, e.g. "2016-01-08"
     hours: tuple(int,int)
 
     subscriber_subset : dict or None, default None
