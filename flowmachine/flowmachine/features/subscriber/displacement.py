@@ -46,7 +46,7 @@ class Displacement(SubscriberFeature):
         The set of home locations from which to calculate displacement.
         If not given then ModalLocation Query wil be created over period
         start -> stop.
-    statistic : str
+    value : str
         the statistic to calculate one of 'sum', 'avg', 'max', 'min', 
         'median', 'stddev' or 'variance'
     unit : {'km', 'm'}, default 'km'
@@ -98,7 +98,7 @@ class Displacement(SubscriberFeature):
         start,
         stop,
         reference_location,
-        statistic="avg",
+        value="avg",
         unit="km",
         hours="all",
         method="last",
@@ -123,22 +123,22 @@ class Displacement(SubscriberFeature):
                     "Argument 'reference_location' should be an instance of ModalLocation class"
                 )
             hl.spatial_unit.verify_criterion("has_lon_lat_columns")
-        else:
-            hl = ModalLocation(
-                *[
-                    daily_location(
-                        date,
-                        spatial_unit=make_spatial_unit("lon-lat"),
-                        hours=hours,
-                        method=method,
-                        table=table,
-                        subscriber_identifier=subscriber_identifier,
-                        ignore_nulls=ignore_nulls,
-                        subscriber_subset=subscriber_subset,
-                    )
-                    for date in list_of_dates(self.start, self.stop_hl)
-                ]
-            )
+        # else:
+        #     hl = ModalLocation(
+        #         *[
+        #             daily_location(
+        #                 date,
+        #                 spatial_unit=make_spatial_unit("lon-lat"),
+        #                 hours=hours,
+        #                 method=method,
+        #                 table=table,
+        #                 subscriber_identifier=subscriber_identifier,
+        #                 ignore_nulls=ignore_nulls,
+        #                 subscriber_subset=subscriber_subset,
+        #             )
+        #             for date in list_of_dates(self.start, self.stop_hl)
+        #         ]
+        #     )
 
         sl = SubscriberLocations(
             self.start,
@@ -151,11 +151,11 @@ class Displacement(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
 
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
+        self.value = value.lower()
+        if self.value not in valid_stats:
             raise ValueError(
                 "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
+                    self.value, valid_stats
                 )
             )
 
@@ -190,13 +190,13 @@ class Displacement(SubscriberFeature):
         sql = """
         select 
             subscriber,
-            {statistic}({dist_string}) / {divisor} as value
+            {value}({dist_string}) / {divisor} as value
         from 
             ({join}) as foo
         group by 
             subscriber
         """.format(
-            statistic=self.statistic,
+            value=self.value,
             dist_string=dist_string,
             divisor=divisor,
             join=self.joined.get_query(),

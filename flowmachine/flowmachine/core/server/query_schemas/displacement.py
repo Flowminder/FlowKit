@@ -4,12 +4,20 @@
 
 from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Length
+from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features import Displacement
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset, Statistic
+from .daily_location import DailyLocationSchema, DailyLocationExposed
+
 
 __all__ = ["DisplacementSchema", "DisplacementExposed"]
+
+
+class InputToModalLocationSchema(OneOfSchema):
+    type_field = "query_kind"
+    type_schemas = {"daily_location": DailyLocationSchema}
 
 
 class DisplacementSchema(Schema):
@@ -17,6 +25,9 @@ class DisplacementSchema(Schema):
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
     value = Statistic()
+    reference_location = fields.Nested(
+        InputToModalLocationSchema, many=True, validate=Length(min=1)
+    )
     subscriber_subset = SubscriberSubset()
 
     @post_load
@@ -25,12 +36,15 @@ class DisplacementSchema(Schema):
 
 
 class DisplacementExposed(BaseExposedQuery):
-    def __init__(self, *, start, stop, value, subscriber_subset=None):
+    def __init__(
+        self, *, start, stop, value, reference_location, subscriber_subset=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
         self.value = value
+        self.reference_location = reference_location
         self.subscriber_subset = subscriber_subset
 
     @property
@@ -42,9 +56,10 @@ class DisplacementExposed(BaseExposedQuery):
         -------
         Query
         """
-        return SubscriberDegree(
+        return Displacement(
             start=self.start,
             stop=self.stop,
-            value=self.direction,
+            value=self.value,
+            reference_location=self.reference_location,
             subscriber_subset=self.subscriber_subset,
         )

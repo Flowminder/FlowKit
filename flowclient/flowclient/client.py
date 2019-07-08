@@ -1435,3 +1435,44 @@ def event_count(
         "event_types": event_types,
         "subscriber_subset": subscriber_subset,
     }
+
+
+def displacement(
+    *,
+    start: str,
+    stop: str,
+    value: str,
+    reference_location: List[Dict[str, Union[str, Dict[str, str]]]],
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for displacement 
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    value : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+        Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
+    reference_location:
+        Return query spec for a modal location query for a list of locations.
+        Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "displacement",
+        "start": start,
+        "stop": stop,
+        "value": value,
+        "reference_location": reference_location,
+        "subscriber_subset": subscriber_subset,
+    }
