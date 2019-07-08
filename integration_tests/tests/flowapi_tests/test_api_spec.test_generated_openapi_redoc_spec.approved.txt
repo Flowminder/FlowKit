@@ -354,6 +354,9 @@
             "$ref": "#/components/schemas/SubscriberDegree"
           },
           {
+            "$ref": "#/components/schemas/TopUpAmount"
+          },
+          {
             "$ref": "#/components/schemas/TopUpBalance"
           },
           {
@@ -924,6 +927,50 @@
         "required": [
           "query_kind",
           "start",
+          "stop"
+        ],
+        "type": "object"
+      },
+      "TopUpAmount": {
+        "properties": {
+          "query_kind": {
+            "enum": [
+              "topup_amount"
+            ],
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "statistic": {
+            "enum": [
+              "avg",
+              "max",
+              "median",
+              "min",
+              "mode",
+              "stddev",
+              "variance"
+            ],
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start",
+          "statistic",
           "stop"
         ],
         "type": "object"
