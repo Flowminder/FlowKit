@@ -7,7 +7,7 @@ from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import Displacement
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import SubscriberSubset,Statistic
+from .custom_fields import SubscriberSubset, Statistic
 
 __all__ = ["DisplacementSchema", "DisplacementExposed"]
 
