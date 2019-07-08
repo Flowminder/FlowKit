@@ -18,10 +18,10 @@
     "default": {
         "ansible": {
             "hashes": [
-                "sha256:e1d51d3a88e21238f9e7a49b2b17a49e76c13880242b936ac8a37aee4fe84445"
+                "sha256:1e5ba829ca0602c55b33da399b06f99b135a34014b661d1c36d8892a1e2d3730"
             ],
             "index": "pypi",
-            "version": "==2.8.1"
+            "version": "==2.8.2"
         },
         "asn1crypto": {
             "hashes": [

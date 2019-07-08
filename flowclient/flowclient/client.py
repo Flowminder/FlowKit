@@ -1267,7 +1267,7 @@ def unique_location_counts(
         ISO format date of the first day of the count, e.g. "2016-01-01"
     end_date : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
-    level : str
+    aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
@@ -1283,6 +1283,43 @@ def unique_location_counts(
         "start_date": start_date,
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def topup_balance(
+    *,
+    start_date: str,
+    end_date: str,
+    statistic: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for top-up balance.
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+        Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "topup_balance",
+        "start_date": start_date,
+        "end_date": end_date,
+        "statistic": statistic,
         "subscriber_subset": subscriber_subset,
     }
 
@@ -1319,6 +1356,42 @@ def subscriber_degree(
         "start": start,
         "stop": stop,
         "direction": direction,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def topup_amount(
+    *,
+    start: str,
+    stop: str,
+    statistic: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for topup amount
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+        Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "topup_amount",
+        "start": start,
+        "stop": stop,
+        "statistic": statistic,
         "subscriber_subset": subscriber_subset,
     }
 
@@ -1360,5 +1433,42 @@ def event_count(
         "stop": stop,
         "direction": direction,
         "event_types": event_types,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def nocturnal_events(
+    *,
+    start: str,
+    stop: str,
+    hours: tuple((int, int)),
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for nocturnal events
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day for which to count nocturnal events, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date for which to count nocturnal events, e.g. "2016-01-08"
+    hours: tuple(int,int)
+
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+
+    return {
+        "query_kind": "nocturnal_events",
+        "start": start,
+        "stop": stop,
+        "hours": hours,
         "subscriber_subset": subscriber_subset,
     }

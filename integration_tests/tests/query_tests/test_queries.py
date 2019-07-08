@@ -125,6 +125,17 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "locations": flowclient.daily_location(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
+                "metric": flowclient.nocturnal_events(
+                    start="2016-01-01", stop="2016-01-02", hours=(20, 4)
+                ),
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
                 "metric": flowclient.subscriber_degree(
                     start="2016-01-01", stop="2016-01-02", direction="both"
                 ),
@@ -140,6 +151,17 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     start_date="2016-01-01",
                     end_date="2016-01-02",
                     aggregation_unit="admin3",
+                ),
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.topup_amount(
+                    start="2016-01-01", stop="2016-01-02", statistic="avg"
                 ),
             },
         ),
@@ -438,6 +460,34 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                         ],
                     },
                 },
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "topup_balance",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                    "statistic": "avg",
+                },
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.topup_balance(
+                    start_date="2016-01-01", end_date="2016-01-02", statistic="avg"
+                ),
             },
         ),
     ],
