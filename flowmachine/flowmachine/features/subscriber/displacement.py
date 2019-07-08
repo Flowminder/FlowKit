@@ -42,7 +42,7 @@ class Displacement(SubscriberFeature):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    modal_locations : ModalLocation
+    reference_location : ModalLocation
         The set of home locations from which to calculate displacement.
         If not given then ModalLocation Query wil be created over period
         start -> stop.
@@ -97,7 +97,7 @@ class Displacement(SubscriberFeature):
         self,
         start,
         stop,
-        modal_locations=None,
+        reference_location,
         statistic="avg",
         unit="km",
         hours="all",
@@ -115,12 +115,12 @@ class Displacement(SubscriberFeature):
 
         self.start = start
 
-        if modal_locations:
-            if isinstance(modal_locations, ModalLocation):
-                hl = modal_locations
+        if reference_location:
+            if isinstance(reference_location, ModalLocation):
+                hl = reference_location
             else:
                 raise ValueError(
-                    "Argument 'modal_locations' should be an instance of ModalLocation class"
+                    "Argument 'reference_location' should be an instance of ModalLocation class"
                 )
             hl.spatial_unit.verify_criterion("has_lon_lat_columns")
         else:
