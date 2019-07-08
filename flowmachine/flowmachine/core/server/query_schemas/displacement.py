@@ -15,7 +15,7 @@ from .daily_location import DailyLocationSchema, DailyLocationExposed
 __all__ = ["DisplacementSchema", "DisplacementExposed"]
 
 
-class InputToModalLocationSchema(OneOfSchema):
+class InputToDisplacementSchema(OneOfSchema):
     type_field = "query_kind"
     type_schemas = {"daily_location": DailyLocationSchema}
 
@@ -25,9 +25,7 @@ class DisplacementSchema(Schema):
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
     value = Statistic()
-    reference_location = fields.Nested(
-        InputToModalLocationSchema, many=True, validate=Length(min=1)
-    )
+    reference_location = fields.Nested(InputToDisplacementSchema, many=False)
     subscriber_subset = SubscriberSubset()
 
     @post_load
