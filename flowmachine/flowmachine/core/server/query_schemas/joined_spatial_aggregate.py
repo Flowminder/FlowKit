@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import Schema, fields, post_load, ValidationError
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
@@ -25,6 +25,7 @@ from flowmachine.core.server.query_schemas.spatial_aggregate import (
 )
 from flowmachine.features.utilities.spatial_aggregates import JoinedSpatialAggregate
 from .base_exposed_query import BaseExposedQuery
+from .custom_fields import SpatialAggregateMethod
 
 
 __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
@@ -49,9 +50,28 @@ class JoinedSpatialAggregateSchema(Schema):
     query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
     locations = fields.Nested(InputToSpatialAggregate, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
-    method = fields.String(
-        default="mean", validate=OneOf(JoinedSpatialAggregate.allowed_methods)
-    )
+    metric_type = fields.Method("get_metric_type")
+    method = SpatialAggregateMethod()
+
+    def get_metric_type(self, obj):
+        quant_metrics = [
+            "radius_of_gyration",
+            "unique_location_counts",
+            "topup_balance",
+            "subscriber_degree",
+            "topup_amount",
+            "event_count",
+            "nocturnal_events",
+        ]
+        qual_metrics = [
+            "handset",
+        ]
+        if obj.metric.type in quant_metrics:
+            return "quant"
+        elif obj.metric.type in qual_metrics:
+            return "qual"
+        else:
+            raise ValidationError("{obj.metric.type} does have a valid type.")
 
     @post_load
     def make_query_object(self, params, **kwargs):
