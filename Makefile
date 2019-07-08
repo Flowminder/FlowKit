@@ -20,6 +20,8 @@
 # flowmachine and flowapi will connected to the first flowdb service in the list.
 
 DOCKER_COMPOSE_FILE ?= docker-compose.yml
+DOCKER_COMPOSE_TESTDATA_FILE ?= docker-compose-testdata.yml
+DOCKER_COMPOSE_SYNTHETICDATA_FILE ?= docker-compose-syntheticdata.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
 DOCKER_SERVICES ?= flowdb_testdata flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
 
@@ -65,23 +67,23 @@ flowdb-build:
 
 
 flowdb_testdata-up: flowdb_testdata-build
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowdb_testdata
+	docker-compose -f $(DOCKER_COMPOSE_TESTDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowdb_testdata
 
 flowdb_testdata-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowdb_testdata
+	docker-compose -f $(DOCKER_COMPOSE_TESTDATA_FILE) rm -f -s -v flowdb_testdata
 
 flowdb_testdata-build: flowdb-build
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowdb_testdata
+	docker-compose -f $(DOCKER_COMPOSE_TESTDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowdb_testdata
 
 
 flowdb_synthetic_data-up: flowdb_synthetic_data-build
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowdb_synthetic_data
+	docker-compose -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) up -d --build flowdb_synthetic_data
 
 flowdb_synthetic_data-down:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) rm -f -s -v flowdb_synthetic_data
+	docker-compose -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) rm -f -s -v flowdb_synthetic_data
 
 flowdb_synthetic_data-build: flowdb-build
-	docker-compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowdb_synthetic_data
+	docker-compose -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) -f $(DOCKER_COMPOSE_FILE_BUILD) build flowdb_synthetic_data
 
 
 flowmachine-up:
