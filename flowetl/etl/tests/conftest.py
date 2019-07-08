@@ -6,12 +6,18 @@
 """
 conftest for unit tests
 """
+import os
 import pytest
+import testing.postgresql
+import yaml
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from etl.model import Base, ETLRecord  # pylint: disable=unused-import
+
+here = os.path.dirname(os.path.abspath(__file__))
+
 
 # pylint: disable=too-few-public-methods
 class FakeDagRun:
@@ -59,16 +65,60 @@ def create_fake_task_instance():
     return fake_task_instance
 
 
-@pytest.fixture(scope="function")
-def session():
+@pytest.fixture(scope="session")
+def postgres_test_db():
     """
-    Fixture to yield a session to an in memory DB with
-    correct model in place.
+    Fixture to yield a PostgreSQL database to be used in the unit tests.
+    The database will only be created once per test session, but the
+    etl_records table will be cleared for each test.
     """
-    engine = create_engine("sqlite:///:memory:")
-    engine.execute(f"ATTACH DATABASE ':memory:' AS etl;")
+    postgres_test_db = testing.postgresql.Postgresql()
+    engine = create_engine(postgres_test_db.url())
+
+    from sqlalchemy.schema import CreateSchema
+    from sqlalchemy_utils import database_exists, create_database
+
+    if not database_exists(engine.url):
+        create_database(engine.url)
+    engine.execute(CreateSchema("etl"))
     Base.metadata.create_all(bind=engine, tables=[ETLRecord.__table__])
+    engine.execute(
+        """
+        CREATE TABLE IF NOT EXISTS mds_raw_data_dump (
+            imei TEXT,
+            msisdn TEXT,
+            event_time TIMESTAMPTZ,
+            cell_id TEXT
+        );
+        """
+    )
+
+    yield postgres_test_db
+    postgres_test_db.stop()
+
+
+@pytest.fixture(scope="function")
+def session(postgres_test_db):
+    """
+    Fixture to yield a session to the test PostgreSQL database. This clears
+    the etl_records table for each test.
+    """
+    engine = create_engine(postgres_test_db.url())
+    engine.execute(f"TRUNCATE TABLE {ETLRecord.__table__};")
     Session = sessionmaker(bind=engine)
     returned_session = Session()
     yield returned_session
     returned_session.close()
+
+
+@pytest.fixture(scope="session")
+def sample_config_dict():
+    """
+    Return sample config loaded from the file `flowetl/mounts/config/config.yml`.
+    """
+    sample_config_file = os.path.join(
+        here, "..", "..", "mounts", "config", "config.yml"
+    )
+    with open(sample_config_file, "r") as f:
+        cfg_dict = yaml.load(f.read(), Loader=yaml.SafeLoader)
+    return cfg_dict
