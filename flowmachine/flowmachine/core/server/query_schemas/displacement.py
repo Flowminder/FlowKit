@@ -16,27 +16,27 @@ class DisplacementSchema(Schema):
     query_kind = fields.String(validate=OneOf(["displacement"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
-    statistic = Statistic()
+    value = Statistic()
     subscriber_subset = SubscriberSubset()
 
     @post_load
     def make_query_object(self, params, **kwargs):
-        return SubscriberDegreeExposed(**params)
+        return DisplacementExposed(**params)
 
 
-class SubscriberDegreeExposed(BaseExposedQuery):
-    def __init__(self, *, start, stop, direction, subscriber_subset=None):
+class DisplacementExposed(BaseExposedQuery):
+    def __init__(self, *, start, stop, value, subscriber_subset=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
-        self.direction = direction
+        self.value = value
         self.subscriber_subset = subscriber_subset
 
     @property
     def _flowmachine_query_obj(self):
         """
-        Return the underlying flowmachine subscriber_degree object.
+        Return the underlying flowmachine displacement object.
 
         Returns
         -------
@@ -45,6 +45,6 @@ class SubscriberDegreeExposed(BaseExposedQuery):
         return SubscriberDegree(
             start=self.start,
             stop=self.stop,
-            direction=self.direction,
+            value=self.direction,
             subscriber_subset=self.subscriber_subset,
         )

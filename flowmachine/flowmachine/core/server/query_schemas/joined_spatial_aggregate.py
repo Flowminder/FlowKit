@@ -17,6 +17,7 @@ from flowmachine.core.server.query_schemas.event_count import EventCountSchema
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
+from flowmachine.core.server.query_schemas.displacement import DisplacementSchema
 from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     InputToSpatialAggregate,
@@ -37,6 +38,7 @@ class JoinableMetrics(OneOfSchema):
         "subscriber_degree": SubscriberDegreeSchema,
         "topup_amount": TopUpAmountSchema,
         "event_count": EventCountSchema,
+        "displacement": DisplacementSchema,
     }
 
 

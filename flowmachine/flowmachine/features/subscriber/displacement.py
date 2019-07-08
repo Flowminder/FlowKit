@@ -174,7 +174,7 @@ class Displacement(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "statistic"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
@@ -190,7 +190,7 @@ class Displacement(SubscriberFeature):
         sql = """
         select 
             subscriber,
-            {statistic}({dist_string}) / {divisor} as statistic
+            {statistic}({dist_string}) / {divisor} as value
         from 
             ({join}) as foo
         group by 
