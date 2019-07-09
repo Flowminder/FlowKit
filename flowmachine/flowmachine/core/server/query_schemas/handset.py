@@ -28,7 +28,7 @@ class HandsetSchema(Schema):
 
     @post_load
     def make_query_object(self, params, **kwargs):
-        return SubscriberHandsetExposed(**params)
+        return HandsetExposed(**params)
 
 
 class HandsetExposed(BaseExposedQuery):
