@@ -46,10 +46,11 @@ def test_get_session_default(monkeypatch):
     )
 
 
-def test_get_session_fails_if_env_not_set(monkeypatch):
+def test_get_session_fails_if_env_var_not_set(monkeypatch):
     """
-    Make sure if env not set we get ValueError
+    Make sure we get ValueError if env var AIRFLOW_CONN_FLOWDB is not set.
     """
+    monkeypatch.delenv("AIRFLOW_CONN_FLOWDB", raising=False)
     mock_psycopg2_connect = Mock()
     monkeypatch.setattr("psycopg2.connect", mock_psycopg2_connect)
 

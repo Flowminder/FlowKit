@@ -12,7 +12,6 @@ import shutil
 import structlog
 import pytest
 import requests
-import json
 
 from pathlib import Path
 from time import sleep
@@ -36,9 +35,9 @@ def ensure_required_env_vars_are_set():
             "Must set environment variable AIRFLOW_HOME to run the flowetl tests."
         )
 
-    if "true" != os.getenv("TESTING", "false").lower():
+    if "testing" != os.getenv("FLOWETL_RUNTIME_CONFIG", "").lower():
         raise RuntimeError(
-            "Must set environment variable TESTING='true' to run the flowetl tests."
+            "Must set environment variable FLOWETL_RUNTIME_CONFIG='testing' to run the flowetl tests."
         )
 
     if "FLOWETL_TESTS_CONTAINER_TAG" not in os.environ:
@@ -173,11 +172,23 @@ def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
 
 @pytest.fixture(scope="session", autouse=True)
 def pull_docker_images(docker_client, container_tag):
-    logger.info(f"Pulling docker images (tag='{container_tag}')...")
-    docker_client.images.pull("postgres", tag="11.0")
-    docker_client.images.pull("flowminder/flowdb", tag=container_tag)
-    docker_client.images.pull("flowminder/flowetl", tag=container_tag)
-    logger.info("Done pulling docker images.")
+    disable_pulling_docker_images = (
+        os.getenv(
+            "FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES", "FALSE"
+        ).upper()
+        == "TRUE"
+    )
+    if disable_pulling_docker_images:
+        logger.info(
+            "Not pulling docker images for FlowETL integration tests "
+            "(because FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES=TRUE)."
+        )
+    else:
+        logger.info(f"Pulling docker images (tag='{container_tag}')...")
+        docker_client.images.pull("postgres", tag="11.0")
+        docker_client.images.pull("flowminder/flowdb", tag=container_tag)
+        docker_client.images.pull("flowminder/flowetl", tag=container_tag)
+        logger.info("Done pulling docker images.")
 
 
 @pytest.fixture(scope="function")
@@ -213,6 +224,24 @@ def flowdb_container(
     while not healthy:
         container_info = docker_api_client.inspect_container(container.id)
         healthy = container_info["State"]["Health"]["Status"] == "healthy"
+
+    # Add a single line of raw SMS data into a postgres table which is used in the full-pipeline test.
+    engine = create_engine(
+        f"postgresql://flowdb:flowflow@localhost:{container_ports['flowdb']}/flowdb"
+    )
+    engine.execute(
+        """
+        CREATE TABLE IF NOT EXISTS mds_raw_data_dump (
+            imei TEXT,
+            msisdn TEXT,
+            event_time TIMESTAMPTZ,
+            cell_id TEXT
+        );
+
+        INSERT INTO mds_raw_data_dump VALUES
+        ('BDED3095A2759089134DDA5CB7968764', '9824B87CDEEAD5ED5AC959D74F3C81C5', '2016-01-01 13:23:29', 'C44BEF');
+        """
+    )
 
     yield
     container.kill()
@@ -481,8 +510,9 @@ def wait_for_completion():
             t1 = now()
             if (t1 - t0) > time_out or len(DagRun.find(**kwargs_fail)) == 1:
                 raise TimeoutError(
-                    f"DAG '{dag_id}' did not reach desired state {end_state}. This may be"
-                    "due to missing config settings or syntax errors in one of its task."
+                    f"DAG '{dag_id}' did not reach desired state {end_state}. This may be "
+                    "due to missing config settings, syntax errors in one of its task, or "
+                    "similar runtime errors."
                 )
         return end_state
 
@@ -515,7 +545,7 @@ def flowdb_connection(flowdb_connection_engine):
 @pytest.fixture(scope="function")
 def flowdb_session(flowdb_connection_engine):
     """
-    sqlalchmy session for flowdb - used for ORM models
+    sqlalchemy session for flowdb - used for ORM models
     """
     session = sessionmaker(bind=flowdb_connection_engine)()
     yield session
@@ -537,7 +567,7 @@ def flowetl_db_connection_engine(container_env, container_ports):
 @pytest.fixture(scope="function")
 def flowetl_db_session(flowetl_db_connection_engine):
     """
-    sqlalchmy session for flowetl - used for ORM models
+    sqlalchemy session for flowetl - used for ORM models
     """
     session = sessionmaker(bind=flowetl_db_connection_engine)()
     yield session
