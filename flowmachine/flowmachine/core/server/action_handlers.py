@@ -117,7 +117,8 @@ def action_handler__run_query(**action_params: dict) -> ZMQReply:
             f"The action parameters were:\n{action_params_as_text}.\n\n"
             f"Validation error messages:\n{validation_errors_as_text}.\n\n"
         )
-        return ZMQReply(status="error", msg=error_msg, payload=None)
+        payload = {"validation_error_messages": validation_error_messages}
+        return ZMQReply(status="error", msg=error_msg, payload=payload)
 
     q_info_lookup = QueryInfoLookup(Query.redis)
     try:
