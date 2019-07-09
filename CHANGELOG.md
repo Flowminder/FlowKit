@@ -16,9 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowETL now supports ingesting from a postgres table in addition to CSV files. [#1027](https://github.com/Flowminder/FlowKit/issues/1027)
 - `FLOWETL_RUNTIME_CONFIG` environment variable added to control which DAG definitions the FlowETL integration tests should use (valid values: "testing", "production").
 - `FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES` environment variable added to allow running the FlowETL integration tests against locally built docker images during development.
-- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes handset.[#1011](https://github.com/Flowminder/FlowKit/issues/1011)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes handset.[#1011](https://github.com/Flowminder/FlowKit/issues/1011) and [#1029](https://github.com/Flowminder/FlowKit/issues/1029)
 - `JoinedSpatialAggregate` now supports "dist" stats which computes outputs the relative distribution of the passed metrics.
-- Added `SubscriberHandsetCharacteristic` to FlowMachine, and removed `SubscriberPhoneType` from FlowMachine to avoid redundancy.
+- Added `SubscriberHandsetCharacteristic` to FlowMachine
 
 ### Changed
 
@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 
 - `TESTING` environment variable was removed (previously used by the FlowETL integration tests).
+- Removed `SubscriberPhoneType` from FlowMachine to avoid redundancy.
 
 ## [0.7.0]
 
