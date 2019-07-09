@@ -41,6 +41,7 @@ from .client import (
     topup_balance,
     event_count,
     nocturnal_events,
+    handset,
 )
 
 __all__ = [
@@ -74,4 +75,5 @@ __all__ = [
     "topup_balance",
     "event_count",
     "nocturnal_events",
+    "handset",
 ]

@@ -1476,8 +1476,8 @@ def nocturnal_events(
 
 def handset(
     *,
-    start: str,
-    stop: str,
+    start_date: str,
+    end_date: str,
     characteristic: str = [
         "hnd_type",
         "brand",
@@ -1512,8 +1512,8 @@ def handset(
     """
     return {
         "query_kind": "handset",
-        "start": start,
-        "stop": stop,
+        "start_date": start_date,
+        "end_date": end_date,
         "characteristic": characteristic,
         "method": method,
         "subscriber_subset": subscriber_subset,
