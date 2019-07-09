@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load, validates_schema, ValidationError
+from marshmallow import Schema, fields, post_load, pre_load, ValidationError
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
@@ -51,7 +51,7 @@ class JoinedSpatialAggregateSchema(Schema):
     metric = fields.Nested(JoinableMetrics, required=True)
     method = fields.String()
 
-    @validates_schema
+    @pre_load
     def validate_method(self, data, **kwargs):
         quant_metrics = [
             "radius_of_gyration",
@@ -72,6 +72,7 @@ class JoinedSpatialAggregateSchema(Schema):
         else:
             raise ValidationError("{data['metric']['query_kind']} does not have a valid metric type.")
         validate(data["method"])
+        return data
 
     @post_load
     def make_query_object(self, params, **kwargs):
