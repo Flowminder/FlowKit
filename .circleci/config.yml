@@ -568,7 +568,7 @@ jobs:
       image: circleci/classic:201808-01
     environment:
       AIRFLOW_HOME: ./test_airflow_home
-      TESTING: "true"
+      FLOWETL_RUNTIME_CONFIG: "testing"
     working_directory: /home/circleci/project/flowetl
     steps:
       - checkout:
@@ -582,6 +582,10 @@ jobs:
           name: Install python dependencies
           command: |
             pipenv install --deploy --dev
+      - run:
+          name: Install postgresql
+          command: |
+            sudo apt-get update && sudo apt-get install -y postgresql
       - save_cache:
           key: flowetl-deps1-{{ checksum "Pipfile.lock" }}
           paths:
