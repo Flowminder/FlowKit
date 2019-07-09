@@ -305,6 +305,54 @@
         ],
         "type": "object"
       },
+      "Handset": {
+        "properties": {
+          "characteristic": {
+            "enum": [
+              "brand",
+              "hnd_type",
+              "model",
+              "software_os_name",
+              "software_os_vendor"
+            ],
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "method": {
+            "enum": [
+              "last",
+              "most-common"
+            ],
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "handset"
+            ],
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "end_date",
+          "query_kind",
+          "start_date"
+        ],
+        "type": "object"
+      },
       "InputToAggregateNetworkObjects": {
         "oneOf": [
           {
@@ -345,6 +393,9 @@
             "$ref": "#/components/schemas/EventCount"
           },
           {
+            "$ref": "#/components/schemas/Handset"
+          },
+          {
             "$ref": "#/components/schemas/NocturnalEvents"
           },
           {
@@ -372,6 +423,7 @@
           "method": {
             "enum": [
               "avg",
+              "dist",
               "max",
               "median",
               "min",
