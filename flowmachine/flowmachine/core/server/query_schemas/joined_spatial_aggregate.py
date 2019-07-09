@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load, ValidationError
+from marshmallow import Schema, fields, post_load, validates_schema, ValidationError
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
@@ -25,7 +25,6 @@ from flowmachine.core.server.query_schemas.spatial_aggregate import (
 )
 from flowmachine.features.utilities.spatial_aggregates import JoinedSpatialAggregate
 from .base_exposed_query import BaseExposedQuery
-from .custom_fields import SpatialAggregateMethod
 
 
 __all__ = ["JoinedSpatialAggregateSchema", "JoinedSpatialAggregateExposed"]
@@ -50,10 +49,10 @@ class JoinedSpatialAggregateSchema(Schema):
     query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
     locations = fields.Nested(InputToSpatialAggregate, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
-    metric_type = fields.Method("get_metric_type")
-    method = SpatialAggregateMethod()
+    method = fields.String()
 
-    def get_metric_type(self, obj):
+    @validates_schema
+    def validate_method(self, data, **kwargs):
         quant_metrics = [
             "radius_of_gyration",
             "unique_location_counts",
@@ -63,13 +62,16 @@ class JoinedSpatialAggregateSchema(Schema):
             "event_count",
             "nocturnal_events",
         ]
-        qual_metrics = ["handset"]
-        if obj.metric.type in quant_metrics:
-            return "quant"
-        elif obj.metric.type in qual_metrics:
-            return "qual"
+        qual_metrics = ["handset",]
+        if data["metric"]["query_kind"] in quant_metrics:
+            validate = OneOf(
+                    ["avg", "max", "min", "median", "mode", "stddev", "variance"]
+                )
+        elif data["metric"]["query_kind"] in qual_metrics:
+            validate = OneOf(["dist"])
         else:
-            raise ValidationError("{obj.metric.type} does have a valid type.")
+            raise ValidationError("{data['metric']['query_kind']} does not have a valid metric type.")
+        validate(data["method"])
 
     @post_load
     def make_query_object(self, params, **kwargs):
