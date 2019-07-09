@@ -181,7 +181,10 @@ class Connection:
             try:
                 error_msg = response.json()["msg"]
                 try:
-                    payload_info = f" Payload: {response.json()['payload']}"
+                    returned_payload = response.json()["payload"]
+                    payload_info = (
+                        "" if not returned_payload else f" Payload: {returned_payload}"
+                    )
                 except KeyError:
                     payload_info = ""
             except ValueError:
