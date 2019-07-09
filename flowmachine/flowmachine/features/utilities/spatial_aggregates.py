@@ -72,7 +72,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     locations : Query
         A query object that represents the locations of subscribers.
         Must have a 'subscriber' column, and a 'spatial_unit' attribute.
-    method : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+    method : {"avg", "max", "min", "median", "mode", "stddev", "variance", "dist"}
             Method of aggregation.
 
     Examples

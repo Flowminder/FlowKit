@@ -49,7 +49,7 @@ class JoinedSpatialAggregateSchema(Schema):
     query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
     locations = fields.Nested(InputToSpatialAggregate, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
-    method = fields.String()
+    method = fields.String(validate=OneOf(JoinedSpatialAggregate.allowed_methods))
 
     @pre_load
     def validate_method(self, data, **kwargs):
@@ -62,15 +62,17 @@ class JoinedSpatialAggregateSchema(Schema):
             "event_count",
             "nocturnal_events",
         ]
-        qual_metrics = ["handset",]
+        qual_metrics = ["handset"]
         if data["metric"]["query_kind"] in quant_metrics:
             validate = OneOf(
-                    ["avg", "max", "min", "median", "mode", "stddev", "variance"]
-                )
+                ["avg", "max", "min", "median", "mode", "stddev", "variance"]
+            )
         elif data["metric"]["query_kind"] in qual_metrics:
             validate = OneOf(["dist"])
         else:
-            raise ValidationError("{data['metric']['query_kind']} does not have a valid metric type.")
+            raise ValidationError(
+                "{data['metric']['query_kind']} does not have a valid metric type."
+            )
         validate(data["method"])
         return data
 
