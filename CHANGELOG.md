@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up balance.[#968](https://github.com/Flowminder/FlowKit/issues/968)
 
 ### Changed
+- The flowdb containers for test_data and synthetic_data were split into two separate containers and quick_start.sh downloads the docker-compose files to a new temporary directory on each run. [#843](https://github.com/Flowminder/FlowKit/issues/843)
 
 
 ### Fixed
