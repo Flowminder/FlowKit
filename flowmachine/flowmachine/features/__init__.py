@@ -43,7 +43,6 @@ subs = [
     "SubscriberHandsets",
     "SubscriberHandset",
     "SubscriberHandsetCharacteristic",
-    "SubscriberPhoneType",
     "ParetoInteractions",
     "SubscriberCallDurations",
     "PairedSubscriberCallDurations",

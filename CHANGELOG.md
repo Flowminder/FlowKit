@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES` environment variable added to allow running the FlowETL integration tests against locally built docker images during development.
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes handset.[#1011](https://github.com/Flowminder/FlowKit/issues/1011)
 - `JoinedSpatialAggregate` now supports "dist" stats which computes outputs the relative distribution of the passed metrics.
-- Added `SubscriberHandsetCharacteristic` to FlowMachine.
+- Added `SubscriberHandsetCharacteristic` to FlowMachine, and removed `SubscriberPhoneType` from FlowMachine to avoid redundancy.
 
 ### Changed
 

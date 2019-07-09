@@ -47,7 +47,6 @@ from .subscriber_tacs import (
     SubscriberHandsets,
     SubscriberHandset,
     SubscriberHandsetCharacteristic,
-    SubscriberPhoneType,
 )
 
 from .subscriber_call_durations import (
@@ -96,7 +95,6 @@ __all__ = [
     "SubscriberHandsets",
     "SubscriberHandset",
     "SubscriberHandsetCharacteristic",
-    "SubscriberPhoneType",
     "ParetoInteractions",
     "SubscriberCallDurations",
     "PairedSubscriberCallDurations",
