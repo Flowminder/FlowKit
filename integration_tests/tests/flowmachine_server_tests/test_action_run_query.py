@@ -182,7 +182,7 @@ async def test_run_query_with_wrong_parameters(
     # expected_reason = f"Error when constructing query of kind daily_location with parameters {params}: '{expected_error_msg}'"
     # expected_reason = "Message contains unexpected key(s): ['query_kind'], 'data': {}"
     assert "error" == reply["status"]
-    assert expected_error_messages == reply["payload"]
+    assert expected_error_messages == reply["payload"]["validation_error_messages"]
 
 
 @pytest.mark.skip(reason="Cannot currently test this because the sender hangs")

@@ -181,7 +181,10 @@ class Connection:
             try:
                 error_msg = response.json()["msg"]
                 try:
-                    payload_info = f" Payload: {response.json()['payload']}"
+                    returned_payload = response.json()["payload"]
+                    payload_info = (
+                        "" if not returned_payload else f" Payload: {returned_payload}"
+                    )
                 except KeyError:
                     payload_info = ""
             except ValueError:
@@ -1474,5 +1477,42 @@ def displacement(
         "stop": stop,
         "value": value,
         "reference_location": reference_location,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def nocturnal_events(
+    *,
+    start: str,
+    stop: str,
+    hours: tuple((int, int)),
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for nocturnal events
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day for which to count nocturnal events, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date for which to count nocturnal events, e.g. "2016-01-08"
+    hours: tuple(int,int)
+
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+
+    return {
+        "query_kind": "nocturnal_events",
+        "start": start,
+        "stop": stop,
+        "hours": hours,
         "subscriber_subset": subscriber_subset,
     }

@@ -14,6 +14,7 @@ from flowmachine.core.server.query_schemas.subscriber_degree import (
 )
 from flowmachine.core.server.query_schemas.topup_amount import TopUpAmountSchema
 from flowmachine.core.server.query_schemas.event_count import EventCountSchema
+from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEventsSchema
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
@@ -38,6 +39,7 @@ class JoinableMetrics(OneOfSchema):
         "subscriber_degree": SubscriberDegreeSchema,
         "topup_amount": TopUpAmountSchema,
         "event_count": EventCountSchema,
+        "nocturnal_events": NocturnalEventsSchema,
         "displacement": DisplacementSchema,
     }
 
