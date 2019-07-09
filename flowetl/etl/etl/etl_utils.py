@@ -6,15 +6,14 @@
 """
 Contains utility functions for use in the ETL dag and it's callables
 """
-import re
 import os
+import pendulum
+import re
+import sqlalchemy
 
-from uuid import UUID
 from typing import List, Callable
 from enum import Enum
 from pathlib import Path
-from pendulum import parse
-from pendulum.date import Date as pendulumDate
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -22,8 +21,6 @@ from sqlalchemy.orm import sessionmaker
 from airflow import DAG
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import PythonOperator
-
-from etl import model
 
 
 def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
@@ -118,7 +115,7 @@ def construct_etl_dag(
         default_args=default_args,
         template_searchpath=config_path,  # template paths will be relative to this
         user_defined_macros={
-            "get_extract_table": lambda execution_date: f"etl.x{ cdr_type }_{ execution_date }",
+            "get_extract_view": lambda execution_date: f"etl.x{ cdr_type }_{ execution_date }",
             "get_transform_table": lambda execution_date: f"etl.t{ cdr_type }_{ execution_date }",
             "get_load_table": lambda execution_date: f"events.{ cdr_type }_{ execution_date }",
             "cdr_type": cdr_type,
@@ -218,105 +215,79 @@ def find_files(*, files_path: Path, ignore_filenames=["README.md"]) -> List[Path
     return list(files)
 
 
-def filter_files(*, found_files: List, cdr_type_config: dict):
+def find_files_matching_pattern(
+    *, files_path: Path, filename_pattern: str
+) -> List[str]:
     """
-    Takes a list of files and filters them based on two
-    factors;
-    1. Does the filename match any CDR type pattern if not remove
-    2. Has the file been successfully ingested if so remove
+    Returns a list of Path objects for all files found in the files location that match the given pattern.
 
     Parameters
     ----------
-    found_files : List
-        List of found files should be Path objects
-    cdr_type_config : dict
-        config dict containing patterns for
-        each cdr type
-
+    files_path : Path
+        The location of the files path
+    filename_pattern : str
+        Regular expression to match the filenames against
 
     Returns
     -------
-    List
-        Files that can be processed by ETL DAG
+    List[str]
+        List of matching files found
     """
-    filtered_files = []
-    for file in found_files:
-        try:
-            # try to parse file name
-            parsed_file_name_config = parse_file_name(
-                file_name=file.name, cdr_type_config=cdr_type_config
-            )
-        except ValueError:
-            # couldnt parse moving on
-            continue
-
-        cdr_type = parsed_file_name_config["cdr_type"]
-        cdr_date = parsed_file_name_config["cdr_date"]
-
-        session = get_session()
-        if model.ETLRecord.can_process(
-            cdr_type=cdr_type, cdr_date=cdr_date, session=session
-        ):
-            filtered_files.append(file)
-
-    return filtered_files
+    all_files = sorted([file for file in files_path.glob("*")])
+    matching_files = [
+        file.name for file in all_files if re.fullmatch(filename_pattern, file.name)
+    ]
+    return sorted(matching_files)
 
 
-def get_config(*, file_name: str, cdr_type_config: dict) -> dict:
+def extract_date_from_filename(filename: str, filename_pattern: str) -> pendulum.Date:
     """
-    Create DAG config that is based on filename
+    Return date extracted from the given filename based on the pattern.
+
+    Note: this assumes that `filename_pattern` contains exactly one group
+    (marked by the `(` and `)` metacharacters) which represents the date.
 
     Parameters
     ----------
-    file_name : str
-        name of file to construct config for
-    cdr_type_config : dict
-        config dict containing patterns for
-        each cdr type
+    filename : str
+        Filename which includes the date, for example `CALLS_20160101.csv`.
+    filename_pattern : str
+        The pattern used to match the filename and extract the date, e.g. `CALLS_(\d{8}).csv.gz`
 
     Returns
     -------
-    dict
-        Dictionary with config for this filename
+    pendulum.Date
+        Date extracted from the filename.
     """
-    parsed_file_name_config = parse_file_name(
-        file_name=file_name, cdr_type_config=cdr_type_config
-    )
-    template_path = f"etl/{parsed_file_name_config['cdr_type']}"
-    other_config = {"file_name": file_name, "template_path": template_path}
-    return {**parsed_file_name_config, **other_config}
+    m = re.fullmatch(filename_pattern, str(filename))
+    if m is None:
+        raise ValueError(
+            f"Filename '{filename}' does not match the pattern '{filename_pattern}'"
+        )
+    date_str = m.group(1)
+    return pendulum.parse(date_str).date()
 
 
-def parse_file_name(*, file_name: str, cdr_type_config: dict) -> dict:
+def find_distinct_dates_in_table(
+    session: sqlalchemy.orm.Session,
+    source_table: str,
+    event_time_col: str = "event_time",
+) -> List[pendulum.Date]:
     """
-    Function to parse date of data and cdr type from filename.
-    Makes use of patterns specified in global config.
 
     Parameters
     ----------
-    file_name : str
-        The file name to parse
-    cdr_type_config : dict
-        The config for each CDR type which contains
-        patterns to match against.
-
-    Returns
-    -------
-    dict
-        contains files cdr type and the date associated
-        to the data
+    session : sqlalchemy.orm.Session
+        SQLAlchemy session to use.
+    source_table : str
+        Name of the table in which to look for dates.
+    event_time_col : str
+        The column in which to look for dates.
     """
-    file_cdr_type, file_cdr_date = None, None
-    for cdr_type in CDRType:
-        pattern = cdr_type_config[cdr_type]["pattern"]
-        m = re.fullmatch(pattern, file_name)
-        if m:
-            file_cdr_type = cdr_type
-            file_cdr_date = parse(m.groups()[0])
-
-    if file_cdr_type and file_cdr_date:
-        parsed_file_info = {"cdr_type": file_cdr_type, "cdr_date": file_cdr_date}
-    else:
-        raise ValueError("No pattern match found")
-
-    return parsed_file_info
+    dates_found = [
+        pendulum.parse(row["date"].strftime("%Y-%m-%d"))
+        for row in session.execute(
+            f"SELECT DISTINCT date FROM (SELECT {event_time_col}::date as date FROM {source_table}) tmp"
+        ).fetchall()
+    ]
+    return dates_found

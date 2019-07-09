@@ -40,6 +40,7 @@ from .client import (
     topup_amount,
     topup_balance,
     event_count,
+    nocturnal_events,
 )
 
 __all__ = [
@@ -72,4 +73,5 @@ __all__ = [
     "topup_amount",
     "topup_balance",
     "event_count",
+    "nocturnal_events",
 ]

@@ -7,7 +7,6 @@
 Mapping task id to a python callable. Allows for the specification of a set of
 dummy callables to be used for testing.
 """
-import os
 from functools import partial
 from pathlib import Path
 
@@ -25,7 +24,7 @@ from etl.production_task_callables import (
     record_ingestion_state__callable,
     run_postload_queries__callable,
     success_branch__callable,
-    trigger__callable,
+    production_trigger__callable,
 )
 from etl.postetl_queries import POSTETL_QUERIES_FOR_TYPE
 
@@ -117,5 +116,7 @@ PRODUCTION_ETL_TASK_CALLABLES = {
 
 TEST_ETL_SENSOR_TASK_CALLABLE = dummy_trigger__callable
 PRODUCTION_ETL_SENSOR_TASK_CALLABLE = partial(
-    trigger__callable, files_path=files_path, cdr_type_config=config.get("etl", {})
+    production_trigger__callable,
+    files_path=files_path,
+    cdr_type_config=config.get("etl", {}),
 )
