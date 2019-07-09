@@ -516,7 +516,10 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
                 "metric": flowclient.handset(
-                    start_date="2016-01-01", end_date="2016-01-02", characteristic="hnd_type", method="last"
+                    start_date="2016-01-01",
+                    end_date="2016-01-02",
+                    characteristic="hnd_type",
+                    method="last",
                 ),
                 "method": "dist",
             },
@@ -576,7 +579,9 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
         ),
     ],
 )
-def test_fail_query_incorret_parameters(query_kind, params, universal_access_token, flowapi_url):
+def test_fail_query_incorret_parameters(
+    query_kind, params, universal_access_token, flowapi_url
+):
     """
     Test that queries fail with incorrect parameters.
     """
@@ -584,6 +589,7 @@ def test_fail_query_incorret_parameters(query_kind, params, universal_access_tok
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
     with pytest.raises(Exception):
         result_dataframe = get_result(connection=con, query=query_spec)
+
 
 def test_get_geography(access_token_builder, flowapi_url):
     """
