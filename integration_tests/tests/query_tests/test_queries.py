@@ -490,6 +490,37 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 ),
             },
         ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "handset",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                    "characteristic": "hnd_type",
+                    "method": "last",
+                },
+                "method": "dist",
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.handset(
+                    start_date="2016-01-01", end_date="2016-01-02", characteristic="hnd_type", method="last"
+                ),
+                "method": "dist",
+            },
+        ),
     ],
 )
 def test_run_query(query_kind, params, universal_access_token, flowapi_url):
@@ -502,6 +533,57 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     result_dataframe = get_result(connection=con, query=query_spec)
     assert len(result_dataframe) > 0
 
+
+@pytest.mark.parametrize(
+    "query_kind, params",
+    [
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "topup_balance",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                    "statistic": "avg",
+                },
+                "method": "dist",
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "handset",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                    "characteristic": "hnd_type",
+                    "method": "last",
+                },
+                "method": "avg",
+            },
+        ),
+    ],
+)
+def test_fail_query_incorret_parameters(query_kind, params, universal_access_token, flowapi_url):
+    """
+    Test that queries fail with incorrect parameters.
+    """
+    query_spec = getattr(flowclient, query_kind)(**params)
+    con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
+    with pytest.raises(Exception):
+        result_dataframe = get_result(connection=con, query=query_spec)
 
 def test_get_geography(access_token_builder, flowapi_url):
     """
