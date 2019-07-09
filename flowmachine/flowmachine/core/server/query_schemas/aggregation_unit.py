@@ -33,6 +33,6 @@ def get_spatial_unit_obj(aggregation_unit_string) -> GeomSpatialUnit:
         spatial_unit_args = {"spatial_unit_type": "admin", "level": level}
     else:
         raise NotImplementedError(
-            f"The helper function `get_spatial_unit_obj` does not yet support aggregation units of type '{aggregation_unit_string}'."
+            f"The helper function `get_spatial_unit_obj` does not support aggregation units of type '{aggregation_unit_string}'."
         )
     return make_spatial_unit(**spatial_unit_args)
