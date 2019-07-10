@@ -154,6 +154,11 @@ At present, the following query types are accessible through FlowAPI:
 
     Count of events (optionally of specific types) for individual subscribers in a time period.
 
+- `pareto_interactions`
+
+    Returns two columns: `subscriber`, `pareto` - where the latter is the
+    proportion of that subscriber's contacts who account for the requested
+    proportion (0.8, by default) of their interactions in this time period.
 
 ### FlowAPI Access tokens
 
