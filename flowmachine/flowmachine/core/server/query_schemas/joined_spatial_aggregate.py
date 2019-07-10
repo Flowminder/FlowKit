@@ -18,6 +18,9 @@ from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEven
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
+from flowmachine.core.server.query_schemas.pareto_interactions import (
+    ParetoInteractionsSchema,
+)
 from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSchema
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     InputToSpatialAggregate,
@@ -38,6 +41,7 @@ class JoinableMetrics(OneOfSchema):
         "subscriber_degree": SubscriberDegreeSchema,
         "topup_amount": TopUpAmountSchema,
         "event_count": EventCountSchema,
+        "pareto_interactions": ParetoInteractionsSchema,
         "nocturnal_events": NocturnalEventsSchema,
     }
 

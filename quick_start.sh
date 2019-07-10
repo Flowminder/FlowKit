@@ -102,23 +102,40 @@ then
     exit 1
 fi
 
+DOCKER_WORKDIR=`mktemp -d`
+if [[ ! "$DOCKER_WORKDIR" || ! -d "$DOCKER_WORKDIR" ]]
+then
+    echo "Could not create temporary docker working directory."
+    exit 1
+fi
+
+function dockertemp_cleanup {
+    rm -rf "$DOCKER_WORKDIR"
+}
+trap dockertemp_cleanup EXIT
+
+curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose.yml -o "$DOCKER_WORKDIR/docker-compose.yml"
+curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-testdata.yml -o "$DOCKER_WORKDIR/docker-compose-testdata.yml"
+curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-syntheticdata.yml -o "$DOCKER_WORKDIR/docker-compose-syntheticdata.yml"
+
+DOCKER_COMPOSE="docker-compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/docker-compose-testdata.yml -f $DOCKER_WORKDIR/docker-compose-syntheticdata.yml"
 
 if [ $# -gt 0 ] && [ "$1" = "stop" ]
 then
     export DOCKER_FLOWDB_HOST=flowdb_testdata
     echo "Stopping containers"
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/development_environment)"
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose.yml | docker-compose -f - down -v
+    $DOCKER_COMPOSE down -v
 else
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/development_environment)"
-     echo "Starting containers (this may take a few minutes)"
-    RUNNING=`curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose.yml | docker-compose -f - ps -q $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
+    echo "Starting containers (this may take a few minutes)"
+    RUNNING=`$DOCKER_COMPOSE ps -q $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
     if [[ "$RUNNING" != "" ]]; then
         confirm "Existing containers are running and will be replaced. Are you sure?" || exit 1
     fi
     DOCKER_SERVICES="$DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES"
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose.yml | docker-compose -f - pull $DOCKER_SERVICES
-    curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose.yml | docker-compose -f - up -d $DOCKER_SERVICES
+    $DOCKER_COMPOSE pull $DOCKER_SERVICES
+    $DOCKER_COMPOSE up -d $DOCKER_SERVICES
     echo "Waiting for containers to be ready.."
     docker exec ${DOCKER_FLOWDB_HOST} bash -c 'i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
     echo "FlowDB ready."
