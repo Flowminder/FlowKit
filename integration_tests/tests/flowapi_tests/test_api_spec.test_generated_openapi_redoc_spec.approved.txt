@@ -345,10 +345,10 @@
             "$ref": "#/components/schemas/EventCount"
           },
           {
-            "$ref": "#/components/schemas/ParetoInteractions"
+            "$ref": "#/components/schemas/NocturnalEvents"
           },
           {
-            "$ref": "#/components/schemas/NocturnalEvents"
+            "$ref": "#/components/schemas/ParetoInteractions"
           },
           {
             "$ref": "#/components/schemas/RadiusOfGyration"
@@ -812,6 +812,40 @@
         ],
         "type": "object"
       },
+      "NocturnalEvents": {
+        "properties": {
+          "hours": {
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "nocturnal_events"
+            ],
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start",
+          "stop"
+        ],
+        "type": "object"
+      },
       "ParetoInteractions": {
         "properties": {
           "proportion": {
@@ -844,40 +878,6 @@
         },
         "required": [
           "proportion",
-          "query_kind",
-          "start",
-          "stop"
-        ],
-        "type": "object"
-      },
-      "NocturnalEvents": {
-        "properties": {
-          "hours": {
-            "type": "string"
-          },
-          "query_kind": {
-            "enum": [
-              "nocturnal_events"
-            ],
-            "type": "string"
-          },
-          "start": {
-            "format": "date",
-            "type": "string"
-          },
-          "stop": {
-            "format": "date",
-            "type": "string"
-          },
-          "subscriber_subset": {
-            "enum": [
-              null
-            ],
-            "nullable": true,
-            "type": "string"
-          }
-        },
-        "required": [
           "query_kind",
           "start",
           "stop"
