@@ -152,7 +152,11 @@ At present, the following query types are accessible through FlowAPI:
 - `event_count`
 
     Count of events (optionally of specific types) for individual subscribers in a time period.
+    
+- `displacement`
 
+    Return statistics of a subscribers displacement from
+    their reference location.
 
 ### FlowAPI Access tokens
 
