@@ -26,11 +26,17 @@ def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataf
     Test that we get expected return values for the various statistics
     """
     sub_a_id, sub_b_id = "j6QYNbMJgAwlVORP", "NG1km5NzBg5JD8nj"
+    rl = ModalLocation(
+        *[
+            daily_location(d, spatial_unit=make_spatial_unit("lon-lat"))
+            for d in list_of_dates("2016-01-01", "2016-01-06")
+        ]
+    )
     df = get_dataframe(
-        Displacement("2016-01-01", "2016-01-07", statistic=stat)
+        Displacement("2016-01-01", "2016-01-07", value=stat, reference_location=rl)
     ).set_index("subscriber")
-    assert df.loc[sub_a_id].statistic == pytest.approx(sub_a_expected)
-    assert df.loc[sub_b_id].statistic == pytest.approx(sub_b_expected)
+    assert df.loc[sub_a_id].value == pytest.approx(sub_a_expected)
+    assert df.loc[sub_b_id].value == pytest.approx(sub_b_expected)
 
 
 def test_returns_expected_result_for_unit_m(get_dataframe):
@@ -38,11 +44,19 @@ def test_returns_expected_result_for_unit_m(get_dataframe):
     Test that we get expected results when unit='m'.
     """
     sub_a_id, sub_b_id = "j6QYNbMJgAwlVORP", "NG1km5NzBg5JD8nj"
+    rl = ModalLocation(
+        *[
+            daily_location(d, spatial_unit=make_spatial_unit("lon-lat"))
+            for d in list_of_dates("2016-01-01", "2016-01-06")
+        ]
+    )
     df = get_dataframe(
-        Displacement("2016-01-01", "2016-01-07", statistic="max", unit="m")
+        Displacement(
+            "2016-01-01", "2016-01-07", reference_location=rl, value="max", unit="m"
+        )
     ).set_index("subscriber")
-    assert df.loc[sub_a_id].statistic == pytest.approx(500809.349)
-    assert df.loc[sub_b_id].statistic == pytest.approx(387024.628)
+    assert df.loc[sub_a_id].value == pytest.approx(500809.349)
+    assert df.loc[sub_b_id].value == pytest.approx(387024.628)
 
 
 def test_min_displacement_zero(get_dataframe):
@@ -50,10 +64,17 @@ def test_min_displacement_zero(get_dataframe):
     When time period for diplacement and home location are the same min displacement
     should be zero for all subscribers
     """
+    rl = ModalLocation(
+        *[
+            daily_location(d, spatial_unit=make_spatial_unit("lon-lat"))
+            for d in list_of_dates("2016-01-01", "2016-01-06")
+        ]
+    )
+    df = get_dataframe(
+        Displacement("2016-01-01", "2016-01-07", reference_location=rl, value="min")
+    )
 
-    df = get_dataframe(Displacement("2016-01-01", "2016-01-07", statistic="min"))
-
-    assert df.statistic.sum() == 0
+    assert df.value.sum() == 0
 
 
 def test_pass_modal_location(get_dataframe):
@@ -61,7 +82,7 @@ def test_pass_modal_location(get_dataframe):
     Test that we can pass a home location object to the class
     """
 
-    ml = ModalLocation(
+    rl = ModalLocation(
         *[
             daily_location(d, spatial_unit=make_spatial_unit("lon-lat"))
             for d in list_of_dates("2016-01-01", "2016-01-06")
@@ -69,11 +90,11 @@ def test_pass_modal_location(get_dataframe):
     )
 
     df = get_dataframe(
-        Displacement("2016-01-01", "2016-01-07", modal_locations=ml, statistic="avg")
+        Displacement("2016-01-01", "2016-01-07", reference_location=rl, value="avg")
     )
     df = df.set_index("subscriber")
 
-    val = df.loc["j6QYNbMJgAwlVORP"].statistic
+    val = df.loc["j6QYNbMJgAwlVORP"].value
     assert val == pytest.approx(176.903620)
 
 
@@ -88,24 +109,28 @@ def test_error_when_modal_location_not_lon_lat():
     )
 
     with pytest.raises(ValueError):
-        Displacement("2016-01-01", "2016-01-02", modal_locations=ml, statistic="avg")
+        Displacement("2016-01-01", "2016-01-02", reference_location=ml, value="avg")
 
 
-def test_error_when_not_modal_location():
+def test_error_when_not_reference_location():
     """
-    Test that error is raised if modal_locations is not a ModalLocation.
+    Test that error is raised if reference_locations is not a object of type `BaseLocation`.
     """
-    dl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
     with pytest.raises(ValueError):
-        Displacement("2016-01-01", "2016-01-02", modal_locations=dl, statistic="avg")
+        Displacement(
+            "2016-01-01", "2016-01-02", reference_location="lon-lat", value="avg"
+        )
 
 
 def test_invalid_statistic_raises_error():
     """
     Test that passing an invalid statistic raises an error.
     """
+    dl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
     with pytest.raises(ValueError):
-        Displacement("2016-01-01", "2016-01-07", statistic="BAD_STATISTIC")
+        Displacement(
+            "2016-01-01", "2016-01-07", reference_location=dl, value="BAD_STATISTIC"
+        )
 
 
 def test_get_all_users_in_modal_location(get_dataframe):
@@ -123,7 +148,7 @@ def test_get_all_users_in_modal_location(get_dataframe):
             for d in list_of_dates(p1[0], p1[1])
         ]
     )
-    d = Displacement(p2[0], p2[1], modal_locations=ml)
+    d = Displacement(p2[0], p2[1], reference_location=ml)
 
     ml_subscribers = set(get_dataframe(ml).subscriber)
     d_subscribers = set(get_dataframe(d).subscriber)
@@ -147,8 +172,8 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
             for d in list_of_dates(p1[0], p1[1])
         ]
     )
-    d = Displacement(p2[0], p2[1], modal_locations=ml)
+    d = Displacement(p2[0], p2[1], reference_location=ml)
 
     df = get_dataframe(d).set_index("subscriber")
 
-    assert isnan(df.loc[subscriber].statistic)
+    assert isnan(df.loc[subscriber].value)
