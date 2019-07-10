@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import Schema, fields, post_load
-from marshmallow.validate import OneOf, Length,Range
+from marshmallow.validate import OneOf, Length, Range
 
 from flowmachine.features import ParetoInteractions
 from .base_exposed_query import BaseExposedQuery
