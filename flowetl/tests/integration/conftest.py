@@ -159,7 +159,8 @@ def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
     """
     config_mount = Mount("/mounts/config", f"{flowetl_mounts_dir}/config", type="bind")
     files_mount = Mount("/mounts/files", f"{flowetl_mounts_dir}/files", type="bind")
-    flowetl_mounts = [config_mount, files_mount]
+    logs_mount = Mount("/mounts/logs", f"{flowetl_mounts_dir}/logs", type="bind")
+    flowetl_mounts = [config_mount, files_mount, logs_mount]
 
     data_mount = Mount(
         "/var/lib/postgresql/data", postgres_data_dir_for_tests, type="bind"
