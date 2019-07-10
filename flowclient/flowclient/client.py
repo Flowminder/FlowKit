@@ -1499,7 +1499,7 @@ def handset(
     start : str
         ISO format date of the first day for which to count handsets, e.g. "2016-01-01"
     stop : str
-        ISO format date of the day _after_ the final date for which to count nocturnal events, e.g. "2016-01-08"
+        ISO format date of the day _after_ the final date for which to count handsets, e.g. "2016-01-08"
     characteristic: ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"], default "hnd_type"
         The required handset characteristic.
     method: ["last", "most-common"], default "last"
