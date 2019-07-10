@@ -1450,7 +1450,7 @@ def pareto_interactions(
     Parameters
     ----------
     start : str
-        ISO format date of the first day of the count, e.g. "2016-01-01"
+        ISO format date of the first day of the time interval to be considered, e.g. "2016-01-01"
     stop : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
     proportion : float
