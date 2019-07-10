@@ -1456,7 +1456,7 @@ def pareto_interactions(
     proportion : float
         proportion to track below
     subscriber_subset : dict or None, default None
-        Subset of subscribers to include in event counts. Must be None
+        Subset of subscribers to include in result. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
     Returns
