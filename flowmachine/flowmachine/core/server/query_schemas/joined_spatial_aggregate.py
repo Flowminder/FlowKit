@@ -71,7 +71,7 @@ class JoinedSpatialAggregateSchema(Schema):
             validate = OneOf(["dist"])
         else:
             raise ValidationError(
-                "{data['metric']['query_kind']} does not have a valid metric type."
+                f"{data['metric']['query_kind']} does not have a valid metric type."
             )
         validate(data["method"])
         return data
