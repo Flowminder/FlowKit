@@ -1492,7 +1492,7 @@ def handset(
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
-    Return query spec for nocturnal events
+    Return query spec for handset
 
     Parameters
     ----------
