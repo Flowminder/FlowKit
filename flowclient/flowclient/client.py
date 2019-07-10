@@ -1460,8 +1460,7 @@ def displacement(
     value : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
         Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
     reference_location:
-        Return query spec for a modal location query for a list of locations.
-        Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
+       
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a

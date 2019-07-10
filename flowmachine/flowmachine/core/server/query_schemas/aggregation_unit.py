@@ -19,7 +19,7 @@ class AggregationUnit(String):
     """
 
     def __init__(self, required=True, **kwargs):
-        validate = OneOf(["admin0", "admin1", "admin2", "admin3"])
+        validate = OneOf(["admin0", "admin1", "admin2", "admin3", "lon-lat"])
         super().__init__(required=required, validate=validate, **kwargs)
 
 
@@ -31,6 +31,8 @@ def get_spatial_unit_obj(aggregation_unit_string) -> GeomSpatialUnit:
     if "admin" in aggregation_unit_string:
         level = int(aggregation_unit_string[-1])
         spatial_unit_args = {"spatial_unit_type": "admin", "level": level}
+    elif "lon-lat" in aggregation_unit_string:
+        spatial_unit_args = {"spatial_unit_type": "lon-lat"}
     else:
         raise NotImplementedError(
             f"The helper function `get_spatial_unit_obj` does not support aggregation units of type '{aggregation_unit_string}'."

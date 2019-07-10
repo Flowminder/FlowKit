@@ -117,13 +117,13 @@ class Displacement(SubscriberFeature):
 
         if reference_location:
             if isinstance(reference_location, BaseLocation):
-                hl = reference_location
+                rl = reference_location
             else:
                 raise ValueError(
                     "Argument 'reference_location' should be an instance of BaseLocation class. "
                     f"Got: {type(reference_location)}"
                 )
-            hl.spatial_unit.verify_criterion("has_lon_lat_columns")
+            rl.spatial_unit.verify_criterion("has_lon_lat_columns")
         # else:
         #     hl = ModalLocation(
         #         *[
@@ -160,7 +160,7 @@ class Displacement(SubscriberFeature):
                 )
             )
 
-        self.joined = hl.join(
+        self.joined = rl.join(
             sl,
             on_left="subscriber",
             on_right="subscriber",

@@ -190,7 +190,7 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     stop="2016-01-02",
                     value="avg",
                     reference_location=flowclient.daily_location(
-                        date="2016-01-01", aggregation_unit="admin3", method="last"
+                        date="2016-01-01", aggregation_unit="lon-lat", method="last"
                     ),
                 ),
             },
