@@ -15,6 +15,8 @@
 #
 
 import functools
+import json
+import textwrap
 from typing import Callable, List, Optional, Union
 
 from apispec import APISpec
@@ -103,11 +105,20 @@ def action_handler__run_query(**action_params: dict) -> ZMQReply:
         # The dictionary of marshmallow errors can contain integers as keys,
         # which will raise an error when converting to JSON (where the keys
         # must be strings). Therefore we transform the keys to strings here.
-        error_msg = "Parameter validation failed."
         validation_error_messages = convert_dict_keys_to_strings(exc.messages)
-        return ZMQReply(
-            status="error", msg=error_msg, payload=validation_error_messages
+        action_params_as_text = textwrap.indent(
+            json.dumps(action_params, indent=2), "   "
         )
+        validation_errors_as_text = textwrap.indent(
+            json.dumps(validation_error_messages, indent=2), "   "
+        )
+        error_msg = (
+            "Parameter validation failed.\n\n"
+            f"The action parameters were:\n{action_params_as_text}.\n\n"
+            f"Validation error messages:\n{validation_errors_as_text}.\n\n"
+        )
+        payload = {"validation_error_messages": validation_error_messages}
+        return ZMQReply(status="error", msg=error_msg, payload=payload)
 
     q_info_lookup = QueryInfoLookup(Query.redis)
     try:

@@ -6,20 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+
 ### Added
+
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes event counts.[#992](https://github.com/Flowminder/FlowKit/issues/992)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up amount.[#967](https://github.com/Flowminder/FlowKit/issues/967)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes nocturnal events.[#1025](https://github.com/Flowminder/FlowKit/issues/1025)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up balance.[#968](https://github.com/Flowminder/FlowKit/issues/968)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes pareto interactions.[#1012](https://github.com/Flowminder/FlowKit/issues/1012)
+- FlowETL now supports ingesting from a postgres table in addition to CSV files. [#1027](https://github.com/Flowminder/FlowKit/issues/1027)
+- `FLOWETL_RUNTIME_CONFIG` environment variable added to control which DAG definitions the FlowETL integration tests should use (valid values: "testing", "production").
+- `FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES` environment variable added to allow running the FlowETL integration tests against locally built docker images during development.
 
 ### Changed
 
+- Flowmachine now returns more informative error messages when query parameter validation fails. [#1055](https://github.com/Flowminder/FlowKit/issues/1055)
 
 ### Fixed
 
 
 ### Removed
 
+- `TESTING` environment variable was removed (previously used by the FlowETL integration tests).
 
 ## [0.7.0]
 

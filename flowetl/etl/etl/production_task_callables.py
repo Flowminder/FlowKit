@@ -6,19 +6,24 @@
 """
 Contains the definition of callables to be used in the production ETL dag.
 """
-import shutil
+import pendulum
+import re
 import structlog
 
 from pathlib import Path
 from uuid import uuid1
-from pendulum import utcnow
 
-from airflow.models import DagRun, BaseOperator
-from airflow.hooks.dbapi_hook import DbApiHook
+from airflow.models import DagRun
 from airflow.api.common.experimental.trigger_dag import trigger_dag
 
 from etl.model import ETLRecord
-from etl.etl_utils import get_session, find_files, filter_files, get_config
+from etl.etl_utils import (
+    CDRType,
+    get_session,
+    find_files_matching_pattern,
+    extract_date_from_filename,
+    find_distinct_dates_in_table,
+)
 
 logger = structlog.get_logger("flowetl")
 
@@ -58,7 +63,7 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
         for task_id in ["init", "extract", "transform", "load"]
     ]
 
-    logger.info(dag_run)
+    logger.info(f"Dag run: {dag_run}")
 
     if any(previous_task_failures):
         branch = "quarantine"
@@ -68,7 +73,7 @@ def success_branch__callable(*, dag_run: DagRun, **kwargs):
     return branch
 
 
-def trigger__callable(
+def production_trigger__callable(
     *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
 ):
     """
@@ -84,36 +89,89 @@ def trigger__callable(
     cdr_type_config : dict
         ETL config for each cdr type
     """
+    session = get_session()
 
-    found_files = find_files(files_path=files_path)
-    logger.info(found_files)
+    for cdr_type, cfg in cdr_type_config.items():
+        cdr_type = CDRType(cdr_type)
 
-    # remove files that either do not match a pattern
-    # or have been processed successfully allready...
-    filtered_files = filter_files(
-        found_files=found_files, cdr_type_config=cdr_type_config
-    )
-    logger.info(filtered_files)
+        source_type = cfg["source"]["source_type"]
+        logger.info(f"Config for {cdr_type!r} ({source_type}): {cfg}")
 
-    # what to do with these!?
-    bad_files = list(set(found_files) - set(filtered_files))
-    logger.info(bad_files)
+        if source_type == "csv":
+            filename_pattern = cfg["source"]["filename_pattern"]
+            logger.info(f"Filename pattern: {filename_pattern!r}")
+            all_files_found = find_files_matching_pattern(
+                files_path=files_path, filename_pattern=filename_pattern
+            )
+            dates_found = {
+                filename: extract_date_from_filename(filename, filename_pattern)
+                for filename in all_files_found
+            }
+            unprocessed_files_and_dates = {
+                filename: date
+                for filename, date in dates_found.items()
+                if ETLRecord.can_process(
+                    cdr_type=cdr_type, cdr_date=date, session=session
+                )
+            }
+            for file, cdr_date in unprocessed_files_and_dates.items():
+                uuid = uuid1()
+                cdr_date_str = cdr_date.strftime("%Y%m%d")
+                execution_date = pendulum.Pendulum(
+                    cdr_date.year, cdr_date.month, cdr_date.day
+                )
+                config = {
+                    "cdr_type": cdr_type,
+                    "cdr_date": cdr_date,
+                    "file_name": file,
+                    "template_path": f"etl/{cdr_type}",
+                }
+                trigger_dag(
+                    f"etl_{cdr_type}",
+                    execution_date=execution_date,
+                    run_id=f"{cdr_type.upper()}_{cdr_date_str}-{str(uuid)}",
+                    conf=config,
+                    replace_microseconds=False,
+                )
+        elif source_type == "sql":
+            source_table = cfg["source"]["table_name"]
 
-    configs = [
-        (file, get_config(file_name=file.name, cdr_type_config=cdr_type_config))
-        for file in filtered_files
-    ]
-    logger.info(configs)
+            # Extract unprocessed dates from source_table
 
-    for file, config in configs:
+            # TODO: this requires a full parse of the existing data so may not be
+            # the most be efficient if a lot of data is present (esp. data that has
+            # already been processed). If it turns out too sluggish might be good to
+            # think about a more efficient way to determine dates with unprocessed data.
+            dates_present = find_distinct_dates_in_table(
+                session, source_table, event_time_col="event_time"
+            )
+            unprocessed_dates = [
+                date
+                for date in dates_present
+                if ETLRecord.can_process(
+                    cdr_type=cdr_type, cdr_date=date, session=session
+                )
+            ]
+            logger.info(f"Dates found: {dates_present}")
+            logger.info(f"Unprocessed dates: {unprocessed_dates}")
 
-        cdr_type = config["cdr_type"]
-        cdr_date = config["cdr_date"]
-        uuid = uuid1()
-        trigger_dag(
-            f"etl_{cdr_type}",
-            execution_date=cdr_date,
-            run_id=f"{file.name}-{str(uuid)}",
-            conf=config,
-            replace_microseconds=False,
-        )
+            for cdr_date in unprocessed_dates:
+                uuid = uuid1()
+                cdr_date_str = cdr_date.strftime("%Y%m%d")
+                execution_date = pendulum.Pendulum(
+                    cdr_date.year, cdr_date.month, cdr_date.day
+                )
+                config = {
+                    "cdr_type": cdr_type,
+                    "cdr_date": cdr_date,
+                    "source_table": source_table,
+                }
+                trigger_dag(
+                    f"etl_{cdr_type}",
+                    execution_date=execution_date,
+                    run_id=f"{cdr_type.upper()}_{cdr_date_str}-{str(uuid)}",
+                    conf=config,
+                    replace_microseconds=False,
+                )
+        else:
+            raise ValueError(f"Invalid source type: '{source_type}'")

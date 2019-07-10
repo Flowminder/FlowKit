@@ -6,35 +6,35 @@
 """
 Tests for configuration parsing
 """
+import pendulum
 import pytest
 import yaml
 
 from copy import deepcopy
 from pathlib import Path
-from unittest.mock import Mock, patch
-from uuid import uuid1
-from pendulum import parse
 
-from etl.model import ETLRecord
-from etl.config_constant import config
 from etl.config_parser import validate_config, get_config_from_file
-from etl.etl_utils import CDRType, find_files, parse_file_name, filter_files
+from etl.etl_utils import (
+    find_files,
+    extract_date_from_filename,
+    find_files_matching_pattern,
+)
 
 
-def test_config_validation():
+def test_config_validation(sample_config_dict):
     """
     Check that with valid config dict we get no exception
     """
-    validate_config(global_config_dict=config)
+    validate_config(global_config_dict=sample_config_dict)
 
 
-def test_config_validation_fails_no_etl_section():
+def test_config_validation_fails_no_etl_section(sample_config_dict):
     """
     Check that we get an exception raised if etl subsection
     missing. The exception will also contain two other exceptions.
     One for missing etl section and one for missing etl subsections.
     """
-    bad_config = deepcopy(config)
+    bad_config = deepcopy(sample_config_dict)
     bad_config.pop("etl")
 
     with pytest.raises(ValueError) as raised_exception:
@@ -43,12 +43,12 @@ def test_config_validation_fails_no_etl_section():
     assert len(raised_exception.value.args[0]) == 2
 
 
-def test_config_validation_fails_no_default_args_section():
+def test_config_validation_fails_no_default_args_section(sample_config_dict):
     """
     Check that we get an exception raised if default args
     subsection missing.
     """
-    bad_config = deepcopy(config)
+    bad_config = deepcopy(sample_config_dict)
     bad_config.pop("default_args")
 
     with pytest.raises(ValueError) as raised_exception:
@@ -57,13 +57,13 @@ def test_config_validation_fails_no_default_args_section():
     assert len(raised_exception.value.args[0]) == 1
 
 
-def test_config_validation_fails_bad_etl_subsection():
+def test_config_validation_fails_bad_etl_subsection(sample_config_dict):
     """
     Check that we get an exception raised if an etl subsection
     does not contain correct keys.
     """
-    bad_config = deepcopy(config)
-    bad_config["etl"]["calls"].pop("pattern")
+    bad_config = deepcopy(sample_config_dict)
+    bad_config["etl"]["calls"].pop("source")
 
     with pytest.raises(ValueError) as raised_exception:
         validate_config(global_config_dict=bad_config)
@@ -103,98 +103,37 @@ def test_find_files_non_default_filter(tmpdir):
     assert set([file.name for file in files]) == set(["README.md"])
 
 
-@pytest.mark.parametrize(
-    "file_name,want",
-    [
-        (
-            "CALLS_20160101.csv.gz",
-            {"cdr_type": CDRType("calls"), "cdr_date": parse("20160101")},
-        ),
-        (
-            "SMS_20160101.csv.gz",
-            {"cdr_type": CDRType("sms"), "cdr_date": parse("20160101")},
-        ),
-        (
-            "MDS_20160101.csv.gz",
-            {"cdr_type": CDRType("mds"), "cdr_date": parse("20160101")},
-        ),
-        (
-            "TOPUPS_20160101.csv.gz",
-            {"cdr_type": CDRType("topups"), "cdr_date": parse("20160101")},
-        ),
-    ],
-)
-def test_parse_file_name(file_name, want):
+def test_find_files_matching_pattern(tmpdir):
     """
-    Test we can parse cdr_type and cdr_date
-    from filenames based on cdr type config.
+    Test that find_files_matching_pattern() returns correct files.
     """
-    cdr_type_config = config["etl"]
-    got = parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
-    assert got == want
+    tmpdir.join("A_01.txt").write("content")
+    tmpdir.join("A_02.txt").write("content")
+    tmpdir.join("B_01.txt").write("content")
+    tmpdir.join("B_02.txt").write("content")
+    tmpdir.join("README.md").write("content")
 
+    tmpdir_path_obj = Path(tmpdir)
 
-def test_parse_file_name_exception():
-    """
-    Test that we get a value error if filename does
-    not match any pattern
-    """
-    cdr_type_config = config["etl"]
-    file_name = "bob.csv"
-    with pytest.raises(ValueError):
-        parse_file_name(file_name=file_name, cdr_type_config=cdr_type_config)
-
-
-def test_filter_files(session, monkeypatch):
-    """
-    testing the filter files function
-
-    - set calls on 20160101 to quarantine so should not be filtered
-    - set calls on 20160102 to archive so should be filtered
-    - no record for sms 20160101 so should not be filtered
-    - bad_file.bad doesn't match any pattern so should  be filtered
-    """
-    cdr_type_config = config["etl"]
-
-    file1 = Path("./CALLS_20160101.csv.gz")
-    file2 = Path("./CALLS_20160102.csv.gz")
-    file3 = Path("./SMS_20160101.csv.gz")
-    file4 = Path("./bad_file.bad")
-
-    found_files = [file1, file2, file3, file4]
-
-    # add a some etl records
-    file1_data = {
-        "cdr_type": "calls",
-        "cdr_date": parse("2016-01-01").date(),
-        "state": "quarantine",
-    }
-
-    file2_data = {
-        "cdr_type": "calls",
-        "cdr_date": parse("2016-01-02").date(),
-        "state": "archive",
-    }
-
-    ETLRecord.set_state(
-        cdr_type=file1_data["cdr_type"],
-        cdr_date=file1_data["cdr_date"],
-        state=file1_data["state"],
-        session=session,
+    files = find_files_matching_pattern(
+        files_path=tmpdir_path_obj, filename_pattern="(.)_01.txt"
     )
+    assert ["A_01.txt", "B_01.txt"] == files
 
-    ETLRecord.set_state(
-        cdr_type=file2_data["cdr_type"],
-        cdr_date=file2_data["cdr_date"],
-        state=file2_data["state"],
-        session=session,
+    files = find_files_matching_pattern(
+        files_path=tmpdir_path_obj, filename_pattern="A_.*\.txt"
     )
+    assert ["A_01.txt", "A_02.txt"] == files
 
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
-    filtered_files = filter_files(
-        found_files=found_files, cdr_type_config=cdr_type_config
+    files = find_files_matching_pattern(
+        files_path=tmpdir_path_obj, filename_pattern=".*"
     )
-    assert filtered_files == [file1, file3]
+    assert ["A_01.txt", "A_02.txt", "B_01.txt", "B_02.txt", "README.md"] == files
+
+    files = find_files_matching_pattern(
+        files_path=tmpdir_path_obj, filename_pattern="foobar.txt"
+    )
+    assert [] == files
 
 
 def test_get_config_from_file(tmpdir):
@@ -208,3 +147,24 @@ def test_get_config_from_file(tmpdir):
 
     config = get_config_from_file(config_filepath=Path(config_file))
     assert config == sample_dict
+
+
+def test_extract_date_from_filename():
+    filename = "CALLS_20160101.csv.gz"
+    filename_pattern = r"CALLS_(\d{8}).csv.gz"
+    date_expected = pendulum.Date(2016, 1, 1)
+    date = extract_date_from_filename(filename, filename_pattern)
+    assert date_expected == date
+
+    filename = "SMS__2018-04-22.csv.gz"
+    filename_pattern = r"SMS__(\d{4}-[0123]\d-\d{2}).csv.gz"
+    date_expected = pendulum.Date(2018, 4, 22)
+    date = extract_date_from_filename(filename, filename_pattern)
+    assert date_expected == date
+
+    filename = "foobar.csv.gz"
+    filename_pattern = r"SMS_(\d{8}).csv.gz"
+    with pytest.raises(
+        ValueError, match="Filename 'foobar.csv.gz' does not match the pattern"
+    ):
+        extract_date_from_filename(filename, filename_pattern)
