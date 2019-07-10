@@ -579,7 +579,7 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
         ),
     ],
 )
-def test_fail_query_incorret_parameters(
+def test_fail_query_incorrect_parameters(
     query_kind, params, universal_access_token, flowapi_url
 ):
     """
