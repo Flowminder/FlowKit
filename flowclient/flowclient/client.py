@@ -1208,7 +1208,7 @@ def joined_spatial_aggregate(
     metric: dict
         Metric to calculate and aggregate
     method: {"avg", "max", "min", "median", "mode", "stddev", "variance", "dist"}, default "avg".
-        Method of aggregation one of "avg", "max", "min", "median", "mode", "stddev", "variance" or "dist". If the metric is qualitative it will only accept the "dist" method which yields the distribution of the metric in relative terms. All of the other methods will be rejected. On the other hand, the "dist" method will be rejected for all quantitative metrics.
+       Method of aggregation; one of "avg", "max", "min", "median", "mode", "stddev", "variance" or "dist". If the metric refers to a categorical variable (e.g. a subscriber handset type) it will only accept the "dist" method which yields the relative distribution of possible values. All of the other methods will be rejected. On the other hand, the "dist" method will be rejected for all continuous variables.
 
     Returns
     -------
