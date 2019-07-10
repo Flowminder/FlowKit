@@ -1480,6 +1480,42 @@ def displacement(
     }
 
 
+def pareto_interactions(
+    *,
+    start: str,
+    stop: str,
+    proportion: float,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for pareto interactions
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the time interval to be considered, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the time interval to be considered, e.g. "2016-01-08"
+    proportion : float
+        proportion to track below
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in result. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "pareto_interactions",
+        "start": start,
+        "stop": stop,
+        "proportion": proportion,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
 def nocturnal_events(
     *,
     start: str,

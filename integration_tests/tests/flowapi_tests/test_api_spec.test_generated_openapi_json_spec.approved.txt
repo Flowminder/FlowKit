@@ -454,6 +454,7 @@
             "displacement": "#/components/schemas/Displacement",
             "event_count": "#/components/schemas/EventCount",
             "nocturnal_events": "#/components/schemas/NocturnalEvents",
+            "pareto_interactions": "#/components/schemas/ParetoInteractions",
             "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
             "subscriber_degree": "#/components/schemas/SubscriberDegree",
             "topup_amount": "#/components/schemas/TopUpAmount",
@@ -471,6 +472,9 @@
           },
           {
             "$ref": "#/components/schemas/NocturnalEvents"
+          },
+          {
+            "$ref": "#/components/schemas/ParetoInteractions"
           },
           {
             "$ref": "#/components/schemas/RadiusOfGyration"
@@ -968,6 +972,44 @@
           }
         },
         "required": [
+          "query_kind",
+          "start",
+          "stop"
+        ],
+        "type": "object"
+      },
+      "ParetoInteractions": {
+        "properties": {
+          "proportion": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "query_kind": {
+            "enum": [
+              "pareto_interactions"
+            ],
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "proportion",
           "query_kind",
           "start",
           "stop"
