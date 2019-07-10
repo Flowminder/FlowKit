@@ -145,7 +145,6 @@ At present, the following query types are accessible through FlowAPI:
     Represents the percentage of events that a subscriber make/receives which
     began at night.
 
--`event_count`
 - `topup_balance`
 
     Return top-up balance statistics for specified dates and (optionally, with default "all") for a specified set of subscribers
