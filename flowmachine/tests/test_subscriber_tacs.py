@@ -100,7 +100,7 @@ def test_subscriber_handset(get_dataframe):
 
 
 def test_subscriber_handset_characteristic(get_dataframe):
-    """Check that correct handset characteristic is returned."""
+    """Check that correct handset characteristic is returned for selected subscribers."""
 
     assert (
         get_dataframe(
