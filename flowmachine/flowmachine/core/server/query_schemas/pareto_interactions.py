@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import Schema, fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow.validate import OneOf, Length,Range
 
 from flowmachine.features import ParetoInteractions
 from .base_exposed_query import BaseExposedQuery
@@ -16,7 +16,7 @@ class ParetoInteractionsSchema(Schema):
     query_kind = fields.String(validate=OneOf(["pareto_interactions"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
-    proportion = fields.Float(required=True)
+    proportion = fields.Float(required=True, validate=Range(min=0.0, max=1.0))
     subscriber_subset = SubscriberSubset()
 
     @post_load

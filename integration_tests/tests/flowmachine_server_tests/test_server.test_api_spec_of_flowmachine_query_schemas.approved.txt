@@ -854,6 +854,8 @@
     "properties": {
       "proportion": {
         "format": "float",
+        "maximum": 1.0,
+        "minimum": 0.0,
         "type": "number"
       },
       "query_kind": {
