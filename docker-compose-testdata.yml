@@ -1,0 +1,38 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# DOCKER COMPOSE FOR FLOWKIT TEST DATA
+#
+
+version: '3.5'
+
+networks:
+  db:
+
+
+services:
+
+  flowdb_testdata:
+    container_name: flowdb_testdata
+    image: flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}
+    ports:
+      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Must set POSTGRES_USER env var}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
+      FLOWMACHINE_FLOWDB_USER: ${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
+      FLOWMACHINE_FLOWDB_PASSWORD: ${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
+      FLOWAPI_FLOWDB_USER: ${FLOWAPI_FLOWDB_USER:?Must set FLOWAPI_FLOWDB_USER env var}
+      FLOWAPI_FLOWDB_PASSWORD: ${FLOWAPI_FLOWDB_PASSWORD:?Must set FLOWAPI_FLOWDB_PASSWORD env var}
+      CACHE_SIZE: ${CACHE_SIZE:-""}
+      CACHE_HALF_LIFE: ${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
+      FLOWDB_ENABLE_POSTGRES_DEBUG_MODE: ${FLOWDB_ENABLE_POSTGRES_DEBUG_MODE:?Must set FLOWDB_ENABLE_POSTGRES_DEBUG_MODE env var}
+    shm_size: 1G
+    tty: true
+    stdin_open: true
+    restart: always
+    networks:
+      db:
+        aliases:
+          - flowdb
