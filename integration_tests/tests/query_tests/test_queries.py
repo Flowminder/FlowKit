@@ -506,22 +506,7 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     "characteristic": "hnd_type",
                     "method": "last",
                 },
-                "method": "dist",
-            },
-        ),
-        (
-            "joined_spatial_aggregate",
-            {
-                "locations": flowclient.daily_location(
-                    date="2016-01-01", aggregation_unit="admin3", method="last"
-                ),
-                "metric": flowclient.handset(
-                    start_date="2016-01-01",
-                    end_date="2016-01-02",
-                    characteristic="hnd_type",
-                    method="last",
-                ),
-                "method": "dist",
+                "method": "distr",
             },
         ),
     ],
@@ -555,7 +540,7 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
                     "end_date": "2016-01-02",
                     "statistic": "avg",
                 },
-                "method": "dist",
+                "method": "distr",
             },
         ),
         (
@@ -587,7 +572,9 @@ def test_fail_query_incorrect_parameters(
     """
     query_spec = getattr(flowclient, query_kind)(**params)
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
-    with pytest.raises(Exception):
+    with pytest.raises(
+        flowclient.client.FlowclientConnectionError, match="Must be one of:"
+    ):
         result_dataframe = get_result(connection=con, query=query_spec)
 
 

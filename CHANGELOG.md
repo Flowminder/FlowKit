@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `FLOWETL_RUNTIME_CONFIG` environment variable added to control which DAG definitions the FlowETL integration tests should use (valid values: "testing", "production").
 - `FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES` environment variable added to allow running the FlowETL integration tests against locally built docker images during development.
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes handset.[#1011](https://github.com/Flowminder/FlowKit/issues/1011) and [#1029](https://github.com/Flowminder/FlowKit/issues/1029)
-- `JoinedSpatialAggregate` now supports "dist" stats which computes outputs the relative distribution of the passed metrics.
+- `JoinedSpatialAggregate` now supports "distr" stats which computes outputs the relative distribution of the passed metrics.
 - Added `SubscriberHandsetCharacteristic` to FlowMachine
 
 ### Changed

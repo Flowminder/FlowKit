@@ -53,7 +53,7 @@ class JoinedSpatialAggregateSchema(Schema):
 
     @pre_load
     def validate_method(self, data, **kwargs):
-        quant_metrics = [
+        continuous_metrics = [
             "radius_of_gyration",
             "unique_location_counts",
             "topup_balance",
@@ -62,13 +62,13 @@ class JoinedSpatialAggregateSchema(Schema):
             "event_count",
             "nocturnal_events",
         ]
-        qual_metrics = ["handset"]
-        if data["metric"]["query_kind"] in quant_metrics:
+        categorical_metrics = ["handset"]
+        if data["metric"]["query_kind"] in continuous_metrics:
             validate = OneOf(
                 ["avg", "max", "min", "median", "mode", "stddev", "variance"]
             )
-        elif data["metric"]["query_kind"] in qual_metrics:
-            validate = OneOf(["dist"])
+        elif data["metric"]["query_kind"] in categorical_metrics:
+            validate = OneOf(["distr"])
         else:
             raise ValidationError(
                 f"{data['metric']['query_kind']} does not have a valid metric type."

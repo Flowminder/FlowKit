@@ -73,6 +73,7 @@ valid_characteristics = {
     "width",
 }
 
+
 class SubscriberTACs(SubscriberFeature):
     """
     Class representing all the TACs for which a subscriber has been associated.

@@ -1207,8 +1207,8 @@ def joined_spatial_aggregate(
         Modal or daily location query to use to localise the metric
     metric: dict
         Metric to calculate and aggregate
-    method: {"avg", "max", "min", "median", "mode", "stddev", "variance", "dist"}, default "avg".
-       Method of aggregation; one of "avg", "max", "min", "median", "mode", "stddev", "variance" or "dist". If the metric refers to a categorical variable (e.g. a subscriber handset type) it will only accept the "dist" method which yields the relative distribution of possible values. All of the other methods will be rejected. On the other hand, the "dist" method will be rejected for all continuous variables.
+    method: {"avg", "max", "min", "median", "mode", "stddev", "variance", "distr"}, default "avg".
+       Method of aggregation; one of "avg", "max", "min", "median", "mode", "stddev", "variance" or "distr". If the metric refers to a categorical variable (e.g. a subscriber handset type) it will only accept the "distr" method which yields the relative distribution of possible values. All of the other methods will be rejected. On the other hand, the "distr" method will be rejected for all continuous variables.
 
     Returns
     -------

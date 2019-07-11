@@ -56,7 +56,7 @@ def test_can_be_aggregated_admin3_distribution(get_dataframe):
     metric = SubscriberHandsetCharacteristic(
         "2016-01-01", "2016-01-02", characteristic="hnd_type"
     )
-    agg = JoinedSpatialAggregate(metric=metric, locations=locations, method="dist")
+    agg = JoinedSpatialAggregate(metric=metric, locations=locations, method="distr")
     df = get_dataframe(agg)
     assert ["pcod", "metric", "key", "value"] == list(df.columns)
     assert all(df[df.metric == "value"].groupby("pcod").sum() == 1.0)

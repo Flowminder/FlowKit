@@ -72,7 +72,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     locations : Query
         A query object that represents the locations of subscribers.
         Must have a 'subscriber' column, and a 'spatial_unit' attribute.
-    method : {"avg", "max", "min", "median", "mode", "stddev", "variance", "dist"}
+    method : {"avg", "max", "min", "median", "mode", "stddev", "variance", "distr"}
             Method of aggregation.
 
     Examples
@@ -101,7 +101,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         "mode",
         "stddev",
         "variance",
-        "dist",
+        "distr",
     }
 
     def __init__(self, *, metric, locations, method="avg"):
@@ -162,7 +162,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         ON metric.subscriber=location.subscriber
         """
 
-        if self.method == "dist":
+        if self.method == "distr":
 
             grouped = " UNION ".join(
                 f"""
@@ -210,7 +210,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        if self.method == "dist":
+        if self.method == "distr":
             return self.spatial_unit.location_id_columns + ["metric", "key", "value"]
         else:
             return self.spatial_unit.location_id_columns + [
