@@ -149,18 +149,7 @@
             "format": "date",
             "type": "string"
           },
-          "stop": {
-            "format": "date",
-            "type": "string"
-          },
-          "subscriber_subset": {
-            "enum": [
-              null
-            ],
-            "nullable": true,
-            "type": "string"
-          },
-          "value": {
+          "statistic": {
             "enum": [
               "avg",
               "max",
@@ -171,13 +160,24 @@
               "variance"
             ],
             "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
           }
         },
         "required": [
           "query_kind",
           "start",
-          "stop",
-          "value"
+          "statistic",
+          "stop"
         ],
         "type": "object"
       },
@@ -367,6 +367,9 @@
         "oneOf": [
           {
             "$ref": "#/components/schemas/DailyLocation"
+          },
+          {
+            "$ref": "#/components/schemas/ModalLocation"
           }
         ]
       },

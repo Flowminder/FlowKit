@@ -1444,7 +1444,7 @@ def displacement(
     *,
     start: str,
     stop: str,
-    value: str,
+    statistic: str,
     reference_location: List[Dict[str, Union[str, Dict[str, str]]]],
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
@@ -1457,7 +1457,7 @@ def displacement(
         ISO format date of the first day of the count, e.g. "2016-01-01"
     stop : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
-    value : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+    statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
         Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
     reference_location:
        
@@ -1474,7 +1474,7 @@ def displacement(
         "query_kind": "displacement",
         "start": start,
         "stop": stop,
-        "value": value,
+        "statistic": statistic,
         "reference_location": reference_location,
         "subscriber_subset": subscriber_subset,
     }

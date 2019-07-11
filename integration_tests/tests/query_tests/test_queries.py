@@ -188,7 +188,7 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "metric": flowclient.displacement(
                     start="2016-01-01",
                     stop="2016-01-02",
-                    value="avg",
+                    statistic="avg",
                     reference_location=flowclient.daily_location(
                         date="2016-01-01", aggregation_unit="lon-lat", method="last"
                     ),

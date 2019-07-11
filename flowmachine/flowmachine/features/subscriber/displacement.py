@@ -42,11 +42,11 @@ class Displacement(SubscriberFeature):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    reference_location : ModalLocation
+    reference_location : BaseLocation
         The set of home locations from which to calculate displacement.
         If not given then ModalLocation Query wil be created over period
         start -> stop.
-    value : str
+    statistic : str
         the statistic to calculate one of 'sum', 'avg', 'max', 'min', 
         'median', 'stddev' or 'variance'
     unit : {'km', 'm'}, default 'km'
@@ -98,7 +98,7 @@ class Displacement(SubscriberFeature):
         start,
         stop,
         reference_location,
-        value="avg",
+        statistic="avg",
         unit="km",
         hours="all",
         method="last",
@@ -152,11 +152,11 @@ class Displacement(SubscriberFeature):
             subscriber_subset=subscriber_subset,
         )
 
-        self.value = value.lower()
-        if self.value not in valid_stats:
+        self.statistic = statistic.lower()
+        if self.statistic not in valid_stats:
             raise ValueError(
                 "{} is not a valid statistic. Use one of {}".format(
-                    self.value, valid_stats
+                    self.statistic, valid_stats
                 )
             )
 
@@ -191,13 +191,13 @@ class Displacement(SubscriberFeature):
         sql = """
         select 
             subscriber,
-            {value}({dist_string}) / {divisor} as value
+            {statistic}({dist_string}) / {divisor} as value
         from 
             ({join}) as foo
         group by 
             subscriber
         """.format(
-            value=self.value,
+            statistic=self.statistic,
             dist_string=dist_string,
             divisor=divisor,
             join=self.joined.get_query(),
