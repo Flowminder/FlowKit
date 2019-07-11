@@ -485,7 +485,7 @@
           "method": {
             "enum": [
               "avg",
-              "dist",
+              "distr",
               "max",
               "median",
               "min",
