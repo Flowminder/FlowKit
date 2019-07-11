@@ -115,32 +115,6 @@ class Displacement(SubscriberFeature):
 
         self.start = start
 
-        if reference_location:
-            if isinstance(reference_location, BaseLocation):
-                rl = reference_location
-            else:
-                raise ValueError(
-                    "Argument 'reference_location' should be an instance of BaseLocation class. "
-                    f"Got: {type(reference_location)}"
-                )
-            rl.spatial_unit.verify_criterion("has_lon_lat_columns")
-        # else:
-        #     hl = ModalLocation(
-        #         *[
-        #             daily_location(
-        #                 date,
-        #                 spatial_unit=make_spatial_unit("lon-lat"),
-        #                 hours=hours,
-        #                 method=method,
-        #                 table=table,
-        #                 subscriber_identifier=subscriber_identifier,
-        #                 ignore_nulls=ignore_nulls,
-        #                 subscriber_subset=subscriber_subset,
-        #             )
-        #             for date in list_of_dates(self.start, self.stop_hl)
-        #         ]
-        #     )
-
         sl = SubscriberLocations(
             self.start,
             self.stop_sl,

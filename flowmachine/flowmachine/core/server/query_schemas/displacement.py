@@ -18,8 +18,10 @@ __all__ = ["DisplacementSchema", "DisplacementExposed"]
 
 class InputToDisplacementSchema(OneOfSchema):
     type_field = "query_kind"
-    type_schemas = {"daily_location": DailyLocationSchema,
-                    "modal_location": ModalLocationSchema, }
+    type_schemas = {
+        "daily_location": DailyLocationSchema,
+        "modal_location": ModalLocationSchema,
+    }
 
 
 class DisplacementSchema(Schema):
