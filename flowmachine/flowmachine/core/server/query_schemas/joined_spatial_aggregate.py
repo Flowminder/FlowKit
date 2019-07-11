@@ -65,6 +65,7 @@ class JoinedSpatialAggregateSchema(Schema):
             "topup_amount",
             "event_count",
             "nocturnal_events",
+            "pareto_interactions",
         ]
         categorical_metrics = ["handset"]
         if data["metric"]["query_kind"] in continuous_metrics:
