@@ -332,7 +332,7 @@ The data that is passed when the DAG is triggered, is also available at runtime 
 `cdr_type` (a DAG is initialised for a specific `cdr_type` *but* this is not static because the callables are reused), `cdr_date` (which currently is the same as the `execution_date`), `file_name` & `template_path` or `source_table`.
 
 Some information can be accessed when creating the DAG / not at runtime - these can be passed to the python callables because they are static and do not change:
-the SQL and config paths (because they remain fixed), the configuration that remains constant for any DAG (config.yml in /mounts/config)
+the SQL and config paths (because they remain fixed), the configuration that remains constant for any DAG (`config.yml` in `/mounts/config`)
 
 ## FlowAuth
 
