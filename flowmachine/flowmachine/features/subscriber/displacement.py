@@ -115,8 +115,6 @@ class Displacement(SubscriberFeature):
 
         self.start = start
 
-       
-
         sl = SubscriberLocations(
             self.start,
             self.stop_sl,
@@ -143,7 +141,7 @@ class Displacement(SubscriberFeature):
             left_append="_home_loc",
             right_append="",
         )
-           
+
         self.unit = unit
 
         super().__init__()

@@ -26,8 +26,7 @@ def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataf
     Test that we get expected return values for the various statistics
     """
     sub_a_id, sub_b_id = "j6QYNbMJgAwlVORP", "NG1km5NzBg5JD8nj"
-    rl = daily_location(
-        "2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
     df = get_dataframe(
         Displacement("2016-01-01", "2016-01-07", reference_location=rl, statistic=stat)
     ).set_index("subscriber")
@@ -40,8 +39,7 @@ def test_returns_expected_result_for_unit_m(get_dataframe):
     Test that we get expected results when unit='m'.
     """
     sub_a_id, sub_b_id = "j6QYNbMJgAwlVORP", "NG1km5NzBg5JD8nj"
-    rl = daily_location(
-        "2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
     df = get_dataframe(
         Displacement(
             "2016-01-01", "2016-01-07", reference_location=rl, statistic="max", unit="m"
@@ -56,11 +54,9 @@ def test_min_displacement_zero(get_dataframe):
     When time period for diplacement and home location are the same min displacement
     should be zero for all subscribers
     """
-    rl = daily_location(
-        "2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
     df = get_dataframe(
-        Displacement("2016-01-01", "2016-01-07",
-                     reference_location=rl, statistic="min")
+        Displacement("2016-01-01", "2016-01-07", reference_location=rl, statistic="min")
     )
 
     assert df.value.sum() == 0
@@ -71,12 +67,10 @@ def test_pass_reference_location(get_dataframe):
     Test that we can pass a home location object to the class
     """
 
-    rl = daily_location(
-        "2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
 
     df = get_dataframe(
-        Displacement("2016-01-01", "2016-01-07",
-                     reference_location=rl, statistic="avg")
+        Displacement("2016-01-01", "2016-01-07", reference_location=rl, statistic="avg")
     )
     df = df.set_index("subscriber")
 
@@ -90,12 +84,10 @@ def test_error_when_reference_location_not_lon_lat():
     is not using lon-lat spatial unit
     """
 
-    rl = daily_location(
-        "2016-01-01", spatial_unit=make_spatial_unit("versioned-site"))
+    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("versioned-site"))
 
     with pytest.raises(ValueError):
-        Displacement("2016-01-01", "2016-01-02",
-                     reference_location=rl, statistic="avg")
+        Displacement("2016-01-01", "2016-01-02", reference_location=rl, statistic="avg")
 
 
 def test_error_when_reference_location_is_not_a_base_location():
@@ -128,8 +120,7 @@ def test_get_all_users_in_reference_location(get_dataframe):
     p1 = ("2016-01-02 10:00:00", "2016-01-02 12:00:00")
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
 
-    rl = daily_location(
-        "2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
     d = Displacement(p2[0], p2[1], reference_location=rl)
 
     ml_subscribers = set(get_dataframe(rl).subscriber)
@@ -148,8 +139,7 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
     subscriber = "OdM7np8LYEp1mkvP"
 
-    rl = daily_location(
-        "2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
     d = Displacement(p2[0], p2[1], reference_location=rl)
 
     df = get_dataframe(d).set_index("subscriber")
