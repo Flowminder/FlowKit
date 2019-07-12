@@ -13,19 +13,12 @@ from flowmachine.features.subscriber import (
     SubscriberTAC,
     SubscriberHandset,
     SubscriberHandsets,
-    SubscriberPhoneType,
+    SubscriberHandsetCharacteristic,
 )
 
 
 @pytest.mark.parametrize(
-    "query",
-    [
-        SubscriberTACs,
-        SubscriberTAC,
-        SubscriberHandset,
-        SubscriberHandsets,
-        SubscriberPhoneType,
-    ],
+    "query", [SubscriberTACs, SubscriberTAC, SubscriberHandset, SubscriberHandsets]
 )
 def test_column_names(query, get_dataframe):
     """Test that column_names attribute matches columns from calling head"""
@@ -79,6 +72,12 @@ def test_last_tac(get_dataframe):
     )
 
 
+def test_tac_errors():
+    """ Test that correct ValueErrors are raised. """
+    with pytest.raises(ValueError, match="foo is not a valid method"):
+        SubscriberTAC("2016-01-01", "2016-01-02", method="foo")
+
+
 def test_imei_warning():
     """Test that a warning is issued when imei is used as identifier."""
     with pytest.warns(UserWarning):
@@ -106,20 +105,40 @@ def test_subscriber_handset(get_dataframe):
     assert tc.loc["1p4MYbA1Y4bZzBQa"].model == "LB-01"
 
 
-def test_subscriber_phonetype(get_dataframe):
-    """Check that correct smart/feature label is returned."""
+def test_subscriber_handset_characteristic(get_dataframe):
+    """Check that correct handset characteristic is returned for selected subscribers."""
+
     assert (
-        get_dataframe(SubscriberPhoneType("2016-01-01", "2016-01-07"))
+        get_dataframe(
+            SubscriberHandsetCharacteristic("2016-01-01", "2016-01-07", "hnd_type")
+        )
         .set_index("subscriber")
         .loc["038OVABN11Ak4W5P"]
-        .handset_type
+        .value
         == "Smart"
     )
 
     assert (
-        get_dataframe(SubscriberPhoneType("2016-01-01", "2016-01-07", method="last"))
+        get_dataframe(
+            SubscriberHandsetCharacteristic(
+                "2016-01-01", "2016-01-07", "brand", method="last"
+            )
+        )
         .set_index("subscriber")
         .loc["YMBqRkzbbxGkX3zA"]
-        .handset_type
-        == "Feature"
+        .value
+        == "Sony"
     )
+
+
+def test_subscriber_handset_characteristic_errors():
+    """ Check that ValueErrors are correctly raised. """
+    with pytest.raises(ValueError, match="foo is not a valid characteristic"):
+        SubscriberHandsetCharacteristic(
+            "2016-01-01", "2016-01-07", "foo", method="last"
+        )
+
+    with pytest.raises(ValueError, match="foo is not a valid method"):
+        SubscriberHandsetCharacteristic(
+            "2016-01-01", "2016-01-07", "hnd_type", method="foo"
+        )
