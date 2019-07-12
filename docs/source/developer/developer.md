@@ -326,7 +326,7 @@ docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_
 This section describes the information available in the DAG code inside FlowETL.
 
 Some information is only known at runtime, in code executed by a running DAG, this cannot be passed to the python callables or accessed when creating the DAGs because it's not static and changes for each run:
-execution_date, run_id, the dag itself, ds/ts and the [default variables allowed in airflow](https://airflow.apache.org/macros.html#default-variables), the task and task_instance.
+`execution_date`, `run_id`, the dag itself, `ds`/`ts` and the [default variables allowed in airflow](https://airflow.apache.org/macros.html#default-variables), the task and task_instance.
 
 The data that is passed when the DAG is triggered, is also available at runtime in the callables under `dag_run['conf']` :
 cdr_type (a DAG is initialised for a specific cdr_type *but* this is not static because the callables are reused), cdr_date (which currently is the same as the execution_date), file_name & template_path or source_table.
