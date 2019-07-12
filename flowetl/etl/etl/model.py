@@ -151,9 +151,9 @@ class ETLPostQueryOutcome(Base):
         Parameters
         ----------
         cdr_type : str
-            CDR type of file being processed ("calls", "sms", "mds" or "topups")
+            CDR type of data being processed ("calls", "sms", "mds" or "topups")
         cdr_date : Date
-            The date with which the file's data is associated
+            The date with which the data is associated
         type_of_query_or_check : str
             The type of query or check that is being recorded
         outcome : str
