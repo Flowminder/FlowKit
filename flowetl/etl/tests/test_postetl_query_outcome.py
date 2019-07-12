@@ -67,7 +67,7 @@ def test_exception_raised_with_invalid_cdr_type(session):
         "outcome": "outcome",
         "optional_comment_or_description": "Optional description",
     }
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="'spaghetti' is not a valid CDRType"):
         ETLPostQueryOutcome.set_outcome(
             cdr_type=query_data["cdr_type"],
             cdr_date=query_data["cdr_date"],
