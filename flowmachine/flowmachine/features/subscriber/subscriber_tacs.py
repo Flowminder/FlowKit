@@ -418,7 +418,7 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
     Class extracting a single characteristic from the handset.
 
     Parameters
-    ---------
+    ----------
     start, stop : str
          iso-format start and stop datetimes
     characteristic: {
