@@ -115,6 +115,8 @@ class Displacement(SubscriberFeature):
 
         self.start = start
 
+       
+
         sl = SubscriberLocations(
             self.start,
             self.stop_sl,
@@ -133,16 +135,20 @@ class Displacement(SubscriberFeature):
                     self.statistic, valid_stats
                 )
             )
-
-        self.joined = rl.join(
-            sl,
-            on_left="subscriber",
-            on_right="subscriber",
-            how="left",
-            left_append="_home_loc",
-            right_append="",
-        )
-
+        if reference_location:
+            self.joined = reference_location.join(
+                sl,
+                on_left="subscriber",
+                on_right="subscriber",
+                how="left",
+                left_append="_home_loc",
+                right_append="",
+            )
+        else:
+            raise ValueError(
+                "Argument 'reference_location' should be an instance of BaseLocation class. "
+                f"Got: {type(reference_location)}"
+            )    
         self.unit = unit
 
         super().__init__()
