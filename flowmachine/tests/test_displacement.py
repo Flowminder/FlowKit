@@ -114,7 +114,7 @@ def test_error_when_modal_location_not_lon_lat():
 
 def test_error_when_reference_location_is_not_a_base_location():
     """
-    Test that error is raised if reference_locations is not a object of type `BaseLocation`.
+    Test that error is raised if reference_locations is not an object of type `BaseLocation`.
     """
     with pytest.raises(ValueError):
         Displacement(
