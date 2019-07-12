@@ -112,7 +112,7 @@ def test_error_when_modal_location_not_lon_lat():
         Displacement("2016-01-01", "2016-01-02", reference_location=ml, value="avg")
 
 
-def test_error_when_not_reference_location():
+def test_error_when_reference_location_is_not_a_base_location():
     """
     Test that error is raised if reference_locations is not a object of type `BaseLocation`.
     """
