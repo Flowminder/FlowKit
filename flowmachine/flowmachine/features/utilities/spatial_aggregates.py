@@ -72,7 +72,7 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
     locations : Query
         A query object that represents the locations of subscribers.
         Must have a 'subscriber' column, and a 'spatial_unit' attribute.
-    method : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+    method : {"avg", "max", "min", "median", "mode", "stddev", "variance", "distr"}
             Method of aggregation.
 
     Examples
@@ -93,7 +93,16 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
             ...
     """
 
-    allowed_methods = {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+    allowed_methods = {
+        "avg",
+        "max",
+        "min",
+        "median",
+        "mode",
+        "stddev",
+        "variance",
+        "distr",
+    }
 
     def __init__(self, *, metric, locations, method="avg"):
         self.metric = metric
@@ -153,29 +162,57 @@ class JoinedSpatialAggregate(GeoDataMixin, Query):
         ON metric.subscriber=location.subscriber
         """
 
-        if self.method == "mode":
-            av_cols = ", ".join(
-                f"pg_catalog.mode() WITHIN GROUP(ORDER BY {mc}) AS {mc}"
+        if self.method == "distr":
+
+            grouped = " UNION ".join(
+                f"""
+                SELECT
+                    {loc_list_no_schema},
+                    '{mc}' AS metric,
+                    key,
+                    value / SUM(value) OVER (PARTITION BY {loc_list_no_schema}) AS value
+                FROM (
+                    SELECT
+                        {loc_list_no_schema},
+                        {mc}::text AS key,
+                        COUNT(*) AS value
+                    FROM joined
+                    GROUP BY {loc_list_no_schema}, {mc}
+                ) _
+                """
                 for mc in metric_cols_no_subscriber
             )
-        else:
-            av_cols = ", ".join(
-                f"{self.method}({mc}) AS {mc}" for mc in metric_cols_no_subscriber
-            )
 
-        # Now do the group by bit
-        grouped = f"""
-        SELECT
-            {loc_list_no_schema},
-            {av_cols}
-        FROM ({joined}) AS joined
-        GROUP BY {loc_list_no_schema}
-        """
+            grouped = f"WITH joined AS ({joined}) {grouped}"
+
+        else:
+
+            if self.method == "mode":
+                av_cols = ", ".join(
+                    f"pg_catalog.mode() WITHIN GROUP(ORDER BY {mc}) AS {mc}"
+                    for mc in metric_cols_no_subscriber
+                )
+            else:
+                av_cols = ", ".join(
+                    f"{self.method}({mc}) AS {mc}" for mc in metric_cols_no_subscriber
+                )
+
+            # Now do the group by bit
+            grouped = f"""
+            SELECT
+                {loc_list_no_schema},
+                {av_cols}
+            FROM ({joined}) AS joined
+            GROUP BY {loc_list_no_schema}
+            """
 
         return grouped
 
     @property
     def column_names(self) -> List[str]:
-        return self.spatial_unit.location_id_columns + [
-            cn for cn in self.metric.column_names if cn != "subscriber"
-        ]
+        if self.method == "distr":
+            return self.spatial_unit.location_id_columns + ["metric", "key", "value"]
+        else:
+            return self.spatial_unit.location_id_columns + [
+                cn for cn in self.metric.column_names if cn != "subscriber"
+            ]

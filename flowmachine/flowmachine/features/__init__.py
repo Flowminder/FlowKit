@@ -42,7 +42,7 @@ subs = [
     "SubscriberTAC",
     "SubscriberHandsets",
     "SubscriberHandset",
-    "SubscriberPhoneType",
+    "SubscriberHandsetCharacteristic",
     "ParetoInteractions",
     "SubscriberCallDurations",
     "PairedSubscriberCallDurations",
