@@ -329,7 +329,7 @@ Some information is only known at runtime, in code executed by a running DAG, th
 `execution_date`, `run_id`, the dag itself, `ds`/`ts` and the [default variables allowed in airflow](https://airflow.apache.org/macros.html#default-variables), the task and task_instance.
 
 The data that is passed when the DAG is triggered, is also available at runtime in the callables under `dag_run['conf']` :
-cdr_type (a DAG is initialised for a specific cdr_type *but* this is not static because the callables are reused), cdr_date (which currently is the same as the execution_date), file_name & template_path or source_table.
+`cdr_type` (a DAG is initialised for a specific `cdr_type` *but* this is not static because the callables are reused), `cdr_date` (which currently is the same as the `execution_date`), `file_name` & `template_path` or `source_table`.
 
 Some information can be accessed when creating the DAG / not at runtime - these can be passed to the python callables because they are static and do not change:
 the SQL and config paths (because they remain fixed), the configuration that remains constant for any DAG (config.yml in /mounts/config)
