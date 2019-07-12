@@ -494,7 +494,7 @@ class SubscriberHandsetCharacteristic(SubscriberFeature):
     >>> subscriber_smart = SubscriberHandsetCharacteristic('2016-01-01', '2016-01-07',
         'hnd_type')
     >>> subscriber_smart.get_dataframe()
-             subscriber     value
+             subscriber        value
     0  038OVABN11Ak4W5P        Smart
     1  09NrjaNNvDanD8pk      Feature
     2  0ayZGYEQrqYlKw6g      Feature
