@@ -27,14 +27,18 @@ def test_can_set_outcome(session):
         "optional_comment_or_description": "Optional description",
     }
 
-    ETLPostQueryOutcome.set_outcome(
-        cdr_type=query_data["cdr_type"],
-        cdr_date=query_data["cdr_date"],
-        type_of_query_or_check=query_data["type_of_query_or_check"],
-        outcome=query_data["outcome"],
-        optional_comment_or_description=query_data["optional_comment_or_description"],
-        session=session,
-    )
+    now = pendulum.parse("2016-01-01")
+    with patch("pendulum.utcnow", lambda: now):
+        ETLPostQueryOutcome.set_outcome(
+            cdr_type=query_data["cdr_type"],
+            cdr_date=query_data["cdr_date"],
+            type_of_query_or_check=query_data["type_of_query_or_check"],
+            outcome=query_data["outcome"],
+            optional_comment_or_description=query_data[
+                "optional_comment_or_description"
+            ],
+            session=session,
+        )
 
     rows = session.query(ETLPostQueryOutcome).all()
     assert len(rows) == 1
@@ -44,6 +48,7 @@ def test_can_set_outcome(session):
     assert row.cdr_date == query_data["cdr_date"]
     assert row.type_of_query_or_check == query_data["type_of_query_or_check"]
     assert row.outcome == query_data["outcome"]
+    assert row.timestamp == now
     assert (
         row.optional_comment_or_description
         == query_data["optional_comment_or_description"]

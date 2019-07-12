@@ -115,6 +115,7 @@ class ETLPostQueryOutcome(Base):
     type_of_query_or_check = Column(String)
     outcome = Column(String)
     optional_comment_or_description = Column(String)
+    timestamp = Column(DateTime(timezone=True))
 
     def __init__(
         self,
@@ -131,6 +132,7 @@ class ETLPostQueryOutcome(Base):
         self.type_of_query_or_check = type_of_query_or_check
         self.outcome = outcome
         self.optional_comment_or_description = optional_comment_or_description
+        self.timestamp = pendulum.utcnow()
 
     @classmethod
     def set_outcome(
