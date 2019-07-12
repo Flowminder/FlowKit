@@ -72,6 +72,12 @@ def test_last_tac(get_dataframe):
     )
 
 
+def test_tac_errors():
+    """ Test that correct ValueErrors are raised. """
+    with pytest.raises(ValueError, match="foo is not a valid method"):
+        SubscriberTAC("2016-01-01", "2016-01-02", method="foo")
+
+
 def test_imei_warning():
     """Test that a warning is issued when imei is used as identifier."""
     with pytest.warns(UserWarning):
@@ -123,3 +129,16 @@ def test_subscriber_handset_characteristic(get_dataframe):
         .value
         == "Sony"
     )
+
+
+def test_subscriber_handset_characteristic_errors():
+    """ Check that ValueErrors are correctly raised. """
+    with pytest.raises(ValueError, match="foo is not a valid characteristic"):
+        SubscriberHandsetCharacteristic(
+            "2016-01-01", "2016-01-07", "foo", method="last"
+        )
+
+    with pytest.raises(ValueError, match="foo is not a valid method"):
+        SubscriberHandsetCharacteristic(
+            "2016-01-01", "2016-01-07", "hnd_type", method="foo"
+        )
