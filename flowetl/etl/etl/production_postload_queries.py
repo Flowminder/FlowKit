@@ -17,9 +17,9 @@ def num_total_calls__callable(*, cdr_date: pendulumDate, session: Session, **kwa
     """
 
     sql = f"""
-    select
-        count(*)
-    from
+    SELECT
+        COUNT(*)
+    FROM
         events.calls
     """
     outcome = session.execute(sql).fetchone()[0]
