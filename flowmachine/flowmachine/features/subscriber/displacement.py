@@ -133,8 +133,9 @@ class Displacement(SubscriberFeature):
                     self.statistic, valid_stats
                 )
             )
-        
-        if  isinstance(reference_location, BaseLocation):
+
+        if isinstance(reference_location, BaseLocation):
+            
             self.joined = reference_location.join(
                 sl,
                 on_left="subscriber",
@@ -143,6 +144,8 @@ class Displacement(SubscriberFeature):
                 left_append="_home_loc",
                 right_append="",
             )
+            reference_location.spatial_unit.verify_criterion(
+                "has_lon_lat_columns")
         else:
             raise ValueError(
                 "Argument 'reference_location' should be an instance of BaseLocation class. "

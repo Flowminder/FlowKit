@@ -8,6 +8,7 @@ from numpy import isnan
 
 from flowmachine.utils import list_of_dates
 from flowmachine.core import make_spatial_unit
+from unittest.mock import Mock
 
 
 @pytest.mark.parametrize(
@@ -84,7 +85,7 @@ def test_error_when_reference_location_not_lon_lat():
     is not using lon-lat spatial unit
     """
 
-    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("versioned-site"))
+    rl = daily_location("2016-01-01")
 
     with pytest.raises(ValueError):
         Displacement("2016-01-01", "2016-01-02", reference_location=rl, statistic="avg")
@@ -94,9 +95,14 @@ def test_error_when_reference_location_is_not_a_base_location():
     """
     Test that error is raised if reference_locations is not an object of type `BaseLocation`.
     """
+    not_an_instance_of_base_location = Mock()
+
     with pytest.raises(ValueError):
         Displacement(
-            "2016-01-01", "2016-01-02", reference_location="lon-lat", statistic="avg"
+            "2016-01-01",
+            "2016-01-02",
+            reference_location=not_an_instance_of_base_location,
+            statistic="avg",
         )
 
 
