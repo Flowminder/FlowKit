@@ -104,7 +104,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                     "subscriber_subset": None,
                 },
             },
-            {"0": {"locations": {"0": {"date": ["Not a valid date."]}}}},
+            {"locations": {"date": ["Not a valid date."]}},
         ),
         (
             {
@@ -117,13 +117,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                     "subscriber_subset": None,
                 },
             },
-            {
-                "0": {
-                    "locations": {
-                        "0": {"method": ["Must be one of: last, most-common."]}
-                    }
-                }
-            },
+            {"locations": {"method": ["Must be one of: last, most-common."]}},
         ),
         (
             {
@@ -137,14 +131,10 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                 },
             },
             {
-                "0": {
-                    "locations": {
-                        "0": {
-                            "aggregation_unit": [
-                                "Must be one of: admin0, admin1, admin2, admin3."
-                            ]
-                        }
-                    }
+                "locations": {
+                    "aggregation_unit": [
+                        "Must be one of: admin0, admin1, admin2, admin3."
+                    ]
                 }
             },
         ),
@@ -159,11 +149,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                     "subscriber_subset": "virtually_all_subscribers",
                 },
             },
-            {
-                "0": {
-                    "locations": {"0": {"subscriber_subset": ["Must be one of: None."]}}
-                }
-            },
+            {"locations": {"subscriber_subset": ["Must be one of: None."]}},
         ),
     ],
 )

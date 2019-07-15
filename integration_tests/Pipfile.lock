@@ -397,10 +397,10 @@
         },
         "marshmallow-oneofschema": {
             "hashes": [
-                "sha256:0c0eaee7a81ca02899e879f69582e738054c126a291ef2636b6b70e4e807aa5a",
-                "sha256:30d1fbb4858b79af4adb8ffc3bff2e352c4c0bbb62bd87f69d8432589a37ac47"
+                "sha256:29673bcc415f4a2098e273bf3c8229bc1a33e91378885eac90b06943bd626110",
+                "sha256:b88daa4f2de249e0a51a617aa09490f896acaddef6f6cf97dda78218c5abb86f"
             ],
-            "version": "==2.0.0.post0"
+            "version": "==2.0.1"
         },
         "more-itertools": {
             "hashes": [
