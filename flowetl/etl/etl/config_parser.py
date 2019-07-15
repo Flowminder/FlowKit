@@ -36,6 +36,14 @@ def validate_config(*, global_config_dict: dict) -> Exception:
             ValueError("default_args must be a toplevel key in the config file")
         )
 
+    etl_keys = global_config_dict.get("etl", {}).keys()
+    if set(etl_keys).issubset(CDRType):
+        exceptions.append(
+            ValueError(
+                f"etl sections present in config.yml must be a subset of {[x.value for x in CDRType]}"
+            )
+        )
+
     for key, value in global_config_dict.get("etl", {}).items():
         if set(value.keys()) != set(["source", "concurrency"]):
             exc_msg = (
