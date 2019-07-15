@@ -365,6 +365,53 @@
     ],
     "type": "object"
   },
+  "Handset": {
+    "properties": {
+      "characteristic": {
+        "enum": [
+          "brand",
+          "hnd_type",
+          "model",
+          "software_os_name",
+          "software_os_vendor"
+        ],
+        "type": "string"
+      },
+      "end_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "method": {
+        "enum": [
+          "last",
+          "most-common"
+        ],
+        "type": "string"
+      },
+      "query_kind": {
+        "enum": [
+          "handset"
+        ],
+        "type": "string"
+      },
+      "start_date": {
+        "format": "date",
+        "type": "string"
+      },
+      "subscriber_subset": {
+        "enum": [
+          null
+        ],
+        "nullable": true,
+        "type": "string"
+      }
+    },
+    "required": [
+      "end_date",
+      "start_date"
+    ],
+    "type": "object"
+  },
   "InputToAggregateNetworkObjects": {
     "discriminator": {
       "mapping": {
@@ -447,6 +494,7 @@
       "mapping": {
         "displacement": "#/components/schemas/Displacement",
         "event_count": "#/components/schemas/EventCount",
+        "handset": "#/components/schemas/Handset",
         "nocturnal_events": "#/components/schemas/NocturnalEvents",
         "pareto_interactions": "#/components/schemas/ParetoInteractions",
         "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
@@ -463,6 +511,9 @@
       },
       {
         "$ref": "#/components/schemas/EventCount"
+      },
+      {
+        "$ref": "#/components/schemas/Handset"
       },
       {
         "$ref": "#/components/schemas/NocturnalEvents"
@@ -495,6 +546,7 @@
       "method": {
         "enum": [
           "avg",
+          "distr",
           "max",
           "median",
           "min",

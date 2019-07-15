@@ -1207,8 +1207,8 @@ def joined_spatial_aggregate(
         Modal or daily location query to use to localise the metric
     metric: dict
         Metric to calculate and aggregate
-    method: {"avg", "max", "min", "median", "mode", "stddev", "variance"}, default "avg"
-        Method of aggregation one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
+    method: {"avg", "max", "min", "median", "mode", "stddev", "variance", "distr"}, default "avg".
+       Method of aggregation; one of "avg", "max", "min", "median", "mode", "stddev", "variance" or "distr". If the metric refers to a categorical variable (e.g. a subscriber handset type) it will only accept the "distr" method which yields the relative distribution of possible values. All of the other methods will be rejected. On the other hand, the "distr" method will be rejected for all continuous variables.
 
     Returns
     -------
@@ -1549,5 +1549,51 @@ def nocturnal_events(
         "start": start,
         "stop": stop,
         "hours": hours,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def handset(
+    *,
+    start_date: str,
+    end_date: str,
+    characteristic: str = [
+        "hnd_type",
+        "brand",
+        "model",
+        "software_os_name",
+        "software_os_vendor",
+    ],
+    method: str = ["last", "most-common"],
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for handset
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day for which to count handsets, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date for which to count handsets, e.g. "2016-01-08"
+    characteristic: ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"], default "hnd_type"
+        The required handset characteristic.
+    method: ["last", "most-common"], default "last"
+        Method for choosing a handset to associate with subscriber.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "handset",
+        "start_date": start_date,
+        "end_date": end_date,
+        "characteristic": characteristic,
+        "method": method,
         "subscriber_subset": subscriber_subset,
     }

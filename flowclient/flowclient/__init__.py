@@ -43,6 +43,7 @@ from .client import (
     displacement,
     pareto_interactions,
     nocturnal_events,
+    handset,
 )
 
 __all__ = [
@@ -78,4 +79,5 @@ __all__ = [
     "displacement",
     "pareto_interactions",
     "nocturnal_events",
+    "handset",
 ]
