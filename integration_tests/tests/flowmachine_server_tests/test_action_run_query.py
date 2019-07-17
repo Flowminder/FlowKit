@@ -131,14 +131,10 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
                 },
             },
             {
-                "0": {
-                    "locations": {
-                        "0": {
-                            "aggregation_unit": [
-                                "Must be one of: admin0, admin1, admin2, admin3, lon-lat."
-                            ]
-                        }
-                    }
+                "locations": {
+                    "aggregation_unit": [
+                        "Must be one of: admin0, admin1, admin2, admin3, lon-lat."
+                    ]
                 }
             },
         ),
