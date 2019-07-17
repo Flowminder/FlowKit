@@ -1445,7 +1445,7 @@ def displacement(
     start: str,
     stop: str,
     statistic: str,
-    reference_location: List[Dict[str, Union[str, Dict[str, str]]]],
+    reference_location: Dict[str, str],
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
