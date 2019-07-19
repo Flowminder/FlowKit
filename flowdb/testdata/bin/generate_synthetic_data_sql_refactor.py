@@ -45,7 +45,7 @@ parser.add_argument(
     "--n-sites", type=int, default=1000, help="Number of sites to generate."
 )
 parser.add_argument(
-    "--n-cells", type=int, default=1000, help="Number of cells to generate."
+    "--n-cells", type=int, default=10, help="Number of cells to generate per site."
 )
 
 
@@ -90,13 +90,21 @@ if __name__ == "__main__":
 
         # Generate some randomly distributed sites and cells
         with engine.begin() as trans:
-            with log_duration(job=f"Generating {num_sites} sites."):
+            with log_duration(
+                job=f"Generating {num_sites} sites and {num_cells} cells."
+            ):
                 with open(f"{dir}/../synthetic_data/data/geom.dat", "r") as f:
-                    # First truncate the table
+                    # First truncate the tables
                     trans.execute("TRUNCATE infrastructure.sites;")
+                    trans.execute("TRUNCATE TABLE infrastructure.cells CASCADE;")
 
+                    cell_id = start_id
+
+                    # First create each site
                     for x in range(start_id, num_sites + start_id):
-                        hash = md5(int(x).to_bytes(8, "big", signed=True)).hexdigest()
+                        hash = md5(
+                            int(x + 1000).to_bytes(8, "big", signed=True)
+                        ).hexdigest()
                         geom_point = f.readline().strip()
 
                         trans.execute(
@@ -106,41 +114,18 @@ if __name__ == "__main__":
                             """
                         )
 
+                        # And for each site, create n number of cells
+                        for y in range(0, num_cells):
+                            cellhash = md5(
+                                int(cell_id).to_bytes(8, "big", signed=True)
+                            ).hexdigest()
+
+                            trans.execute(
+                                f"""
+                                    INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) 
+                                    VALUES ('{cellhash}', 0, '{hash}', (date '2015-01-01' + random() * interval '1 year')::date, '{geom_point}');
+                                """
+                            )
+                            cell_id += 1000
+
                     f.close()
-
-            with log_duration(f"Generating {num_cells} cells."):
-                for x in range(start_id, num_sites + start_id):
-                    sitehash = md5(int(x).to_bytes(8, "big", signed=True)).hexdigest()
-
-                    for y in range(start_id, num_cells + start_id):
-                        cellhash = md5(
-                            int(x).to_bytes(8, "big", signed=True)
-                        ).hexdigest()
-
-                        trans.execute(
-                            f"""
-                                INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) 
-                                VALUES ('{hash}', 0, (date '2015-01-01' + random() * interval '1 year')::date, null);
-                            """
-                        )
-                # trans.execute(
-                #     f"""CREATE TABLE tmp_cells as
-                #     SELECT row_number() over() AS rid, *, -1 AS rid_knockout FROM
-                #     (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from tmp_sites
-                #     union all
-                #     SELECT * from
-                #     (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from
-                #     (
-                #       SELECT floor(random() * {num_sites} + 1)::integer AS id
-                #       from generate_series(1, {int(num_cells * 1.1)}) -- Preserve duplicates
-                #     ) rands
-                #     inner JOIN tmp_sites
-                #     ON rands.id=tmp_sites.rid
-                #     limit {num_cells - num_sites}) _) _
-                #     ;
-                #     CREATE INDEX ON tmp_cells (rid);
-                #     """
-                # )
-                # trans.execute(
-                #     "INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) SELECT id, version, site_id, date_of_first_service, geom_point FROM tmp_cells;"
-                # )
