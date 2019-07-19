@@ -47,6 +47,9 @@ parser.add_argument(
 parser.add_argument(
     "--n-cells", type=int, default=10, help="Number of cells to generate per site."
 )
+parser.add_argument(
+    "--n-tacs", type=int, default=4000, help="Number of phone models to generate."
+)
 
 
 @contextmanager
@@ -75,6 +78,7 @@ if __name__ == "__main__":
         # Limit num_sites to 10000 due to geom.dat.
         num_sites = min(10000, args.n_sites)
         num_cells = args.n_cells
+        num_tacs = args.n_tacs
 
         engine = sqlalchemy.create_engine(
             f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
@@ -129,3 +133,16 @@ if __name__ == "__main__":
                             cell_id += 1000
 
                     f.close()
+
+            with log_duration(f"Generating {num_tacs} tacs."):
+                # First truncate the table
+                trans.execute("TRUNCATE infrastructure.tacs;")
+                trans.execute(
+                    f"""
+                        INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) SELECT (row_number() over())::numeric(8, 0) AS id, 
+                        (ARRAY['Nokia', 'Huawei', 'Apple', 'Samsung', 'Sony', 'LG', 'Google', 'Xiaomi', 'ZTE'])[floor((random()*9 + 1))::int] AS brand, 
+                        uuid_generate_v4()::text AS model, 
+                        (ARRAY['Smart', 'Feature', 'Basic'])[floor((random()*3 + 1))::int] AS  hnd_type 
+                        FROM generate_series(1, {num_tacs});
+                    """
+                )
