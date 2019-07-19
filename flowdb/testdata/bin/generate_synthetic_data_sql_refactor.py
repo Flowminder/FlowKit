@@ -69,7 +69,8 @@ def log_duration(job: str, **kwargs):
 if __name__ == "__main__":
     args = parser.parse_args()
     with log_duration("Generating synthetic data..", **vars(args)):
-        num_sites = args.n_sites
+        # Limit num_sites to 10000 due to geom.dat.
+        num_sites = min(10000, args.n_sites)
 
         engine = sqlalchemy.create_engine(
             f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
@@ -81,14 +82,24 @@ if __name__ == "__main__":
 
         start_time = datetime.datetime.now()
         start_id = 1000000
+        dir = os.path.dirname(os.path.abspath(__file__))
 
         # Generate some randomly distributed sites and cells
         with engine.begin() as trans:
             with log_duration(job=f"Generating {num_sites} sites."):
-                # Truncate the table first so that we can possibly run multiple times
-                trans.execute("TRUNCATE infrastructure.sites;")
-                for x in range(start_id, num_sites + start_id):
-                    hash = md5(int(x).to_bytes(8, "big", signed=True)).hexdigest()
-                    trans.execute(
-                        f"INSERT INTO infrastructure.sites (id, version, date_of_first_service) SELECT '{hash}', 0, (date '2015-01-01' + random() * interval '1 year')::date;"
-                    )
+                with open(f"{dir}/../synthetic_data/data/geom.dat", "r") as f:
+                    # First truncate the table
+                    trans.execute("TRUNCATE infrastructure.sites;")
+
+                    for x in range(start_id, num_sites + start_id):
+                        hash = md5(int(x).to_bytes(8, "big", signed=True)).hexdigest()
+                        geom_point = f.readline().strip()
+
+                        trans.execute(
+                            f"""
+                                INSERT INTO infrastructure.sites (id, version, date_of_first_service, geom_point) 
+                                VALUES ('{hash}', 0, (date '2015-01-01' + random() * interval '1 year')::date, '{geom_point}');
+                            """
+                        )
+
+                    f.close()
