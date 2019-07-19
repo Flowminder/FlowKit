@@ -44,6 +44,9 @@ parser = argparse.ArgumentParser(description="Flowminder Synthetic CDR Generator
 parser.add_argument(
     "--n-sites", type=int, default=1000, help="Number of sites to generate."
 )
+parser.add_argument(
+    "--n-cells", type=int, default=1000, help="Number of cells to generate."
+)
 
 
 @contextmanager
@@ -71,6 +74,7 @@ if __name__ == "__main__":
     with log_duration("Generating synthetic data..", **vars(args)):
         # Limit num_sites to 10000 due to geom.dat.
         num_sites = min(10000, args.n_sites)
+        num_cells = args.n_cells
 
         engine = sqlalchemy.create_engine(
             f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
@@ -103,3 +107,40 @@ if __name__ == "__main__":
                         )
 
                     f.close()
+
+            with log_duration(f"Generating {num_cells} cells."):
+                for x in range(start_id, num_sites + start_id):
+                    sitehash = md5(int(x).to_bytes(8, "big", signed=True)).hexdigest()
+
+                    for y in range(start_id, num_cells + start_id):
+                        cellhash = md5(
+                            int(x).to_bytes(8, "big", signed=True)
+                        ).hexdigest()
+
+                        trans.execute(
+                            f"""
+                                INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) 
+                                VALUES ('{hash}', 0, (date '2015-01-01' + random() * interval '1 year')::date, null);
+                            """
+                        )
+                # trans.execute(
+                #     f"""CREATE TABLE tmp_cells as
+                #     SELECT row_number() over() AS rid, *, -1 AS rid_knockout FROM
+                #     (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from tmp_sites
+                #     union all
+                #     SELECT * from
+                #     (SELECT md5(uuid_generate_v4()::text) AS id, version, tmp_sites.id AS site_id, date_of_first_service, geom_point from
+                #     (
+                #       SELECT floor(random() * {num_sites} + 1)::integer AS id
+                #       from generate_series(1, {int(num_cells * 1.1)}) -- Preserve duplicates
+                #     ) rands
+                #     inner JOIN tmp_sites
+                #     ON rands.id=tmp_sites.rid
+                #     limit {num_cells - num_sites}) _) _
+                #     ;
+                #     CREATE INDEX ON tmp_cells (rid);
+                #     """
+                # )
+                # trans.execute(
+                #     "INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) SELECT id, version, site_id, date_of_first_service, geom_point FROM tmp_cells;"
+                # )
