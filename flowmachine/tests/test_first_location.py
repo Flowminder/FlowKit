@@ -24,9 +24,9 @@ def test_time_at_first_location_correct(get_dataframe):
     df = get_dataframe(dfl)
 
     set_df = df.set_index("subscriber")
-    assert str(set_df.loc["038OVABN11Ak4W5P"]) == "2016-01-01 05:02:10+00:00"
-    assert str(set_df.loc["1p4MYbA1Y4bZzBQa"]) == "2016-01-02 21:30:41+00:00"
-    assert str(set_df.loc["3XKdxqvyNxO2vLD1"]) == "2016-01-01 05:09:20+00:00"
+    assert str(set_df.loc["038OVABN11Ak4W5P", "time"]) == "2016-01-01 05:02:10+00:00"
+    assert str(set_df.loc["1p4MYbA1Y4bZzBQa", "time"]) == "2016-01-02 21:30:41+00:00"
+    assert str(set_df.loc["3XKdxqvyNxO2vLD1", "time"]) == "2016-01-01 05:09:20+00:00"
 
 
 def test_handles_list_of_locations(get_dataframe):
