@@ -42,6 +42,7 @@ from .client import (
     event_count,
     pareto_interactions,
     nocturnal_events,
+    handset,
 )
 
 __all__ = [
@@ -76,4 +77,5 @@ __all__ = [
     "event_count",
     "pareto_interactions",
     "nocturnal_events",
+    "handset",
 ]

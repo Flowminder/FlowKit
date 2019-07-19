@@ -17,6 +17,62 @@ from ..utilities import EventsTablesUnion
 from .metaclasses import SubscriberFeature
 from ...core import Table
 
+valid_characteristics = {
+    "brand",
+    "depth",
+    "display_colors",
+    "display_height",
+    "display_type",
+    "display_width",
+    "hardware_bluetooth",
+    "hardware_edge",
+    "hardware_gprs",
+    "hardware_gps",
+    "hardware_umts",
+    "hardware_wifi",
+    "height",
+    "hnd_type",
+    "j2me_cldc_10",
+    "j2me_cldc_11",
+    "j2me_cldc_20",
+    "j2me_midp_10",
+    "j2me_midp_20",
+    "j2me_midp_21",
+    "mms_built_in_camera",
+    "mms_receiver",
+    "model",
+    "software_os_name",
+    "software_os_vendor",
+    "software_os_version",
+    "syncml_dm_acc_gprs",
+    "syncml_dm_app_bookmark",
+    "syncml_dm_app_browser",
+    "syncml_dm_app_internet",
+    "syncml_dm_app_java",
+    "syncml_dm_app_mms",
+    "syncml_dm_settings",
+    "tac",
+    "wap_1_2_1",
+    "wap_2_0",
+    "wap_push_oma_app_browser",
+    "wap_push_oma_app_ims",
+    "wap_push_oma_app_internet",
+    "wap_push_oma_app_mms",
+    "wap_push_oma_app_poc",
+    "wap_push_oma_cp_bookmarks",
+    "wap_push_oma_settings",
+    "wap_push_ota_app_browser",
+    "wap_push_ota_app_internet",
+    "wap_push_ota_app_mms",
+    "wap_push_ota_bookmarks",
+    "wap_push_ota_multi_shot",
+    "wap_push_ota_settings",
+    "wap_push_ota_single_shot",
+    "wap_push_ota_support",
+    "weight",
+    "width",
+}
+
 
 class SubscriberTACs(SubscriberFeature):
     """
@@ -357,15 +413,70 @@ class SubscriberHandset(SubscriberFeature):
         return self.joined.get_query()
 
 
-class SubscriberPhoneType(SubscriberFeature):
+class SubscriberHandsetCharacteristic(SubscriberFeature):
     """
-    Class representing which type of phone (Basic, Feature, or Smart) a subscriber
-    is associated with.
+    Class extracting a single characteristic from the handset.
 
     Parameters
     ----------
     start, stop : str
          iso-format start and stop datetimes
+    characteristic: {
+        "brand",
+        "depth",
+        "display_colors",
+        "display_height",
+        "display_type",
+        "display_width",
+        "hardware_bluetooth",
+        "hardware_edge",
+        "hardware_gprs",
+        "hardware_gps",
+        "hardware_umts",
+        "hardware_wifi",
+        "height",
+        "hnd_type",
+        "j2me_cldc_10",
+        "j2me_cldc_11",
+        "j2me_cldc_20",
+        "j2me_midp_10",
+        "j2me_midp_20",
+        "j2me_midp_21",
+        "mms_built_in_camera",
+        "mms_receiver",
+        "model",
+        "software_os_name",
+        "software_os_vendor",
+        "software_os_version",
+        "syncml_dm_acc_gprs",
+        "syncml_dm_app_bookmark",
+        "syncml_dm_app_browser",
+        "syncml_dm_app_internet",
+        "syncml_dm_app_java",
+        "syncml_dm_app_mms",
+        "syncml_dm_settings",
+        "tac",
+        "wap_1_2_1",
+        "wap_2_0",
+        "wap_push_oma_app_browser",
+        "wap_push_oma_app_ims",
+        "wap_push_oma_app_internet",
+        "wap_push_oma_app_mms",
+        "wap_push_oma_app_poc",
+        "wap_push_oma_cp_bookmarks",
+        "wap_push_oma_settings",
+        "wap_push_ota_app_browser",
+        "wap_push_ota_app_internet",
+        "wap_push_ota_app_mms",
+        "wap_push_ota_bookmarks",
+        "wap_push_ota_multi_shot",
+        "wap_push_ota_settings",
+        "wap_push_ota_single_shot",
+        "wap_push_ota_support",
+        "weight",
+        "width",
+    }
+        The required handset characteristic.
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
@@ -380,9 +491,10 @@ class SubscriberPhoneType(SubscriberFeature):
     Examples
     -------------
 
-    >>> subscriber_smart = SubscriberPhoneType('2016-01-01', '2016-01-07')
+    >>> subscriber_smart = SubscriberHandsetCharacteristic('2016-01-01', '2016-01-07',
+        'hnd_type')
     >>> subscriber_smart.get_dataframe()
-             subscriber handset_type
+             subscriber        value
     0  038OVABN11Ak4W5P        Smart
     1  09NrjaNNvDanD8pk      Feature
     2  0ayZGYEQrqYlKw6g      Feature
@@ -403,6 +515,7 @@ class SubscriberPhoneType(SubscriberFeature):
         self,
         start,
         stop,
+        characteristic,
         hours="all",
         table="all",
         subscriber_identifier="msisdn",
@@ -418,6 +531,9 @@ class SubscriberPhoneType(SubscriberFeature):
         self.hours = hours
         self.table = table
         self.subscriber_identifier = subscriber_identifier
+        self.characteristic = characteristic
+        if self.characteristic not in valid_characteristics:
+            raise ValueError("{} is not a valid characteristic.".format(characteristic))
         if method == "most-common":
             self.subscriber_handsets = SubscriberHandsets(
                 start,
@@ -442,21 +558,17 @@ class SubscriberPhoneType(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "handset_type"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
         if self.method == "most-common":
-            query = """
-                    SELECT t.subscriber as subscriber, pg_catalog.mode() WITHIN GROUP(ORDER BY t.hnd_type) as handset_type
-                    FROM ({}) t
-                    GROUP BY t.subscriber""".format(
-                self.subscriber_handsets.get_query()
-            )
+            query = f"""
+                    SELECT t.subscriber as subscriber, pg_catalog.mode() WITHIN GROUP(ORDER BY t.{self.characteristic}) as value
+                    FROM ({self.subscriber_handsets.get_query()}) t
+                    GROUP BY t.subscriber"""
         elif self.method == "last":
-            query = """
-            SELECT t.subscriber as subscriber, t.hnd_type as handset_type FROM
-            ({}) t
-            """.format(
-                self.subscriber_handsets.get_query()
-            )
+            query = f"""
+            SELECT t.subscriber as subscriber, t.{self.characteristic} as value
+            FROM ({self.subscriber_handsets.get_query()}) t
+            """
         return query
