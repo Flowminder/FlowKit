@@ -37,7 +37,7 @@ def validate_config(*, global_config_dict: dict) -> Exception:
         )
 
     etl_keys = global_config_dict.get("etl", {}).keys()
-    if set(etl_keys).issubset(CDRType):
+    if not set(etl_keys).issubset(CDRType):
         exceptions.append(
             ValueError(
                 f"Etl sections present in config.yml must be a subset of {[x.value for x in CDRType]}. Got: {set(etl_keys)}"
