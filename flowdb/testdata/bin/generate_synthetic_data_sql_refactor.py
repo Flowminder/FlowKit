@@ -51,7 +51,7 @@ parser.add_argument(
     "--n-tacs", type=int, default=4000, help="Number of phone models to generate."
 )
 
-
+# Logging context
 @contextmanager
 def log_duration(job: str, **kwargs):
     """
@@ -70,6 +70,13 @@ def log_duration(job: str, **kwargs):
     logger.info(
         "Finished", job=job, runtime=str(datetime.datetime.now() - start_time), **kwargs
     )
+
+
+def generate_hash(index):
+    """
+    Generates a md5 checksum from an integer index value
+    """
+    return md5(int(index).to_bytes(8, "big", signed=True)).hexdigest()
 
 
 if __name__ == "__main__":
@@ -106,9 +113,7 @@ if __name__ == "__main__":
 
                     # First create each site
                     for x in range(start_id, num_sites + start_id):
-                        hash = md5(
-                            int(x + 1000).to_bytes(8, "big", signed=True)
-                        ).hexdigest()
+                        hash = generate_hash(x + 1000)
                         geom_point = f.readline().strip()
 
                         trans.execute(
