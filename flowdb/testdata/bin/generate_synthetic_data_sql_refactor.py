@@ -125,10 +125,7 @@ if __name__ == "__main__":
 
                         # And for each site, create n number of cells
                         for y in range(0, num_cells):
-                            cellhash = md5(
-                                int(cell_id).to_bytes(8, "big", signed=True)
-                            ).hexdigest()
-
+                            hash = generate_hash(cell_id)
                             trans.execute(
                                 f"""
                                     INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) 
