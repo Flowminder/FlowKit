@@ -40,7 +40,7 @@ def test_config_validation_fails_no_etl_section(sample_config_dict):
     with pytest.raises(ValueError) as raised_exception:
         validate_config(global_config_dict=bad_config)
 
-    assert len(raised_exception.value.args[0]) == 2
+    assert len(raised_exception.value.args[0]) == 1
 
 
 def test_config_validation_fails_no_default_args_section(sample_config_dict):
