@@ -52,7 +52,7 @@ parser.add_argument(
     "--n-cells", type=int, default=10, help="Number of cells to generate per site."
 )
 parser.add_argument(
-    "--n-tacs", type=int, default=4000, help="Number of phone models to generate."
+    "--n-tacs", type=int, default=2000, help="Number of phone models to generate."
 )
 parser.add_argument(
     "--n-subscribers", type=int, default=4000, help="Number of subscribers to generate."
@@ -197,3 +197,21 @@ if __name__ == "__main__":
                             INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) VALUES ({id}, '{brands[idx]}', '{hash}', '{next(type)}');
                         """
                     )
+
+            # 3. Temporary subscribers
+            with log_duration(f"Generating {num_subscribers} subscribers."):
+                mu = 10  # 10 subscribers per tac
+                subscribers = generateNormalDistribution(num_subscribers)
+                trans.execute(
+                    f"""
+                        CREATE TABLE IF NOT EXISTS subs(
+                            id NUMERIC PRIMARY KEY,
+                            msisdn TEXT,
+                            imei TEXT,
+                            imsi TEXT,
+                            tac TEXT
+                        );
+                    """
+                )
+
+                # TODO - distribute the TAC data across the subscribers
