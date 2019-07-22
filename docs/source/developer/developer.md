@@ -147,7 +147,6 @@ At present, the following query types are accessible through FlowAPI:
     Represents the percentage of events that a subscriber make/receives which
     began at night.
 
--`event_count`
 - `topup_balance`
 
     Return top-up balance statistics for specified dates and (optionally, with default "all") for a specified set of subscribers
@@ -155,7 +154,11 @@ At present, the following query types are accessible through FlowAPI:
 - `event_count`
 
     Count of events (optionally of specific types) for individual subscribers in a time period.
+    
+- `displacement`
 
+    Return statistics of a subscribers displacement from
+    their reference location.
 - `pareto_interactions`
 
     Returns two columns: `subscriber`, `pareto` - where the latter is the
