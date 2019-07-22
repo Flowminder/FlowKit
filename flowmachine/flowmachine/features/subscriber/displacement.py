@@ -15,7 +15,7 @@ from typing import List
 from flowmachine.features.subscriber import daily_location
 from .metaclasses import SubscriberFeature
 from . import ModalLocation
-from ..utilities.subscriber_locations import SubscriberLocations
+from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 from flowmachine.utils import parse_datestring, get_dist_query_string, list_of_dates
 from flowmachine.core import make_spatial_unit
 
@@ -42,7 +42,7 @@ class Displacement(SubscriberFeature):
         e.g. 2016-01-01 or 2016-01-01 14:03:01
     stop : str
         As above
-    modal_locations : ModalLocation
+    reference_location : BaseLocation
         The set of home locations from which to calculate displacement.
         If not given then ModalLocation Query wil be created over period
         start -> stop.
@@ -97,7 +97,7 @@ class Displacement(SubscriberFeature):
         self,
         start,
         stop,
-        modal_locations=None,
+        reference_location,
         statistic="avg",
         unit="km",
         hours="all",
@@ -114,31 +114,6 @@ class Displacement(SubscriberFeature):
         self.stop_hl = str(parse_datestring(stop) - relativedelta(days=1))
 
         self.start = start
-
-        if modal_locations:
-            if isinstance(modal_locations, ModalLocation):
-                hl = modal_locations
-            else:
-                raise ValueError(
-                    "Argument 'modal_locations' should be an instance of ModalLocation class"
-                )
-            hl.spatial_unit.verify_criterion("has_lon_lat_columns")
-        else:
-            hl = ModalLocation(
-                *[
-                    daily_location(
-                        date,
-                        spatial_unit=make_spatial_unit("lon-lat"),
-                        hours=hours,
-                        method=method,
-                        table=table,
-                        subscriber_identifier=subscriber_identifier,
-                        ignore_nulls=ignore_nulls,
-                        subscriber_subset=subscriber_subset,
-                    )
-                    for date in list_of_dates(self.start, self.stop_hl)
-                ]
-            )
 
         sl = SubscriberLocations(
             self.start,
@@ -159,14 +134,22 @@ class Displacement(SubscriberFeature):
                 )
             )
 
-        self.joined = hl.join(
-            sl,
-            on_left="subscriber",
-            on_right="subscriber",
-            how="left",
-            left_append="_home_loc",
-            right_append="",
-        )
+        if isinstance(reference_location, BaseLocation):
+
+            self.joined = reference_location.join(
+                sl,
+                on_left="subscriber",
+                on_right="subscriber",
+                how="left",
+                left_append="_home_loc",
+                right_append="",
+            )
+            reference_location.spatial_unit.verify_criterion("has_lon_lat_columns")
+        else:
+            raise ValueError(
+                "Argument 'reference_location' should be an instance of BaseLocation class. "
+                f"Got: {type(reference_location)}"
+            )
 
         self.unit = unit
 
@@ -174,7 +157,7 @@ class Displacement(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", "statistic"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
@@ -190,7 +173,7 @@ class Displacement(SubscriberFeature):
         sql = """
         select 
             subscriber,
-            {statistic}({dist_string}) / {divisor} as statistic
+            {statistic}({dist_string}) / {divisor} as value
         from 
             ({join}) as foo
         group by 
