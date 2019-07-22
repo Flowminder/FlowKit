@@ -3,18 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # -*- coding: utf-8 -*-
-from unittest.mock import Mock
+import pytest
+
+from unittest.mock import Mock, call
 from pathlib import Path
 from pendulum import parse
 from uuid import uuid1
 
 from etl.model import ETLRecord
 from etl.etl_utils import CDRType
-from etl.config_constant import config
-from etl.production_task_callables import trigger__callable
+from etl.production_task_callables import production_trigger__callable
 
 
-def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
+def test_trigger__callable_bad_file_filtered(
+    tmpdir, session, sample_config_dict, monkeypatch
+):
     """
     Test that the trigger callable picks up files in files and suitably filters
     them. In this case we have one unseen file and one file that matches no
@@ -27,17 +30,16 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
     file2 = files.join("bad_file.bad")
     file2.write("blah")
 
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
     uuid = uuid1()
-    uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
-    trigger__callable(
+    production_trigger__callable(
         dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
     )
 
@@ -56,12 +58,14 @@ def test_trigger__callable_bad_file_filtered(tmpdir, session, monkeypatch):
         "etl_sms",
         conf=expected_conf,
         execution_date=cdr_date,
-        run_id=f"SMS_20160101.csv.gz-{uuid}",
+        run_id=f"SMS_20160101-{uuid}",
         replace_microseconds=False,
     )
 
 
-def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkeypatch):
+def test_trigger__callable_quarantined_file_not_filtered(
+    tmpdir, session, sample_config_dict, monkeypatch
+):
     """
     Test that the trigger callable picks up files in files and suitably filters
     them. In this case we have one previously seen and quarantined file.
@@ -86,17 +90,16 @@ def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkey
         session=session,
     )
 
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
     uuid = uuid1()
-    uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
-    trigger__callable(
+    production_trigger__callable(
         dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
     )
 
@@ -115,12 +118,14 @@ def test_trigger__callable_quarantined_file_not_filtered(tmpdir, session, monkey
         "etl_sms",
         conf=expected_conf,
         execution_date=cdr_date,
-        run_id=f"SMS_20160101.csv.gz-{uuid}",
+        run_id=f"SMS_20160101-{uuid}",
         replace_microseconds=False,
     )
 
 
-def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
+def test_trigger__callable_archive_file_filtered(
+    tmpdir, session, sample_config_dict, monkeypatch
+):
     """
     Test that the trigger callable picks up files in files and suitably filters
     them. In this case we have one previously seen file and one never seen file.
@@ -147,17 +152,17 @@ def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
         session=session,
     )
 
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
     uuid = uuid1()
     uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
-    trigger__callable(
+    production_trigger__callable(
         dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
     )
 
@@ -176,12 +181,68 @@ def test_trigger__callable_archive_file_filtered(tmpdir, session, monkeypatch):
         "etl_sms",
         conf=expected_conf,
         execution_date=cdr_date,
-        run_id=f"SMS_20160102.csv.gz-{uuid}",
+        run_id=f"SMS_20160102-{uuid}",
         replace_microseconds=False,
     )
 
 
-def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
+def test_trigger__callable_sql(tmpdir, session, sample_config_dict, monkeypatch):
+    """
+    Test that the trigger callable picks up dates present in a postgres table
+    if 'source_type=sql' was configured. We expect a two calls of the
+    trigger_dag_mock for the two dates present in the table
+
+    """
+    files_path = tmpdir.mkdir("files")
+    session.execute(
+        """
+    INSERT INTO mds_raw_data_dump VALUES
+        ('BDED3095A2759089134DDA5CB7968764', '9824B87CDEEAD5ED5AC959D74F3C81C5', '2016-01-01 13:23:29', 'C44BEF'),
+        ('344F81588DC0DEAE77A17DEC308CE229', 'E7F5D068681196C7D57904B1D84AAE38', '2016-01-02 11:22:33', '54A61A');
+    """
+    )
+
+    cdr_type_config = sample_config_dict["etl"]
+    fake_dag_run = {}
+    trigger_dag_mock = Mock()
+
+    monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: "<fake_uuid>")
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
+
+    production_trigger__callable(
+        dag_run=fake_dag_run,
+        cdr_type_config=cdr_type_config,
+        files_path=Path(files_path),
+    )
+
+    def get_expected_conf_for_date(date_str):
+        return {
+            "cdr_type": CDRType("mds"),
+            "cdr_date": parse(date_str),
+            "source_table": "mds_raw_data_dump",
+        }
+
+    assert trigger_dag_mock.call_count == 2
+    trigger_dag_mock.assert_any_call(
+        "etl_mds",
+        conf=get_expected_conf_for_date("2016-01-01"),
+        execution_date=parse("2016-01-01"),
+        run_id=f"MDS_20160101-<fake_uuid>",
+        replace_microseconds=False,
+    )
+    trigger_dag_mock.assert_any_call(
+        "etl_mds",
+        conf=get_expected_conf_for_date("2016-01-02"),
+        execution_date=parse("2016-01-02"),
+        run_id=f"MDS_20160102-<fake_uuid>",
+        replace_microseconds=False,
+    )
+
+
+def test_trigger__callable_multiple_triggers(
+    tmpdir, session, sample_config_dict, monkeypatch
+):
     """
     Test that the trigger callable picks up files in files and is able to trigger
     multiple etl dag runs.
@@ -193,17 +254,16 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
     file2 = files.join("CALLS_20160102.csv.gz")
     file2.write("blah")
 
-    cdr_type_config = config["etl"]
+    cdr_type_config = sample_config_dict["etl"]
     fake_dag_run = {}
     trigger_dag_mock = Mock()
     uuid = uuid1()
-    uuid_sans_underscore = str(uuid).replace("-", "")
 
     monkeypatch.setattr("etl.production_task_callables.uuid1", lambda: uuid)
-    monkeypatch.setattr("etl.etl_utils.get_session", lambda: session)
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
-    trigger__callable(
+    production_trigger__callable(
         dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
     )
 
@@ -231,7 +291,7 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
         "etl_sms",
         conf=expected_conf_file1,
         execution_date=cdr_date_file1,
-        run_id=f"SMS_20160101.csv.gz-{uuid}",
+        run_id=f"SMS_20160101-{uuid}",
         replace_microseconds=False,
     )
 
@@ -239,6 +299,20 @@ def test_trigger__callable_multiple_triggers(tmpdir, session, monkeypatch):
         "etl_calls",
         conf=expected_conf_file2,
         execution_date=cdr_date_file2,
-        run_id=f"CALLS_20160102.csv.gz-{uuid}",
+        run_id=f"CALLS_20160102-{uuid}",
         replace_microseconds=False,
     )
+
+
+def test_trigger__callable_invalid_source_type(session, monkeypatch):
+    fake_dag_run = {}
+    cdr_type_config = {"calls": {"concurrency": 4, "source": {"source_type": "foobar"}}}
+
+    monkeypatch.setattr("etl.production_task_callables.get_session", lambda: session)
+
+    with pytest.raises(ValueError, match="Invalid source type: 'foobar'"):
+        production_trigger__callable(
+            dag_run=fake_dag_run,
+            files_path=Path("foobar"),
+            cdr_type_config=cdr_type_config,
+        )

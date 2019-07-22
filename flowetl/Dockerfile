@@ -9,7 +9,7 @@
 FROM greenape/docker-airflow
 
 ARG AIRFLOW_HOME=/usr/local/airflow
-ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/src
+ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 USER root
 WORKDIR /usr/src/deps
@@ -31,7 +31,7 @@ COPY ./etl /opt/etl
 RUN pip install /opt/etl
 
 USER airflow
-COPY --chown=airflow:airflow ./dags/* ${AIRFLOW_HOME}/src/
+COPY --chown=airflow:airflow ./dags/* ${AIRFLOW__CORE__DAGS_FOLDER}/
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["webserver"] # set default arg for entrypoint

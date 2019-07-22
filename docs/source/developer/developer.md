@@ -1,14 +1,16 @@
 # Information for Developers
 
-Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](../install.md). 
+Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](../install.md).
 
 An outline roadmap is provided below together with details about [contributing to the project](#contrib).
 
-Followed by a guide to the [FlowAPI](#flowapi). 
+Followed by a guide to the [FlowAPI](#flowapi).
 
 FlowMachine specifications are found [here](#flowmachine).
 
 FlowDB details are found [here](#flowdb).
+
+FlowETL details are found [here](#flowetl).
 
 <a href="roadmap"></a>
 
@@ -53,9 +55,9 @@ FlowDB details are found [here](#flowdb).
 We are creating FlowKit at [Flowminder](http://flowminder.org).
 
 #### Get involved
-You are welcome to contribute to the FlowKit library. To get started:  
+You are welcome to contribute to the FlowKit library. To get started:
 
-1. Check [Issues](https://github.com/Flowminder/FlowKit/issues) to see what we are working on right now.  
+1. Check [Issues](https://github.com/Flowminder/FlowKit/issues) to see what we are working on right now.
 2. Express your interest in a particular [issue](https://github.com/Flowminder/FlowKit/issues) by submitting a comment, or submit your own [issue](https://github.com/Flowminder/FlowKit/issues).
 3. We will get back to you about working together.
 
@@ -103,12 +105,12 @@ At present, the following query types are accessible through FlowAPI:
     The mode of a set of daily locations. Must be used in combination with `flows` or `spatial_aggregate`.
 
 - `spatial_aggregate`
-    
+
     A spatial aggregate of `modal_location` or `daily_location`, suitable for return via the API.
 
 - `joined_spatial_aggregate`
 
-    Spatial aggregate of a subscriber metric which does not have associated location information 
+    Spatial aggregate of a subscriber metric which does not have associated location information
 
 - `flows`
 
@@ -133,12 +135,32 @@ At present, the following query types are accessible through FlowAPI:
     Return Radius of Gyration info for specified dates and (optionally, with default "all") for a specified set of subscribers
 
 - `total_network_objects`
-    
+
     Count of mobile phone cells per area active based on CDR traffic within a time period, broken down into time buckets.
+    
+- `topup_amount`
+
+    Aggregate of topup amount for individual subscribers.
+
+- `nocturnal_events`
+    
+    Represents the percentage of events that a subscriber make/receives which
+    began at night.
 
 -`event_count`
+- `topup_balance`
+
+    Return top-up balance statistics for specified dates and (optionally, with default "all") for a specified set of subscribers
+
+- `event_count`
 
     Count of events (optionally of specific types) for individual subscribers in a time period.
+
+- `pareto_interactions`
+
+    Returns two columns: `subscriber`, `pareto` - where the latter is the
+    proportion of that subscriber's contacts who account for the requested
+    proportion (0.8, by default) of their interactions in this time period.
 
 ### FlowAPI Access tokens
 
@@ -156,7 +178,7 @@ JWTs allow these access permissions to be granted independently for each query k
 
 #### Test Tokens
 
-FlowKit includes the `flowkit-jwt-generator` package, which can be used to generate tokens for testing purposes. This package supplies: 
+FlowKit includes the `flowkit-jwt-generator` package, which can be used to generate tokens for testing purposes. This package supplies:
 
 - Two commandline tools
     - `generate-jwt`, which allows you to generate tokens which grant specific kinds of access to a subset of queries, or to generate an all access token for a specific instance of FlowAPI
@@ -224,8 +246,8 @@ docker run --name flowdb_synth_data -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAP
 ```
 
 !!! warning
-    For generating large datasets, it is recommended that you use the SQL based generator. 
-    
+    For generating large datasets, it is recommended that you use the SQL based generator.
+
 ##### SQL Generator features
 
 The SQL generator supports semi-plausible behaviour - each subscriber has a 'home' region, and will typically (by default, 95% of the time) call/sms/use data from cells in that region. Subscribers will occasionally (by default, 1% chance per day) relocate to a new home region.
@@ -236,7 +258,7 @@ Mass relocation scenarios are also supported - a designated admin 2 region can b
 ##### Parameters
 
 - `N_DAYS`: number of days of data to generate, defaults to 7
-- `N_SUBSCRIBERS`: number of simulated subscribers, defaults to 4,000 
+- `N_SUBSCRIBERS`: number of simulated subscribers, defaults to 4,000
 - `N_TACS`: number of mobile phone models, defaults to 1,000 (SQL generator only)
 - `N_SITES`: number of mobile sites, defaults to 1,000 (SQL generator only)
 - `N_CELLS`: number of cells, defaults to 1,000
@@ -275,7 +297,7 @@ services:
           - /path/to/consume/data/from/host:/etl:ro
 ```
 
-This creates two bind mounts, the first is FlowDB's internal storage, and the second is a *read only* mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified. 
+This creates two bind mounts, the first is FlowDB's internal storage, and the second is a *read only* mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified.
 
 !!! warning
     If the bind mounted directories do not exist, docker will create them and you will need to `chown` them to the correct user.
@@ -293,14 +315,29 @@ docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_
 
 !!! tip
     To run as the current user, you can simply replace `HOST_USER_ID:HOST_GROUP_ID` with `$(id -u):$(id -g)`.
- 
- 
+
+
 !!! warning
     Using the `--user` flag without a bind mount specified will not work, and you will see an error
     like this: `initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted`.
-    
+
     When using docker volumes, docker will manage the permissions for you.
 
+
+## FlowETL
+
+### DAG information flow
+
+This section describes the information available in the DAG code inside FlowETL.
+
+Some information is only known at runtime, in code executed by a running DAG, this cannot be passed to the python callables or accessed when creating the DAGs because it's not static and changes for each run:
+`execution_date`, `run_id`, the dag itself, `ds`/`ts` and the [default variables allowed in airflow](https://airflow.apache.org/macros.html#default-variables), the task and task_instance.
+
+The data that is passed when the DAG is triggered, is also available at runtime in the callables under `dag_run['conf']` :
+`cdr_type` (a DAG is initialised for a specific `cdr_type` *but* this is not static because the callables are reused), `cdr_date` (which currently is the same as the `execution_date`), `file_name` & `template_path` or `source_table`.
+
+Some information can be accessed when creating the DAG / not at runtime - these can be passed to the python callables because they are static and do not change:
+the SQL and config paths (because they remain fixed), the configuration that remains constant for any DAG (`config.yml` in `/mounts/config`)
 
 ## FlowAuth
 

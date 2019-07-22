@@ -21,13 +21,22 @@ logger = structlog.get_logger("flowetl")
 
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
-if os.environ.get("TESTING", "") == "true":
-    logger.info("running in testing environment")
-    dag = construct_etl_sensor_dag(
-        callable=TEST_ETL_SENSOR_TASK_CALLABLE, default_args=default_args
+ETL_SENSOR_TASK_CALLABLES = {
+    "testing": TEST_ETL_SENSOR_TASK_CALLABLE,
+    "production": PRODUCTION_ETL_SENSOR_TASK_CALLABLE,
+}
+
+flowetl_runtime_config = os.environ.get("FLOWETL_RUNTIME_CONFIG", "production")
+
+try:
+    etl_sensor_task_callable = ETL_SENSOR_TASK_CALLABLES[flowetl_runtime_config]
+except KeyError:
+    raise ValueError(
+        f"Invalid config name: '{flowetl_runtime_config}'. "
+        f"Valid config names are: {list(ETL_SENSOR_TASK_CALLABLES.keys())}"
     )
-else:
-    logger.info("running in production environment")
-    dag = construct_etl_sensor_dag(
-        callable=PRODUCTION_ETL_SENSOR_TASK_CALLABLE, default_args=default_args
-    )
+
+logger.info(f"Running in {flowetl_runtime_config} environment")
+dag = construct_etl_sensor_dag(
+    callable=etl_sensor_task_callable, default_args=default_args
+)

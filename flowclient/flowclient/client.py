@@ -181,7 +181,10 @@ class Connection:
             try:
                 error_msg = response.json()["msg"]
                 try:
-                    payload_info = f" Payload: {response.json()['payload']}"
+                    returned_payload = response.json()["payload"]
+                    payload_info = (
+                        "" if not returned_payload else f" Payload: {returned_payload}"
+                    )
                 except KeyError:
                     payload_info = ""
             except ValueError:
@@ -1204,8 +1207,8 @@ def joined_spatial_aggregate(
         Modal or daily location query to use to localise the metric
     metric: dict
         Metric to calculate and aggregate
-    method: {"avg", "max", "min", "median", "mode", "stddev", "variance"}, default "avg"
-        Method of aggregation one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
+    method: {"avg", "max", "min", "median", "mode", "stddev", "variance", "distr"}, default "avg".
+       Method of aggregation; one of "avg", "max", "min", "median", "mode", "stddev", "variance" or "distr". If the metric refers to a categorical variable (e.g. a subscriber handset type) it will only accept the "distr" method which yields the relative distribution of possible values. All of the other methods will be rejected. On the other hand, the "distr" method will be rejected for all continuous variables.
 
     Returns
     -------
@@ -1267,7 +1270,7 @@ def unique_location_counts(
         ISO format date of the first day of the count, e.g. "2016-01-01"
     end_date : str
         ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
-    level : str
+    aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
@@ -1283,6 +1286,43 @@ def unique_location_counts(
         "start_date": start_date,
         "end_date": end_date,
         "aggregation_unit": aggregation_unit,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def topup_balance(
+    *,
+    start_date: str,
+    end_date: str,
+    statistic: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for top-up balance.
+
+    Parameters
+    ----------
+    start_date : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    end_date : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+        Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "topup_balance",
+        "start_date": start_date,
+        "end_date": end_date,
+        "statistic": statistic,
         "subscriber_subset": subscriber_subset,
     }
 
@@ -1319,6 +1359,42 @@ def subscriber_degree(
         "start": start,
         "stop": stop,
         "direction": direction,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def topup_amount(
+    *,
+    start: str,
+    stop: str,
+    statistic: str,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for topup amount
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+        Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "topup_amount",
+        "start": start,
+        "stop": stop,
+        "statistic": statistic,
         "subscriber_subset": subscriber_subset,
     }
 
@@ -1360,5 +1436,124 @@ def event_count(
         "stop": stop,
         "direction": direction,
         "event_types": event_types,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def pareto_interactions(
+    *,
+    start: str,
+    stop: str,
+    proportion: float,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for pareto interactions
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the time interval to be considered, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the time interval to be considered, e.g. "2016-01-08"
+    proportion : float
+        proportion to track below
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in result. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "pareto_interactions",
+        "start": start,
+        "stop": stop,
+        "proportion": proportion,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def nocturnal_events(
+    *,
+    start: str,
+    stop: str,
+    hours: tuple((int, int)),
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for nocturnal events
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day for which to count nocturnal events, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date for which to count nocturnal events, e.g. "2016-01-08"
+    hours: tuple(int,int)
+
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+
+    return {
+        "query_kind": "nocturnal_events",
+        "start": start,
+        "stop": stop,
+        "hours": hours,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def handset(
+    *,
+    start_date: str,
+    end_date: str,
+    characteristic: str = [
+        "hnd_type",
+        "brand",
+        "model",
+        "software_os_name",
+        "software_os_vendor",
+    ],
+    method: str = ["last", "most-common"],
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for handset
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day for which to count handsets, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date for which to count handsets, e.g. "2016-01-08"
+    characteristic: ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"], default "hnd_type"
+        The required handset characteristic.
+    method: ["last", "most-common"], default "last"
+        Method for choosing a handset to associate with subscriber.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "handset",
+        "start_date": start_date,
+        "end_date": end_date,
+        "characteristic": characteristic,
+        "method": method,
         "subscriber_subset": subscriber_subset,
     }
