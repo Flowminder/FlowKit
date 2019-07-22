@@ -21,6 +21,7 @@ from hashlib import md5
 from concurrent.futures.thread import ThreadPoolExecutor
 from contextlib import contextmanager
 from multiprocessing import cpu_count
+from itertools import cycle
 
 import sqlalchemy as sqlalchemy
 from sqlalchemy.exc import ResourceClosedError
@@ -125,7 +126,7 @@ if __name__ == "__main__":
 
                         # And for each site, create n number of cells
                         for y in range(0, num_cells):
-                            hash = generate_hash(cell_id)
+                            cellhash = generate_hash(cell_id)
                             trans.execute(
                                 f"""
                                     INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) 
@@ -139,12 +140,27 @@ if __name__ == "__main__":
             with log_duration(f"Generating {num_tacs} tacs."):
                 # First truncate the table
                 trans.execute("TRUNCATE infrastructure.tacs;")
-                trans.execute(
-                    f"""
-                        INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) SELECT (row_number() over())::numeric(8, 0) AS id, 
-                        (ARRAY['Nokia', 'Huawei', 'Apple', 'Samsung', 'Sony', 'LG', 'Google', 'Xiaomi', 'ZTE'])[floor((random()*9 + 1))::int] AS brand, 
-                        uuid_generate_v4()::text AS model, 
-                        (ARRAY['Smart', 'Feature', 'Basic'])[floor((random()*3 + 1))::int] AS  hnd_type 
-                        FROM generate_series(1, {num_tacs});
-                    """
-                )
+                brands = [
+                    "Nokia",
+                    "Huawei",
+                    "Apple",
+                    "Samsung",
+                    "Sony",
+                    "LG",
+                    "Google",
+                    "Xiaomi",
+                    "ZTE",
+                ]
+                types = ["Smart", "Feature", "Basic"]
+
+                brand = cycle(brands)
+                type = cycle(types)
+
+                for x in range(start_id, num_tacs + start_id):
+                    id = x + 1000
+                    hash = generate_hash(id)
+                    trans.execute(
+                        f"""
+                            INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) VALUES ({id}, '{next(brand)}', '{hash}', '{next(type)}');
+                        """
+                    )
