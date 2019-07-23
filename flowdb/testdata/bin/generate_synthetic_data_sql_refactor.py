@@ -23,7 +23,6 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from contextlib import contextmanager
 from multiprocessing import cpu_count
 from itertools import cycle
-from math import floor
 import numpy as np
 
 import sqlalchemy as sqlalchemy
@@ -181,20 +180,16 @@ if __name__ == "__main__":
                     "ZTE",
                 ]
                 types = ["Smart", "Feature", "Basic"]
-
-                # Get a random distribution for the brand types across the data set
-                distribution = generateNormalDistribution(num_tacs, 3)
-                y = 0
+                
+                # Create cycles to loop over the types/brands.
+                brand = cycle(brands)
                 type = cycle(types)
                 for x in range(start_id, num_tacs + start_id):
                     id = x + 1000
-                    idx = floor(distribution[y])
                     hash = generate_hash(id)
-                    y += 1
-
                     trans.execute(
                         f"""
-                            INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) VALUES ({id}, '{brands[idx]}', '{hash}', '{next(type)}');
+                            INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) VALUES ({id}, '{next(brand)}', '{hash}', '{next(type)}');
                         """
                     )
 
