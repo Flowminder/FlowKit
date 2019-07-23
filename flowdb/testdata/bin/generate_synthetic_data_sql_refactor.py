@@ -23,6 +23,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from contextlib import contextmanager
 from multiprocessing import cpu_count
 from itertools import cycle
+from math import floor
 import numpy as np
 
 import sqlalchemy as sqlalchemy
@@ -48,7 +49,7 @@ parser.add_argument(
     "--n-sites", type=int, default=1000, help="Number of sites to generate."
 )
 parser.add_argument(
-    "--n-cells", type=int, default=10, help="Number of cells to generate per site."
+    "--n-cells", type=int, default=1, help="Number of cells to generate per site."
 )
 parser.add_argument(
     "--n-tacs", type=int, default=2000, help="Number of phone models to generate."
@@ -180,7 +181,7 @@ if __name__ == "__main__":
                     "ZTE",
                 ]
                 types = ["Smart", "Feature", "Basic"]
-                
+
                 # Create cycles to loop over the types/brands.
                 brand = cycle(brands)
                 type = cycle(types)
@@ -195,18 +196,38 @@ if __name__ == "__main__":
 
             # 3. Temporary subscribers
             with log_duration(f"Generating {num_subscribers} subscribers."):
-                mu = 10  # 10 subscribers per tac
-                subscribers = generateNormalDistribution(num_subscribers)
                 trans.execute(
                     f"""
-                        CREATE TABLE IF NOT EXISTS subs(
-                            id NUMERIC PRIMARY KEY,
+                        CREATE TABLE IF NOT EXISTS subs (
+                            id TEXT,
                             msisdn TEXT,
                             imei TEXT,
                             imsi TEXT,
-                            tac TEXT
+                            tac INT
                         );
+                        TRUNCATE subs;
                     """
                 )
+                # These are interpreted from here: https://www.statista.com/statistics/719123/share-of-cell-phone-brands-owned-in-the-uk/
+                # to get the basic spread of ownsership weights
+                weights = [0.02, 0.06, 0.38, 0.3, 0.07, 0.07, 0.06, 0.02, 0.02]
+                y = 0
+                weight = cycle(weights)
+                count = next(weight) * num_subscribers
 
-                # TODO - distribute the TAC data across the subscribers
+                for x in range(start_id, num_subscribers + start_id):
+                    id = generate_hash(x + 1000)
+                    msisdn = generate_hash(x + 2000)
+                    imei = generate_hash(x + 3000)
+                    imsi = generate_hash(x + 4000)
+
+                    if count == 0:
+                        count = next(weight) * num_subscribers
+                        y += 1
+
+                    trans.execute(
+                        f"""
+                            INSERT INTO subs (id, msisdn, imei, imsi, tac) VALUES ('{id}', '{msisdn}','{imei}','{imsi}', (SELECT id FROM infrastructure.tacs where brand = '{brands[y]}' ORDER BY RANDOM() LIMIT 1));
+                        """
+                    )
+                    count -= 1
