@@ -29,7 +29,6 @@ class ServerAggregationUnits extends React.Component {
     getAllAggregationUnits()
       .then(json => {
         this.setState({ all_agg_units: json });
-        console.log(json);
       })
       .catch(err => {
         this.setState({ hasError: true, error: err });

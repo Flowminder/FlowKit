@@ -15,11 +15,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import SubmitButtons from "./SubmitButtons";
 import ServerAggregationUnits from "./ServerAggregationUnits";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Checkbox from "@material-ui/core/Checkbox";
+import PermissionDetails from "./PermissionDetails";
 import WarningDialog from "./WarningDialog";
 
 const styles = theme => ({
@@ -90,95 +86,8 @@ class TokenDetails extends React.Component {
     this.setState(Object.assign(this.state, { expiry: date }));
   };
 
-  handleChange = (claim, right) => event => {
-    this.setState({ pageError: false, errors: "" });
-    const { rights } = this.state;
-
-    rights[claim].permissions[right] = event.target.checked;
-    const permissionSet = new Set();
-    for (const keys in rights) {
-      for (const key in rights[keys].permissions) {
-        permissionSet.add(rights[keys].permissions[key]);
-      }
-    }
-    const indeterminate = permissionSet.size > 1;
-    console.log(indeterminate);
-    this.setState({ rights: rights, permissionIndeterminate: indeterminate });
-  };
   scrollToRef = ref => ref.current.scrollIntoView();
 
-  handleAggUnitChange = (claim_id, claim, unit) => event => {
-    this.setState({ pageError: false, errors: "" });
-    const { rights, totalAggregateUnits } = this.state;
-    if (event.target.checked) {
-      rights[claim].spatial_aggregation.push(unit);
-    } else {
-      rights[claim].spatial_aggregation = rights[
-        claim
-      ].spatial_aggregation.filter(u => u != unit);
-    }
-    console.log(rights);
-    const listUnits = [];
-    for (const key in rights) {
-      for (const keys in rights[key].spatial_aggregation) {
-        listUnits.push(keys);
-      }
-    }
-
-    this.setState({
-      rights: rights,
-      aggregateIndeterminate: totalAggregateUnits != listUnits.length
-    });
-  };
-  handlePermissionCheckbox = async event => {
-    const toCheck = event.target.checked;
-    event.stopPropagation();
-    const { uiReady } = this.state;
-    this.setState({
-      isPermissionChecked: toCheck,
-      permissionIndeterminate: false,
-      pageError: false,
-      errors: ""
-    });
-    await uiReady; // Wait to make sure checkboxes exist
-    const { rights } = this.state;
-
-    for (const keys in rights) {
-      for (const key in rights[keys].permissions) {
-        rights[keys].permissions[key] = toCheck;
-      }
-    }
-    this.setState({
-      rights: rights
-    });
-  };
-  handleAggregationCheckbox = async event => {
-    const toCheck = event.target.checked;
-    this.setState({
-      pageError: false,
-      errors: "",
-      isAggregationChecked: toCheck,
-      aggregateIndeterminate: false
-    });
-    event.stopPropagation();
-    const { uiReady } = this.state;
-    await uiReady; // Wait to make sure checkboxes exist
-    var listUnits = [];
-    const { rights, permitted } = this.state;
-    for (const key in rights) {
-      if (toCheck) {
-        rights[key].spatial_aggregation = permitted[key].spatial_aggregation;
-      } else {
-        rights[key].spatial_aggregation = [];
-      }
-      for (const keys in rights[key].spatial_aggregation) {
-        listUnits.push(keys);
-      }
-    }
-    this.setState({
-      rights: rights
-    });
-  };
   handleNameChange = event => {
     var letters = /^[A-Za-z0-9_]+$/;
     let name = event.target.value;
@@ -205,11 +114,6 @@ class TokenDetails extends React.Component {
     this.setState({ name: event.target.value });
   };
 
-  isAggUnitPermitted = (claim, key) => {
-    const { permitted } = this.state;
-    return permitted[claim].spatial_aggregation.indexOf(key) !== -1;
-  };
-
   componentDidMount() {
     this.setState({
       uiReady: getMyRightsForServer(this.props.serverID)
@@ -233,60 +137,6 @@ class TokenDetails extends React.Component {
     });
   }
 
-  renderRights = () => {
-    var perms = [];
-    const { rights, permitted } = this.state;
-    for (const key in rights) {
-      perms.push([
-        <TokenPermission
-          permissions={rights[key].permissions}
-          claim={key}
-          checkedHandler={this.handleChange}
-          permitted={permitted[key].permissions}
-        />,
-        key
-      ]);
-    }
-    return perms
-      .sort((a, b) => {
-        if (a[1] > b[1]) {
-          return 1;
-        } else if (a[1] < b[1]) {
-          return -1;
-        } else {
-          return 0;
-        }
-      })
-      .map(x => x[0]);
-  };
-
-  renderAggUnits = () => {
-    var perms = [];
-    const { rights, permitted, isAggregationChecked } = this.state;
-    for (const key in rights) {
-      perms.push([
-        <ServerAggregationUnits
-          units={rights[key].spatial_aggregation}
-          claim={key}
-          checkedHandler={this.handleAggUnitChange}
-          permitted={this.isAggUnitPermitted}
-        />,
-        key
-      ]);
-    }
-    return perms
-      .sort((a, b) => {
-        if (a[1] > b[1]) {
-          return 1;
-        } else if (a[1] < b[1]) {
-          return -1;
-        } else {
-          return 0;
-        }
-      })
-      .map(x => x[0]);
-  };
-
   render() {
     if (this.state.hasError) throw this.state.error;
 
@@ -294,11 +144,9 @@ class TokenDetails extends React.Component {
       expiry,
       latest_expiry,
       name,
-      aggregateIndeterminate,
-      isAggregationChecked,
-      isPermissionChecked,
-      permissionIndeterminate,
-      name_helper_text
+      name_helper_text,
+      rights,
+      permitted
     } = this.state;
     const { classes, onClick } = this.props;
 
@@ -344,61 +192,11 @@ class TokenDetails extends React.Component {
           </MuiPickersUtilsProvider>
         </Grid>
         <Grid item xs={12}>
-          <ExpansionPanel>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon id="api-exp" />}>
-              <Checkbox
-                checked={isPermissionChecked}
-                indeterminate={permissionIndeterminate}
-                data-cy="permissions-top-level"
-                id="permissions"
-                value="checkedB"
-                color="primary"
-                onClick={this.handlePermissionCheckbox}
-              />
-
-              <Grid item xs={2}>
-                <Typography
-                  className={classes.heading}
-                  style={{ paddingTop: 10 }}
-                >
-                  API Permissions
-                </Typography>
-              </Grid>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <Grid container spacing={5}>
-                {this.renderRights()}
-              </Grid>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
-          <ExpansionPanel>
-            <ExpansionPanelSummary
-              expandIcon={<ExpandMoreIcon id="unit-exp" />}
-            >
-              <Checkbox
-                id="units"
-                checked={isAggregationChecked}
-                indeterminate={aggregateIndeterminate}
-                value="checkedB"
-                color="primary"
-                onClick={this.handleAggregationCheckbox}
-              />
-
-              <Grid item xs={3}>
-                <Typography
-                  className={classes.heading}
-                  style={{ paddingTop: 10 }}
-                >
-                  Aggregation Units
-                </Typography>
-              </Grid>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <Grid container spacing={5}>
-                {this.renderAggUnits()}
-              </Grid>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
+          <PermissionDetails
+            rights={rights}
+            permitted={permitted}
+            updateRights={rights => this.setState({ rights: rights })}
+          />
         </Grid>
         <WarningDialog
           open={this.state.pageError}
