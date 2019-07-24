@@ -40,20 +40,21 @@ class PermissionDetails extends React.Component {
     permissionIndeterminate: false,
     aggregateIndeterminate: false,
     totalAggregateUnits: 0,
-    uiReady: new Promise(() => {}),
     pageError: false,
     errors: { message: "" }
   };
 
   handleChange = (claim, right) => event => {
     this.setState({ pageError: false, errors: "" });
-    const { updateRights, rights } = this.props;
+    const { updateRights, rights, permitted } = this.props;
 
     rights[claim].permissions[right] = event.target.checked;
     const permissionSet = new Set();
     for (const keys in rights) {
       for (const key in rights[keys].permissions) {
-        permissionSet.add(rights[keys].permissions[key]);
+        if (permitted[keys].permissions[key]) {
+          permissionSet.add(rights[keys].permissions[key]);
+        }
       }
     }
     const indeterminate = permissionSet.size > 1;
@@ -84,7 +85,7 @@ class PermissionDetails extends React.Component {
       aggregateIndeterminate: totalAggregateUnits != listUnits.length
     });
   };
-  handlePermissionCheckbox = async event => {
+  handlePermissionCheckbox = event => {
     const { updateRights, rights, permitted } = this.props;
     const toCheck = event.target.checked;
     event.stopPropagation();
@@ -132,18 +133,19 @@ class PermissionDetails extends React.Component {
     return permitted[claim].spatial_aggregation.indexOf(key) !== -1;
   };
 
-  componentDidMount() {
-    const { permitted } = this.props;
+  static getDerivedStateFromProps(props, state) {
+    const { permitted } = props;
     if (permitted) {
       const totalAggUnits = Object.keys(permitted).reduce(
         (acc, k) => acc + permitted[k].spatial_aggregation.length,
         0
       );
-      console.log("Enabling ui");
-      this.setState({
+      return {
         totalAggregateUnits: totalAggUnits,
-        uiReady: this.state.uiReady.resolve()
-      });
+        ...state
+      };
+    } else {
+      return state;
     }
   }
 
