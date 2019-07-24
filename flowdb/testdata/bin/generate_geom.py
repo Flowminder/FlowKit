@@ -104,6 +104,7 @@ def type_d(rows, points, geom):
 
     return "d", lines
 
+
 # The getType method aids selection of type
 def getType(type, rows, points, geom):
     types = {0: type_a, 1: type_b, 2: type_c, 3: type_d}
@@ -111,6 +112,7 @@ def getType(type, rows, points, geom):
     func = types.get(type)
 
     return func(rows, points, geom)
+
 
 if __name__ == "__main__":
     dir = os.path.dirname(os.path.abspath(__file__))
