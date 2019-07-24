@@ -100,24 +100,6 @@ class ServerAdminDetails extends React.Component {
     this.setState({ latest_expiry: date });
   };
 
-  handleChange = (claim_id, claim, right) => event => {
-    var rights = Object.assign({}, this.state.rights);
-    rights[claim].permissions[right] = event.target.checked;
-    this.setState(Object.assign(this.state, { rights: rights }));
-  };
-
-  handleAggUnitChange = (claim_id, claim, unit) => event => {
-    var rights = Object.assign({}, this.state.rights);
-    if (event.target.checked) {
-      rights[claim].spatial_aggregation.push(unit);
-    } else {
-      rights[claim].spatial_aggregation = rights[
-        claim
-      ].spatial_aggregation.filter(u => u != unit);
-    }
-    this.setState({ rights: rights });
-  };
-
   handleTextChange = name => event => {
     this.setState({
       pageError: false,
@@ -194,7 +176,8 @@ class ServerAdminDetails extends React.Component {
       getAllCapabilities()
         .then(json => {
           this.setState({
-            rights: json
+            rights: json,
+            permitted: JSON.parse(JSON.stringify(json || {}))
           });
         })
         .catch(err => {
