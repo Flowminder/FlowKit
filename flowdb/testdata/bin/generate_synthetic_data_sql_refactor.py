@@ -253,42 +253,70 @@ if __name__ == "__main__":
                     t -= 1
                     v -= 1
 
-            # 4. Calls SQL
+            # 4. Event SQL
+            variants = {}
+            for t in ["a", "b", "c", "d"]:
+                variants[t] = [
+                    line.strip()
+                    for line in open(
+                        f"{dir}/../synthetic_data/data/variations/{t}.dat", "r"
+                    )
+                ]
+
+            # Loop over the days required
             for date in (
-                start_time + datetime.timedelta(days=i)
-                for i in range(num_days)
+                start_time + datetime.timedelta(days=i) for i in range(num_days)
             ):
                 table = date.strftime("%Y%m%d")
-                # end_date = (date + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-                
-                if (num_calls > 0):
-                    call_sql = [f"CREATE TABLE IF NOT EXISTS events.calls_{table} () INHERITS (events.calls);"]
-                    
+
+                # 4.1 Calls
+                if num_calls > 0:
+                    call_sql = [
+                        f"CREATE TABLE IF NOT EXISTS events.calls_{table} () INHERITS (events.calls);"
+                    ]
+
                     for x in range(0, num_calls):
-                        # TODO - insert the
-                    
+                        call_sql.append(
+                            f""" 
+                            // TODO - add query
+                        """
+                        )
+
                     # Add the indexes for this day
                     call_sql.append(f"CREATE INDEX ON events.calls_{table} (msisdn);")
-                    call_sql.append(f"CREATE INDEX ON events.calls_{table} (msisdn_counterpart);")
+                    call_sql.append(
+                        f"CREATE INDEX ON events.calls_{table} (msisdn_counterpart);"
+                    )
                     call_sql.append(f"CREATE INDEX ON events.calls_{table} (tac);")
-                    call_sql.append(f"CREATE INDEX ON events.calls_{table} (location_id);")
+                    call_sql.append(
+                        f"CREATE INDEX ON events.calls_{table} (location_id);"
+                    )
                     call_sql.append(f"CREATE INDEX ON events.calls_{table} (datetime);")
-                    call_sql.append(f"CLUSTER events.calls_{table} USING calls_{table}_msisdn_idx;")
+                    call_sql.append(
+                        f"CLUSTER events.calls_{table} USING calls_{table}_msisdn_idx;"
+                    )
                     call_sql.append(f"ANALYZE events.calls_{table};")
-                
-                    deferred_sql.append((f"Generating {num_calls} call events for {date}", call_sql))
-            
+
+                    deferred_sql.append(
+                        (f"Generating {num_calls} call events for {date}", call_sql)
+                    )
+
             # Add all the ANALYZE calls for the events tables.
-            deferred_sql.append(("Analyzing the events tables", [
-                "ANALYZE events.calls;",
-                "ANALYZE events.sms;",
-                "ANALYZE events.mds;"
-            ]))
-                
+            deferred_sql.append(
+                (
+                    "Analyzing the events tables",
+                    [
+                        "ANALYZE events.calls;",
+                        "ANALYZE events.sms;",
+                        "ANALYZE events.mds;",
+                    ],
+                )
+            )
+
         # Remove the intermediary data tables
         for tbl in ("subs",):
             deferred_sql.append((f"Dropping {tbl}", [f"DROP TABLE {tbl};"]))
-            
+
         def do_exec(args):
             msg, sql = args
             with log_duration(msg):
@@ -299,6 +327,6 @@ if __name__ == "__main__":
                             logger.info(f"SQL result", job=msg, result=res.fetchall())
                         except ResourceClosedError:
                             pass  # Nothing to do here
-        
+
         with ThreadPoolExecutor(cpu_count()) as tp:
             list(tp.map(do_exec, deferred_sql))
