@@ -32,9 +32,8 @@ def type_a(rows, points, geom):
     """Variant A will be the modal type - simple movement between two cells, thirds per day home/work/home"""
 
     lines = []
+    mult = floor(points / 3)
     for r in range(0, rows * 2, 2):
-        mult = floor(points / 3)
-
         line = []
         line.append(
             geom[r]
@@ -63,10 +62,30 @@ def type_b(rows, points, geom):
 
 def type_c(rows, points, geom):
     """
-    Variant C - distribute over a longer commute - passing through multiple locations, but still based on the 
+    Variant C - distribute over a longer commute - passing through multiple locations in the day, but still based on the 
     third home/work/home division
     """
     lines = []
+    mult = floor(points / 3)
+    start_index = len(geom) - 1  # Start at the end to use different point data
+
+    for r in range(start_index, start_index - (rows * 10), -10):
+        line = []
+        home = [geom[r]] * mult  # Generate the home points
+
+        line.extend(home)
+
+        # The remaining "work" time is completely variable
+        work = []
+        for p in range(r - 1, r - 1 - (points - (2 * mult)), -1):
+            work.append(geom[p])
+
+        # Add work, then home
+        line.extend(work)
+        line.extend(home)
+
+        lines.append(" ".join(line))
+
     return "c", lines
 
 
@@ -85,14 +104,13 @@ def type_d(rows, points, geom):
 
     return "d", lines
 
-
+# The getType method aids selection of type
 def getType(type, rows, points, geom):
     types = {0: type_a, 1: type_b, 2: type_c, 3: type_d}
 
     func = types.get(type)
 
     return func(rows, points, geom)
-
 
 if __name__ == "__main__":
     dir = os.path.dirname(os.path.abspath(__file__))
