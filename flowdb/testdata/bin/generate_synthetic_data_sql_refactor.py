@@ -57,6 +57,9 @@ parser.add_argument(
     "--n-subscribers", type=int, default=4000, help="Number of subscribers to generate."
 )
 parser.add_argument(
+    "--n-days", type=int, default=7, help="Number of days of data to generate."
+)
+parser.add_argument(
     "--n-calls", type=int, default=200_000, help="Number of calls to generate per day."
 )
 
@@ -110,6 +113,7 @@ if __name__ == "__main__":
         num_cells = args.n_cells
         num_tacs = args.n_tacs
         num_subscribers = args.n_subscribers
+        num_days = args.n_days
         num_calls = args.n_calls
 
         engine = sqlalchemy.create_engine(
@@ -120,6 +124,7 @@ if __name__ == "__main__":
             pool_timeout=None,
         )
 
+        deferred_sql = []
         start_time = datetime.datetime.now()
         start_id = 1000000
         dir = os.path.dirname(os.path.abspath(__file__))
@@ -240,9 +245,30 @@ if __name__ == "__main__":
 
                     trans.execute(
                         f"""
-                            INSERT INTO subs (id, msisdn, imei, imsi, tac, variant) VALUES ('{id}', '{msisdn}','{imei}','{imsi}', (SELECT id FROM infrastructure.tacs where brand = '{brands[b]}' ORDER BY RANDOM() LIMIT 1), '{variants[i]}');
+                            INSERT INTO subs (id, msisdn, imei, imsi, tac, variant) VALUES ('{id}', '{msisdn}','{imei}','{imsi}', 
+                            (SELECT id FROM infrastructure.tacs where brand = '{brands[b]}' ORDER BY RANDOM() LIMIT 1), '{variants[i]}');
                         """
                     )
 
                     t -= 1
                     v -= 1
+
+            # 4. Calls SQL
+            # TODO - add in call SQL
+
+        # Remove the intermediary data tables
+        for tbl in ("subs",):
+            deferred_sql.append((f"Dropping {tbl}", f"DROP TABLE {tbl};"))
+
+        def do_exec(args):
+            msg, sql = args
+            with log_duration(msg):
+                with engine.begin() as trans:
+                    res = trans.execute(sql)
+                    try:
+                        logger.info(f"SQL result", job=msg, result=res.fetchall())
+                    except ResourceClosedError:
+                        pass  # Nothing to do here
+
+        with ThreadPoolExecutor(cpu_count()) as tp:
+            list(tp.map(do_exec, deferred_sql))
