@@ -14,7 +14,6 @@ import { getMyRightsForServer, createToken } from "./util/api";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import SubmitButtons from "./SubmitButtons";
-import ServerAggregationUnits from "./ServerAggregationUnits";
 import PermissionDetails from "./PermissionDetails";
 import WarningDialog from "./WarningDialog";
 
@@ -40,11 +39,6 @@ class TokenDetails extends React.Component {
     expiry: new Date(),
     latest_expiry: new Date(),
     name_helper_text: "",
-    isPermissionChecked: true,
-    isAggregationChecked: true,
-    permissionIndeterminate: false,
-    aggregateIndeterminate: false,
-    totalAggregateUnits: 0,
     uiReady: new Promise(() => {}),
     pageError: false,
     errors: { message: "" }
@@ -118,17 +112,11 @@ class TokenDetails extends React.Component {
     this.setState({
       uiReady: getMyRightsForServer(this.props.serverID)
         .then(json => {
-          const totalAggUnits = Object.keys(json.allowed_claims).reduce(
-            (acc, k) => acc + json.allowed_claims[k].spatial_aggregation.length,
-            0
-          );
-
           this.setState({
             rights: JSON.parse(JSON.stringify(json.allowed_claims || {})),
             permitted: json.allowed_claims || {},
             expiry: json.latest_expiry,
-            latest_expiry: json.latest_expiry,
-            totalAggregateUnits: totalAggUnits
+            latest_expiry: json.latest_expiry
           });
         })
         .catch(err => {
