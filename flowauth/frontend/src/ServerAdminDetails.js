@@ -5,18 +5,12 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
-import ServerCapability from "./ServerCapability";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import IconButton from "@material-ui/core/IconButton";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import TextField from "@material-ui/core/TextField";
 import SubmitButtons from "./SubmitButtons";
-import ServerAggregationUnits from "./ServerAggregationUnits";
 import ErrorDialog from "./ErrorDialog";
-import { generate } from "generate-password";
 import {
   getAllAggregationUnits,
   getAllCapabilities,
@@ -27,6 +21,7 @@ import {
   editServerCapabilities,
   editServer
 } from "./util/api";
+import PermissionDetails from "./PermissionDetails";
 
 class ServerAdminDetails extends React.Component {
   state = {
@@ -186,6 +181,7 @@ class ServerAdminDetails extends React.Component {
           this.setState({
             name: name,
             rights: rights,
+            permitted: JSON.parse(JSON.stringify(rights || {})),
             latest_expiry: json.latest_token_expiry,
             max_life: json.longest_token_life,
             edit_mode: true
@@ -211,7 +207,7 @@ class ServerAdminDetails extends React.Component {
     if (this.state.hasError && this.state.error.code === 401)
       throw this.state.error;
 
-    const { rights, latest_expiry, name, secret_key, max_life } = this.state;
+    const { rights, latest_expiry, name, permitted, max_life } = this.state;
     const { classes, onClick } = this.props;
 
     return (
@@ -270,39 +266,12 @@ class ServerAdminDetails extends React.Component {
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="h5" component="h1">
-            API Permissions
-          </Typography>
-        </Grid>
-        <Divider />
-        {Object.keys(rights).map(key => (
-          <ServerCapability
-            permissions={rights[key].permissions}
-            claim={key}
-            claim_id={rights[key].id}
-            checkedHandler={this.handleChange}
-            permitted={() => {
-              return true;
-            }}
+          <PermissionDetails
+            rights={rights}
+            permitted={permitted}
+            updateRights={rights => this.setState({ rights: rights })}
           />
-        ))}
-        <Grid item xs={12}>
-          <Typography variant="h5" component="h1">
-            Aggregation Units
-          </Typography>
         </Grid>
-        <Divider />
-        {Object.keys(rights).map(key => (
-          <ServerAggregationUnits
-            units={rights[key].spatial_aggregation}
-            claim={key}
-            claim_id={rights[key].id}
-            checkedHandler={this.handleAggUnitChange}
-            permitted={() => {
-              return true;
-            }}
-          />
-        ))}
         <ErrorDialog
           open={this.state.pageError}
           message={this.state.errors.message}
