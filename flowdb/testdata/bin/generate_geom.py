@@ -30,71 +30,92 @@ from math import floor
 # Variant types
 def type_a(rows, points, geom):
     """Variant A will be the modal type - simple movement between two cells, thirds per day home/work/home"""
-    
+
     lines = []
     for r in range(0, rows * 2, 2):
-        multiplier = floor(points / 3)
-        
+        mult = floor(points / 3)
+
         line = []
-        line.append(geom[r])    # Start with on point so we get the total divided by a third
-        line.extend([geom[r]] * multiplier)
-        line.extend([geom[r+1]] * multiplier)
-        line.extend([geom[r]] * multiplier)
-        
-        lines.append(' '.join(line))
-        
+        line.append(
+            geom[r]
+        )  # Start with on point so we get the total divided by a third
+
+        home = [geom[r]] * mult  # Generate the home points
+
+        line.extend(home)
+        line.extend([geom[r + 1]] * mult)  # Generate the work points
+        line.extend(home)
+
+        lines.append(" ".join(line))
+
     return "a", lines
- 
+
+
 def type_b(rows, points, geom):
     """Variant B - all points are in the same location, each row will be in a different location"""
     lines = []
-    
+
     for r in range(1000, 1000 + (rows * 10), 10):
-        lines.append(' '.join([geom[r]] * points))
-    
+        lines.append(" ".join([geom[r]] * points))
+
     return "b", lines
- 
-# Distribute over a longer commute - passing through multiple locations., but still home/work balance
+
+
 def type_c(rows, points, geom):
+    """
+    Variant C - distribute over a longer commute - passing through multiple locations, but still based on the 
+    third home/work/home division
+    """
     lines = []
     return "c", lines
 
-# Over the course of a day go through multiple cells at one (e.g. delivery driver)
+
 def type_d(rows, points, geom):
+    """
+    Variant D - move through a lot of points over the course of the day, making each of the points different
+    """
     lines = []
+    start_index = 2000  # Start at this row to mix up the point mix
+    for r in range(0, rows):
+        line = []
+        for p in range(start_index + (r * points), start_index + points + (points * r)):
+            line.append(geom[p])
+
+        lines.append(" ".join(line))
+
     return "d", lines
- 
+
+
 def getType(type, rows, points, geom):
-    types = {
-        0: type_a,
-        1: type_b,
-        2: type_c,
-        3: type_d
-    }
-    
+    types = {0: type_a, 1: type_b, 2: type_c, 3: type_d}
+
     func = types.get(type)
-    
+
     return func(rows, points, geom)
+
 
 if __name__ == "__main__":
     dir = os.path.dirname(os.path.abspath(__file__))
-        
-    geom = [line.strip() for line in open(f"{dir}/../synthetic_data/data/geom.dat", "r")]
-    
+
+    geom = [
+        line.strip() for line in open(f"{dir}/../synthetic_data/data/geom.dat", "r")
+    ]
+
     rows = 50
     points = 100
-    
+
     for v in range(0, 4):
         name, lines = getType(v, rows, points, geom)
         path = f"{dir}/../synthetic_data/data/variations/{name}.dat"
-        
+
         # Remove any existing files
-        if os.path.exists(path): os.remove(path)
-        
+        if os.path.exists(path):
+            os.remove(path)
+
         # Loop through the lines to input into file
-        if (len(lines) > 0):
+        if len(lines) > 0:
             with open(path, "w+") as f:
                 for l in lines:
                     f.write(f"{l}\n")
-            
+
             f.close()
