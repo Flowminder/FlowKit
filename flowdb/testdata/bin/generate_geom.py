@@ -45,9 +45,13 @@ def type_a(rows, points, geom):
         
     return "a", lines
  
-# ALl points in same place 
 def type_b(rows, points, geom):
+    """Variant B - all points are in the same location, each row will be in a different location"""
     lines = []
+    
+    for r in range(1000, 1000 + (rows * 10), 10):
+        lines.append(' '.join([geom[r]] * points))
+    
     return "b", lines
  
 # Distribute over a longer commute - passing through multiple locations., but still home/work balance
