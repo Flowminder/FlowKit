@@ -17,6 +17,7 @@ for a period of time.
 import os
 import argparse
 import datetime
+import time
 from hashlib import md5
 from concurrent.futures.thread import ThreadPoolExecutor
 from contextlib import contextmanager
@@ -61,6 +62,12 @@ parser.add_argument(
 )
 parser.add_argument(
     "--n-calls", type=int, default=200_000, help="Number of calls to generate per day."
+)
+parser.add_argument(
+    "--n-startdate",
+    type=int,
+    default=1451606400,
+    help="Timestamp of the day to start call data.",
 )
 
 # Logging context
@@ -115,6 +122,7 @@ if __name__ == "__main__":
         num_subscribers = args.n_subscribers
         num_days = args.n_days
         num_calls = args.n_calls
+        start_date = datetime.date.fromtimestamp(args.n_startdate)
 
         engine = sqlalchemy.create_engine(
             f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
@@ -125,7 +133,6 @@ if __name__ == "__main__":
         )
 
         deferred_sql = []
-        start_time = datetime.datetime.now()
         start_id = 1000000
         dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -265,21 +272,24 @@ if __name__ == "__main__":
 
             # Loop over the days required
             for date in (
-                start_time + datetime.timedelta(days=i) for i in range(num_days)
+                start_date + datetime.timedelta(days=i) for i in range(num_days)
             ):
                 table = date.strftime("%Y%m%d")
 
                 # 4.1 Calls
                 if num_calls > 0:
+                    # TODO - remove existing days so we get an exact data set
                     call_sql = [
-                        f"CREATE TABLE IF NOT EXISTS events.calls_{table} () INHERITS (events.calls);"
+                        f"CREATE TABLE IF NOT EXISTS events.calls_{table} () INHERITS (events.calls);",
+                        f"TRUNCATE events.calls_{table};",
                     ]
 
                     for x in range(0, num_calls):
+                        hash = generate_hash(time.mktime(date.timetuple()) + x)
                         call_sql.append(
                             f""" 
-                            // TODO - add query
-                        """
+                                INSERT INTO events.calls_{table} (id, datetime, msisdn) VALUES ('{hash}', ('{table}'::TIMESTAMPTZ + random() * interval '1 day'), '{hash}')
+                            """
                         )
 
                     # Add the indexes for this day
