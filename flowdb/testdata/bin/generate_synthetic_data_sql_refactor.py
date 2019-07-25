@@ -286,8 +286,9 @@ if __name__ == "__main__":
                     ]
 
                     # Create the SQL for outgoing/incoming SQL
-                    offset = 0
+                    offset = 0  # Offset to cycle through subscribers
                     inc = 1
+                    vline = cycle(range(0, 50))
                     for x in range(0, num_calls):
                         duration = floor(random.random() * 2600)
                         calleehash = generate_hash(time.mktime(date.timetuple()) + x)
@@ -302,6 +303,10 @@ if __name__ == "__main__":
                         callee = trans.execute(
                             f"SELECT * FROM subs WHERE id != {caller[0]} ORDER BY RANDOM() LIMIT 1 "
                         ).first()
+
+                        # The variant will be selected
+                        callervariant = variants[caller[5]][next(vline)]
+                        calleevariant = variants[callee[5]][next(vline)]
 
                         # Generate the outgoing call
                         call_sql.append(
