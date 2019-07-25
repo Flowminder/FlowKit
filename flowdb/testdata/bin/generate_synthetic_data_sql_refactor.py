@@ -210,7 +210,7 @@ if __name__ == "__main__":
                 trans.execute(
                     f"""
                         CREATE TABLE IF NOT EXISTS subs (
-                            id TEXT,
+                            id SERIAL PRIMARY KEY,
                             msisdn TEXT,
                             imei TEXT,
                             imsi TEXT,
@@ -237,10 +237,9 @@ if __name__ == "__main__":
                 v = next(variantWeight) * num_subscribers
 
                 for x in range(start_id, num_subscribers + start_id):
-                    id = generate_hash(x + 1000)
-                    msisdn = generate_hash(x + 2000)
-                    imei = generate_hash(x + 3000)
-                    imsi = generate_hash(x + 4000)
+                    msisdn = generate_hash(x + 1000)
+                    imei = generate_hash(x + 2000)
+                    imsi = generate_hash(x + 3000)
 
                     if t == 0:
                         t = next(tacWeight) * num_subscribers
@@ -252,8 +251,9 @@ if __name__ == "__main__":
 
                     trans.execute(
                         f"""
-                            INSERT INTO subs (id, msisdn, imei, imsi, tac, variant) VALUES ('{id}', '{msisdn}','{imei}','{imsi}', 
-                            (SELECT id FROM infrastructure.tacs where brand = '{brands[b]}' ORDER BY RANDOM() LIMIT 1), '{variants[i]}');
+                            INSERT INTO subs (msisdn, imei, imsi, tac, variant) VALUES ('{msisdn}','{imei}','{imsi}', 
+                            (SELECT id FROM infrastructure.tacs where brand = '{brands[b]}' ORDER BY RANDOM() LIMIT 1), 
+                            '{variants[i]}');
                         """
                     )
 
@@ -288,7 +288,9 @@ if __name__ == "__main__":
                         hash = generate_hash(time.mktime(date.timetuple()) + x)
                         call_sql.append(
                             f""" 
-                                INSERT INTO events.calls_{table} (id, datetime, msisdn) VALUES ('{hash}', ('{table}'::TIMESTAMPTZ + random() * interval '1 day'), '{hash}')
+                                INSERT INTO events.calls_{table} (id, datetime, outgoing, msisdn) 
+                                VALUES 
+                                ('{hash}', true, ('{table}'::TIMESTAMPTZ + random() * interval '1 day'), '{hash}')
                             """
                         )
 
