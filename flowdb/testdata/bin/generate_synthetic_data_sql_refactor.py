@@ -25,6 +25,7 @@ from multiprocessing import cpu_count
 from itertools import cycle
 from math import floor
 import numpy as np
+import random
 
 import sqlalchemy as sqlalchemy
 from sqlalchemy.exc import ResourceClosedError
@@ -284,15 +285,56 @@ if __name__ == "__main__":
                         f"TRUNCATE events.calls_{table};",
                     ]
 
+                    # Create the SQL for outgoing/incoming SQL
+                    offset = 0
+                    inc = 1
                     for x in range(0, num_calls):
-                        hash = generate_hash(time.mktime(date.timetuple()) + x)
+                        duration = floor(random.random() * 2600)
+                        calleehash = generate_hash(time.mktime(date.timetuple()) + x)
+                        callerhash = generate_hash(
+                            time.mktime(date.timetuple()) + x + inc
+                        )
+
+                        # Get caller/callee rows
+                        caller = trans.execute(
+                            f"SELECT *, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS date FROM subs LIMIT 1 OFFSET {offset}"
+                        ).first()
+                        callee = trans.execute(
+                            f"SELECT * FROM subs WHERE id != {caller[0]} ORDER BY RANDOM() LIMIT 1 "
+                        ).first()
+
+                        # Generate the outgoing call
                         call_sql.append(
                             f""" 
-                                INSERT INTO events.calls_{table} (id, datetime, outgoing, msisdn) 
-                                VALUES 
-                                ('{hash}', true, ('{table}'::TIMESTAMPTZ + random() * interval '1 day'), '{hash}')
+                                INSERT INTO events.calls_{table} (
+                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration
+                                ) VALUES 
+                                (
+                                    '{calleehash}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
+                                    '{caller[3]}', '{caller[4]}', {duration}
+                                )
                             """
                         )
+
+                        # Generate the incomming call
+                        call_sql.append(
+                            f""" 
+                                INSERT INTO events.calls_{table} (
+                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration
+                                ) VALUES 
+                                (
+                                    '{hash}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
+                                    '{callee[3]}', '{callee[4]}', {duration}
+                                )
+                            """
+                        )
+
+                        # Handle the offset/cycling through the subscribers
+                        offset += 1
+                        inc += 1
+
+                        if offset >= num_subscribers:
+                            offset = 0
 
                     # Add the indexes for this day
                     call_sql.append(f"CREATE INDEX ON events.calls_{table} (msisdn);")
