@@ -285,7 +285,7 @@ if __name__ == "__main__":
             variants = {}
             for t in ["a", "b", "c", "d"]:
                 variants[t] = [
-                    line.strip()
+                    line.strip().split(" ", 100)
                     for line in open(
                         f"{dir}/../synthetic_data/data/variations/{t}.dat", "r"
                     )
@@ -299,7 +299,6 @@ if __name__ == "__main__":
 
                 # 4.1 Calls
                 if num_calls > 0:
-                    # TODO - remove existing days so we get an exact data set
                     call_sql = [
                         f"CREATE TABLE IF NOT EXISTS events.calls_{table} () INHERITS (events.calls);",
                         f"TRUNCATE events.calls_{table};",
@@ -309,10 +308,10 @@ if __name__ == "__main__":
                     dist = generateNormalDistribution(
                         num_subscribers, num_calls / num_subscribers, 2
                     )
-                    vline = cycle(range(0, 50))
-
+                    
                     calls = 1
                     offset = 0
+                    vline = cycle(range(0, 50))
                     for d in dist:
                         call_count = int(round(d))
                         if call_count <= 0:
@@ -322,15 +321,17 @@ if __name__ == "__main__":
                         caller = trans.execute(
                             f"SELECT *, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS date FROM subs LIMIT 1 OFFSET {offset}"
                         ).first()
-
-                        callervariant = variants[caller[5]][next(vline)].split(" ", 100)
+                        # Select the caller variant
+                        callervariant = variants[caller[5]][next(vline)]
 
                         for c in range(0, call_count):
                             # Get callee rows - TODO: better appraoch to selection
                             callee = trans.execute(
                                 f"SELECT * FROM subs WHERE id != {caller[0]} ORDER BY RANDOM() LIMIT 1 "
                             ).first()
-
+                            # Select the calleevariant
+                            calleevariant = variants[callee[5]][next(vline)]
+                            
                             # Set a duration and hashes
                             duration = floor(random.random() * 2600)
                             outgoing = generate_hash(
@@ -350,14 +351,11 @@ if __name__ == "__main__":
                                         '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
                                         '{caller[3]}', '{caller[4]}', {duration}, 
                                         (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant[int(c % d)]}'::geometry) LIMIT 1)
-                                    )
+                                    );
                                 """
                             )
 
-                            # The callee variant will be selected - TODO: make this more efficient without the split above
-                            calleevariant = variants[callee[5]][next(vline)].split(
-                                " ", 100
-                            )
+                            
 
                             # Generate the incomming call
                             call_sql.append(
@@ -369,7 +367,7 @@ if __name__ == "__main__":
                                         '{incomming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
                                         '{callee[3]}', '{callee[4]}', {duration},
                                         (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant[int(c % d)]}'::geometry) LIMIT 1)
-                                    )
+                                    );
                                 """
                             )
 
