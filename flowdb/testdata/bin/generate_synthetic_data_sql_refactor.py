@@ -127,8 +127,9 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
 
     return s
 
+
 # Generate distributed types
-def generatedDistributedTypes(type, num_type, date):
+def generatedDistributedTypes(type, num_type, date, table, query):
     sql = []
 
     # Get a distribution
@@ -162,30 +163,21 @@ def generatedDistributedTypes(type, num_type, date):
             # Set a duration and hashes
             duration = floor(random.random() * 2600)
             outgoing = generate_hash(time.mktime(date.timetuple()) + type_count)
-            incomming = generate_hash(
+            incoming = generate_hash(
                 time.mktime(date.timetuple()) + count + c + type_count
             )
 
             # Generate the outgoing/incoming of type
             sql.append(
-                f""" 
-                    INSERT INTO events.{type}_{table} (
-                        id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
-                    ) VALUES 
-                    (
-                        '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
-                        '{caller[3]}', '{caller[4]}', 
-                        (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant[int(c % d)]}'::geometry) LIMIT 1)
-                    );
-                    INSERT INTO events.{type}_{table} (
-                        id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
-                    ) VALUES 
-                    (
-                        '{incomming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
-                        '{callee[3]}', '{callee[4]}', 
-                        (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant[int(c % d)]}'::geometry) LIMIT 1)
-                    );
-                """
+                query.format(
+                    table=table,
+                    caller=caller,
+                    callee=callee,
+                    outgoing=outgoing,
+                    incoming=incoming,
+                    callervariant=callervariant[int(c % d)],
+                    calleevariant=calleevariant[int(c % d)],
+                )
             )
 
             type_count += 1
@@ -485,7 +477,32 @@ if __name__ == "__main__":
                     ]
 
                     # Generate the distributed sms for this day
-                    sms_sql.extend(generatedDistributedTypes("sms", num_sms, date))
+                    sms_sql.extend(
+                        generatedDistributedTypes(
+                            "sms",
+                            num_sms,
+                            date,
+                            table,
+                            """
+                        INSERT INTO events.sms_{table} (
+                            id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
+                        ) VALUES 
+                        (
+                            '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
+                            '{caller[3]}', '{caller[4]}',
+                            (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
+                        );
+                        INSERT INTO events.sms_{table} (
+                            id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
+                        ) VALUES 
+                        (
+                            '{incoming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
+                            '{callee[3]}', '{callee[4]}',
+                            (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
+                        );
+                    """,
+                        )
+                    )
 
                     # Add the indexes for this day
                     sms_sql.extend(addEventSQL("sms", table))
