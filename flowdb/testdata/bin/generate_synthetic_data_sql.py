@@ -377,9 +377,7 @@ if __name__ == "__main__":
                 ON caller_homes.home_date='{table}'::date and caller_homes.id=interactions.caller_id
                 LEFT JOIN homes AS callee_homes
                 ON callee_homes.home_date='{table}'::date and callee_homes.id=interactions.callee_id;
-                
-                
-                # Creates the union between the calls.
+
                 CREATE TABLE events.calls_{table} AS 
                 SELECT id, true AS outgoing, start_time AS datetime, duration, NULL::TEXT AS network,
                 caller_msisdn AS msisdn, callee_msisdn AS msisdn_counterpart, caller_cell AS location_id,
@@ -392,7 +390,6 @@ if __name__ == "__main__":
                 callee_imsi AS imsi, callee_imei AS imei, callee_tac AS tac, NULL::NUMERIC AS operator_code,
                 NULL::NUMERIC AS country_code
                 FROM call_evts_{table};
-                
                 ALTER TABLE events.calls_{table} ADD CONSTRAINT calls_{table}_dt CHECK ( datetime >= '{table}'::TIMESTAMPTZ AND datetime < '{end_date}'::TIMESTAMPTZ);
                 ALTER TABLE events.calls_{table} ALTER msisdn SET NOT NULL;
                 ALTER TABLE events.calls_{table} ALTER datetime SET NOT NULL;
