@@ -167,13 +167,14 @@ def generatedDistributedTypes(type, num_type, date, table, query):
                 time.mktime(date.timetuple()) + count + c + type_count
             )
 
-            # Generate the outgoing/incoming of type
+            # Generate the outgoing/incoming of type by making the replacements in the query passed in
             sql.append(
                 query.format(
                     table=table,
                     caller=caller,
                     callee=callee,
                     outgoing=outgoing,
+                    duration=duration,
                     incoming=incoming,
                     callervariant=callervariant[int(c % d)],
                     calleevariant=calleevariant[int(c % d)],
@@ -389,79 +390,33 @@ if __name__ == "__main__":
                         f"TRUNCATE events.calls_{table};",
                     ]
 
-                    # Get a distribution for this day
-                    dist = generateNormalDistribution(
-                        num_subscribers, num_calls / num_subscribers, 2
+                    # Generate the distributed calls for this day
+                    call_sql.extend(
+                        generatedDistributedTypes(
+                            "sms",
+                            num_sms,
+                            date,
+                            table,
+                            """
+                        INSERT INTO events.calls_{table} (
+                            id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
+                        ) VALUES 
+                        (
+                            '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
+                            '{caller[3]}', '{caller[4]}', {duration}, 
+                            (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
+                        );
+                        INSERT INTO events.calls_{table} (
+                            id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
+                        ) VALUES 
+                        (
+                            '{incoming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
+                            '{callee[3]}', '{callee[4]}', {duration},
+                            (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
+                        );
+                    """,
+                        )
                     )
-
-                    calls = 1
-                    offset = 0
-                    vline = cycle(range(0, 50))
-
-                    # Create the SQL for outgoing/incoming SQL according to our distribution
-                    for d in dist:
-                        call_count = int(round(d))
-                        if call_count <= 0:
-                            continue
-
-                        # Get the caller, and variant
-                        caller = trans.execute(
-                            f"SELECT *, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS date FROM subs LIMIT 1 OFFSET {offset}"
-                        ).first()
-                        # Select the caller variant
-                        callervariant = variants[caller[5]][next(vline)]
-
-                        for c in range(0, call_count):
-                            # Get callee rows - TODO: better appraoch to selection
-                            callee = trans.execute(
-                                f"SELECT * FROM subs WHERE id != {caller[0]} ORDER BY RANDOM() LIMIT 1 "
-                            ).first()
-                            # Select the calleevariant
-                            calleevariant = variants[callee[5]][next(vline)]
-
-                            # Set a duration and hashes
-                            duration = floor(random.random() * 2600)
-                            outgoing = generate_hash(
-                                time.mktime(date.timetuple()) + calls
-                            )
-                            incomming = generate_hash(
-                                time.mktime(date.timetuple()) + call_count + c + calls
-                            )
-
-                            # Generate the outgoing/incoming calls
-                            call_sql.append(
-                                f""" 
-                                    INSERT INTO events.calls_{table} (
-                                        id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
-                                    ) VALUES 
-                                    (
-                                        '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
-                                        '{caller[3]}', '{caller[4]}', {duration}, 
-                                        (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant[int(c % d)]}'::geometry) LIMIT 1)
-                                    );
-                                    INSERT INTO events.calls_{table} (
-                                        id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
-                                    ) VALUES 
-                                    (
-                                        '{incomming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
-                                        '{callee[3]}', '{callee[4]}', {duration},
-                                        (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant[int(c % d)]}'::geometry) LIMIT 1)
-                                    );
-                                """
-                            )
-
-                            calls += 1
-                            offset += 1
-
-                            if calls >= num_calls:
-                                break
-                            if offset >= num_subscribers:
-                                offset = 0
-
-                        else:
-                            continue
-
-                        break
 
                     # Add the indexes for this day
                     call_sql.extend(addEventSQL("calls", table))
