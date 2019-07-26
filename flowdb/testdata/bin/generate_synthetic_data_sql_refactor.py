@@ -151,6 +151,14 @@ if __name__ == "__main__":
 
         # Main generation process
         with engine.begin() as trans:
+            # Setup stage: Tidy up old event tables on previous runs
+            with log_duration(job=f"Tidy up event tables"):
+                tables = trans.execute(
+                    "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ '^calls_|sms_|mds_'"
+                ).fetchall()
+                
+                for t in tables:
+                    trans.execute(f"DROP TABLE events.{t[1]};")
 
             # The following generates the infrastructure schema data
             # 1. Sites and cells
