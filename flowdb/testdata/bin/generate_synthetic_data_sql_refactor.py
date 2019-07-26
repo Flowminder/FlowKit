@@ -66,6 +66,9 @@ parser.add_argument(
     "--n-calls", type=int, default=200_000, help="Number of calls to generate per day."
 )
 parser.add_argument(
+    "--n-sms", type=int, default=200_000, help="Number of sms to generate per day."
+)
+parser.add_argument(
     "--n-startdate",
     type=int,
     default=1451606400,
@@ -125,6 +128,19 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
     return s
 
 
+# Add post event SQL
+def addEventSQL(type, table):
+    return [
+        f"CREATE INDEX ON events.{type}_{table} (msisdn);",
+        f"CREATE INDEX ON events.{type}_{table} (msisdn_counterpart);",
+        f"CREATE INDEX ON events.{type}_{table} (tac);",
+        f"CREATE INDEX ON events.{type}_{table} (location_id);",
+        f"CREATE INDEX ON events.{type}_{table} (datetime);",
+        f"CLUSTER events.{type}_{table} USING {type}_{table}_msisdn_idx;",
+        f"ANALYZE events.{type}_{table};",
+    ]
+
+
 if __name__ == "__main__":
     args = parser.parse_args()
     with log_duration("Generating synthetic data..", **vars(args)):
@@ -135,6 +151,7 @@ if __name__ == "__main__":
         num_subscribers = args.n_subscribers
         num_days = args.n_days
         num_calls = args.n_calls
+        num_sms = args.n_sms
         start_date = datetime.date.fromtimestamp(args.n_startdate)
 
         engine = sqlalchemy.create_engine(
@@ -304,7 +321,7 @@ if __name__ == "__main__":
                         f"TRUNCATE events.calls_{table};",
                     ]
 
-                    # Create the SQL for outgoing/incoming SQL according to our distribution
+                    # Get a distribution for this day
                     dist = generateNormalDistribution(
                         num_subscribers, num_calls / num_subscribers, 2
                     )
@@ -312,6 +329,8 @@ if __name__ == "__main__":
                     calls = 1
                     offset = 0
                     vline = cycle(range(0, 50))
+
+                    # Create the SQL for outgoing/incoming SQL according to our distribution
                     for d in dist:
                         call_count = int(round(d))
                         if call_count <= 0:
@@ -377,21 +396,27 @@ if __name__ == "__main__":
                         break
 
                     # Add the indexes for this day
-                    call_sql.append(f"CREATE INDEX ON events.calls_{table} (msisdn);")
-                    call_sql.append(
-                        f"CREATE INDEX ON events.calls_{table} (msisdn_counterpart);"
-                    )
-                    call_sql.append(f"CREATE INDEX ON events.calls_{table} (tac);")
-                    call_sql.append(
-                        f"CREATE INDEX ON events.calls_{table} (location_id);"
-                    )
-                    call_sql.append(f"CREATE INDEX ON events.calls_{table} (datetime);")
-                    call_sql.append(
-                        f"CLUSTER events.calls_{table} USING calls_{table}_msisdn_idx;"
-                    )
-                    call_sql.append(f"ANALYZE events.calls_{table};")
+                    call_sql.extend(addEventSQL("calls", table))
                     deferred_sql.append(
                         (f"Generating {num_calls} call events for {date}", call_sql)
+                    )
+
+                # 4.2 SMS
+                if num_sms > 0:
+                    sms_sql = [
+                        f"CREATE TABLE IF NOT EXISTS events.sms_{table} () INHERITS (events.sms);",
+                        f"TRUNCATE events.sms_{table};",
+                    ]
+
+                    # Get a distribution for this day
+                    dist = generateNormalDistribution(
+                        num_sms, num_sms / num_subscribers, 2
+                    )
+
+                    # Add the indexes for this day
+                    sms_sql.extend(addEventSQL("sms", table))
+                    deferred_sql.append(
+                        (f"Generating {num_sms} sms events for {date}", sms_sql)
                     )
 
             # Add all the ANALYZE calls for the events tables.
