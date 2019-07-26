@@ -156,7 +156,7 @@ if __name__ == "__main__":
                 tables = trans.execute(
                     "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ '^calls_|sms_|mds_'"
                 ).fetchall()
-                
+
                 for t in tables:
                     trans.execute(f"DROP TABLE events.{t[1]};")
 
@@ -308,7 +308,7 @@ if __name__ == "__main__":
                     dist = generateNormalDistribution(
                         num_subscribers, num_calls / num_subscribers, 2
                     )
-                    
+
                     calls = 1
                     offset = 0
                     vline = cycle(range(0, 50))
@@ -331,7 +331,7 @@ if __name__ == "__main__":
                             ).first()
                             # Select the calleevariant
                             calleevariant = variants[callee[5]][next(vline)]
-                            
+
                             # Set a duration and hashes
                             duration = floor(random.random() * 2600)
                             outgoing = generate_hash(
@@ -341,7 +341,7 @@ if __name__ == "__main__":
                                 time.mktime(date.timetuple()) + call_count + c + calls
                             )
 
-                            # Generate the outgoing call
+                            # Generate the outgoing/incoming calls
                             call_sql.append(
                                 f""" 
                                     INSERT INTO events.calls_{table} (
@@ -352,14 +352,6 @@ if __name__ == "__main__":
                                         '{caller[3]}', '{caller[4]}', {duration}, 
                                         (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant[int(c % d)]}'::geometry) LIMIT 1)
                                     );
-                                """
-                            )
-
-                            
-
-                            # Generate the incomming call
-                            call_sql.append(
-                                f""" 
                                     INSERT INTO events.calls_{table} (
                                         id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
                                     ) VALUES 
