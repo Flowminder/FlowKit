@@ -117,6 +117,9 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
     test that the values hit the normal distribution requirements
     """
 
+    # Ensure our distribution is fixed
+    np.random.seed(42)
+
     s = np.random.normal(mu, sigma, size)
 
     # The following will generate a plot (with smoothing) if needed to
@@ -132,7 +135,7 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
 
 
 # Generate distributed types
-def generatedDistributedTypes(type, num_type, date, table, query):
+def generatedDistributedTypes(trans, num_type, date, table, query):
     sql = []
 
     # Get a distribution
@@ -148,7 +151,7 @@ def generatedDistributedTypes(type, num_type, date, table, query):
         if count <= 0:
             continue
 
-        # Get the caller, and variant
+        # Get the caller, and variant - TODO - alter this time stamp - get it from the variance count to set the time of day
         caller = trans.execute(
             f"SELECT *, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS date FROM subs LIMIT 1 OFFSET {offset}"
         ).first()
@@ -156,18 +159,19 @@ def generatedDistributedTypes(type, num_type, date, table, query):
         callervariant = variants[caller[5]][next(vline)]
 
         for c in range(0, count):
-            # Get callee rows - TODO: better appraoch to selection
+            # Get callee rows - TODO: better appraoch to selection # Take the offset - have a multiplier to will increase this.
             callee = trans.execute(
                 f"SELECT * FROM subs WHERE id != {caller[0]} ORDER BY RANDOM() LIMIT 1 "
             ).first()
-            # Select the calleevariant
+            # Select the calleevariant - 100 divided by the number
             calleevariant = variants[callee[5]][next(vline)]
 
-            # Set a duration and hashes
-            duration = floor(random.random() * 2600)
-            upload = round(random.random() * 100000)
-            download = round(random.random() * 100000)
+            # Set a duration, upload, download and hashes - TODO: decide if these should be configurable
+            duration = floor(0.5 * 2600)
+            upload = round(0.5 * 100000)
+            download = round(0.5 * 100000)
             total = upload + download
+
             outgoing = generate_hash(time.mktime(date.timetuple()) + type_count)
             incoming = generate_hash(
                 time.mktime(date.timetuple()) + count + c + type_count
@@ -193,6 +197,13 @@ def generatedDistributedTypes(type, num_type, date, table, query):
             type_count += 1
             offset += 1
 
+            # Process in groups of 10 - consider pushing to a ThreadPoolExecutor?
+            if (len(sql) % 10) == 0:
+                for s in sql:
+                    trans.execute(s)
+
+                sql.clear()
+
             if type_count >= num_type:
                 break
             if offset >= num_subscribers:
@@ -202,8 +213,6 @@ def generatedDistributedTypes(type, num_type, date, table, query):
             continue
 
         break
-
-    return sql
 
 
 # Add post event SQL
@@ -401,101 +410,99 @@ if __name__ == "__main__":
             for date in (
                 start_date + datetime.timedelta(days=i) for i in range(num_days)
             ):
+                # The date for the extended table names
                 table = date.strftime("%Y%m%d")
 
                 # 4.1 Calls
                 if num_calls > 0:
-                    call_sql = [
-                        f"CREATE TABLE IF NOT EXISTS events.calls_{table} () INHERITS (events.calls);",
-                        f"TRUNCATE events.calls_{table};",
-                    ]
+                    with log_duration(f"Generating {num_calls} call events for {date}"):
+                        # Create the table
+                        trans.execute(
+                            f"CREATE TABLE events.calls_{table} () INHERITS (events.calls);"
+                        )
 
-                    # Generate the distributed calls for this day
-                    call_sql.extend(
+                        # Generate the distributed calls for this day
                         generatedDistributedTypes(
-                            "sms",
+                            trans,
                             num_calls,
                             date,
                             table,
                             """
-                        INSERT INTO events.calls_{table} (
-                            id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
-                        ) VALUES 
-                        (
-                            '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
-                            '{caller[3]}', '{caller[4]}', {duration}, 
-                            (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
-                        );
-                        INSERT INTO events.calls_{table} (
-                            id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
-                        ) VALUES 
-                        (
-                            '{incoming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
-                            '{callee[3]}', '{callee[4]}', {duration},
-                            (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
-                        );
-                    """,
+                                INSERT INTO events.calls_{table} (
+                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
+                                ) VALUES 
+                                (
+                                    '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
+                                    '{caller[3]}', '{caller[4]}', {duration}, 
+                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
+                                );
+                                INSERT INTO events.calls_{table} (
+                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
+                                ) VALUES 
+                                (
+                                    '{incoming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
+                                    '{callee[3]}', '{callee[4]}', {duration},
+                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
+                                );
+                            """,
                         )
-                    )
 
                     # Add the indexes for this day
-                    call_sql.extend(addEventSQL("calls", table))
                     deferred_sql.append(
-                        (f"Generating {num_calls} call events for {date}", call_sql)
+                        (
+                            "Adding table analyzing for calls",
+                            addEventSQL("calls", table),
+                        )
                     )
 
                 # 4.2 SMS
                 if num_sms > 0:
-                    sms_sql = [
-                        f"CREATE TABLE IF NOT EXISTS events.sms_{table} () INHERITS (events.sms);",
-                        f"TRUNCATE events.sms_{table};",
-                    ]
+                    with log_duration(f"Generating {num_sms} sms events for {date}"):
+                        trans.execute(
+                            f"CREATE TABLE IF NOT EXISTS events.sms_{table} () INHERITS (events.sms);"
+                        )
 
-                    # Generate the distributed sms for this day
-                    sms_sql.extend(
+                        # Generate the distributed sms for this day
                         generatedDistributedTypes(
-                            "sms",
+                            trans,
                             num_sms,
                             date,
                             table,
                             """
-                        INSERT INTO events.sms_{table} (
-                            id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
-                        ) VALUES 
-                        (
-                            '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
-                            '{caller[3]}', '{caller[4]}',
-                            (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
-                        );
-                        INSERT INTO events.sms_{table} (
-                            id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
-                        ) VALUES 
-                        (
-                            '{incoming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
-                            '{callee[3]}', '{callee[4]}',
-                            (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
-                        );
-                    """,
+                                INSERT INTO events.sms_{table} (
+                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
+                                ) VALUES 
+                                (
+                                    '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
+                                    '{caller[3]}', '{caller[4]}',
+                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
+                                );
+                                INSERT INTO events.sms_{table} (
+                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
+                                ) VALUES 
+                                (
+                                    '{incoming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
+                                    '{callee[3]}', '{callee[4]}',
+                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
+                                );
+                            """,
                         )
-                    )
 
                     # Add the indexes for this day
-                    sms_sql.extend(addEventSQL("sms", table))
                     deferred_sql.append(
-                        (f"Generating {num_sms} sms events for {date}", sms_sql)
+                        ("Adding table analyzing for sms", addEventSQL("sms", table))
                     )
 
                 # 4.3 MDS
                 if num_mds > 0:
-                    mds_sql = [
-                        f"CREATE TABLE IF NOT EXISTS events.mds_{table} () INHERITS (events.mds);",
-                        f"TRUNCATE events.mds_{table};",
-                    ]
+                    with log_duration(f"Generating {num_mds} mds events for {date}"):
+                        trans.execute(
+                            f"CREATE TABLE IF NOT EXISTS events.mds_{table} () INHERITS (events.mds);"
+                        )
 
-                    # Generate the distributed mds for this day
-                    mds_sql.extend(
+                        # Generate the distributed mds for this day
                         generatedDistributedTypes(
-                            "mds",
+                            trans,
                             num_mds,
                             date,
                             table,
@@ -510,25 +517,19 @@ if __name__ == "__main__":
                                 );
                             """,
                         )
-                    )
 
                     # Add the indexes for this day
-                    mds_sql.extend(addEventSQL("mds", table))
                     deferred_sql.append(
-                        (f"Generating {num_mds} mds events for {date}", mds_sql)
+                        ("Adding table analyzing for mds", addEventSQL("mds", table))
                     )
 
-            # Add all the ANALYZE calls for the events tables.
-            deferred_sql.append(
-                (
-                    "Analyzing the events tables",
-                    [
-                        "ANALYZE events.calls;",
-                        "ANALYZE events.sms;",
-                        "ANALYZE events.mds;",
-                    ],
-                )
+        # Add all the ANALYZE calls for the events tables.
+        deferred_sql.append(
+            (
+                "Analyzing the events tables",
+                ["ANALYZE events.calls;", "ANALYZE events.sms;", "ANALYZE events.mds;"],
             )
+        )
 
         # Remove the intermediary data tables
         for tbl in ("subs",):
