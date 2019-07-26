@@ -69,6 +69,9 @@ parser.add_argument(
     "--n-sms", type=int, default=200_000, help="Number of sms to generate per day."
 )
 parser.add_argument(
+    "--n-mds", type=int, default=200_000, help="Number of mds to generate per day."
+)
+parser.add_argument(
     "--n-startdate",
     type=int,
     default=1451606400,
@@ -133,7 +136,7 @@ def generatedDistributedTypes(type, num_type, date, table, query):
     sql = []
 
     # Get a distribution
-    dist = generateNormalDistribution(num_subscribers, num_type / num_subscribers, 2)
+    dist = generateNormalDistribution(num_subscribers, num_type / num_subscribers, 12)
 
     type_count = 1
     offset = 0
@@ -162,6 +165,9 @@ def generatedDistributedTypes(type, num_type, date, table, query):
 
             # Set a duration and hashes
             duration = floor(random.random() * 2600)
+            upload = round(random.random() * 100000)
+            download = round(random.random() * 100000)
+            total = upload + download
             outgoing = generate_hash(time.mktime(date.timetuple()) + type_count)
             incoming = generate_hash(
                 time.mktime(date.timetuple()) + count + c + type_count
@@ -173,8 +179,11 @@ def generatedDistributedTypes(type, num_type, date, table, query):
                     table=table,
                     caller=caller,
                     callee=callee,
-                    outgoing=outgoing,
                     duration=duration,
+                    upload=upload,
+                    download=download,
+                    total=total,
+                    outgoing=outgoing,
                     incoming=incoming,
                     callervariant=callervariant[int(c % d)],
                     calleevariant=calleevariant[int(c % d)],
@@ -199,15 +208,25 @@ def generatedDistributedTypes(type, num_type, date, table, query):
 
 # Add post event SQL
 def addEventSQL(type, table):
-    return [
+    sql = [
         f"CREATE INDEX ON events.{type}_{table} (msisdn);",
-        f"CREATE INDEX ON events.{type}_{table} (msisdn_counterpart);",
         f"CREATE INDEX ON events.{type}_{table} (tac);",
         f"CREATE INDEX ON events.{type}_{table} (location_id);",
         f"CREATE INDEX ON events.{type}_{table} (datetime);",
-        f"CLUSTER events.{type}_{table} USING {type}_{table}_msisdn_idx;",
-        f"ANALYZE events.{type}_{table};",
     ]
+
+    # Only add the msisdn_counterpart index for calls and sms
+    if type != "mds":
+        sql.append(f"CREATE INDEX ON events.{type}_{table} (msisdn_counterpart);")
+
+    sql.extend(
+        [
+            f"CLUSTER events.{type}_{table} USING {type}_{table}_msisdn_idx;",
+            f"ANALYZE events.{type}_{table};",
+        ]
+    )
+
+    return sql
 
 
 if __name__ == "__main__":
@@ -221,6 +240,7 @@ if __name__ == "__main__":
         num_days = args.n_days
         num_calls = args.n_calls
         num_sms = args.n_sms
+        num_mds = args.n_mds
         start_date = datetime.date.fromtimestamp(args.n_startdate)
 
         engine = sqlalchemy.create_engine(
@@ -394,7 +414,7 @@ if __name__ == "__main__":
                     call_sql.extend(
                         generatedDistributedTypes(
                             "sms",
-                            num_sms,
+                            num_calls,
                             date,
                             table,
                             """
@@ -463,6 +483,39 @@ if __name__ == "__main__":
                     sms_sql.extend(addEventSQL("sms", table))
                     deferred_sql.append(
                         (f"Generating {num_sms} sms events for {date}", sms_sql)
+                    )
+
+                # 4.3 MDS
+                if num_mds > 0:
+                    mds_sql = [
+                        f"CREATE TABLE IF NOT EXISTS events.mds_{table} () INHERITS (events.mds);",
+                        f"TRUNCATE events.mds_{table};",
+                    ]
+
+                    # Generate the distributed mds for this day
+                    mds_sql.extend(
+                        generatedDistributedTypes(
+                            "mds",
+                            num_mds,
+                            date,
+                            table,
+                            """
+                                INSERT INTO events.mds_{table} (
+                                    id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id
+                                ) VALUES 
+                                (
+                                    '{outgoing}', '{caller[6]}', {duration}, {total}, {upload}, {download}, '{caller[1]}', '{caller[2]}',
+                                    '{caller[3]}', '{caller[4]}',
+                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
+                                );
+                            """,
+                        )
+                    )
+
+                    # Add the indexes for this day
+                    mds_sql.extend(addEventSQL("mds", table))
+                    deferred_sql.append(
+                        (f"Generating {num_mds} mds events for {date}", mds_sql)
                     )
 
             # Add all the ANALYZE calls for the events tables.
