@@ -151,10 +151,8 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
         if count <= 0:
             continue
 
-        # Get the caller, and variant - TODO - alter this time stamp - get it from the variance count to set the time of day
-        caller = trans.execute(
-            f"SELECT *, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS date FROM subs LIMIT 1 OFFSET {offset}"
-        ).first()
+        # Get the caller
+        caller = trans.execute(f"SELECT * FROM subs LIMIT 1 OFFSET {offset}").first()
 
         # Select the caller variant & point
         points = cycle(range(1, 100, round(100 / count)))
@@ -173,7 +171,12 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
             upload = round(0.5 * 100000)
             download = round(0.5 * 100000)
             total = upload + download
+
+            # Select the next "point", and use this to create a reference for the time of day
             point = next(points)
+            timeofday = datetime.datetime.combine(
+                date, datetime.time(0, 0)
+            ) + datetime.timedelta(minutes=(14.4 * point))
 
             outgoing = generate_hash(time.mktime(date.timetuple()) + type_count)
             incoming = generate_hash(
@@ -192,6 +195,7 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
                     total=total,
                     outgoing=outgoing,
                     incoming=incoming,
+                    datetime=timeofday,
                     callervariant=callervariant[point],
                     calleevariant=calleevariant[point],
                 )
@@ -435,7 +439,7 @@ if __name__ == "__main__":
                                     id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
                                 ) VALUES 
                                 (
-                                    '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
+                                    '{outgoing}', '{datetime}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
                                     '{caller[3]}', '{caller[4]}', {duration}, 
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
                                 );
@@ -443,7 +447,7 @@ if __name__ == "__main__":
                                     id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
                                 ) VALUES 
                                 (
-                                    '{incoming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
+                                    '{incoming}', '{datetime}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
                                     '{callee[3]}', '{callee[4]}', {duration},
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
                                 );
@@ -476,7 +480,7 @@ if __name__ == "__main__":
                                     id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
                                 ) VALUES 
                                 (
-                                    '{outgoing}', '{caller[6]}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
+                                    '{outgoing}', '{datetime}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
                                     '{caller[3]}', '{caller[4]}',
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
                                 );
@@ -484,7 +488,7 @@ if __name__ == "__main__":
                                     id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
                                 ) VALUES 
                                 (
-                                    '{incoming}', '{caller[6]}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
+                                    '{incoming}', '{datetime}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
                                     '{callee[3]}', '{callee[4]}',
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
                                 );
@@ -514,7 +518,7 @@ if __name__ == "__main__":
                                     id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id
                                 ) VALUES 
                                 (
-                                    '{outgoing}', '{caller[6]}', {duration}, {total}, {upload}, {download}, '{caller[1]}', '{caller[2]}',
+                                    '{outgoing}', '{datetime}', {duration}, {total}, {upload}, {download}, '{caller[1]}', '{caller[2]}',
                                     '{caller[3]}', '{caller[4]}',
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
                                 );
