@@ -155,7 +155,9 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
         caller = trans.execute(
             f"SELECT *, ('{table}'::TIMESTAMPTZ + random() * interval '1 day') AS date FROM subs LIMIT 1 OFFSET {offset}"
         ).first()
-        # Select the caller variant
+
+        # Select the caller variant & point
+        points = cycle(range(1, 100, round(100 / count)))
         callervariant = variants[caller[5]][next(vline)]
 
         for c in range(0, count):
@@ -171,6 +173,7 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
             upload = round(0.5 * 100000)
             download = round(0.5 * 100000)
             total = upload + download
+            point = next(points)
 
             outgoing = generate_hash(time.mktime(date.timetuple()) + type_count)
             incoming = generate_hash(
@@ -189,8 +192,8 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
                     total=total,
                     outgoing=outgoing,
                     incoming=incoming,
-                    callervariant=callervariant[int(c % d)],
-                    calleevariant=calleevariant[int(c % d)],
+                    callervariant=callervariant[point],
+                    calleevariant=calleevariant[point],
                 )
             )
 
