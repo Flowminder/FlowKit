@@ -24,5 +24,6 @@
 !./synthetic_data/Pipfile.lock
 !./bin/generate_synthetic_data.py
 !./bin/generate_synthetic_data_sql.py
+!./bin/generate_synthetic_data_sql_refactor.py
 !./bin/z_ingest_synthetic_data.sh
 !./synthetic_data/data/
