@@ -51,8 +51,8 @@ if [ -f /opt/synthetic_data/generate_synthetic_data.py ] && [  "$SYNTHETIC_DATA_
       --calls-seed ${CALLS_SEED} \
       --n-days ${N_DAYS} \
       --output-root-dir ${OUTPUT_ROOT_DIR}
-elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "sql" ]; then
-  python3 /opt/synthetic_data/generate_synthetic_data_sql.py \
+elif [ -f /opt/synthetic_data/generate_synthetic_data_sql_refactor.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "sql" ]; then
+  python3 /opt/synthetic_data/generate_synthetic_data_sql_refactor.py \
       --n-subscribers ${N_SUBSCRIBERS} \
       --n-cells ${N_CELLS} \
       --n-calls ${N_CALLS} \
@@ -60,13 +60,7 @@ elif [ -f /opt/synthetic_data/generate_synthetic_data_sql.py ] && [  "$SYNTHETIC
       --n-tacs ${N_TACS} \
       --n-mds ${N_MDS} \
       --n-sms ${N_SMS} \
-      --n-sites ${N_SITES} \
-      --out-of-area-probability ${P_OUT_OF_AREA:-0.05}\
-      --relocation-probability ${P_RELOCATE:-0.05}\
-      --interactions-multiplier ${INTERACTIONS_MULTIPLIER:-5}\
-      --disaster-zone ${DISASTER_REGION_PCOD:-"524 4 12"} \
-      --disaster-start-date ${DISASTER_START:-"2015-01-01"} \
-      --disaster-end-date ${DISASTER_END:-"2015-01-01"}
+      --n-sites ${N_SITES}
 else
     echo "Must set SYNTHETIC_DATA_GENERATOR environment variable to 'sql' or 'python'."
     exit 1
