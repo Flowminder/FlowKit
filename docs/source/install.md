@@ -347,7 +347,7 @@ docker secret create cert-flowkit.pem cert-flowkit.pem
 # Deploy the stack
 
 echo "Deploying stack"
-docker stack deploy -docker-stack.yml secrets_test
+docker stack deploy -c docker-stack.yml secrets_test
 ```
 
 This will bring up a single node swarm, create random 16 character passwords for the database users, generate a fresh RSA key pair which links FlowAuth and FlowAPI, generate a certificate valid for the `flowkit.api` domain (and point that to `localhost` using `/etc/hosts`), pull all necessary containers, and bring up FlowAuth and FlowAPI.
