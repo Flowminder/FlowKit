@@ -85,7 +85,7 @@ CREATE TABLE etl.post_etl_queries (
     type_of_query_or_check TEXT,
     outcome TEXT,
     optional_comment_or_description TEXT,
-    timestamp TIMESTAMP WITH TIME ZONE,
+    timestamp TIMESTAMP WITH TIME ZONE
 );
 
 COMMENT ON TABLE etl.post_etl_queries
