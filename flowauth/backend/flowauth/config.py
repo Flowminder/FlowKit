@@ -97,9 +97,7 @@ def get_config():
 
     return dict(
         PRIVATE_JWT_SIGNING_KEY=load_private_key(
-            get_secret_or_env_var(
-                "PRIVATE_JWT_SIGNING_KEY", os.environ["PRIVATE_JWT_SIGNING_KEY"]
-            )
+            get_secret_or_env_var("PRIVATE_JWT_SIGNING_KEY")
         ),
         LOG_LEVEL=log_level,
         ADMIN_USER=get_secret_or_env_var("FLOWAUTH_ADMIN_USERNAME"),
