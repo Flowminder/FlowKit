@@ -120,7 +120,10 @@ class UserAdminDetails extends React.Component {
       username_helper_text,
       password_strength
     } = this.state;
-    if (username_helper_text === "" && password_strength > 3) {
+    if (
+      username_helper_text === "" &&
+      (password_strength > 3 || password === "")
+    ) {
       var task;
       var uid;
       if (edit_mode) {
