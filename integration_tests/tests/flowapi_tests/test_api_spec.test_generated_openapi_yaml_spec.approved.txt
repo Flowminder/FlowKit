@@ -51,7 +51,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -95,7 +96,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -129,6 +131,53 @@
           "date",
           "method",
           "query_kind"
+        ],
+        "type": "object"
+      },
+      "Displacement": {
+        "properties": {
+          "query_kind": {
+            "enum": [
+              "displacement"
+            ],
+            "type": "string"
+          },
+          "reference_location": {
+            "$ref": "#/components/schemas/InputToDisplacement"
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "statistic": {
+            "enum": [
+              "avg",
+              "max",
+              "median",
+              "min",
+              "mode",
+              "stddev",
+              "variance"
+            ],
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start",
+          "statistic",
+          "stop"
         ],
         "type": "object"
       },
@@ -275,7 +324,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -307,7 +357,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -324,6 +375,54 @@
         ],
         "type": "object"
       },
+      "Handset": {
+        "properties": {
+          "characteristic": {
+            "enum": [
+              "brand",
+              "hnd_type",
+              "model",
+              "software_os_name",
+              "software_os_vendor"
+            ],
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "method": {
+            "enum": [
+              "last",
+              "most-common"
+            ],
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "handset"
+            ],
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "end_date",
+          "query_kind",
+          "start_date"
+        ],
+        "type": "object"
+      },
       "InputToAggregateNetworkObjects": {
         "discriminator": {
           "mapping": {
@@ -334,6 +433,23 @@
         "oneOf": [
           {
             "$ref": "#/components/schemas/TotalNetworkObjects"
+          }
+        ]
+      },
+      "InputToDisplacement": {
+        "discriminator": {
+          "mapping": {
+            "daily_location": "#/components/schemas/DailyLocation",
+            "modal_location": "#/components/schemas/ModalLocation"
+          },
+          "propertyName": "query_kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DailyLocation"
+          },
+          {
+            "$ref": "#/components/schemas/ModalLocation"
           }
         ]
       },
@@ -387,7 +503,9 @@
       "JoinableMetrics": {
         "discriminator": {
           "mapping": {
+            "displacement": "#/components/schemas/Displacement",
             "event_count": "#/components/schemas/EventCount",
+            "handset": "#/components/schemas/Handset",
             "nocturnal_events": "#/components/schemas/NocturnalEvents",
             "pareto_interactions": "#/components/schemas/ParetoInteractions",
             "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
@@ -400,7 +518,13 @@
         },
         "oneOf": [
           {
+            "$ref": "#/components/schemas/Displacement"
+          },
+          {
             "$ref": "#/components/schemas/EventCount"
+          },
+          {
+            "$ref": "#/components/schemas/Handset"
           },
           {
             "$ref": "#/components/schemas/NocturnalEvents"
@@ -433,6 +557,7 @@
           "method": {
             "enum": [
               "avg",
+              "distr",
               "max",
               "median",
               "min",
@@ -466,7 +591,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -539,7 +665,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -581,7 +708,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -663,7 +791,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -754,7 +883,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -839,7 +969,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -1125,7 +1256,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -1171,7 +1303,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -1212,7 +1345,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },

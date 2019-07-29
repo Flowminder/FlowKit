@@ -10,6 +10,8 @@ FlowMachine specifications are found [here](#flowmachine).
 
 FlowDB details are found [here](#flowdb).
 
+FlowETL details are found [here](#flowetl).
+
 <a href="roadmap"></a>
 
 ## Roadmap
@@ -145,7 +147,6 @@ At present, the following query types are accessible through FlowAPI:
     Represents the percentage of events that a subscriber make/receives which
     began at night.
 
--`event_count`
 - `topup_balance`
 
     Return top-up balance statistics for specified dates and (optionally, with default "all") for a specified set of subscribers
@@ -153,7 +154,11 @@ At present, the following query types are accessible through FlowAPI:
 - `event_count`
 
     Count of events (optionally of specific types) for individual subscribers in a time period.
+    
+- `displacement`
 
+    Return statistics of a subscribers displacement from
+    their reference location.
 - `pareto_interactions`
 
     Returns two columns: `subscriber`, `pareto` - where the latter is the
@@ -321,6 +326,21 @@ docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_
 
     When using docker volumes, docker will manage the permissions for you.
 
+
+## FlowETL
+
+### DAG information flow
+
+This section describes the information available in the DAG code inside FlowETL.
+
+Some information is only known at runtime, in code executed by a running DAG, this cannot be passed to the python callables or accessed when creating the DAGs because it's not static and changes for each run:
+`execution_date`, `run_id`, the dag itself, `ds`/`ts` and the [default variables allowed in airflow](https://airflow.apache.org/macros.html#default-variables), the task and task_instance.
+
+The data that is passed when the DAG is triggered, is also available at runtime in the callables under `dag_run['conf']` :
+`cdr_type` (a DAG is initialised for a specific `cdr_type` *but* this is not static because the callables are reused), `cdr_date` (which currently is the same as the `execution_date`), `file_name` & `template_path` or `source_table`.
+
+Some information can be accessed when creating the DAG / not at runtime - these can be passed to the python callables because they are static and do not change:
+the SQL and config paths (because they remain fixed), the configuration that remains constant for any DAG (`config.yml` in `/mounts/config`)
 
 ## FlowAuth
 

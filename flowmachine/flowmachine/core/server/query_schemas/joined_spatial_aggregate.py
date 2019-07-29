@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import Schema, fields, post_load, pre_load, ValidationError
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
@@ -14,10 +14,12 @@ from flowmachine.core.server.query_schemas.subscriber_degree import (
 )
 from flowmachine.core.server.query_schemas.topup_amount import TopUpAmountSchema
 from flowmachine.core.server.query_schemas.event_count import EventCountSchema
+from flowmachine.core.server.query_schemas.handset import HandsetSchema
 from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEventsSchema
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
+from flowmachine.core.server.query_schemas.displacement import DisplacementSchema
 from flowmachine.core.server.query_schemas.pareto_interactions import (
     ParetoInteractionsSchema,
 )
@@ -41,8 +43,10 @@ class JoinableMetrics(OneOfSchema):
         "subscriber_degree": SubscriberDegreeSchema,
         "topup_amount": TopUpAmountSchema,
         "event_count": EventCountSchema,
+        "handset": HandsetSchema,
         "pareto_interactions": ParetoInteractionsSchema,
         "nocturnal_events": NocturnalEventsSchema,
+        "displacement": DisplacementSchema,
     }
 
 
@@ -51,9 +55,34 @@ class JoinedSpatialAggregateSchema(Schema):
     query_kind = fields.String(validate=OneOf(["joined_spatial_aggregate"]))
     locations = fields.Nested(InputToSpatialAggregate, required=True)
     metric = fields.Nested(JoinableMetrics, required=True)
-    method = fields.String(
-        default="mean", validate=OneOf(JoinedSpatialAggregate.allowed_methods)
-    )
+    method = fields.String(validate=OneOf(JoinedSpatialAggregate.allowed_methods))
+
+    @pre_load
+    def validate_method(self, data, **kwargs):
+        continuous_metrics = [
+            "radius_of_gyration",
+            "unique_location_counts",
+            "topup_balance",
+            "subscriber_degree",
+            "topup_amount",
+            "event_count",
+            "nocturnal_events",
+            "pareto_interactions",
+            "displacement",
+        ]
+        categorical_metrics = ["handset"]
+        if data["metric"]["query_kind"] in continuous_metrics:
+            validate = OneOf(
+                ["avg", "max", "min", "median", "mode", "stddev", "variance"]
+            )
+        elif data["metric"]["query_kind"] in categorical_metrics:
+            validate = OneOf(["distr"])
+        else:
+            raise ValidationError(
+                f"{data['metric']['query_kind']} does not have a valid metric type."
+            )
+        validate(data["method"])
+        return data
 
     @post_load
     def make_query_object(self, params, **kwargs):
