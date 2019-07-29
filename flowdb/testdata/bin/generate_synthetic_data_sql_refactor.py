@@ -144,6 +144,7 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
     type_count = 1
     offset = 0
     vline = cycle(range(0, 50))
+    callee_inc = 50
 
     # Create the SQL for outgoing/incoming SQL according to our distribution
     for d in dist:
@@ -157,13 +158,15 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
         # Select the caller variant & point
         points = cycle(range(1, 100, round(100 / count)))
         callervariant = variants[caller[5]][next(vline)]
+        callee_offset = offset + callee_inc
 
         for c in range(0, count):
-            # Get callee rows - TODO: better appraoch to selection # Take the offset - have a multiplier to will increase this.
+            # Get callee row
             callee = trans.execute(
-                f"SELECT * FROM subs WHERE id != {caller[0]} ORDER BY RANDOM() LIMIT 1 "
+                f"SELECT * FROM subs WHERE id != {caller[0]} LIMIT 1 OFFSET {callee_offset}"
             ).first()
-            # Select the calleevariant - 100 divided by the number
+
+            # Select the calleevariant
             calleevariant = variants[callee[5]][next(vline)]
 
             # Set a duration, upload, download and hashes - TODO: decide if these should be configurable
@@ -201,6 +204,7 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
                 )
             )
 
+            callee_offset += callee_inc
             type_count += 1
             offset += 1
 
@@ -215,6 +219,8 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
                 break
             if offset >= num_subscribers:
                 offset = 0
+            if callee_offset >= num_subscribers:
+                callee_offset = 0
 
         else:
             continue
