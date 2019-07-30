@@ -32,6 +32,8 @@ secrets:
     external: true
   FLOWAUTH_DB_PASSWORD: # Password for flowauth's database
     external: true
+  SECRET_KEY: # Secret key for Flowauth's Flask
+    external: true
 networks:
   db:
   redis:
@@ -51,6 +53,7 @@ services:
         - FLOWAUTH_ADMIN_USERNAME
         - FLOWAUTH_ADMIN_PASSWORD
         - FLOWAUTH_DB_PASSWORD
+        - SECRET_KEY
       networks:
         - flowauth_database
 

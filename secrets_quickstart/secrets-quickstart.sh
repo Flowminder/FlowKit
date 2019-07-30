@@ -54,6 +54,8 @@ docker secret rm FLOWAUTH_ADMIN_PASSWORD || true
 docker secret rm FLOWAUTH_DB_PASSWORD || true
 docker secret rm PRIVATE_JWT_SIGNING_KEY || true
 docker secret rm PUBLIC_JWT_SIGNING_KEY || true
+docker secret rm FLOWAUTH_FERNET_KEY || true
+docker secret rm SECRET_KEY || true
 
 # Add new secrets
 
@@ -62,6 +64,7 @@ echo "Adding secrets"
 openssl genrsa -out tokens-private-key.key 4096
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAUTH_DB_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAUTH_ADMIN_PASSWORD -
+openssl rand -base64 64 | docker secret create SECRET_KEY -
 echo "admin" | docker secret create FLOWAUTH_ADMIN_USERNAME -
 pip install cryptography && python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())" | docker secret create FLOWAUTH_FERNET_KEY -
 
