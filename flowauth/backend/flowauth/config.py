@@ -97,7 +97,7 @@ def get_config():
     db_uri = get_secret_or_env_var(
         "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
     )
-    db_uri.format(get_secret_or_env_var("FLOWAUTH_DB_PASSWORD"))
+    db_uri.format(get_secret_or_env_var("FLOWAUTH_DB_PASSWORD", ""))
 
     return dict(
         PRIVATE_JWT_SIGNING_KEY=load_private_key(

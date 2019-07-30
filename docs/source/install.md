@@ -143,7 +143,7 @@ Contact Flowminder on [flowkit@flowminder.org](mailto:flowkit@flowminder.org) fo
 
 FlowAuth is designed to be deployed as a single Docker container working in cooperation with a database and, typically, an ssl reverse proxy (e.g. [nginx-proxy](https://github.com/jwilder/nginx-proxy) combined with [letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion)).
 
-FlowAuth supports any database supported by [SQLAlchemy](https://sqlalche.me), and to connect you will only need to supply a correct URI for the database either using the `DB_URI` environment variable, or by setting the `DB_URI` secret. If `DB_URI` is not set, a temporary sqlite database will be created.
+FlowAuth supports any database supported by [SQLAlchemy](https://sqlalche.me), and to connect you will only need to supply a correct URI for the database either using the `DB_URI` environment variable, or by setting the `DB_URI` secret. If `DB_URI` is not set, a temporary sqlite database will be created. For database backends which require a username and password, you may supply the URI with `{}` in place of the password and provide the password using the `FLOWAUTH_DB_PASSWORD` secret or environment variable.
 
 FlowAuth will attempt to create all necessary tables when first accessed, but will not overwrite any existing tables. To wipe any existing data, you can either set the `RESET_FLOWAUTH_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
 
@@ -161,7 +161,7 @@ openssl genrsa -out flowauth-private-key.key 4096
 
 And then create a public key from the key file (`openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub`), or download it from FlowAuth once started. Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. `base64 -i flowauth-private-key.key`). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.
 
-By defaul`SECRET_KEY` may be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.
+By default `SECRET_KEY` may be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.
 
 ### Running with Secrets
 
@@ -169,7 +169,7 @@ The standard Docker compose file supplies a number of 'secret' values as environ
 
 Instead, you should make use of [docker secrets](https://docs.docker.com/engine/swarm/secrets/), which are stored securely in docker and only made available _inside_ containers. The `secrets_quickstart` directory contains a docker _stack_ file (`docker-stack.yml`). The stack file is very similar to a compose file, but removes container names, and adds a new section - [secrets](https://docs.docker.com/compose/compose-file/#secrets-configuration-reference).
 
-The stack expects you to provide eight secrets:
+The stack expects you to provide fifteen secrets:
 
 - cert-flowkit.pem
 
@@ -210,6 +210,26 @@ The stack expects you to provide eight secrets:
 - FLOWAPI_IDENTIFIER
 
   The unique name of the FlowAPI server. Used to verify that a decoded token is intended for _this_ server.
+  
+-  FLOWAUTH_FERNET_KEY
+    
+   Used for encrypted-at-rest storage of tokens in flowauth
+    
+-  FLOWAUTH_ADMIN_USERNAME
+
+   Default flowauth administrator username
+    
+-  FLOWAUTH_ADMIN_PASSWORD
+
+   Default flowauth administrator password
+
+-  FLOWAUTH_DB_PASSWORD
+
+   Password for flowauth's database
+    
+-  SECRET_KEY
+
+    Secret key for Flowauth's Flask, used for signing cookies
 
 To make use of secrets you will need to use docker swarm. For testing purposes, you can set up a single node swarm by running `docker swarm init`.
 
@@ -231,7 +251,7 @@ Once you have added all the required secrets, you can use `docker stack` to spin
 
 ```bash
 cd secrets_quickstart
-docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
+docker stack deploy -c docker-stack.yml secrets_test
 ```
 
 After which, the API will be available via HTTPS (and no longer available via HTTP). Note that to access the API using FlowClient, you'll need to provide the path to the certificate as the `ssl_certificate` argument when calling `flowclient.Connection` (much as you would if using a self-signed certificate with `requests`):
@@ -300,6 +320,8 @@ docker secret rm FLOWAUTH_ADMIN_PASSWORD || true
 docker secret rm FLOWAUTH_DB_PASSWORD || true
 docker secret rm PRIVATE_JWT_SIGNING_KEY || true
 docker secret rm PUBLIC_JWT_SIGNING_KEY || true
+docker secret rm FLOWAUTH_FERNET_KEY || true
+docker secret rm SECRET_KEY || true
 
 # Add new secrets
 
@@ -308,6 +330,7 @@ echo "Adding secrets"
 openssl genrsa -out tokens-private-key.key 4096
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAUTH_DB_PASSWORD -
 openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAUTH_ADMIN_PASSWORD -
+openssl rand -base64 64 | docker secret create SECRET_KEY -
 echo "admin" | docker secret create FLOWAUTH_ADMIN_USERNAME -
 pip install cryptography && python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())" | docker secret create FLOWAUTH_FERNET_KEY -
 
@@ -348,6 +371,7 @@ docker secret create cert-flowkit.pem cert-flowkit.pem
 
 echo "Deploying stack"
 docker stack deploy -c docker-stack.yml secrets_test
+
 ```
 
 This will bring up a single node swarm, create random 16 character passwords for the database users, generate a fresh RSA key pair which links FlowAuth and FlowAPI, generate a certificate valid for the `flowkit.api` domain (and point that to `localhost` using `/etc/hosts`), pull all necessary containers, and bring up FlowAuth and FlowAPI.
