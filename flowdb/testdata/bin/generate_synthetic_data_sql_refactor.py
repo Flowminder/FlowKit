@@ -32,6 +32,7 @@ import random
 import sqlalchemy as sqlalchemy
 from sqlalchemy.exc import ResourceClosedError
 
+import sys
 import structlog
 import json
 
@@ -95,6 +96,12 @@ parser.add_argument(
     type=int,
     default=1451606400,
     help="Timestamp of the day to start call data.",
+)
+parser.add_argument(
+    "--dryrun",
+    type=bool,
+    default=False,
+    help="Dry run the values to ensure call counts are correct.",
 )
 
 # Logging context
@@ -304,6 +311,29 @@ if __name__ == "__main__":
         sd_mds = args.n_sd_mds
         start_date = datetime.date.fromtimestamp(args.n_startdate)
 
+        # Generate all the event distributions
+        dist_calls, num_calls = generateNormalDistribution(
+            num_subscribers, mean_calls, sd_calls
+        )
+        dist_sms, num_sms = generateNormalDistribution(
+            num_subscribers, mean_sms, sd_sms
+        )
+        dist_mds, num_mds = generateNormalDistribution(
+            num_subscribers, mean_mds, sd_mds
+        )
+
+        if args.dryrun:
+            print(
+                f"""
+                With {num_subscribers} subscribers the output will be:
+                
+                calls -> a mean of {mean_calls} and sd of {sd_calls}: {num_calls * 2} calls rows per day {num_calls * 2 * num_days} total
+                sms -> a mean of {mean_sms} and sd of {sd_sms}: {num_sms * 2} messages rows per day {num_sms * 2 * num_days} total
+                mds -> a mean of {mean_mds} and sd of {sd_mds}, {num_mds} mds rows per day {num_sms * num_days} total
+            """
+            )
+            sys.exit()
+
         engine = sqlalchemy.create_engine(
             f"postgresql://{os.getenv('POSTGRES_USER')}@/{os.getenv('POSTGRES_DB')}",
             echo=False,
@@ -466,16 +496,6 @@ if __name__ == "__main__":
                         f"{dir}/../synthetic_data/data/variations/{t}.dat", "r"
                     )
                 ]
-
-            dist_calls, num_calls = generateNormalDistribution(
-                num_subscribers, mean_calls, sd_calls
-            )
-            dist_sms, num_sms = generateNormalDistribution(
-                num_subscribers, mean_sms, sd_sms
-            )
-            dist_mds, num_mds = generateNormalDistribution(
-                num_subscribers, mean_mds, sd_mds
-            )
 
             # Loop over the days and generate all the types required
             for date in (
