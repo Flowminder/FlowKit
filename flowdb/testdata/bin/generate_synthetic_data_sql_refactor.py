@@ -24,6 +24,7 @@ from contextlib import contextmanager
 from multiprocessing import cpu_count
 from itertools import cycle
 from math import floor
+
 # import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -165,10 +166,10 @@ def generatedDistributedTypes(trans, num_type, date, table, insert, values):
             callee = trans.execute(
                 f"SELECT * FROM subs WHERE id != {caller[0]} LIMIT 1 OFFSET {callee_offset}"
             ).first()
-            
+
             # Select the calleevariant
             calleevariant = variants[callee[5]][next(vline)]
-  
+
             # Set a duration, upload, download and hashes - TODO: decide if these should be configurable
             duration = floor(0.5 * 2600)
             upload = round(0.5 * 100000)
@@ -210,10 +211,10 @@ def generatedDistributedTypes(trans, num_type, date, table, insert, values):
                 break
             if callee_offset >= num_subscribers:
                 callee_offset = 0
-        
+
         # Process in groups of 1000 - consider pushing to a ThreadPoolExecutor? Expected insert speed here should
         # be around 5 seconds
-        if (len(sql) >= 5 or type_count >= num_type):
+        if len(sql) >= 5 or type_count >= num_type:
             trans.execute(f"{insert.format(table=table)} VALUES {', '.join(sql)}")
             sql.clear()
 
@@ -385,6 +386,8 @@ if __name__ == "__main__":
                 t = next(tacWeight) * num_subscribers
                 v = next(variantWeight) * num_subscribers
 
+                sql = []
+                insert = "INSERT INTO subs (msisdn, imei, imsi, tac, variant) VALUES"
                 for x in range(start_id, num_subscribers + start_id):
                     msisdn = generate_hash(x + 1000)
                     imei = generate_hash(x + 2000)
@@ -398,16 +401,23 @@ if __name__ == "__main__":
                         v = next(variantWeight) * num_subscribers
                         i += 1
 
-                    trans.execute(
+                    sql.append(
                         f"""
-                            INSERT INTO subs (msisdn, imei, imsi, tac, variant) VALUES ('{msisdn}','{imei}','{imsi}', 
+                            ('{msisdn}','{imei}','{imsi}', 
                             (SELECT id FROM infrastructure.tacs where brand = '{brands[b]}' ORDER BY RANDOM() LIMIT 1), 
-                            '{variants[i]}');
+                            '{variants[i]}')
                         """
                     )
 
+                    if len(sql) >= 10000:
+                        trans.execute(f"{insert} {', '.join(sql)}")
+                        sql.clear()
+
                     t -= 1
                     v -= 1
+
+                if len(sql) > 0:
+                    trans.execute(f"{insert} {', '.join(sql)}")
 
             # 4. Event SQL
             variants = {}
