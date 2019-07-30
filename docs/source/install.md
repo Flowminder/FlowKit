@@ -147,7 +147,7 @@ FlowAuth supports any database supported by [SQLAlchemy](https://sqlalche.me), a
 
 FlowAuth will attempt to create all necessary tables when first accessed, but will not overwrite any existing tables. To wipe any existing data, you can either set the `RESET_FLOWAUTH_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
 
-FlowAuth requires you to create at least one admin user by setting the `FLOWAUTH_ADMIN_USER` and `FLOWAUTH_ADMIN_PASSWORD` environment variables or providing them as secrets. You can combine these environment variables with the `INIT_DB` environment variable.
+FlowAuth requires you to create at least one admin user by setting the `FLOWAUTH_ADMIN_USER` and `FLOWAUTH_ADMIN_PASSWORD` environment variables or providing them as secrets. You can combine these environment variables with the `INIT_DB` environment variable. If the user already exists, their password will be reset to the provided value and they will be promoted to admin.
 
 You _must_ also provide three additional environment variables or secrets: `FLOWAUTH_FERNET_KEY`, `SECRET_KEY`, and `PRIVATE_JWT_SIGNING_KEY`. `FLOWAUTH_FERNET_KEY` is used to encrypt tokens while 'at rest' in the database, and decrypt them for use. `SECRET_KEY` is used to secure session and CSRF protection cookies.
 
