@@ -125,9 +125,7 @@ def connect(
             getenv("REDIS_PORT", "6379") if redis_port is None else redis_port
         )
         redis_password = (
-            getsecret("REDIS_PASSWORD", os.getenv("REDIS_PASSWORD"))
-            if redis_password is None
-            else redis_password
+            environ["REDIS_PASSWORD"] if redis_password is None else redis_password
         )
     except KeyError as e:
         raise ValueError(
