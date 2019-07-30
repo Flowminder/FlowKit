@@ -135,7 +135,7 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
 
 
 # Generate distributed types
-def generatedDistributedTypes(trans, num_type, date, table, query):
+def generatedDistributedTypes(trans, num_type, date, table, insert, values):
     sql = []
 
     # Get a distribution
@@ -165,10 +165,10 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
             callee = trans.execute(
                 f"SELECT * FROM subs WHERE id != {caller[0]} LIMIT 1 OFFSET {callee_offset}"
             ).first()
-
+            
             # Select the calleevariant
             calleevariant = variants[callee[5]][next(vline)]
-
+  
             # Set a duration, upload, download and hashes - TODO: decide if these should be configurable
             duration = floor(0.5 * 2600)
             upload = round(0.5 * 100000)
@@ -188,8 +188,7 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
 
             # Generate the outgoing/incoming of type by making the replacements in the query passed in
             sql.append(
-                query.format(
-                    table=table,
+                values.format(
                     caller=caller,
                     callee=callee,
                     duration=duration,
@@ -206,21 +205,22 @@ def generatedDistributedTypes(trans, num_type, date, table, query):
 
             callee_offset += callee_inc
             type_count += 1
-            offset += 1
-
-            # Process in groups of 10 - consider pushing to a ThreadPoolExecutor?
-            if (len(sql) % 10) == 0:
-                for s in sql:
-                    trans.execute(s)
-
-                sql.clear()
 
             if type_count >= num_type:
                 break
-            if offset >= num_subscribers:
-                offset = 0
             if callee_offset >= num_subscribers:
                 callee_offset = 0
+        
+        # Process in groups of 1000 - consider pushing to a ThreadPoolExecutor? Expected insert speed here should
+        # be around 5 seconds
+        if (len(sql) >= 5 or type_count >= num_type):
+            trans.execute(f"{insert.format(table=table)} VALUES {', '.join(sql)}")
+            sql.clear()
+
+        offset += 1
+
+        if offset >= num_subscribers:
+            offset = 0
 
         else:
             continue
@@ -440,23 +440,18 @@ if __name__ == "__main__":
                             num_calls,
                             date,
                             table,
+                            "INSERT INTO events.calls_{table} (id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id)",
                             """
-                                INSERT INTO events.calls_{table} (
-                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
-                                ) VALUES 
                                 (
                                     '{outgoing}', '{datetime}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
                                     '{caller[3]}', '{caller[4]}', {duration}, 
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
-                                );
-                                INSERT INTO events.calls_{table} (
-                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id
-                                ) VALUES 
+                                ),
                                 (
                                     '{incoming}', '{datetime}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
                                     '{callee[3]}', '{callee[4]}', {duration},
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
-                                );
+                                )
                             """,
                         )
 
@@ -481,23 +476,18 @@ if __name__ == "__main__":
                             num_sms,
                             date,
                             table,
+                            "INSERT INTO events.sms_{table} (id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id)",
                             """
-                                INSERT INTO events.sms_{table} (
-                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
-                                ) VALUES 
                                 (
                                     '{outgoing}', '{datetime}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
                                     '{caller[3]}', '{caller[4]}',
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
-                                );
-                                INSERT INTO events.sms_{table} (
-                                    id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id
-                                ) VALUES 
+                                ),
                                 (
                                     '{incoming}', '{datetime}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
                                     '{callee[3]}', '{callee[4]}',
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
-                                );
+                                )
                             """,
                         )
 
@@ -519,15 +509,13 @@ if __name__ == "__main__":
                             num_mds,
                             date,
                             table,
+                            "INSERT INTO events.mds_{table} (id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id)",
                             """
-                                INSERT INTO events.mds_{table} (
-                                    id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id
-                                ) VALUES 
                                 (
                                     '{outgoing}', '{datetime}', {duration}, {total}, {upload}, {download}, '{caller[1]}', '{caller[2]}',
                                     '{caller[3]}', '{caller[4]}',
                                     (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
-                                );
+                                )
                             """,
                         )
 
