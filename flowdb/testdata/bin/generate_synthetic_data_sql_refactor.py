@@ -160,6 +160,7 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
             zero = 0
 
         if count >= 0:
+            t += count * p
             output[count] = p + zero
 
         count += 1
@@ -170,101 +171,97 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
         plt.plot(bins, people, linewidth=2, color="r")
         plt.savefig("nd.png")
 
-    return output
+    return output, t
 
 
 # Generate distributed types
-def generatedDistributedTypes(trans, num_type, date, table, insert, values):
+def generatedDistributedTypes(trans, dist, date, table, insert, values):
     sql = []
-
-    # Get a distribution
-    dist = generateNormalDistribution(num_subscribers, num_type / num_subscribers, 12)
-
-    type_count = 1
+    type_count = 0
     offset = 0
     vline = cycle(range(0, 50))
-    callee_inc = 50
+    callee_inc = round(num_subscribers * 0.1)
 
     # Create the SQL for outgoing/incoming SQL according to our distribution
     for d in dist:
-        count = int(round(d))
-        if count <= 0:
+        calls = d * dist_calls[d]
+
+        # If the call count is zero, then we can move on
+        if calls <= 0:
             continue
 
-        # Get the caller
-        caller = trans.execute(f"SELECT * FROM subs LIMIT 1 OFFSET {offset}").first()
-
-        # Select the caller variant & point
-        points = cycle(range(1, 100, round(100 / count)))
-        callervariant = variants[caller[5]][next(vline)]
-        callee_offset = offset + callee_inc
-
-        for c in range(0, count):
-            # Get callee row
-            callee = trans.execute(
-                f"SELECT * FROM subs WHERE id != {caller[0]} LIMIT 1 OFFSET {callee_offset}"
+        # Loop the number of subscribers in this "pot"
+        for p in range(0, dist_calls[d]):
+            # Get the caller
+            caller = trans.execute(
+                f"SELECT * FROM subs LIMIT 1 OFFSET {offset}"
             ).first()
 
-            # Select the calleevariant
-            calleevariant = variants[callee[5]][next(vline)]
+            points = cycle(range(1, 100, round(100 / d)))
+            callervariant = variants[caller[5]][next(vline)]
+            callee_offset = offset  # + callee_inc
 
-            # Set a duration, upload, download and hashes - TODO: decide if these should be configurable
-            duration = floor(0.5 * 2600)
-            upload = round(0.5 * 100000)
-            download = round(0.5 * 100000)
-            total = upload + download
+            # Then create all their calls
+            for c in range(0, d):
+                callee_offset += callee_inc
+                type_count += 1
 
-            # Select the next "point", and use this to create a reference for the time of day
-            point = next(points)
-            timeofday = datetime.datetime.combine(
-                date, datetime.time(0, 0)
-            ) + datetime.timedelta(minutes=(14.4 * point))
+                if callee_offset >= (num_subscribers - 1) or callee_offset == offset:
+                    callee_offset = 0
 
-            outgoing = generate_hash(time.mktime(date.timetuple()) + type_count)
-            incoming = generate_hash(
-                time.mktime(date.timetuple()) + count + c + type_count
-            )
+                # Get callee row
+                callee = trans.execute(
+                    f"SELECT * FROM subs WHERE id != {caller[0]} LIMIT 1 OFFSET {callee_offset}"
+                ).first()
 
-            # Generate the outgoing/incoming of type by making the replacements in the query passed in
-            sql.append(
-                values.format(
-                    caller=caller,
-                    callee=callee,
-                    duration=duration,
-                    upload=upload,
-                    download=download,
-                    total=total,
-                    outgoing=outgoing,
-                    incoming=incoming,
-                    datetime=timeofday,
-                    callervariant=callervariant[point],
-                    calleevariant=calleevariant[point],
+                # Select the calleevariant
+                calleevariant = variants[callee[5]][next(vline)]
+
+                # Set a duration, upload, download and hashes - TODO: decide if these should be configurable
+                duration = floor(0.5 * 2600)
+                upload = round(0.5 * 100000)
+                download = round(0.5 * 100000)
+                total = upload + download
+
+                # Select the next "point", and use this to create a reference for the time of day
+                point = next(points)
+                timeofday = datetime.datetime.combine(
+                    date, datetime.time(0, 0)
+                ) + datetime.timedelta(minutes=(14.4 * point))
+
+                # Hashes
+                outgoing = generate_hash(
+                    time.mktime(date.timetuple()) + offset + type_count
                 )
-            )
+                incoming = generate_hash(
+                    time.mktime(date.timetuple()) + callee_offset + type_count + c
+                )
 
-            callee_offset += callee_inc
-            type_count += 1
+                # Generate the outgoing/incoming of type by making the replacements in the query passed in
+                sql.append(
+                    values.format(
+                        caller=caller,
+                        callee=callee,
+                        duration=duration,
+                        upload=upload,
+                        download=download,
+                        total=total,
+                        outgoing=outgoing,
+                        incoming=incoming,
+                        datetime=timeofday,
+                        callervariant=callervariant[point],
+                        calleevariant=calleevariant[point],
+                    )
+                )
 
-            if type_count >= num_type:
-                break
-            if callee_offset >= num_subscribers:
-                callee_offset = 0
+            # Process in groups - TODO - this will need to be fine tuned
+            if len(sql) > 0:
+                trans.execute(f"{insert.format(table=table)} VALUES {', '.join(sql)}")
+                sql.clear()
 
-        # Process in groups of 1000 - consider pushing to a ThreadPoolExecutor? Expected insert speed here should
-        # be around 5 seconds
-        if len(sql) >= 5 or type_count >= num_type:
-            trans.execute(f"{insert.format(table=table)} VALUES {', '.join(sql)}")
-            sql.clear()
+            offset += 1
 
-        offset += 1
-
-        if offset >= num_subscribers:
-            offset = 0
-
-        else:
-            continue
-
-        break
+    return offset
 
 
 # Add post event SQL
@@ -470,6 +467,16 @@ if __name__ == "__main__":
                     )
                 ]
 
+            dist_calls, num_calls = generateNormalDistribution(
+                num_subscribers, mean_calls, sd_calls
+            )
+            dist_sms, num_sms = generateNormalDistribution(
+                num_subscribers, mean_sms, sd_sms
+            )
+            dist_mds, num_mds = generateNormalDistribution(
+                num_subscribers, mean_mds, sd_mds
+            )
+
             # Loop over the days and generate all the types required
             for date in (
                 start_date + datetime.timedelta(days=i) for i in range(num_days)
@@ -488,7 +495,7 @@ if __name__ == "__main__":
                         # Generate the distributed calls for this day
                         generatedDistributedTypes(
                             trans,
-                            num_calls,
+                            dist_calls,
                             date,
                             table,
                             "INSERT INTO events.calls_{table} (id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, duration, location_id)",
@@ -524,7 +531,7 @@ if __name__ == "__main__":
                         # Generate the distributed sms for this day
                         generatedDistributedTypes(
                             trans,
-                            num_sms,
+                            dist_sms,
                             date,
                             table,
                             "INSERT INTO events.sms_{table} (id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id)",
@@ -557,7 +564,7 @@ if __name__ == "__main__":
                         # Generate the distributed mds for this day
                         generatedDistributedTypes(
                             trans,
-                            num_mds,
+                            dist_mds,
                             date,
                             table,
                             "INSERT INTO events.mds_{table} (id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id)",
