@@ -171,11 +171,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:7c29a283e6ec4e39f62cd8e8b095f3bf0e2f35b4adf27e9e744ef7d385310063",
-                "sha256:df8a9d8f4a8fb5626d2e32b03b8ee2acd0c2567d4db19d907c6f2eee16c20325"
+                "sha256:110f534cb98131ed5c21cc3896772fc46597f67295116022ef5c1ef9bd180d4e",
+                "sha256:f3ab33ee77d3ea68bf75a94ca5633a5a01134aedf1a6c9d05a70339022d6c8a3"
             ],
             "index": "pypi",
-            "version": "==0.7.1"
+            "version": "==0.7.2"
         },
         "hyperframe": {
             "hashes": [
@@ -583,10 +583,10 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:6dfd58dfe281e8d240937776065dd3624ad5469c835248219bd16cf2e12dbeb7",
-                "sha256:cb6ee23b46173539939964df59d3d72c3e0c1b5d54b84f1d8a7e912fe43612db"
+                "sha256:23d3d873e008a513952355379d93cbcab874c58f4f034ff657c7a87422fa64e8",
+                "sha256:80d2de76188eabfbfcf27e6a37342c2827801e59c4cc14b0371c56fed43820e3"
             ],
-            "version": "==0.18"
+            "version": "==0.19"
         },
         "more-itertools": {
             "hashes": [
@@ -631,10 +631,10 @@
         },
         "pyparsing": {
             "hashes": [
-                "sha256:530d8bf8cc93a34019d08142593cf4d78a05c890da8cf87ffa3120af53772238",
-                "sha256:f78e99616b6f1a4745c0580e170251ef1bbafc0d0513e270c4bd281bf29d2800"
+                "sha256:43c5486cefefa536c9aab528881c992328f020eefe4f6d06332449c365218580",
+                "sha256:d6c5ffe9d0305b9b977f7a642d36b9370954d1da7ada4c62393382cbadad4265"
             ],
-            "version": "==2.4.1"
+            "version": "==2.4.1.1"
         },
         "pytest": {
             "hashes": [

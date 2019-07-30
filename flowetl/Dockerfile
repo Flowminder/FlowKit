@@ -14,15 +14,21 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES false
 USER root
 WORKDIR /usr/src/deps
 
-# This allows us to start airflow as a specified UID/GID - shouldn't really use in
-# production so should perhaps rebuild for specific server when used in production
-RUN USER=airflow && \
-        GROUP=airflow && \
-        curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.4/fixuid-0.4-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
-        chown root:root /usr/local/bin/fixuid && \
-        chmod 4755 /usr/local/bin/fixuid && \
-        mkdir -p /etc/fixuid && \
-        printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
+# Needed for custom users passed through docker's --user argument, otherwise it's /
+ENV HOME ${AIRFLOW_HOME}
+
+# Use "nss_wrapper" to fake "/etc/passwd" and "/etc/group" for Airflow when
+# running under a different user for development purposes. Related uses:
+# https://github.com/docker-library/postgres/issues/359
+# https://cwrap.org/nss_wrapper.html
+RUN set -eux; \
+        apt-get update; \
+        apt-get install -y --no-install-recommends libnss-wrapper; \
+        rm -rf /var/lib/apt/lists/*
+
+ENV LD_PRELOAD /usr/lib/libnss_wrapper.so
+ENV NSS_WRAPPER_PASSWD /tmp/nsspasswd
+ENV NSS_WRAPPER_GROUP /tmp/nssgroup
 
 RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY ./entrypoint.sh /entrypoint.sh
@@ -32,6 +38,13 @@ RUN pip install /opt/etl
 
 USER airflow
 COPY --chown=airflow:airflow ./dags/* ${AIRFLOW__CORE__DAGS_FOLDER}/
+
+# Needed on $AIRFLOW_HOME so that different users passed through --user
+# have the permission to create and use their files for Airflow
+#
+# When possible, this will get changed to 700 at runtime (uid 0)
+RUN chmod -R 777 ${AIRFLOW_HOME}
+
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["webserver"] # set default arg for entrypoint

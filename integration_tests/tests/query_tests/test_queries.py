@@ -185,6 +185,22 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "locations": flowclient.daily_location(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
+                "metric": flowclient.displacement(
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    statistic="avg",
+                    reference_location=flowclient.daily_location(
+                        date="2016-01-01", aggregation_unit="lon-lat", method="last"
+                    ),
+                ),
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
                 "metric": flowclient.pareto_interactions(
                     start="2016-01-01", stop="2016-01-02", proportion="0.8"
                 ),

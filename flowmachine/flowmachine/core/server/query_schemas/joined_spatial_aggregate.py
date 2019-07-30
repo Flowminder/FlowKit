@@ -19,6 +19,7 @@ from flowmachine.core.server.query_schemas.nocturnal_events import NocturnalEven
 from flowmachine.core.server.query_schemas.unique_location_counts import (
     UniqueLocationCountsSchema,
 )
+from flowmachine.core.server.query_schemas.displacement import DisplacementSchema
 from flowmachine.core.server.query_schemas.pareto_interactions import (
     ParetoInteractionsSchema,
 )
@@ -45,6 +46,7 @@ class JoinableMetrics(OneOfSchema):
         "handset": HandsetSchema,
         "pareto_interactions": ParetoInteractionsSchema,
         "nocturnal_events": NocturnalEventsSchema,
+        "displacement": DisplacementSchema,
     }
 
 
@@ -66,6 +68,7 @@ class JoinedSpatialAggregateSchema(Schema):
             "event_count",
             "nocturnal_events",
             "pareto_interactions",
+            "displacement",
         ]
         categorical_metrics = ["handset"]
         if data["metric"]["query_kind"] in continuous_metrics:

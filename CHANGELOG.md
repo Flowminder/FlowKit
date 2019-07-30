@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up amount.[#967](https://github.com/Flowminder/FlowKit/issues/967)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes nocturnal events.[#1025](https://github.com/Flowminder/FlowKit/issues/1025)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up balance.[#968](https://github.com/Flowminder/FlowKit/issues/968)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes displacement.[#1010](https://github.com/Flowminder/FlowKit/issues/1010)
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes pareto interactions.[#1012](https://github.com/Flowminder/FlowKit/issues/1012)
 - FlowETL now supports ingesting from a postgres table in addition to CSV files. [#1027](https://github.com/Flowminder/FlowKit/issues/1027)
 - `FLOWETL_RUNTIME_CONFIG` environment variable added to control which DAG definitions the FlowETL integration tests should use (valid values: "testing", "production").
