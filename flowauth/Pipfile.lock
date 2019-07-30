@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f607ecaa05c1a480907e115e3c852b8cddbf7df8c62c8196ec7c7bdd461e99be"
+            "sha256": "611dd1007023aee2ac76c079ba085e2fe7d44a924a4d2446ae7cd89a84e15934"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -152,6 +152,13 @@
             ],
             "index": "pypi",
             "version": "==0.14.2"
+        },
+        "get-secret-or-env-var": {
+            "hashes": [
+                "sha256:dc945b732359c0198d75aff0501026aa1fb47a41d666cfd132a18bf7449358c6"
+            ],
+            "index": "pypi",
+            "version": "==0.0.1"
         },
         "itsdangerous": {
             "hashes": [
@@ -509,6 +516,13 @@
         "flowkit-jwt-generator": {
             "editable": true,
             "path": "./../flowkit_jwt_generator"
+        },
+        "get-secret-or-env-var": {
+            "hashes": [
+                "sha256:dc945b732359c0198d75aff0501026aa1fb47a41d666cfd132a18bf7449358c6"
+            ],
+            "index": "pypi",
+            "version": "==0.0.1"
         },
         "idna": {
             "hashes": [

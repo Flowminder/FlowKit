@@ -88,6 +88,7 @@ setup(
         "structlog",
         "shapely",
         "python-rapidjson",
+        "get-secret-or-env-var",
     ],
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,

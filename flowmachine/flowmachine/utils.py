@@ -24,30 +24,6 @@ from typing import List, Union, Tuple
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
-def getsecret(key: str, default: str) -> str:
-    """
-    Get a value from docker secrets (i.e. read it from a file in
-    /run/secrets), return a default if the file is not there.
-
-    Parameters
-    ----------
-    key: str
-        Name of the secret.
-    default: str
-        Default value to return if the file does not exist
-
-    Returns
-    -------
-    str
-        Value in the file, or default
-    """
-    try:
-        with open(Path("/run/secrets") / key, "r") as fin:
-            return fin.read().strip()
-    except FileNotFoundError:
-        return default
-
-
 def parse_datestring(
     datestring: Union[str, datetime.datetime, datetime.date]
 ) -> datetime.datetime:

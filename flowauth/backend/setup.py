@@ -36,6 +36,7 @@ setup(
         "flask-wtf",
         "zxcvbn",
         "cryptography",
+        "get-secret-or-env-var",
     ],
     extras_require={
         "test": ["pytest", "coverage", "flowkit-jwt-generator"],
