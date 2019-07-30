@@ -49,7 +49,7 @@ logger = structlog.get_logger(__name__)
 parser = argparse.ArgumentParser(description="Flowminder Synthetic CDR Generator\n")
 
 parser.add_argument(
-    "--n-sites", type=int, default=1000, help="Number of sites to generate."
+    "--n-sites", type=int, default=10000, help="Number of sites to generate."
 )
 parser.add_argument(
     "--n-cells", type=int, default=1, help="Number of cells to generate per site."
@@ -64,13 +64,31 @@ parser.add_argument(
     "--n-days", type=int, default=7, help="Number of days of data to generate."
 )
 parser.add_argument(
-    "--n-calls", type=int, default=200_000, help="Number of calls to generate per day."
+    "--n-mean_calls",
+    type=int,
+    default=50,
+    help="Mean number of calls per subscriber to generate per day.",
 )
 parser.add_argument(
-    "--n-sms", type=int, default=200_000, help="Number of sms to generate per day."
+    "--n-sd_calls", type=int, default=5, help="Standard deviation for call creation."
 )
 parser.add_argument(
-    "--n-mds", type=int, default=200_000, help="Number of mds to generate per day."
+    "--n-mean_sms",
+    type=int,
+    default=50,
+    help="Mean number of sms per subscriber to generate per day.",
+)
+parser.add_argument(
+    "--n-sd_sms", type=int, default=5, help="Standard deviation for sms creation."
+)
+parser.add_argument(
+    "--n-mean_mds",
+    type=int,
+    default=50,
+    help="Mean number of mds per subscriber to generate per day.",
+)
+parser.add_argument(
+    "--n-sd_mds", type=int, default=5, help="Standard deviation for mds creation."
 )
 parser.add_argument(
     "--n-startdate",
@@ -121,18 +139,38 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
     # Ensure our distribution is fixed
     np.random.seed(42)
 
-    s = np.random.normal(mu, sigma, size)
+    # Generate a distribution for the total calls
+    dist = np.random.normal(mu, sigma, size)
+
+    # Find the min/max point of the distribution, and pass this into the histogram method
+    start = int(round(min(dist)))
+    end = int(round(max(dist)))
+    people, bins = np.histogram(dist, end - start, density=False)
+
+    t = 0
+    zero = 0
+    output = {}
+    count = start
+
+    # Loop over the grouped people to get the output
+    for p in people:
+        if count <= 0:
+            zero += p
+        else:
+            zero = 0
+
+        if count >= 0:
+            output[count] = p + zero
+
+        count += 1
 
     # The following will generate a plot (with smoothing) if needed to
     # test the ouput from the normal distribution generator
     if plot == True:
-        pdf, bins = np.histogram(s, 10, density=True)
-        bins = np.delete(bins, 1, 0)
-
-        plt.plot(bins, pdf, linewidth=2, color="r")
+        plt.plot(bins, people, linewidth=2, color="r")
         plt.savefig("nd.png")
 
-    return s
+    return output
 
 
 # Generate distributed types
@@ -261,9 +299,12 @@ if __name__ == "__main__":
         num_tacs = args.n_tacs
         num_subscribers = args.n_subscribers
         num_days = args.n_days
-        num_calls = args.n_calls
-        num_sms = args.n_sms
-        num_mds = args.n_mds
+        mean_calls = args.n_mean_calls
+        sd_calls = args.n_sd_calls
+        mean_sms = args.n_mean_sms
+        sd_sms = args.n_sd_sms
+        mean_mds = args.n_mean_mds
+        sd_mds = args.n_sd_mds
         start_date = datetime.date.fromtimestamp(args.n_startdate)
 
         engine = sqlalchemy.create_engine(
