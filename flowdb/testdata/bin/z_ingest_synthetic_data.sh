@@ -55,11 +55,14 @@ elif [ -f /opt/synthetic_data/generate_synthetic_data_sql_refactor.py ] && [  "$
   python3 /opt/synthetic_data/generate_synthetic_data_sql_refactor.py \
       --n-subscribers ${N_SUBSCRIBERS} \
       --n-cells ${N_CELLS} \
-      --n-calls ${N_CALLS} \
       --n-days ${N_DAYS} \
       --n-tacs ${N_TACS} \
-      --n-mds ${N_MDS} \
-      --n-sms ${N_SMS} \
+      --n-mean_calls ${N_MEAN_CALLS} \
+      --n-sd_calls ${N_SD_CALLS} \
+      --n-mean_sms ${N_MEAN_SMS} \
+      --n-sd_sms ${N_SD_SMS} \
+      --n-mean_mds ${N_MEAN_MDS} \
+      --n-sd_mds ${N_SD_MDS} \
       --n-sites ${N_SITES}
 else
     echo "Must set SYNTHETIC_DATA_GENERATOR environment variable to 'sql' or 'python'."
