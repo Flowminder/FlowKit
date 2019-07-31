@@ -205,7 +205,6 @@ def generatedDistributedTypes(trans, dist, date, table, insert, values):
             ).first()
 
             points = cycle(range(1, 100, round(100 / d)))
-            callervariant = variants[caller[5]][next(vline)]
             callee_offset = offset  # + callee_inc
 
             # Then create all their calls
@@ -220,9 +219,6 @@ def generatedDistributedTypes(trans, dist, date, table, insert, values):
                 callee = trans.execute(
                     f"SELECT * FROM subs WHERE id != {caller[0]} LIMIT 1 OFFSET {callee_offset}"
                 ).first()
-
-                # Select the calleevariant
-                calleevariant = variants[callee[5]][next(vline)]
 
                 # Set a duration, upload, download and hashes - TODO: decide if these should be configurable
                 duration = floor(0.5 * 2600)
@@ -256,8 +252,8 @@ def generatedDistributedTypes(trans, dist, date, table, insert, values):
                         outgoing=outgoing,
                         incoming=incoming,
                         datetime=timeofday,
-                        callervariant=callervariant[point],
-                        calleevariant=calleevariant[point],
+                        row=next(vline),
+                        point=point,
                     )
                 )
 
@@ -356,6 +352,36 @@ if __name__ == "__main__":
 
                 for t in tables:
                     trans.execute(f"DROP TABLE events.{t[1]};")
+
+            # Steup stage 2. Load the variantions into a temp table
+            with log_duration(job=f"Import variation data"):
+                trans.execute(
+                    f"""
+                        CREATE TABLE IF NOT EXISTS variations (
+                            id SERIAL PRIMARY KEY,
+                            row INT,
+                            type TEXT,
+                            value JSON
+                        );
+                        TRUNCATE variations;
+                    """
+                )
+
+                for t in ["a", "b", "c", "d"]:
+                    row = 1
+                    with open(
+                        f"{dir}/../synthetic_data/data/variations/{t}.dat", "r"
+                    ) as f:
+                        for l in f:
+                            trans.execute(
+                                f"""
+                                    INSERT INTO variations (row, type, value) 
+                                    VALUES ({row}, '{t}', '["{l.strip().replace(" ", '","')}"]');
+                                """
+                            )
+                            row += 1
+
+                    f.close()
 
             # The following generates the infrastructure schema data
             # 1. Sites and cells
@@ -488,15 +514,6 @@ if __name__ == "__main__":
                     trans.execute(f"{insert} {', '.join(sql)}")
 
             # 4. Event SQL
-            variants = {}
-            for t in ["a", "b", "c", "d"]:
-                variants[t] = [
-                    line.strip().split(" ", 100)
-                    for line in open(
-                        f"{dir}/../synthetic_data/data/variations/{t}.dat", "r"
-                    )
-                ]
-
             # Loop over the days and generate all the types required
             for date in (
                 start_date + datetime.timedelta(days=i) for i in range(num_days)
@@ -523,12 +540,18 @@ if __name__ == "__main__":
                                 (
                                     '{outgoing}', '{datetime}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
                                     '{caller[3]}', '{caller[4]}', {duration}, 
-                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
+                                    (SELECT c.id FROM infrastructure.cells as c
+                                        JOIN variations as v
+                                        ON v.type = '{caller[5]}' AND v.row = {row}
+                                        AND ST_Equals(c.geom_point, cast(value->>{point} as text)::geometry) LIMIT 1)
                                 ),
                                 (
                                     '{incoming}', '{datetime}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
                                     '{callee[3]}', '{callee[4]}', {duration},
-                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
+                                    (SELECT c.id FROM infrastructure.cells as c
+                                        JOIN variations as v
+                                        ON v.type = '{callee[5]}' AND v.row = {row}
+                                        AND ST_Equals(c.geom_point, cast(value->>{point} as text)::geometry) LIMIT 1)
                                 )
                             """,
                         )
@@ -559,12 +582,18 @@ if __name__ == "__main__":
                                 (
                                     '{outgoing}', '{datetime}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
                                     '{caller[3]}', '{caller[4]}',
-                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
+                                    (SELECT c.id FROM infrastructure.cells as c
+                                        JOIN variations as v
+                                        ON v.type = '{caller[5]}' AND v.row = {row}
+                                        AND ST_Equals(c.geom_point, cast(value->>{point} as text)::geometry) LIMIT 1)
                                 ),
                                 (
                                     '{incoming}', '{datetime}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
                                     '{callee[3]}', '{callee[4]}',
-                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{calleevariant}'::geometry) LIMIT 1)
+                                    (SELECT c.id FROM infrastructure.cells as c
+                                        JOIN variations as v
+                                        ON v.type = '{callee[5]}' AND v.row = {row}
+                                        AND ST_Equals(c.geom_point, cast(value->>{point} as text)::geometry) LIMIT 1)
                                 )
                             """,
                         )
@@ -592,7 +621,10 @@ if __name__ == "__main__":
                                 (
                                     '{outgoing}', '{datetime}', {duration}, {total}, {upload}, {download}, '{caller[1]}', '{caller[2]}',
                                     '{caller[3]}', '{caller[4]}',
-                                    (SELECT id FROM infrastructure.cells WHERE ST_Equals(geom_point, '{callervariant}'::geometry) LIMIT 1)
+                                    (SELECT c.id FROM infrastructure.cells as c
+                                        JOIN variations as v
+                                        ON v.type = '{caller[5]}' AND v.row = {row}
+                                        AND ST_Equals(c.geom_point, cast(value->>{point} as text)::geometry) LIMIT 1)
                                 )
                             """,
                         )
@@ -611,7 +643,7 @@ if __name__ == "__main__":
         )
 
         # Remove the intermediary data tables
-        for tbl in ("subs",):
+        for tbl in ("subs","variations",):
             deferred_sql.append((f"Dropping {tbl}", [f"DROP TABLE {tbl};"]))
 
         def do_exec(args):
