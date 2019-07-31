@@ -63,7 +63,8 @@ elif [ -f /opt/synthetic_data/generate_synthetic_data_sql_refactor.py ] && [  "$
       --n-sd_sms ${N_SD_SMS} \
       --n-mean_mds ${N_MEAN_MDS} \
       --n-sd_mds ${N_SD_MDS} \
-      --n-sites ${N_SITES}
+      --n-sites ${N_SITES} \
+      --n-startdate ${N_STARTDATE}
 else
     echo "Must set SYNTHETIC_DATA_GENERATOR environment variable to 'sql' or 'python'."
     exit 1

@@ -30,6 +30,7 @@ services:
       INTERACTIONS_MULTIPLIER: ${INTERACTIONS_MULTIPLIER:?Must set INTERACTIONS_MULTIPLIER env var}
       DISASTER_START: ${DISASTER_START:?Must set DISASTER_START env var}
       DISASTER_END: ${DISASTER_END:?Must set DISASTER_END env var}
+      N_STARTDATE: ${N_STARTDATE:?Must set N_STARTDATE env var}
     shm_size: 1G
     tty: true
     stdin_open: true
