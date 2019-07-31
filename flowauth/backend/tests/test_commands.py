@@ -83,35 +83,6 @@ def test_demo_data_only_sets_up_once(app, caplog):
     assert "Database already set up by another worker, skipping." in caplog.text
 
 
-def test_demo_data_skips_when_in_progress(app, caplog):
-    """
-    Shouldn't attempt to create demo data if something else is.
-    """
-    with app.app_context():
-        runner = app.test_cli_runner()
-        app.config["DB_IS_SET_UP"].clear()
-        app.config["DB_IS_SETTING_UP"].set()
-        result = runner.invoke(demodata)
-        assert len(User.query.all()) == 1
-        assert len(Group.query.all()) == 1
-    assert "Database setup in progress by another worker, skipping." in caplog.text
-
-
-def test_db_init_skips_when_in_progress(app, caplog):
-    """
-    Shouldn't attempt to init the db if something else is.
-    """
-    with app.app_context():
-        runner = app.test_cli_runner()
-        app.config["DB_IS_SET_UP"].clear()
-        app.config["DB_IS_SETTING_UP"].set()
-        result = runner.invoke(init_db_command)
-
-        assert len(User.query.all()) == 1
-        assert len(Group.query.all()) == 1
-    assert "Database setup in progress by another worker, skipping." in caplog.text
-
-
 def test_db_init_only_runs_once(app, caplog):
     """
     Shouldn't attempt to init the db if something else has.

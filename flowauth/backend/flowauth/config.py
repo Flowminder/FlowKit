@@ -113,6 +113,5 @@ def get_config():
         FLOWAUTH_FERNET_KEY=flowauth_fernet_key,
         DEMO_MODE=True if os.getenv("DEMO_MODE") is not None else False,
         RESET_DB=True if os.getenv("RESET_FLOWAUTH_DB") is not None else False,
-        DB_IS_SETTING_UP=Event(),
         DB_IS_SET_UP=Event(),
     )
