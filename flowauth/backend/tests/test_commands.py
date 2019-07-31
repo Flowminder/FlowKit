@@ -32,7 +32,7 @@ def test_add_admin_promotes(app):
         db.session.commit()
         runner = app.test_cli_runner()
         result = runner.invoke(
-            add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTATOR_PASSWORD"]
+            add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTRATOR_PASSWORD"]
         )
         user = User.query.filter(User.username == "DUMMY_ADMINISTRATOR").first()
         assert user.is_admin
@@ -47,7 +47,7 @@ def test_init_db(app):
         runner = app.test_cli_runner()
         result = runner.invoke(init_db_command)
         result = runner.invoke(
-            add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTATOR_PASSWORD"]
+            add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTRATOR_PASSWORD"]
         )
         result = runner.invoke(init_db_command)
         assert len(User.query.all()) > 0
@@ -61,7 +61,7 @@ def test_init_db_force(app):
         runner = app.test_cli_runner()
         result = runner.invoke(init_db_command)
         result = runner.invoke(
-            add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTATOR_PASSWORD"]
+            add_admin_command, ["DUMMY_ADMINISTRATOR", "DUMMY_ADMINISTRATOR_PASSWORD"]
         )
         assert len(User.query.all()) > 0
         app.config["DB_IS_SET_UP"].clear()
