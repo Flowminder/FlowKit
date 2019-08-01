@@ -300,10 +300,10 @@
         },
         "approvaltests": {
             "hashes": [
-                "sha256:49292efb78706f915368a872b503c13e042ec59aeeebdf68693c27dae32b72e1"
+                "sha256:77bcfa60f975a48a378c96f61749d7943ecc27d486394896aa8536d93105d556"
             ],
             "index": "pypi",
-            "version": "==0.2.5"
+            "version": "==0.2.6"
         },
         "argh": {
             "hashes": [
