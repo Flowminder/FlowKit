@@ -62,22 +62,31 @@ docker secret rm SECRET_KEY || true
 echo "Adding secrets"
 # Flowauth
 openssl genrsa -out tokens-private-key.key 4096
-openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAUTH_DB_PASSWORD -
-openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAUTH_ADMIN_PASSWORD -
-openssl rand -base64 64 | docker secret create SECRET_KEY -
+FLOWAUTH_DB_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
+echo "$FLOWAUTH_DB_PASSWORD" | docker secret create FLOWAUTH_DB_PASSWORD -
+FLOWAUTH_ADMIN_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
+echo "$FLOWAUTH_ADMIN_PASSWORD"| docker secret create FLOWAUTH_ADMIN_PASSWORD -
+SECRET_KEY=$(openssl rand -base64 64)
+echo "$SECRET_KEY"| docker secret create SECRET_KEY -
 echo "admin" | docker secret create FLOWAUTH_ADMIN_USERNAME -
-pip install cryptography && python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())" | docker secret create FLOWAUTH_FERNET_KEY -
+pip install cryptography
+FLOWAUTH_FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+echo "$FLOWAUTH_FERNET_KEY"| docker secret create FLOWAUTH_FERNET_KEY -
 
 
 # Flowmachine
-openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
+FLOWMACHINE_FLOWDB_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
+echo "$FLOWMACHINE_FLOWDB_PASSWORD" | docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 echo "flowmachine" | docker secret create FLOWMACHINE_FLOWDB_USER -
 echo "flowapi" | docker secret create FLOWAPI_FLOWDB_USER -
-openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create REDIS_PASSWORD -
+REDIS_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
+echo "$REDIS_PASSWORD"| docker secret create REDIS_PASSWORD -
 
 # FlowDB
-openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWAPI_FLOWDB_PASSWORD -
-openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z' | docker secret create FLOWDB_POSTGRES_PASSWORD -
+FLOWAPI_FLOWDB_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
+echo "$FLOWAPI_FLOWDB_PASSWORD" | docker secret create FLOWAPI_FLOWDB_PASSWORD -
+FLOWDB_POSTGRES_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
+echo "$FLOWDB_POSTGRES_PASSWORD" | docker secret create FLOWDB_POSTGRES_PASSWORD -
 
 # FlowAPI
 openssl rsa -pubout -in  tokens-private-key.key -out tokens-public-key.pub
@@ -103,5 +112,40 @@ docker secret create cert-flowkit.pem cert-flowkit.pem
 
 # Deploy the stack
 
-echo "Deploying stack"
+echo "
+===============
+
+Deploying stack
+"
+
 docker stack deploy -c docker-stack.yml secrets_test
+
+echo "
+
+===============
+
+Deployed with settings:
+
+FlowDB users
+flowmachine:$FLOWMACHINE_FLOWDB_PASSWORD
+flowapi:$FLOWAPI_FLOWDB_PASSWORD
+flowdb:$FLOWDB_POSTGRES_PASSWORD
+
+FlowAuth admin user
+admin:$FLOWAUTH_ADMIN_PASSWORD
+
+FlowAuth DB user
+flowauth:$FLOWAUTH_DB_PASSWORD
+
+FlowAuth Fernet Key
+$FLOWAUTH_FERNET_KEY
+
+FlowAuth secret Key
+$SECRET_KEY
+
+Redis password
+$REDIS_PASSWORD
+
+===============
+"
+
