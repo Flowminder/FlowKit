@@ -152,40 +152,40 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
     # Find the min/max point of the distribution, and pass this into the histogram method
     start = int(round(min(dist)))
     end = int(round(max(dist)))
-    people, bins = np.histogram(dist, end - start, density=False)
+    subscribers, bins = np.histogram(dist, end - start, density=False)
 
     t = 0
     zero = 0
     output = {}
     count = start
 
-    # Loop over the grouped people to get the output
-    for p in people:
+    # Loop over the grouped subscribers to get the output
+    for s in subscribers:
         if count <= 0:
-            zero += p
+            zero += s
         else:
             zero = 0
 
         if count >= 0:
-            t += count * p
-            output[count] = p + zero
+            t += count * s  # The number of subscribers x the calls each
+            output[count] = s + zero
 
         count += 1
 
     # The following will generate a plot (with smoothing) if needed to
     # test the ouput from the normal distribution generator
     if plot == True:
-        plt.plot(bins, people, linewidth=2, color="r")
+        plt.plot(bins, subscribers, linewidth=2, color="r")
         plt.savefig("nd.png")
 
     return output, t
 
 
 # Generate distributed types
-def generatedDistributedTypes(trans, dist, date, table, insert, values):
+def generatedDistributedTypes(trans, dist, date, table, query):
     sql = []
     type_count = 0
-    offset = 0
+    id = 1
     vline = cycle(range(0, 50))
     callee_inc = round(num_subscribers * 0.1)
 
@@ -199,72 +199,17 @@ def generatedDistributedTypes(trans, dist, date, table, insert, values):
 
         # Loop the number of subscribers in this "pot"
         for p in range(0, dist_calls[d]):
-            # Get the caller
-            caller = trans.execute(
-                f"SELECT * FROM subs LIMIT 1 OFFSET {offset}"
-            ).first()
-
-            points = cycle(range(1, 100, round(100 / d)))
-            callee_offset = offset  # + callee_inc
-
-            # Then create all their calls
-            for c in range(0, d):
-                callee_offset += callee_inc
-                type_count += 1
-
-                if callee_offset >= (num_subscribers - 1) or callee_offset == offset:
-                    callee_offset = 0
-
-                # Get callee row
-                callee = trans.execute(
-                    f"SELECT * FROM subs WHERE id != {caller[0]} LIMIT 1 OFFSET {callee_offset}"
-                ).first()
-
-                # Set a duration, upload, download and hashes - TODO: decide if these should be configurable
-                duration = floor(0.5 * 2600)
-                upload = round(0.5 * 100000)
-                download = round(0.5 * 100000)
-                total = upload + download
-
-                # Select the next "point", and use this to create a reference for the time of day
-                point = next(points)
-                timeofday = datetime.datetime.combine(
-                    date, datetime.time(0, 0)
-                ) + datetime.timedelta(minutes=(14.4 * point))
-
-                # Hashes
-                outgoing = generate_hash(
-                    time.mktime(date.timetuple()) + offset + type_count
+            trans.execute(
+                query.format(
+                    table=table,
+                    id=id,
+                    from_count=id + 1,
+                    to_count=(id + d) * 2,
+                    timestamp=time.mktime(date.timetuple()),
                 )
-                incoming = generate_hash(
-                    time.mktime(date.timetuple()) + callee_offset + type_count + c
-                )
+            )
 
-                # Generate the outgoing/incoming of type by making the replacements in the query passed in
-                sql.append(
-                    values.format(
-                        caller=caller,
-                        callee=callee,
-                        duration=duration,
-                        upload=upload,
-                        download=download,
-                        total=total,
-                        outgoing=outgoing,
-                        incoming=incoming,
-                        datetime=timeofday,
-                        row=next(vline),
-                        point=point,
-                    )
-                )
-
-            # Process in groups - TODO - this will need to be fine tuned
-            if len(sql) > 0:
-                trans.execute(f"{insert.format(table=table)} VALUES {', '.join(sql)}")
-                sql.clear()
-
-            offset += 1
-
-    return offset
+            id += 1
 
 
 # Add post event SQL
@@ -544,7 +489,7 @@ if __name__ == "__main__":
                                         s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac
                                     FROM subs s1
                                         LEFT JOIN subs s2 
-                                        on s2.id in (SELECT * FROM generate_series({from}, {to}, 2))
+                                        on s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 1))
                                         and s2.id != s1.id
 
                                         LEFT JOIN variations v1
