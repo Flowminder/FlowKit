@@ -44,15 +44,15 @@ class HistogramAggregation(Query):
                 f""" select min(value) from ({self.locations.get_query()}) as to_agg """
             )
             
-            sql = f"""
-                select count(value) as value, width_bucket(value,({max_range}),({min_range}),{self.bins}) as bin_edges 
-                from ({self.locations.get_query()}) AS to_agg
-                group by bin_edges
-                """
             # sql = f"""
-            #     select count(value) as value, width_bucket(value,Array[{self.bins}]) as bin_edges 
+            #     select count(value) as value, width_bucket(value,({max_range}),({min_range}),{self.bins}) as bin_edges 
             #     from ({self.locations.get_query()}) AS to_agg
             #     group by bin_edges
             #     """
+            sql = f"""
+                select count(value) as value, width_bucket(value,Array[5, 20, 50, 70, 80, 100]) as bin_edges 
+                from ({self.locations.get_query()}) AS to_agg
+                group by bin_edges
+                """
 
         return sql
