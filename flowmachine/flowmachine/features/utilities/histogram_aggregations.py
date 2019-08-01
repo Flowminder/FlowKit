@@ -21,18 +21,20 @@ class HistogramAggregation(Query):
 
     @property
     def column_names(self) -> List[str]:
-        return ["value", "bins"]
+        return ["value", "bin_edges"]
 
     def _make_query(self):
         if isinstance(self.ranges, tuple):
             max_range = max(self.ranges)
             min_range = min(self.ranges)
+            
             sql = f"""
             SELECT
-                value,
-                width_bucket(value,{max_range},{min_range},{self.bins}) as bins
+                count(value) as value,
+                width_bucket(value,{max_range},{min_range},{self.bins}) as bin_edges
             FROM
                 ({self.locations.get_query()}) AS to_agg
+            group by bin_edges
             """
         else:
             max_range = (
@@ -41,9 +43,16 @@ class HistogramAggregation(Query):
             min_range = (
                 f""" select min(value) from ({self.locations.get_query()}) as to_agg """
             )
+            
             sql = f"""
-                select value, width_bucket(value,({max_range}),({min_range}),{self.bins}) as bins from ({self.locations.get_query()}) AS to_agg
-                group by value
+                select count(value) as value, width_bucket(value,({max_range}),({min_range}),{self.bins}) as bin_edges 
+                from ({self.locations.get_query()}) AS to_agg
+                group by bin_edges
                 """
+            # sql = f"""
+            #     select count(value) as value, width_bucket(value,Array[{self.bins}]) as bin_edges 
+            #     from ({self.locations.get_query()}) AS to_agg
+            #     group by bin_edges
+            #     """
 
         return sql

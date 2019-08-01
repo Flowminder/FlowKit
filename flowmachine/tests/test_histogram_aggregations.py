@@ -16,14 +16,18 @@ from flowmachine.features.subscriber.daily_location import locate_subscribers
 from flowmachine.utils import list_of_dates
 
 
-def test_can_be_aggregated_admin3_distribution(get_dataframe):
+def test_can_be_aggregated_admin3_distribution  (get_dataframe):
     """
     
     """
     RoG = RadiusOfGyration("2016-01-01", "2016-01-02")
-
-    agg = HistogramAggregation(locations=RoG, bins=5)
+    
+    agg = HistogramAggregation(locations=RoG, bins=[5, 20, 50, 70, 80, 100])
     df = get_dataframe(agg)
+    de = np.histogram(get_dataframe(RoG).value, bins=[5,20,50,70,80,100])
     print("==================================")
-    print(np.histogram(df["value"], [5]))
+    print(df)
+    # for x in de:
+    #   print(x)
     print("==================================")
+    
