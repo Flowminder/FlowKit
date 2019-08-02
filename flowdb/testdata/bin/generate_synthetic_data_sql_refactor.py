@@ -531,10 +531,10 @@ if __name__ == "__main__":
                                         imsi, imei, tac
                                     FROM (
                                         SELECT (id1 * id2) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
-                                        caller_loc->>(select nextval('pointcount'))::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
+                                        caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
                                         select (id1 + id2) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
-                                        msisdn AS msisdn_counterpart, callee_loc->>(select nextval('pointcount'))::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
+                                        msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
                                 )
@@ -595,10 +595,10 @@ if __name__ == "__main__":
                                         imsi, imei, tac
                                     FROM (
                                         SELECT (id1 * id2) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
-                                        caller_loc->>(select nextval('pointcount'))::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
+                                        caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
                                         select (id1 + id2) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
-                                        msisdn AS msisdn_counterpart, callee_loc->>(select nextval('pointcount'))::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
+                                        msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
                                 )
