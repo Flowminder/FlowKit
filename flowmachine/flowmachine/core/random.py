@@ -156,31 +156,16 @@ def random_factory(parent_class):
 
         Parameters
         ----------
-        variable : str
-            Either 'msisdn' or 'sites'. The class will select a random sample
-            of msisdn or sites. If this argument is set, it is not possible to
-            set 'columns' and/or 'query'. The argument 'table' then refers to
-            any table in the 'events' schema and only has implications when
-            'variable' is equal to 'msisdn'.
-        columns : str or list
-            The columns from the table to be selected. If this argument is set,
-            it is not possible to set 'variable' and/or 'query'.
-        table : str
-            Schema qualified name of the table which the analysis is based
-            upon. If 'ALL' it will use all tables that contain location data,
-            specified in flowmachine.yml. If this argument is set, it is not possible
-            to set 'query'. If 'variable' is set, then 'table' should refer to
-            a table in the 'events' schema.
         query : str
             A query specifying a table from which a random sample will be drawn
             from. If this argument is set, it is not possible to set
             'variable' and/or 'table'.
         size : int
             The size of the random sample.
-        fraction : int
+        fraction : float
             The fraction of rows to be selected from the table.
         method : str, default 'system_rows'
-            Either 'system_rows', 'system', 'bernouilli', 'random_ids'.
+            Either 'system_rows', 'system', 'bernoulli', 'random_ids'.
             Specifies the method used to select the random sample.
             'system_rows': performs block-level sampling by randomly sampling
                 each physical storage page of the underlying relation. This
@@ -202,6 +187,10 @@ def random_factory(parent_class):
             Whether to estimate the number of rows in the table using
             information contained in the `pg_class` or whether to perform an
             actual count in the number of rows.
+        seed : int or float
+            Seed for a repeatable random sample. For 'random_ids' method, seed must
+            have a value between 0 and 1. Seed cannot be used with 'system_rows'
+            method.
 
         Examples
         --------
