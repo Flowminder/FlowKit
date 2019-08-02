@@ -185,7 +185,8 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
 def generatedDistributedTypes(trans, dist, date, table, query):
     sql = []
     type_count = 0
-    id = 1
+    caller_id = 1
+    to_id = 1
     vline = cycle(range(0, 50))
     callee_inc = round(num_subscribers * 0.1)
 
@@ -198,19 +199,26 @@ def generatedDistributedTypes(trans, dist, date, table, query):
             continue
 
         # Loop the number of subscribers in this "pot"
+        from_count = 0
+        to_count = 0
         for p in range(0, dist_calls[d]):
+            # Ensure we can generate the callee counts required
+            if ((to_id + 5) + (d * 2) - 1 >= num_subscribers):
+                to_id = 1
+            
+            from_count = to_id + 5 # This value gives us a skip of subscribers
+            to_count = from_count + (d * 2) - 1
             trans.execute(
                 query.format(
                     table=table,
-                    id=id,
-                    from_count=id + 1,
-                    to_count=(id + d) * 2,
+                    caller_id=caller_id,
+                    from_count=from_count,
+                    to_count=to_count,
                     timestamp=time.mktime(date.timetuple()),
                 )
             )
-
-            id += 1
-
+            to_id += 1
+            caller_id += 1
 
 # Add post event SQL
 def addEventSQL(type, table):
@@ -489,7 +497,8 @@ if __name__ == "__main__":
                                         s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac
                                     FROM subs s1
                                         LEFT JOIN subs s2 
-                                        on s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 1))
+                                        -- Series generator to provide the call count for each caller
+                                        on s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 2))
                                         and s2.id != s1.id
 
                                         LEFT JOIN variations v1
@@ -500,7 +509,7 @@ if __name__ == "__main__":
                                         ON v2.type  = s2.variant
                                         AND v2.row = s2.id
 
-                                    WHERE s1.id = {id}
+                                    WHERE s1.id = {caller_id}
                                 )
                                 INSERT INTO events.calls_{table} (id, outgoing, datetime, duration, msisdn, msisdn_counterpart, location_id, imsi, imei, tac) 
                                 (
