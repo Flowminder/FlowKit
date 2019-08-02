@@ -16,7 +16,7 @@ class RandomSampleSchema(Schema):
         required=True,
     )
     estimate_count = fields.Boolean()
-    seed = fields.Float(validate=Range(0.0, 1.0))
+    seed = fields.Float()
 
     @validates_schema
     def validate_size_or_fraction(self, data, **kwargs):
@@ -26,8 +26,12 @@ class RandomSampleSchema(Schema):
             )
 
     @validates_schema
-    def validate_seed_permitted(self, data, **kwargs):
+    def validate_seed(self, data, **kwargs):
         if data["method"] == "system_rows" and "seed" in data:
             raise ValidationError(
                 "'system_rows' sampling method does not support seeding"
+            )
+        elif data["method"] == "random_ids" and not 0 <= data["seed"] <= 1:
+            raise ValidationError(
+                "Seed must be between 0 and 1 for 'random_ids' sampling method"
             )
