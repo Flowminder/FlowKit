@@ -203,10 +203,10 @@ def generatedDistributedTypes(trans, dist, date, table, query):
         to_count = 0
         for p in range(0, dist_calls[d]):
             # Ensure we can generate the callee counts required
-            if ((to_id + 5) + (d * 2) - 1 >= num_subscribers):
+            if (to_id + 5) + (d * 2) - 1 >= num_subscribers:
                 to_id = 1
-            
-            from_count = to_id + 5 # This value gives us a skip of subscribers
+
+            from_count = to_id + 5  # This value gives us a skip of subscribers
             to_count = from_count + (d * 2) - 1
             trans.execute(
                 query.format(
@@ -219,6 +219,7 @@ def generatedDistributedTypes(trans, dist, date, table, query):
             )
             to_id += 1
             caller_id += 1
+
 
 # Add post event SQL
 def addEventSQL(type, table):
@@ -467,8 +468,13 @@ if __name__ == "__main__":
                     trans.execute(f"{insert} {', '.join(sql)}")
 
             # 4. Event SQL
-            # Create a temp rowcount sequence to select the variation rows
-            trans.execute("CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;")
+            # Create a temp rowcount/pointcount sequence to select the variation rows/points
+            trans.execute(
+                "CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;"
+            )
+            trans.execute(
+                "CREATE TEMPORARY SEQUENCE pointcount MINVALUE 1 maxvalue 100 CYCLE;"
+            )
 
             # Loop over the days and generate all the types required
             for date in (
@@ -521,14 +527,14 @@ if __name__ == "__main__":
                                         '{table}'::TIMESTAMPTZ + interval '30 mins' * datetime AS datetime,
                                         floor(0.5 * 2600) AS duration,
                                         msisdn, msisdn_counterpart,
-                                        (SELECT id FROM infrastructure.cells where ST_Equals(geom_point, loc::geometry)) AS location_id,
+                                        (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,(loc->>(select nextval('pointcount'))::INTEGER)::geometry)) AS location_id,
                                         imsi, imei, tac
                                     FROM (
                                         SELECT (id1 * id2) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
-                                        caller_loc->>LEAST(99, (id1 * id2)) AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
+                                        caller_loc AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
                                         select (id1 + id2) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
-                                        msisdn AS msisdn_counterpart, callee_loc->>least(99, (id1 + id2)) AS loc, callee_imsi AS imsi, callee_imei AS imei, 
+                                        msisdn AS msisdn_counterpart, callee_loc AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
                                 )
@@ -622,7 +628,7 @@ if __name__ == "__main__":
         )
 
         # Remove the intermediary data tables
-        for tbl in ("subs","variations",):
+        for tbl in ("subs", "variations"):
             deferred_sql.append((f"Dropping {tbl}", [f"DROP TABLE {tbl};"]))
 
         def do_exec(args):
