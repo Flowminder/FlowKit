@@ -5,6 +5,8 @@
 from marshmallow import Schema, fields, validates_schema, ValidationError
 from marshmallow.validate import OneOf, Range
 
+from flowmachine.core.random import random_factory
+
 
 class RandomSampleSchema(Schema):
     size = fields.Integer(validate=Range(min=1))
@@ -35,3 +37,29 @@ class RandomSampleSchema(Schema):
             raise ValidationError(
                 "Seed must be between 0 and 1 for 'random_ids' sampling method"
             )
+
+    @post_load
+    def make_random_sample_factory(self, params, **kwargs):
+        return RandomSampleFactory(**params)
+
+
+class RandomSampleFactory:
+    def __init__(self, *, size, fraction, method, estimate_count, seed):
+        # Note: all input parameters need to be defined as attributes on `self`
+        # so that marshmallow can serialise the object correctly.
+        self.size = size
+        self.fraction = fraction
+        self.method = method
+        self.estimate_count = estimate_count
+        self.seed = seed
+
+    def make_random_sample_object(self, query):
+        Random = random_factory(type(query))
+        return Random(
+            query,
+            size=self.size,
+            fraction=self.fraction,
+            method=self.method,
+            estimate_count=self.estimate_count,
+            seed=self.seed,
+        )
