@@ -623,15 +623,29 @@ if __name__ == "__main__":
                             dist_mds,
                             date,
                             table,
-                            "INSERT INTO events.mds_{table} (id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id)",
                             """
-                                (
-                                    '{outgoing}', '{datetime}', {duration}, {total}, {upload}, {download}, '{caller[1]}', '{caller[2]}',
-                                    '{caller[3]}', '{caller[4]}',
-                                    (SELECT c.id FROM infrastructure.cells as c
-                                        JOIN variations as v
-                                        ON v.type = '{caller[5]}' AND v.row = {row}
-                                        AND ST_Equals(c.geom_point, cast(value->>{point} as text)::geometry) LIMIT 1)
+                                WITH callers AS (
+                                    SELECT s.msisdn, s.imei, s.imsi, s.tac, v.value as loc, round(0.5 * 100000) as volume
+                                    FROM subs s
+                                        
+                                        LEFT JOIN variations v
+                                        ON v.type  = s.variant
+                                        AND v.row = (select nextval('rowcount'))
+                                    
+                                    WHERE s.id = {caller_id}
+                                )
+                                INSERT INTO events.mds_{table} (id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id) (
+                                    select 
+                                    md5(({timestamp} + s.id)::TEXT) AS id,
+                                    '{table}'::TIMESTAMPTZ + interval '30 mins' * (point / 3) AS datetime,
+                                    FLOOR(0.5 * 2600) AS duration,
+                                    c.volume * 2 as volume_total,
+                                    c.volume as volume_upload,
+                                    c.volume as volume_download,
+                                    c.msisdn, c.imei, c.imsi, c.tac, (SELECT id FROM infrastructure.cells where ST_Equals(geom_point, (c.loc->>s.point::INTEGER)::geometry)) as loc
+                                    FROM
+                                    callers c,
+                                    (SELECT row_number() over() AS id, nextval('pointcount') as point FROM generate_series({from_count}, {to_count}, 2)) s
                                 )
                             """,
                         )
