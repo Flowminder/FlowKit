@@ -562,23 +562,45 @@ if __name__ == "__main__":
                             dist_sms,
                             date,
                             table,
-                            "INSERT INTO events.sms_{table} (id, datetime, outgoing, msisdn, msisdn_counterpart, imei, imsi, tac, location_id)",
                             """
+                                WITH callers AS (
+                                    SELECT 
+                                        s1.id AS id1, s2.id AS id2, s1.msisdn, s2.msisdn AS msisdn_counterpart, 
+                                        v1.value AS caller_loc, v2.value AS callee_loc,
+                                        s1.imsi AS caller_imsi, s1.imei AS caller_imei, s1.tac AS caller_tac,
+                                        s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac
+                                    FROM subs s1
+                                        LEFT JOIN subs s2 
+                                        -- Series generator to provide the call count for each caller
+                                        on s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 2))
+                                        and s2.id != s1.id
+
+                                        LEFT JOIN variations v1
+                                        ON v1.type  = s1.variant
+                                        AND v1.row = (select nextval('rowcount'))
+
+                                        LEFT JOIN variations v2
+                                        ON v2.type  = s2.variant
+                                        AND v2.row = (select nextval('rowcount'))
+
+                                    WHERE s1.id = {caller_id}
+                                )
+                                INSERT INTO events.sms_{table} (id, outgoing, datetime, msisdn, msisdn_counterpart, location_id, imsi, imei, tac) 
                                 (
-                                    '{outgoing}', '{datetime}', true, '{caller[1]}', '{callee[1]}', '{caller[2]}',
-                                    '{caller[3]}', '{caller[4]}',
-                                    (SELECT c.id FROM infrastructure.cells as c
-                                        JOIN variations as v
-                                        ON v.type = '{caller[5]}' AND v.row = {row}
-                                        AND ST_Equals(c.geom_point, cast(value->>{point} as text)::geometry) LIMIT 1)
-                                ),
-                                (
-                                    '{incoming}', '{datetime}', false, '{callee[1]}', '{caller[1]}', '{callee[2]}',
-                                    '{callee[3]}', '{callee[4]}',
-                                    (SELECT c.id FROM infrastructure.cells as c
-                                        JOIN variations as v
-                                        ON v.type = '{callee[5]}' AND v.row = {row}
-                                        AND ST_Equals(c.geom_point, cast(value->>{point} as text)::geometry) LIMIT 1)
+                                    SELECT
+                                        md5(({timestamp} + id)::TEXT) AS id, outgoing,
+                                        '{table}'::TIMESTAMPTZ + interval '30 mins' * datetime AS datetime,
+                                        msisdn, msisdn_counterpart,
+                                        (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
+                                        imsi, imei, tac
+                                    FROM (
+                                        SELECT (id1 * id2) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
+                                        caller_loc->>(select nextval('pointcount'))::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
+                                        UNION ALL
+                                        select (id1 + id2) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
+                                        msisdn AS msisdn_counterpart, callee_loc->>(select nextval('pointcount'))::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
+                                        callee_tac AS tac from callers
+                                    ) _
                                 )
                             """,
                         )
