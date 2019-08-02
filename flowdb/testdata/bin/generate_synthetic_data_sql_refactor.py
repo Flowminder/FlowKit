@@ -467,6 +467,9 @@ if __name__ == "__main__":
                     trans.execute(f"{insert} {', '.join(sql)}")
 
             # 4. Event SQL
+            # Create a temp rowcount sequence to select the variation rows
+            trans.execute("CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;")
+
             # Loop over the days and generate all the types required
             for date in (
                 start_date + datetime.timedelta(days=i) for i in range(num_days)
@@ -503,11 +506,11 @@ if __name__ == "__main__":
 
                                         LEFT JOIN variations v1
                                         ON v1.type  = s1.variant
-                                        AND v1.row = s1.id
+                                        AND v1.row = (select nextval('rowcount'))
 
                                         LEFT JOIN variations v2
                                         ON v2.type  = s2.variant
-                                        AND v2.row = s2.id
+                                        AND v2.row = (select nextval('rowcount'))
 
                                     WHERE s1.id = {caller_id}
                                 )
