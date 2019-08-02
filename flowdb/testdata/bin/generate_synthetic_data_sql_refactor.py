@@ -473,7 +473,7 @@ if __name__ == "__main__":
                 "CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;"
             )
             trans.execute(
-                "CREATE TEMPORARY SEQUENCE pointcount MINVALUE 1 maxvalue 100 CYCLE;"
+                "CREATE TEMPORARY SEQUENCE pointcount MINVALUE 0 maxvalue 99 CYCLE;"
             )
 
             # Loop over the days and generate all the types required
@@ -527,14 +527,14 @@ if __name__ == "__main__":
                                         '{table}'::TIMESTAMPTZ + interval '30 mins' * datetime AS datetime,
                                         floor(0.5 * 2600) AS duration,
                                         msisdn, msisdn_counterpart,
-                                        (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,(loc->>(select nextval('pointcount'))::INTEGER)::geometry)) AS location_id,
+                                        (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
                                         imsi, imei, tac
                                     FROM (
                                         SELECT (id1 * id2) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
-                                        caller_loc AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
+                                        caller_loc->>(select nextval('pointcount'))::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
                                         select (id1 + id2) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
-                                        msisdn AS msisdn_counterpart, callee_loc AS loc, callee_imsi AS imsi, callee_imei AS imei, 
+                                        msisdn AS msisdn_counterpart, callee_loc->>(select nextval('pointcount'))::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
                                 )
