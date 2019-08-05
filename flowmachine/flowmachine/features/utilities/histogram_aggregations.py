@@ -24,18 +24,9 @@ class HistogramAggregation(Query):
         return ["value", "bin_edges"]
 
     def _make_query(self):
-        if isinstance(self.ranges, tuple):
+        if isinstance(self.ranges, tuple) and not None:
             max_range = max(self.ranges)
             min_range = min(self.ranges)
-            
-            sql = f"""
-            SELECT
-                count(value) as value,
-                width_bucket(value,{max_range},{min_range},{self.bins}) as bin_edges
-            FROM
-                ({self.locations.get_query()}) AS to_agg
-            group by bin_edges
-            """
         else:
             max_range = (
                 f"""select max(value) from ({self.locations.get_query()}) as to_agg """
@@ -43,14 +34,21 @@ class HistogramAggregation(Query):
             min_range = (
                 f""" select min(value) from ({self.locations.get_query()}) as to_agg """
             )
-            
-            # sql = f"""
-            #     select count(value) as value, width_bucket(value,({max_range}),({min_range}),{self.bins}) as bin_edges 
-            #     from ({self.locations.get_query()}) AS to_agg
-            #     group by bin_edges
-            #     """
+
+        if isinstance(self.bins,int):
+
             sql = f"""
-                select count(value) as value, width_bucket(value,Array[5, 20, 50, 70, 80, 100]) as bin_edges 
+                SELECT
+                    count(value) as value,
+                    width_bucket(value::numeric,{max_range},{min_range},{self.bins}) as bin_edges
+                FROM
+                    ({self.locations.get_query()}) AS to_agg
+                group by bin_edges
+                """
+        else:
+            
+            sql = f"""
+                select count(value) as value, width_bucket(value::numeric,Array[5, 20, 50, 70, 80, 100]::numeric[]) as bin_edges 
                 from ({self.locations.get_query()}) AS to_agg
                 group by bin_edges
                 """
