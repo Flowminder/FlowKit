@@ -11,12 +11,10 @@ from cryptography.hazmat.primitives import serialization
 from multiprocessing import Event
 
 from get_secret_or_env_var import environ, getenv
-from typing import Optional
 
 import logging
 
 import os
-from pathlib import Path
 from cryptography.fernet import Fernet
 
 
@@ -60,10 +58,8 @@ def get_config():
         log_level = getattr(
             logging, getenv("FLOWAUTH_LOG_LEVEL", "error").upper(), logging.ERROR
         )
-        db_uri = get_secret_or_env_var(
-        "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
-        )
-        db_uri = db_uri.format(get_secret_or_env_var("FLOWAUTH_DB_PASSWORD", ""))
+        db_uri = getenv("DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db"))
+        db_uri = db_uri.format(getenv("FLOWAUTH_DB_PASSWORD", ""))
 
         return dict(
             PRIVATE_JWT_SIGNING_KEY=load_private_key(
