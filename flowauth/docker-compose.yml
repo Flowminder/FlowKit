@@ -1,38 +1,56 @@
-version: '2.1'
-
+version: '3.7'
+secrets:
+  PRIVATE_JWT_SIGNING_KEY: # Secret used to sign api tokens
+    external: true
+  FLOWAUTH_FERNET_KEY: # Used for encrypted-at-rest storage of tokens in flowauth
+    external: true
+  FLOWAUTH_ADMIN_USERNAME: # Default flowauth administrator username
+    external: true
+  FLOWAUTH_ADMIN_PASSWORD: # Default flowauth administrator password
+    external: true
+  FLOWAUTH_DB_PASSWORD: # Password for flowauth's database
+    external: true
+  SECRET_KEY:
+    external: true # Flask secret key
 networks:
-  database:
   web:
-
+  flowauth_database:
+volumes:
+    vhost:
+    nginx_home:
+    certs:
 services:
   flowauth:
-    image: flowminder/flowauth:${TAG:-auth-manager}
+    image: flowminder/flowauth:${CONTAINER_TAG:-latest}
+    ports:
+      - "9091:80"
     environment:
-      VIRTUAL_HOST: ${VIRTUAL_HOST:-exampledomain.com}
-      LETSENCRYPT_HOST: ${HOST-exampledomain.com}
-      LETSENCRYPT_EMAIL: ${EMAIL:-admin@exampledomain.com}
-      DB_URI: "postgresql://postgres:${POSTGRES_PASSWORD:-changeme}@db:5432/flowauth"
-      FLOWAUTH_FERNET_KEY: ${FLOWAUTH_FERNET_KEY:?Must set FLOWAUTH_FERNET_KEY env var}
-      FLOWAUTH_ADMIN_PASSWORD: ${FLOWAUTH_ADMIN_PASSWORD:?Must set FLOWAUTH_ADMIN_PASSWORD env var}
-      FLOWAUTH_ADMIN_USERNAME: ${FLOWAUTH_ADMIN_USERNAME:?Must set FLOWAUTH_ADMIN_USERNAME env var}
-      SECRET_KEY: ${SECRET_KEY:?Must set SECRET_KEY env var}
+      DB_URI: "postgres://flowauth:{}@flowauth_postgres:5432/flowauth"
+    secrets:
+      - PRIVATE_JWT_SIGNING_KEY
+      - FLOWAUTH_FERNET_KEY
+      - FLOWAUTH_ADMIN_USERNAME
+      - FLOWAUTH_ADMIN_PASSWORD
+      - FLOWAUTH_DB_PASSWORD
+      - SECRET_KEY
     networks:
-      database:
+      flowauth_database:
         aliases:
           - web
       web:
         aliases:
           - auth
 
-  postgres:
+  flowauth_postgres:
     image: postgres
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_PASSWORD_FILE: /run/secrets/FLOWAUTH_DB_PASSWORD
+      POSTGRES_USER: flowauth
       POSTGRES_DB: flowauth
+    secrets:
+      - FLOWAUTH_DB_PASSWORD
     networks:
-      database:
-        aliases:
-          - db
+      - flowauth_database
 
   nginx-proxy:
     image: jwilder/nginx-proxy
@@ -40,10 +58,10 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - "/etc/nginx/vhost.d"
-      - "/usr/share/nginx/html"
+      - vhost:/etc/nginx/vhost.d
+      - nginx_home:/usr/share/nginx/html
+      - certs:/etc/nginx/certs
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
-      - "/etc/nginx/certs"
     networks:
       web:
         aliases:
@@ -52,6 +70,7 @@ services:
   letsencrypt-nginx-proxy-companion:
     image: jrcs/letsencrypt-nginx-proxy-companion
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    volumes_from:
-      - "nginx-proxy"
+      - vhost:/etc/nginx/vhost.d
+      - nginx_home:/usr/share/nginx/html
+      - certs:/etc/nginx/certs
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"

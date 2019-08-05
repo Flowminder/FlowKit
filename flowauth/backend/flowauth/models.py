@@ -453,19 +453,12 @@ def init_db(force: bool = False) -> None:
     if current_app.config["DB_IS_SET_UP"].is_set():
         current_app.logger.debug("Database already set up by another worker, skipping.")
         return
-    if current_app.config["DB_IS_SETTING_UP"].is_set():
-        current_app.logger.debug(
-            "Database setup in progress by another worker, skipping."
-        )
-        return
-    current_app.config["DB_IS_SETTING_UP"].set()
     current_app.logger.debug("Initialising db.")
     if force:
         current_app.logger.debug("Dropping existing db.")
         db.drop_all()
     db.create_all()
     current_app.config["DB_IS_SET_UP"].set()
-    current_app.config["DB_IS_SETTING_UP"].clear()
     current_app.logger.debug("Initialised db.")
 
 
@@ -518,12 +511,6 @@ def make_demodata():
     if current_app.config["DB_IS_SET_UP"].is_set():
         current_app.logger.debug("Database already set up by another worker, skipping.")
         return
-    if current_app.config["DB_IS_SETTING_UP"].is_set():
-        current_app.logger.debug(
-            "Database setup in progress by another worker, skipping."
-        )
-        return
-    current_app.config["DB_IS_SETTING_UP"].set()
     current_app.logger.debug("Creating demo data.")
     db.drop_all()
     db.create_all()
@@ -611,7 +598,6 @@ def make_demodata():
     )
     db.session.commit()
     current_app.config["DB_IS_SET_UP"].set()
-    current_app.config["DB_IS_SETTING_UP"].clear()
     current_app.logger.debug("Made demo data.")
 
 
