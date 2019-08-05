@@ -14,7 +14,6 @@ class HistogramAggregation(Query):
     def __init__(self, *, locations, bins, ranges: tuple = None):
 
         self.locations = locations
-        # self.spatial_unit = locations.spatial_unit
         self.bins = bins
         self.ranges = ranges
         super().__init__()
@@ -24,33 +23,44 @@ class HistogramAggregation(Query):
         return ["value", "bin_edges"]
 
     def _make_query(self):
-        if isinstance(self.ranges, tuple) and not None:
-            max_range = max(self.ranges)
-            min_range = min(self.ranges)
-        else:
-            max_range = (
-                f"""select max(value) from ({self.locations.get_query()}) as to_agg """
-            )
-            min_range = (
-                f""" select min(value) from ({self.locations.get_query()}) as to_agg """
-            )
 
-        if isinstance(self.bins,int):
+        if isinstance(self.bins, int):
+            if isinstance(self.ranges, tuple) and not None:
+                max_range = max(self.ranges)
+                min_range = min(self.ranges)
+                sql = f""" 
+                    SELECT
+                        count(value) as value,
+                        width_bucket(foo.value::numeric,{max_range},{min_range},{self.bins}) as bin_edges
+                    FROM(
+                        select value from ({self.locations.get_query()}) AS to_agg
+                        where value between {min_range} and {max_range}
+                        ) as foo
+                    group by bin_edges
+                    """
+            elif self.ranges is None:
+                max_range = f"""select max(value) from ({self.locations.get_query()}) as to_agg """
+                min_range = f""" select min(value) from ({self.locations.get_query()}) as to_agg """
+                sql = f""" 
+                    SELECT
+                        count(value) as value,
+                        width_bucket(foo.value::numeric,({max_range}),({min_range}),{self.bins}) as bin_edges
+                    FROM(
+                        select value from ({self.locations.get_query()}) AS to_agg
+                        where value between ({min_range}) and ({max_range})
+                        ) as foo
+                    group by bin_edges
+                    """
+            else:
+                raise ValueError("Range should be tuple of two values")
+        elif isinstance(self.bins, list):
 
             sql = f"""
-                SELECT
-                    count(value) as value,
-                    width_bucket(value::numeric,{max_range},{min_range},{self.bins}) as bin_edges
-                FROM
-                    ({self.locations.get_query()}) AS to_agg
-                group by bin_edges
-                """
-        else:
-            
-            sql = f"""
-                select count(value) as value, width_bucket(value::numeric,Array[5, 20, 50, 70, 80, 100]::numeric[]) as bin_edges 
+                select count(value) as value, width_bucket(value::numeric,Array{self.bins}::numeric[]) as bin_edges 
                 from ({self.locations.get_query()}) AS to_agg
                 group by bin_edges
                 """
+        else:
+            raise ValueError("Bins should be integer or list of integer values.")
 
         return sql
