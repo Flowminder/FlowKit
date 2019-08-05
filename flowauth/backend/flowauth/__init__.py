@@ -13,6 +13,14 @@ from flask_principal import Principal, identity_loaded, UserNeed, RoleNeed
 from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
 from flowauth.config import get_config
 
+try:
+    from uwsgidecorators import lock
+except ImportError:
+    # Psuedo-lock function for if not running under uwsgi
+    def lock(func):
+        return func
+
+
 from .config import get_config
 from .invalid_usage import InvalidUsage
 from .models import *
@@ -61,13 +69,15 @@ def create_app(test_config=None):
         app.before_first_request(make_demodata)
     else:
         # Initialise the database
-        app.before_first_request(partial(init_db, force=app.config["RESET_DB"]))
+        app.before_first_request(lock(partial(init_db, force=app.config["RESET_DB"])))
         # Create an admin user
         app.before_first_request(
-            partial(
-                add_admin,
-                username=app.config["ADMIN_USER"],
-                password=app.config["ADMIN_PASSWORD"],
+            lock(
+                partial(
+                    add_admin,
+                    username=app.config["ADMIN_USER"],
+                    password=app.config["ADMIN_PASSWORD"],
+                )
             )
         )
 

@@ -143,10 +143,10 @@
                 "asymmetric-crypto"
             ],
             "hashes": [
-                "sha256:062d2cac64f5c02fd689105b99390b2490e550a1c0994cb9d781454ec31bd50c"
+                "sha256:d671b24981a1d09d8f21c7b2681ce7b4bde33e2dfcb98be50ae412fc5908ec79"
             ],
             "index": "pypi",
-            "version": "==3.20.0"
+            "version": "==3.21.0"
         },
         "get-secret-or-env-var": {
             "hashes": [
@@ -164,10 +164,10 @@
         },
         "h2": {
             "hashes": [
-                "sha256:c8f387e0e4878904d4978cd688a3195f6b169d49b1ffa572a3d347d7adc5e09f",
-                "sha256:fd07e865a3272ac6ef195d8904de92dc7b38dc28297ec39cfa22716b6d62e6eb"
+                "sha256:ac377fcf586314ef3177bfd90c12c7826ab0840edeb03f0f24f511858326049e",
+                "sha256:b8a32bd282594424c0ac55845377eea13fa54fe4a8db012f3a198ed923dc3ab4"
             ],
-            "version": "==3.1.0"
+            "version": "==3.1.1"
         },
         "hpack": {
             "hashes": [

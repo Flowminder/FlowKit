@@ -251,10 +251,10 @@
         },
         "redis": {
             "hashes": [
-                "sha256:1f2493b72f669a096c59ca7cf7f4067b1ab58a0a3c6bef51d5d8fd384298c6a2",
-                "sha256:b851b0ef53b6d416f1dc692dc168f3d390b37995925bfe29351b3a869976598c"
+                "sha256:8106502b96280e8614d30766f28b4e07ca2b368a8d7896bffce9de88756dd481",
+                "sha256:95ccbec607e21fff2823e7da8b7041e0c471eb36d0672f20abcb32adb5b089ca"
             ],
-            "version": "==3.3.4"
+            "version": "==3.3.5"
         },
         "shapely": {
             "hashes": [
@@ -722,11 +722,11 @@
         },
         "pre-commit": {
             "hashes": [
-                "sha256:92e406d556190503630fd801958379861c94884693a032ba66629d0351fdccd4",
-                "sha256:cccc39051bc2457b0c0f7152a411f8e05e3ba2fe1a5613e4ee0833c1c1985ce3"
+                "sha256:704d9c48d7efb5bd36dcf8e8c3529fa95689b4f8b5c80b3fceab235ee2394ba1",
+                "sha256:8615bff705a56684462f9f0e8e1a22f3476bcdda0f204e77f70fbddb330ffeb4"
             ],
             "index": "pypi",
-            "version": "==1.17.0"
+            "version": "==1.18.0"
         },
         "prompt-toolkit": {
             "hashes": [
