@@ -378,30 +378,27 @@ if __name__ == "__main__":
             with log_duration(f"Generating {num_tacs} tacs."):
                 # First truncate the table
                 trans.execute("TRUNCATE infrastructure.tacs;")
-                brands = [
-                    "Nokia",
-                    "Huawei",
-                    "Apple",
-                    "Samsung",
-                    "Sony",
-                    "LG",
-                    "Google",
-                    "Xiaomi",
-                    "ZTE",
-                ]
-                types = ["Smart", "Feature", "Basic"]
-
-                # Create cycles to loop over the types/brands.
-                brand = cycle(brands)
-                type = cycle(types)
-                for x in range(start_id, num_tacs + start_id):
-                    id = x + 1000
-                    hash = generate_hash(id)
-                    trans.execute(
-                        f"""
-                            INSERT INTO infrastructure.tacs (id, brand, model, hnd_type) VALUES ({id}, '{next(brand)}', '{hash}', '{next(type)}');
-                        """
-                    )
+                # Then setup the temp sequences
+                trans.execute(
+                    """
+                        CREATE TEMPORARY SEQUENCE brand MINVALUE 1 maxvalue 9 CYCLE;
+                        CREATE TEMPORARY SEQUENCE hnd_type MINVALUE 1 maxvalue 3 CYCLE;
+                    """
+                )
+                # Then run the inserts
+                trans.execute(
+                    f"""
+                        INSERT INTO infrastructure.tacs (id, model, brand, hnd_type)
+                        SELECT 
+                        s.id * 10000 AS id,
+                        md5((s.id + 10)::TEXT) AS  model,
+                        (ARRAY['Nokia', 'Huawei', 'Apple', 'Samsung', 'Sony', 'LG', 'Google', 'Xiaomi', 'ZTE'])[nextval('brand')] AS brand, 
+                        (ARRAY['Smart', 'Feature', 'Basic'])[nextval('hnd_type')] AS hnd_type
+                        FROM
+                        (SELECT row_number() over() AS id
+                        FROM generate_series(1, {num_tacs})) s;
+                    """
+                )
 
             # 3. Temporary subscribers
             with log_duration(f"Generating {num_subscribers} subscribers."):
@@ -416,6 +413,17 @@ if __name__ == "__main__":
                     variant_sql += f" AND {int(round(inc) - 1)} THEN '{v}' "
 
                 # Add the subscriber counts for tac brands
+                brands = [
+                    "Nokia",
+                    "Huawei",
+                    "Apple",
+                    "Samsung",
+                    "Sony",
+                    "LG",
+                    "Google",
+                    "Xiaomi",
+                    "ZTE",
+                ]
                 weights = [0.02, 0.06, 0.38, 0.3, 0.07, 0.07, 0.06, 0.02, 0.02]
                 tac_sql = "CASE "
                 inc = 1
@@ -447,10 +455,10 @@ if __name__ == "__main__":
             # 4. Event SQL
             # Create a temp rowcount/pointcount sequence to select the variation rows/points
             trans.execute(
-                "CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;"
-            )
-            trans.execute(
-                "CREATE TEMPORARY SEQUENCE pointcount MINVALUE 0 maxvalue 99 CYCLE;"
+                """
+                    CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;
+                    CREATE TEMPORARY SEQUENCE pointcount MINVALUE 0 maxvalue 99 CYCLE;
+                """
             )
 
             # Stores the PostgreSQL WITH statement to get subscribers
