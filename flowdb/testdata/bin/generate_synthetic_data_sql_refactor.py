@@ -279,7 +279,7 @@ if __name__ == "__main__":
                 
                 calls -> a mean of {mean_calls} and sd of {sd_calls}: {num_calls * 2} calls rows per day {num_calls * 2 * num_days} total
                 sms -> a mean of {mean_sms} and sd of {sd_sms}: {num_sms * 2} messages rows per day {num_sms * 2 * num_days} total
-                mds -> a mean of {mean_mds} and sd of {sd_mds}, {num_mds} mds rows per day {num_sms * num_days} total
+                mds -> a mean of {mean_mds} and sd of {sd_mds}, {num_mds} mds rows per day {num_mds * num_days} total
             """
             )
             sys.exit()
