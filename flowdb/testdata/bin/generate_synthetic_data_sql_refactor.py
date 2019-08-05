@@ -475,6 +475,32 @@ if __name__ == "__main__":
             trans.execute(
                 "CREATE TEMPORARY SEQUENCE pointcount MINVALUE 0 maxvalue 99 CYCLE;"
             )
+            
+            # Stores the PostgreSQL WITH statement to get subscribers
+            with_sql = """
+                WITH callers AS (
+                    SELECT 
+                        s1.id AS id1, s2.id AS id2, s1.msisdn, s2.msisdn AS msisdn_counterpart, 
+                        v1.value AS caller_loc, v2.value AS callee_loc,
+                        s1.imsi AS caller_imsi, s1.imei AS caller_imei, s1.tac AS caller_tac,
+                        s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac
+                    FROM subs s1
+                        LEFT JOIN subs s2 
+                        -- Series generator to provide the call count for each caller
+                        on s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 2))
+                        and s2.id != s1.id
+
+                        LEFT JOIN variations v1
+                        ON v1.type  = s1.variant
+                        AND v1.row = (select nextval('rowcount'))
+
+                        LEFT JOIN variations v2
+                        ON v2.type  = s2.variant
+                        AND v2.row = (select nextval('rowcount'))
+
+                    WHERE s1.id = {caller_id}
+                )
+            """
 
             # Loop over the days and generate all the types required
             for date in (
@@ -497,29 +523,7 @@ if __name__ == "__main__":
                             dist_calls,
                             date,
                             table,
-                            """
-                                WITH callers AS (
-                                    SELECT 
-                                        s1.id AS id1, s2.id AS id2, s1.msisdn, s2.msisdn AS msisdn_counterpart, 
-                                        v1.value AS caller_loc, v2.value AS callee_loc,
-                                        s1.imsi AS caller_imsi, s1.imei AS caller_imei, s1.tac AS caller_tac,
-                                        s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac
-                                    FROM subs s1
-                                        LEFT JOIN subs s2 
-                                        -- Series generator to provide the call count for each caller
-                                        on s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 2))
-                                        and s2.id != s1.id
-
-                                        LEFT JOIN variations v1
-                                        ON v1.type  = s1.variant
-                                        AND v1.row = (select nextval('rowcount'))
-
-                                        LEFT JOIN variations v2
-                                        ON v2.type  = s2.variant
-                                        AND v2.row = (select nextval('rowcount'))
-
-                                    WHERE s1.id = {caller_id}
-                                )
+                            with_sql + """
                                 INSERT INTO events.calls_{table} (id, outgoing, datetime, duration, msisdn, msisdn_counterpart, location_id, imsi, imei, tac) 
                                 (
                                     SELECT
@@ -562,29 +566,7 @@ if __name__ == "__main__":
                             dist_sms,
                             date,
                             table,
-                            """
-                                WITH callers AS (
-                                    SELECT 
-                                        s1.id AS id1, s2.id AS id2, s1.msisdn, s2.msisdn AS msisdn_counterpart, 
-                                        v1.value AS caller_loc, v2.value AS callee_loc,
-                                        s1.imsi AS caller_imsi, s1.imei AS caller_imei, s1.tac AS caller_tac,
-                                        s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac
-                                    FROM subs s1
-                                        LEFT JOIN subs s2 
-                                        -- Series generator to provide the call count for each caller
-                                        on s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 2))
-                                        and s2.id != s1.id
-
-                                        LEFT JOIN variations v1
-                                        ON v1.type  = s1.variant
-                                        AND v1.row = (select nextval('rowcount'))
-
-                                        LEFT JOIN variations v2
-                                        ON v2.type  = s2.variant
-                                        AND v2.row = (select nextval('rowcount'))
-
-                                    WHERE s1.id = {caller_id}
-                                )
+                            with_sql + """
                                 INSERT INTO events.sms_{table} (id, outgoing, datetime, msisdn, msisdn_counterpart, location_id, imsi, imei, tac) 
                                 (
                                     SELECT
@@ -639,13 +621,13 @@ if __name__ == "__main__":
                                     md5(({timestamp} + s.id)::TEXT) AS id,
                                     '{table}'::TIMESTAMPTZ + interval '30 mins' * (point / 3) AS datetime,
                                     FLOOR(0.5 * 2600) AS duration,
-                                    c.volume * 2 as volume_total,
-                                    c.volume as volume_upload,
-                                    c.volume as volume_download,
-                                    c.msisdn, c.imei, c.imsi, c.tac, (SELECT id FROM infrastructure.cells where ST_Equals(geom_point, (c.loc->>s.point::INTEGER)::geometry)) as loc
+                                    c.volume * 2 AS volume_total,
+                                    c.volume AS volume_upload,
+                                    c.volume AS volume_download,
+                                    c.msisdn, c.imei, c.imsi, c.tac, (SELECT id FROM infrastructure.cells where ST_Equals(geom_point, (c.loc->>s.point::INTEGER)::geometry)) AS loc
                                     FROM
                                     callers c,
-                                    (SELECT row_number() over() AS id, nextval('pointcount') as point FROM generate_series({from_count}, {to_count}, 2)) s
+                                    (SELECT row_number() over() AS id, nextval('pointcount') AS point FROM generate_series({from_count}, {to_count}, 2)) s
                                 )
                             """,
                         )
