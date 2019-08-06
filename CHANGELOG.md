@@ -6,29 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- FlowAuth now makes version information available at `/version` and displays it in the web ui. [#835](https://github.com/Flowminder/FlowKit/issues/835)
+
+### Changed
+
+### Fixed
+
+
+### Removed
+
+
+## [0.8.0]
 
 ### Added
 
-- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes event counts.[#992](https://github.com/Flowminder/FlowKit/issues/992)
-- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up amount.[#967](https://github.com/Flowminder/FlowKit/issues/967)
-- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes nocturnal events.[#1025](https://github.com/Flowminder/FlowKit/issues/1025)
-- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up balance.[#968](https://github.com/Flowminder/FlowKit/issues/968)
-- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes displacement.[#1010](https://github.com/Flowminder/FlowKit/issues/1010)
-- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes pareto interactions.[#1012](https://github.com/Flowminder/FlowKit/issues/1012)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes event counts. [#992](https://github.com/Flowminder/FlowKit/issues/992)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up amount. [#967](https://github.com/Flowminder/FlowKit/issues/967)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes nocturnal events. [#1025](https://github.com/Flowminder/FlowKit/issues/1025)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes top-up balance. [#968](https://github.com/Flowminder/FlowKit/issues/968)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes displacement. [#1010](https://github.com/Flowminder/FlowKit/issues/1010)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes pareto interactions. [#1012](https://github.com/Flowminder/FlowKit/issues/1012)
 - FlowETL now supports ingesting from a postgres table in addition to CSV files. [#1027](https://github.com/Flowminder/FlowKit/issues/1027)
 - `FLOWETL_RUNTIME_CONFIG` environment variable added to control which DAG definitions the FlowETL integration tests should use (valid values: "testing", "production").
 - `FLOWETL_INTEGRATION_TESTS_DISABLE_PULLING_DOCKER_IMAGES` environment variable added to allow running the FlowETL integration tests against locally built docker images during development.
-- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes handset.[#1011](https://github.com/Flowminder/FlowKit/issues/1011) and [#1029](https://github.com/Flowminder/FlowKit/issues/1029)
+- FlowAPI's 'joined_spatial_aggregate' endpoint now exposes handset. [#1011](https://github.com/Flowminder/FlowKit/issues/1011) and [#1029](https://github.com/Flowminder/FlowKit/issues/1029)
 - `JoinedSpatialAggregate` now supports "distr" stats which computes outputs the relative distribution of the passed metrics.
 - Added `SubscriberHandsetCharacteristic` to FlowMachine
 - FlowAuth now supports optional two-factor authentication [#121](https://github.com/Flowminder/FlowKit/issues/121)
 
 ### Changed
 - The flowdb containers for test_data and synthetic_data were split into two separate containers and quick_start.sh downloads the docker-compose files to a new temporary directory on each run. [#843](https://github.com/Flowminder/FlowKit/issues/843)
-
 - Flowmachine now returns more informative error messages when query parameter validation fails. [#1055](https://github.com/Flowminder/FlowKit/issues/1055)
-
-### Fixed
 
 
 ### Removed
@@ -458,7 +467,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.7.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.8.0...master
+[0.8.0]: https://github.com/Flowminder/FlowKit/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/Flowminder/FlowKit/compare/0.6.4...0.7.0
 [0.6.4]: https://github.com/Flowminder/FlowKit/compare/0.6.3...0.6.4
 [0.6.3]: https://github.com/Flowminder/FlowKit/compare/0.6.2...0.6.3
