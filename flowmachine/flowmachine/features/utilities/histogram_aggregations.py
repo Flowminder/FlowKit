@@ -23,41 +23,30 @@ class HistogramAggregation(Query):
         return ["value", "bin_edges"]
 
     def _make_query(self):
+        if isinstance(self.ranges, tuple) and not None:
+            max_range = max(self.ranges)
+            min_range = min(self.ranges)
+        elif self.ranges is None:
+            max_range = f"""select max(value) from ({self.locations.get_query()}) as to_agg """
+            min_range = f""" select min(value) from ({self.locations.get_query()}) as to_agg """
+        else:
+            raise ValueError("Range should be tuple of two values")
 
+        filter_values = f"""select value from ({self.locations.get_query()}) AS to_agg
+                        where value between ({min_range}) and ({max_range})  """
         if isinstance(self.bins, int):
-            if isinstance(self.ranges, tuple) and not None:
-                max_range = max(self.ranges)
-                min_range = min(self.ranges)
-                sql = f""" 
-                    SELECT
-                        count(value) as value,
-                        width_bucket(foo.value::numeric,{max_range},{min_range},{self.bins}) as bin_edges
-                    FROM(
-                        select value from ({self.locations.get_query()}) AS to_agg
-                        where value between {min_range} and {max_range}
-                        ) as foo
-                    group by bin_edges
-                    """
-            elif self.ranges is None:
-                max_range = f"""select max(value) from ({self.locations.get_query()}) as to_agg """
-                min_range = f""" select min(value) from ({self.locations.get_query()}) as to_agg """
-                sql = f""" 
-                    SELECT
+            sql = f""" 
+                  SELECT
                         count(value) as value,
                         width_bucket(foo.value::numeric,({max_range}),({min_range}),{self.bins}) as bin_edges
-                    FROM(
-                        select value from ({self.locations.get_query()}) AS to_agg
-                        where value between ({min_range}) and ({max_range})
-                        ) as foo
+                    FROM ({filter_values}) as foo
                     group by bin_edges
                     """
-            else:
-                raise ValueError("Range should be tuple of two values")
         elif isinstance(self.bins, list):
 
             sql = f"""
-                select count(value) as value, width_bucket(value::numeric,Array{self.bins}::numeric[]) as bin_edges 
-                from ({self.locations.get_query()}) AS to_agg
+                select count(foo.value) as value, width_bucket(foo.value::numeric,Array{self.bins}::numeric[]) as bin_edges 
+                from ({filter_values}) AS foo
                 group by bin_edges
                 """
         else:

@@ -16,7 +16,7 @@ from flowmachine.features.subscriber.daily_location import locate_subscribers
 from flowmachine.utils import list_of_dates
 
 
-def test_create_histogram_using_integer_bins_value(get_dataframe):
+def test_create_histogram_using_int_bins_value(get_dataframe):
     """
     Create histogram using one bins value.
     """
@@ -25,11 +25,7 @@ def test_create_histogram_using_integer_bins_value(get_dataframe):
     agg = HistogramAggregation(locations=RoG, bins=5)
     df = get_dataframe(agg)
     de = np.histogram(get_dataframe(RoG).value, bins=5)
-    print("==================================")
-    print(de)
-    print("==================================")
-    print(df.value.tolist())
-    print("==================================")
+    assert set(de[0].tolist()) == set(df.value.tolist())
 
 
 def test_create_histogram_using_list_of_bins_values(get_dataframe):
@@ -38,27 +34,20 @@ def test_create_histogram_using_list_of_bins_values(get_dataframe):
     """
     RoG = RadiusOfGyration("2016-01-01", "2016-01-02")
 
-    agg = HistogramAggregation(locations=RoG, bins=[5, 10, 15, 20, 25, 30])
+    agg = HistogramAggregation(locations=RoG, bins=[10, 20, 30, 40, 50, 60])
     df = get_dataframe(agg)
-    de = np.histogram(get_dataframe(RoG).value, bins=[5, 10, 15, 20, 25, 30])
-    print("==================================")
-    print(de)
-    print("==================================")
-    print(df.value.tolist())
-    print("==================================")
+    de = np.histogram(get_dataframe(RoG).value, bins=[10, 20, 30, 40, 50, 60])
+    assert set(de[0].tolist()) == set(df.value.tolist())
 
 
 def test_create_histogram_using_bins_and_range_values(get_dataframe):
     """
-    Create histogram using one bins and ranges value.
+    Create histogram using one bins and range values.
     """
     RoG = RadiusOfGyration("2016-01-01", "2016-01-02")
 
     agg = HistogramAggregation(locations=RoG, bins=5, ranges=(130.00, 230.00))
     df = get_dataframe(agg)
     de = np.histogram(get_dataframe(RoG).value, bins=5, range=(130.00, 230.00))
-    print("==================================")
-    print(de)
-    print("==================================")
-    print(df.value.tolist())
-    print("==================================")
+
+    assert set(de[0].tolist()) == set(df.value.tolist())
