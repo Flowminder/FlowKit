@@ -61,7 +61,7 @@ executors:
         default: 400
       num_cells:
         type: integer
-        default: 100
+        default: 1
       num_sites:
         type: integer
         default: 100
@@ -83,6 +83,24 @@ executors:
       disaster_end_date:
         type: string
         default: "2015-01-01"
+      mean_calls:
+        type: integer
+        default: 50
+      sd_calls:
+        type: integer
+        default: 5
+      mean_sms:
+        type: integer
+        default: 50
+      sd_sms:
+        type: integer
+        default: 5
+      mean_mds:
+        type: integer
+        default: 50
+      sd_mds:
+        type: integer
+        default: 5
     environment:
       POSTGRES_PASSWORD: flowflow
       MPLBACKEND: "agg"
@@ -115,6 +133,12 @@ executors:
           N_MDS: <<parameters.num_mds>>
           N_CALLS: <<parameters.num_calls>>
           N_TACS: <<parameters.num_tacs>>
+          N_MEAN_CALLS: <<parameters.mean_calls>>
+          N_SD_CALLS: <<parameters.sd_calls>>
+          N_MEAN_SMS: <<parameters.mean_sms>>
+          N_SD_SMS: <<parameters.sd_sms>>
+          N_MEAN_MDS: <<parameters.mean_mds>>
+          N_SD_MDS: <<parameters.sd_mds>>
           SYNTHETIC_DATA_GENERATOR: <<parameters.synthetic_data_generator>>
           FLOWMACHINE_FLOWDB_PASSWORD: foo
           FLOWAPI_FLOWDB_PASSWORD: foo
@@ -761,13 +785,19 @@ jobs:
       flowdb_image: "synthetic-data"
       synthetic_data_generator: sql
       num_sites: 200
-      num_cells: 1000
+      num_cells: 1
       num_subscribers: 50000
       num_days: 60
       num_calls: 20000
       num_sms: 20000
       num_tacs: 10000
       num_mds: 20000
+      mean_calls: 50
+      sd_calls: 5
+      mean_sms: 50
+      sd_sms: 5
+      mean_mds: 50
+      sd_mds: 5
       disaster_start_date: 2016-02-11
       disaster_end_date: 2016-03-01
     working_directory: /home/circleci/project/docs
