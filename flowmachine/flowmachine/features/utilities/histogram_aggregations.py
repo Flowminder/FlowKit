@@ -27,8 +27,12 @@ class HistogramAggregation(Query):
             max_range = max(self.ranges)
             min_range = min(self.ranges)
         elif self.ranges is None:
-            max_range = f"""select max(value) from ({self.locations.get_query()}) as to_agg """
-            min_range = f""" select min(value) from ({self.locations.get_query()}) as to_agg """
+            max_range = (
+                f"""select max(value) from ({self.locations.get_query()}) as to_agg """
+            )
+            min_range = (
+                f""" select min(value) from ({self.locations.get_query()}) as to_agg """
+            )
         else:
             raise ValueError("Range should be tuple of two values")
 
