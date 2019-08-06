@@ -404,13 +404,13 @@ export async function isLoggedIn() {
   return await getResponseDefault("/is_signed_in");
 }
 
-
 export async function isTwoFactorActive() {
   return await getResponseDefault("/user/two_factor_active");
 }
 
 export async function isTwoFactorRequired() {
   return await getResponseDefault("/user/two_factor_required");
+}
 
 export async function getVersion() {
   return await getResponseDefault("/version");
