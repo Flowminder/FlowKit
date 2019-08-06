@@ -192,7 +192,7 @@ def generatedDistributedTypes(trans, dist, date, table, query):
 
     # Create the SQL for outgoing/incoming SQL according to our distribution
     for d in dist:
-        calls = d * dist_calls[d]
+        calls = d * dist[d]
 
         # If the call count is zero, then we can move on
         if calls <= 0:
@@ -201,7 +201,7 @@ def generatedDistributedTypes(trans, dist, date, table, query):
         # Loop the number of subscribers in this "pot"
         from_count = 0
         to_count = 0
-        for p in range(0, dist_calls[d]):
+        for p in range(0, dist[d]):
             # Ensure we can generate the callee counts required
             if (to_id + 5) + (d * 2) - 1 >= num_subscribers:
                 to_id = 1
