@@ -330,6 +330,10 @@ export async function isLoggedIn() {
   return await getResponseDefault("/is_signed_in");
 }
 
+export async function getVersion() {
+  return await getResponseDefault("/version");
+}
+
 export async function logout() {
   try {
     return await getResponseDefault("/signout");
