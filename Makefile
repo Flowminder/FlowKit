@@ -17,7 +17,6 @@
 #     DOCKER_SERVICES="flowdb" make up
 #     DOCKER_SERVICES="flowdb_testdata flowetl flowetl_db" make up
 #
-# flowmachine and flowapi will connected to the first flowdb service in the list.
 
 DOCKER_COMPOSE_FILE ?= docker-compose.yml
 DOCKER_COMPOSE_TESTDATA_FILE ?= docker-compose-testdata.yml
@@ -72,103 +71,21 @@ down:
 # Note: the targets below are repetitive and could be simplified by using
 # a pattern rule as follows:
 #
-#   %-up: %-build
+#   %: %-build
 #       docker-compose -f $(DOCKER_COMPOSE_FILE) up -d --build $*
 #
 # The reason we are keeping the explicitly spelled-out versions is in order
 # to increase discoverability of the available Makefile targets and to enable
 # tab-completion of targets (which is not possible when using patterns).
 
+services := flowmachine flowapi flowauth flowdb worked_examples flowdb_testdata flowdb_synthetic_data flowetl flowetl_db
+space :=
+space +=
+$(subst $(space),-up ,$(services)):
+	$(DOCKER_COMPOSE_UP) $(subst -up,,$@)
 
-flowdb-up: flowdb-build
-	$(DOCKER_COMPOSE_UP) flowdb
-
-flowdb-down:
-	$(DOCKER_COMPOSE_DOWN) flowdb
-
-flowdb-build:
-	$(DOCKER_COMPOSE_BUILD) flowdb
-
-
-flowdb_testdata-up: flowdb_testdata-build
-	$(DOCKER_COMPOSE_UP) flowdb
-
-flowdb_testdata-down:
-	$(DOCKER_COMPOSE_DOWN) flowdb
-
-flowdb_testdata-build: flowdb-build
-	$(DOCKER_COMPOSE_BUILD) flowdb
-
-
-flowdb_synthetic_data-up: flowdb_synthetic_data-build
-	$(DOCKER_COMPOSE_UP) flowdb
-
-flowdb_synthetic_data-down:
-	$(DOCKER_COMPOSE_DOWN) flowdb
-
-flowdb_synthetic_data-build: flowdb-build
-	$(DOCKER_COMPOSE_BUILD) flowdb
-
-
-flowmachine-up:
-	$(DOCKER_COMPOSE_UP) flowmachine
-
-flowmachine-down:
-	$(DOCKER_COMPOSE_DOWN) flowmachine
-
-flowmachine-build:
-	$(DOCKER_COMPOSE_BUILD) flowmachine
-
-
-flowapi-up:
-	$(DOCKER_COMPOSE_UP) flowapi
-
-flowapi-down:
-	$(DOCKER_COMPOSE_DOWN) flowapi
-
-flowapi-build:
-	$(DOCKER_COMPOSE_BUILD) flowapi
-
-
-flowauth-up:
-	$(DOCKER_COMPOSE_UP) flowauth
-
-flowauth-down:
-	$(DOCKER_COMPOSE_DOWN) flowauth
-
-flowauth-build:
-	$(DOCKER_COMPOSE_BUILD) flowauth
-
-
-worked_examples-up: worked_examples-build
-	$(DOCKER_COMPOSE_UP) worked_examples
-
-worked_examples-down:
-	$(DOCKER_COMPOSE_DOWN) worked_examples
-
-worked_examples-build:
-	$(DOCKER_COMPOSE_BUILD) worked_examples
-
-
-flowmachine_query_locker-up:
-	$(DOCKER_COMPOSE_UP_NOBUILD) flowmachine_query_locker
-
-flowmachine_query_locker-down:
-	$(DOCKER_COMPOSE_DOWN) flowmachine_query_locker
-
-
-flowetl-up:
-	$(DOCKER_COMPOSE_UP) flowetl
-
-flowetl-down:
-	$(DOCKER_COMPOSE_DOWN) flowetl
-
-flowetl-build:
-	$(DOCKER_COMPOSE_BUILD) flowetl
-
-
-flowetl_db-up:
-	$(DOCKER_COMPOSE_UP) flowetl_db
-
-flowetl_db-down:
-	$(DOCKER_COMPOSE_DOWN) flowetl_db
+$(subst $(space),-down ,$(services)):
+	$(DOCKER_COMPOSE_DOWN) $(patsubst -down,,$@)
+	
+$(subst $(space),-build ,$(services))::
+	$(DOCKER_COMPOSE_BUILD) $(patsubst -build,,$@)
