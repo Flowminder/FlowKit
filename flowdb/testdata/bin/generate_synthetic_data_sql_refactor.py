@@ -539,7 +539,7 @@ if __name__ == "__main__":
                     # Add the indexes for this day
                     deferred_sql.append(
                         (
-                            "Adding table analyzing for calls",
+                            f"Adding table analyzing for calls_{table}",
                             addEventSQL("calls", table),
                         )
                     )
@@ -581,7 +581,10 @@ if __name__ == "__main__":
 
                     # Add the indexes for this day
                     deferred_sql.append(
-                        ("Adding table analyzing for sms", addEventSQL("sms", table))
+                        (
+                            f"Adding table analyzing for sms_{table}",
+                            addEventSQL("sms", table),
+                        )
                     )
 
                 # 4.3 MDS
@@ -626,7 +629,10 @@ if __name__ == "__main__":
 
                     # Add the indexes for this day
                     deferred_sql.append(
-                        ("Adding table analyzing for mds", addEventSQL("mds", table))
+                        (
+                            f"Adding table analyzing for mds_{table}",
+                            addEventSQL("mds", table),
+                        )
                     )
 
         # Add all the ANALYZE calls for the events tables.
