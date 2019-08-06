@@ -316,7 +316,7 @@ if __name__ == "__main__":
             with log_duration(job=f"Import variation data"):
                 trans.execute(
                     f"""
-                        CREATE TABLE IF NOT EXISTS variations (
+                        CREATE TEMPORARY TABLE variations (
                             id SERIAL PRIMARY KEY,
                             row INT,
                             type TEXT,
@@ -638,13 +638,13 @@ if __name__ == "__main__":
         # Add all the ANALYZE calls for the events tables.
         deferred_sql.append(
             (
-                "Analyzing the events tables",
+                "Analyzing the main event tables",
                 ["ANALYZE events.calls;", "ANALYZE events.sms;", "ANALYZE events.mds;"],
             )
         )
 
         # Remove the intermediary data tables
-        for tbl in ("subs", "variations"):
+        for tbl in ("subs",):
             deferred_sql.append((f"Dropping {tbl}", [f"DROP TABLE {tbl};"]))
 
         def do_exec(args):
