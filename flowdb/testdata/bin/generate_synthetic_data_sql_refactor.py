@@ -450,11 +450,11 @@ if __name__ == "__main__":
                 )
 
                 # Add index and ANALYZE
-                deferred_sql.append(
-                    (
-                        "Analyzing the subs table",
-                        ["CREATE INDEX on subs (id);", "ANALYZE subs;"],
-                    )
+                trans.execute(
+                    """
+                    CREATE INDEX on subs (id);
+                    ANALYZE subs;
+                """
                 )
 
             # 4. Event SQL
