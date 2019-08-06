@@ -4,21 +4,17 @@
 
 from marshmallow import Schema, fields, validates_schema, ValidationError, post_load
 from marshmallow.validate import OneOf, Range
+from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.core.random import random_factory
 
 
-class RandomSampleSchema(Schema):
+class BaseRandomSampleSchema(Schema):
     size = fields.Integer(validate=Range(min=1))
     fraction = fields.Float(
         validate=Range(0.0, 1.0, min_inclusive=False, max_inclusive=False)
     )
-    method = fields.String(
-        validate=OneOf(["system_rows", "system", "bernoulli", "random_ids"]),
-        required=True,
-    )
     estimate_count = fields.Boolean()
-    seed = fields.Float()
 
     @validates_schema
     def validate_size_or_fraction(self, data, **kwargs):
@@ -27,29 +23,44 @@ class RandomSampleSchema(Schema):
                 "Must provide exactly one of 'size' or 'fraction' for a random sample"
             )
 
-    @validates_schema
-    def validate_seed(self, data, **kwargs):
-        if data["method"] == "system_rows" and "seed" in data:
-            raise ValidationError(
-                "'system_rows' sampling method does not support seeding"
-            )
-        elif data["method"] == "random_ids" and not 0 <= data["seed"] <= 1:
-            raise ValidationError(
-                "Seed must be between 0 and 1 for 'random_ids' sampling method"
-            )
+
+class SystemRowsRandomSampleSchema(BaseRandomSampleSchema):
+    @post_load
+    def make_random_sampler(self, params, **kwargs):
+        return RandomSampler(method="system_rows", **params)
+
+
+class SystemRandomSampleSchema(BaseRandomSampleSchema):
+    seed = fields.Integer()
 
     @post_load
-    def make_random_sample_factory(self, params, **kwargs):
-        return RandomSampleFactory(**params)
+    def make_random_sampler(self, params, **kwargs):
+        return RandomSampler(method="system", **params)
 
 
-class RandomSampleFactory:
-    def __init__(self, *, size, fraction, method, estimate_count, seed):
+class BernoulliRandomSampleSchema(BaseRandomSampleSchema):
+    seed = fields.Integer()
+
+    @post_load
+    def make_random_sampler(self, params, **kwargs):
+        return RandomSampler(method="bernoulli", **params)
+
+
+class RandomIDsRandomSampleSchema(BaseRandomSampleSchema):
+    seed = fields.Float(validate=Range(0.0, 1.0))
+
+    @post_load
+    def make_random_sampler(self, params, **kwargs):
+        return RandomSampler(method="random_ids", **params)
+
+
+class RandomSampler:
+    def __init__(self, *, method, size, fraction, estimate_count, seed=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
+        self.method = method
         self.size = size
         self.fraction = fraction
-        self.method = method
         self.estimate_count = estimate_count
         self.seed = seed
 
@@ -57,9 +68,19 @@ class RandomSampleFactory:
         Random = random_factory(type(query))
         return Random(
             query,
+            method=self.method,
             size=self.size,
             fraction=self.fraction,
-            method=self.method,
             estimate_count=self.estimate_count,
             seed=self.seed,
         )
+
+
+class RandomSampleSchema(OneOfSchema):
+    type_field = "method"
+    type_schemas = {
+        "system_rows": SystemRowsRandomSampleSchema,
+        "system": SystemRandomSampleSchema,
+        "bernoulli": BernoulliRandomSampleSchema,
+        "random_ids": RandomIDsRandomSampleSchema,
+    }
