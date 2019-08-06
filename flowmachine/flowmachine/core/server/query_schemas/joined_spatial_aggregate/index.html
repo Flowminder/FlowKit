@@ -1110,8 +1110,32 @@
 
 
   <li class="md-nav__item">
+    <a href="../displacement/" title="displacement" class="md-nav__link">
+      displacement
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../dummy_query/" title="dummy_query" class="md-nav__link">
       dummy_query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../event_count/" title="event_count" class="md-nav__link">
+      event_count
     </a>
   </li>
 
@@ -1148,6 +1172,18 @@
   <li class="md-nav__item">
     <a href="../geography/" title="geography" class="md-nav__link">
       geography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../handset/" title="handset" class="md-nav__link">
+      handset
     </a>
   </li>
 
@@ -1309,6 +1345,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#validate_method" title="validate_method" class="md-nav__link">
+    validate_method
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dict_class_1" title="dict_class" class="md-nav__link">
     dict_class
   </a>
@@ -1392,6 +1435,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../nocturnal_events/" title="nocturnal_events" class="md-nav__link">
+      nocturnal_events
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pareto_interactions/" title="pareto_interactions" class="md-nav__link">
+      pareto_interactions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../radius_of_gyration/" title="radius_of_gyration" class="md-nav__link">
       radius_of_gyration
     </a>
@@ -1418,6 +1485,30 @@
   <li class="md-nav__item">
     <a href="../subscriber_degree/" title="subscriber_degree" class="md-nav__link">
       subscriber_degree
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../topup_amount/" title="topup_amount" class="md-nav__link">
+      topup_amount
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../topup_balance/" title="topup_balance" class="md-nav__link">
+      topup_balance
     </a>
   </li>
 
@@ -2936,6 +3027,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#validate_method" title="validate_method" class="md-nav__link">
+    validate_method
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dict_class_1" title="dict_class" class="md-nav__link">
     dict_class
   </a>
@@ -2975,9 +3073,9 @@
 <h2 id="class-joinablemetrics">Class <strong>JoinableMetrics</strong><a class="headerlink" href="#class-joinablemetrics" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">JoinableMetrics</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(),</span> <span class="n">many</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">load_only</span><span class="o">=</span><span class="p">(),</span> <span class="n">dump_only</span><span class="o">=</span><span class="p">(),</span> <span class="n">partial</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">unknown</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L28">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L37">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
 <p>This is a special kind of schema that actually multiplexes other schemas based on object type. When serializing values, it uses get_obj_type() method to get object type name. Then it uses <code>type_schemas</code> name-to-Schema mapping to get schema for that particular object type, serializes object using that schema and adds an extra "type" field with name of object type. Deserialization is reverse.
-Example:      class Foo(object):         def <strong>init</strong>(self, foo):             self.foo = foo      class Bar(object):         def <strong>init</strong>(self, bar):             self.bar = bar      class FooSchema(marshmallow.Schema):         foo = marshmallow.fields.String(required=True)          @marshmallow.post_load         def make_foo(self, data):             return Foo(**data)      class BarSchema(marshmallow.Schema):         bar = marshmallow.fields.Integer(required=True)          @marshmallow.post_load         def make_bar(self, data):             return Bar(**data)      class MyUberSchema(marshmallow.OneOfSchema):         type_schemas = {             'foo': FooSchema,             'bar': BarSchema,         }          def get_obj_type(self, obj):             if isinstance(obj, Foo):                 return 'foo'             elif isinstance(obj, Bar):                 return 'bar'             else:                 raise Exception('Unknown object type: %s' % repr(obj))      MyUberSchema().dump([Foo(foo='hello'), Bar(bar=123)], many=True).data     # =&gt; [{'type': 'foo', 'foo': 'hello'}, {'type': 'bar', 'bar': 123}]  You can control type field name added to serialized object representation by setting <code>type_field</code> class property.</p>
+Example:      class Foo(object):         def <strong>init</strong>(self, foo):             self.foo = foo      class Bar(object):         def <strong>init</strong>(self, bar):             self.bar = bar      class FooSchema(marshmallow.Schema):         foo = marshmallow.fields.String(required=True)          @marshmallow.post_load         def make_foo(self, data, **kwargs):             return Foo(**data)      class BarSchema(marshmallow.Schema):         bar = marshmallow.fields.Integer(required=True)          @marshmallow.post_load         def make_bar(self, data, **kwargs):             return Bar(**data)      class MyUberSchema(marshmallow.OneOfSchema):         type_schemas = {             'foo': FooSchema,             'bar': BarSchema,         }          def get_obj_type(self, obj):             if isinstance(obj, Foo):                 return 'foo'             elif isinstance(obj, Bar):                 return 'bar'             else:                 raise Exception('Unknown object type: %s' % repr(obj))      MyUberSchema().dump([Foo(foo='hello'), Bar(bar=123)], many=True)     # =&gt; [{'type': 'foo', 'foo': 'hello'}, {'type': 'bar', 'bar': 123}]  You can control type field name added to serialized object representation by setting <code>type_field</code> class property.</p>
 <h2 id="attributes">Attributes<a class="headerlink" href="#attributes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
@@ -2999,7 +3097,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
 <h2 id="class-joinedspatialaggregateexposed">Class <strong>JoinedSpatialAggregateExposed</strong><a class="headerlink" href="#class-joinedspatialaggregateexposed" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">JoinedSpatialAggregateExposed</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">locations</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L51">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L92">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
 <p>Base class for exposed flowmachine queries.
 Note: this class and derived classes are not meant to be instantiated directly! Instead, they are instantiated automatically by the class FlowmachineQuerySchema.  Example:      FlowmachineQuerySchema().load({"query_kind": "dummy_query", "dummy_param": "foobar"})</p>
 <h2 id="attributes_1">Attributes<a class="headerlink" href="#attributes_1" title="Permanent link">&para;</a></h2>
@@ -3015,7 +3113,7 @@ Note: this class and derived classes are not meant to be instantiated directly! 
 <h4 id="_flowmachine_query_obj">_flowmachine_query_obj<a class="headerlink" href="#_flowmachine_query_obj" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">_flowmachine_query_obj</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L59">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L100">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
 <p>Return the underlying flowmachine object.</p>
 <h5 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h5>
 <ul>
@@ -3028,7 +3126,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/f
 <h2 id="class-joinedspatialaggregateschema">Class <strong>JoinedSpatialAggregateSchema</strong><a class="headerlink" href="#class-joinedspatialaggregateschema" title="Permanent link">&para;</a></h2>
 <p><div class="codehilite"><pre><span></span><span class="n">JoinedSpatialAggregateSchema</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">(),</span> <span class="n">many</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">load_only</span><span class="o">=</span><span class="p">(),</span> <span class="n">dump_only</span><span class="o">=</span><span class="p">(),</span> <span class="n">partial</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">unknown</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L37">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L53">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
 <p>Base schema class with which to define custom schemas.
 Example usage:  .. code-block:: python      import datetime as dt     from marshmallow import Schema, fields      class Album:         def <strong>init</strong>(self, title, release_date):             self.title = title             self.release_date = release_date      class AlbumSchema(Schema):         title = fields.Str()         release_date = fields.Date()      # Or, equivalently     class AlbumSchema2(Schema):         class Meta:             fields = ("title", "release_date")      album = Album("Beggars Banquet", dt.date(1968, 12, 6))     schema = AlbumSchema()     data = schema.dump(album)     data  # {'release_date': '1968-12-06', 'title': 'Beggars Banquet'}  :param tuple|list only: Whitelist of the declared fields to select when     instantiating the Schema. If None, all fields are used. Nested fields     can be represented with dot delimiters. :param tuple|list exclude: Blacklist of the declared fields to exclude     when instantiating the Schema. If a field appears in both <code>only</code> and     <code>exclude</code>, it is not used. Nested fields can be represented with dot     delimiters. :param bool many: Should be set to <code>True</code> if <code>obj</code> is a collection     so that the object will be serialized to a list. :param dict context: Optional context passed to :class:<code>fields.Method</code> and     :class:<code>fields.Function</code> fields. :param tuple|list load_only: Fields to skip during serialization (write-only fields) :param tuple|list dump_only: Fields to skip during deserialization (read-only fields) :param bool|tuple partial: Whether to ignore missing fields and not require     any fields declared. Propagates down to <code>Nested</code> fields as well. If     its value is an iterable, only missing fields listed in that iterable     will be ignored. Use dot delimiters to specify nested fields. :param unknown: Whether to exclude, include, or raise an error for unknown     fields in the data. Use <code>EXCLUDE</code>, <code>INCLUDE</code> or <code>RAISE</code>.  .. versionchanged:: 3.0.0     <code>prefix</code> parameter removed.  .. versionchanged:: 2.0.0     <code>__validators__</code>, <code>__preprocessors__</code>, and <code>__data_handlers__</code> are removed in favor of     <code>marshmallow.decorators.validates_schema</code>,     <code>marshmallow.decorators.pre_load</code> and <code>marshmallow.decorators.post_dump</code>.     <code>__accessor__</code> and <code>__error_handler__</code> are deprecated. Implement the     <code>handle_error</code> and <code>get_attribute</code> methods instead.</p>
 <h2 id="attributes_2">Attributes<a class="headerlink" href="#attributes_2" title="Permanent link">&para;</a></h2>
@@ -3044,7 +3142,11 @@ Example usage:  .. code-block:: python      import datetime as dt     from marsh
 <h4 id="make_query_object">make_query_object<a class="headerlink" href="#make_query_object" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">make_query_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
-Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L46">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L87">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
+<h4 id="validate_method">validate_method<a class="headerlink" href="#validate_method" title="Permanent link">&para;</a></h4>
+<p><div class="codehilite"><pre><span></span><span class="n">validate_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/flowmachine/core/server/query_schemas/joined_spatial_aggregate.py#L60">flowmachine/core/server/query_schemas/joined_spatial_aggregate.py</a></p>
 <h4 id="dict_class_1">dict_class<a class="headerlink" href="#dict_class_1" title="Permanent link">&para;</a></h4>
 <p><div class="codehilite"><pre><span></span><span class="n">dict_class</span>
 </pre></div>
@@ -3073,7 +3175,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../geography/" title="geography" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../handset/" title="handset" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -3082,7 +3184,7 @@ Source: <a href="https://github.com/Flowminder/FlowKit/tree/master/flowmachine/m
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                geography
+                handset
               </span>
             </div>
           </a>

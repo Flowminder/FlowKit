@@ -1239,8 +1239,32 @@
 
 
   <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/displacement/" title="displacement" class="md-nav__link">
+      displacement
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/server/query_schemas/dummy_query/" title="dummy_query" class="md-nav__link">
       dummy_query
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/event_count/" title="event_count" class="md-nav__link">
+      event_count
     </a>
   </li>
 
@@ -1277,6 +1301,18 @@
   <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/server/query_schemas/geography/" title="geography" class="md-nav__link">
       geography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/handset/" title="handset" class="md-nav__link">
+      handset
     </a>
   </li>
 
@@ -1347,6 +1383,30 @@
 
 
   <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/nocturnal_events/" title="nocturnal_events" class="md-nav__link">
+      nocturnal_events
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/pareto_interactions/" title="pareto_interactions" class="md-nav__link">
+      pareto_interactions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/server/query_schemas/radius_of_gyration/" title="radius_of_gyration" class="md-nav__link">
       radius_of_gyration
     </a>
@@ -1373,6 +1433,30 @@
   <li class="md-nav__item">
     <a href="../flowmachine/flowmachine/core/server/query_schemas/subscriber_degree/" title="subscriber_degree" class="md-nav__link">
       subscriber_degree
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/topup_amount/" title="topup_amount" class="md-nav__link">
+      topup_amount
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../flowmachine/flowmachine/core/server/query_schemas/topup_balance/" title="topup_balance" class="md-nav__link">
+      topup_balance
     </a>
   </li>
 
@@ -2991,9 +3075,9 @@ pipenv run pytest
 <p>Contact Flowminder on <a href="mailto:flowkit@flowminder.org">flowkit@flowminder.org</a> for full instructions. Instructions on FlowAuth production deployment and dealing with docker secrets is described below. Note that these instructions are likely subject to change.</p>
 <h3 id="flowauth-production-deployment">FlowAuth Production Deployment<a class="headerlink" href="#flowauth-production-deployment" title="Permanent link">&para;</a></h3>
 <p>FlowAuth is designed to be deployed as a single Docker container working in cooperation with a database and, typically, an ssl reverse proxy (e.g. <a href="https://github.com/jwilder/nginx-proxy">nginx-proxy</a> combined with <a href="https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion">letsencrypt-nginx-proxy-companion</a>).</p>
-<p>FlowAuth supports any database supported by <a href="https://sqlalche.me">SQLAlchemy</a>, and to connect you will only need to supply a correct URI for the database either using the <code>DB_URI</code> environment variable, or by setting the <code>DB_URI</code> secret. If <code>DB_URI</code> is not set, a temporary sqlite database will be created.</p>
+<p>FlowAuth supports any database supported by <a href="https://sqlalche.me">SQLAlchemy</a>, and to connect you will only need to supply a correct URI for the database either using the <code>DB_URI</code> environment variable, or by setting the <code>DB_URI</code> secret. If <code>DB_URI</code> is not set, a temporary sqlite database will be created. For database backends which require a username and password, you may supply the URI with <code>{}</code> in place of the password and provide the password using the <code>FLOWAUTH_DB_PASSWORD</code> secret or environment variable.</p>
 <p>FlowAuth will attempt to create all necessary tables when first accessed, but will not overwrite any existing tables. To wipe any existing data, you can either set the <code>RESET_FLOWAUTH_DB</code> environment variable to <code>true</code>, or run <code>flask init-db</code> from inside the container (<code>docker exec &lt;container-id&gt; flask init-db</code>).</p>
-<p>FlowAuth requires you to create at least one admin user by setting the <code>FLOWAUTH_ADMIN_USER</code> and <code>FLOWAUTH_ADMIN_PASSWORD</code> environment variables or providing them as secrets. You can combine these environment variables with the <code>INIT_DB</code> environment variable.</p>
+<p>FlowAuth requires you to create at least one admin user by setting the <code>FLOWAUTH_ADMIN_USER</code> and <code>FLOWAUTH_ADMIN_PASSWORD</code> environment variables or providing them as secrets. You can combine these environment variables with the <code>INIT_DB</code> environment variable. If the user already exists, their password will be reset to the provided value and they will be promoted to admin.</p>
 <p>You <em>must</em> also provide three additional environment variables or secrets: <code>FLOWAUTH_FERNET_KEY</code>, <code>SECRET_KEY</code>, and <code>PRIVATE_JWT_SIGNING_KEY</code>. <code>FLOWAUTH_FERNET_KEY</code> is used to encrypt tokens while 'at rest' in the database, and decrypt them for use. <code>SECRET_KEY</code> is used to secure session and CSRF protection cookies.</p>
 <p><code>PRIVATE_JWT_SIGNING_KEY</code> is used to sign the tokens generated by FlowAuth, which ensures that they can be trusted by FlowAPI. When deploying instances of FlowAPI, you will need to supply them with the corresponding <em>public</em> key, to allow them to verify the tokens were produced by this instance of FlowAuth.</p>
 <p>You can use <code>openssl</code> to generate a private key:</p>
@@ -3001,11 +3085,11 @@ pipenv run pytest
 </pre></div>
 
 <p>And then create a public key from the key file (<code>openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub</code>), or download it from FlowAuth once started. Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. <code>base64 -i flowauth-private-key.key</code>). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.</p>
-<p>By defaul<code>SECRET_KEY</code> may be any arbitrary string, <code>FLOWAUTH_FERNET_KEY</code> should be a valid Fernet key. A convenience command is provided to generate one - <code>flask get-fernet</code>.</p>
+<p>By default <code>SECRET_KEY</code> may be any arbitrary string, <code>FLOWAUTH_FERNET_KEY</code> should be a valid Fernet key. A convenience command is provided to generate one - <code>flask get-fernet</code>.</p>
 <h3 id="running-with-secrets">Running with Secrets<a class="headerlink" href="#running-with-secrets" title="Permanent link">&para;</a></h3>
 <p>The standard Docker compose file supplies a number of 'secret' values as environment variables. Typically, this is a bad idea.</p>
 <p>Instead, you should make use of <a href="https://docs.docker.com/engine/swarm/secrets/">docker secrets</a>, which are stored securely in docker and only made available <em>inside</em> containers. The <code>secrets_quickstart</code> directory contains a docker <em>stack</em> file (<code>docker-stack.yml</code>). The stack file is very similar to a compose file, but removes container names, and adds a new section - <a href="https://docs.docker.com/compose/compose-file/#secrets-configuration-reference">secrets</a>.</p>
-<p>The stack expects you to provide eight secrets:</p>
+<p>The stack expects you to provide fifteen secrets:</p>
 <ul>
 <li>cert-flowkit.pem</li>
 </ul>
@@ -3046,6 +3130,28 @@ pipenv run pytest
 <li>FLOWAPI_IDENTIFIER</li>
 </ul>
 <p>The unique name of the FlowAPI server. Used to verify that a decoded token is intended for <em>this</em> server.</p>
+<ul>
+<li>FLOWAUTH_FERNET_KEY</li>
+</ul>
+<p>Used for encrypted-at-rest storage of tokens in flowauth</p>
+<ul>
+<li>FLOWAUTH_ADMIN_USERNAME</li>
+</ul>
+<p>Default flowauth administrator username</p>
+<ul>
+<li>FLOWAUTH_ADMIN_PASSWORD</li>
+</ul>
+<p>Default flowauth administrator password</p>
+<ul>
+<li>FLOWAUTH_DB_PASSWORD</li>
+</ul>
+<p>Password for flowauth's database</p>
+<ul>
+<li>
+<p>SECRET_KEY</p>
+<p>Secret key for Flowauth's Flask, used for signing cookies</p>
+</li>
+</ul>
 <p>To make use of secrets you will need to use docker swarm. For testing purposes, you can set up a single node swarm by running <code>docker swarm init</code>.</p>
 <p>Once you have created a swarm, you can add secrets to it using the <a href="https://docs.docker.com/engine/reference/commandline/secret_create/">docker secret</a> command. For example, to add a randomly generated password for the <code>FLOWMACHINE_FLOWDB_PASSWORD</code> secret:</p>
 <div class="codehilite"><pre><span></span>openssl rand -base64 <span class="m">16</span> <span class="p">|</span> docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
@@ -3058,7 +3164,7 @@ pipenv run pytest
 <p>(Note that unlike the other examples, we are supplying a <em>file</em> rather than piping to stdin.)</p>
 <p>Once you have added all the required secrets, you can use <code>docker stack</code> to spin up FlowKit, much as you would <code>docker-compose</code>:</p>
 <div class="codehilite"><pre><span></span><span class="nb">cd</span> secrets_quickstart
-docker stack deploy --with-registry-auth -c docker-stack.yml secrets_test
+docker stack deploy -c docker-stack.yml secrets_test
 </pre></div>
 
 <p>After which, the API will be available via HTTPS (and no longer available via HTTP). Note that to access the API using FlowClient, you'll need to provide the path to the certificate as the <code>ssl_certificate</code> argument when calling <code>flowclient.Connection</code> (much as you would if using a self-signed certificate with <code>requests</code>):</p>
@@ -3123,27 +3229,39 @@ docker secret rm FLOWAUTH_ADMIN_PASSWORD <span class="o">||</span> <span class="
 docker secret rm FLOWAUTH_DB_PASSWORD <span class="o">||</span> <span class="nb">true</span>
 docker secret rm PRIVATE_JWT_SIGNING_KEY <span class="o">||</span> <span class="nb">true</span>
 docker secret rm PUBLIC_JWT_SIGNING_KEY <span class="o">||</span> <span class="nb">true</span>
+docker secret rm FLOWAUTH_FERNET_KEY <span class="o">||</span> <span class="nb">true</span>
+docker secret rm SECRET_KEY <span class="o">||</span> <span class="nb">true</span>
 
 <span class="c1"># Add new secrets</span>
 
 <span class="nb">echo</span> <span class="s2">&quot;Adding secrets&quot;</span>
 <span class="c1"># Flowauth</span>
 openssl genrsa -out tokens-private-key.key <span class="m">4096</span>
-openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span> <span class="p">|</span> docker secret create FLOWAUTH_DB_PASSWORD -
-openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span> <span class="p">|</span> docker secret create FLOWAUTH_ADMIN_PASSWORD -
+<span class="nv">FLOWAUTH_DB_PASSWORD</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$FLOWAUTH_DB_PASSWORD</span><span class="s2">&quot;</span> <span class="p">|</span> docker secret create FLOWAUTH_DB_PASSWORD -
+<span class="nv">FLOWAUTH_ADMIN_PASSWORD</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$FLOWAUTH_ADMIN_PASSWORD</span><span class="s2">&quot;</span><span class="p">|</span> docker secret create FLOWAUTH_ADMIN_PASSWORD -
+<span class="nv">SECRET_KEY</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">64</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$SECRET_KEY</span><span class="s2">&quot;</span><span class="p">|</span> docker secret create SECRET_KEY -
 <span class="nb">echo</span> <span class="s2">&quot;admin&quot;</span> <span class="p">|</span> docker secret create FLOWAUTH_ADMIN_USERNAME -
-pip install cryptography <span class="o">&amp;&amp;</span> python -c <span class="s2">&quot;from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())&quot;</span> <span class="p">|</span> docker secret create FLOWAUTH_FERNET_KEY -
+pip install cryptography
+<span class="nv">FLOWAUTH_FERNET_KEY</span><span class="o">=</span><span class="k">$(</span>python -c <span class="s2">&quot;from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())&quot;</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$FLOWAUTH_FERNET_KEY</span><span class="s2">&quot;</span><span class="p">|</span> docker secret create FLOWAUTH_FERNET_KEY -
 
 
 <span class="c1"># Flowmachine</span>
-openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span> <span class="p">|</span> docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
+<span class="nv">FLOWMACHINE_FLOWDB_PASSWORD</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$FLOWMACHINE_FLOWDB_PASSWORD</span><span class="s2">&quot;</span> <span class="p">|</span> docker secret create FLOWMACHINE_FLOWDB_PASSWORD -
 <span class="nb">echo</span> <span class="s2">&quot;flowmachine&quot;</span> <span class="p">|</span> docker secret create FLOWMACHINE_FLOWDB_USER -
 <span class="nb">echo</span> <span class="s2">&quot;flowapi&quot;</span> <span class="p">|</span> docker secret create FLOWAPI_FLOWDB_USER -
-openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span> <span class="p">|</span> docker secret create REDIS_PASSWORD -
+<span class="nv">REDIS_PASSWORD</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$REDIS_PASSWORD</span><span class="s2">&quot;</span><span class="p">|</span> docker secret create REDIS_PASSWORD -
 
 <span class="c1"># FlowDB</span>
-openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span> <span class="p">|</span> docker secret create FLOWAPI_FLOWDB_PASSWORD -
-openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span> <span class="p">|</span> docker secret create FLOWDB_POSTGRES_PASSWORD -
+<span class="nv">FLOWAPI_FLOWDB_PASSWORD</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$FLOWAPI_FLOWDB_PASSWORD</span><span class="s2">&quot;</span> <span class="p">|</span> docker secret create FLOWAPI_FLOWDB_PASSWORD -
+<span class="nv">FLOWDB_POSTGRES_PASSWORD</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">16</span> <span class="p">|</span> tr -cd <span class="s1">&#39;0-9-a-z-A-Z&#39;</span><span class="k">)</span>
+<span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$FLOWDB_POSTGRES_PASSWORD</span><span class="s2">&quot;</span> <span class="p">|</span> docker secret create FLOWDB_POSTGRES_PASSWORD -
 
 <span class="c1"># FlowAPI</span>
 openssl rsa -pubout -in  tokens-private-key.key -out tokens-public-key.pub
@@ -3169,8 +3287,42 @@ docker secret create cert-flowkit.pem cert-flowkit.pem
 
 <span class="c1"># Deploy the stack</span>
 
-<span class="nb">echo</span> <span class="s2">&quot;Deploying stack&quot;</span>
-docker stack deploy -docker-stack.yml secrets_test
+<span class="nb">echo</span> <span class="s2">&quot;</span>
+<span class="s2">===============</span>
+
+<span class="s2">Deploying stack</span>
+<span class="s2">&quot;</span>
+
+docker stack deploy -c docker-stack.yml secrets_test
+
+<span class="nb">echo</span> <span class="s2">&quot;</span>
+
+<span class="s2">===============</span>
+
+<span class="s2">Deployed with settings:</span>
+
+<span class="s2">FlowDB users</span>
+<span class="s2">flowmachine:</span><span class="nv">$FLOWMACHINE_FLOWDB_PASSWORD</span><span class="s2"></span>
+<span class="s2">flowapi:</span><span class="nv">$FLOWAPI_FLOWDB_PASSWORD</span><span class="s2"></span>
+<span class="s2">flowdb:</span><span class="nv">$FLOWDB_POSTGRES_PASSWORD</span><span class="s2"></span>
+
+<span class="s2">FlowAuth admin user</span>
+<span class="s2">admin:</span><span class="nv">$FLOWAUTH_ADMIN_PASSWORD</span><span class="s2"></span>
+
+<span class="s2">FlowAuth DB user</span>
+<span class="s2">flowauth:</span><span class="nv">$FLOWAUTH_DB_PASSWORD</span><span class="s2"></span>
+
+<span class="s2">FlowAuth Fernet Key</span>
+<span class="nv">$FLOWAUTH_FERNET_KEY</span><span class="s2"></span>
+
+<span class="s2">FlowAuth secret Key</span>
+<span class="nv">$SECRET_KEY</span><span class="s2"></span>
+
+<span class="s2">Redis password</span>
+<span class="nv">$REDIS_PASSWORD</span><span class="s2"></span>
+
+<span class="s2">===============</span>
+<span class="s2">&quot;</span>
 </pre></div>
 
 <p>This will bring up a single node swarm, create random 16 character passwords for the database users, generate a fresh RSA key pair which links FlowAuth and FlowAPI, generate a certificate valid for the <code>flowkit.api</code> domain (and point that to <code>localhost</code> using <code>/etc/hosts</code>), pull all necessary containers, and bring up FlowAuth and FlowAPI.</p>
