@@ -238,6 +238,11 @@ def addEventSQL(type, table):
         [
             f"CLUSTER events.{type}_{table} USING {type}_{table}_msisdn_idx;",
             f"ANALYZE events.{type}_{table};",
+            f"""
+                INSERT INTO available_tables (table_name, has_locations, has_subscribers, has_counterparts) VALUES ('{type}', true, true, true)
+                ON conflict (table_name)
+                DO UPDATE SET has_locations=EXCLUDED.has_locations, has_subscribers=EXCLUDED.has_subscribers, has_counterparts=EXCLUDED.has_counterparts;
+            """,
         ]
     )
 
