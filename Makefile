@@ -23,7 +23,9 @@ DOCKER_COMPOSE_FILE ?= docker-compose.yml
 DOCKER_COMPOSE_TESTDATA_FILE ?= docker-compose-testdata.yml
 DOCKER_COMPOSE_SYNTHETICDATA_FILE ?= docker-compose-syntheticdata.yml
 DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
-DOCKER_SERVICES ?= flowdb_testdata flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
+DOCKER_COMPOSE_TESTDATA_FILE_BUILD ?= docker-compose-testdata-build.yml
+DOCKER_COMPOSE_SYNTHETICDATA_FILE_BUILD ?= docker-compose-syntheticdata-build.yml
+DOCKER_SERVICES ?= flowdb flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
 DOCKER_COMPOSE_UP = docker-compose -f $(DOCKER_COMPOSE_FILE) \
 	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
 	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
@@ -89,23 +91,23 @@ flowdb-build:
 
 
 flowdb_testdata-up: flowdb_testdata-build
-	$(DOCKER_COMPOSE_UP) flowdb_testdata
+	$(DOCKER_COMPOSE_UP) flowdb
 
 flowdb_testdata-down:
-	$(DOCKER_COMPOSE_DOWN) flowdb_testdata
+	$(DOCKER_COMPOSE_DOWN) flowdb
 
 flowdb_testdata-build: flowdb-build
-	$(DOCKER_COMPOSE_BUILD) flowdb_testdata
+	$(DOCKER_COMPOSE_BUILD) flowdb
 
 
 flowdb_synthetic_data-up: flowdb_synthetic_data-build
-	$(DOCKER_COMPOSE_UP) flowdb_synthetic_data
+	$(DOCKER_COMPOSE_UP) flowdb
 
 flowdb_synthetic_data-down:
-	$(DOCKER_COMPOSE_DOWN) flowdb_synthetic_data
+	$(DOCKER_COMPOSE_DOWN) flowdb
 
 flowdb_synthetic_data-build: flowdb-build
-	$(DOCKER_COMPOSE_BUILD) flowdb_synthetic_data
+	$(DOCKER_COMPOSE_BUILD) flowdb
 
 
 flowmachine-up:
