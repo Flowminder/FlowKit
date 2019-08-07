@@ -197,18 +197,11 @@ CREATE OR REPLACE FUNCTION random_ints (seed DOUBLE PRECISION, n_samples INT, ma
              RETURNS TABLE (id INT)
             AS $$
 DECLARE new_seed NUMERIC;
-DECLARE samples double precision[] := array[]::double precision[];
 BEGIN
  new_seed = random();
  PERFORM setseed(seed);
- FOR i in 1..n_samples LOOP
-    samples := array_append(samples, random());
- END LOOP;
+ RETURN QUERY SELECT generate_series AS id FROM generate_series(1, max_val) ORDER BY random() LIMIT n_samples;
  PERFORM setseed(new_seed);
- RETURN QUERY SELECT
-    round(samples[generate_series] * max_val)::integer as id
-    FROM generate_series(1, n_samples)
-    GROUP BY id;
 END; $$
 
 LANGUAGE plpgsql
