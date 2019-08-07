@@ -34,7 +34,9 @@ def dummy_failing__callable(*, dag_run: DagRun, **kwargs):
     Dummy python callable raising an exception
     """
     logger.info(f"Dag run: {dag_run}")
-    raise Exception
+    raise Exception(
+        "This exception is raised deliberately to indicate that some step in the ETL process failed."
+    )
 
 
 def dummy_trigger__callable(*, dag_run: DagRun, **kwargs):
