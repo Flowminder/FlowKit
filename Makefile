@@ -13,9 +13,9 @@
 # you'd like to use when running `make up`. Note that at most one flowdb
 # service must be specified. Examples:
 #
-#     DOCKER_SERVICES="flowdb_synthetic_data flowapi flowmachine flowauth flowmachine_query_locker" make up
-#     DOCKER_SERVICES="flowdb" make up
-#     DOCKER_SERVICES="flowdb_testdata flowetl flowetl_db" make up
+#     make up DOCKER_SERVICES="flowdb_synthetic_data flowapi flowmachine flowauth flowmachine_query_locker"
+#     make up DOCKER_SERVICES="flowdb"
+#     make up DOCKER_SERVICES="flowdb_testdata flowetl flowetl_db"
 #
 
 DOCKER_COMPOSE_FILE ?= docker-compose.yml
@@ -25,67 +25,63 @@ DOCKER_COMPOSE_FILE_BUILD ?= docker-compose-build.yml
 DOCKER_COMPOSE_TESTDATA_FILE_BUILD ?= docker-compose-testdata-build.yml
 DOCKER_COMPOSE_SYNTHETICDATA_FILE_BUILD ?= docker-compose-syntheticdata-build.yml
 DOCKER_SERVICES ?= flowdb flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
-DOCKER_COMPOSE_UP = docker-compose -f $(DOCKER_COMPOSE_FILE) \
-	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
-	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
-	-f $(DOCKER_COMPOSE_FILE_BUILD) \
-	up -d --build
-DOCKER_COMPOSE_UP_NOBUILD = docker-compose -f $(DOCKER_COMPOSE_FILE) \
-	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
-	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
-	up -d
-DOCKER_COMPOSE_DOWN = docker-compose -f $(DOCKER_COMPOSE_FILE) \
-	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
-	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
-	rm -f -s -v
-DOCKER_COMPOSE_DOWN_ALL = docker-compose -f $(DOCKER_COMPOSE_FILE) \
-	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
-	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
-	down -v
-DOCKER_COMPOSE_BUILD = docker-compose -f $(DOCKER_COMPOSE_FILE) \
-	-f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE) \
-	-f $(DOCKER_COMPOSE_TESTDATA_FILE) \
-	-f $(DOCKER_COMPOSE_FILE_BUILD) \
-	build
+DOCKER_SERVICES_TO_START = $(patsubst flowdb%,flowdb,$(DOCKER_SERVICES))
+services := flowmachine flowapi flowauth flowdb worked_examples flowdb_testdata flowdb_synthetic_data flowetl flowetl_db
+space :=
+space +=
+DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE)
 
 # Check that at most one flowdb service is present in DOCKER_SERVICES
 NUM_SPECIFIED_FLOWDB_SERVICES=$(words $(filter flowdb%, $(DOCKER_SERVICES)))
 ifneq ($(NUM_SPECIFIED_FLOWDB_SERVICES),0)
   ifneq ($(NUM_SPECIFIED_FLOWDB_SERVICES),1)
-    $(error "At most one flowdb service must be specified in DOCKER_SERVICES, but found: $(filter flowdb%, $(DOCKER_SERVICES))")
+	$(error "At most one flowdb service must be specified in DOCKER_SERVICES, but found: $(filter flowdb%, $(DOCKER_SERVICES))")
   endif
+endif
+
+
+ifeq ($(words $(filter flowdb_testdata, $(DOCKER_SERVICES))), 1)
+    up up-no_build : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_TESTDATA_FILE)
+    up : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_TESTDATA_FILE_BUILD)
+endif
+ifeq ($(words $(filter flowdb_syntheticdata, $(DOCKER_SERVICES))), 1)
+	up up-no_build : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE)
+	up : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE_BUILD)
 endif
 
 all:
 
 up: flowdb-build
-	$(DOCKER_COMPOSE_UP) $(DOCKER_SERVICES)
+	$(DOCKER_COMPOSE) up --build -d $(DOCKER_SERVICES_TO_START)
 
 up-no_build:
-	$(DOCKER_COMPOSE_UP_NO_BUILD) $(DOCKER_SERVICES)
+	$(DOCKER_COMPOSE) up -d $(DOCKER_SERVICES_TO_START)
 
 down:
-	$(DOCKER_COMPOSE_DOWN)
+	$(DOCKER_COMPOSE) down
 
 
-# Note: the targets below are repetitive and could be simplified by using
-# a pattern rule as follows:
-#
-#   %: %-build
-#       docker-compose -f $(DOCKER_COMPOSE_FILE) up -d --build $*
-#
-# The reason we are keeping the explicitly spelled-out versions is in order
-# to increase discoverability of the available Makefile targets and to enable
-# tab-completion of targets (which is not possible when using patterns).
+# Per-service targets
+# While we could define these using a % pattern, those aren't tab-completable
 
-services := flowmachine flowapi flowauth flowdb worked_examples flowdb_testdata flowdb_synthetic_data flowetl flowetl_db
-space :=
-space +=
-$(subst $(space),-up ,$(services)):
-	$(DOCKER_COMPOSE_UP) $(subst -up,,$@)
 
-$(subst $(space),-down ,$(services)):
-	$(DOCKER_COMPOSE_DOWN) $(patsubst -down,,$@)
+
+flowdb_testdata-up flowdb_testdata-down: DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_TESTDATA_FILE)
+flowdb_synthetic_data-up flowdb_synthetic_data-down : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE)
+
+%-build: DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_FILE_BUILD)
+
+flowdb_testdata-build flowdb_synthetic_data-build: flowdb-build
+
+flowdb_testdata-build : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_TESTDATA_FILE_BUILD)
+flowdb_synthetic_data-build : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE_BUILD)
+
+
+$(services:=-up):
+	$(DOCKER_COMPOSE) up -d $(subst _synthetic_data,,$(subst _testdata,,$(@:-up=)))
+
+$(services:=-down):
+	$(DOCKER_COMPOSE) down $(subst _synthetic_data,,$(subst _testdata,,$(@:-down=)))
 	
-$(subst $(space),-build ,$(services))::
-	$(DOCKER_COMPOSE_BUILD) $(patsubst -build,,$@)
+$($(filter-out flowetl_db, services):=-build):
+	$(DOCKER_COMPOSE) build $(subst _synthetic_data,,$(subst _testdata,,$(@:-build=)))
