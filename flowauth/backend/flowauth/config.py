@@ -94,25 +94,24 @@ def get_config():
     log_level = getattr(
         logging, os.getenv("FLOWAUTH_LOG_LEVEL", "error").upper(), logging.ERROR
     )
+    db_uri = get_secret_or_env_var(
+        "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
+    )
+    db_uri = db_uri.format(get_secret_or_env_var("FLOWAUTH_DB_PASSWORD", ""))
 
     return dict(
         PRIVATE_JWT_SIGNING_KEY=load_private_key(
-            get_secret_or_env_var(
-                "PRIVATE_JWT_SIGNING_KEY", os.environ["PRIVATE_JWT_SIGNING_KEY"]
-            )
+            get_secret_or_env_var("PRIVATE_JWT_SIGNING_KEY")
         ),
         LOG_LEVEL=log_level,
         ADMIN_USER=get_secret_or_env_var("FLOWAUTH_ADMIN_USERNAME"),
         ADMIN_PASSWORD=get_secret_or_env_var("FLOWAUTH_ADMIN_PASSWORD"),
-        SQLALCHEMY_DATABASE_URI=get_secret_or_env_var(
-            "DB_URI", os.getenv("DB_URI", "sqlite:////tmp/test.db")
-        ),
+        SQLALCHEMY_DATABASE_URI=db_uri,
         SECRET_KEY=get_secret_or_env_var("SECRET_KEY"),
         SESSION_PROTECTION="strong",
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         FLOWAUTH_FERNET_KEY=flowauth_fernet_key,
         DEMO_MODE=True if os.getenv("DEMO_MODE") is not None else False,
         RESET_DB=True if os.getenv("RESET_FLOWAUTH_DB") is not None else False,
-        DB_IS_SETTING_UP=Event(),
         DB_IS_SET_UP=Event(),
     )

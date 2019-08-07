@@ -13,6 +13,14 @@ from flask_principal import Principal, identity_loaded, UserNeed, RoleNeed
 from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
 from flowauth.config import get_config
 
+try:
+    from uwsgidecorators import lock
+except ImportError:
+    # Psuedo-lock function for if not running under uwsgi
+    def lock(func):
+        return func
+
+
 from .config import get_config
 from .invalid_usage import InvalidUsage
 from .models import *
@@ -20,6 +28,7 @@ from .admin import blueprint as admin_blueprint
 from .token_management import blueprint as token_management_blueprint
 from .login import blueprint as login_blueprint
 from .spatial_aggregation import blueprint as aggregation_unit_blueprint
+from .version import blueprint as version_blueprint
 
 
 def create_app(test_config=None):
@@ -46,6 +55,7 @@ def create_app(test_config=None):
     csrf = CSRFProtect()
     csrf.init_app(app)
     csrf.exempt(login_blueprint)
+    csrf.exempt(version_blueprint)
 
     app.register_blueprint(login_blueprint)
     app.register_blueprint(admin_blueprint, url_prefix="/admin")
@@ -53,6 +63,7 @@ def create_app(test_config=None):
     app.register_blueprint(
         aggregation_unit_blueprint, url_prefix="/spatial_aggregation"
     )
+    app.register_blueprint(version_blueprint)
 
     # Set the log level
     app.before_first_request(partial(app.logger.setLevel, app.config["LOG_LEVEL"]))
@@ -61,13 +72,15 @@ def create_app(test_config=None):
         app.before_first_request(make_demodata)
     else:
         # Initialise the database
-        app.before_first_request(partial(init_db, force=app.config["RESET_DB"]))
+        app.before_first_request(lock(partial(init_db, force=app.config["RESET_DB"])))
         # Create an admin user
         app.before_first_request(
-            partial(
-                add_admin,
-                username=app.config["ADMIN_USER"],
-                password=app.config["ADMIN_PASSWORD"],
+            lock(
+                partial(
+                    add_admin,
+                    username=app.config["ADMIN_USER"],
+                    password=app.config["ADMIN_PASSWORD"],
+                )
             )
         )
 

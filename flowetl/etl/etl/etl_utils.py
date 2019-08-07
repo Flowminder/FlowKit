@@ -133,7 +133,7 @@ def construct_etl_dag(
         archive = archive(task_id="archive")
         quarantine = quarantine(task_id="quarantine")
         clean = clean(
-            task_id="clean", sql="fixed_sql/clean.sql", trigger_rule="all_done"
+            task_id="clean", sql=f"etl/{cdr_type}/clean.sql", trigger_rule="all_done"
         )
         fail = fail(task_id="fail")
 
