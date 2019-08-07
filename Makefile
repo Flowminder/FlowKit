@@ -30,6 +30,7 @@ services := flowmachine flowapi flowauth flowdb worked_examples flowdb_testdata 
 space :=
 space +=
 DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE)
+FLOWDB_SERVICE := $(filter flowdb%, $(DOCKER_SERVICES))
 
 # Check that at most one flowdb service is present in DOCKER_SERVICES
 NUM_SPECIFIED_FLOWDB_SERVICES=$(words $(filter flowdb%, $(DOCKER_SERVICES)))
@@ -40,13 +41,13 @@ ifneq ($(NUM_SPECIFIED_FLOWDB_SERVICES),0)
 endif
 
 
-ifeq ($(words $(filter flowdb_testdata, $(DOCKER_SERVICES))), 1)
-    up up-no_build : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_TESTDATA_FILE)
-    up : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_TESTDATA_FILE_BUILD)
+ifeq ($(FLOWDB_SERVICE), flowdb_testdata)
+ up up-no_build : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_TESTDATA_FILE)
+ up : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_TESTDATA_FILE_BUILD)
 endif
-ifeq ($(words $(filter flowdb_syntheticdata, $(DOCKER_SERVICES))), 1)
-	up up-no_build : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE)
-	up : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE_BUILD)
+ifeq ($(FLOWDB_SERVICE), flowdb_synthetic_data)
+ up up-no_build : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE)
+ up : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE_BUILD)
 endif
 
 all:
