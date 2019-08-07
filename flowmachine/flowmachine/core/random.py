@@ -52,18 +52,18 @@ class RandomBase:
             fraction and self.method in ["system_rows", "random_ids"]
         ):
 
-            ct = 0
+            rowcount = 0
 
             if self.estimate_count:
-                ct = table.estimated_rowcount()
+                rowcount = table.estimated_rowcount()
 
-            if not self.estimate_count or ct == 0:
-                ct = len(self.query)
+            if not self.estimate_count or rowcount == 0:
+                rowcount = len(self.query)
 
             if size is not None:
-                fraction = size / float(ct)
+                fraction = size / float(rowcount)
             elif fraction is not None:
-                size = int(fraction * float(ct))
+                size = int(fraction * float(rowcount))
 
         if fraction is not None:
             fraction *= 100
@@ -75,18 +75,16 @@ class RandomBase:
 
             query = """
             SELECT {cn} FROM (
-                (SELECT * FROM random_ints({seed}, {size_buffer}, {ct})) r
+                (SELECT * FROM random_ints({seed}, {size}, {rowcount})) r
                 LEFT JOIN
                 (SELECT *, row_number() OVER () as rid FROM {sc}.{tn}) s
                 ON r.id=s.rid
             ) o
-            LIMIT {size}
             """.format(
                 cn=",".join(self.query.column_names),
                 sc=table.schema,
                 tn=table.name,
-                ct=ct,
-                size_buffer=int(size * 1.1),
+                rowcount=rowcount,
                 size=size,
                 seed=seed,
             )
