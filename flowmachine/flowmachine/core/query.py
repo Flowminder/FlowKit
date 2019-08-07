@@ -1066,7 +1066,8 @@ class Query(metaclass=ABCMeta):
             information contained in the `pg_class` or whether to perform an
             actual count in the number of rows.
         seed : float, optional
-            Optionally provide a seed for repeatable random samples, which should be between -/+1.
+            Optionally provide a seed for repeatable random samples.
+            If using random_ids method, seed must be between -/+1.
             Not available in combination with the system_rows method.
 
         Returns
@@ -1085,7 +1086,7 @@ class Query(metaclass=ABCMeta):
 
         """
         if seed is not None:
-            if seed > 1 or seed < -1:
+            if method == "random_ids" and (seed > 1 or seed < -1):
                 raise ValueError("Seed must be between -1 and 1.")
             if method == "system_rows":
                 raise ValueError("Seed is not supported with system_rows method.")
