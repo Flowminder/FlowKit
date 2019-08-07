@@ -443,7 +443,10 @@ if __name__ == "__main__":
                     CREATE TABLE subs as
                         SELECT s.id, md5((s.id + 10)::TEXT) AS msisdn, md5((s.id + 20)::TEXT) AS imei, md5((s.id + 30)::TEXT) AS imsi,
                         {variant_sql} END as variant,
-                        (SELECT id FROM infrastructure.tacs where brand = ({tac_sql} END) ORDER BY RANDOM() LIMIT 1) as tac
+                        (
+                            SELECT id FROM infrastructure.tacs where brand = ({tac_sql} END) 
+                            OFFSET (CASE WHEN s.id > (SELECT count(id) FROM infrastructure.tacs where brand = ({tac_sql} END)) THEN s.id %% (SELECT count(id) FROM infrastructure.tacs where brand = ({tac_sql} END)) ELSE s.id END) LIMIT 1
+                        ) as tac
                         FROM
                         (SELECT row_number() over() AS id FROM generate_series(1, {num_subscribers})) s;
                 """
