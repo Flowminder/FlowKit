@@ -75,7 +75,7 @@ def run_postload_queries__callable(*, queries: dict, dag_run: DagRun, **kwargs):
         )
 
     for query in queries[cdr_type]:
-        query_result = query(cdr_date=cdr_date, session=session)
+        query_result = query(cdr_type=cdr_type, cdr_date=cdr_date, session=session)
         optional_comment_or_description = (
             query_result["optional_comment_or_description"]
             if "optional_comment_or_description" in query_result

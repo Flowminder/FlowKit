@@ -9,23 +9,28 @@ Contains the definition of callables to be used in the production ETL dag.
 from sqlalchemy.orm.session import Session
 from pendulum.date import Date as pendulumDate
 
+from .etl_utils import CDRType
+
 
 # pylint: disable=unused-argument
-def num_total_calls__callable(*, cdr_date: pendulumDate, session: Session, **kwargs):
+def num_total_events__callable(
+    *, cdr_type: CDRType, cdr_date: pendulumDate, session: Session, **kwargs
+):
     """
-    Function to determine the number of total calls
+    Function to determine the number of total events for this CDR type and date.
     """
+    cdr_type_as_str = cdr_type.value
     cdr_date_tomorrow = cdr_date.add(days=1)
 
     sql = f"""
     SELECT COUNT(*)
-    FROM events.calls
+    FROM events.{cdr_type_as_str}
     WHERE datetime >= '{ cdr_date }' AND datetime < '{ cdr_date_tomorrow }'
     """
     outcome = session.execute(sql).fetchone()[0]
 
     return {
         "outcome": outcome,
-        "type_of_query_or_check": "num_total_calls",
-        "optional_comment_or_description": "Total number of calls",
+        "type_of_query_or_check": "num_total_events",
+        "optional_comment_or_description": f"Total number of events for this CDR type and date",
     }
