@@ -6,14 +6,15 @@ SMS data from a CSV file.
 
 The remainder of this README describes the steps to set up this deployment and run
 the ingestion process. For the initial steps of building the relevant docker images,
-you need a clone of the FlowKit repository (for simplicity, the steps below assume
-that you are running them from within the FlowKit repository).
+you need a local clone of the FlowKit repository. For simplicity, the steps below
+assume that you are running them from within this local clone, inside the
+directory `flowetl/deployment_example/`.
 
 In a production deployment, you would simply upload the docker images directly to the
-server (or pull them there if it has an internet connection), but for development and
-testing it is useful to build the images locally, which is the method described here.
-Note that some other parts of the setup (e.g. using a docker swarm or setting up a
-local registry) are not strictly needed for a local example deployment, but we describe
+server, or pull them there if the server has internet connection. However, for development
+and testing it is useful to build the images locally, which is the method described here.
+Note that some other parts of the setup - e.g. using a docker swarm or setting up a
+local registry - are not strictly needed for a local example deployment, but we describe
 them here in order to mimic a production setup as closely as possible.
 
 
