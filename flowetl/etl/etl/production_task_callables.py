@@ -45,25 +45,10 @@ def record_ingestion_state__callable(*, dag_run: DagRun, to_state: str, **kwargs
     cdr_type = dag_run.conf["cdr_type"]
     cdr_date = dag_run.conf["cdr_date"]
 
-    try:
-        file_name = dag_run.conf["file_name"]
-        full_file_path = dag_run.conf["full_file_path"]
-        info_string = (
-            f"[FFF] file_name={file_name!r}, full_file_path={full_file_path!r}"
-        )
-        print(f"[EEE] file_name={file_name!r}")
-        print(f"[EEE] full_file_path={full_file_path!r}")
-    except KeyError:
-        print(f"[EEE] Keys missing!")
-        print(f"[EEE] Here is the config: {dag_run.conf}")
-        info_string = f"[FFF] Keys missing! config: {dag_run.conf}"
-
     session = get_session()
     ETLRecord.set_state(
         cdr_type=cdr_type, cdr_date=cdr_date, state=to_state, session=session
     )
-
-    return info_string
 
 
 # pylint: disable=unused-argument
