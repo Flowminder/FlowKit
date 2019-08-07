@@ -101,6 +101,9 @@ executors:
       sd_mds:
         type: integer
         default: 5
+      startdate:
+        type: integer
+        default: 1451606400
     environment:
       POSTGRES_PASSWORD: flowflow
       MPLBACKEND: "agg"
@@ -139,6 +142,7 @@ executors:
           N_SD_SMS: <<parameters.sd_sms>>
           N_MEAN_MDS: <<parameters.mean_mds>>
           N_SD_MDS: <<parameters.sd_mds>>
+          N_STARTDATE: <<parameters.startdate>>
           SYNTHETIC_DATA_GENERATOR: <<parameters.synthetic_data_generator>>
           FLOWMACHINE_FLOWDB_PASSWORD: foo
           FLOWAPI_FLOWDB_PASSWORD: foo
@@ -759,6 +763,7 @@ jobs:
       sd_sms: 5
       mean_mds: 50
       sd_mds: 5
+      startdate: 1451606400
       disaster_start_date: 2016-02-11
       disaster_end_date: 2016-03-01
     working_directory: /home/circleci/project/docs
