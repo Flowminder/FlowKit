@@ -151,8 +151,8 @@ def test_single_file_previously_quarantined(
         cdr_type="calls",
         cdr_date="20160102",
         outcome="0",
-        type_of_query_or_check="num_total_calls",
-        optional_comment_or_description="The number of total calls",
+        type_of_query_or_check="num_total_events",
+        optional_comment_or_description="Total number of events for this CDR type and date",
     )
 
     def get_etl_states(*, cdr_type, cdr_date):
