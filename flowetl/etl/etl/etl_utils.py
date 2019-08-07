@@ -139,7 +139,7 @@ def construct_etl_dag(
 
         # Define upstream/downstream relationships between airflow tasks
         init >> extract >> transform >> load >> success_branch  # pylint: disable=pointless-statement
-        success_branch >> archive >> clean >> postload  # pylint: disable=pointless-statement
+        success_branch >> archive >> postload >> clean  # pylint: disable=pointless-statement
         quarantine >> clean  # pylint: disable=pointless-statement
         success_branch >> quarantine >> fail  # pylint: disable=pointless-statement
 
