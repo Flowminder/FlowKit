@@ -14,7 +14,7 @@ class BaseRandomSampleSchema(Schema):
     fraction = fields.Float(
         validate=Range(0.0, 1.0, min_inclusive=False, max_inclusive=False)
     )
-    estimate_count = fields.Boolean()
+    estimate_count = fields.Boolean(missing=True)
 
     @validates_schema
     def validate_size_or_fraction(self, data, **kwargs):
@@ -55,7 +55,7 @@ class RandomIDsRandomSampleSchema(BaseRandomSampleSchema):
 
 
 class RandomSampler:
-    def __init__(self, *, method, size, fraction, estimate_count, seed=None):
+    def __init__(self, *, method, size=None, fraction=None, estimate_count, seed=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.method = method

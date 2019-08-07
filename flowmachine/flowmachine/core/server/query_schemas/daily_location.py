@@ -55,7 +55,7 @@ class DailyLocationExposed(BaseExposedQuery):
             method=self.method,
             subscriber_subset=self.subscriber_subset,
         )
-        if sampling is None:
+        if self.sampling is None:
             return query
         else:
-            return sampling.make_random_sample_object(query)
+            return self.sampling.make_random_sample_object(query)
