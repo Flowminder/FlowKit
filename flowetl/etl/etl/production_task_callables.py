@@ -77,8 +77,9 @@ def production_trigger__callable(
     *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
 ):
     """
-    Function that determines which files in files/ should be processed
-    and triggers the correct ETL dag with config based on filename.
+    Function that determines which files in files/ or which external database
+    tables should be processed and triggers the correct ETL dag with config based
+    on the CDR date derived from the filename or data present.
 
     Parameters
     ----------
@@ -120,10 +121,12 @@ def production_trigger__callable(
                 execution_date = pendulum.Pendulum(
                     cdr_date.year, cdr_date.month, cdr_date.day
                 )
+                full_file_path = str(files_path.joinpath(file).absolute())
                 config = {
                     "cdr_type": cdr_type,
                     "cdr_date": cdr_date,
                     "file_name": file,
+                    "full_file_path": full_file_path,
                     "template_path": f"etl/{cdr_type}",
                 }
                 trigger_dag(
