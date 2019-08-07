@@ -361,8 +361,8 @@ if __name__ == "__main__":
 
                         trans.execute(
                             f"""
-                                INSERT INTO infrastructure.sites (id, version, date_of_first_service, geom_point) 
-                                VALUES ('{hash}', 0, (date '2015-01-01' + random() * interval '1 year')::date, '{geom_point}');
+                                INSERT INTO infrastructure.sites (id, version, date_of_first_service, date_of_last_service, geom_point) 
+                                VALUES ('{hash}', 0, (date '{start_date}')::date, (date '{start_date}' + interval '{num_days} days')::date, '{geom_point}');
                             """
                         )
 
@@ -371,8 +371,8 @@ if __name__ == "__main__":
                             cellhash = generate_hash(cell_id)
                             trans.execute(
                                 f"""
-                                    INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, geom_point) 
-                                    VALUES ('{cellhash}', 0, '{hash}', (date '2015-01-01' + random() * interval '1 year')::date, '{geom_point}');
+                                    INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, date_of_last_service, geom_point) 
+                                    VALUES ('{cellhash}', 0, '{hash}', (date '{start_date}')::date, (date '{start_date}' + interval '{num_days} days')::date, '{geom_point}');
                                 """
                             )
                             cell_id += 1000
