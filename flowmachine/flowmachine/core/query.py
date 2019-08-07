@@ -1058,9 +1058,7 @@ class Query(metaclass=ABCMeta):
             'bernoulli': samples directly on each row of the underlying
                 relation. This sampling method is slower and is not guaranteed to
                 generate a sample of the specified size, but an approximation
-            'random_ids': Assumes that the table contains a column named 'id'
-                with random numbers from 1 to the total number of rows in the
-                table. This method samples the ids from this table.
+            'random_ids': samples rows by randomly sampling the row number.
         estimate_count : bool, default True
             Whether to estimate the number of rows in the table using
             information contained in the `pg_class` or whether to perform an
