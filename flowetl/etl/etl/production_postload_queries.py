@@ -15,17 +15,17 @@ def num_total_calls__callable(*, cdr_date: pendulumDate, session: Session, **kwa
     """
     Function to determine the number of total calls
     """
+    cdr_date_tomorrow = cdr_date.add(days=1)
 
     sql = f"""
-    SELECT
-        COUNT(*)
-    FROM
-        events.calls
+    SELECT COUNT(*)
+    FROM events.calls
+    WHERE datetime >= '{ cdr_date }' AND datetime < '{ cdr_date_tomorrow }'
     """
     outcome = session.execute(sql).fetchone()[0]
 
     return {
         "outcome": outcome,
         "type_of_query_or_check": "num_total_calls",
-        "optional_comment_or_description": "The number of total calls",
+        "optional_comment_or_description": "Total number of calls",
     }
