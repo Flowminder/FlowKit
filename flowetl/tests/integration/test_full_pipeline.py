@@ -136,20 +136,13 @@ def test_single_file_previously_quarantined(
 
         connection, _ = flowdb_connection
         sql = f"""
-        select
-            1
-        from
-            etl.post_etl_queries
-        where
-            cdr_type = '{cdr_type}'
-            and
-            cdr_date = '{cdr_date}'
-            and
-            type_of_query_or_check = '{type_of_query_or_check}'
-            and
-            outcome = '{outcome}'
-            and
-            optional_comment_or_description = '{optional_comment_or_description}'
+        SELECT 1
+        FROM etl.post_etl_queries
+        WHERE cdr_type = '{cdr_type}'
+        AND cdr_date = '{cdr_date}'
+        AND type_of_query_or_check = '{type_of_query_or_check}'
+        AND outcome = '{outcome}'
+        AND optional_comment_or_description = '{optional_comment_or_description}'
         """
         res = connection.execute(sql).fetchone()[0]
         return res == 1
