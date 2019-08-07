@@ -195,5 +195,6 @@ flowdb=# SELECT date, COUNT(*) FROM (SELECT datetime::date as date FROM events.s
     date    | count
 ------------+-------
  2019-01-01 |   100
+ 2019-01-02 |   120
  (1 row)
 ```
