@@ -122,8 +122,6 @@ def production_trigger__callable(
                     cdr_date.year, cdr_date.month, cdr_date.day
                 )
                 full_file_path = str(files_path.joinpath(file).absolute())
-                logger.info(f"[DDD] Processing file '{file}' for cdr_date={cdr_date}")
-                logger.info(f"[DDD] Full file path: {full_file_path}")
                 config = {
                     "cdr_type": cdr_type,
                     "cdr_date": cdr_date,
