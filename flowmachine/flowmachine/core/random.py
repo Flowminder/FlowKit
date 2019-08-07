@@ -75,7 +75,7 @@ class RandomBase:
 
             query = """
             SELECT {cn} FROM (
-                (SELECT * FROM random_ints({seed}, {ct}, {size_buffer})) r
+                (SELECT * FROM random_ints({seed}, {size_buffer}, {ct})) r
                 LEFT JOIN
                 (SELECT *, row_number() OVER () as rid FROM {sc}.{tn}) s
                 ON r.id=s.rid
