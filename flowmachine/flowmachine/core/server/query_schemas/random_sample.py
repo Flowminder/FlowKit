@@ -6,8 +6,6 @@ from marshmallow import Schema, fields, validates_schema, ValidationError, post_
 from marshmallow.validate import OneOf, Range
 from marshmallow_oneofschema import OneOfSchema
 
-from flowmachine.core.random import random_factory
-
 
 class BaseRandomSampleSchema(Schema):
     size = fields.Integer(validate=Range(min=1))
@@ -20,7 +18,7 @@ class BaseRandomSampleSchema(Schema):
     def validate_size_or_fraction(self, data, **kwargs):
         if ("size" in data) == ("fraction" in data):
             raise ValidationError(
-                "Must provide exactly one of 'size' or 'fraction' for a random sample"
+                "Must provide exactly one of 'size' or 'fraction' for a random sample."
             )
 
 
@@ -31,7 +29,7 @@ class SystemRowsRandomSampleSchema(BaseRandomSampleSchema):
 
 
 class SystemRandomSampleSchema(BaseRandomSampleSchema):
-    seed = fields.Integer()
+    seed = fields.Float()
 
     @post_load
     def make_random_sampler(self, params, **kwargs):
@@ -39,7 +37,7 @@ class SystemRandomSampleSchema(BaseRandomSampleSchema):
 
 
 class BernoulliRandomSampleSchema(BaseRandomSampleSchema):
-    seed = fields.Integer()
+    seed = fields.Float()
 
     @post_load
     def make_random_sampler(self, params, **kwargs):
@@ -47,7 +45,7 @@ class BernoulliRandomSampleSchema(BaseRandomSampleSchema):
 
 
 class RandomIDsRandomSampleSchema(BaseRandomSampleSchema):
-    seed = fields.Float(validate=Range(0.0, 1.0))
+    seed = fields.Float(validate=Range(-1.0, 1.0))
 
     @post_load
     def make_random_sampler(self, params, **kwargs):
@@ -65,9 +63,7 @@ class RandomSampler:
         self.seed = seed
 
     def make_random_sample_object(self, query):
-        Random = random_factory(type(query))
-        return Random(
-            query,
+        return query.random_sample(
             method=self.method,
             size=self.size,
             fraction=self.fraction,
