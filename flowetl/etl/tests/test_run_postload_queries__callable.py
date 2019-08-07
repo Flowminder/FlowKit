@@ -23,7 +23,7 @@ def test_run_postload_queries__callable(create_fake_dag_run):
     cdr_date = pendulum.parse("2016-01-01").date()
 
     def mock_postetl_query_outcome(**kwargs):
-        return lambda cdr_date, session: kwargs
+        return lambda cdr_type, cdr_date, session: kwargs
 
     queries = {
         cdr_type: [
