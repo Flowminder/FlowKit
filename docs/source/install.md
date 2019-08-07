@@ -50,7 +50,7 @@ bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick
 ```
 
 !!! warning
-The larger data container will take considerably longer to start up, as it generates data when first run.
+    The larger data container will take considerably longer to start up, as it generates data when first run.
 
 The [worked examples](worked_examples) are also available as part of the demo system. To install these run
 
@@ -67,10 +67,10 @@ bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick
 to get the examples with the larger dataset (the one used when producing this documentation).
 
 !!! info
-The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the [Flows Above Normal](worked_examples/flows-above-normal.ipynb) example because this uses data for dates outside the range included in the small dataset.
+    The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the [Flows Above Normal](worked_examples/flows-above-normal.ipynb) example because this uses data for dates outside the range included in the small dataset.
 
 !!! info
-The worked examples make use of [Mapbox GL](https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/) for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions [here](https://account.mapbox.com/)), and set this as the value of the `MAPBOX_ACCESS_TOKEN` environment variable before running the above commands.
+    The worked examples make use of [Mapbox GL](https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/) for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions [here](https://account.mapbox.com/)), and set this as the value of the `MAPBOX_ACCESS_TOKEN` environment variable before running the above commands.
 
 To shut down the system, you can either stop all the docker containers directly, or run
 
@@ -116,7 +116,7 @@ After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), th
 
 FlowKit uses [pipenv](https://pipenv.readthedocs.io/) to manage Python environments. To start a Python session in which you can use FlowClient:
 
-```
+```bash
 cd flowclient
 pipenv install
 pipenv run python
@@ -173,59 +173,62 @@ The stack expects you to provide fifteen secrets:
 
 - cert-flowkit.pem
 
-  An SSL certificate file (should contain private key as well)
+    An SSL certificate file (should contain private key as well)
 
 - FLOWAPI_FLOWDB_USER
 
-  The username the API will use to connect to FlowDB
+    The username the API will use to connect to FlowDB
 
 - FLOWAPI_FLOWDB_PASSWORD
 
-  The password that the API will use to connect to FlowDB
+    The password that the API will use to connect to FlowDB
 
 - FLOWMACHINE_FLOWDB_USER
 
-  The username that FlowMachine will use to connect to FlowDB
+    The username that FlowMachine will use to connect to FlowDB
 
 - FLOWMACHINE_FLOWDB_PASSWORD
 
-  The password that FlowMachine will use to connect to FlowDB
+    The password that FlowMachine will use to connect to FlowDB
 
 - POSTGRES_PASSWORD
 
-  The superuser password for the `flowdb` user
+    The superuser password for the `flowdb` user
 
 - REDIS_PASSWORD
 
-  The password for redis
+    The password for redis
 
 - PRIVATE_JWT_SIGNING_KEY
 
-  The secret key used to sign API access tokens, should be an RSA private key
+    The secret key used to sign API access tokens, should be an RSA private key
 
 - PUBLIC_JWT_SIGNING_KEY
 
-  The public key used to verify API access tokens, should be the public key which matches PRIVATE_JWT_SIGNING_KEY
+    The public key used to verify API access tokens, should be the public key which matches PRIVATE_JWT_SIGNING_KEY
 
 - FLOWAPI_IDENTIFIER
 
-  The unique name of the FlowAPI server. Used to verify that a decoded token is intended for _this_ server.
+    The unique name of the FlowAPI server. Used to verify that a decoded token is intended for _this_ server.
   
 -  FLOWAUTH_FERNET_KEY
-    
-   Used for encrypted-at-rest storage of tokens in flowauth
+
+    Used for encrypted-at-rest storage of tokens in flowauth
+
     
 -  FLOWAUTH_ADMIN_USERNAME
 
-   Default flowauth administrator username
+    Default flowauth administrator username
+
     
 -  FLOWAUTH_ADMIN_PASSWORD
 
-   Default flowauth administrator password
+    Default flowauth administrator password
 
 -  FLOWAUTH_DB_PASSWORD
 
-   Password for flowauth's database
+    Password for flowauth's database
+
     
 -  SECRET_KEY
 
