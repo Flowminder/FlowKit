@@ -23,6 +23,7 @@ from airflow.models import DagRun
                 "transform": "upstream_failed",
                 "success_branch": "success",
                 "load": "upstream_failed",
+                "postload": "skipped",
                 "archive": "skipped",
                 "quarantine": "success",
                 "clean": "success",

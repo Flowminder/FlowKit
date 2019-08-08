@@ -117,7 +117,7 @@ The `ingestion_db` instance contains sample data in the table `events.sample` (g
 scripts `ingestion_db/sql/create_sample_table.sql` and `ingestion_db/sql/populate_sample_table.sql`).
 
 
-### Create a foreign data wrapper to connect FlowDB to IngstionDB
+### Create a foreign data wrapper to connect FlowDB to IngestionDB
 
 Run the following from within `flowdb` (you can connect to flowdb by running `make connect-flowdb`).
 ```
@@ -195,5 +195,6 @@ flowdb=# SELECT date, COUNT(*) FROM (SELECT datetime::date as date FROM events.s
     date    | count
 ------------+-------
  2019-01-01 |   100
+ 2019-01-02 |   120
  (1 row)
 ```
