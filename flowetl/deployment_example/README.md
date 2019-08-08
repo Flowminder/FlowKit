@@ -92,7 +92,7 @@ make connect-flowetl_db
 
 If you want to shut down the docker services in the stack, use the following command.
 ```bash
-make shut-down-stack-without-pruning-volumes
+make shut-down-stack-without-purging-volumes
 ```
 This calls the script `shut_down_docker_stack.sh`, which ensures that any networks set up by docker
 will be removed as well (which otherwise can be a bit flaky; see references in the script for details).
