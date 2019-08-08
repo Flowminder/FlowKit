@@ -28,30 +28,32 @@ class HistogramAggregation(Query):
             min_range = min(self.ranges)
         elif self.ranges is None:
             max_range = (
-                f"""select max(value) from ({self.locations.get_query()}) as to_agg """
+                f"""SELECT MAX(value) FROM ({self.locations.get_query()}) AS to_agg """
             )
             min_range = (
-                f""" select min(value) from ({self.locations.get_query()}) as to_agg """
+                f""" SELECT MIN(value) FROM ({self.locations.get_query()}) AS to_agg """
             )
         else:
             raise ValueError("Range should be tuple of two values")
 
-        filter_values = f"""select value from ({self.locations.get_query()}) AS to_agg
-                        where value between ({min_range}) and ({max_range})  """
+        filter_values = f""" SELECT value FROM ({self.locations.get_query()}) AS to_agg
+                        WHERE value BETWEEN ({min_range}) AND ({max_range})"""
         if isinstance(self.bins, int):
             sql = f""" 
-                  SELECT
-                        count(value) as value,
-                        width_bucket(foo.value::numeric,({max_range}),({min_range}),{self.bins}) as bin_edges
-                    FROM ({filter_values}) as foo
-                    group by bin_edges
-                    """
+                SELECT
+                    count(value) AS value,
+                    width_bucket(foo.value::numeric,({max_range}),({min_range}),{self.bins}) AS bin_edges
+                FROM ({filter_values}) AS foo
+                GROUP BY bin_edges
+                """
         elif isinstance(self.bins, list):
 
             sql = f"""
-                select count(foo.value) as value, width_bucket(foo.value::numeric,Array{self.bins}::numeric[]) as bin_edges 
-                from ({filter_values}) AS foo
-                group by bin_edges
+                SELECT 
+                    count(foo.value) AS value, 
+                    width_bucket(foo.value::numeric,Array{self.bins}::numeric[]) AS bin_edges 
+                FROM ({filter_values}) AS foo
+                GROUP BY bin_edges
                 """
         else:
             raise ValueError("Bins should be integer or list of integer values.")
