@@ -147,6 +147,7 @@ def random_factory(parent_class):
     The resulting object will query the underlying object for attributes,
     and methods.
     """
+    # valid_methods = ["system_rows", "system", "bernoulli", "random_ids"]
 
     class Random(RandomBase, parent_class):
         """
@@ -178,17 +179,15 @@ def random_factory(parent_class):
             'bernoulli': samples directly on each row of the underlying
                 relation. This sampling method is slower and is not guaranteed to
                 generate a sample of the specified size, but an approximation
-            'random_ids': Assumes that the table contains a column named 'id'
-                with random numbers from 1 to the total number of rows in the
-                table. This method samples the ids from this table.
+            'random_ids': samples rows by randomly sampling the row number.
         estimate_count : bool, default True
             Whether to estimate the number of rows in the table using
             information contained in the `pg_class` or whether to perform an
             actual count in the number of rows.
-        seed : int or float
-            Seed for a repeatable random sample. For 'random_ids' method, seed must
-            have a value between 0 and 1. Seed cannot be used with 'system_rows'
-            method.
+        seed : float, optional
+            Optionally provide a seed for repeatable random samples.
+            If using random_ids method, seed must be between -/+1.
+            Not available in combination with the system_rows method.
 
         Examples
         --------
@@ -276,6 +275,15 @@ def random_factory(parent_class):
 
             if self.fraction and self.fraction > 1:
                 raise ValueError("Random() expects fraction between 0 and 1.")
+
+            if self.seed is not None:
+                if self.method == "random_ids" and (self.seed > 1 or self.seed < -1):
+                    raise ValueError(
+                        "Seed must be between -1 and 1 for random_ids method."
+                    )
+                if self.method == "system_rows":
+                    raise ValueError("Seed is not supported with system_rows method.")
+
             self._inheritance_check()
             Query.__init__(self)
 

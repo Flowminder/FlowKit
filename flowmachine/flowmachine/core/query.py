@@ -1083,12 +1083,6 @@ class Query(metaclass=ABCMeta):
         Random samples may only be stored if a seed is supplied.
 
         """
-        if seed is not None:
-            if method == "random_ids" and (seed > 1 or seed < -1):
-                raise ValueError("Seed must be between -1 and 1.")
-            if method == "system_rows":
-                raise ValueError("Seed is not supported with system_rows method.")
-
         from .random import random_factory
 
         random_class = random_factory(self.__class__)
