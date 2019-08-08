@@ -53,27 +53,32 @@ class RandomIDsRandomSampleSchema(BaseRandomSampleSchema):
 
 
 class RandomSampler:
-    def __init__(self, *, method, size=None, fraction=None, estimate_count, seed=None):
+    def __init__(
+        self, *, sampling_method, size=None, fraction=None, estimate_count, seed=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
-        self.method = method
+        self.sampling_method = sampling_method
         self.size = size
         self.fraction = fraction
         self.estimate_count = estimate_count
-        self.seed = seed
+        if sampling_method != "system_rows":
+            self.seed = seed
 
     def make_random_sample_object(self, query):
-        return query.random_sample(
-            method=self.method,
-            size=self.size,
-            fraction=self.fraction,
-            estimate_count=self.estimate_count,
-            seed=self.seed,
-        )
+        sample_params = {
+            "sampling_method": self.sampling_method,
+            "size": self.size,
+            "fraction": self.fraction,
+            "estimate_count": self.estimate_count,
+        }
+        if self.sampling_method != "system_rows":
+            sample_params["seed"] = self.seed
+        return query.random_sample(**sample_params)
 
 
 class RandomSampleSchema(OneOfSchema):
-    type_field = "method"
+    type_field = "sampling_method"
     type_schemas = {
         "system_rows": SystemRowsRandomSampleSchema,
         "system": SystemRandomSampleSchema,

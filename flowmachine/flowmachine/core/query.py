@@ -1026,24 +1026,13 @@ class Query(metaclass=ABCMeta):
         objs = Query.connection.fetch(qry)
         return (pickle.loads(obj[0]) for obj in objs)
 
-    def random_sample(
-        self,
-        size=None,
-        fraction=None,
-        method="system_rows",
-        estimate_count=True,
-        seed=None,
-    ):
+    def random_sample(self, sampling_method="system_rows", **params):
         """
         Draws a random sample from this query.
 
         Parameters
         ----------
-        size : int
-            Number of rows to draw
-        fraction : float
-            Fraction of total rows to draw
-        method : {'system', 'system_rows', 'bernoulli', 'random_ids'}, default 'system_rows'
+        sampling_method : {'system', 'system_rows', 'bernoulli', 'random_ids'}, default 'system_rows'
             Specifies the method used to select the random sample.
             'system_rows': performs block-level sampling by randomly sampling
                 each physical storage page of the underlying relation. This
@@ -1059,6 +1048,12 @@ class Query(metaclass=ABCMeta):
                 relation. This sampling method is slower and is not guaranteed to
                 generate a sample of the specified size, but an approximation
             'random_ids': samples rows by randomly sampling the row number.
+        size : int, optional
+            The number of rows to draw.
+            Exactly one of the 'size' or 'fraction' arguments must be provided.
+        fraction : float, optional
+            Fraction of rows to draw.
+            Exactly one of the 'size' or 'fraction' arguments must be provided.
         estimate_count : bool, default True
             Whether to estimate the number of rows in the table using
             information contained in the `pg_class` or whether to perform an
@@ -1075,22 +1070,13 @@ class Query(metaclass=ABCMeta):
 
         See Also
         --------
-        flowmachine.utils.random.random_factory
+        flowmachine.core.random.random_factory
 
         Notes
         -----
-
         Random samples may only be stored if a seed is supplied.
-
         """
         from .random import random_factory
 
-        random_class = random_factory(self.__class__)
-        return random_class(
-            query=self,
-            size=size,
-            fraction=fraction,
-            method=method,
-            estimate_count=estimate_count,
-            seed=seed,
-        )
+        random_class = random_factory(self.__class__, sampling_method=sampling_method)
+        return random_class(query=self, **params)

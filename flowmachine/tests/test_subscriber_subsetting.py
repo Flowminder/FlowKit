@@ -165,7 +165,7 @@ def test_cdrs_can_be_subset_by_list(get_dataframe, subscriber_list):
 def test_can_subset_by_sampler(get_dataframe):
     """Test that we can use the output of another query to subset by."""
     unique_subs_sample = UniqueSubscribers("2016-01-01", "2016-01-07").random_sample(
-        size=10, method="system", seed=0.1
+        size=10, sampling_method="system", seed=0.1
     )
     su = EventTableSubset(
         start="2016-01-01", stop="2016-01-03", subscriber_subset=unique_subs_sample

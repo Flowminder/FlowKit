@@ -22,7 +22,7 @@ def test_random_msisdn(get_dataframe):
     Tests whether class selects a random sample of msisdn without failing.
     """
     df = get_dataframe(
-        UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(10)
+        UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(size=10)
     )
     assert list(df.columns) == ["subscriber"]
     assert len(df) == 10
@@ -36,12 +36,12 @@ def test_seeded_random(sample_method, get_dataframe):
 
     df = get_dataframe(
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            10, method=sample_method, seed=0.1
+            size=10, sampling_method=sample_method, seed=0.1
         )
     )
     df2 = get_dataframe(
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            10, method=sample_method, seed=0.1
+            size=10, sampling_method=sample_method, seed=0.1
         )
     )
     assert df.values.tolist() == df2.values.tolist()
@@ -54,7 +54,7 @@ def test_bad_method_errors():
 
     with pytest.raises(ValueError):
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            10, method="BAD_METHOD_TYPE", seed=-50
+            size=10, sampling_method="BAD_METHOD_TYPE", seed=-50
         )
 
 
@@ -65,7 +65,7 @@ def test_bad_must_provide_sample_size_or_fraction():
 
     with pytest.raises(ValueError):
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            None, fraction=None
+            size=None, fraction=None
         )
 
 
@@ -76,7 +76,7 @@ def test_bad_must_provide_either_sample_size_or_fraction():
 
     with pytest.raises(ValueError):
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            10, fraction=0.5
+            size=10, fraction=0.5
         )
 
 
@@ -87,7 +87,7 @@ def test_seeded_random_oob():
 
     with pytest.raises(ValueError):
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            10, method="bernoulli", seed=-50
+            size=10, sampling_method="random_ids", seed=-50
         )
 
 
@@ -98,7 +98,7 @@ def test_seeded_random_zero(sample_method):
     """
 
     sample = UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-        10, method=sample_method, seed=0
+        size=10, sampling_method=sample_method, seed=0
     )
     assert sample.get_query() == sample.get_query()
 
@@ -110,7 +110,7 @@ def test_seeded_random_badmethod():
 
     with pytest.raises(ValueError):
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            10, method="system_rows", seed=-0.5
+            size=10, sampling_method="system_rows", seed=-0.5
         )
 
 
@@ -155,13 +155,13 @@ def test_system_rows(get_dataframe):
     """
     df = get_dataframe(
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            size=10, method="system_rows"
+            size=10, sampling_method="system_rows"
         )
     )
     assert len(df) == 10
     df = get_dataframe(
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            fraction=0.1, method="system_rows"
+            fraction=0.1, sampling_method="system_rows"
         )
     )
     assert len(df) == 50
@@ -177,7 +177,7 @@ def test_system(get_dataframe):
     while len(df) == 0:
         df = get_dataframe(
             UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-                size=20, method="system"
+                size=20, sampling_method="system"
             )
         )
     assert list(df.columns) == ["subscriber"]
@@ -189,7 +189,7 @@ def test_system(get_dataframe):
     while len(df) == 0:
         df = get_dataframe(
             UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-                fraction=0.25, method="system"
+                fraction=0.25, sampling_method="system"
             )
         )
     assert list(df.columns) == ["subscriber"]
@@ -201,7 +201,7 @@ def test_bernoulli(get_dataframe):
     """
     df = get_dataframe(
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            size=10, method="bernoulli"
+            size=10, sampling_method="bernoulli"
         )
     )
     assert list(df.columns) == ["subscriber"]
@@ -209,7 +209,7 @@ def test_bernoulli(get_dataframe):
 
     df = get_dataframe(
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            fraction=0.1, method="bernoulli"
+            fraction=0.1, sampling_method="bernoulli"
         )
     )
     assert list(df.columns) == ["subscriber"]
@@ -221,7 +221,7 @@ def test_not_estimate_count(get_dataframe):
     """
     df = get_dataframe(
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-            size=10, method="bernoulli", estimate_count=False
+            size=10, sampling_method="bernoulli", estimate_count=False
         )
     )
     assert list(df.columns) == ["subscriber"]
@@ -233,7 +233,9 @@ def test_system_rows_fail_with_inheritance():
     Test whether the system row method fails if the subscriber queries for random rows on a parent table.
     """
     with pytest.raises(ValueError):
-        df = Table(name="events.calls").random_sample(size=8)
+        df = Table(name="events.calls").random_sample(
+            size=8, sampling_method="system_rows"
+        )
 
 
 def test_random_sample(get_dataframe):
@@ -253,7 +255,9 @@ def is_subclass():
     Test that a random sample is an instance of the sampled thing. 
     """
     qur = UniqueSubscribers(start="2016-01-01", stop="2016-01-04")
-    sample = qur.random_sample(size=10, method="bernoulli", estimate_count=False)
+    sample = qur.random_sample(
+        size=10, sampling_method="bernoulli", estimate_count=False
+    )
     assert isinstance(sample, UniqueSubscribers)
 
 
@@ -262,7 +266,9 @@ def gets_parent_attributes():
     Test that a random sample is an instance of the sampled thing.
     """
     qur = UniqueSubscribers(start="2016-01-01", stop="2016-01-04", level="admin3")
-    sample = qur.random_sample(size=10, method="bernoulli", estimate_count=False)
+    sample = qur.random_sample(
+        size=10, sampling_method="bernoulli", estimate_count=False
+    )
     assert sample.level == "admin3"
 
 

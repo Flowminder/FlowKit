@@ -34,7 +34,7 @@ def test_construct_query(diff_reporter):
                 "method": "last",
                 "subscriber_subset": None,
                 "sampling": {
-                    "method": "system_rows",
+                    "sampling_method": "system_rows",
                     "size": 10,
                     "estimate_count": False,
                 },
@@ -285,20 +285,23 @@ def test_wrong_geography_aggregation_unit_raises_error():
     "sampling, message",
     [
         (
-            {"method": "system_rows", "size": 10, "fraction": 0.2},
+            {"sampling_method": "system_rows", "size": 10, "fraction": 0.2},
             "Must provide exactly one of 'size' or 'fraction' for a random sample",
         ),
         (
-            {"method": "system_rows"},
+            {"sampling_method": "system_rows"},
             "Must provide exactly one of 'size' or 'fraction' for a random sample",
         ),
         (
-            {"method": "system_rows", "fraction": 1.2},
+            {"sampling_method": "system_rows", "fraction": 1.2},
             "Must be greater than 0.0 and less than 1.0.",
         ),
-        ({"method": "system_rows", "size": -1}, "Must be greater or equal to 1."),
         (
-            {"method": "random_ids", "size": 10, "seed": 185},
+            {"sampling_method": "system_rows", "size": -1},
+            "Must be greater or equal to 1.",
+        ),
+        (
+            {"sampling_method": "random_ids", "size": 10, "seed": 185},
             "Must be greater or equal to -1.0 and less or equal to 1.0.",
         ),
     ],
