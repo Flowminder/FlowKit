@@ -384,20 +384,32 @@ if __name__ == "__main__":
                 # First truncate the table
                 trans.execute("TRUNCATE infrastructure.tacs;")
                 # Then setup the temp sequences
+                brands = [
+                    "Nokia",
+                    "Huawei",
+                    "Apple",
+                    "Samsung",
+                    "Sony",
+                    "LG",
+                    "Google",
+                    "Xiaomi",
+                    "ZTE",
+                ]
                 trans.execute(
-                    """
-                        CREATE TEMPORARY SEQUENCE brand MINVALUE 1 maxvalue 9 CYCLE;
+                    f"""
+                        CREATE TEMPORARY SEQUENCE brand MINVALUE 1 maxvalue {len(brands)} CYCLE;
                         CREATE TEMPORARY SEQUENCE hnd_type MINVALUE 1 maxvalue 3 CYCLE;
                     """
                 )
                 # Then run the inserts
+
                 trans.execute(
                     f"""
                         INSERT INTO infrastructure.tacs (id, model, brand, hnd_type)
                         SELECT 
                         s.id * 10000 AS id,
                         md5((s.id + 10)::TEXT) AS  model,
-                        (ARRAY['Nokia', 'Huawei', 'Apple', 'Samsung', 'Sony', 'LG', 'Google', 'Xiaomi', 'ZTE'])[nextval('brand')] AS brand, 
+                        (ARRAY['{"', '".join(brands)}'])[nextval('brand')] AS brand, 
                         (ARRAY['Smart', 'Feature', 'Basic'])[nextval('hnd_type')] AS hnd_type
                         FROM
                         (SELECT row_number() over() AS id
@@ -418,17 +430,6 @@ if __name__ == "__main__":
                     variant_sql += f" AND {int(round(inc) - 1)} THEN '{v}' "
 
                 # Add the subscriber counts for tac brands
-                brands = [
-                    "Nokia",
-                    "Huawei",
-                    "Apple",
-                    "Samsung",
-                    "Sony",
-                    "LG",
-                    "Google",
-                    "Xiaomi",
-                    "ZTE",
-                ]
                 weights = [0.02, 0.06, 0.38, 0.3, 0.07, 0.07, 0.06, 0.02, 0.02]
                 tac_sql = "CASE "
                 inc = 1
@@ -437,15 +438,19 @@ if __name__ == "__main__":
                     inc += w * num_subscribers
                     tac_sql += f" AND {int(round(inc) - 1)} THEN '{b}' "
 
+                trans.execute(
+                    f"CREATE TEMPORARY SEQUENCE brandcount MINVALUE 0 maxvalue {round(num_tacs / len(brands)) - 1} CYCLE;"
+                )
+
                 # Then insert the subscribers
                 trans.execute(
                     f"""
                     CREATE TABLE subs as
                         SELECT s.id, md5((s.id + 10)::TEXT) AS msisdn, md5((s.id + 20)::TEXT) AS imei, md5((s.id + 30)::TEXT) AS imsi,
                         {variant_sql} END as variant,
-                        (
-                            SELECT id FROM infrastructure.tacs where brand = ({tac_sql} END) 
-                            OFFSET (CASE WHEN s.id > (SELECT count(id) FROM infrastructure.tacs where brand = ({tac_sql} END)) THEN s.id %% (SELECT count(id) FROM infrastructure.tacs where brand = ({tac_sql} END)) ELSE s.id END) LIMIT 1
+                        (SELECT id FROM infrastructure.tacs where brand = ({tac_sql} END) 
+                            OFFSET nextval('brandcount')
+                            LIMIT 1
                         ) as tac
                         FROM
                         (SELECT row_number() over() AS id FROM generate_series(1, {num_subscribers})) s;
