@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from ...core.query import Query
-from typing import List
+from typing import List, Tuple, Optional, Union
 
 
 class HistogramAggregation(Query):
@@ -11,11 +11,21 @@ class HistogramAggregation(Query):
 
     """
 
-    def __init__(self, *, locations, bins, ranges: tuple = None):
-
+    def __init__(
+        self,
+        *,
+        locations: "Query",
+        bins: Union[List[float], int],
+        ranges: Optional[Tuple[float, float]] = None,
+    ) -> None:
         self.locations = locations
         self.bins = bins
         self.ranges = ranges
+        if not isinstance(self.bins, (int, list)):
+            raise ValueError("Bins should be an integer or list of numeric values.")
+        if not isinstance(self.ranges, tuple) and None:
+            raise ValueError("Range should be tuple of two values")
+
         super().__init__()
 
     @property
@@ -33,8 +43,6 @@ class HistogramAggregation(Query):
             min_range = (
                 f""" SELECT MIN(value) FROM ({self.locations.get_query()}) AS to_agg """
             )
-        else:
-            raise ValueError("Range should be tuple of two values")
 
         filter_values = f""" SELECT value FROM ({self.locations.get_query()}) AS to_agg
                         WHERE value BETWEEN ({min_range}) AND ({max_range})"""
@@ -55,7 +63,5 @@ class HistogramAggregation(Query):
                 FROM ({filter_values}) AS foo
                 GROUP BY bin_edges
                 """
-        else:
-            raise ValueError("Bins should be integer or list of integer values.")
 
         return sql
