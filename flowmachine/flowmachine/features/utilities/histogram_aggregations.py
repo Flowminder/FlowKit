@@ -14,11 +14,11 @@ class HistogramAggregation(Query):
     def __init__(
         self,
         *,
-        locations: "Query",
+        metric: "Query",
         bins: Union[List[float], int],
         ranges: Optional[Tuple[float, float]] = None,
     ) -> None:
-        self.locations = locations
+        self.metric = metric
         self.bins = bins
         self.ranges = ranges
         if not isinstance(self.bins, (int, list)):
@@ -38,13 +38,13 @@ class HistogramAggregation(Query):
             min_range = min(self.ranges)
         elif self.ranges is None:
             max_range = (
-                f"""SELECT MAX(value) FROM ({self.locations.get_query()}) AS to_agg """
+                f"""SELECT MAX(value) FROM ({self.metric.get_query()}) AS to_agg """
             )
             min_range = (
-                f""" SELECT MIN(value) FROM ({self.locations.get_query()}) AS to_agg """
+                f""" SELECT MIN(value) FROM ({self.metric.get_query()}) AS to_agg """
             )
 
-        filter_values = f""" SELECT value FROM ({self.locations.get_query()}) AS to_agg
+        filter_values = f""" SELECT value FROM ({self.metric.get_query()}) AS to_agg
                         WHERE value BETWEEN ({min_range}) AND ({max_range})"""
         if isinstance(self.bins, int):
             sql = f""" 
