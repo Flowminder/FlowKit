@@ -6,7 +6,8 @@
       "date": "2016-01-01",
       "aggregation_unit": "admin3",
       "method": "last",
-      "subscriber_subset": null
+      "subscriber_subset": null,
+      "sampling": null
     }
   },
   "d1b69e1ca8b44f717d3335aaf93eb97c": {

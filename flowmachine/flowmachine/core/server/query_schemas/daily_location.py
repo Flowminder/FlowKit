@@ -21,7 +21,7 @@ class DailyLocationSchema(Schema):
     method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
     aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
-    sampling = fields.Nested(RandomSampleSchema)
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
