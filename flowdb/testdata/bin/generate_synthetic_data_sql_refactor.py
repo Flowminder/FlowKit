@@ -429,7 +429,9 @@ if __name__ == "__main__":
                     inc += w * num_subscribers
                     variant_sql += f" AND {int(round(inc) - 1)} THEN '{v}' "
 
-                # Add the subscriber counts for tac brands
+                # Add the subscriber counts for tac brands - the weightings are interpreted from
+                # here: https://www.statista.com/statistics/719123/share-of-cell-phone-brands-owned-in-the-uk/
+                # to get the basic spread of ownsership of handset types
                 weights = [0.02, 0.06, 0.38, 0.3, 0.07, 0.07, 0.06, 0.02, 0.02]
                 tac_sql = "CASE "
                 inc = 1
