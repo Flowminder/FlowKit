@@ -1105,7 +1105,7 @@ def location_introversion(
         Unit of aggregation, e.g. "admin3"
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts can be one of "in", "out" or "both"
->
+
     Returns
     -------
     dict
@@ -1136,6 +1136,7 @@ def total_network_objects(
         Unit of aggregation, e.g. "admin3"
     total_by : {"second", "minute", "hour", "day", "month", "year"}
         Time period to bucket by one of "second", "minute", "hour", "day", "month" or "year"
+    
     Returns
     -------
     dict
@@ -1281,6 +1282,7 @@ def unique_location_counts(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1354,6 +1356,7 @@ def subscriber_degree(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1390,6 +1393,7 @@ def topup_amount(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1430,6 +1434,7 @@ def event_count(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1470,6 +1475,7 @@ def displacement(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1507,6 +1513,7 @@ def pareto_interactions(
         Subset of subscribers to include in result. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1525,7 +1532,7 @@ def nocturnal_events(
     *,
     start: str,
     stop: str,
-    hours: tuple((int, int)),
+    hours: Tuple[int, int],
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -1543,6 +1550,7 @@ def nocturnal_events(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1562,14 +1570,8 @@ def handset(
     *,
     start_date: str,
     end_date: str,
-    characteristic: str = [
-        "hnd_type",
-        "brand",
-        "model",
-        "software_os_name",
-        "software_os_vendor",
-    ],
-    method: str = ["last", "most-common"],
+    characteristic: str = "hnd_type",
+    method: str = "last",
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -1581,14 +1583,15 @@ def handset(
         ISO format date of the first day for which to count handsets, e.g. "2016-01-01"
     stop : str
         ISO format date of the day _after_ the final date for which to count handsets, e.g. "2016-01-08"
-    characteristic: ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"], default "hnd_type"
+    characteristic: {"hnd_type", "brand", "model", "software_os_name", "software_os_vendor"}, default "hnd_type"
         The required handset characteristic.
-    method: ["last", "most-common"], default "last"
+    method: {"last", "most-common"}, default "last"
         Method for choosing a handset to associate with subscriber.
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
