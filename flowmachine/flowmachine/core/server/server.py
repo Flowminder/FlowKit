@@ -79,6 +79,10 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
         return ZMQReply(
             status="error", msg="Invalid JSON.", payload={"decode_error": exc.msg}
         )
+    except Exception as exc:
+        # Generic error boundary to catch any unexpected errors and pass to API
+        return ZMQReply(status="error", msg=f"{exc}")
+        raise exc
 
     # Return the reply (in JSON format)
     return reply
