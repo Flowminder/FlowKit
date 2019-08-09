@@ -225,23 +225,29 @@ async def get_query_result(query_id):
 
     if reply["status"] == "error":
         # TODO: check that this path is fully tested!
-        query_state = reply["payload"]["query_state"]
-        if query_state in ("executing", "queued"):
-            return jsonify({}), 202
-        elif query_state == "errored":
-            return (
-                jsonify({"status": "Error", "msg": reply["msg"]}),
-                403,
-            )  # TODO: should this really be 403?
-        elif query_state in ("awol", "known"):
-            return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
-        else:
-            return (
-                jsonify(
-                    {"status": "Error", "msg": f"Unexpected query state: {query_state}"}
-                ),
-                500,
-            )
+        try:
+            query_state = reply["payload"]["query_state"]
+            if query_state in ("executing", "queued"):
+                return jsonify({}), 202
+            elif query_state == "errored":
+                return (
+                    jsonify({"status": "Error", "msg": reply["msg"]}),
+                    403,
+                )  # TODO: should this really be 403?
+            elif query_state in ("awol", "known"):
+                return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
+            else:
+                return (
+                    jsonify(
+                        {
+                            "status": "Error",
+                            "msg": f"Unexpected query state: {query_state}",
+                        }
+                    ),
+                    500,
+                )
+        except KeyError:
+            return jsonify({"status": "error", "msg": reply["msg"]}), 500
     else:
         sql = reply["payload"]["sql"]
         results_streamer = stream_with_context(stream_result_as_json)(
