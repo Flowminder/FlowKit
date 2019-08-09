@@ -9,7 +9,7 @@
       "subscriber_subset": null
     }
   },
-  "458701c290ae19e3028178da31c1381e": {
+  "d1b69e1ca8b44f717d3335aaf93eb97c": {
     "query_kind": "spatial_aggregate",
     "locations": {
       "query_kind": "daily_location",
@@ -18,7 +18,7 @@
       "method": "last",
       "subscriber_subset": null,
       "sampling": {
-        "method": "system_rows",
+        "sampling_method": "system_rows",
         "size": 10,
         "estimate_count": false
       }

@@ -108,7 +108,7 @@ def test_seeded_random_badmethod():
     Tests whether seeds don't work with system_rows.
     """
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError, match="got an unexpected keyword argument 'seed'"):
         UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
             size=10, sampling_method="system_rows", seed=-0.5
         )

@@ -19,11 +19,11 @@ class RandomBase(metaclass=ABCMeta):
     """
 
     def __init__(self, query, *, size=None, fraction=None, estimate_count=True):
-        if self.size is None and self.fraction is None:
+        if size is None and fraction is None:
             raise ValueError(
                 f"{self.__class__.__name__}() missing 1 required argument: 'size' or 'fraction'"
             )
-        if self.size is not None and self.fraction is not None:
+        if size is not None and fraction is not None:
             raise ValueError(
                 f"{self.__class__.__name__}() expects only 1 argument to be defined: either 'size' or 'fraction'"
             )
@@ -195,6 +195,8 @@ class RandomTablesample(RandomBase):
     -----
     Random samples may only be stored if a seed is supplied.
     """
+
+    _sampling_method = None
 
     def __init__(
         self, query, *, size=None, fraction=None, estimate_count=True, seed=None

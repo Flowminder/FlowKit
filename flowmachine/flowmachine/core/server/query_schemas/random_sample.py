@@ -25,7 +25,7 @@ class BaseRandomSampleSchema(Schema):
 class SystemRowsRandomSampleSchema(BaseRandomSampleSchema):
     @post_load
     def make_random_sampler(self, params, **kwargs):
-        return RandomSampler(method="system_rows", **params)
+        return RandomSampler(sampling_method="system_rows", **params)
 
 
 class SystemRandomSampleSchema(BaseRandomSampleSchema):
@@ -33,7 +33,7 @@ class SystemRandomSampleSchema(BaseRandomSampleSchema):
 
     @post_load
     def make_random_sampler(self, params, **kwargs):
-        return RandomSampler(method="system", **params)
+        return RandomSampler(sampling_method="system", **params)
 
 
 class BernoulliRandomSampleSchema(BaseRandomSampleSchema):
@@ -41,7 +41,7 @@ class BernoulliRandomSampleSchema(BaseRandomSampleSchema):
 
     @post_load
     def make_random_sampler(self, params, **kwargs):
-        return RandomSampler(method="bernoulli", **params)
+        return RandomSampler(sampling_method="bernoulli", **params)
 
 
 class RandomIDsRandomSampleSchema(BaseRandomSampleSchema):
@@ -49,7 +49,7 @@ class RandomIDsRandomSampleSchema(BaseRandomSampleSchema):
 
     @post_load
     def make_random_sampler(self, params, **kwargs):
-        return RandomSampler(method="random_ids", **params)
+        return RandomSampler(sampling_method="random_ids", **params)
 
 
 class RandomSampler:
