@@ -6,6 +6,8 @@ from marshmallow import Schema, fields, validates_schema, ValidationError, post_
 from marshmallow.validate import OneOf, Range
 from marshmallow_oneofschema import OneOfSchema
 
+__all__ = ["RandomSampleSchema", "RandomSampler"]
+
 
 class BaseRandomSampleSchema(Schema):
     size = fields.Integer(validate=Range(min=1))
@@ -23,12 +25,23 @@ class BaseRandomSampleSchema(Schema):
 
 
 class SystemRowsRandomSampleSchema(BaseRandomSampleSchema):
+    # We must define the sampling_method field here for it to appear in the API spec.
+    # This field is removed by RandomSampleSchema before passing on to this schema,
+    # so the sampling_method parameter is never received here and is not included in the
+    # params passed to make_random_sampler.
+    sampling_method = fields.String(validate=OneOf(["system_rows"]))
+
     @post_load
     def make_random_sampler(self, params, **kwargs):
         return RandomSampler(sampling_method="system_rows", **params)
 
 
 class SystemRandomSampleSchema(BaseRandomSampleSchema):
+    # We must define the sampling_method field here for it to appear in the API spec.
+    # This field is removed by RandomSampleSchema before passing on to this schema,
+    # so the sampling_method parameter is never received here and is not included in the
+    # params passed to make_random_sampler.
+    sampling_method = fields.String(validate=OneOf(["system"]))
     seed = fields.Float()
 
     @post_load
@@ -37,6 +50,11 @@ class SystemRandomSampleSchema(BaseRandomSampleSchema):
 
 
 class BernoulliRandomSampleSchema(BaseRandomSampleSchema):
+    # We must define the sampling_method field here for it to appear in the API spec.
+    # This field is removed by RandomSampleSchema before passing on to this schema,
+    # so the sampling_method parameter is never received here and is not included in the
+    # params passed to make_random_sampler.
+    sampling_method = fields.String(validate=OneOf(["bernoulli"]))
     seed = fields.Float()
 
     @post_load
@@ -45,6 +63,11 @@ class BernoulliRandomSampleSchema(BaseRandomSampleSchema):
 
 
 class RandomIDsRandomSampleSchema(BaseRandomSampleSchema):
+    # We must define the sampling_method field here for it to appear in the API spec.
+    # This field is removed by RandomSampleSchema before passing on to this schema,
+    # so the sampling_method parameter is never received here and is not included in the
+    # params passed to make_random_sampler.
+    sampling_method = fields.String(validate=OneOf(["random_ids"]))
     seed = fields.Float(validate=Range(-1.0, 1.0))
 
     @post_load
