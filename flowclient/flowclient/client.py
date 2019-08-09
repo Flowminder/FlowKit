@@ -617,6 +617,7 @@ def daily_location(
     aggregation_unit: str,
     method: str,
     subscriber_subset: Union[dict, None] = None,
+    sampling: Union[dict, None] = None,
 ) -> dict:
     """
     Return query spec for a daily location query for a date and unit of aggregation.
@@ -634,6 +635,9 @@ def daily_location(
         Subset of subscribers to retrieve daily locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    sampling: dict or None
+        Either a dictionary specifying the parameters for a random sample of
+        the result of this query, or None (= no sampling).
 
     Returns
     -------
@@ -647,6 +651,7 @@ def daily_location(
         "aggregation_unit": aggregation_unit,
         "method": method,
         "subscriber_subset": subscriber_subset,
+        "sampling": sampling,
     }
 
 
@@ -1597,3 +1602,23 @@ def handset(
         "method": method,
         "subscriber_subset": subscriber_subset,
     }
+
+
+def random_sample(
+    *,
+    sampling_method: str = "system_rows",
+    size: Union[int, None] = None,
+    fraction: Union[float, None] = None,
+    estimate_count: bool = True,
+    seed: Union[float, None] = None,
+) -> dict:
+    spec = {
+        "sampling_method": sampling_method,
+        "size": size,
+        "fraction": fraction,
+        "estimate_count": estimate_count,
+    }
+    if seed is not None:
+        # 'system_rows' method doesn't accept a seed parameter, so if seed is None we don't include it in the spec
+        spec["seed"] = seed
+    return spec

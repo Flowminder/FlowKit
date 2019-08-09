@@ -47,6 +47,7 @@ def test_construct_query(diff_reporter):
                 "sampling": {
                     "sampling_method": "system_rows",
                     "size": 10,
+                    "fraction": None,
                     "estimate_count": False,
                 },
             },

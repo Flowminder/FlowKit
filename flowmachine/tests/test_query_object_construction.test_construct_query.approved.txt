@@ -21,6 +21,7 @@
       "sampling": {
         "sampling_method": "system_rows",
         "size": 10,
+        "fraction": null,
         "estimate_count": false
       }
     }

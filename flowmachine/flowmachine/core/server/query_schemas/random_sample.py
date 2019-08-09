@@ -10,15 +10,18 @@ __all__ = ["RandomSampleSchema", "RandomSampler"]
 
 
 class BaseRandomSampleSchema(Schema):
-    size = fields.Integer(validate=Range(min=1))
+    size = fields.Integer(validate=Range(min=1), allow_none=True)
     fraction = fields.Float(
-        validate=Range(0.0, 1.0, min_inclusive=False, max_inclusive=False)
+        validate=Range(0.0, 1.0, min_inclusive=False, max_inclusive=False),
+        allow_none=True,
     )
     estimate_count = fields.Boolean(missing=True)
 
     @validates_schema
     def validate_size_or_fraction(self, data, **kwargs):
-        if ("size" in data) == ("fraction" in data):
+        if ("size" in data and data["size"] is not None) == (
+            "fraction" in data and data["fraction"] is not None
+        ):
             raise ValidationError(
                 "Must provide exactly one of 'size' or 'fraction' for a random sample."
             )
