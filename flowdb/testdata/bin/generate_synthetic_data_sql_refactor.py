@@ -302,7 +302,7 @@ if __name__ == "__main__":
         dir = os.path.dirname(os.path.abspath(__file__))
 
         # Main generation process
-        with engine.begin() as trans:
+        with engine.connect() as trans:
             # Setup stage: Tidy up old event tables on previous runs
             with log_duration(job=f"Tidy up event tables"):
                 tables = trans.execute(
