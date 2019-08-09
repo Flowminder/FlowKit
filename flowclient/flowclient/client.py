@@ -1615,6 +1615,47 @@ def random_sample(
     estimate_count: bool = True,
     seed: Union[float, None] = None,
 ) -> dict:
+    """
+    Return spec for a random sample from a query result.
+
+    Parameters
+    ----------
+    sampling_method : {'system_rows', 'system', 'bernoulli', 'random_ids'}, default 'system_rows'
+        Specifies the method used to select the random sample.
+        'system_rows': performs block-level sampling by randomly sampling
+            each physical storage page of the underlying relation. This
+            sampling method is guaranteed to provide a sample of the specified
+            size
+        'system': performs block-level sampling by randomly sampling each
+            physical storage page for the underlying relation. This
+            sampling method is not guaranteed to generate a sample of the
+            specified size, but an approximation. This method may not
+            produce a sample at all, so it might be worth running it again
+            if it returns an empty dataframe.
+        'bernoulli': samples directly on each row of the underlying
+            relation. This sampling method is slower and is not guaranteed to
+            generate a sample of the specified size, but an approximation
+        'random_ids': samples rows by randomly sampling the row number.
+    size : int, optional
+        The number of rows to draw.
+        Exactly one of the 'size' or 'fraction' arguments must be provided.
+    fraction : float, optional
+        Fraction of rows to draw.
+        Exactly one of the 'size' or 'fraction' arguments must be provided.
+    estimate_count : bool, default True
+        Whether to estimate the number of rows in the table using
+        information contained in the `pg_class` or whether to perform an
+        actual count in the number of rows.
+    seed : float, optional
+        Optionally provide a seed for repeatable random samples.
+        If using random_ids method, seed must be between -/+1.
+        Not available in combination with the system_rows method.
+
+    Returns
+    -------
+    dict
+        Dict which specifies the parameters for the random sample.
+    """
     spec = {
         "sampling_method": sampling_method,
         "size": size,
