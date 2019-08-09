@@ -54,6 +54,7 @@
             "format": "float",
             "maximum": 1.0,
             "minimum": 0.0,
+            "nullable": true,
             "type": "number"
           },
           "sampling_method": {
@@ -69,6 +70,7 @@
           "size": {
             "format": "int32",
             "minimum": 1,
+            "nullable": true,
             "type": "integer"
           }
         },
@@ -149,7 +151,12 @@
             "type": "string"
           },
           "sampling": {
-            "$ref": "#/components/schemas/RandomSample"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "subscriber_subset": {
             "enum": [
@@ -1080,6 +1087,7 @@
             "format": "float",
             "maximum": 1.0,
             "minimum": 0.0,
+            "nullable": true,
             "type": "number"
           },
           "sampling_method": {
@@ -1097,6 +1105,7 @@
           "size": {
             "format": "int32",
             "minimum": 1,
+            "nullable": true,
             "type": "integer"
           }
         },
@@ -1185,6 +1194,7 @@
             "format": "float",
             "maximum": 1.0,
             "minimum": 0.0,
+            "nullable": true,
             "type": "number"
           },
           "sampling_method": {
@@ -1200,6 +1210,7 @@
           "size": {
             "format": "int32",
             "minimum": 1,
+            "nullable": true,
             "type": "integer"
           }
         },
@@ -1215,6 +1226,7 @@
             "format": "float",
             "maximum": 1.0,
             "minimum": 0.0,
+            "nullable": true,
             "type": "number"
           },
           "sampling_method": {
@@ -1226,6 +1238,7 @@
           "size": {
             "format": "int32",
             "minimum": 1,
+            "nullable": true,
             "type": "integer"
           }
         },
