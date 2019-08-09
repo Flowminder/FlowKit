@@ -44,6 +44,36 @@
         ],
         "type": "object"
       },
+      "BernoulliRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "bernoulli"
+            ],
+            "type": "string"
+          },
+          "seed": {
+            "format": "float",
+            "type": "number"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
       "DFSTotalMetricAmount": {
         "properties": {
           "aggregation_unit": {
@@ -117,6 +147,9 @@
               "daily_location"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "$ref": "#/components/schemas/RandomSample"
           },
           "subscriber_subset": {
             "enum": [
@@ -1037,6 +1070,54 @@
         ],
         "type": "object"
       },
+      "RandomIDsRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "random_ids"
+            ],
+            "type": "string"
+          },
+          "seed": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": -1.0,
+            "type": "number"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "RandomSample": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BernoulliRandomSample"
+          },
+          {
+            "$ref": "#/components/schemas/RandomIDsRandomSample"
+          },
+          {
+            "$ref": "#/components/schemas/SystemRandomSample"
+          },
+          {
+            "$ref": "#/components/schemas/SystemRowsRandomSample"
+          }
+        ]
+      },
       "SpatialAggregate": {
         "properties": {
           "locations": {
@@ -1092,6 +1173,62 @@
           "start",
           "stop"
         ],
+        "type": "object"
+      },
+      "SystemRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "system"
+            ],
+            "type": "string"
+          },
+          "seed": {
+            "format": "float",
+            "type": "number"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SystemRowsRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "system_rows"
+            ],
+            "type": "string"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
         "type": "object"
       },
       "TopUpAmount": {
