@@ -44,6 +44,7 @@ from .client import (
     pareto_interactions,
     nocturnal_events,
     handset,
+    random_sample,
 )
 
 __all__ = [
@@ -80,4 +81,5 @@ __all__ = [
     "pareto_interactions",
     "nocturnal_events",
     "handset",
+    "random_sample",
 ]
