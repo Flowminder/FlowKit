@@ -214,7 +214,7 @@ def test_two_factor_login_no_reuse(client, auth, test_two_factor_auth_user):
 def test_two_factor_login_required_when_enabled(
     client, auth, test_two_factor_auth_user
 ):
-    """Test that we can't log in twice with the same backup code."""
+    """Test that we can't log in without a code when 2fa is enabled."""
     uid, username, password, otp_generator, backup_codes = test_two_factor_auth_user
 
     # Log in once with a backup code
