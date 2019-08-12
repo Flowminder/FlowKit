@@ -14,7 +14,11 @@ import yaml
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from etl.model import Base, ETLRecord  # pylint: disable=unused-import
+from etl.model import (
+    Base,
+    ETLRecord,
+    ETLPostQueryOutcome,
+)  # pylint: disable=unused-import
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -81,7 +85,9 @@ def postgres_test_db():
     if not database_exists(engine.url):
         create_database(engine.url)
     engine.execute(CreateSchema("etl"))
-    Base.metadata.create_all(bind=engine, tables=[ETLRecord.__table__])
+    Base.metadata.create_all(
+        bind=engine, tables=[ETLRecord.__table__, ETLPostQueryOutcome.__table__]
+    )
     engine.execute(
         """
         CREATE TABLE IF NOT EXISTS mds_raw_data_dump (
@@ -105,6 +111,7 @@ def session(postgres_test_db):
     """
     engine = create_engine(postgres_test_db.url())
     engine.execute(f"TRUNCATE TABLE {ETLRecord.__table__};")
+    engine.execute(f"TRUNCATE TABLE {ETLPostQueryOutcome.__table__};")
     Session = sessionmaker(bind=engine)
     returned_session = Session()
     yield returned_session

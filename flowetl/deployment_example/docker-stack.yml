@@ -1,0 +1,128 @@
+#
+# DOCKER STACK FILE FOR FLOWETL EXAMPLE DEPLOYMENT
+#
+
+version: '3'
+
+networks:
+  flowdb:
+  flowetl_db:
+  ingestion_db:
+
+services:
+
+  flowdb:
+    container_name: flowdb
+    image: ${LOCAL_DOCKER_REGISTRY:?Must set LOCAL_DOCKER_REGISTRY env var}/flowdb:latest
+    build:
+      context: ${LOCAL_FLOWKIT_REPO:?Must set LOCAL_FLOWKIT_REPO env var}/flowdb
+      dockerfile: Dockerfile
+    ports:
+      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
+    environment: &base-flowdb-environment
+      POSTGRES_USER: ${FLOWDB_ADMIN_USER:?Must set FLOWDB_ADMIN_USER env var}
+      POSTGRES_PASSWORD: ${FLOWDB_ADMIN_PASSWORD:?Must set FLOWDB_ADMIN_PASSWORD env var}
+      FLOWMACHINE_FLOWDB_USER: ${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
+      FLOWMACHINE_FLOWDB_PASSWORD: ${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
+      FLOWAPI_FLOWDB_USER: ${FLOWAPI_FLOWDB_USER:?Must set FLOWAPI_FLOWDB_USER env var}
+      FLOWAPI_FLOWDB_PASSWORD: ${FLOWAPI_FLOWDB_PASSWORD:?Must set FLOWAPI_FLOWDB_PASSWORD env var}
+      CACHE_SIZE: ${CACHE_SIZE:-""}
+      CACHE_HALF_LIFE: ${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
+      FLOWDB_ENABLE_POSTGRES_DEBUG_MODE: ${FLOWDB_ENABLE_POSTGRES_DEBUG_MODE:?Must set FLOWDB_ENABLE_POSTGRES_DEBUG_MODE env var}
+    shm_size: 1G
+    tty: true
+    stdin_open: true
+    restart: always
+    volumes:
+      - data_volume_flowdb:/var/lib/postgresql/data
+      - ${FLOWETL_HOST_FILES_DIR:?Must set FLOWETL_HOST_FILES_DIR env var}:/mounts/files:ro
+    networks:
+      - flowdb
+      - ingestion_db
+
+  ingestion_db:
+    container_name: ingestion_db
+    image: ${LOCAL_DOCKER_REGISTRY:?Must set LOCAL_DOCKER_REGISTRY env var}/ingestion_db:latest
+    build:
+      context: ingestion_db
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_USER=${INGESTION_DB_ADMIN_USER:?Must set INGESTION_DB_ADMIN_USER env var}
+      - POSTGRES_PASSWORD=${INGESTION_DB_ADMIN_PASSWORD:?Must set INGESTION_DB_ADMIN_PASSWORD env var}
+      - POSTGRES_DB=ingestion_db
+      - INGESTION_DB_USER=${INGESTION_DB_USER:?Must set INGESTION_DB_USER env var}
+      - INGESTION_DB_PASSWORD=${INGESTION_DB_PASSWORD:?Must set INGESTION_DB_PASSWORD env var}
+    ports:
+      - ${INGESTION_DB_PORT:?Must set INGESTION_DB_PORT env var}:5432
+    tty: true
+    stdin_open: true
+    restart: always
+    shm_size: ${POSTGRES_SHM:-1G}
+    volumes:
+      - data_volume_ingestion_db:/var/lib/postgresql/data
+    networks:
+      - ingestion_db
+
+  flowetl:
+    container_name: flowetl
+    image: ${LOCAL_DOCKER_REGISTRY:?Must set LOCAL_DOCKER_REGISTRY env var}/flowetl:latest
+    build:
+      context: ${LOCAL_FLOWKIT_REPO:?Must set LOCAL_FLOWKIT_REPO env var}/flowetl
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    stdin_open: true
+    ports:
+      - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
+    volumes:
+      - ${FLOWETL_HOST_CONFIG_DIR:?Must set FLOWETL_HOST_CONFIG_DIR env var}:/mounts/config:ro
+      - ${FLOWETL_HOST_FILES_DIR:?Must set FLOWETL_HOST_FILES_DIR env var}:/mounts/files:ro
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: ${FLOWETL_SQL_ALCHEMY_CONN:?Must set FLOWETL_SQL_ALCHEMY_CONN env var}
+      AIRFLOW__CORE__FERNET_KEY: ${FLOWETL_FERNET_KEY:?Must set FLOWETL_FERNET_KEY env var}
+      # Note: By setting a variable called "AIRFLOW_CONN_<some_database_name>" airflow will
+      # automatically define a connection for the given database.
+      # See: https://airflow.readthedocs.io/en/latest/howto/connection/index.html#creating-a-connection-with-environment-variables
+      AIRFLOW_CONN_FLOWDB: postgres://${FLOWDB_ADMIN_USER}:${FLOWDB_ADMIN_PASSWORD}@flowdb:5432/flowdb
+      # Note: in order for Airflow to pickup the correct database it is necessary to set the following POSTGRES env vars
+      # See: https://github.com/puckel/docker-airflow/issues/149
+      # This will hopefully be unnecessary once this PR is merged: https://github.com/puckel/docker-airflow/pull/253
+      POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
+      POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
+      POSTGRES_HOST: flowetl_db
+      POSTGRES_DB: flowetl
+      FLOWETL_RUNTIME_CONFIG: ${FLOWETL_RUNTIME_CONFIG:?Must set FLOWETL_RUNTIME_CONFIG env var}
+
+    networks:
+      - flowdb
+      - flowetl_db
+
+  flowetl_db:
+    image: postgres:11
+    container_name: flowetl_db
+
+    tty: true
+    stdin_open: true
+    restart: always
+
+    ports:
+      - ${FLOWETL_DB_PORT:?Must set FLOWETL_DB_PORT env var}:5432
+
+    environment:
+      POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
+      POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
+      POSTGRES_DB: flowetl
+
+    volumes:
+      - data_volume_flowetl_db:/var/lib/postgresql/data
+
+    networks:
+      - flowetl_db
+
+
+volumes:
+  data_volume_flowdb:
+  data_volume_flowetl_db:
+  data_volume_ingestion_db:

@@ -10,7 +10,7 @@
     "generate-password": "^1.4.2",
     "material-ui-pickers": "^2.2.4",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6",
+    "react-dom": "^16.9.0",
     "react-qr-svg": "^2.2.1",
     "react-scripts": "^3.0.1",
     "zxcvbn": "^4.4.2"
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "cypress": "^3.4.1",
-    "husky": "^3.0.2",
+    "husky": "^3.0.3",
     "otp-cli": "^0.2.0",
     "prettier": "^1.18.2",
     "pretty-quick": "^1.11.1"
