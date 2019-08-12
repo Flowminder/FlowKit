@@ -5,10 +5,9 @@ verify_ssl = true
 
 [dev-packages]
 black = "==19.3b0"
-apache-airflow = {extras = ["postgres"],version = "==1.10.3"}
+apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.4"}
 pylint = "*"
 pytest = "*"
-flask = "==1.0.4" # Pinned until airflow 1.10.4 to avoid a dependency incompatibility
 docker = "*"
 ipython = "*"
 etl = {editable = true,path = "./etl"}
