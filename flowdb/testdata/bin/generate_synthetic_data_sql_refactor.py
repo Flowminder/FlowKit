@@ -302,7 +302,7 @@ if __name__ == "__main__":
         dir = os.path.dirname(os.path.abspath(__file__))
 
         # Main generation process
-        with engine.connect() as trans:
+        with engine.begin() as trans:
             # Setup stage: Tidy up old event tables on previous runs
             with log_duration(job=f"Tidy up event tables"):
                 tables = trans.execute(
@@ -466,45 +466,44 @@ if __name__ == "__main__":
                 """
                 )
 
-            # 4. Event SQL
-            # Create a temp rowcount/pointcount sequence to select the variation rows/points
-            trans.execute(
-                """
-                    CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;
-                    CREATE TEMPORARY SEQUENCE pointcount MINVALUE 0 maxvalue 99 CYCLE;
-                """
+        # 4. Event SQL
+        # Stores the PostgreSQL WITH statement to get subscribers
+        with_sql = """
+            WITH callers AS (
+                SELECT 
+                    s1.id AS id1, s2.id AS id2, s1.msisdn, s2.msisdn AS msisdn_counterpart, 
+                    concat(v1.row, v2.row) as inc, v1.value AS caller_loc, v2.value AS callee_loc,
+                    s1.imsi AS caller_imsi, s1.imei AS caller_imei, s1.tac AS caller_tac,
+                    s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac
+                FROM subs s1
+                    LEFT JOIN subs s2 
+                    -- Series generator to provide the call count for each caller
+                    on s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 2))
+                    and s2.id != s1.id
+
+                    LEFT JOIN variations v1
+                    ON v1.type  = s1.variant
+                    AND v1.row = (select nextval('rowcount'))
+
+                    LEFT JOIN variations v2
+                    ON v2.type  = s2.variant
+                    AND v2.row = (select nextval('rowcount'))
+
+                WHERE s1.id = {caller_id}
             )
+        """
 
-            # Stores the PostgreSQL WITH statement to get subscribers
-            with_sql = """
-                WITH callers AS (
-                    SELECT 
-                        s1.id AS id1, s2.id AS id2, s1.msisdn, s2.msisdn AS msisdn_counterpart, 
-                        concat(v1.row, v2.row) as inc, v1.value AS caller_loc, v2.value AS callee_loc,
-                        s1.imsi AS caller_imsi, s1.imei AS caller_imei, s1.tac AS caller_tac,
-                        s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac
-                    FROM subs s1
-                        LEFT JOIN subs s2 
-                        -- Series generator to provide the call count for each caller
-                        on s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 2))
-                        and s2.id != s1.id
-
-                        LEFT JOIN variations v1
-                        ON v1.type  = s1.variant
-                        AND v1.row = (select nextval('rowcount'))
-
-                        LEFT JOIN variations v2
-                        ON v2.type  = s2.variant
-                        AND v2.row = (select nextval('rowcount'))
-
-                    WHERE s1.id = {caller_id}
+        # Loop over the days and generate all the types required
+        for date in (start_date + datetime.timedelta(days=i) for i in range(num_days)):
+            with engine.begin() as trans:
+                # Create a temp rowcount/pointcount sequence to select the variation rows/points
+                trans.execute(
+                    """
+                        CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;
+                        CREATE TEMPORARY SEQUENCE pointcount MINVALUE 0 maxvalue 99 CYCLE;
+                    """
                 )
-            """
 
-            # Loop over the days and generate all the types required
-            for date in (
-                start_date + datetime.timedelta(days=i) for i in range(num_days)
-            ):
                 # The date for the extended table names
                 table = date.strftime("%Y%m%d")
 
