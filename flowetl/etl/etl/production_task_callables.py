@@ -16,7 +16,7 @@ from uuid import uuid1
 from airflow.models import DagRun
 from airflow.api.common.experimental.trigger_dag import trigger_dag
 
-from etl.model import ETLRecord
+from etl.model import ETLRecord, ETLPostQueryOutcome
 from etl.etl_utils import (
     CDRType,
     get_session,
@@ -52,6 +52,47 @@ def record_ingestion_state__callable(*, dag_run: DagRun, to_state: str, **kwargs
 
 
 # pylint: disable=unused-argument
+def run_postload_queries__callable(*, queries: dict, dag_run: DagRun, **kwargs):
+    """
+    Function to deal with running and recording the outcome of informative
+    post-load ETL queries for the cdr_type of the running DAG.
+
+    Parameters
+    ----------
+    queries : dict
+        The dictionary that maps CDRType to the array of queries to run.
+    dag_run : DagRun
+        Passed as part of the Dag context - contains the config.
+    """
+    cdr_type = dag_run.conf["cdr_type"]
+    cdr_date = dag_run.conf["cdr_date"]
+
+    session = get_session()
+
+    if cdr_type not in queries:
+        raise ValueError(
+            f"Attempted to run queries for non-existing CDRType {cdr_type}"
+        )
+
+    for query in queries[cdr_type]:
+        query_result = query(cdr_type=cdr_type, cdr_date=cdr_date, session=session)
+        optional_comment_or_description = (
+            query_result["optional_comment_or_description"]
+            if "optional_comment_or_description" in query_result
+            else ""
+        )
+
+        ETLPostQueryOutcome.set_outcome(
+            cdr_type=cdr_type,
+            cdr_date=cdr_date,
+            type_of_query_or_check=query_result["type_of_query_or_check"],
+            outcome=query_result["outcome"],
+            optional_comment_or_description=optional_comment_or_description,
+            session=session,
+        )
+
+
+# pylint: disable=unused-argument
 def success_branch__callable(*, dag_run: DagRun, **kwargs):
     """
     Function to determine if we should follow the quarantine or
@@ -77,8 +118,9 @@ def production_trigger__callable(
     *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
 ):
     """
-    Function that determines which files in files/ should be processed
-    and triggers the correct ETL dag with config based on filename.
+    Function that determines which files in files/ or which external database
+    tables should be processed and triggers the correct ETL dag with config based
+    on the CDR date derived from the filename or data present.
 
     Parameters
     ----------
@@ -120,10 +162,12 @@ def production_trigger__callable(
                 execution_date = pendulum.Pendulum(
                     cdr_date.year, cdr_date.month, cdr_date.day
                 )
+                full_file_path = str(files_path.joinpath(file).absolute())
                 config = {
                     "cdr_type": cdr_type,
                     "cdr_date": cdr_date,
                     "file_name": file,
+                    "full_file_path": full_file_path,
                     "template_path": f"etl/{cdr_type}",
                 }
                 trigger_dag(

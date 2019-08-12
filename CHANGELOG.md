@@ -8,8 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - FlowAuth now makes version information available at `/version` and displays it in the web ui. [#835](https://github.com/Flowminder/FlowKit/issues/835)
+- FlowETL now comes with a deployment example (in `flowetl/deployment_example/`). [#1126](https://github.com/Flowminder/FlowKit/issues/1126)
+- FlowETL now allows to run supplementary post-ETL queries. [#989](https://github.com/Flowminder/FlowKit/issues/989)
 
 ### Changed
+- FlowDB is now based on PostgreSQL 11.5 and PostGIS 2.5.3
 
 ### Fixed
 
