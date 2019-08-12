@@ -480,7 +480,7 @@ if __name__ == "__main__":
                 WITH callers AS (
                     SELECT 
                         s1.id AS id1, s2.id AS id2, s1.msisdn, s2.msisdn AS msisdn_counterpart, 
-                        v1.value AS caller_loc, v2.value AS callee_loc,
+                        concat(v1.row, v2.row) as inc, v1.value AS caller_loc, v2.value AS callee_loc,
                         s1.imsi AS caller_imsi, s1.imei AS caller_imei, s1.tac AS caller_tac,
                         s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac
                     FROM subs s1
@@ -534,10 +534,10 @@ if __name__ == "__main__":
                                         (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
                                         imsi, imei, tac
                                     FROM (
-                                        SELECT CONCAT((id2 + id1)::text, id1::text) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
+                                        SELECT CONCAT(id1::text, inc, id2::text) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
                                         caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
-                                        select CONCAT(id1::text, (id2 * id1)::text) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
+                                        SELECT CONCAT(id2::text, (inc::INTEGER * id2), id1::text) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
                                         msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
@@ -577,10 +577,10 @@ if __name__ == "__main__":
                                         (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
                                         imsi, imei, tac
                                     FROM (
-                                        SELECT CONCAT(id2::text, id1::text) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
+                                        SELECT CONCAT(id1::text, inc, id2::text) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
                                         caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
-                                        select CONCAT(id1::text, id2::text) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
+                                        SELECT CONCAT(id2::text, (inc::INTEGER * id2), id1::text) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
                                         msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
