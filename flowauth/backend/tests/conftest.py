@@ -56,11 +56,6 @@ def client(app):
     return app.test_client()
 
 
-@pytest.fixture
-def otp_generator():
-    pass
-
-
 class AuthActions(object):
     def __init__(self, client):
         self._client = client
