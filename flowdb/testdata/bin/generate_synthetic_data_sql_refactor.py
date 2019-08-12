@@ -528,16 +528,16 @@ if __name__ == "__main__":
                                 (
                                     SELECT
                                         md5(concat({timestamp}, id)) AS id, outgoing,
-                                        '{table}'::TIMESTAMPTZ + interval '30 seconds' * datetime AS datetime,
+                                        '{table}'::TIMESTAMPTZ + interval '1 seconds' * (datetime / 2) AS datetime,
                                         floor(0.5 * 2600) AS duration,
                                         msisdn, msisdn_counterpart,
                                         (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
                                         imsi, imei, tac
                                     FROM (
-                                        SELECT CONCAT(id1::text, inc, id2::text) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
+                                        SELECT CONCAT(id1::text, inc, id2::text) AS id, id1 AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
                                         caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
-                                        SELECT CONCAT(id2::text, (inc::INTEGER * id2), id1::text) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
+                                        SELECT CONCAT(id2::text, (inc::INTEGER * id2), id1::text) AS id, id1 AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
                                         msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
@@ -572,15 +572,15 @@ if __name__ == "__main__":
                                 (
                                     SELECT
                                         md5(concat({timestamp}, id)) AS id, outgoing,
-                                        '{table}'::TIMESTAMPTZ + interval '30 seconds' * datetime AS datetime,
+                                        '{table}'::TIMESTAMPTZ + interval '1 seconds' * (datetime / 2) AS datetime,
                                         msisdn, msisdn_counterpart,
                                         (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
                                         imsi, imei, tac
                                     FROM (
-                                        SELECT CONCAT(id1::text, inc, id2::text) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
+                                        SELECT CONCAT(id1::text, inc, id2::text) AS id, id1 AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
                                         caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
-                                        SELECT CONCAT(id2::text, (inc::INTEGER * id2), id1::text) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
+                                        SELECT CONCAT(id2::text, (inc::INTEGER * id2), id1::text) AS id, id1 AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
                                         msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
@@ -623,7 +623,7 @@ if __name__ == "__main__":
                                 INSERT INTO events.mds_{table} (id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id) (
                                     SELECT 
                                     MD5(CONCAT({timestamp}, s.id, c.msisdn)) AS id,
-                                    '{table}'::TIMESTAMPTZ + interval '30 seconds' * (point / 3) AS datetime,
+                                    '{table}'::TIMESTAMPTZ + interval '1 seconds' * (point / 3) AS datetime,
                                     FLOOR(0.5 * 2600) AS duration,
                                     c.volume * 2 AS volume_total,
                                     c.volume AS volume_upload,
