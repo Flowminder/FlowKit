@@ -9,10 +9,10 @@
     "date-fns": "^2.0.0-beta.3",
     "generate-password": "^1.4.2",
     "material-ui-pickers": "^2.2.4",
-    "react": "^16.8.6",
+    "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-qr-svg": "^2.2.1",
-    "react-scripts": "^3.0.1",
+    "react-scripts": "^3.1.0",
     "zxcvbn": "^4.4.2"
   },
   "homepage": "http://site.com/static",
