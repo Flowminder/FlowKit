@@ -98,7 +98,9 @@ class UserDetails extends React.Component {
   editTwoFactor = () => this.setState({ two_factor_setup: true });
   newBackups = () => this.setState({ new_backups: true });
   finishNewBackups = () => this.setState({ new_backups: false });
-  finishEditTwoFactor = () => this.setState({ two_factor_setup: false });
+  finishEditTwoFactor = () =>
+    this.setState({ two_factor_setup: false, two_factor_enabled: true });
+  cancelEditTwoFactor = () => this.setState({ two_factor_setup: false });
   disableTwoFactor = async () => this.setState(await disableTwoFactor());
 
   async componentDidMount() {
@@ -209,6 +211,9 @@ class UserDetails extends React.Component {
                 color="primary"
                 className={classes.button}
                 onClick={this.editTwoFactor}
+                id={
+                  two_factor_enabled ? "reset_two_factor" : "enable_two_factor"
+                }
               >
                 {two_factor_enabled ? "Reset" : "Enable"}
               </Button>
@@ -250,7 +255,7 @@ class UserDetails extends React.Component {
         <TwoFactorConfirm
           classes={classes}
           finish={this.finishEditTwoFactor}
-          cancel={this.finishEditTwoFactor}
+          cancel={this.cancelEditTwoFactor}
         />
       );
     } else {
