@@ -622,7 +622,7 @@ if __name__ == "__main__":
                                 )
                                 INSERT INTO events.mds_{table} (id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id) (
                                     SELECT 
-                                    md5(({timestamp} + s.id)::TEXT) AS id,
+                                    MD5(CONCAT({timestamp}, s.id, c.msisdn)) AS id,
                                     '{table}'::TIMESTAMPTZ + interval '30 seconds' * (point / 3) AS datetime,
                                     FLOOR(0.5 * 2600) AS duration,
                                     c.volume * 2 AS volume_total,
