@@ -796,10 +796,10 @@
                 "pytest"
             ],
             "hashes": [
-                "sha256:45d2e3da0cfdaa9818769f28b8e4ed131abdc70213be7a6598c915abca44d4ef"
+                "sha256:471a5744a4c69ba33ebf4f9fe9adc2f7a662833d9f3f264807dbaa94f7beacb3"
             ],
             "index": "pypi",
-            "version": "==0.26.5"
+            "version": "==0.27.0"
         },
         "toml": {
             "hashes": [
@@ -846,10 +846,10 @@
         },
         "wsproto": {
             "hashes": [
-                "sha256:2b870f5b5b4a6d23dce080a4ee1cbb119b2378f82593bd6d66ae2cbd72a7c0ad",
-                "sha256:ed222c812aaea55d72d18a87df429cfd602e15b6c992a07a53b495858f083a14"
+                "sha256:614798c30e5dc2b3f65acc03d2d50842b97621487350ce79a80a711229edfa9d",
+                "sha256:e3d190a11d9307112ba23bbe60055604949b172143969c8f641318476a9b6f1d"
             ],
-            "version": "==0.14.1"
+            "version": "==0.15.0"
         },
         "zipp": {
             "hashes": [
