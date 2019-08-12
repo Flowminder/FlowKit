@@ -402,7 +402,6 @@ if __name__ == "__main__":
                     """
                 )
                 # Then run the inserts
-
                 trans.execute(
                     f"""
                         INSERT INTO infrastructure.tacs (id, model, brand, hnd_type)
@@ -528,17 +527,17 @@ if __name__ == "__main__":
                                 INSERT INTO events.calls_{table} (id, outgoing, datetime, duration, msisdn, msisdn_counterpart, location_id, imsi, imei, tac) 
                                 (
                                     SELECT
-                                        md5(({timestamp} + id)::TEXT) AS id, outgoing,
-                                        '{table}'::TIMESTAMPTZ + interval '30 mins' * datetime AS datetime,
+                                        md5(concat({timestamp}, id)) AS id, outgoing,
+                                        '{table}'::TIMESTAMPTZ + interval '30 seconds' * datetime AS datetime,
                                         floor(0.5 * 2600) AS duration,
                                         msisdn, msisdn_counterpart,
                                         (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
                                         imsi, imei, tac
                                     FROM (
-                                        SELECT (id1 * id2) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
+                                        SELECT CONCAT((id2 + id1)::text, id1::text) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
                                         caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
-                                        select (id1 + id2) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
+                                        select CONCAT(id1::text, (id2 * id1)::text) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
                                         msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
@@ -572,16 +571,16 @@ if __name__ == "__main__":
                                 INSERT INTO events.sms_{table} (id, outgoing, datetime, msisdn, msisdn_counterpart, location_id, imsi, imei, tac) 
                                 (
                                     SELECT
-                                        md5(({timestamp} + id)::TEXT) AS id, outgoing,
-                                        '{table}'::TIMESTAMPTZ + interval '30 mins' * datetime AS datetime,
+                                        md5(concat({timestamp}, id)) AS id, outgoing,
+                                        '{table}'::TIMESTAMPTZ + interval '30 seconds' * datetime AS datetime,
                                         msisdn, msisdn_counterpart,
                                         (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
                                         imsi, imei, tac
                                     FROM (
-                                        SELECT (id1 * id2) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
+                                        SELECT CONCAT(id2::text, id1::text) AS id, (id1 + id2) AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
                                         caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
                                         UNION ALL
-                                        select (id1 + id2) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
+                                        select CONCAT(id1::text, id2::text) AS id, (id1 + id2) AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
                                         msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
                                         callee_tac AS tac from callers
                                     ) _
@@ -622,9 +621,9 @@ if __name__ == "__main__":
                                     WHERE s.id = {caller_id}
                                 )
                                 INSERT INTO events.mds_{table} (id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id) (
-                                    select 
+                                    SELECT 
                                     md5(({timestamp} + s.id)::TEXT) AS id,
-                                    '{table}'::TIMESTAMPTZ + interval '30 mins' * (point / 3) AS datetime,
+                                    '{table}'::TIMESTAMPTZ + interval '30 seconds' * (point / 3) AS datetime,
                                     FLOOR(0.5 * 2600) AS duration,
                                     c.volume * 2 AS volume_total,
                                     c.volume AS volume_upload,
