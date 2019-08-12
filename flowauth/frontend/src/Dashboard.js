@@ -27,7 +27,6 @@ import PublicKey from "./PublicKey";
 import AggregationUnitList from "./AggregationUnitList";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { logout } from "./util/api";
-import TwoFactorConfirm from "./TwoFactorConfirm";
 
 const drawerWidth = 240;
 
