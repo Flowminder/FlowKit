@@ -80,8 +80,9 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
             status="error", msg="Invalid JSON.", payload={"decode_error": exc.msg}
         )
     except Exception as exc:
-        # Generic error boundary to catch any unexpected errors and pass to API
-        return ZMQReply(status="error", msg=f"{exc}")
+        # Generic error boundary to catch any unexpected errors and return a
+        # generic error message to the API
+        return ZMQReply(status="error", msg="Something went wrong.")
         raise exc
 
     # Return the reply (in JSON format)
@@ -199,6 +200,10 @@ async def recv(port):
     except Exception as exc:
         logger.debug(f"Received exception: {exc}")
         logger.error("Flowmachine server died unexpectedly.")
+        ZMQReply(status="error", msg="Something went wrong.")
+        socket.send_multipart(
+            [return_address, b"", rapidjson.dumps(reply_json).encode()]
+        )
         socket.close()
 
 
