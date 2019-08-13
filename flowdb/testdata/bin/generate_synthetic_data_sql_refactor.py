@@ -295,26 +295,28 @@ if __name__ == "__main__":
             strategy="threadlocal",
             pool_size=cpu_count(),
             pool_timeout=None,
+            isolation_level="AUTOCOMMIT",
         )
 
+        connection = engine.connect()
         deferred_sql = []
         start_id = 1000000
         dir = os.path.dirname(os.path.abspath(__file__))
 
         # Main generation process
-        with engine.begin() as trans:
+        with connection.begin() as trans:
             # Setup stage: Tidy up old event tables on previous runs
             with log_duration(job=f"Tidy up event tables"):
-                tables = trans.execute(
+                tables = connection.execute(
                     "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ '^calls_|sms_|mds_'"
                 ).fetchall()
 
                 for t in tables:
-                    trans.execute(f"DROP TABLE events.{t[1]};")
+                    connection.execute(f"DROP TABLE events.{t[1]};")
 
             # Steup stage 2. Load the variantions into a temp table
             with log_duration(job=f"Import variation data"):
-                trans.execute(
+                connection.execute(
                     f"""
                         CREATE TEMPORARY TABLE variations (
                             id SERIAL PRIMARY KEY,
@@ -332,7 +334,7 @@ if __name__ == "__main__":
                         f"{dir}/../synthetic_data/data/variations/{t}.dat", "r"
                     ) as f:
                         for l in f:
-                            trans.execute(
+                            connection.execute(
                                 f"""
                                     INSERT INTO variations (row, type, value) 
                                     VALUES ({row}, '{t}', '["{l.strip().replace(" ", '","')}"]');
@@ -349,8 +351,8 @@ if __name__ == "__main__":
             ):
                 with open(f"{dir}/../synthetic_data/data/geom.dat", "r") as f:
                     # First truncate the tables
-                    trans.execute("TRUNCATE infrastructure.sites;")
-                    trans.execute("TRUNCATE TABLE infrastructure.cells CASCADE;")
+                    connection.execute("TRUNCATE infrastructure.sites;")
+                    connection.execute("TRUNCATE TABLE infrastructure.cells CASCADE;")
 
                     cell_id = start_id
 
@@ -359,7 +361,7 @@ if __name__ == "__main__":
                         hash = generate_hash(x + 1000)
                         geom_point = f.readline().strip()
 
-                        trans.execute(
+                        connection.execute(
                             f"""
                                 INSERT INTO infrastructure.sites (id, version, date_of_first_service, date_of_last_service, geom_point) 
                                 VALUES ('{hash}', 0, (date '{start_date}')::date, (date '{start_date}' + interval '{num_days} days')::date, '{geom_point}');
@@ -369,7 +371,7 @@ if __name__ == "__main__":
                         # And for each site, create n number of cells
                         for y in range(0, num_cells):
                             cellhash = generate_hash(cell_id)
-                            trans.execute(
+                            connection.execute(
                                 f"""
                                     INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, date_of_last_service, geom_point) 
                                     VALUES ('{cellhash}', 0, '{hash}', (date '{start_date}')::date, (date '{start_date}' + interval '{num_days} days')::date, '{geom_point}');
@@ -382,7 +384,7 @@ if __name__ == "__main__":
             # 2. TACS
             with log_duration(f"Generating {num_tacs} tacs."):
                 # First truncate the table
-                trans.execute("TRUNCATE infrastructure.tacs;")
+                connection.execute("TRUNCATE infrastructure.tacs;")
                 # Then setup the temp sequences
                 brands = [
                     "Nokia",
@@ -395,14 +397,14 @@ if __name__ == "__main__":
                     "Xiaomi",
                     "ZTE",
                 ]
-                trans.execute(
+                connection.execute(
                     f"""
                         CREATE TEMPORARY SEQUENCE brand MINVALUE 1 maxvalue {len(brands)} CYCLE;
                         CREATE TEMPORARY SEQUENCE hnd_type MINVALUE 1 maxvalue 3 CYCLE;
                     """
                 )
                 # Then run the inserts
-                trans.execute(
+                connection.execute(
                     f"""
                         INSERT INTO infrastructure.tacs (id, model, brand, hnd_type)
                         SELECT 
@@ -439,12 +441,12 @@ if __name__ == "__main__":
                     inc += w * num_subscribers
                     tac_sql += f" AND {int(round(inc) - 1)} THEN '{b}' "
 
-                trans.execute(
+                connection.execute(
                     f"CREATE TEMPORARY SEQUENCE brandcount MINVALUE 0 maxvalue {round(num_tacs / len(brands)) - 1} CYCLE;"
                 )
 
                 # Then insert the subscribers
-                trans.execute(
+                connection.execute(
                     f"""
                     CREATE TABLE subs as
                         SELECT s.id, md5((s.id + 10)::TEXT) AS msisdn, md5((s.id + 20)::TEXT) AS imei, md5((s.id + 30)::TEXT) AS imsi,
@@ -459,12 +461,14 @@ if __name__ == "__main__":
                 )
 
                 # Add index and ANALYZE
-                trans.execute(
+                connection.execute(
                     """
                     CREATE INDEX on subs (id);
                     ANALYZE subs;
                 """
                 )
+
+            trans.commit()
 
         # 4. Event SQL
         # Stores the PostgreSQL WITH statement to get subscribers
@@ -492,18 +496,16 @@ if __name__ == "__main__":
                 WHERE s1.id = {caller_id}
             )
         """
-
+        # Create a temp rowcount/pointcount sequence to select the variation rows/points
+        connection.execute(
+            """
+                CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;
+                CREATE TEMPORARY SEQUENCE pointcount MINVALUE 0 maxvalue 99 CYCLE;
+            """
+        )
         # Loop over the days and generate all the types required
         for date in (start_date + datetime.timedelta(days=i) for i in range(num_days)):
-            with engine.begin() as trans:
-                # Create a temp rowcount/pointcount sequence to select the variation rows/points
-                trans.execute(
-                    """
-                        CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;
-                        CREATE TEMPORARY SEQUENCE pointcount MINVALUE 0 maxvalue 99 CYCLE;
-                    """
-                )
-
+            with connection.begin() as trans:
                 # The date for the extended table names
                 table = date.strftime("%Y%m%d")
 
@@ -511,13 +513,13 @@ if __name__ == "__main__":
                 if num_calls > 0:
                     with log_duration(f"Generating {num_calls} call events for {date}"):
                         # Create the table
-                        trans.execute(
+                        connection.execute(
                             f"CREATE TABLE events.calls_{table} () INHERITS (events.calls);"
                         )
 
                         # Generate the distributed calls for this day
                         generatedDistributedTypes(
-                            trans,
+                            connection,
                             dist_calls,
                             date,
                             table,
@@ -555,13 +557,13 @@ if __name__ == "__main__":
                 # 4.2 SMS
                 if num_sms > 0:
                     with log_duration(f"Generating {num_sms} sms events for {date}"):
-                        trans.execute(
+                        connection.execute(
                             f"CREATE TABLE IF NOT EXISTS events.sms_{table} () INHERITS (events.sms);"
                         )
 
                         # Generate the distributed sms for this day
                         generatedDistributedTypes(
-                            trans,
+                            connection,
                             dist_sms,
                             date,
                             table,
@@ -598,13 +600,13 @@ if __name__ == "__main__":
                 # 4.3 MDS
                 if num_mds > 0:
                     with log_duration(f"Generating {num_mds} mds events for {date}"):
-                        trans.execute(
+                        connection.execute(
                             f"CREATE TABLE IF NOT EXISTS events.mds_{table} () INHERITS (events.mds);"
                         )
 
                         # Generate the distributed mds for this day
                         generatedDistributedTypes(
-                            trans,
+                            connection,
                             dist_mds,
                             date,
                             table,
@@ -642,6 +644,8 @@ if __name__ == "__main__":
                             addEventSQL("mds", table),
                         )
                     )
+
+                trans.commit()
 
         # Add all the ANALYZE calls for the events tables.
         deferred_sql.append(
