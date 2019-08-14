@@ -5,6 +5,7 @@
 import asyncio
 import os
 from json import JSONDecodeError
+import traceback
 
 import rapidjson
 
@@ -79,11 +80,6 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
         return ZMQReply(
             status="error", msg="Invalid JSON.", payload={"decode_error": exc.msg}
         )
-    except Exception as exc:
-        # Generic error boundary to catch any unexpected errors and return a
-        # generic error message to the API
-        return ZMQReply(status="error", msg="Something went wrong.")
-        raise exc
 
     # Return the reply (in JSON format)
     return reply
@@ -159,7 +155,16 @@ async def calculate_and_send_reply_for_message(socket, return_address, msg_conte
     msg_contents : str
         JSON string with the message contents.
     """
-    reply_json = get_reply_for_message(msg_contents)
+    try:
+        reply_json = get_reply_for_message(msg_contents)
+    except Exception as exc:
+        # Catch and log any unhandled errors, and send a generic error response to the API
+        logger.debug(
+            f"Received exception: {type(exc).__name__}: {exc}",
+            traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
+        )
+        logger.error("Unexpected error while getting reply for ZMQ message.")
+        reply_json = ZMQReply(status="error", msg="Could not get reply for message")
     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
 
 
@@ -198,7 +203,10 @@ async def recv(port):
         while True:
             await receive_next_zmq_message_and_send_back_reply(socket)
     except Exception as exc:
-        logger.debug(f"Received exception: {exc}")
+        logger.debug(
+            f"Received exception: {type(exc).__name__}: {exc}",
+            traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
+        )
         logger.error("Flowmachine server died unexpectedly.")
         ZMQReply(status="error", msg="Something went wrong.")
         socket.send_multipart(
