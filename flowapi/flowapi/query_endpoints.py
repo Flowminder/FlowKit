@@ -224,8 +224,8 @@ async def get_query_result(query_id):
     )
 
     if reply["status"] == "error":
-        # TODO: check that this path is fully tested!
         try:
+            # TODO: check that this path is fully tested!
             query_state = reply["payload"]["query_state"]
             if query_state in ("executing", "queued"):
                 return jsonify({}), 202

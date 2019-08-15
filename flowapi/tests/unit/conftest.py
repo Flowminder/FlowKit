@@ -16,13 +16,24 @@ from zmq.asyncio import Context
 from asyncio import Future
 
 
-def async_return(result):
+@pytest.fixture
+def async_return():
     """
-    Return an object which can be used in an 'await' expression.
+    A fixture to provide a function which returns an object that can be set as
+    the return value of an async function.
+
+    Yields
+    ------
+    function
+        A function which returns a Future
     """
-    f = Future()
-    f.set_result(result)
-    return f
+
+    def return_future_with_result(result):
+        f = Future()
+        f.set_result(result)
+        return f
+
+    yield return_future_with_result
 
 
 @pytest.fixture
@@ -75,7 +86,7 @@ def dummy_zmq_server(monkeypatch):
 
 
 @pytest.fixture
-def dummy_db_pool(monkeypatch):
+def dummy_db_pool(monkeypatch, async_return):
     """
     A fixture which provides a mock database connection.
 
