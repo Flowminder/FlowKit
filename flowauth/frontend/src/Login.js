@@ -7,14 +7,14 @@ import PropTypes from "prop-types";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import FormControl from "@material-ui/core/FormControl";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
-import { login, isLoggedIn } from "./util/api";
+import { twoFactorlogin, isLoggedIn } from "./util/api";
 import ErrorDialog from "./ErrorDialog";
+import LoginBox from "./LoginBox";
+import TwoFactorLoginBox from "./TwoFactorLoginBox";
+import TwoFactorConfirm from "./TwoFactorConfirm";
 
 const styles = theme => ({
   layout: {
@@ -28,7 +28,7 @@ const styles = theme => ({
       marginRight: "auto"
     }
   },
-  paper: {
+  root: {
     marginTop: theme.spacing.unit * 8,
     display: "flex",
     flexDirection: "column",
@@ -55,20 +55,45 @@ class Login extends React.Component {
     this.state = {
       username: "",
       password: "",
+      two_factor_code: "",
+      need_two_factor: false,
+      require_two_factor_setup: false,
       hasError: false,
       error: { message: "" }
     };
   }
 
+  postLogin = () => {
+    const { setLoggedIn } = this.props;
+    const { is_admin } = this.state;
+    setLoggedIn(is_admin);
+  };
+
   handleSubmit = async event => {
     event.preventDefault();
-    login(this.state.username, this.state.password)
-      .then(json => {
+    const { username, password, two_factor_code } = this.state;
+    try {
+      const json = await twoFactorlogin(username, password, two_factor_code);
+      if (json.require_two_factor_setup) {
+        this.setState({
+          require_two_factor_setup: true,
+          is_admin: json.is_admin
+        });
+      } else {
         this.props.setLoggedIn(json.is_admin);
-      })
-      .catch(err => {
-        this.setState({ hasError: true, error: err });
-      });
+      }
+    } catch (err) {
+      if (err.need_two_factor) {
+        this.setState({ need_two_factor: true, hasError: false });
+      } else {
+        this.setState({
+          hasError: true,
+          error: err,
+          need_two_factor: false,
+          two_factor_code: ""
+        });
+      }
+    }
   };
 
   handleChange = event => {
@@ -79,65 +104,82 @@ class Login extends React.Component {
     });
   };
 
-  componentDidMount() {
-    isLoggedIn()
-      .then(json => {
+  resetTwoFactor = () => {
+    this.props.setLoggedOut();
+    this.setState({ require_two_factor_setup: false });
+  };
+
+  async componentDidMount() {
+    try {
+      const json = await isLoggedIn();
+      if (json.require_two_factor_setup) {
+        this.setState({ require_two_factor_setup: true });
+      } else {
         this.props.setLoggedIn(json.is_admin);
-      })
-      .catch(err => {
-        if (err.code !== 401) {
-          this.setState({ hasError: true, error: err });
-        }
-      });
+      }
+    } catch (err) {
+      if (err.code !== 401) {
+        this.setState({ hasError: true, error: err });
+      }
+    }
   }
 
   render() {
     const { classes } = this.props;
+    const {
+      need_two_factor,
+      two_factor_code,
+      require_two_factor_setup,
+      username,
+      password
+    } = this.state;
 
     return (
       <React.Fragment>
         <CssBaseline />
         <main className={classes.layout}>
-          <Paper className={classes.paper}>
-            <Avatar
-              className={classes.avatar}
-              src={require("./img/flowminder_logo.png")}
+          {!require_two_factor_setup && (
+            <Paper className={classes.root}>
+              <Avatar
+                className={classes.avatar}
+                src={require("./img/flowminder_logo.png")}
+              />
+              <Typography variant="h5">Sign in</Typography>
+              <form className={classes.form} onSubmit={this.handleSubmit}>
+                {!need_two_factor && (
+                  <LoginBox
+                    username={username}
+                    password={password}
+                    usernameChangeHandler={this.handleChange}
+                    passwordChangeHandler={this.handleChange}
+                  />
+                )}
+
+                {need_two_factor && (
+                  <TwoFactorLoginBox
+                    two_factor_code={two_factor_code}
+                    handleChange={this.handleChange}
+                  />
+                )}
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                >
+                  Sign in
+                </Button>
+              </form>
+            </Paper>
+          )}
+          {require_two_factor_setup && (
+            <TwoFactorConfirm
+              classes={classes}
+              finish={this.postLogin}
+              cancel={this.resetTwoFactor}
             />
-            <Typography variant="h5">Sign in</Typography>
-            <form className={classes.form} onSubmit={this.handleSubmit}>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="username">Username</InputLabel>
-                <Input
-                  id="username"
-                  name="username"
-                  autoComplete="username"
-                  autoFocus
-                  value={this.state.username}
-                  onChange={this.handleChange}
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <Input
-                  name="password"
-                  type="password"
-                  id="password"
-                  value={this.state.password}
-                  onChange={this.handleChange}
-                  autoComplete="current-password"
-                />
-              </FormControl>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-              >
-                Sign in
-              </Button>
-            </form>
-          </Paper>
+          )}
         </main>
         <ErrorDialog
           open={this.state.hasError}

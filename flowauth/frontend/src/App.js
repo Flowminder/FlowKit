@@ -40,7 +40,12 @@ class App extends Component {
         <Dashboard setLoggedOut={this.setLoggedOut} is_admin={is_admin} />
       );
     } else {
-      component = <Login setLoggedIn={this.setLoggedIn} />;
+      component = (
+        <Login
+          setLoggedIn={this.setLoggedIn}
+          setLoggedOut={this.setLoggedOut}
+        />
+      );
     }
     return (
       <>

@@ -28,6 +28,7 @@ from .admin import blueprint as admin_blueprint
 from .token_management import blueprint as token_management_blueprint
 from .login import blueprint as login_blueprint
 from .spatial_aggregation import blueprint as aggregation_unit_blueprint
+from .user_settings import blueprint as user_settings_blueprint
 from .version import blueprint as version_blueprint
 
 
@@ -59,7 +60,8 @@ def create_app(test_config=None):
 
     app.register_blueprint(login_blueprint)
     app.register_blueprint(admin_blueprint, url_prefix="/admin")
-    app.register_blueprint(token_management_blueprint, url_prefix="/user")
+    app.register_blueprint(token_management_blueprint, url_prefix="/tokens")
+    app.register_blueprint(user_settings_blueprint, url_prefix="/user")
     app.register_blueprint(
         aggregation_unit_blueprint, url_prefix="/spatial_aggregation"
     )
