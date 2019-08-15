@@ -160,11 +160,10 @@ async def calculate_and_send_reply_for_message(socket, return_address, msg_conte
     except Exception as exc:
         # Catch and log any unhandled errors, and send a generic error response to the API
         # TODO: Ensure that FlowAPI always returns the correct error code when receiving an error reply
-        logger.debug(
-            f"Received exception: {type(exc).__name__}: {exc}",
+        logger.error(
+            f"Unexpected error while getting reply for ZMQ message. Received exception: {type(exc).__name__}: {exc}",
             traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
         )
-        logger.error("Unexpected error while getting reply for ZMQ message.")
         reply_json = ZMQReply(status="error", msg="Could not get reply for message")
     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
 
@@ -204,15 +203,11 @@ async def recv(port):
         while True:
             await receive_next_zmq_message_and_send_back_reply(socket)
     except Exception as exc:
-        logger.debug(
+        logger.error(
             f"Received exception: {type(exc).__name__}: {exc}",
             traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
         )
         logger.error("Flowmachine server died unexpectedly.")
-        ZMQReply(status="error", msg="Something went wrong.")
-        socket.send_multipart(
-            [return_address, b"", rapidjson.dumps(reply_json).encode()]
-        )
         socket.close()
 
 
