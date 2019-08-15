@@ -154,4 +154,3 @@ async def test_get_error_message_without_query_state(
     json = await response.get_json()
     assert 500 == response.status_code
     assert "DUMMY_ERROR_MESSAGE" == json["msg"]
-
