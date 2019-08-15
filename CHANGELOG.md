@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowETL now allows to run supplementary post-ETL queries. [#989](https://github.com/Flowminder/FlowKit/issues/989)
 
 ### Changed
+- FlowDB is now based on PostgreSQL 11.5 and PostGIS 2.5.3
 
 ### Fixed
 
@@ -35,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAPI's 'joined_spatial_aggregate' endpoint now exposes handset. [#1011](https://github.com/Flowminder/FlowKit/issues/1011) and [#1029](https://github.com/Flowminder/FlowKit/issues/1029)
 - `JoinedSpatialAggregate` now supports "distr" stats which computes outputs the relative distribution of the passed metrics.
 - Added `SubscriberHandsetCharacteristic` to FlowMachine
+- FlowAuth now supports optional two-factor authentication [#121](https://github.com/Flowminder/FlowKit/issues/121)
 
 ### Changed
 - The flowdb containers for test_data and synthetic_data were split into two separate containers and quick_start.sh downloads the docker-compose files to a new temporary directory on each run. [#843](https://github.com/Flowminder/FlowKit/issues/843)
