@@ -159,6 +159,7 @@ async def calculate_and_send_reply_for_message(socket, return_address, msg_conte
         reply_json = get_reply_for_message(msg_contents)
     except Exception as exc:
         # Catch and log any unhandled errors, and send a generic error response to the API
+        # TODO: Ensure that FlowAPI always returns the correct error code when receiving an error reply
         logger.debug(
             f"Received exception: {type(exc).__name__}: {exc}",
             traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
