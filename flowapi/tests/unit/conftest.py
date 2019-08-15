@@ -17,26 +17,6 @@ from asyncio import Future
 
 
 @pytest.fixture
-def async_return():
-    """
-    A fixture to provide a function which returns an object that can be set as
-    the return value of an async function.
-
-    Yields
-    ------
-    function
-        A function which returns a Future
-    """
-
-    def return_future_with_result(result):
-        f = Future()
-        f.set_result(result)
-        return f
-
-    yield return_future_with_result
-
-
-@pytest.fixture
 def json_log(capsys):
     def parse_json():
         log_output = capsys.readouterr()
@@ -86,7 +66,7 @@ def dummy_zmq_server(monkeypatch):
 
 
 @pytest.fixture
-def dummy_db_pool(monkeypatch, async_return):
+def dummy_db_pool(monkeypatch):
     """
     A fixture which provides a mock database connection.
 
@@ -98,11 +78,9 @@ def dummy_db_pool(monkeypatch, async_return):
     dummy = MagicMock()
 
     # A MagicMock can't be used in an 'await' expression,
-    # so we need to set the return value of connection.set_type_codec
+    # so we need to make connection.set_type_codec a CoroutineMock
     # (awaited in stream_result_as_json())
-    dummy.acquire.return_value.__aenter__.return_value.set_type_codec.return_value = async_return(
-        Mock()
-    )
+    dummy.acquire.return_value.__aenter__.return_value.set_type_codec = CoroutineMock()
 
     async def f(*args, **kwargs):
         return dummy

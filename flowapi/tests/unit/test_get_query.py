@@ -6,6 +6,7 @@ import pytest
 from json import loads
 
 from tests.unit.zmq_helpers import ZMQReply
+from asynctest import CoroutineMock
 
 
 @pytest.mark.asyncio
@@ -132,7 +133,7 @@ async def test_get_json_status_code(
 
 @pytest.mark.asyncio
 async def test_get_error_message_without_query_state(
-    app, access_token_builder, dummy_zmq_server, async_return, monkeypatch
+    app, access_token_builder, dummy_zmq_server, monkeypatch
 ):
     """
     Test that the get/ endpoint returns the correct error message if the reply
@@ -144,7 +145,7 @@ async def test_get_error_message_without_query_state(
     # of replies as side-effects of dummy_zmq_server just to verify token permissions
     monkeypatch.setattr(
         "flowapi.user_model.UserObject.can_get_results_by_query_id",
-        lambda self, query_id: async_return(True),
+        CoroutineMock(return_value=True),
     )
     dummy_zmq_server.return_value = ZMQReply(status="error", msg="DUMMY_ERROR_MESSAGE")
     response = await client.get(
