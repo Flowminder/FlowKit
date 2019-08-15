@@ -706,63 +706,6 @@ class Query(metaclass=ABCMeta):
         store_future = self.to_sql(name, schema=schema)
         return store_future
 
-    def _db_store_cache_metadata(self, compute_time=None):
-        """
-        Helper function for store, updates flowmachine metadata table to
-        log that this query is stored, but does not actually store
-        the query.
-        """
-
-        from ..__init__ import __version__
-
-        con = self.connection.engine
-
-        self_storage = b""
-        try:
-            self_storage = pickle.dumps(self)
-        except:
-            logger.debug("Can't pickle, attempting to cache anyway.")
-            pass
-
-        try:
-            in_cache = bool(
-                self.connection.fetch(
-                    f"SELECT * FROM cache.cached WHERE query_id='{self.md5}'"
-                )
-            )
-
-            with con.begin():
-                cache_record_insert = """
-                INSERT INTO cache.cached 
-                (query_id, version, query, created, access_count, last_accessed, compute_time, 
-                cache_score_multiplier, class, schema, tablename, obj) 
-                VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
-                 ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
-                con.execute(
-                    cache_record_insert,
-                    (
-                        self.md5,
-                        __version__,
-                        self._make_query(),
-                        compute_time,
-                        self.__class__.__name__,
-                        *self.fully_qualified_table_name.split("."),
-                        psycopg2.Binary(self_storage),
-                    ),
-                )
-                con.execute("SELECT touch_cache(%s);", self.md5)
-                logger.debug(
-                    "{} added to cache.".format(self.fully_qualified_table_name)
-                )
-                if not in_cache:
-                    for dep in self._get_stored_dependencies(exclude_self=True):
-                        con.execute(
-                            "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
-                            (self.md5, dep.md5),
-                        )
-        except NotImplementedError:
-            logger.debug("Table has no standard name.")
-
     @property
     def dependencies(self):
         """

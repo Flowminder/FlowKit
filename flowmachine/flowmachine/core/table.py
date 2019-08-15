@@ -14,6 +14,7 @@ from flowmachine.core.query_state import QueryStateMachine
 from .errors import NotConnectedError
 from .query import Query
 from .subset import subset_factory
+from .cache import write_cache_metadata
 
 import structlog
 
@@ -121,7 +122,7 @@ class Table(Query):
         q_state_machine = QueryStateMachine(self.redis, self.md5)
         q_state_machine.enqueue()
         q_state_machine.execute()
-        self._db_store_cache_metadata(compute_time=0)
+        write_cache_metadata(self.connection, self, compute_time=0)
         q_state_machine.finish()
 
     def __format__(self, fmt):
