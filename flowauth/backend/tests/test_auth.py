@@ -13,7 +13,11 @@ def test_login(client, auth, test_user):
     uid, username, password = test_user
     # test that successful login redirects to the index page
     response, _ = auth.login(username, password)
-    assert {"logged_in": True, "is_admin": False} == response.get_json()
+    assert {
+        "logged_in": True,
+        "is_admin": False,
+        "require_two_factor_setup": False,
+    } == response.get_json()
 
     # login request set the user_id in the session
     # check that the user is loaded from the session

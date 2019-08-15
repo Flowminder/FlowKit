@@ -1,9 +1,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from multiprocessing import Value
+
 
 import datetime
+import pyotp
+from flowauth.invalid_usage import Unauthorized
 from itertools import chain
 
 import click
@@ -87,6 +89,19 @@ class User(db.Model):
     tokens = db.relationship(
         "Token", back_populates="owner", cascade="all, delete, delete-orphan"
     )
+    two_factor_auth = db.relationship(
+        "TwoFactorAuth",
+        back_populates="user",
+        cascade="all, delete, delete-orphan",
+        uselist=False,
+    )
+    require_two_factor = db.Column(db.Boolean, default=False)
+
+    @property
+    def two_factor_setup_required(self):
+        return (
+            self.two_factor_auth is None or not self.two_factor_auth.enabled
+        ) and self.require_two_factor
 
     def is_authenticated(self):
         return True
@@ -203,6 +218,158 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.username}>"
+
+
+class TwoFactorAuth(db.Model):
+    user_id = db.Column(
+        db.Integer, db.ForeignKey("user.id"), nullable=False, primary_key=True
+    )
+    user = db.relationship("User", back_populates="two_factor_auth", lazy=True)
+    enabled = db.Column(db.Boolean, nullable=False, default=False)
+    _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
+    last_used_two_factor_code = db.Column(db.String(), nullable=True)
+    two_factor_backups = db.relationship(
+        "TwoFactorBackup", back_populates="auth", cascade="all, delete, delete-orphan"
+    )
+
+    def validate(self, code: str) -> bool:
+        """
+        Validate a code against the otp generator, and if that fails, the backup codes, and
+        mark as just used.
+
+        A valid code is only valid once.
+
+        Parameters
+        ----------
+        code : str
+            Code to check
+
+        Returns
+        -------
+        bool
+            True if the code is a valid OTP
+
+        Raises
+        ------
+        Unauthorized
+            Raised if the code is invalid, or has just been used.
+        """
+        current_app.logger.debug(f"Verifying {code} using {self.secret_key}")
+        is_valid = pyotp.totp.TOTP(self.secret_key).verify(code)
+        if is_valid:
+            if (
+                self.last_used_two_factor_code == code
+            ):  # Reject if the code is being reused
+                raise Unauthorized("Code not valid.")
+            else:
+                self.last_used_two_factor_code = code
+            db.session.add(self)
+            db.session.commit()
+            return True
+        else:
+            raise Unauthorized("Code not valid.")
+
+    def validate_backup_code(self, plaintext):
+        """
+        Verify if a password is correct.
+
+        Parameters
+        ----------
+        plaintext: str
+            Input to check
+
+        Returns
+        -------
+        bool
+
+        """
+        for code in self.two_factor_backups:
+            try:
+                if code.verify(plaintext):
+                    db.session.delete(code)
+                    db.session.commit()
+                    return True
+            except Unauthorized:
+                pass  # Need to check them all
+        raise Unauthorized("Code not valid.")
+
+    @hybrid_property
+    def secret_key(self):
+        """
+        Hybrid property which allows for the per user otp secret to
+        be encrypted in db, but decrypted when read.
+
+        Returns
+        -------
+        InstrumentedProperty or str
+            Returns the underlying prop when called by sqlalchemy at class level
+            but the decrypted secret key when called on an instance
+        """
+        key = self._secret_key
+        try:
+            key.decode()
+        except AttributeError:
+            return key
+        return get_fernet().decrypt(key).decode()
+
+    @secret_key.setter
+    def secret_key(self, plaintext):
+        """
+        Encrypt, then store to the database the per user otp secret.
+
+        Parameters
+        ----------
+        plaintext: str
+            Key to encrypt.
+        """
+        self._secret_key = get_fernet().encrypt(plaintext.encode())
+
+
+class TwoFactorBackup(db.Model):
+    """
+    Back up login codes for two-factor auth.
+    """
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    auth_id = db.Column(
+        db.Integer, db.ForeignKey("two_factor_auth.user_id"), nullable=False
+    )
+    auth = db.relationship(
+        "TwoFactorAuth", back_populates="two_factor_backups", lazy=True
+    )
+    _backup_code = db.Column(db.String(), nullable=False)
+
+    def verify(self, plaintext: str) -> bool:
+        """
+
+        Parameters
+        ----------
+        plaintext : str
+            Code to verify
+
+        Returns
+        -------
+        bool
+            True if a valid code.
+
+        Raises
+        ------
+        Unauthorized
+            Raised if the code is not valid
+
+        """
+        if argon2.verify(plaintext, self._backup_code):
+            return True
+        else:
+            raise Unauthorized("Code not valid.")
+
+    @hybrid_property
+    def backup_code(self):
+        return self._password
+
+    @backup_code.setter
+    def backup_code(self, plaintext):
+        self._backup_code = argon2.hash(plaintext)
 
 
 class Token(db.Model):

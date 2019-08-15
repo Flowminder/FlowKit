@@ -4,23 +4,16 @@
 
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
 import TokenPermission from "./TokenPermission";
-import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import { DateTimePicker, MuiPickersUtilsProvider } from "material-ui-pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import { getMyRightsForServer, createToken } from "./util/api";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import SubmitButtons from "./SubmitButtons";
 import ServerAggregationUnits from "./ServerAggregationUnits";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Checkbox from "@material-ui/core/Checkbox";
-import WarningDialog from "./WarningDialog";
 
 const styles = theme => ({
   root: {
