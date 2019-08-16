@@ -16,12 +16,14 @@ passlib = "*"
 argon2_cffi = "*"
 psycopg2-binary = "*"
 cryptography = "*"
+pyotp = "*"
+itsdangerous = "*"
 
 
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
-"flowauth" = {editable = true, path = "./backend"}
+flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 
 [requires]
@@ -35,5 +37,3 @@ start-frontend = "bash -c 'cd frontend && npm start'"
 test-frontend-with-record = "bash start.sh test --record"
 test-frontend = "bash start.sh test"
 test-backend = "pytest"
-
-

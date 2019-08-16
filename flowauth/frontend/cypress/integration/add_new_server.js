@@ -7,9 +7,10 @@ describe("Server management", function() {
 
   beforeEach(function() {
     // Log in and navigate to user details screen
-    cy.login_admin();
-    cy.goto("/");
-    cy.get("#server_list").click();
+    cy.login_admin()
+      .goto("/")
+      .get("#server_list")
+      .click();
   });
   it("Add server name with space", function() {
     cy.get("#new").click();
