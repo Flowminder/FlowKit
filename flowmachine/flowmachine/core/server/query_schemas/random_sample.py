@@ -6,7 +6,7 @@ from marshmallow import Schema, fields, validates_schema, ValidationError, post_
 from marshmallow.validate import OneOf, Range
 from marshmallow_oneofschema import OneOfSchema
 
-__all__ = ["RandomSampleSchema", "RandomSampler"]
+__all__ = ["RandomSampleSchema", "RandomSampler", "apply_sampling"]
 
 
 class BaseRandomSampleSchema(Schema):
@@ -92,6 +92,18 @@ class RandomSampler:
             self.seed = seed
 
     def make_random_sample_object(self, query):
+        """
+        Apply this random sample to a FlowMachine Query object
+
+        Parameters
+        ----------
+        query : Query
+            FlowMachine Query object to be sampled
+        
+        Returns
+        -------
+        Random
+        """
         sample_params = {
             "sampling_method": self.sampling_method,
             "size": self.size,
@@ -111,3 +123,26 @@ class RandomSampleSchema(OneOfSchema):
         "bernoulli": BernoulliRandomSampleSchema,
         "random_ids": RandomIDsRandomSampleSchema,
     }
+
+
+def apply_sampling(query, random_sampler=None):
+    """
+    Helper function to return a random sample object if random_sampler is provided,
+    or the unmodified query otherwise.
+
+    Parameters
+    ----------
+    query : Query
+        FlowMachine Query object to be sampled.
+    random_sampler : RandomSampler, optional
+        Object loaded from RandomSampleSchema, which parameterises a random sample.
+    
+    Returns
+    -------
+    Query
+        Either the provided query, or a random sample of it.
+    """
+    if random_sampler is None:
+        return query
+    else:
+        return random_sampler.make_random_sample_object(query)

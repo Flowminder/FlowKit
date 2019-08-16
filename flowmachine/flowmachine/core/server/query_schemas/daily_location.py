@@ -9,7 +9,7 @@ from flowmachine.features import daily_location
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
-from .random_sample import RandomSampleSchema
+from .random_sample import RandomSampleSchema, apply_sampling
 
 __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 
@@ -55,7 +55,4 @@ class DailyLocationExposed(BaseExposedQuery):
             method=self.method,
             subscriber_subset=self.subscriber_subset,
         )
-        if self.sampling is None:
-            return query
-        else:
-            return self.sampling.make_random_sample_object(query)
+        return apply_sampling(query, random_sampler=self.sampling)
