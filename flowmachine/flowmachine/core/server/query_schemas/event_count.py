@@ -8,6 +8,7 @@ from marshmallow.validate import OneOf, Length
 from flowmachine.features import EventCount
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import EventTypes, SubscriberSubset
+from .random_sample import RandomSampleSchema, apply_sampling
 
 __all__ = ["EventCountSchema", "EventCountExposed"]
 
@@ -21,6 +22,7 @@ class EventCountSchema(Schema):
     )  # TODO: use a globally defined enum for this
     event_types = EventTypes()
     subscriber_subset = SubscriberSubset()
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -28,7 +30,16 @@ class EventCountSchema(Schema):
 
 
 class EventCountExposed(BaseExposedQuery):
-    def __init__(self, *, start, stop, direction, event_types, subscriber_subset=None):
+    def __init__(
+        self,
+        *,
+        start,
+        stop,
+        direction,
+        event_types,
+        subscriber_subset=None,
+        sampling=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
@@ -36,6 +47,7 @@ class EventCountExposed(BaseExposedQuery):
         self.direction = direction
         self.event_types = event_types
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
@@ -46,10 +58,11 @@ class EventCountExposed(BaseExposedQuery):
         -------
         Query
         """
-        return EventCount(
+        query = EventCount(
             start=self.start,
             stop=self.stop,
             direction=self.direction,
             tables=self.event_types,
             subscriber_subset=self.subscriber_subset,
         )
+        return apply_sampling(query, random_sampler=self.sampling)

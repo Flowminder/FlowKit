@@ -9,6 +9,7 @@ from flowmachine.features import SubscriberHandsetCharacteristic
 from flowmachine.core import CustomQuery
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
+from .random_sample import RandomSampleSchema, apply_sampling
 
 __all__ = ["HandsetSchema", "HandsetExposed"]
 
@@ -25,6 +26,7 @@ class HandsetSchema(Schema):
     )
     method = fields.String(validate=OneOf(["last", "most-common"]))
     subscriber_subset = SubscriberSubset()
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -33,7 +35,14 @@ class HandsetSchema(Schema):
 
 class HandsetExposed(BaseExposedQuery):
     def __init__(
-        self, *, start_date, end_date, method, characteristic, subscriber_subset=None
+        self,
+        *,
+        start_date,
+        end_date,
+        method,
+        characteristic,
+        subscriber_subset=None,
+        sampling=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -42,6 +51,7 @@ class HandsetExposed(BaseExposedQuery):
         self.method = method
         self.characteristic = characteristic
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
@@ -52,10 +62,11 @@ class HandsetExposed(BaseExposedQuery):
         -------
         Query
         """
-        return SubscriberHandsetCharacteristic(
+        query = SubscriberHandsetCharacteristic(
             start=self.start_date,
             stop=self.end_date,
             characteristic=self.characteristic,
             method=self.method,
             subscriber_subset=self.subscriber_subset,
         )
+        return apply_sampling(query, random_sampler=self.sampling)

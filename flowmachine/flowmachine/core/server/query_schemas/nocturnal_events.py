@@ -8,6 +8,7 @@ from marshmallow.validate import OneOf, Length
 from flowmachine.features import NocturnalEvents
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
+from .random_sample import RandomSampleSchema, apply_sampling
 
 __all__ = ["NocturnalEventsSchema", "NocturnalEventsExposed"]
 
@@ -18,6 +19,7 @@ class NocturnalEventsSchema(Schema):
     stop = fields.Date(required=True)
     hours = fields.Tuple((fields.Integer(), fields.Integer()))
     subscriber_subset = SubscriberSubset()
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -25,13 +27,14 @@ class NocturnalEventsSchema(Schema):
 
 
 class NocturnalEventsExposed(BaseExposedQuery):
-    def __init__(self, *, start, stop, hours, subscriber_subset=None):
+    def __init__(self, *, start, stop, hours, subscriber_subset=None, sampling=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
         self.hours = hours
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
@@ -42,9 +45,10 @@ class NocturnalEventsExposed(BaseExposedQuery):
         -------
         Query
         """
-        return NocturnalEvents(
+        query = NocturnalEvents(
             start=self.start,
             stop=self.stop,
             hours=self.hours,
             subscriber_subset=self.subscriber_subset,
         )
+        return apply_sampling(query, random_sampler=self.sampling)

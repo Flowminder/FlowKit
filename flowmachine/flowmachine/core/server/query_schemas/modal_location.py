@@ -10,6 +10,7 @@ from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit
 from .daily_location import DailyLocationSchema, DailyLocationExposed
+from .random_sample import RandomSampleSchema, apply_sampling
 
 
 class InputToModalLocationSchema(OneOfSchema):
@@ -25,6 +26,7 @@ class ModalLocationSchema(Schema):
     )
     aggregation_unit = AggregationUnit(required=True)
     subscriber_subset = SubscriberSubset(required=False)
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, data, **kwargs):
@@ -32,12 +34,15 @@ class ModalLocationSchema(Schema):
 
 
 class ModalLocationExposed(BaseExposedQuery):
-    def __init__(self, locations, *, aggregation_unit, subscriber_subset=None):
+    def __init__(
+        self, locations, *, aggregation_unit, subscriber_subset=None, sampling=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.locations = locations
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
@@ -51,4 +56,5 @@ class ModalLocationExposed(BaseExposedQuery):
         from flowmachine.features import ModalLocation
 
         locations = [loc._flowmachine_query_obj for loc in self.locations]
-        return ModalLocation(*locations)
+        query = ModalLocation(*locations)
+        return apply_sampling(query, random_sampler=self.sampling)

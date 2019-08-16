@@ -8,6 +8,7 @@ from marshmallow.validate import OneOf, Length
 from flowmachine.features import SubscriberDegree
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
+from .random_sample import RandomSampleSchema, apply_sampling
 
 __all__ = ["SubscriberDegreeSchema", "SubscriberDegreeExposed"]
 
@@ -20,6 +21,7 @@ class SubscriberDegreeSchema(Schema):
         required=False, validate=OneOf(["in", "out", "both"]), default="both"
     )  # TODO: use a globally defined enum for this
     subscriber_subset = SubscriberSubset()
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -27,13 +29,16 @@ class SubscriberDegreeSchema(Schema):
 
 
 class SubscriberDegreeExposed(BaseExposedQuery):
-    def __init__(self, *, start, stop, direction, subscriber_subset=None):
+    def __init__(
+        self, *, start, stop, direction, subscriber_subset=None, sampling=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
         self.direction = direction
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
@@ -44,9 +49,10 @@ class SubscriberDegreeExposed(BaseExposedQuery):
         -------
         Query
         """
-        return SubscriberDegree(
+        query = SubscriberDegree(
             start=self.start,
             stop=self.stop,
             direction=self.direction,
             subscriber_subset=self.subscriber_subset,
         )
+        return apply_sampling(query, random_sampler=self.sampling)

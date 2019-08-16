@@ -8,6 +8,7 @@ from marshmallow.validate import OneOf, Length, Range
 from flowmachine.features import ParetoInteractions
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
+from .random_sample import RandomSampleSchema, apply_sampling
 
 __all__ = ["ParetoInteractionsSchema", "ParetoInteractionsExposed"]
 
@@ -18,6 +19,7 @@ class ParetoInteractionsSchema(Schema):
     stop = fields.Date(required=True)
     proportion = fields.Float(required=True, validate=Range(min=0.0, max=1.0))
     subscriber_subset = SubscriberSubset()
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -25,13 +27,16 @@ class ParetoInteractionsSchema(Schema):
 
 
 class ParetoInteractionsExposed(BaseExposedQuery):
-    def __init__(self, *, start, stop, proportion, subscriber_subset=None):
+    def __init__(
+        self, *, start, stop, proportion, subscriber_subset=None, sampling=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
         self.proportion = proportion
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
@@ -42,9 +47,10 @@ class ParetoInteractionsExposed(BaseExposedQuery):
         -------
         Query
         """
-        return ParetoInteractions(
+        query = ParetoInteractions(
             start=self.start,
             stop=self.stop,
             proportion=self.proportion,
             subscriber_subset=self.subscriber_subset,
         )
+        return apply_sampling(query, random_sampler=self.sampling)

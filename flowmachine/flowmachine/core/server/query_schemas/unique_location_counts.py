@@ -9,6 +9,7 @@ from flowmachine.features import UniqueLocationCounts
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
+from .random_sample import RandomSampleSchema, apply_sampling
 
 __all__ = ["UniqueLocationCountsSchema", "UniqueLocationCountsExposed"]
 
@@ -19,6 +20,7 @@ class UniqueLocationCountsSchema(Schema):
     end_date = fields.Date(required=True)
     aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -27,7 +29,13 @@ class UniqueLocationCountsSchema(Schema):
 
 class UniqueLocationCountsExposed(BaseExposedQuery):
     def __init__(
-        self, *, start_date, end_date, aggregation_unit, subscriber_subset=None
+        self,
+        *,
+        start_date,
+        end_date,
+        aggregation_unit,
+        subscriber_subset=None,
+        sampling=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -35,6 +43,7 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
         self.end_date = end_date
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
@@ -45,9 +54,10 @@ class UniqueLocationCountsExposed(BaseExposedQuery):
         -------
         Query
         """
-        return UniqueLocationCounts(
+        query = UniqueLocationCounts(
             start=self.start_date,
             stop=self.end_date,
             spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             subscriber_subset=self.subscriber_subset,
         )
+        return apply_sampling(query, random_sampler=self.sampling)

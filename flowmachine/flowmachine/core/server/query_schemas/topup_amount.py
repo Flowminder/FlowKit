@@ -8,6 +8,7 @@ from marshmallow.validate import OneOf, Length
 from flowmachine.features import TopUpAmount
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset, Statistic
+from .random_sample import RandomSampleSchema, apply_sampling
 
 __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]
 
@@ -18,6 +19,7 @@ class TopUpAmountSchema(Schema):
     stop = fields.Date(required=True)
     statistic = Statistic()
     subscriber_subset = SubscriberSubset()
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -25,13 +27,16 @@ class TopUpAmountSchema(Schema):
 
 
 class TopUpAmountExposed(BaseExposedQuery):
-    def __init__(self, *, start, stop, statistic, subscriber_subset=None):
+    def __init__(
+        self, *, start, stop, statistic, subscriber_subset=None, sampling=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
         self.statistic = statistic
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
@@ -42,9 +47,10 @@ class TopUpAmountExposed(BaseExposedQuery):
         -------
         Query
         """
-        return TopUpAmount(
+        query = TopUpAmount(
             start=self.start,
             stop=self.stop,
             statistic=self.statistic,
             subscriber_subset=self.subscriber_subset,
         )
+        return apply_sampling(query, random_sampler=self.sampling)

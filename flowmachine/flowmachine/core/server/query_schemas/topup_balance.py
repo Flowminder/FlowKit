@@ -8,6 +8,7 @@ from marshmallow.validate import OneOf, Length
 from flowmachine.features import TopUpBalance
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import Statistic, SubscriberSubset
+from .random_sample import RandomSampleSchema, apply_sampling
 
 __all__ = ["TopUpBalanceSchema", "TopUpBalanceExposed"]
 
@@ -18,6 +19,7 @@ class TopUpBalanceSchema(Schema):
     end_date = fields.Date(required=True)
     statistic = Statistic()
     subscriber_subset = SubscriberSubset()
+    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -26,7 +28,13 @@ class TopUpBalanceSchema(Schema):
 
 class TopUpBalanceExposed(BaseExposedQuery):
     def __init__(
-        self, *, start_date, end_date, statistic="avg", subscriber_subset=None
+        self,
+        *,
+        start_date,
+        end_date,
+        statistic="avg",
+        subscriber_subset=None,
+        sampling=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -34,6 +42,7 @@ class TopUpBalanceExposed(BaseExposedQuery):
         self.end_date = end_date
         self.statistic = statistic
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
     def _flowmachine_query_obj(self):
@@ -44,9 +53,10 @@ class TopUpBalanceExposed(BaseExposedQuery):
         -------
         Query
         """
-        return TopUpBalance(
+        query = TopUpBalance(
             start=self.start_date,
             stop=self.end_date,
             statistic=self.statistic,
             subscriber_subset=self.subscriber_subset,
         )
+        return apply_sampling(query, random_sampler=self.sampling)
