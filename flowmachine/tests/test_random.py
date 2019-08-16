@@ -9,6 +9,7 @@ samples from the database.
 
 
 import pytest
+import pickle
 
 from flowmachine.core.mixins import GraphMixin
 from flowmachine.features import daily_location, Flows
@@ -280,3 +281,18 @@ def gets_mixins():
     dl2 = daily_location("2016-01-02")
     flow = Flows(dl1, dl2)
     assert isinstance(flow.random_sample(10), GraphMixin)
+
+
+def test_pickling():
+    """
+    Test that we can pickle and unpickle random classes.
+    """
+    ss1 = UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
+        size=10
+    )
+    ss2 = Table("events.calls").random_sample(
+        size=10, sampling_method="bernoulli", seed=0.73
+    )
+    for ss in [ss1, ss2]:
+        assert ss.get_query() == pickle.loads(pickle.dumps(ss)).get_query()
+        assert ss.md5 == pickle.loads(pickle.dumps(ss)).md5
