@@ -180,6 +180,14 @@
       "reference_location": {
         "$ref": "#/components/schemas/InputToDisplacement"
       },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
       "start": {
         "format": "date",
         "type": "string"
@@ -261,6 +269,14 @@
           "event_count"
         ],
         "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
       },
       "start": {
         "format": "date",
@@ -433,6 +449,14 @@
           "handset"
         ],
         "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
       },
       "start_date": {
         "format": "date",
@@ -1010,6 +1034,14 @@
         ],
         "type": "string"
       },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
       "subscriber_subset": {
         "enum": [
           null
@@ -1033,6 +1065,14 @@
           "nocturnal_events"
         ],
         "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
       },
       "start": {
         "format": "date",
@@ -1070,6 +1110,14 @@
         ],
         "type": "string"
       },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
       "start": {
         "format": "date",
         "type": "string"
@@ -1104,6 +1152,14 @@
           "radius_of_gyration"
         ],
         "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
       },
       "start_date": {
         "format": "date",
@@ -1215,6 +1271,14 @@
         ],
         "type": "string"
       },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
       "start": {
         "format": "date",
         "type": "string"
@@ -1305,6 +1369,14 @@
         ],
         "type": "string"
       },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
+      },
       "start": {
         "format": "date",
         "type": "string"
@@ -1351,6 +1423,14 @@
           "topup_balance"
         ],
         "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
       },
       "start_date": {
         "format": "date",
@@ -1450,6 +1530,14 @@
           "unique_location_counts"
         ],
         "type": "string"
+      },
+      "sampling": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/RandomSample"
+          }
+        ],
+        "nullable": true
       },
       "start_date": {
         "format": "date",
