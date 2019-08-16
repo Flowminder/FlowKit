@@ -251,7 +251,7 @@ def test_random_sample(get_dataframe):
     assert len(df) == 6
 
 
-def is_subclass():
+def test_is_subclass():
     """
     Test that a random sample is an instance of the sampled thing. 
     """
@@ -262,25 +262,25 @@ def is_subclass():
     assert isinstance(sample, UniqueSubscribers)
 
 
-def gets_parent_attributes():
+def test_gets_parent_attributes():
     """
     Test that a random sample is an instance of the sampled thing.
     """
-    qur = UniqueSubscribers(start="2016-01-01", stop="2016-01-04", level="admin3")
+    qur = UniqueSubscribers(start="2016-01-01", stop="2016-01-04", hours=(4, 17))
     sample = qur.random_sample(
         size=10, sampling_method="bernoulli", estimate_count=False
     )
-    assert sample.level == "admin3"
+    assert sample.hours == (4, 17)
 
 
-def gets_mixins():
+def test_gets_mixins():
     """
     Test that a random sample gets applicable mixins. 
     """
     dl1 = daily_location("2016-01-01")
     dl2 = daily_location("2016-01-02")
     flow = Flows(dl1, dl2)
-    assert isinstance(flow.random_sample(10), GraphMixin)
+    assert isinstance(flow.random_sample(size=10), GraphMixin)
 
 
 def test_pickling():
