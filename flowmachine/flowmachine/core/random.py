@@ -13,6 +13,16 @@ from .query import Query
 from .table import Table
 
 
+class _RandomGetter:
+    """
+    Helper class for pickling/unpickling of dynamic random classes.
+    (see https://stackoverflow.com/questions/1947904/how-can-i-pickle-a-nested-class-in-python/11493777#11493777)
+    """
+
+    def __call__(self, query, sampling_method, params):
+        return query.random_sample(sampling_method, **params)
+
+
 class RandomBase(metaclass=ABCMeta):
     """
     Base class for queries used to obtain a random sample from a table.
@@ -37,6 +47,17 @@ class RandomBase(metaclass=ABCMeta):
         self.size = size
         self.fraction = fraction
         self.estimate_count = estimate_count
+
+    @property
+    def _sample_params(self):
+        """
+        Parameters passed when initialising this query.
+        """
+        return {
+            "size": self.size,
+            "fraction": self.fraction,
+            "estimate_count": self.estimate_count,
+        }
 
     def _count_table_rows(self):
         """
@@ -65,10 +86,10 @@ class RandomBase(metaclass=ABCMeta):
     # be stored by accident.
     @property
     def table_name(self):
-        if self.seed is None:
-            raise NotImplementedError
-        else:
+        if hasattr(self, "seed") and self.seed is not None:
             return f"x{self.md5}"
+        else:
+            raise NotImplementedError
 
     # Overwrite to call on parent instead
     @property
@@ -148,12 +169,6 @@ class RandomSystemRows(RandomBase):
 
         return sampled_query
 
-    # Overwrite the table_name method so that it cannot
-    # be stored by accident.
-    @property
-    def table_name(self):
-        raise NotImplementedError
-
 
 class RandomTablesample(RandomBase):
     """
@@ -212,6 +227,18 @@ class RandomTablesample(RandomBase):
         super().__init__(
             query=query, size=size, fraction=fraction, estimate_count=estimate_count
         )
+
+    @property
+    def _sample_params(self):
+        """
+        Parameters passed when initialising this query.
+        """
+        return {
+            "size": self.size,
+            "fraction": self.fraction,
+            "estimate_count": self.estimate_count,
+            "seed": self.seed,
+        }
 
     def _make_query(self):
         # TABLESAMPLE only works on tables, so silently store this query
@@ -291,6 +318,18 @@ class RandomIDs(RandomBase):
         super().__init__(
             query=query, size=size, fraction=fraction, estimate_count=estimate_count
         )
+
+    @property
+    def _sample_params(self):
+        """
+        Parameters passed when initialising this query.
+        """
+        return {
+            "size": self.size,
+            "fraction": self.fraction,
+            "estimate_count": self.estimate_count,
+            "seed": self.seed,
+        }
 
     def _make_query(self):
         # TABLESAMPLE only works on tables, so silently store this query
@@ -425,9 +464,10 @@ def random_factory(parent_class, sampling_method="system_rows"):
     class Random(random_class, parent_class):
         __doc__ = random_class.__doc__
 
-        # We define _sampling_method here so that it can be used within the
-        # RandomTablesample class without having to pass sampling_method as an
-        # init parameter
+        # We define _sampling_method here so that __reduce__ can pass this to
+        # _RandomGetter for pickling/unpickling, and also so that it can be
+        # used within the RandomTablesample class without having to pass
+        # sampling_method as an init parameter
         _sampling_method = sampling_method
 
         def __init__(self, query, **params):
@@ -443,5 +483,16 @@ def random_factory(parent_class, sampling_method="system_rows"):
             if name.startswith("_"):
                 raise AttributeError
             return self.query.__getattribute__(name)
+
+        def __reduce__(self):
+            """
+            Returns
+            -------
+            A special object which recreates random samples.
+            """
+            return (
+                _RandomGetter(),
+                (self.query, self._sampling_method, self._sample_params),
+            )
 
     return Random
