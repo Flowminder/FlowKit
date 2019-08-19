@@ -16,9 +16,9 @@ passlib = "*"
 argon2_cffi = "*"
 psycopg2-binary = "*"
 cryptography = "*"
+get-secret-or-env-var = "*"
 pyotp = "*"
 itsdangerous = "*"
-
 
 [dev-packages]
 pytest = "*"

@@ -364,6 +364,12 @@
             "index": "pypi",
             "version": "==0.5.1"
         },
+        "get-secret-or-env-var": {
+            "hashes": [
+                "sha256:dc945b732359c0198d75aff0501026aa1fb47a41d666cfd132a18bf7449358c6"
+            ],
+            "version": "==0.0.1"
+        },
         "h11": {
             "hashes": [
                 "sha256:33d4bca7be0fa039f4e84d50ab00531047e53d6ee8ffbc83501ea602c169cae1",
