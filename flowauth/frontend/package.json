@@ -7,7 +7,7 @@
     "@material-ui/core": "^4.3.2",
     "@material-ui/icons": "^4.2.1",
     "@material-ui/pickers": "^3.2.2",
-    "date-fns": "^2.0.0-beta.4",
+    "date-fns": "^2.0.0-beta.5",
     "generate-password": "^1.4.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "cypress": "^3.4.1",
-    "husky": "^3.0.3",
+    "husky": "^3.0.4",
     "otp-cli": "^0.2.0",
     "prettier": "^1.18.2",
     "pretty-quick": "^1.11.1"

@@ -16,15 +16,6 @@ from zmq.asyncio import Context
 from asyncio import Future
 
 
-def async_return(result):
-    """
-    Return an object which can be used in an 'await' expression.
-    """
-    f = Future()
-    f.set_result(result)
-    return f
-
-
 @pytest.fixture
 def json_log(capsys):
     def parse_json():
@@ -87,11 +78,9 @@ def dummy_db_pool(monkeypatch):
     dummy = MagicMock()
 
     # A MagicMock can't be used in an 'await' expression,
-    # so we need to set the return value of connection.set_type_codec
+    # so we need to make connection.set_type_codec a CoroutineMock
     # (awaited in stream_result_as_json())
-    dummy.acquire.return_value.__aenter__.return_value.set_type_codec.return_value = async_return(
-        Mock()
-    )
+    dummy.acquire.return_value.__aenter__.return_value.set_type_codec = CoroutineMock()
 
     async def f(*args, **kwargs):
         return dummy
