@@ -58,7 +58,9 @@ def test_two_factor_confirmed(app, client, auth, test_user):
         assert response.status_code == 200
         assert response.json == {"two_factor_enabled": True}
         assert (
-            User.query.filter(User.id == uid).first().two_factor_auth.secret_key
+            User.query.filter(User.id == uid)
+            .first()
+            .two_factor_auth.decrypted_secret_key
             == secret
         )
 

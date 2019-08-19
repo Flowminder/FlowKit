@@ -865,7 +865,7 @@ def list_all_tokens():
             {
                 "id": token.id,
                 "name": token.name,
-                "token": token.token,
+                "token": token.decrypted_token,
                 "expires": token.expires,
                 "server_name": token.server.name,
                 "username": token.owner.username,
