@@ -9,7 +9,7 @@ from flowauth.invalid_usage import Unauthorized
 from itertools import chain
 
 import click
-from cryptography.fernet import Fernet, InvalidToken
+from cryptography.fernet import Fernet
 from flask import current_app
 from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
