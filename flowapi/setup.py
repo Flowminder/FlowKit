@@ -35,6 +35,7 @@ setup(
         "asyncpg",
         "pyyaml >= 5.1",
         "apispec[yaml]",
+        "get-secret-or-env-var",
     ],
     extras_require={"test": ["pytest", "coverage"]},
 )

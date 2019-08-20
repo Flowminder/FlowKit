@@ -171,7 +171,6 @@ async def test_run_query_with_wrong_parameters(
     assert expected_error_messages == reply["payload"]["validation_error_messages"]
 
 
-@pytest.mark.skip(reason="Cannot currently test this because the sender hangs")
 @pytest.mark.asyncio
 async def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
     """
@@ -189,4 +188,5 @@ async def test_wrongly_formatted_zmq_message(zmq_port, zmq_host):
     }
 
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
-    assert False
+    assert "error" == reply["status"]
+    assert "Invalid action request." == reply["msg"]

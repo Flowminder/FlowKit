@@ -36,6 +36,7 @@ setup(
         "flask-wtf",
         "zxcvbn",
         "cryptography",
+        "get-secret-or-env-var",
         "pyotp",
         "itsdangerous",
     ],

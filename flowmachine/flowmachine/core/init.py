@@ -21,8 +21,7 @@ from typing import Union
 import flowmachine
 from flowmachine.core import Connection, Query
 from flowmachine.core.logging import set_log_level
-from flowmachine.utils import getsecret
-
+from get_secret_or_env_var import environ, getenv
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -87,78 +86,50 @@ def connect(
     If a secret is available, the secret takes precedence over both the environment variable, and
     the default.
     """
+    try:
+        log_level = (
+            getenv("FLOWMACHINE_LOG_LEVEL", "error") if log_level is None else log_level
+        )
+        flowdb_port = int(
+            getenv("FLOWDB_PORT", "9000") if flowdb_port is None else flowdb_port
+        )
+        flowdb_user = (
+            getenv("FLOWMACHINE_FLOWDB_USER", "flowmachine")
+            if flowdb_user is None
+            else flowdb_user
+        )
 
-    log_level = (
-        getsecret("FLOWMACHINE_LOG_LEVEL", os.getenv("FLOWMACHINE_LOG_LEVEL", "error"))
-        if log_level is None
-        else log_level
-    )
-    flowdb_port = int(
-        getsecret("FLOWDB_PORT", os.getenv("FLOWDB_PORT", 9000))
-        if flowdb_port is None
-        else flowdb_port
-    )
-    flowdb_user = (
-        getsecret(
-            "FLOWMACHINE_FLOWDB_USER",
-            os.getenv("FLOWMACHINE_FLOWDB_USER", "flowmachine"),
+        flowdb_password = (
+            environ["FLOWMACHINE_FLOWDB_PASSWORD"]
+            if flowdb_password is None
+            else flowdb_password
         )
-        if flowdb_user is None
-        else flowdb_user
-    )
-    flowdb_password = (
-        getsecret(
-            "FLOWMACHINE_FLOWDB_PASSWORD", os.getenv("FLOWMACHINE_FLOWDB_PASSWORD")
+        flowdb_host = (
+            getenv("FLOWDB_HOST", "localhost") if flowdb_host is None else flowdb_host
         )
-        if flowdb_password is None
-        else flowdb_password
-    )
-    flowdb_host = (
-        getsecret("FLOWDB_HOST", os.getenv("FLOWDB_HOST", "localhost"))
-        if flowdb_host is None
-        else flowdb_host
-    )
-    flowdb_connection_pool_size = (
-        int(
-            getsecret(
-                "DB_CONNECTION_POOL_SIZE", os.getenv("DB_CONNECTION_POOL_SIZE", 5)
-            )
+        flowdb_connection_pool_size = (
+            int(getenv("DB_CONNECTION_POOL_SIZE", "5"))
+            if flowdb_connection_pool_size is None
+            else flowdb_connection_pool_size
         )
-        if flowdb_connection_pool_size is None
-        else flowdb_connection_pool_size
-    )
-    flowdb_connection_pool_overflow = int(
-        getsecret(
-            "DB_CONNECTION_POOL_OVERFLOW", os.getenv("DB_CONNECTION_POOL_OVERFLOW", 1)
+        flowdb_connection_pool_overflow = int(
+            getenv("DB_CONNECTION_POOL_OVERFLOW", "1")
+            if flowdb_connection_pool_overflow is None
+            else flowdb_connection_pool_overflow
         )
-        if flowdb_connection_pool_overflow is None
-        else flowdb_connection_pool_overflow
-    )
 
-    redis_host = (
-        getsecret("REDIS_HOST", os.getenv("REDIS_HOST", "localhost"))
-        if redis_host is None
-        else redis_host
-    )
-    redis_port = int(
-        getsecret("REDIS_PORT", os.getenv("REDIS_PORT", 6379))
-        if redis_port is None
-        else redis_port
-    )
-    redis_password = (
-        getsecret("REDIS_PASSWORD", os.getenv("REDIS_PASSWORD"))
-        if redis_password is None
-        else redis_password
-    )
-
-    if flowdb_password is None:
+        redis_host = (
+            getenv("REDIS_HOST", "localhost") if redis_host is None else redis_host
+        )
+        redis_port = int(
+            getenv("REDIS_PORT", "6379") if redis_port is None else redis_port
+        )
+        redis_password = (
+            environ["REDIS_PASSWORD"] if redis_password is None else redis_password
+        )
+    except KeyError as e:
         raise ValueError(
-            "You must provide a secret named FLOWMACHINE_FLOWDB_PASSWORD, set an environment variable named FLOWMACHINE_FLOWDB_PASSWORD, or provide a flowdb_password argument."
-        )
-
-    if redis_password is None:
-        raise ValueError(
-            "You must provide a secret named REDIS_PASSWORD, set an environment variable named REDIS_PASSWORD, or provide a redis_password argument."
+            f"You must provide a secret named {e.args[0]}, set an environment variable named {e.args[0]}, or provide the value as a parameter."
         )
 
     try:
