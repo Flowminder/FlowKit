@@ -50,16 +50,21 @@ ifeq ($(FLOWDB_SERVICE), flowdb_synthetic_data)
  up : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_SYNTHETICDATA_FILE_BUILD)
 endif
 
+# Only build flowdb if a flowdb service is requested
+ifeq ($(words, $FLOWDB_SERVICE), 1)
+    FLOWDB_BUILD = flowdb-build
+endif
+
 all:
 
-up: flowdb-build
+up: $(FLOWDB_BUILD)
 	$(DOCKER_COMPOSE) up --build -d $(DOCKER_SERVICES_TO_START)
 
 up-no_build:
 	$(DOCKER_COMPOSE) up -d $(DOCKER_SERVICES_TO_START)
 
 down:
-	$(DOCKER_COMPOSE) down
+	$(DOCKER_COMPOSE) down -v
 
 
 # Per-service targets
@@ -82,7 +87,7 @@ $(services:=-up):
 	$(DOCKER_COMPOSE) up -d $(subst _synthetic_data,,$(subst _testdata,,$(@:-up=)))
 
 $(services:=-down):
-	$(DOCKER_COMPOSE) down $(subst _synthetic_data,,$(subst _testdata,,$(@:-down=)))
+	$(DOCKER_COMPOSE) rm -f -s -v $(subst _synthetic_data,,$(subst _testdata,,$(@:-down=)))
 	
 $($(filter-out flowetl_db, services):=-build):
 	$(DOCKER_COMPOSE) build $(subst _synthetic_data,,$(subst _testdata,,$(@:-build=)))
