@@ -336,7 +336,7 @@ class TwoFactorAuth(db.Model):
         plaintext: str
             Key to encrypt.
         """
-        self._secret_key = get_fernet().encrypt(plaintext.encode())
+        self._secret_key = get_fernet().encrypt(plaintext.encode()).decode()
 
 
 class TwoFactorBackup(db.Model):
@@ -433,7 +433,7 @@ class Token(db.Model):
         plaintext: str
             Token to encrypt.
         """
-        self._token = get_fernet().encrypt(plaintext.encode())
+        self._token = get_fernet().encrypt(plaintext.encode()).decode()
 
     def __repr__(self) -> str:
         return f"<Token {self.owner}:{self.server}>"
