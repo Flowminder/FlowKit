@@ -1654,7 +1654,7 @@ def random_sample(
     dict
         Dict which functions as the query specification.
     """
-    sampled_query = query.copy()
+    sampled_query = dict(query)
     sampling = {
         "sampling_method": sampling_method,
         "size": size,
