@@ -212,6 +212,17 @@ class User(db.Model):
 
     @hybrid_property
     def password(self) -> str:
+        """
+
+        Notes
+        -----
+        When called on the class, returns the SQLAlchemy QueryableAttribute
+
+        Returns
+        -------
+        str
+            The encrypted password as a string when called on an instance.
+        """
         return self._password
 
     @password.setter
@@ -300,7 +311,18 @@ class TwoFactorAuth(db.Model):
         raise Unauthorized("Code not valid.")
 
     @hybrid_property
-    def secret_key(self):
+    def secret_key(self) -> str:
+        """
+
+        Notes
+        -----
+        When called on the class, returns the SQLAlchemy QueryableAttribute
+
+        Returns
+        -------
+        str
+            The encrypted secret key as a string when called on an instance.
+        """
         return self._secret_key
 
     @property
@@ -379,6 +401,17 @@ class TwoFactorBackup(db.Model):
 
     @hybrid_property
     def backup_code(self) -> str:
+        """
+
+        Notes
+        -----
+        When called on the class, returns the SQLAlchemy QueryableAttribute
+
+        Returns
+        -------
+        str
+            The encrypted backup code as a string when called on an instance.
+        """
         return self._backup_code
 
     @backup_code.setter
@@ -402,8 +435,19 @@ class Token(db.Model):
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
     server = db.relationship("Server", back_populates="tokens", lazy=True)
 
-    @property
-    def token(self):
+    @hybrid_property
+    def token(self) -> str:
+        """
+
+        Notes
+        -----
+        When called on the class, returns the SQLAlchemy QueryableAttribute
+
+        Returns
+        -------
+        str
+            The encrypted token as a string when called on an instance.
+        """
         return self._token
 
     @property
