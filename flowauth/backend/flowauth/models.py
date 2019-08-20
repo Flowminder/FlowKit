@@ -210,7 +210,7 @@ class User(db.Model):
             "longest_life": min(server.longest_token_life, max(longest)),
         }
 
-    @property
+    @hybrid_property
     def password(self) -> str:
         return self._password
 
@@ -377,7 +377,7 @@ class TwoFactorBackup(db.Model):
         else:
             raise Unauthorized("Code not valid.")
 
-    @property
+    @hybrid_property
     def backup_code(self) -> str:
         return self._backup_code
 
