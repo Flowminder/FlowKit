@@ -617,7 +617,6 @@ def daily_location(
     aggregation_unit: str,
     method: str,
     subscriber_subset: Union[dict, None] = None,
-    sampling: Union[dict, None] = None,
 ) -> dict:
     """
     Return query spec for a daily location query for a date and unit of aggregation.
@@ -635,9 +634,6 @@ def daily_location(
         Subset of subscribers to retrieve daily locations for. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
-    sampling: dict or None
-        Either a dictionary specifying the parameters for a random sample of
-        the result of this query, or None (= no sampling).
 
     Returns
     -------
@@ -651,7 +647,6 @@ def daily_location(
         "aggregation_unit": aggregation_unit,
         "method": method,
         "subscriber_subset": subscriber_subset,
-        "sampling": sampling,
     }
 
 
@@ -1609,6 +1604,7 @@ def handset(
 
 def random_sample(
     *,
+    query: Dict[str, Union[str, dict]],
     sampling_method: str = "system_rows",
     size: Union[int, None] = None,
     fraction: Union[float, None] = None,
@@ -1620,6 +1616,8 @@ def random_sample(
 
     Parameters
     ----------
+    query : dict
+        Specification of the query to be sampled.
     sampling_method : {'system_rows', 'system', 'bernoulli', 'random_ids'}, default 'system_rows'
         Specifies the method used to select the random sample.
         'system_rows': performs block-level sampling by randomly sampling
@@ -1654,9 +1652,10 @@ def random_sample(
     Returns
     -------
     dict
-        Dict which specifies the parameters for the random sample.
+        Dict which functions as the query specification.
     """
-    spec = {
+    sampled_query = query.copy()
+    sampling = {
         "sampling_method": sampling_method,
         "size": size,
         "fraction": fraction,
@@ -1664,5 +1663,6 @@ def random_sample(
     }
     if seed is not None:
         # 'system_rows' method doesn't accept a seed parameter, so if seed is None we don't include it in the spec
-        spec["seed"] = seed
-    return spec
+        sampling["seed"] = seed
+    sampled_query["sampling"] = sampling
+    return sampled_query
