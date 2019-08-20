@@ -2,31 +2,32 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf, Length, Range
 
 from flowmachine.features import ParetoInteractions
-from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
-from .random_sample import RandomSampleSchema, apply_sampling
+from .base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 
 __all__ = ["ParetoInteractionsSchema", "ParetoInteractionsExposed"]
 
 
-class ParetoInteractionsSchema(Schema):
+class ParetoInteractionsSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["pareto_interactions"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
     proportion = fields.Float(required=True, validate=Range(min=0.0, max=1.0))
     subscriber_subset = SubscriberSubset()
-    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
         return ParetoInteractionsExposed(**params)
 
 
-class ParetoInteractionsExposed(BaseExposedQuery):
+class ParetoInteractionsExposed(BaseExposedQueryWithSampling):
     def __init__(
         self, *, start, stop, proportion, subscriber_subset=None, sampling=None
     ):
@@ -39,7 +40,7 @@ class ParetoInteractionsExposed(BaseExposedQuery):
         self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         """
         Return the underlying flowmachine pareto_interactions object.
 
@@ -47,10 +48,9 @@ class ParetoInteractionsExposed(BaseExposedQuery):
         -------
         Query
         """
-        query = ParetoInteractions(
+        return ParetoInteractions(
             start=self.start,
             stop=self.stop,
             proportion=self.proportion,
             subscriber_subset=self.subscriber_subset,
         )
-        return apply_sampling(query, random_sampler=self.sampling)

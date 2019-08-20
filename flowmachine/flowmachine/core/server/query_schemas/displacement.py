@@ -2,16 +2,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
 from flowmachine.features import Displacement
-from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset, Statistic
 from .daily_location import DailyLocationSchema, DailyLocationExposed
 from .modal_location import ModalLocationSchema, ModalLocationExposed
-from .random_sample import RandomSampleSchema, apply_sampling
+from .base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 
 
 __all__ = ["DisplacementSchema", "DisplacementExposed"]
@@ -25,21 +27,20 @@ class InputToDisplacementSchema(OneOfSchema):
     }
 
 
-class DisplacementSchema(Schema):
+class DisplacementSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["displacement"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
     statistic = Statistic()
     reference_location = fields.Nested(InputToDisplacementSchema, many=False)
     subscriber_subset = SubscriberSubset()
-    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
         return DisplacementExposed(**params)
 
 
-class DisplacementExposed(BaseExposedQuery):
+class DisplacementExposed(BaseExposedQueryWithSampling):
     def __init__(
         self,
         *,
@@ -60,7 +61,7 @@ class DisplacementExposed(BaseExposedQuery):
         self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         """
         Return the underlying flowmachine displacement object.
 
@@ -68,11 +69,10 @@ class DisplacementExposed(BaseExposedQuery):
         -------
         Query
         """
-        query = Displacement(
+        return Displacement(
             start=self.start,
             stop=self.stop,
             statistic=self.statistic,
             reference_location=self.reference_location._flowmachine_query_obj,
             subscriber_subset=self.subscriber_subset,
         )
-        return apply_sampling(query, random_sampler=self.sampling)

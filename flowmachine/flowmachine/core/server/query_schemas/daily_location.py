@@ -2,33 +2,34 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features import daily_location
-from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
-from .random_sample import RandomSampleSchema, apply_sampling
+from .base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 
 __all__ = ["DailyLocationSchema", "DailyLocationExposed"]
 
 
-class DailyLocationSchema(Schema):
+class DailyLocationSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["daily_location"]))
     date = fields.Date(required=True)
     method = fields.String(required=True, validate=OneOf(["last", "most-common"]))
     aggregation_unit = AggregationUnit()
     subscriber_subset = SubscriberSubset()
-    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
         return DailyLocationExposed(**params)
 
 
-class DailyLocationExposed(BaseExposedQuery):
+class DailyLocationExposed(BaseExposedQueryWithSampling):
     def __init__(
         self, date, *, method, aggregation_unit, subscriber_subset=None, sampling=None
     ):
@@ -41,7 +42,7 @@ class DailyLocationExposed(BaseExposedQuery):
         self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         """
         Return the underlying flowmachine daily_location object.
 
@@ -49,10 +50,9 @@ class DailyLocationExposed(BaseExposedQuery):
         -------
         Query
         """
-        query = daily_location(
+        return daily_location(
             date=self.date,
             spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
             method=self.method,
             subscriber_subset=self.subscriber_subset,
         )
-        return apply_sampling(query, random_sampler=self.sampling)

@@ -2,31 +2,32 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import TopUpAmount
-from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset, Statistic
-from .random_sample import RandomSampleSchema, apply_sampling
+from .base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 
 __all__ = ["TopUpAmountSchema", "TopUpAmountExposed"]
 
 
-class TopUpAmountSchema(Schema):
+class TopUpAmountSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["topup_amount"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
     statistic = Statistic()
     subscriber_subset = SubscriberSubset()
-    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
         return TopUpAmountExposed(**params)
 
 
-class TopUpAmountExposed(BaseExposedQuery):
+class TopUpAmountExposed(BaseExposedQueryWithSampling):
     def __init__(
         self, *, start, stop, statistic, subscriber_subset=None, sampling=None
     ):
@@ -39,7 +40,7 @@ class TopUpAmountExposed(BaseExposedQuery):
         self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         """
         Return the underlying flowmachine topup_amount object.
 
@@ -47,10 +48,9 @@ class TopUpAmountExposed(BaseExposedQuery):
         -------
         Query
         """
-        query = TopUpAmount(
+        return TopUpAmount(
             start=self.start,
             stop=self.stop,
             statistic=self.statistic,
             subscriber_subset=self.subscriber_subset,
         )
-        return apply_sampling(query, random_sampler=self.sampling)

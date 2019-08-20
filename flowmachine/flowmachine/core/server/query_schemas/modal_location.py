@@ -2,15 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
-from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit
 from .daily_location import DailyLocationSchema, DailyLocationExposed
-from .random_sample import RandomSampleSchema, apply_sampling
+from .base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 
 
 class InputToModalLocationSchema(OneOfSchema):
@@ -18,7 +20,7 @@ class InputToModalLocationSchema(OneOfSchema):
     type_schemas = {"daily_location": DailyLocationSchema}
 
 
-class ModalLocationSchema(Schema):
+class ModalLocationSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["modal_location"]))
     locations = fields.Nested(
@@ -26,14 +28,13 @@ class ModalLocationSchema(Schema):
     )
     aggregation_unit = AggregationUnit(required=True)
     subscriber_subset = SubscriberSubset(required=False)
-    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, data, **kwargs):
         return ModalLocationExposed(**data)
 
 
-class ModalLocationExposed(BaseExposedQuery):
+class ModalLocationExposed(BaseExposedQueryWithSampling):
     def __init__(
         self, locations, *, aggregation_unit, subscriber_subset=None, sampling=None
     ):
@@ -45,7 +46,7 @@ class ModalLocationExposed(BaseExposedQuery):
         self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         """
         Return the underlying flowmachine ModalLocation object.
 
@@ -56,5 +57,4 @@ class ModalLocationExposed(BaseExposedQuery):
         from flowmachine.features import ModalLocation
 
         locations = [loc._flowmachine_query_obj for loc in self.locations]
-        query = ModalLocation(*locations)
-        return apply_sampling(query, random_sampler=self.sampling)
+        return ModalLocation(*locations)

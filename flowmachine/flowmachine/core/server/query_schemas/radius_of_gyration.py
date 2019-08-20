@@ -2,31 +2,32 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf
 
 from flowmachine.features import RadiusOfGyration
-from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
-from .random_sample import RandomSampleSchema, apply_sampling
+from .base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 
 __all__ = ["RadiusOfGyrationSchema", "RadiusOfGyrationExposed"]
 
 
-class RadiusOfGyrationSchema(Schema):
+class RadiusOfGyrationSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["radius_of_gyration"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
     subscriber_subset = SubscriberSubset()
-    sampling = fields.Nested(RandomSampleSchema, allow_none=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
         return RadiusOfGyrationExposed(**params)
 
 
-class RadiusOfGyrationExposed(BaseExposedQuery):
+class RadiusOfGyrationExposed(BaseExposedQueryWithSampling):
     def __init__(self, *, start_date, end_date, subscriber_subset=None, sampling=None):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -36,7 +37,7 @@ class RadiusOfGyrationExposed(BaseExposedQuery):
         self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         """
         Return the underlying flowmachine radius_of_gyration object.
 
@@ -44,9 +45,8 @@ class RadiusOfGyrationExposed(BaseExposedQuery):
         -------
         Query
         """
-        query = RadiusOfGyration(
+        return RadiusOfGyration(
             start=self.start_date,
             stop=self.end_date,
             subscriber_subset=self.subscriber_subset,
         )
-        return apply_sampling(query, random_sampler=self.sampling)
