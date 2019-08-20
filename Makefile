@@ -26,7 +26,7 @@ DOCKER_COMPOSE_TESTDATA_FILE_BUILD ?= docker-compose-testdata-build.yml
 DOCKER_COMPOSE_SYNTHETICDATA_FILE_BUILD ?= docker-compose-syntheticdata-build.yml
 DOCKER_SERVICES ?= flowdb flowapi flowmachine flowauth flowmachine_query_locker flowetl flowetl_db worked_examples
 DOCKER_SERVICES_TO_START = $(patsubst flowdb%,flowdb,$(DOCKER_SERVICES))
-services := flowmachine flowapi flowauth flowdb worked_examples flowdb_testdata flowdb_synthetic_data flowetl flowetl_db
+services := flowmachine flowmachine_query_locker flowapi flowauth flowdb worked_examples flowdb_testdata flowdb_synthetic_data flowetl flowetl_db
 space :=
 space +=
 DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE)
@@ -89,5 +89,5 @@ $(services:=-up):
 $(services:=-down):
 	$(DOCKER_COMPOSE) rm -f -s -v $(subst _synthetic_data,,$(subst _testdata,,$(@:-down=)))
 	
-$($(filter-out flowetl_db, services):=-build):
+$($(filter-out flowetl_db flowmachine_query_locker, services):=-build):
 	$(DOCKER_COMPOSE) build $(subst _synthetic_data,,$(subst _testdata,,$(@:-build=)))
