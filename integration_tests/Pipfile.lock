@@ -621,10 +621,10 @@
         },
         "python-box": {
             "hashes": [
-                "sha256:05713399ee6a4477bb32e90c009c95b1c2e548773f2a993e8b446a3bd396bafb",
-                "sha256:48dbb429347c0e5deb55fc71b993a5d54f8110cd39165b9a971cfab83504b34c"
+                "sha256:3a5837245b264c7c8b79b019b2853db59ab8472a8a6a02407b7982d6f3321c4f",
+                "sha256:449f90ea30d7bc48d0f2242bac5299d87d1c1cc471464823e0a05fc1980a87fd"
             ],
-            "version": "==3.4.2"
+            "version": "==3.4.3"
         },
         "python-dateutil": {
             "hashes": [
@@ -731,10 +731,10 @@
         },
         "redis": {
             "hashes": [
-                "sha256:0607faf60d44768e17f65e506fe390679b54be6fd6d5f0c2d28f3ebf4f0535e7",
-                "sha256:9c96c5bf11a8c47eb33cefdefd41c47cf1ff68db41c51b56b3ec7938b7c627f7"
+                "sha256:98a22fb750c9b9bb46e75e945dc3f61d0ab30d06117cbb21ff9cd1d315fedd3b",
+                "sha256:c504251769031b0dd7dd5cf786050a6050197c6de0d37778c80c08cb04ae8275"
             ],
-            "version": "==3.3.7"
+            "version": "==3.3.8"
         },
         "requests": {
             "hashes": [
