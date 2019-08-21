@@ -45,6 +45,5 @@ setup(
         "test": ["pytest", "coverage", "flowkit-jwt-generator"],
         "postgres": ["psycopg2-binary"],
         "redis": ["redis"],
-        "memcache": ["pylibmc"],
     },
 )

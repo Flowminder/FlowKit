@@ -14,7 +14,6 @@ COPY Pipfile .
 COPY Pipfile.lock .
 # Install dependencies required for argon crypto & psycopg2
 RUN apk update && apk add --virtual build-dependencies build-base postgresql-dev gcc python3-dev musl-dev \
-    libmemcached-dev zlib-dev \
     libressl-dev libffi-dev && \
     pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
     apk del build-dependencies && \
