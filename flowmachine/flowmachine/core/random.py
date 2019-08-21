@@ -6,7 +6,7 @@
 Classes to select random samples from queries or tables.
 """
 import random
-from typing import List
+from typing import List, Optional, Dict, Any, Union, Type, Tuple
 from abc import ABCMeta, abstractmethod
 
 from .query import Query
@@ -19,7 +19,7 @@ class _RandomGetter:
     (see https://stackoverflow.com/questions/1947904/how-can-i-pickle-a-nested-class-in-python/11493777#11493777)
     """
 
-    def __call__(self, query, sampling_method, params):
+    def __call__(self, query: Query, sampling_method: str, params: Dict[str, Any]):
         return query.random_sample(sampling_method, **params)
 
 
@@ -28,7 +28,14 @@ class RandomBase(metaclass=ABCMeta):
     Base class for queries used to obtain a random sample from a table.
     """
 
-    def __init__(self, query, *, size=None, fraction=None, estimate_count=True):
+    def __init__(
+        self,
+        query: Query,
+        *,
+        size: Optional[int] = None,
+        fraction: Optional[float] = None,
+        estimate_count: bool = True,
+    ):
         if size is None and fraction is None:
             raise ValueError(
                 f"{self.__class__.__name__}() missing 1 required argument: 'size' or 'fraction'"
@@ -49,7 +56,7 @@ class RandomBase(metaclass=ABCMeta):
         self.estimate_count = estimate_count
 
     @property
-    def _sample_params(self):
+    def _sample_params(self) -> Dict[str, Any]:
         """
         Parameters passed when initialising this query.
         """
@@ -59,7 +66,7 @@ class RandomBase(metaclass=ABCMeta):
             "estimate_count": self.estimate_count,
         }
 
-    def _count_table_rows(self):
+    def _count_table_rows(self) -> int:
         """
         Return a count of the number of rows in self.query table, either using
         information contained in the `pg_class` (if self.estimate_rowcount) or
@@ -130,7 +137,14 @@ class RandomSystemRows(RandomBase):
     reproducible samples, so random samples cannot be stored.
     """
 
-    def __init__(self, query, *, size=None, fraction=None, estimate_count=True):
+    def __init__(
+        self,
+        query: Query,
+        *,
+        size: Optional[int] = None,
+        fraction: Optional[float] = None,
+        estimate_count: bool = True,
+    ):
         # Raise a value error if the query is a table, and has children, as the
         # method relies on it not having children.
         if isinstance(query, Table) and query.has_children():
@@ -143,7 +157,7 @@ class RandomSystemRows(RandomBase):
             query=query, size=size, fraction=fraction, estimate_count=estimate_count
         )
 
-    def _make_query(self):
+    def _make_query(self) -> str:
         # TABLESAMPLE only works on tables, so silently store this query
         self.query.store().result()
 
@@ -173,7 +187,13 @@ class SeedableRandom(RandomBase, metaclass=ABCMeta):
     """
 
     def __init__(
-        self, query, *, size=None, fraction=None, estimate_count=True, seed=None
+        self,
+        query: Query,
+        *,
+        size: Optional[int] = None,
+        fraction: Optional[float] = None,
+        estimate_count: bool = True,
+        seed: Optional[float] = None,
     ):
         self._seed = seed
         super().__init__(
@@ -182,11 +202,11 @@ class SeedableRandom(RandomBase, metaclass=ABCMeta):
 
     # Make seed a property to avoid inadvertently changing it.
     @property
-    def seed(self):
+    def seed(self) -> Optional[float]:
         return self._seed
 
     @property
-    def _sample_params(self):
+    def _sample_params(self) -> Dict[str, Any]:
         """
         Parameters passed when initialising this query.
         """
@@ -195,7 +215,7 @@ class SeedableRandom(RandomBase, metaclass=ABCMeta):
     # Overwrite the table_name method so that it cannot
     # be stored by accident.
     @property
-    def table_name(self):
+    def table_name(self) -> str:
         if self.seed is None:
             raise NotImplementedError("Unseeded random samples cannot be stored.")
         return f"x{self.md5}"
@@ -245,7 +265,13 @@ class RandomTablesample(SeedableRandom):
     _sampling_method = None
 
     def __init__(
-        self, query, *, size=None, fraction=None, estimate_count=True, seed=None
+        self,
+        query: Query,
+        *,
+        size: Optional[int] = None,
+        fraction: Optional[float] = None,
+        estimate_count: bool = True,
+        seed: Optional[float] = None,
     ):
         valid_methods = ["system", "bernoulli"]
         if self._sampling_method not in valid_methods:
@@ -262,7 +288,7 @@ class RandomTablesample(SeedableRandom):
             seed=seed,
         )
 
-    def _make_query(self):
+    def _make_query(self) -> str:
         # TABLESAMPLE only works on tables, so silently store this query
         self.query.store().result()
 
@@ -331,7 +357,13 @@ class RandomIDs(SeedableRandom):
     """
 
     def __init__(
-        self, query, *, size=None, fraction=None, estimate_count=True, seed=None
+        self,
+        query: Query,
+        *,
+        size: Optional[int] = None,
+        fraction: Optional[float] = None,
+        estimate_count: bool = True,
+        seed: Optional[float] = None,
     ):
         if seed is not None and (seed > 1 or seed < -1):
             raise ValueError("Seed must be between -1 and 1 for random_ids method.")
@@ -344,7 +376,7 @@ class RandomIDs(SeedableRandom):
             seed=seed,
         )
 
-    def _make_query(self):
+    def _make_query(self) -> str:
         # TABLESAMPLE only works on tables, so silently store this query
         # Note: The "random_ids" method doesn't use TABLESAMPLE, but we still
         # store the query before sampling for consistency with the other
@@ -375,7 +407,7 @@ class RandomIDs(SeedableRandom):
         return sampled_query
 
 
-def random_factory(parent_class, sampling_method="system_rows"):
+def random_factory(parent_class: Type[Query], sampling_method: str = "system_rows"):
     """
     Dynamically creates a random class as a descendant of parent_class.
     The resulting object will query the underlying object for attributes,
@@ -483,7 +515,7 @@ def random_factory(parent_class, sampling_method="system_rows"):
         # sampling_method as an init parameter
         _sampling_method = sampling_method
 
-        def __init__(self, query, **params):
+        def __init__(self, query: Query, **params):
             super().__init__(query=query, **params)
             Query.__init__(self)
 
@@ -497,7 +529,7 @@ def random_factory(parent_class, sampling_method="system_rows"):
                 raise AttributeError
             return self.query.__getattribute__(name)
 
-        def __reduce__(self):
+        def __reduce__(self) -> Tuple[_RandomGetter, Tuple[Query, str, Dict[str, Any]]]:
             """
             Returns
             -------
