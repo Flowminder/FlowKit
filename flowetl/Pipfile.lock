@@ -945,10 +945,10 @@
         },
         "sqlalchemy-utils": {
             "hashes": [
-                "sha256:c037bec2fe2a73b2dfda7b079b02644f20c477fdf6fc4ff0c2141a65ddbee0ee"
+                "sha256:6689b29d7951c5c7c4d79fa6b8c95f9ff9ec708b07aa53f82060599bd14dcc88"
             ],
             "index": "pypi",
-            "version": "==0.34.1"
+            "version": "==0.34.2"
         },
         "structlog": {
             "hashes": [
