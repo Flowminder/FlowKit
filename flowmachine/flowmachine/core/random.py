@@ -86,10 +86,7 @@ class RandomBase(metaclass=ABCMeta):
     # be stored by accident.
     @property
     def table_name(self):
-        if hasattr(self, "seed") and self.seed is not None:
-            return f"x{self.md5}"
-        else:
-            raise NotImplementedError
+        raise NotImplementedError("Unseeded random samples cannot be stored.")
 
     # Overwrite to call on parent instead
     @property
@@ -170,7 +167,50 @@ class RandomSystemRows(RandomBase):
         return sampled_query
 
 
-class RandomTablesample(RandomBase):
+class SeededRandom(RandomBase, metaclass=ABCMeta):
+    """
+    Base class for random samples that accept a seed parameter for reproducibility.
+    """
+
+    def __init__(
+        self, query, *, size=None, fraction=None, estimate_count=True, seed=None
+    ):
+        self._seed = seed
+        super().__init__(
+            self,
+            query=query,
+            size=size,
+            fraction=fraction,
+            estimate_count=estimate_count,
+        )
+
+    # Make seed a property to avoid inadvertently changing it.
+    @property
+    def seed(self):
+        return self._seed
+
+    @property
+    def _sample_params(self):
+        """
+        Parameters passed when initialising this query.
+        """
+        return {
+            "size": self.size,
+            "fraction": self.fraction,
+            "estimate_count": self.estimate_count,
+            "seed": self.seed,
+        }
+
+    # Overwrite the table_name method so that it cannot
+    # be stored by accident.
+    @property
+    def table_name(self):
+        if self.seed is None:
+            raise NotImplementedError("Unseeded random samples cannot be stored.")
+        return f"x{self.md5}"
+
+
+class RandomTablesample(SeededRandom):
     """
     Gets a random sample from the result of a query, using a PostgreSQL TABLESAMPLE
     clause with one of the following sampling methods:
@@ -223,22 +263,13 @@ class RandomTablesample(RandomBase):
                 + ", ".join(valid_methods)
             )
 
-        self.seed = seed
         super().__init__(
-            query=query, size=size, fraction=fraction, estimate_count=estimate_count
+            query=query,
+            size=size,
+            fraction=fraction,
+            estimate_count=estimate_count,
+            seed=seed,
         )
-
-    @property
-    def _sample_params(self):
-        """
-        Parameters passed when initialising this query.
-        """
-        return {
-            "size": self.size,
-            "fraction": self.fraction,
-            "estimate_count": self.estimate_count,
-            "seed": self.seed,
-        }
 
     def _make_query(self):
         # TABLESAMPLE only works on tables, so silently store this query
@@ -276,7 +307,7 @@ class RandomTablesample(RandomBase):
         return sampled_query
 
 
-class RandomIDs(RandomBase):
+class RandomIDs(SeededRandom):
     """
     Gets a random sample from the result of a query, using the 'random_ids' sampling method.
     This method samples rows by randomly sampling the row number.
@@ -314,22 +345,13 @@ class RandomIDs(RandomBase):
         if seed is not None and (seed > 1 or seed < -1):
             raise ValueError("Seed must be between -1 and 1 for random_ids method.")
 
-        self.seed = seed
         super().__init__(
-            query=query, size=size, fraction=fraction, estimate_count=estimate_count
+            query=query,
+            size=size,
+            fraction=fraction,
+            estimate_count=estimate_count,
+            seed=seed,
         )
-
-    @property
-    def _sample_params(self):
-        """
-        Parameters passed when initialising this query.
-        """
-        return {
-            "size": self.size,
-            "fraction": self.fraction,
-            "estimate_count": self.estimate_count,
-            "seed": self.seed,
-        }
 
     def _make_query(self):
         # TABLESAMPLE only works on tables, so silently store this query
