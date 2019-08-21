@@ -190,12 +190,7 @@ class SeedableRandom(RandomBase, metaclass=ABCMeta):
         """
         Parameters passed when initialising this query.
         """
-        return {
-            "size": self.size,
-            "fraction": self.fraction,
-            "estimate_count": self.estimate_count,
-            "seed": self.seed,
-        }
+        return dict(seed=self.seed, **super()._sample_params)
 
     # Overwrite the table_name method so that it cannot
     # be stored by accident.
