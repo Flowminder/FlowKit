@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+from typing import Dict, Union
 
 import datetime
 import pyotp
@@ -98,24 +98,24 @@ class User(db.Model):
     require_two_factor = db.Column(db.Boolean, default=False)
 
     @property
-    def two_factor_setup_required(self):
+    def two_factor_setup_required(self) -> bool:
         return (
             self.two_factor_auth is None or not self.two_factor_auth.enabled
         ) and self.require_two_factor
 
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         return True
 
-    def is_active(self):
+    def is_active(self) -> bool:
         return True
 
-    def is_anonymous(self):
+    def is_anonymous(self) -> bool:
         return False
 
-    def get_id(self):
+    def get_id(self) -> int:
         return self.id
 
-    def is_correct_password(self, plaintext):
+    def is_correct_password(self, plaintext) -> bool:
         """
         Verify if a password is correct.
 
@@ -131,7 +131,7 @@ class User(db.Model):
         """
         return argon2.verify(plaintext, self._password)
 
-    def allowed_claims(self, server):
+    def allowed_claims(self, server) -> dict:
         """
         Get the claims the user is allowed to generate tokens for on a server.
 
@@ -166,7 +166,7 @@ class User(db.Model):
                 }
         return allowed
 
-    def latest_token_expiry(self, server):
+    def latest_token_expiry(self, server: "Server") -> datetime.datetime:
         """
         Get the latest datetime a token can be valid until on a server.
 
@@ -186,7 +186,9 @@ class User(db.Model):
         hypothetical_max = datetime.datetime.now() + datetime.timedelta(minutes=life)
         return min(end, hypothetical_max)
 
-    def token_limits(self, server):
+    def token_limits(
+        self, server: "Server"
+    ) -> Dict[str, Union[datetime.datetime, int]]:
         """
         Get the maximum lifetime and latest expiry date a token can be
         created for on this user on a server.
@@ -209,14 +211,25 @@ class User(db.Model):
         }
 
     @hybrid_property
-    def password(self):
+    def password(self) -> str:
+        """
+
+        Notes
+        -----
+        When called on the class, returns the SQLAlchemy QueryableAttribute
+
+        Returns
+        -------
+        str
+            The encrypted password as a string when called on an instance.
+        """
         return self._password
 
     @password.setter
-    def password(self, plaintext):
+    def password(self, plaintext: str):
         self._password = argon2.hash(plaintext)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<User {self.username}>"
 
 
@@ -254,8 +267,8 @@ class TwoFactorAuth(db.Model):
         Unauthorized
             Raised if the code is invalid, or has just been used.
         """
-        current_app.logger.debug(f"Verifying {code} using {self.secret_key}")
-        is_valid = pyotp.totp.TOTP(self.secret_key).verify(code)
+        current_app.logger.debug(f"Verifying {code} using {self.decrypted_secret_key}")
+        is_valid = pyotp.totp.TOTP(self.decrypted_secret_key).verify(code)
         if is_valid:
             if (
                 self.last_used_two_factor_code == code
@@ -269,7 +282,7 @@ class TwoFactorAuth(db.Model):
         else:
             raise Unauthorized("Code not valid.")
 
-    def validate_backup_code(self, plaintext):
+    def validate_backup_code(self, plaintext: str) -> bool:
         """
         Verify if a password is correct.
 
@@ -282,6 +295,10 @@ class TwoFactorAuth(db.Model):
         -------
         bool
 
+        Raises
+        ------
+        Unauthorized
+            If the backup code is not valid
         """
         for code in self.two_factor_backups:
             try:
@@ -294,26 +311,45 @@ class TwoFactorAuth(db.Model):
         raise Unauthorized("Code not valid.")
 
     @hybrid_property
-    def secret_key(self):
+    def secret_key(self) -> str:
         """
-        Hybrid property which allows for the per user otp secret to
-        be encrypted in db, but decrypted when read.
+
+        Notes
+        -----
+        When called on the class, returns the SQLAlchemy QueryableAttribute
 
         Returns
         -------
-        InstrumentedProperty or str
-            Returns the underlying prop when called by sqlalchemy at class level
-            but the decrypted secret key when called on an instance
+        str
+            The encrypted secret key as a string when called on an instance.
+        """
+        return self._secret_key
+
+    @property
+    def decrypted_secret_key(self) -> str:
+        """
+        Decrypted per user otp secret.
+
+        Returns
+        -------
+        str
+            Returns the decrypted secret key
         """
         key = self._secret_key
         try:
-            key.decode()
+            key = key.encode()
         except AttributeError:
-            return key
-        return get_fernet().decrypt(key).decode()
+            pass  # Already bytes
+        try:
+            return get_fernet().decrypt(key).decode()
+        except Exception as exc:
+            current_app.logger.debug(
+                f"Failed to decrypt '{key}'. Original was '{self._secret_key}'. Error was {exc}"
+            )
+            raise exc
 
     @secret_key.setter
-    def secret_key(self, plaintext):
+    def secret_key(self, plaintext: str):
         """
         Encrypt, then store to the database the per user otp secret.
 
@@ -322,7 +358,7 @@ class TwoFactorAuth(db.Model):
         plaintext: str
             Key to encrypt.
         """
-        self._secret_key = get_fernet().encrypt(plaintext.encode())
+        self._secret_key = get_fernet().encrypt(plaintext.encode()).decode()
 
 
 class TwoFactorBackup(db.Model):
@@ -364,11 +400,22 @@ class TwoFactorBackup(db.Model):
             raise Unauthorized("Code not valid.")
 
     @hybrid_property
-    def backup_code(self):
-        return self._password
+    def backup_code(self) -> str:
+        """
+
+        Notes
+        -----
+        When called on the class, returns the SQLAlchemy QueryableAttribute
+
+        Returns
+        -------
+        str
+            The encrypted backup code as a string when called on an instance.
+        """
+        return self._backup_code
 
     @backup_code.setter
-    def backup_code(self, plaintext):
+    def backup_code(self, plaintext: str):
         self._backup_code = argon2.hash(plaintext)
 
 
@@ -389,25 +436,39 @@ class Token(db.Model):
     server = db.relationship("Server", back_populates="tokens", lazy=True)
 
     @hybrid_property
-    def token(self):
+    def token(self) -> str:
         """
-        Hybrid property which allows for the token string to
-        be encrypted in db, but decrypted when read.
+
+        Notes
+        -----
+        When called on the class, returns the SQLAlchemy QueryableAttribute
 
         Returns
         -------
-        InstrumentedProperty or str
-            Returns the underlying prop when called by sqlalchemy at class level
-            but the decrypted token string when called on an instance
+        str
+            The encrypted token as a string when called on an instance.
         """
+        return self._token
+
+    @property
+    def decrypted_token(self) -> str:
+        """
+        Decrypted token.
+
+        Returns
+        -------
+        str
+            Returns the decrypted token.
+        """
+        token = self._token
         try:
-            self._token.decode()
+            token = token.encode()
         except AttributeError:
-            return self._token
-        return get_fernet().decrypt(self._token).decode()
+            pass  # Already bytes
+        return get_fernet().decrypt(token).decode()
 
     @token.setter
-    def token(self, plaintext):
+    def token(self, plaintext: str):
         """
         Encrypt, then store to the database the token string.
 
@@ -416,9 +477,9 @@ class Token(db.Model):
         plaintext: str
             Token to encrypt.
         """
-        self._token = get_fernet().encrypt(plaintext.encode())
+        self._token = get_fernet().encrypt(plaintext.encode()).decode()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Token {self.owner}:{self.server}>"
 
 
@@ -446,7 +507,7 @@ class Server(db.Model):
         cascade="all, delete, delete-orphan",
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Server {self.name}>"
 
 
@@ -477,7 +538,7 @@ class ServerCapability(db.Model):
         db.UniqueConstraint("server_id", "capability_id", name="_server_cap_uc"),
     )  # Enforce only one of each capability per server
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ServerCapability {self.capability}> {self.get_result}:{self.run}:{self.poll}, {self.spatial_aggregation}@{self.server}>"
 
 
@@ -498,7 +559,7 @@ class GroupServerTokenLimits(db.Model):
         db.UniqueConstraint("group_id", "server_id", name="_group_server_limits_uc"),
     )  # Enforce only one per group-server combination
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<GroupServerTokenLimits {self.group} {self.server}>"
 
 
@@ -526,7 +587,7 @@ class GroupServerPermission(db.Model):
         ),
     )  # Enforce only only group - capability pair
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<GroupServerPermission {self.server_capability.capability}> {self.get_result}:{self.run}:{self.poll}, {self.spatial_aggregation} {self.group}@{self.server_capability.server}>"
 
 
@@ -551,7 +612,7 @@ class SpatialAggregationUnit(db.Model):
         backref=db.backref("spatial_aggregation", lazy=True),
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<SpatialAggregationUnit {self.name}>"
 
 
@@ -568,7 +629,7 @@ class Capability(db.Model):
         cascade="all, delete, delete-orphan",
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Capability {self.name}>"
 
 
@@ -591,7 +652,7 @@ class Group(db.Model):
         cascade="all, delete, delete-orphan",
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Group {self.name}>"
 
 
@@ -600,7 +661,7 @@ class Group(db.Model):
     "--force/--no-force", default=False, help="Optionally wipe any existing data first."
 )
 @with_appcontext
-def init_db_command(force: bool):
+def init_db_command(force: bool) -> None:
     init_db(force)
     click.echo("Initialized the database.")
 

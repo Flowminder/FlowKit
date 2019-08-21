@@ -4,7 +4,6 @@ pull_request_rules:
       - base=master
       - "#approved-reviews-by>=1"
       - label=ready-to-merge
-      - status-success=codecov/project
       - status-success=run_build_pipeline
       - status-success=Travis CI - Pull Request
     actions:
