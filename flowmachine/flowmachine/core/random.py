@@ -177,11 +177,7 @@ class SeededRandom(RandomBase, metaclass=ABCMeta):
     ):
         self._seed = seed
         super().__init__(
-            self,
-            query=query,
-            size=size,
-            fraction=fraction,
-            estimate_count=estimate_count,
+            query=query, size=size, fraction=fraction, estimate_count=estimate_count
         )
 
     # Make seed a property to avoid inadvertently changing it.
