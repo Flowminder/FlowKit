@@ -167,6 +167,7 @@ class Login extends React.Component {
                   variant="contained"
                   color="primary"
                   className={classes.submit}
+                  id="signin-button"
                 >
                   Sign in
                 </Button>

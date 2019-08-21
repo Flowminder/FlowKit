@@ -240,7 +240,6 @@ class TwoFactorAuth(db.Model):
     user = db.relationship("User", back_populates="two_factor_auth", lazy=True)
     enabled = db.Column(db.Boolean, nullable=False, default=False)
     _secret_key = db.Column(db.String(), nullable=False)  # Encrypted in db
-    last_used_two_factor_code = db.Column(db.String(), nullable=True)
     two_factor_backups = db.relationship(
         "TwoFactorBackup", back_populates="auth", cascade="all, delete, delete-orphan"
     )
@@ -271,13 +270,11 @@ class TwoFactorAuth(db.Model):
         is_valid = pyotp.totp.TOTP(self.decrypted_secret_key).verify(code)
         if is_valid:
             if (
-                self.last_used_two_factor_code == code
+                current_app.config["CACHE_BACKEND"].get(self.user_id) == code
             ):  # Reject if the code is being reused
                 raise Unauthorized("Code not valid.")
             else:
-                self.last_used_two_factor_code = code
-            db.session.add(self)
-            db.session.commit()
+                current_app.config["CACHE_BACKEND"].set(self.user_id, code)
             return True
         else:
             raise Unauthorized("Code not valid.")

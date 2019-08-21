@@ -127,7 +127,7 @@ def confirm_two_factor():
     old_auth = current_user.two_factor_auth
     if old_auth is not None:
         db.session.delete(old_auth)
-    auth = TwoFactorAuth(user=current_user)
+    auth = TwoFactorAuth(user_id=current_user.id)
     auth.secret_key = secret
 
     auth.validate(code)
