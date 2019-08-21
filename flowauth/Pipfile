@@ -19,6 +19,9 @@ cryptography = "*"
 get-secret-or-env-var = "*"
 pyotp = "*"
 itsdangerous = "*"
+"dogpile.cache" = "*"
+pylibmc = "*"
+redis = "*"
 
 [dev-packages]
 pytest = "*"

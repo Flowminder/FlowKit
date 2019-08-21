@@ -39,9 +39,12 @@ setup(
         "get-secret-or-env-var",
         "pyotp",
         "itsdangerous",
+        "dogpile.cache",
     ],
     extras_require={
         "test": ["pytest", "coverage", "flowkit-jwt-generator"],
         "postgres": ["psycopg2-binary"],
+        "redis": ["redis"],
+        "memcache": ["pylibmc"],
     },
 )
