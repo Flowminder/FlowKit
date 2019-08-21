@@ -167,7 +167,7 @@ class RandomSystemRows(RandomBase):
         return sampled_query
 
 
-class SeededRandom(RandomBase, metaclass=ABCMeta):
+class SeedableRandom(RandomBase, metaclass=ABCMeta):
     """
     Base class for random samples that accept a seed parameter for reproducibility.
     """
@@ -206,7 +206,7 @@ class SeededRandom(RandomBase, metaclass=ABCMeta):
         return f"x{self.md5}"
 
 
-class RandomTablesample(SeededRandom):
+class RandomTablesample(SeedableRandom):
     """
     Gets a random sample from the result of a query, using a PostgreSQL TABLESAMPLE
     clause with one of the following sampling methods:
@@ -303,7 +303,7 @@ class RandomTablesample(SeededRandom):
         return sampled_query
 
 
-class RandomIDs(SeededRandom):
+class RandomIDs(SeedableRandom):
     """
     Gets a random sample from the result of a query, using the 'random_ids' sampling method.
     This method samples rows by randomly sampling the row number.
