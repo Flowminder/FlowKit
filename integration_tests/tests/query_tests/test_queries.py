@@ -551,6 +551,35 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "method": "distr",
             },
         ),
+        (
+            "spatial_aggregate",
+            {
+                "locations": flowclient.random_sample(
+                    query=flowclient.daily_location(
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="most-common",
+                    ),
+                    size=10,
+                )
+            },
+        ),
+        (
+            "spatial_aggregate",
+            {
+                "locations": flowclient.random_sample(
+                    query=flowclient.daily_location(
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="most-common",
+                    ),
+                    sampling_method="bernoulli",
+                    fraction=0.5,
+                    estimate_count=False,
+                    seed=0.2,
+                )
+            },
+        ),
     ],
 )
 def test_run_query(query_kind, params, universal_access_token, flowapi_url):

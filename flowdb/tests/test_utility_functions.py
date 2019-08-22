@@ -93,8 +93,18 @@ def test_seeded_random_ints(cursor):
     """Seeded random integers should return some predictable outputs."""
     sql = "SELECT * from random_ints(0, 5, 10)"
     cursor.execute(sql)
+    first_vals = [x["id"] for x in cursor.fetchall()]
+    cursor.execute(sql)
+    second_vals = [x["id"] for x in cursor.fetchall()]
+    assert first_vals == second_vals
+
+
+def test_random_ints_n_samples(cursor):
+    """random_ints should return the requested number of random integers."""
+    sql = "SELECT * from random_ints(0, 5, 10)"
+    cursor.execute(sql)
     vals = [x["id"] for x in cursor.fetchall()]
-    assert [9, 4, 8] == vals
+    assert len(vals) == 5
 
 
 def test_seeded_random_ints_seed_reset(cursor):

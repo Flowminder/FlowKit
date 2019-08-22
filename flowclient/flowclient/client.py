@@ -1100,7 +1100,7 @@ def location_introversion(
         Unit of aggregation, e.g. "admin3"
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts can be one of "in", "out" or "both"
->
+
     Returns
     -------
     dict
@@ -1131,6 +1131,7 @@ def total_network_objects(
         Unit of aggregation, e.g. "admin3"
     total_by : {"second", "minute", "hour", "day", "month", "year"}
         Time period to bucket by one of "second", "minute", "hour", "day", "month" or "year"
+    
     Returns
     -------
     dict
@@ -1276,6 +1277,7 @@ def unique_location_counts(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1349,6 +1351,7 @@ def subscriber_degree(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1385,6 +1388,7 @@ def topup_amount(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1425,6 +1429,7 @@ def event_count(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1465,6 +1470,7 @@ def displacement(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1502,6 +1508,7 @@ def pareto_interactions(
         Subset of subscribers to include in result. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1520,7 +1527,7 @@ def nocturnal_events(
     *,
     start: str,
     stop: str,
-    hours: tuple((int, int)),
+    hours: Tuple[int, int],
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -1538,6 +1545,7 @@ def nocturnal_events(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1557,14 +1565,8 @@ def handset(
     *,
     start_date: str,
     end_date: str,
-    characteristic: str = [
-        "hnd_type",
-        "brand",
-        "model",
-        "software_os_name",
-        "software_os_vendor",
-    ],
-    method: str = ["last", "most-common"],
+    characteristic: str = "hnd_type",
+    method: str = "last",
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -1576,14 +1578,15 @@ def handset(
         ISO format date of the first day for which to count handsets, e.g. "2016-01-01"
     stop : str
         ISO format date of the day _after_ the final date for which to count handsets, e.g. "2016-01-08"
-    characteristic: ["hnd_type", "brand", "model", "software_os_name", "software_os_vendor"], default "hnd_type"
+    characteristic: {"hnd_type", "brand", "model", "software_os_name", "software_os_vendor"}, default "hnd_type"
         The required handset characteristic.
-    method: ["last", "most-common"], default "last"
+    method: {"last", "most-common"}, default "last"
         Method for choosing a handset to associate with subscriber.
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1597,3 +1600,69 @@ def handset(
         "method": method,
         "subscriber_subset": subscriber_subset,
     }
+
+
+def random_sample(
+    *,
+    query: Dict[str, Union[str, dict]],
+    sampling_method: str = "system_rows",
+    size: Union[int, None] = None,
+    fraction: Union[float, None] = None,
+    estimate_count: bool = True,
+    seed: Union[float, None] = None,
+) -> dict:
+    """
+    Return spec for a random sample from a query result.
+
+    Parameters
+    ----------
+    query : dict
+        Specification of the query to be sampled.
+    sampling_method : {'system_rows', 'system', 'bernoulli', 'random_ids'}, default 'system_rows'
+        Specifies the method used to select the random sample.
+        'system_rows': performs block-level sampling by randomly sampling
+            each physical storage page of the underlying relation. This
+            sampling method is guaranteed to provide a sample of the specified
+            size
+        'system': performs block-level sampling by randomly sampling each
+            physical storage page for the underlying relation. This
+            sampling method is not guaranteed to generate a sample of the
+            specified size, but an approximation. This method may not
+            produce a sample at all, so it might be worth running it again
+            if it returns an empty dataframe.
+        'bernoulli': samples directly on each row of the underlying
+            relation. This sampling method is slower and is not guaranteed to
+            generate a sample of the specified size, but an approximation
+        'random_ids': samples rows by randomly sampling the row number.
+    size : int, optional
+        The number of rows to draw.
+        Exactly one of the 'size' or 'fraction' arguments must be provided.
+    fraction : float, optional
+        Fraction of rows to draw.
+        Exactly one of the 'size' or 'fraction' arguments must be provided.
+    estimate_count : bool, default True
+        Whether to estimate the number of rows in the table using
+        information contained in the `pg_class` or whether to perform an
+        actual count in the number of rows.
+    seed : float, optional
+        Optionally provide a seed for repeatable random samples.
+        If using random_ids method, seed must be between -/+1.
+        Not available in combination with the system_rows method.
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification.
+    """
+    sampled_query = dict(query)
+    sampling = {
+        "sampling_method": sampling_method,
+        "size": size,
+        "fraction": fraction,
+        "estimate_count": estimate_count,
+    }
+    if seed is not None:
+        # 'system_rows' method doesn't accept a seed parameter, so if seed is None we don't include it in the spec
+        sampling["seed"] = seed
+    sampled_query["sampling"] = sampling
+    return sampled_query

@@ -44,6 +44,38 @@
         ],
         "type": "object"
       },
+      "BernoulliRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "nullable": true,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "bernoulli"
+            ],
+            "type": "string"
+          },
+          "seed": {
+            "format": "float",
+            "type": "number"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
       "DFSTotalMetricAmount": {
         "properties": {
           "aggregation_unit": {
@@ -118,6 +150,14 @@
             ],
             "type": "string"
           },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
           "subscriber_subset": {
             "enum": [
               null
@@ -144,6 +184,14 @@
           },
           "reference_location": {
             "$ref": "#/components/schemas/InputToDisplacement"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start": {
             "format": "date",
@@ -228,6 +276,14 @@
               "event_count"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start": {
             "format": "date",
@@ -403,6 +459,14 @@
               "handset"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start_date": {
             "format": "date",
@@ -987,6 +1051,14 @@
             ],
             "type": "string"
           },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
           "subscriber_subset": {
             "enum": [
               null
@@ -1011,6 +1083,14 @@
               "nocturnal_events"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start": {
             "format": "date",
@@ -1049,6 +1129,14 @@
             ],
             "type": "string"
           },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
           "start": {
             "format": "date",
             "type": "string"
@@ -1085,6 +1173,14 @@
             ],
             "type": "string"
           },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
           "start_date": {
             "format": "date",
             "type": "string"
@@ -1103,6 +1199,65 @@
           "start_date"
         ],
         "type": "object"
+      },
+      "RandomIDsRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "nullable": true,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "random_ids"
+            ],
+            "type": "string"
+          },
+          "seed": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": -1.0,
+            "type": "number"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "RandomSample": {
+        "discriminator": {
+          "mapping": {
+            "bernoulli": "#/components/schemas/BernoulliRandomSample",
+            "random_ids": "#/components/schemas/RandomIDsRandomSample",
+            "system": "#/components/schemas/SystemRandomSample",
+            "system_rows": "#/components/schemas/SystemRowsRandomSample"
+          },
+          "propertyName": "sampling_method"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BernoulliRandomSample"
+          },
+          {
+            "$ref": "#/components/schemas/RandomIDsRandomSample"
+          },
+          {
+            "$ref": "#/components/schemas/SystemRandomSample"
+          },
+          {
+            "$ref": "#/components/schemas/SystemRowsRandomSample"
+          }
+        ]
       },
       "SpatialAggregate": {
         "properties": {
@@ -1138,6 +1293,14 @@
             ],
             "type": "string"
           },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
           "start": {
             "format": "date",
             "type": "string"
@@ -1161,6 +1324,66 @@
         ],
         "type": "object"
       },
+      "SystemRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "nullable": true,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "system"
+            ],
+            "type": "string"
+          },
+          "seed": {
+            "format": "float",
+            "type": "number"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SystemRowsRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "nullable": true,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "system_rows"
+            ],
+            "type": "string"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
       "TopUpAmount": {
         "properties": {
           "query_kind": {
@@ -1168,6 +1391,14 @@
               "topup_amount"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start": {
             "format": "date",
@@ -1216,6 +1447,14 @@
               "topup_balance"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start_date": {
             "format": "date",
@@ -1317,6 +1556,14 @@
               "unique_location_counts"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start_date": {
             "format": "date",

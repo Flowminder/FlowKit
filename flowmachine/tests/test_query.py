@@ -126,7 +126,7 @@ def test_iteration():
 def test_limited_head():
     """Test that we can call head on a query with a limit clause."""
     dl = daily_location("2016-01-01")
-    dl.random_sample(2).head()
+    dl.random_sample(size=2, sampling_method="bernoulli").head()
 
 
 def test_make_sql_no_overwrite():

@@ -166,7 +166,7 @@ def write_cache_metadata(
     try:
         self_storage = pickle.dumps(query)
     except Exception as e:
-        logger.debug("Can't pickle ({e}), attempting to cache anyway.")
+        logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
         pass
 
     try:
