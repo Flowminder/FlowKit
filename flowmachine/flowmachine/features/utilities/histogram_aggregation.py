@@ -62,6 +62,8 @@ class HistogramAggregation(Query):
     range : tuple of float, default None
         Optionally supply inclusive lower and upper bounds to build the histogram over. By default, the
         histogram will cover the whole range of the data.
+    value_column : str, default "value"
+        Name of the column in `metric` to construct the histogram over
     censor : bool, default True
         Set to False to return results where there are bins with counts below 15
 
