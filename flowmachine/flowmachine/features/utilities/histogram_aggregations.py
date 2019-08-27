@@ -62,6 +62,13 @@ class HistogramAggregation(Query):
     range : tuple of float, default None
         Optionally supply inclusive lower and upper bounds to build the histogram over. By default, the
         histogram will cover the whole range of the data.
+    censor : bool, default True
+        Set to False to return results where there are bins with counts below 15
+
+    Notes
+    -----
+    By default, if the count of values for any bin is _below_ 15, then no histogram will be
+    returned.
     """
 
     def __init__(
@@ -71,12 +78,14 @@ class HistogramAggregation(Query):
         bins: Union[List[float], int],
         range: Optional[Tuple[float, float]] = None,
         value_column: str = "value",
+        censor: bool = True,
     ) -> None:
 
         self.metric = metric
         self.bins = bins
         self.range = range
         self.value_column = value_column
+        self.censor = censor
         if self.value_column not in self.metric.column_names:
             raise ValueError(
                 f"'{self.value_column}' is not a column in this query. Must be one of '{self.metric.column_names}'"
@@ -97,15 +106,16 @@ class HistogramAggregation(Query):
         num_bins, bins_sql = _get_bins_clause(self.bins)
         bounds_sql = _get_bounds_clause(self.range, self.value_column, self.metric)
 
-        return f"""
+        bounds_and_breaks = f"""
         WITH bounds AS ({bounds_sql}),
             
             breaks AS (
             SELECT
                 numrange(lower, upper, CASE WHEN v={num_bins} THEN '[]' ELSE '[)' END) as bin
             FROM ({bins_sql}) as b
-            )
-             
+            )"""
+
+        hist_sql = f"""     
         SELECT count(*) as value, 
             lower(bin) as lower_edge,
             upper(bin) as upper_edge 
@@ -115,3 +125,18 @@ class HistogramAggregation(Query):
         GROUP BY bin 
         ORDER BY bin ASC
         """
+
+        if not self.censor:
+            return f"{bounds_and_breaks} {hist_sql}"
+        else:
+            return f"""
+            {bounds_and_breaks},
+            hist AS ({hist_sql})
+            
+            SELECT * FROM 
+                (SELECT (CASE WHEN (SELECT min(value) < 15 FROM hist) THEN NULL ELSE value END) as value,
+                (CASE WHEN (SELECT min(value) < 15 FROM hist) THEN NULL ELSE lower_edge END) as lower_edge,
+                (CASE WHEN (SELECT min(value) < 15 FROM hist) THEN NULL ELSE upper_edge END) as upper_edge
+                FROM hist) _
+            GROUP BY lower_edge, upper_edge, value
+            """
