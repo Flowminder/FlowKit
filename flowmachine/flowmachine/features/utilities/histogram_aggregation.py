@@ -155,4 +155,5 @@ class HistogramAggregation(Query):
                 (CASE WHEN (SELECT min(value) < 15 FROM hist) THEN NULL ELSE upper_edge END) as upper_edge
                 FROM hist) _
             GROUP BY lower_edge, upper_edge, value
+            ORDER BY lower_edge ASC
             """

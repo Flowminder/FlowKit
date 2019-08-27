@@ -10,6 +10,28 @@ from flowmachine.features import RadiusOfGyration
 from flowmachine.features.utilities.histogram_aggregation import HistogramAggregation
 
 
+def test_non_default_value_column(get_dataframe):
+    """
+    Test a non-default value column.
+    """
+    query = CustomQuery(
+        "SELECT * FROM generate_series(0, 100) AS t(non_default_value_column)",
+        column_names=["non_default_value_column"],
+    )
+
+    agg = HistogramAggregation(
+        metric=query, bins=5, value_column="non_default_value_column"
+    )
+    df = get_dataframe(agg)
+    numpy_histogram, numpy_bins = np.histogram(
+        get_dataframe(query).non_default_value_column, bins=5
+    )
+    assert df.value.sum() == len(get_dataframe(query))
+    assert numpy_histogram.tolist() == df.value.tolist()
+    assert numpy_bins.tolist()[:-1] == pytest.approx(df.lower_edge.tolist())
+    assert numpy_bins.tolist()[1:] == pytest.approx(df.upper_edge.tolist())
+
+
 def test_create_histogram_censors(get_dataframe):
     """
     Histogram should be censored if any bin has a count below 15.
