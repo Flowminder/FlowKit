@@ -270,11 +270,14 @@ class TwoFactorAuth(db.Model):
         is_valid = pyotp.totp.TOTP(self.decrypted_secret_key).verify(code)
         if is_valid:
             if (
-                current_app.config["CACHE_BACKEND"].get(self.user_id) == code
+                current_app.config["CACHE_BACKEND"].get(f"{self.user_id}".encode())
+                == code
             ):  # Reject if the code is being reused
                 raise Unauthorized("Code not valid.")
             else:
-                current_app.config["CACHE_BACKEND"].set(self.user_id, code)
+                current_app.config["CACHE_BACKEND"].set(
+                    f"{self.user_id}".encode(), code
+                )
             return True
         else:
             raise Unauthorized("Code not valid.")
