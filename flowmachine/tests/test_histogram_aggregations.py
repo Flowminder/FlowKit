@@ -103,3 +103,28 @@ def test_create_histogram_using_bins_list_and_range_values(get_dataframe):
     assert numpy_histogram.tolist() == df.value.tolist()
     assert numpy_bins.tolist()[:-1] == pytest.approx(df.lower_edge.tolist())
     assert numpy_bins.tolist()[1:] == pytest.approx(df.upper_edge.tolist())
+
+
+@pytest.mark.parametrize(
+    "param_name, param_value, expected_exception",
+    [
+        (
+            "value_column",
+            "NOT_A_COLUMN",
+            "'NOT_A_COLUMN' is not a column in this query. Must be one of '\['subscriber', 'value'\]'",
+        ),
+        (
+            "bins",
+            "NOT_A_BIN_TYPE",
+            "Bins should be an integer or list of numeric values.",
+        ),
+        ("range", "NOT_A_RANGE_TYPE", "Range should be tuple of two values or None."),
+    ],
+)
+def test_histogram_param_value_errors(param_name, param_value, expected_exception):
+    radius_of_gyration = RadiusOfGyration("2016-01-01", "2016-01-02")
+
+    args = dict(bins=10, metric=radius_of_gyration)
+    args[param_name] = param_value
+    with pytest.raises(ValueError, match=expected_exception):
+        HistogramAggregation(**args)
