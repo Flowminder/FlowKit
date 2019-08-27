@@ -178,11 +178,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:110f534cb98131ed5c21cc3896772fc46597f67295116022ef5c1ef9bd180d4e",
-                "sha256:f3ab33ee77d3ea68bf75a94ca5633a5a01134aedf1a6c9d05a70339022d6c8a3"
+                "sha256:7bc09d1875774102fa190ab3fc30332e094abe137c014ef8656d1e1504948d92",
+                "sha256:ba8c3b1600d711127aba87ea8f8f68b1cc9971deffa9b0cc50702c93a6daea93"
             ],
             "index": "pypi",
-            "version": "==0.7.2"
+            "version": "==0.8.1"
         },
         "hyperframe": {
             "hashes": [
@@ -271,6 +271,13 @@
                 "sha256:db603a1c235d110c860d5f39988ebc8218ee028f07a7cbc056ba6424372ca31b"
             ],
             "version": "==4.5.2"
+        },
+        "priority": {
+            "hashes": [
+                "sha256:6bc1961a6d7fcacbfc337769f1a382c8e746566aaa365e78047abe9f66b2ffbe",
+                "sha256:be4fcb94b5e37cdeb40af5533afe6dd603bd665fe9c8b3052610fc1001d5d1eb"
+            ],
+            "version": "==1.3.0"
         },
         "pycparser": {
             "hashes": [
@@ -708,10 +715,10 @@
         },
         "zipp": {
             "hashes": [
-                "sha256:4970c3758f4e89a7857a973b1e2a5d75bcdc47794442f2e2dd4fe8e0466e809a",
-                "sha256:8a5712cfd3bb4248015eb3b0b3c54a5f6ee3f2425963ef2a0125b8bc40aafaec"
+                "sha256:3718b1cbcd963c7d4c5511a8240812904164b7f381b647143a89d3b98f9bcd8e",
+                "sha256:f06903e9f1f43b12d371004b4ac7b06ab39a44adc747266928ae6debfa7b3335"
             ],
-            "version": "==0.5.2"
+            "version": "==0.6.0"
         }
     }
 }
