@@ -33,7 +33,7 @@ def get_cache_backend() -> CacheRegion:
     -------
     CacheRegion
     """
-    cache_backend = getenv("FLOWAUTH_CACHE_BACKEND", "MEMORY").upper()
+    cache_backend = getenv("FLOWAUTH_CACHE_BACKEND", "FILE").upper()
 
     if cache_backend == "REDIS":
         backend = "dogpile.cache.redis"
