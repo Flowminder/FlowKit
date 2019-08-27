@@ -115,7 +115,7 @@ class HistogramAggregation(Query):
     def column_names(self) -> List[str]:
         return ["value", "lower_edge", "upper_edge"]
 
-    def _make_query(self):
+    def _make_query(self) -> str:
 
         num_bins, bins_sql = _get_bins_clause(self.bins)
         bounds_sql = _get_bounds_clause(self.range, self.value_column, self.metric)
