@@ -108,7 +108,7 @@ class HistogramAggregation(Query):
             )
         if not isinstance(self.bins, (int, list)):
             raise ValueError("Bins should be an integer or list of numeric values.")
-        if not isinstance(self.range, tuple) and None:
+        if not isinstance(self.range, tuple) or (self.range is None):
             raise ValueError("Range should be tuple of two values")
 
         super().__init__()
