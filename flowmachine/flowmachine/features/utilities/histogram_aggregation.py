@@ -73,7 +73,7 @@ class HistogramAggregation(Query):
     Examples
     --------
     >>>from flowmachine.features import RadiusOfGyration
-    >>>from flowmachine.features.utilities.histogram_aggregations import HistogramAggregation
+    >>>from flowmachine.features.utilities.histogram_aggregation import HistogramAggregation
     >>>radius_of_gyration = RadiusOfGyration("2016-01-01", "2016-01-02")
     >>>histogram = HistogramAggregation(metric=radius_of_gyration, bins=5, censor=False)
     >>>histogram.head()

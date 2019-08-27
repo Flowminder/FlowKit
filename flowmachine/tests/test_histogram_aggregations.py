@@ -7,7 +7,7 @@ import pytest
 
 from flowmachine.core import CustomQuery
 from flowmachine.features import RadiusOfGyration
-from flowmachine.features.utilities.histogram_aggregations import HistogramAggregation
+from flowmachine.features.utilities.histogram_aggregation import HistogramAggregation
 
 
 def test_create_histogram_censors(get_dataframe):

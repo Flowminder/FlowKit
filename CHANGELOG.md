@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowETL now comes with a deployment example (in `flowetl/deployment_example/`). [#1126](https://github.com/Flowminder/FlowKit/issues/1126)
 - FlowETL now allows to run supplementary post-ETL queries. [#989](https://github.com/Flowminder/FlowKit/issues/989)
 - Random sampling is now exposed via the API, for all non-aggregated query kinds. [#1007](https://github.com/Flowminder/FlowKit/issues/1007)
+- New aggregate added to FlowMachine - `HistogramAggregation`, which constructs histograms over the results of other queries. [#1075](https://github.com/Flowminder/FlowKit/issues/1075)
 
 ### Changed
 - FlowDB is now based on PostgreSQL 11.5 and PostGIS 2.5.3
