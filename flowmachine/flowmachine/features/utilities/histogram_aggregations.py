@@ -69,6 +69,20 @@ class HistogramAggregation(Query):
     -----
     By default, if the count of values for any bin is _below_ 15, then no histogram will be
     returned.
+
+    Examples
+    --------
+    >>>from flowmachine.features import RadiusOfGyration
+    >>>from flowmachine.features.utilities.histogram_aggregations import HistogramAggregation
+    >>>radius_of_gyration = RadiusOfGyration("2016-01-01", "2016-01-02")
+    >>>histogram = HistogramAggregation(metric=radius_of_gyration, bins=5, censor=False)
+    >>>histogram.head()
+           value  lower_edge  upper_edge
+    0     61    0.000000   70.837717
+    1    123   70.837717  141.675435
+    2    192  141.675435  212.513152
+    3    108  212.513152  283.350869
+    4     15  283.350869  354.188587
     """
 
     def __init__(
