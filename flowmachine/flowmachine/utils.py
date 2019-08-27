@@ -526,3 +526,39 @@ def plot_dependency_graph(
         raise ValueError(f"Unsupported output format: '{format}'")
 
     return result
+
+
+def calculate_unstored_dependency_graph(query_obj):
+    g = calculate_dependency_graph(query_obj, analyse=False)
+    # Remove already-stored queries from dependency graph
+    g.remove_nodes_from([node for node in g if g.nodes[node]["stored"]])
+    # Remove nodes that were only dependencies of already-stored queries
+    # TODO: This also removes the query_obj node. Until I've implemented this in the flowmachine server, I'm not sure whether this is the behaviour we want.
+    g.remove_nodes_from(
+        [node for node in g if node not in nx.descendants(g, f"x{query_obj.md5}")]
+    )
+    return g
+
+
+# TODO: Decide whether it's really worth having this function
+def calculate_combined_unstored_dependency_graph_for_multiple_queries(queries):
+    g = nx.DiGraph()
+    for query_obj in queries:
+        g.update(calculate_unstored_dependency_graph(query_obj))
+    return g
+
+
+def store_queries_in_order(dependency_graph):
+    ordered_list_of_queries = reversed(list(nx.topological_sort(dependency_graph)))
+    for node in ordered_list_of_queries:
+        try:
+            # TODO: Check that these are guaranteed to run in the correct order
+            query_stores.append(dependency_graph.nodes[node]["query_object"].store())
+        except ValueError:
+            # Some dependencies cannot be stored
+            # TODO: Check that this except handles all un-storable queries (e.g. Random)
+            pass
+    # TODO: Not sure whether we ultimately want to wait for stores to finish in this function, or just return the list of futures to be awaited elsewhere
+    import concurrent.futures
+
+    concurrent.futures.wait(query_stores)
