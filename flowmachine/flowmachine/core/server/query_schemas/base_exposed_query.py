@@ -2,11 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 
 from flowmachine.core import Query
 from flowmachine.core.query_info_lookup import QueryInfoLookup
+from flowmachine.utils import store_queries_in_order, unstored_dependencies_graph
 
 __all__ = ["BaseExposedQuery"]
 
@@ -40,19 +42,26 @@ class BaseExposedQuery(metaclass=ABCMeta):
     def store_async(self):
         """
         Store this query using a background thread.
+        If the environment variable 'FLOWMACHINE_SERVER_STORE_DEPENDENCIES' is true,
+        set the dependencies of this query running first.
 
         Returns
         -------
-        Future
-            Future object representing the calculation.
-
+        str
+            Query ID that can be used to check the query state.
         """
         q = self._flowmachine_query_obj
+
+        store_dependencies = (
+            "true"
+            == os.getenv("FLOWMACHINE_SERVER_STORE_DEPENDENCIES", "false").lower()
+        )
+        if store_dependencies:
+            _ = store_queries_in_order(unstored_dependencies_graph(q))
+
         q.store()
 
-        query_id = q.md5
-
-        return query_id
+        return self.query_id
 
     @property
     def query_id(self):
