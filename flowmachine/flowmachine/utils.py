@@ -19,7 +19,7 @@ from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
 from time import sleep
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Dict
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -528,7 +528,19 @@ def plot_dependency_graph(
     return result
 
 
-def unstored_dependencies_graph(query_obj):
+def unstored_dependencies_graph(query_obj: "Query") -> "DiGraph":
+    """
+    Produce a dependency graph of the unstored queries on which this query depends.
+
+    Parameters
+    ----------
+    query_obj : Query
+        Query object to produce a dependency graph for.
+
+    Returns
+    -------
+    networkx.DiGraph
+    """
     if query_obj.is_stored:
         # If query is already stored, no need to store its dependencies
         return nx.DiGraph()
@@ -544,7 +556,20 @@ def unstored_dependencies_graph(query_obj):
         return g
 
 
-def store_queries_in_order(dependency_graph):
+def store_queries_in_order(dependency_graph: "DiGraph") -> Dict[str, "Future"]:
+    """
+    Execute queries in an order that ensures each query store is triggered after its dependencies.
+
+    Parameters
+    ----------
+    dependency_graph : networkx.DiGraph
+        Dependency graph of query objects to be stored
+    
+    Returns
+    -------
+    dict
+        Mapping from query nodes to Future objects representing the store tasks
+    """
     ordered_list_of_queries = reversed(list(nx.topological_sort(dependency_graph)))
     store_futures = {}
     for query in ordered_list_of_queries:
