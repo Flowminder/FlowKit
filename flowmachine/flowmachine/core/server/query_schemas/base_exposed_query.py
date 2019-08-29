@@ -2,7 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import os
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 
@@ -42,7 +41,7 @@ class BaseExposedQuery(metaclass=ABCMeta):
     def store_async(self, store_dependencies=True):
         """
         Store this query using a background thread.
-        
+
         Parameters
         ----------
         store_dependencies : bool, default True
