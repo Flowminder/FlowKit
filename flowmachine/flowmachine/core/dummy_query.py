@@ -36,3 +36,13 @@ class DummyQuery(Query):
         q_state_machine.enqueue()
         q_state_machine.execute()
         q_state_machine.finish()
+
+    def explain(self, format="text", analyse=False):
+        """
+        Override Query.explain so that no SQL is executed
+        """
+        if format.upper() != "JSON":
+            raise NotImplementedError(
+                f"Only format='json' is supported by {self.__class__.__name__}.explain()"
+            )
+        return [{"Plan": {"Total Cost": 0.0}}]
