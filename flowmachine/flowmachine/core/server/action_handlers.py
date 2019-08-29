@@ -124,9 +124,15 @@ def action_handler__run_query(**action_params: dict) -> ZMQReply:
     try:
         query_id = q_info_lookup.get_query_id(action_params)
     except QueryInfoLookupError:
-        # Set the query running (it's safe to call this even if the query was set running before)
+        store_dependencies = not (
+            "true"
+            == os.getenv(
+                "FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", "false"
+            ).lower()
+        )
         try:
-            query_id = query_obj.store_async()
+            # Set the query running (it's safe to call this even if the query was set running before)
+            query_id = query_obj.store_async(store_dependencies=store_dependencies)
         except Exception as e:
             return ZMQReply(
                 status="error",

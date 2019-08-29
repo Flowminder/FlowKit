@@ -39,11 +39,14 @@ class BaseExposedQuery(metaclass=ABCMeta):
             f"Class {self.__class__.__name__} does not have the fm_query_obj property set."
         )
 
-    def store_async(self):
+    def store_async(self, store_dependencies=True):
         """
         Store this query using a background thread.
-        If the environment variable 'FLOWMACHINE_SERVER_STORE_DEPENDENCIES' is true,
-        set the dependencies of this query running first.
+        
+        Parameters
+        ----------
+        store_dependencies : bool, default True
+            If True, set the dependencies of this query running first.
 
         Returns
         -------
@@ -52,10 +55,6 @@ class BaseExposedQuery(metaclass=ABCMeta):
         """
         q = self._flowmachine_query_obj
 
-        store_dependencies = (
-            "true"
-            == os.getenv("FLOWMACHINE_SERVER_STORE_DEPENDENCIES", "false").lower()
-        )
         if store_dependencies:
             _ = store_queries_in_order(unstored_dependencies_graph(q))
 
