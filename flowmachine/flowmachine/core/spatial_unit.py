@@ -597,6 +597,7 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         geom_table_column_names: Union[str, Iterable[str]],
         geom_table: Union[Query, str],
         geom_column: str = "geom",
+        ident: str,
     ):
         if isinstance(geom_table_column_names, str):
             location_id_column_names = get_name_and_alias(geom_table_column_names)[1]
@@ -604,6 +605,8 @@ class PolygonSpatialUnit(GeomSpatialUnit):
             location_id_column_names = [
                 get_name_and_alias(c)[1] for c in geom_table_column_names
             ]
+
+        self.ident = ident
         super().__init__(
             geom_table_column_names=geom_table_column_names,
             location_id_column_names=location_id_column_names,
@@ -615,10 +618,7 @@ class PolygonSpatialUnit(GeomSpatialUnit):
         return f"""
         INNER JOIN
             ({self.geom_table.get_query()}) AS {geom_table_alias}
-        ON ST_within(
-            {loc_table_alias}.geom_point::geometry,
-            ST_SetSRID({geom_table_alias}.{self._geom_col}, 4326)::geometry
-        )
+        ON {geom_table_alias}.gid = CAST ({loc_table_alias}.gids->>'{self.ident}' AS INTEGER)
         """
 
 
@@ -696,8 +696,11 @@ def admin_spatial_unit(
     else:
         col_name = region_id_column_name
     table = f"geography.admin{level}"
+    ident = f"admin{level}"
 
-    return PolygonSpatialUnit(geom_table_column_names=col_name, geom_table=table)
+    return PolygonSpatialUnit(
+        geom_table_column_names=col_name, geom_table=table, ident=ident
+    )
 
 
 def grid_spatial_unit(*, size: Union[float, int]) -> PolygonSpatialUnit:
