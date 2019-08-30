@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - FlowDB is now based on PostgreSQL 11.5 and PostGIS 2.5.3
+- when running queries through FlowAPI, the query's dependencies will also be cached by default. This behaviour can be switched off by setting `FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING=true`. [#1152](https://github.com/Flowminder/FlowKit/issues/1152)
 
 ### Fixed
 - Quickstart will no longer fail if it has been run previously with a different FlowDB data size and not explicitly shut down. [#900](https://github.com/Flowminder/FlowKit/issues/900)
