@@ -245,7 +245,7 @@ def reset_cache_schema(fm_conn, redis_instance):
     print(f"Killing any queries still running...")
     with fm_conn.engine.begin():  # Kill any running queries
         fm_conn.engine.execute(
-            "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE application_name='flowmachine';"
+            "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND application_name='flowmachine';"
         )
     print("[DDD] Recreating cache schema... ", end="", flush=True)
     reset_cache(fm_conn, redis_instance, protect_table_objects=False)
