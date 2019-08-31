@@ -143,10 +143,10 @@
                 "asymmetric-crypto"
             ],
             "hashes": [
-                "sha256:d671b24981a1d09d8f21c7b2681ce7b4bde33e2dfcb98be50ae412fc5908ec79"
+                "sha256:e325b7e31a06c10bb78412353a1c2d11a0b5170fb6a4d3790515b232a4370a45"
             ],
             "index": "pypi",
-            "version": "==3.21.0"
+            "version": "==3.22.0"
         },
         "get-secret-or-env-var": {
             "hashes": [
@@ -178,11 +178,11 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:7bc09d1875774102fa190ab3fc30332e094abe137c014ef8656d1e1504948d92",
-                "sha256:ba8c3b1600d711127aba87ea8f8f68b1cc9971deffa9b0cc50702c93a6daea93"
+                "sha256:21d9be84ea2a227e8332074b4269d5a1a044d3bb3884887d2a54cf6d23945574",
+                "sha256:e451b8cbfd58a12015e8b840cb9b0f531d2c16310c7175f6910fbd02ddc97448"
             ],
             "index": "pypi",
-            "version": "==0.8.1"
+            "version": "==0.8.2"
         },
         "hyperframe": {
             "hashes": [
@@ -371,11 +371,11 @@
         },
         "quart": {
             "hashes": [
-                "sha256:3122d7dd3535301d0f4075657b71842bbef9044a3086091e82637eade72c2f2a",
-                "sha256:3b3e1207bdecbbae35b9aeef137abcf273768034423df77c9ad1034a105ddde3"
+                "sha256:243db3bcd6698d1d6adb966e2ed5aca5d4d4648345abcaa3f79f14de76fb33be",
+                "sha256:d329f2c392031f87c32ff2dcd6e11dc1fbf94c7449c3afe2d7541326ae390703"
             ],
             "index": "pypi",
-            "version": "==0.9.1"
+            "version": "==0.10.0"
         },
         "six": {
             "hashes": [
@@ -656,11 +656,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:95b1f6db806e5b1b5b443efeb58984c24945508f93a866c1719e1a507a957d7c",
-                "sha256:c3d5020755f70c82eceda3feaf556af9a341334414a8eca521a18f463bcead88"
+                "sha256:95d13143cc14174ca1a01ec68e84d76ba5d9d493ac02716fd9706c949a505210",
+                "sha256:b78fe2881323bd44fd9bd76e5317173d4316577e7b1cddebae9136a4495ec865"
             ],
             "index": "pypi",
-            "version": "==5.1.1"
+            "version": "==5.1.2"
         },
         "pytest-asyncio": {
             "hashes": [
