@@ -810,10 +810,10 @@
                 "pytest"
             ],
             "hashes": [
-                "sha256:b9a9e01ca2d5076f1533a8cd17575c0e8f451c19446ef1d8f9a2e5cb6825bc84"
+                "sha256:d90705b1a1671bcca27641c9c98d3ebfdc40318f9cf3a21def71f582a117fabc"
             ],
             "index": "pypi",
-            "version": "==0.28.0"
+            "version": "==0.30.0"
         },
         "toml": {
             "hashes": [
