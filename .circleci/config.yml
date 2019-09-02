@@ -327,7 +327,7 @@ jobs:
             echo Building flowdb-synthetic-data version $FLOWDB_VERSION
             echo Tagging as $CIRCLE_SHA1
             docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
-                -f flowdb/testdata/Dockerfile.synthetic_data .
+                -f Dockerfile.synthetic_data .
       - run:
           name: Test that a data generator must be set for synth data
           command: |
