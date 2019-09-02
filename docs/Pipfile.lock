@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8bc3beb0c12799100bba578072319746e129ef0372fd704ced6f150e232abc35"
+            "sha256": "cd19d33509d56268944a030a4af94ffa25c4cdaf6e49ad0d098169b88dcfd3d5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -585,9 +585,11 @@
             "version": "==1.1.1"
         },
         "marshmallow": {
-            "editable": true,
-            "git": "https://github.com/marshmallow-code/marshmallow.git",
-            "ref": "818dc1c7454934c9aeb882d41838caf2cf8de15f"
+            "hashes": [
+                "sha256:23f684b54b1955ebd5bdfbdda4062e438ef86218f14f1a356f570cdf0c016ab3",
+                "sha256:fcfc9ffd75a883da06f30f604a4e81dd0b56eb9438f4d0a8de6bbaa163ce9ec3"
+            ],
+            "version": "==3.0.1"
         },
         "marshmallow-oneofschema": {
             "hashes": [
@@ -1063,7 +1065,6 @@
                 "sha256:243db3bcd6698d1d6adb966e2ed5aca5d4d4648345abcaa3f79f14de76fb33be",
                 "sha256:d329f2c392031f87c32ff2dcd6e11dc1fbf94c7449c3afe2d7541326ae390703"
             ],
-            "index": "pypi",
             "version": "==0.10.0"
         },
         "redis": {
@@ -1176,7 +1177,6 @@
                 "sha256:5feae03167620824d3ae3e8915ea8589fc28d1ad6f3edf3cc90ed7c7cb33fab5",
                 "sha256:db441b81c65b0f104a7ce5d86c5432be099956b98b8a2c8be0b3fb3a7a0b1536"
             ],
-            "index": "pypi",
             "version": "==19.1.0"
         },
         "tabulate": {
