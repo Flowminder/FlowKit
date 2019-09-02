@@ -260,7 +260,7 @@ jobs:
             echo Building oracle_fdw version $FLOWDB_VERSION
             echo Tagging as oracle-$CIRCLE_SHA1
             docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-              -t flowminder/flowdb:oracle-$SAFE_TAG oracle_fdw
+              -t flowminder/flowdb:oracle-$CIRCLE_SHA1 oracle_fdw
       - run:
           name: Launch flowdb
           command: |
