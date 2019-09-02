@@ -61,7 +61,7 @@ executors:
         default: 400
       num_cells:
         type: integer
-        default: 1
+        default: 100
       num_sites:
         type: integer
         default: 100
@@ -750,7 +750,7 @@ jobs:
       flowdb_image: "synthetic-data"
       synthetic_data_generator: sql
       num_sites: 200
-      num_cells: 1
+      num_cells: 1000
       num_subscribers: 50000
       num_days: 60
       num_calls: 20000
