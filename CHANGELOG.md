@@ -80,6 +80,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `PopulationWeightedOpportunities` is now available under `flowmachine.features.location`, instead of `flowmachine.models`
 - `PopulationWeightedOpportunities` no longer supports erroring with incomplete per-location departure rate vectors and will instead omit any locations not included from the results
 - `PopulationWeightedOpportunities` no longer requires use of the `run()` method
+- FlowAuth now records last used two-factor authentication codes in an expiring cache, which supports either a file-based, or redis backend. [#1173](https://github.com/Flowminder/FlowKit/issues/1173)
 
 ### Fixed
 - Quickstart will no longer fail if it has been run previously with a different FlowDB data size and not explicitly shut down. [#900](https://github.com/Flowminder/FlowKit/issues/900)
