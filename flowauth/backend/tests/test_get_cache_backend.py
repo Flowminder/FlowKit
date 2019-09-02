@@ -43,15 +43,6 @@ def test_redis_backend(monkeypatch):
 
 def test_file_backend(monkeypatch, tmpdir):
     """
-    Test that the file based backend is created.
-    """
-    monkeypatch.setenv("FLOWAUTH_CACHE_BACKEND", "memory")
-    cache = get_cache_backend()
-    assert isinstance(cache.actual_backend, MemoryBackend)
-
-
-def test_file_backend(monkeypatch, tmpdir):
-    """
     Test that the file backend is created and works cross-process.
     """
     monkeypatch.setenv("FLOWAUTH_CACHE_BACKEND", "file")
