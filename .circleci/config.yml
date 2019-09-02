@@ -51,7 +51,7 @@ executors:
         default: "testdata"
       synthetic_data_generator:
         type: enum
-        enum: ["python", "sql"]
+        enum: ["python", "sql", "realistic"]
         default: "python"
       num_days:
         type: integer
