@@ -233,25 +233,23 @@ jobs:
             - .env
 
   build_flowdb_oracle:
-    docker:
-      - image: circleci/python:3.7
-        environment: *flowdb_env
+    machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
+      image: circleci/classic:201808-01
+    environment: *flowdb_env
     working_directory: /home/circleci/project/flowdb
     steps:
       - checkout:
           path: /home/circleci/project/
-      - restore_cache:
-          key: flowdb-oracle-deps-1-{{ checksum "Pipfile.lock"}}
       - run:
-          name: Install python dependencies
+          name: "Switch to Python v3.7"
           command: |
-            pipenv install --deploy --dev
-      - save_cache:
-          key: flowdb-oracle-deps-1-{{ checksum "Pipfile.lock" }}
-          paths:
-            - /home/circleci/.local/share/virtualenvs/flowdb-NgQ6vyXW
-      - setup_remote_docker:
-          version: 18.09.3
+            pyenv versions
+            pyenv global 3.7.0
+      - run:
+          name: Install pipenv
+          command: pip install --upgrade pip pipenv
+      - restore_cache:
+          key: flowdb-deps-1-{{ checksum "Pipfile.lock"}}
       - attach_workspace:
           at: /home/circleci/
       - run:
