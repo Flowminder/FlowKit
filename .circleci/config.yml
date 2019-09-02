@@ -185,33 +185,6 @@ jobs:
             docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
               --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_SHA1 flowdb
       - run:
-          name: Build testdata image
-          command: |
-            echo Building testdata version $FLOWDB_VERSION
-            echo Tagging as testdata-$SAFE_TAG and testdata-$CIRCLE_SHA1
-            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-testdata:$SAFE_TAG -t flowminder/flowdb-testdata:$CIRCLE_SHA1 \
-            flowdb/testdata
-            touch .testdata-build-done
-          background: true
-      - run:
-          name: Build image with Oracle
-          command: |
-            echo Building Oracle_fdw version $FLOWDB_VERSION
-            echo Tagging as oracle-$SAFE_TAG
-            docker build --build-arg CODE_VERSION=$SAFE_TAG --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-             -t flowminder/flowdb:oracle-$SAFE_TAG flowdb/oracle_fdw
-            touch .oracle-build-done
-          background: true
-      - run:
-          name: Build synthetic data image
-          command: |
-            echo Building synthetic testdata version $FLOWDB_VERSION.
-            echo Tagging as synthetic-data-$SAFE_TAG synthetic-data-$CIRCLE_SHA1
-            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-synthetic-data:$SAFE_TAG -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
-              -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
-            touch .synthetic-data-build-done
-          background: true
-      - run:
           name: Test that not providing a superuser password causes the container to exit
           command: |
             if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo flowminder/flowdb:$SAFE_TAG; then
@@ -225,22 +198,6 @@ jobs:
           command: |
             mkdir $FLOWDB_DATA_DIR
       - run:
-          name: Wait for container builds to complete
-          command: |
-            while [ ! -f ".synthetic-data-build-done" ] || [ ! -f ".oracle-build-done" ] || [ ! -f ".testdata-build-done" ]; do
-              echo "Waiting for docker image builds to complete"
-              sleep 5
-            done
-      - run:
-          name: Test that a data generator must be set for synth data
-          command: |
-            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD flowminder/flowdb-synthetic-data:$SAFE_TAG; then
-                echo "Error: could run flowdb-synthetic-data with no data generator selected."
-                exit 1
-            else
-                echo "Correctly failed with no data generator selected"
-            fi
-      - run:
           name: Launch flowdb
           command: |
             docker run --name flowdb --publish $FLOWDB_PORT:5432 --user $(id -u):$(id -g) --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
@@ -250,12 +207,7 @@ jobs:
               --detach flowminder/flowdb:$SAFE_TAG
 
             echo "Waiting for flowdb to be ready.."
-            docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
-            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-             --detach flowminder/flowdb:oracle-$SAFE_TAG
             docker exec flowdb bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432 -U flowdb);do let i=i+1; echo Waiting 10s; sleep 10;done'
-            echo "Waiting for flowdb with oracle_fdw to be ready.."
-            docker exec flowdb_oracle bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
             docker ps -a
             docker images -a
       - run:
@@ -268,24 +220,110 @@ jobs:
           command: docker logs flowdb
           when: on_fail
       - run:
-          name: FlowDB-oracle Docker logs
-          command: docker logs flowdb_oracle
-          when: on_fail
-      - run:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowdb:${SAFE_TAG}
             docker push flowminder/flowdb:${CIRCLE_SHA1}
-
-            docker push flowminder/flowdb-testdata:${SAFE_TAG}
-            docker push flowminder/flowdb-testdata:${CIRCLE_SHA1}
-
-            docker push flowminder/flowdb-synthetic-data:${SAFE_TAG}
-            docker push flowminder/flowdb-synthetic-data:${CIRCLE_SHA1}
       - persist_to_workspace:
           root: /home/circleci/
           paths:
             - .env
+
+  build_flowdb_oracle:
+    docker:
+      - image: circleci/python:3.7
+        environment: *flowdb_env
+    working_directory: /home/circleci/project/flowdb/oracle_fdw
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - setup_remote_docker:
+          version: 18.09.3
+      - attach_workspace:
+          at: /home/circleci/
+      - run:
+          name: Build oracle_fdw image
+          command: |
+            echo Building oracle_fdw version $FLOWDB_VERSION
+            echo Tagging as oracle-$CIRCLE_SHA1
+            docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
+              -t flowminder/flowdb:oracle-$SAFE_TAG .
+      - run:
+          name: Launch flowdb
+          command: |
+            docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
+            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+             --detach flowminder/flowdb:oracle-$CIRCLE_SHA1
+            docker exec flowdb bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432 -U flowdb);do let i=i+1; echo Waiting 10s; sleep 10;done'
+            echo "Waiting for flowdb with oracle_fdw to be ready.."
+            docker exec flowdb_oracle bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
+            docker ps -a
+            docker images -a
+      - run:
+          name: FlowDB-oracle Docker logs
+          command: docker logs flowdb_oracle
+          when: on_fail
+
+  build_flowdb_testdata:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowdb/testdata
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - setup_remote_docker:
+          version: 18.09.3
+      - attach_workspace:
+          at: /home/circleci/
+      - run:
+          name: Log in to docker cloud
+          command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
+      - run:
+          name: Build testdata image
+          command: |
+            echo Building testdata version $FLOWDB_VERSION
+            echo Tagging as $CIRCLE_SHA1
+            docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-testdata:$CIRCLE_SHA1 .
+      - run:
+          name: Push images to Docker cloud
+          command: |
+            docker push flowminder/flowdb-testdata:${CIRCLE_SHA1}
+
+  build_flowdb_synthdata:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowdb/testdata
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - setup_remote_docker:
+          version: 18.09.3
+      - attach_workspace:
+          at: /home/circleci/
+      - run:
+          name: Log in to docker cloud
+          command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
+      - run:
+          name: Build synth data image
+          command: |
+            echo Building flowdb-synthetic-data version $FLOWDB_VERSION
+            echo Tagging as $CIRCLE_SHA1
+            docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
+                -f flowdb/testdata/Dockerfile.synthetic_data .
+      - run:
+          name: Test that a data generator must be set for synth data
+          command: |
+            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD flowminder/flowdb-synthetic-data:$CIRCLE_SHA1; then
+                echo "Error: could run flowdb-synthetic-data with no data generator selected."
+                exit 1
+            else
+                echo "Correctly failed with no data generator selected"
+            fi
+      - run:
+          name: Push images to Docker cloud
+          command: |
+            docker push flowminder/flowdb-synthetic-data:${CIRCLE_SHA1}
+
 
   install_flowmachine_deps:
     docker: *base_docker
@@ -819,6 +857,18 @@ workflows:
           <<: *run_always_org_context
       - build_flowdb:
           <<: *run_always_org_context
+      - build_flowdb_testdata:
+          requires:
+            - build_flowdb
+          <<: *run_always_org_context
+      - build_flowdb_oracle:
+          requires:
+            - build_flowdb
+          <<: *run_always_org_context
+      - build_flowdb_synthdata:
+          requires:
+            - build_flowdb
+          <<: *run_always_org_context
       - install_flowmachine_deps:
           <<: *run_always_org_context
       - run_flowkit_api_tests:
@@ -835,20 +885,20 @@ workflows:
           <<: *run_always_org_context
       - run_flowmachine_tests:
           requires:
-            - build_flowdb
+            - build_flowdb_testdata
             - install_flowmachine_deps
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
           name: synth_data_python_generator_tests
           synthetic_data_generator: python
           requires:
-            - build_flowdb
+            - build_flowdb_synthdata
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
           name: synth_data_sql_generator_tests
           synthetic_data_generator: sql
           requires:
-            - build_flowdb
+            - build_flowdb_synthdata
           <<: *run_always_org_context
       - build_docker_image:
           name: build_examples
@@ -869,7 +919,7 @@ workflows:
           name: build_docs
           requires:
             - install_flowmachine_deps
-            - build_flowdb
+            - build_flowdb_synthdata
           <<: *run_always_org_context
       - build_docker_image:
           name: build_flowauth
@@ -905,7 +955,8 @@ workflows:
       - run_quickstart_tests:
           name: test_quickstart
           requires: &quickstart_requirements
-            - build_flowdb
+            - build_flowdb_testdata
+            - build_flowdb_synthdata
             - build_flowapi
             - build_flowmachine
             - build_flowauth
@@ -927,7 +978,7 @@ workflows:
       - integration_tests:
           requires:
             - install_flowmachine_deps
-            - build_flowdb
+            - build_flowdb_testdata
           <<: *run_always_org_context
       - retag_images:
           name: retag_master_branch
