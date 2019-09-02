@@ -212,7 +212,10 @@ jobs:
             docker images -a
       - run:
           name: Run tests
-          command: cd flowdb && pipenv run pytest --junit-xml=test_results/pytest/results.xml --ignore=tests/test_synthetic_data.py
+          command: |
+            cd flowdb
+            pipenv run pytest --junit-xml=test_results/pytest/results.xml \
+            --ignore=tests/test_synthetic_data.py --ignore=tests/test_oracle_fdw.py
       - store_test_results:
           path: flowdb/test_results
       - run:
@@ -233,10 +236,20 @@ jobs:
     docker:
       - image: circleci/python:3.7
         environment: *flowdb_env
-    working_directory: /home/circleci/project/flowdb/oracle_fdw
+    working_directory: /home/circleci/project/flowdb
     steps:
       - checkout:
           path: /home/circleci/project/
+      - restore_cache:
+          key: flowdb-deps-1-{{ checksum "Pipfile.lock"}}
+      - run:
+          name: Install python dependencies
+          command: |
+            pipenv install --deploy --dev
+      - save_cache:
+          key: flowdb-deps-1-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/flowdb-NgQ6vyXW
       - setup_remote_docker:
           version: 18.09.3
       - attach_workspace:
@@ -247,7 +260,7 @@ jobs:
             echo Building oracle_fdw version $FLOWDB_VERSION
             echo Tagging as oracle-$CIRCLE_SHA1
             docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-              -t flowminder/flowdb:oracle-$SAFE_TAG .
+              -t flowminder/flowdb:oracle-$SAFE_TAG oracle_fdw
       - run:
           name: Launch flowdb
           command: |
@@ -259,6 +272,11 @@ jobs:
             docker exec flowdb_oracle bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
             docker ps -a
             docker images -a
+      - run:
+          name: Run tests
+          command: |
+            pipenv run pytest --junit-xml=test_results/pytest/results.xml \
+            tests/test_oracle_fdw.py
       - run:
           name: FlowDB-oracle Docker logs
           command: docker logs flowdb_oracle
