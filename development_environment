@@ -2,6 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+## Alembic settings for FlowDB migrations
+ALEMBIC_FLOWDB_USER=flowdb
+ALEMBIC_FLOWDB_PASSWORD=flowflow
+ALEMBIC_FLOWDB_DATABASE=flowdb
+
 ## FlowAuth settings
 # Database that stores users and servers, defaults to temporary sqlite
 #SQLALCHEMY_DATABASE_URI
