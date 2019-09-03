@@ -1,11 +1,13 @@
 import logging
 import pytest
+import os
 
 from flowmachine.core.cache import reset_cache
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from flowmachine.core import make_spatial_unit
 from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
 from flowmachine.features import daily_location
+from flowmachine.utils import unstored_dependencies_graph
 from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
@@ -88,6 +90,71 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
         f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
     ).fetchall()
     assert first_few_rows_expected == first_few_rows
+
+
+@pytest.mark.asyncio
+async def test_cache_content(
+    start_flowmachine_server_with_or_without_dependency_caching, fm_conn, redis
+):
+    """
+    Run a query with dependency caching turned on, and check that its dependencies are cached.
+    Run a query with dependency caching turned off, and check that only the query itself is cached.
+    """
+    # Can't use the zmq_port fixture here as we're running against a different FlowMachine server
+    zmq_port = os.getenv("FLOWMACHINE_PORT")
+
+    msg_run_query = {
+        "action": "run_query",
+        "params": {
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "method": "last",
+                "aggregation_unit": "admin3",
+                "subscriber_subset": None,
+            },
+        },
+        "request_id": "DUMMY_ID",
+    }
+    q = SpatialAggregate(
+        locations=daily_location(
+            date="2016-01-01",
+            method="last",
+            spatial_unit=make_spatial_unit("admin", level=3),
+            subscriber_subset=None,
+        )
+    )
+
+    # Get list of tables that should be cached
+    expected_cache_tables = [q.table_name]
+    if "false" == os.getenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING"):
+        dependencies = unstored_dependencies_graph(q)
+        for node, query_obj in dependencies.nodes(data="query_object"):
+            try:
+                schema, table_name = query_obj.fully_qualified_table_name.split(".")
+                if schema == "cache":
+                    expected_cache_tables.append(table_name)
+            except NotImplementedError:
+                # Some queries cannot be cached, and don't have table names
+                pass
+
+    # Check that we are starting with an empty cache.
+    reset_cache(fm_conn, redis, protect_table_objects=False)
+    assert cache_schema_is_empty(fm_conn)
+
+    # Send message to run the daily_location query, and check it was accepted
+    reply = send_zmq_message_and_receive_reply(
+        msg_run_query, port=zmq_port, host="localhost"
+    )
+    assert reply["status"] == "success"
+    query_id = reply["payload"]["query_id"]
+
+    # Wait until the query has finished.
+    poll_until_done(zmq_port, query_id)
+
+    # Check that the cache contains the correct tables.
+    assert sorted(expected_cache_tables) == get_cache_tables(fm_conn)
 
 
 @pytest.mark.parametrize(
