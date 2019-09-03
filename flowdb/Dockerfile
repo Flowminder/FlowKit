@@ -141,7 +141,8 @@ COPY --chown=postgres ./build_scripts/* /docker-entrypoint-initdb.d/
 #
 #  Copy alembic migration scripts (which define the flowdb schema).
 #
-COPY --chown=postgres alembic.ini ./migrations/* /docker-entrypoint-initdb.d/
+COPY --chown=postgres alembic.ini /docker-entrypoint-initdb.d/
+COPY --chown=postgres ./migrations/ /docker-entrypoint-initdb.d/migrations/
 
 #
 #  Add local data to PostgreSQL data ingestion
