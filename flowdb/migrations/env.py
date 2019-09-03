@@ -13,11 +13,13 @@ config = context.config
 # this will overwrite the ini-file sqlalchemy.url with
 # connection details from relevant environment variables
 flowdb_host = getenv("FLOWDB_HOST", "localhost")
-flowdb_port = getenv("FLOWDB_PORT", "9000")
+flowdb_port = getenv("FLOWDB_PORT", "5432")
 flowdb_user = getenv("ALEMBIC_FLOWDB_USER", "flowdb")
 flowdb_password = environ["ALEMBIC_FLOWDB_PASSWORD"]
-flowdb_database = getenv("ALEMBIC_FLOWDB_DATABASE", "flowdb_revised_schema_01")
-conn_str = f"postgresql://{flowdb_user}:{flowdb_password}@{flowdb_host}:{flowdb_port}/{flowdb_database}"
+flowdb_database = getenv("ALEMBIC_FLOWDB_DATABASE", "flowdb")
+conn_str = "postgresql://{}:{}@{}:{}/{}".format(
+    flowdb_user, flowdb_password, flowdb_host, flowdb_port, flowdb_database
+)
 config.set_main_option("sqlalchemy.url", conn_str)
 
 
@@ -50,7 +52,6 @@ def run_migrations_offline():
 
     """
     url = config.get_main_option("sqlalchemy.url")
-    # url = f"postgresql://{flowdb_user}:{flowdb_password}@{flowdb_host}:{flowdb_port}/{flowdb_database}"
     context.configure(
         url=url,
         target_metadata=target_metadata,
