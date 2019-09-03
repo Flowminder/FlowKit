@@ -16,8 +16,12 @@ set -euo pipefail
 # of the testdata containers for increased performance
 # during startup, which is why we add it here to the main
 # config as well.
-echo "wal_level='minimal'
-max_wal_senders = 0" >> /var/lib/postgresql/data/postgresql.conf
+echo "---------------------------------------------------------"
+echo " * Applying custom WAL settings and restarting postgres. "
+echo "---------------------------------------------------------"
+
+echo "wal_level='minimal'" >> /var/lib/postgresql/data/postgresql.conf
+echo "max_wal_senders = 0" >> /var/lib/postgresql/data/postgresql.conf
 pg_ctl -D "$PGDATA" \
        -o "-c listen_addresses=''" \
 		-w restart

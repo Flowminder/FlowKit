@@ -18,7 +18,7 @@ EXTENSIONS=('postgis' 'postgis_topology' 'fuzzystrmatch' \
 for EXT in "${EXTENSIONS[@]}"; do
 
 echo "Loading $EXT extension into $POSTGRES_DB"
-psql --dbname="$POSTGRES_DB" -c <<EOSQL
+psql --dbname="$POSTGRES_DB" <<EOSQL
     CREATE EXTENSION IF NOT EXISTS "$EXT";
 EOSQL
 
@@ -31,5 +31,3 @@ echo "Creating extension servers in $POSTGRES_DB."
 psql --dbname="$POSTGRES_DB" <<-EOSQL
     CREATE SERVER csv_fdw FOREIGN DATA WRAPPER file_fdw;
 EOSQL
-
-done
