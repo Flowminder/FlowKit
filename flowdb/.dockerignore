@@ -11,7 +11,9 @@
 #
 !Pipfile
 !Pipfile.lock
+!alembic.ini
 !./bin/build/
 !./build_scripts/
 !./sql/
 !./data/
+!./migrations/

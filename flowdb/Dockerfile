@@ -139,6 +139,11 @@ ENV LOCATION_TABLE=infrastructure.cells
 COPY --chown=postgres ./build_scripts/* /docker-entrypoint-initdb.d/
 
 #
+#  Copy alembic migration scripts (which define the flowdb schema).
+#
+COPY --chown=postgres alembic.ini ./migrations/* /docker-entrypoint-initdb.d/
+
+#
 #  Add local data to PostgreSQL data ingestion
 #  directory. Files in that directory will be
 #  ingested by PostgreSQL on build-time.

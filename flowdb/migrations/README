@@ -1,0 +1,2 @@
+Database migrations for FlowDB. These are applied when
+FlowDB first starts up and define the FlowDB schema.
