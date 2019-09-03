@@ -12,5 +12,6 @@
 !Pipfile
 !Pipfile.lock
 !./bin/build/
+!./build_scripts/
 !./sql/
 !./data/
