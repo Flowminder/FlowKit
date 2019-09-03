@@ -310,11 +310,11 @@ def test_wrong_geography_aggregation_unit_raises_error():
         ),
         (
             {"sampling_method": "system_rows", "size": -1},
-            "Must be greater or equal to 1.",
+            "Must be greater than or equal to 1.",
         ),
         (
             {"sampling_method": "random_ids", "size": 10, "seed": 185},
-            "Must be greater or equal to -1.0 and less or equal to 1.0.",
+            "Must be greater than or equal to -1.0 and less than or equal to 1.0.",
         ),
     ],
 )

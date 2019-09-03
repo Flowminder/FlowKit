@@ -72,7 +72,7 @@ setup(
         "SQLAlchemy",
         "cachetools",
         "apispec-oneofschema",
-        "marshmallow>=3.0.0rc7",  # TODO: unpin
+        "marshmallow>=3.0.0",
         "marshmallow-oneofschema>=2.0.0",
         "numpy",
         "networkx",
