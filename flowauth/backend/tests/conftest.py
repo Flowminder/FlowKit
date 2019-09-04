@@ -4,6 +4,7 @@
 from collections import namedtuple
 
 import datetime
+import pyotp
 import pytest
 
 from flowauth import (
@@ -18,9 +19,15 @@ from flowauth import (
     GroupServerTokenLimits,
     Token,
     SpatialAggregationUnit,
+    TwoFactorAuth,
+    TwoFactorBackup,
 )
+from flowauth.user_settings import generate_backup_codes
 
 TestUser = namedtuple("TestUser", ["id", "username", "password"])
+TestTwoFactorUser = namedtuple(
+    "TestTwoFactorUser", TestUser._fields + ("otp_generator", "backup_codes")
+)
 TestGroup = namedtuple("TestGroup", ["id", "name"])
 
 
@@ -61,6 +68,19 @@ class AuthActions(object):
         csrf_cookie = [c for c in cookies if c.startswith("X-CSRF")][0][7:-8]
         return response, csrf_cookie
 
+    def two_factor_login(self, *, otp_code, username="test", password="test"):
+        response = self._client.post(
+            "signin",
+            json={
+                "username": username,
+                "password": password,
+                "two_factor_code": otp_code,
+            },
+        )
+        cookies = response.headers.get_all("Set-Cookie")
+        csrf_cookie = [c for c in cookies if c.startswith("X-CSRF")][0][7:-8]
+        return response, csrf_cookie
+
     def logout(self):
         return self._client.get("signout")
 
@@ -74,6 +94,30 @@ def test_user(app):
         db.session.add(ug)
         db.session.commit()
         return TestUser(user.id, user.username, "TEST_USER_PASSWORD")
+
+
+@pytest.fixture
+def test_two_factor_auth_user(app):
+    with app.app_context():
+        user = User(username="TEST_FACTOR_USER", password="TEST_USER_PASSWORD")
+        ug = Group(name="TEST_FACTOR_USER", user_group=True, members=[user])
+        secret = pyotp.random_base32()
+        auth = TwoFactorAuth(user=user, enabled=True)
+        auth.secret_key = secret
+        otp_generator = pyotp.totp.TOTP(secret)
+        db.session.add(user)
+        db.session.add(auth)
+        db.session.add(ug)
+        db.session.commit()
+        backup_codes = generate_backup_codes()
+        for code in backup_codes:
+            backup = TwoFactorBackup(auth_id=auth.user_id)
+            backup.backup_code = code
+            db.session.add(backup)
+        db.session.commit()
+        return TestTwoFactorUser(
+            user.id, user.username, "TEST_USER_PASSWORD", otp_generator, backup_codes
+        )
 
 
 @pytest.fixture

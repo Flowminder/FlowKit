@@ -185,33 +185,6 @@ jobs:
             docker build --cache-from flowminder/flowdb:$BUILD_CACHE_TAG --build-arg FLOWDB_VERSION=$FLOWDB_VERSION \
               --build-arg FLOWDB_RELEASE_DATE=$FLOWDB_RELEASE_DATE -t flowminder/flowdb:$SAFE_TAG -t flowminder/flowdb:$CIRCLE_SHA1 flowdb
       - run:
-          name: Build testdata image
-          command: |
-            echo Building testdata version $FLOWDB_VERSION
-            echo Tagging as testdata-$SAFE_TAG and testdata-$CIRCLE_SHA1
-            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-testdata:$SAFE_TAG -t flowminder/flowdb-testdata:$CIRCLE_SHA1 \
-            flowdb/testdata
-            touch .testdata-build-done
-          background: true
-      - run:
-          name: Build image with Oracle
-          command: |
-            echo Building Oracle_fdw version $FLOWDB_VERSION
-            echo Tagging as oracle-$SAFE_TAG
-            docker build --build-arg CODE_VERSION=$SAFE_TAG --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-             -t flowminder/flowdb:oracle-$SAFE_TAG flowdb/oracle_fdw
-            touch .oracle-build-done
-          background: true
-      - run:
-          name: Build synthetic data image
-          command: |
-            echo Building synthetic testdata version $FLOWDB_VERSION.
-            echo Tagging as synthetic-data-$SAFE_TAG synthetic-data-$CIRCLE_SHA1
-            docker build --build-arg CODE_VERSION=$SAFE_TAG -t flowminder/flowdb-synthetic-data:$SAFE_TAG -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
-              -f flowdb/testdata/Dockerfile.synthetic_data flowdb/testdata
-            touch .synthetic-data-build-done
-          background: true
-      - run:
           name: Test that not providing a superuser password causes the container to exit
           command: |
             if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo flowminder/flowdb:$SAFE_TAG; then
@@ -225,22 +198,6 @@ jobs:
           command: |
             mkdir $FLOWDB_DATA_DIR
       - run:
-          name: Wait for container builds to complete
-          command: |
-            while [ ! -f ".synthetic-data-build-done" ] || [ ! -f ".oracle-build-done" ] || [ ! -f ".testdata-build-done" ]; do
-              echo "Waiting for docker image builds to complete"
-              sleep 5
-            done
-      - run:
-          name: Test that a data generator must be set for synth data
-          command: |
-            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD flowminder/flowdb-synthetic-data:$SAFE_TAG; then
-                echo "Error: could run flowdb-synthetic-data with no data generator selected."
-                exit 1
-            else
-                echo "Correctly failed with no data generator selected"
-            fi
-      - run:
           name: Launch flowdb
           command: |
             docker run --name flowdb --publish $FLOWDB_PORT:5432 --user $(id -u):$(id -g) --shm-size=1G --volume=${FLOWDB_DATA_DIR}:/var/lib/postgresql/data \
@@ -250,17 +207,15 @@ jobs:
               --detach flowminder/flowdb:$SAFE_TAG
 
             echo "Waiting for flowdb to be ready.."
-            docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
-            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-             --detach flowminder/flowdb:oracle-$SAFE_TAG
             docker exec flowdb bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432 -U flowdb);do let i=i+1; echo Waiting 10s; sleep 10;done'
-            echo "Waiting for flowdb with oracle_fdw to be ready.."
-            docker exec flowdb_oracle bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
             docker ps -a
             docker images -a
       - run:
           name: Run tests
-          command: cd flowdb && pipenv run pytest --junit-xml=test_results/pytest/results.xml --ignore=tests/test_synthetic_data.py
+          command: |
+            cd flowdb
+            pipenv run pytest --junit-xml=test_results/pytest/results.xml \
+            --ignore=tests/test_synthetic_data.py --ignore=tests/test_oracle_fdw.py
       - store_test_results:
           path: flowdb/test_results
       - run:
@@ -268,24 +223,122 @@ jobs:
           command: docker logs flowdb
           when: on_fail
       - run:
-          name: FlowDB-oracle Docker logs
-          command: docker logs flowdb_oracle
-          when: on_fail
-      - run:
           name: Push images to Docker cloud
           command: |
             docker push flowminder/flowdb:${SAFE_TAG}
             docker push flowminder/flowdb:${CIRCLE_SHA1}
-
-            docker push flowminder/flowdb-testdata:${SAFE_TAG}
-            docker push flowminder/flowdb-testdata:${CIRCLE_SHA1}
-
-            docker push flowminder/flowdb-synthetic-data:${SAFE_TAG}
-            docker push flowminder/flowdb-synthetic-data:${CIRCLE_SHA1}
       - persist_to_workspace:
           root: /home/circleci/
           paths:
             - .env
+
+  build_flowdb_oracle:
+    machine: # Need to talk to the container, so must use machine per: https://circleci.com/docs/2.0/building-docker-images/#accessing-services
+      image: circleci/classic:201808-01
+    environment: *flowdb_env
+    working_directory: /home/circleci/project/flowdb
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run:
+          name: "Switch to Python v3.7"
+          command: |
+            pyenv versions
+            pyenv global 3.7.0
+      - run:
+          name: Install pipenv
+          command: pip install --upgrade pip pipenv
+      - restore_cache:
+          key: flowdb-deps-1-{{ checksum "Pipfile.lock"}}
+      - attach_workspace:
+          at: /home/circleci/
+      - run:
+          name: Build oracle_fdw image
+          command: |
+            echo Building oracle_fdw version $FLOWDB_VERSION
+            echo Tagging as oracle-$CIRCLE_SHA1
+            docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
+              -t flowminder/flowdb:oracle-$CIRCLE_SHA1 oracle_fdw
+      - run:
+          name: Launch flowdb
+          command: |
+            docker run --name flowdb_oracle --shm-size=1G --publish $ORACLE_DB_PORT:5432 -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
+            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+             --detach flowminder/flowdb:oracle-$CIRCLE_SHA1
+            echo "Waiting for flowdb with oracle_fdw to be ready.."
+            docker exec flowdb_oracle bash -c 'i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432);do let i=i+1; echo Waiting 10s; sleep 10;done'
+            docker ps -a
+            docker images -a
+      - run:
+          name: Run tests
+          command: |
+            pipenv run pytest --junit-xml=test_results/pytest/results.xml \
+            tests/test_oracle_fdw.py
+      - run:
+          name: FlowDB-oracle Docker logs
+          command: docker logs flowdb_oracle
+          when: on_fail
+
+  build_flowdb_testdata:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowdb/testdata
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - setup_remote_docker:
+          version: 18.09.3
+      - attach_workspace:
+          at: /home/circleci/
+      - run:
+          name: Log in to docker cloud
+          command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
+      - run:
+          name: Build testdata image
+          command: |
+            echo Building testdata version $FLOWDB_VERSION
+            echo Tagging as $CIRCLE_SHA1
+            docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-testdata:$CIRCLE_SHA1 .
+      - run:
+          name: Push images to Docker cloud
+          command: |
+            docker push flowminder/flowdb-testdata:${CIRCLE_SHA1}
+
+  build_flowdb_synthdata:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/flowdb/testdata
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - setup_remote_docker:
+          version: 18.09.3
+      - attach_workspace:
+          at: /home/circleci/
+      - run:
+          name: Log in to docker cloud
+          command: echo $DOCKER_CLOUD_PASSWORD | docker login --username $DOCKER_CLOUD_USER --password-stdin
+      - run:
+          name: Build synth data image
+          command: |
+            echo Building flowdb-synthetic-data version $FLOWDB_VERSION
+            echo Tagging as $CIRCLE_SHA1
+            docker build --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb-synthetic-data:$CIRCLE_SHA1 \
+                -f Dockerfile.synthetic_data .
+      - run:
+          name: Test that a data generator must be set for synth data
+          command: |
+            if docker run -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD flowminder/flowdb-synthetic-data:$CIRCLE_SHA1; then
+                echo "Error: could run flowdb-synthetic-data with no data generator selected."
+                exit 1
+            else
+                echo "Correctly failed with no data generator selected"
+            fi
+      - run:
+          name: Push images to Docker cloud
+          command: |
+            docker push flowminder/flowdb-synthetic-data:${CIRCLE_SHA1}
+
 
   install_flowmachine_deps:
     docker: *base_docker
@@ -296,7 +349,7 @@ jobs:
           key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
       # Need to install graphviz and pygraphviz manually because it was removed from the Pipfile
       # (see https://github.com/Flowminder/FlowKit/issues/952)
-      - run: cd flowmachine && sudo apt-get install -y graphviz && pipenv run pip install pygraphviz
+      - run: cd flowmachine && sudo apt-get install -y libgraphviz-dev graphviz && pipenv run pip install pygraphviz
       - run: cd flowmachine && pipenv install --dev --deploy && pipenv run pip install -e .
       - save_cache:
           key: flowmachine-deps-2-{{ checksum "flowmachine/Pipfile.lock" }}
@@ -351,7 +404,7 @@ jobs:
           key: flowmachine-deps-2-{{ checksum "Pipfile.lock" }}
       - run:
           name: Install graphviz
-          command: sudo apt-get install -y xvfb graphviz
+          command: sudo apt-get install -y xvfb libgraphviz-dev graphviz
       - run: *wait_for_flowdb
       - run:
           name: Run tests
@@ -446,6 +499,7 @@ jobs:
     environment: &flowauth_env
       FLOWAUTH_FERNET_KEY: "XU-J5xNOtkaUKAoqWT7_VoT3zk2OTuoqKPBN3l0pOFg="
       FLASK_APP: flowauth
+      FLOWAUTH_DB_PASSWORD: flowauth
       FLOWAPI_IDENTIFIER: TEST_SERVER
       FLOWAUTH_ADMIN_PASSWORD: DUMMY_PASSWORD
       FLOWAUTH_ADMIN_USERNAME: TEST_ADMIN
@@ -470,7 +524,7 @@ jobs:
       - image: cypress/base:8
       - image: flowminder/flowauth:$CIRCLE_SHA1
         environment:
-          DB_URI: postgres://flowauth:flowauth@localhost:5432/flowauth
+          DB_URI: postgres://flowauth:{}@localhost:5432/flowauth
           DEMO_MODE: true
           # The private key needs to be explicitly provided here where elsewhere it comes from the circle project config. Unfortunately, those settings don't get passed to secondary containers, and we can't interpolate in the config file
           PRIVATE_JWT_SIGNING_KEY: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQ0KTUlJSkp3SUJBQUtDQWdFQTJVS0ZGOHNObnNMc3g3cXRTUFBjTnFyRTVMd0pPeWlLZFI2emd3NlloMk9DVHU3SQ0KNGY4b2Fpdk5KWWNuNElGMzRlUnFSemRURldaeEJwS2VKQnJHa1UyKzVCbVNneERFbEJxVWxBQ1B2eHNVV2lheQ0Kd2l3REZRdHEvakd6K3BabitCU09DK3V0VmM4alpiUWhWRVFDRi9nckk3eTZpUHBWYk01Tjkva0FPQS9kYi9ESQ0KbHRpaG9sQ1cvU3pmRzMzckx4U3phS215dm9BREl6Q01iWnJCQVJ6Y21ibzVyT1dyWEdtUldTSXhlMTRscnl1bg0KeEZIVzZNZkQ0RmhsZHV0S2RKSFBrQWp5ZDJacU03U3dUL1NGeXc2L3paeEpyeUtNbmNwbm1GZ2JpMEtwdG5CUQ0KaVpCTm5CQzlpK24wNFlqUzBtaHZkT2VTTHRiS05nUktzM0dqWWkwVXhSdy9WTXRPcGJCVStSM0dDVVFlZWE1Vw0KR3l4NmJuQmM3V3RCL014TEVNVTlRMXI1TEtwTDlNZXd3cUdzV2FGOEw5NGMvQklFek9Vdkx2bS9XYTk0QWhQQw0KT2d4cXBBM0tyait5QmdNeGp2NVdmQU53eHcxYnVIQ09INTAyME51dmF4RjVjejJVaDlQSDZma0MzaUFCenNkVg0KbGY2cVJEK2pGY2N4S0lqWU5WeXJHcmFySzJHc1k1OEJKYmJuOFp6WCtWMmtsN2FmeDJPZHJCd1dacFMySnFFNw0KWGZCOXZhR0lELzhhQ0xXN2wzRDUvVHNYTDNSMnUwaHRUNjNmMk5sc0FwWnFiRDk5WnZpbVlBWVNYL2VCRUlVVw0KK2FtQkhNaG5jRytVckIvb2ZBUkpKOFlOWHlmRDM3UzdpWlU4M2grOVU3UzN1YzR3bFUwZDh1N2dQZTBDQXdFQQ0KQVFLQ0FnQmtiR2dDd0h2eU41MmxFTGZLY2RZSGV0WDUrS1Mzc0p5WFdIS1hrS2FXWmp1MGFwRjJUVEFNSzJUdg0KQk5NODVmdFk4ZkRpTEVOK0w5VHN1ZGJaVDNzYmJQbGdqQ1Y1NmNWRHhDbUxZOXNOOWVGcGJsdlFmdkdKeDdaVA0KK3Z0N1NBeVUwa042WlJ6QS9qY1phckxCTlpKV0xBTWN5TDdjVkFJcWdnM3VJaTJrdkVpWjFvMlJsRjdhSFRBOQ0KcElFWVB4TDN0elRhbXg0aENpRHBJaWEyL3dKWmxsS3R5RE9pcEtLWjI3NHdtaXFQSU15QWRNaGVhWW5TSFl4Lw0KNWJ3NHhMZXN2RDFhRVppcDhqQUM2SEZhOCtib0hsQXdKUjYyRWwwM0Ruam1KVXZPQ2lsU1NBWWlJQTZQcGZsSA0KZEFRYVA5bGJJcVRxUDZRRmZJa0pnT0JhbzV0bUN2RVB3N3luN1pmVEdUVG5sM3JFRFZmZWIvYXJYMHVyYU5VWA0KUEZHcm9LSThkZEY1Ti9uQlFaU0pLL0pkUkMxUDBaUlM4WGlLMGNPYjh0L2F5UGF2alRlT1NWQUVKMnI3UGlKMA0KMWJ6b21MZWtDTWdrSkxhU2VQQzJkYjRVQ1NVNkhzcnRPSVFaVEJKNVcwREI4a3NZamlUWUhBaWlUaVI4aXdjbg0KeXRpMTlVYmg4OEVsajZSRHA5b0RjbHJCN21QV0JoNG9vRVI1NVVzVENPd2NZQ2VVVW1zaHNzNGV3czJ6d0crcw0KTVU5R2t3aEphWk1KQkpQdWFJNThIOFgxZHc4eDI3emlZU3BaUGtFQkxLNXVCQzk3SjZMK05qUFRjZWdWaFFocw0KVmw4OTBIQ2NuN3VJM1ZaR3IwMHBIbklDRlJhV01qaUFURURYZVNXZGZwL2lQeVlBclFLQ0FRRUE3b1hORUpaYg0KdUIvbHJpQjhOVHQ1MG0zSExwVHg1VXVnd2JGUnIzSll1L1V1VmFyUnRxRW1pWEkza05GeHMxY3pSc3NVM085Sw0KQS9wT0Y1S3BUaTU3Y3V3MVZ6UnhTZDRKR3EzbHVkeWZGUnFGYzNiRGlTMnp4TFhTK3NFRjlhUnhsbWJFMVgvVA0KZWFZNnZzandYelMycUxGOUtjSjFuM05BcHJHV01mc2o4TTdabG9qTzBaanRtZWlSN3JpTTdLQmpVTHZsdFJ1bw0KbVhvV2FXWWF5VWR2dWlxbG5CdGZIUFZSVzdRVmJuSlBDR3RJTGxtYW1lZkRJOEVscnhNMHp3cFpqNFhEK0h2Rw0KdTRoNXR5dG5qQjJNL05RTzBONC9VMUx5YnVKV2lsc1Q3dnM3SHZRS3gwTTFqenZpNVdNNlh6UzRZTnd0MmlrTA0KWWFzeEt1NnBZOXFvcHdLQ0FRRUE2UzNmS3dqSVQ4MWg3eCtEeG82OUxjd1VaeWRDekwwbXN1SVFqL3h1T0tGSw0KU1lieEswMms5M2YvMGNlRVV2dzBpUjZKOVBSYzVNRlcxZFBHdml1cVc1NW5kcHFpU2N0dWJneDVPQWQrM2FqZA0KeDlwM0FJV3cveVplMDZBMkljSjJvT1BaSHdsdjVncExnekdFZlQzQnRUOExFYjNWZTV5QW1PZFZaWDVabDVUaA0KRkhTQytHNzZWV0xjVHVMc1FlY0xVOFhqcDNwSmxPTUhWZ3oyOVg3QTlGdTQ0VnpjbWVsVS9WbTFFd1dNQ2tQaw0KUWVlSERDRnBhOFVJL2hPSjdrQklQYUdKNDBQTlFTU0VudVB1bSs3THZHSThPNGtTbFFaQjFWM3BZN3FBV3FjNA0Kb01jOGViOWpOVjd3UHpjdGhuNmlPQk11UDFsTXlyejk4Y2luUjI0alN3S0NBUUJFNzV6RngzNzRweGRkalB2NA0KOHBpUnpiSjhid1crYkc0b3JOUGI3aU5oSjBwZDdnR3dVOERzaG5zeXVxV3UzR3Z3Y084MXIxN242V2E2ZjJPNQ0KT2N2cCtnU3NrSGFSajc5MzIzeUNqQlhhSnBFZFB0emlmN2Z1Q1ZMUnNBbkY1ZUlDUXU5dWVRUW9xM2RjL253aQ0KTi96Mm9sMTNQVUY3ZFBiaGRuL2ZNQ05DRExac1FGdnR6ZElWNGxhUzlQbWR4ZmtPTTAvL1dPQVFnMjJJeHI3Rg0KSDRWVis4OWpYN0hNajhZVXgrWk54bkc3RUM2TFh0QkUzT3ZVSUpXQWxQOTFPeHVKVkhMQUZSM3B3MWJTTHBROQ0KdGFpeXhhTUdrTVVpa3QySVdKZ0VZckJQS0lMOHZqR0RSNVJxTWpld2JrNUhoOWdsL2x5dUthQ2xlTEc4SThBSA0KSVFJUEFvSUJBRzVQd1MvK3E2VDFLTXVUUVNnQ0J3VlBjcWVLTDFQa2VCWlFWRDJKMGlzQVFzQ2VFaUhHVGJDMQ0KR0ZVSjZsUEg5S0taeS9JU1dJL3YxMEM1TzJCa0QrZmYvRnBqdFRyci9vWVphSTlWSEhPSW04TWNXd2ZvTjErOQ0KcTBhNm1HRklPZzdMTzhBdkdyemRTZlA2elE3aTFHMEdNaHBta0VRMk9iQWNZSTN2UkRzdHQzMlIwUlB1akljdw0KaWNEWUlhVGJ4TVFRN2k0ZzhBWjdrTkRvdVR4U2hyNFRWbGRuTXdXdEdRUHlHSE96UUJqckhXVUFQeWRCOXptQQ0Kc1V4aHVmTDRmalNKNDAyY21kR2prUW9LRXF1NlFMQVNXU1JoS0dWUDNIMHdQR1Z0cWFNNVVOVGU3SUU4UlpiTw0KSHlJSTNJU3dDOVl6WE1HallXellFOXI2YmdpZzFoa0NnZ0VBY09WbnpBRlJNQWhyc3JBTjVjTmdabS9VWUthVA0KVXozeFBKNStLVXp2b0w4a2t0VHgyVTVRempkenVlZmxiOVVDT1AveWp6TElnUlRhTnRKdjZVODRURUNWSVQyRA0KVUtIVkdlQ0hGUE5MZU9UbE5PTVVjOFo0SGw1Tzd4MjcwQXhXTTJndXBncUVNUGIxbnJnWGF2ekNDZ2lSU2lnZQ0KbUx6a0FpOElEYzduZkxPUXBjaGVNSG02TkNBcDRRZ1pFYkRaYmp6VUdrUTlRMGNlT0wwLy9JYzIwdmQ1a2pWbw0KTjI5dnJuYStCTW0rejJ3Q2FJSFZmNWlWbzhFdGxwN2E2OEJnQkpEUVVxTzh4M1hpMWhCWkxuWlNJSEFWYjZXLw0KaGd1UmVkRlJucXQ5QWhVdVN0ZlRzUExoUDlXNGN5bDd2QzcyZ3k4K0lkbTgwTkFCaGpaUE0zelF1QT09DQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQ==
@@ -565,7 +619,7 @@ jobs:
 
   run_flowetl_tests:
     machine:
-      image: circleci/classic:201808-01
+      image: ubuntu-1604:201903-01
     environment:
       AIRFLOW_HOME: ./test_airflow_home
       FLOWETL_RUNTIME_CONFIG: "testing"
@@ -587,7 +641,7 @@ jobs:
           command: |
             sudo apt-get update && sudo apt-get install -y postgresql
       - save_cache:
-          key: flowetl-deps1-{{ checksum "Pipfile.lock" }}
+          key: flowetl-deps-1-{{ checksum "Pipfile.lock" }}
           paths:
             - /home/circleci/.local/share/virtualenvs/
       - run:
@@ -818,6 +872,18 @@ workflows:
           <<: *run_always_org_context
       - build_flowdb:
           <<: *run_always_org_context
+      - build_flowdb_testdata:
+          requires:
+            - build_flowdb
+          <<: *run_always_org_context
+      - build_flowdb_oracle:
+          requires:
+            - build_flowdb
+          <<: *run_always_org_context
+      - build_flowdb_synthdata:
+          requires:
+            - build_flowdb
+          <<: *run_always_org_context
       - install_flowmachine_deps:
           <<: *run_always_org_context
       - run_flowkit_api_tests:
@@ -834,20 +900,20 @@ workflows:
           <<: *run_always_org_context
       - run_flowmachine_tests:
           requires:
-            - build_flowdb
+            - build_flowdb_testdata
             - install_flowmachine_deps
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
           name: synth_data_python_generator_tests
           synthetic_data_generator: python
           requires:
-            - build_flowdb
+            - build_flowdb_synthdata
           <<: *run_always_org_context
       - run_flowdbsynth_tests:
           name: synth_data_sql_generator_tests
           synthetic_data_generator: sql
           requires:
-            - build_flowdb
+            - build_flowdb_synthdata
           <<: *run_always_org_context
       - build_docker_image:
           name: build_examples
@@ -868,7 +934,7 @@ workflows:
           name: build_docs
           requires:
             - install_flowmachine_deps
-            - build_flowdb
+            - build_flowdb_synthdata
           <<: *run_always_org_context
       - build_docker_image:
           name: build_flowauth
@@ -904,7 +970,8 @@ workflows:
       - run_quickstart_tests:
           name: test_quickstart
           requires: &quickstart_requirements
-            - build_flowdb
+            - build_flowdb_testdata
+            - build_flowdb_synthdata
             - build_flowapi
             - build_flowmachine
             - build_flowauth
@@ -926,7 +993,7 @@ workflows:
       - integration_tests:
           requires:
             - install_flowmachine_deps
-            - build_flowdb
+            - build_flowdb_testdata
           <<: *run_always_org_context
       - retag_images:
           name: retag_master_branch

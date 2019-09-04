@@ -2,14 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf, Length
 from marshmallow_oneofschema import OneOfSchema
 
-from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset
 from .aggregation_unit import AggregationUnit
 from .daily_location import DailyLocationSchema, DailyLocationExposed
+from .base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 
 
 class InputToModalLocationSchema(OneOfSchema):
@@ -17,7 +20,7 @@ class InputToModalLocationSchema(OneOfSchema):
     type_schemas = {"daily_location": DailyLocationSchema}
 
 
-class ModalLocationSchema(Schema):
+class ModalLocationSchema(BaseQueryWithSamplingSchema):
     # query_kind parameter is required here for claims validation
     query_kind = fields.String(validate=OneOf(["modal_location"]))
     locations = fields.Nested(
@@ -31,16 +34,19 @@ class ModalLocationSchema(Schema):
         return ModalLocationExposed(**data)
 
 
-class ModalLocationExposed(BaseExposedQuery):
-    def __init__(self, locations, *, aggregation_unit, subscriber_subset=None):
+class ModalLocationExposed(BaseExposedQueryWithSampling):
+    def __init__(
+        self, locations, *, aggregation_unit, subscriber_subset=None, sampling=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.locations = locations
         self.aggregation_unit = aggregation_unit
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         """
         Return the underlying flowmachine ModalLocation object.
 

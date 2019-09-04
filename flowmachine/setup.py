@@ -72,7 +72,7 @@ setup(
         "SQLAlchemy",
         "cachetools",
         "apispec-oneofschema",
-        "marshmallow>=3.0.0rc7",  # TODO: unpin
+        "marshmallow>=3.0.0",
         "marshmallow-oneofschema>=2.0.0",
         "numpy",
         "networkx",
@@ -88,6 +88,7 @@ setup(
         "structlog",
         "shapely",
         "python-rapidjson",
+        "get-secret-or-env-var",
     ],
     setup_requires=["pytest-runner"],
     tests_require=test_requirements,

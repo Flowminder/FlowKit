@@ -65,7 +65,7 @@ export async function getUser(user_id) {
 }
 
 export async function getUserGroup(user_id) {
-  return await getResponseDefault("/admin/users/" + user_id + "/user_group");
+  return await getResponseDefault("/admin/users/" + user_id + "/tokens_group");
 }
 
 export async function editPassword(oldPassword, newPassword) {
@@ -79,13 +79,22 @@ export async function editPassword(oldPassword, newPassword) {
   return await getResponse("/user/password", dat);
 }
 
-export async function editUser(user_id, username, password, is_admin) {
+export async function editUser(
+  user_id,
+  username,
+  password,
+  is_admin,
+  require_two_factor,
+  has_two_factor
+) {
   var dat = {
     method: "PATCH",
     body: JSON.stringify({
       username: username,
       password: password,
-      is_admin: is_admin
+      is_admin: is_admin,
+      require_two_factor: require_two_factor,
+      has_two_factor: has_two_factor
     })
   };
   return await getResponse("/admin/users/" + user_id, dat);
@@ -158,15 +167,15 @@ export async function getGroupsForUser(user_id) {
 }
 
 export async function getMyServers() {
-  return await getResponseDefault("/user/servers");
+  return await getResponseDefault("/tokens/servers");
 }
 
 export async function getMyTokensForServer(server_id) {
-  return await getResponseDefault("/user/tokens/" + server_id);
+  return await getResponseDefault("/tokens/tokens/" + server_id);
 }
 
 export async function getMyRightsForServer(server_id) {
-  return await getResponseDefault("/user/servers/" + server_id);
+  return await getResponseDefault("/tokens/servers/" + server_id);
 }
 
 export async function getCapabilities(server_id) {
@@ -201,13 +210,19 @@ export async function getTimeLimits(server_id) {
   );
 }
 
-export async function createUser(username, password, is_admin) {
+export async function createUser(
+  username,
+  password,
+  is_admin,
+  require_two_factor
+) {
   var dat = {
     method: "POST",
     body: JSON.stringify({
       username: username,
       password: password,
-      is_admin: is_admin
+      is_admin: is_admin,
+      require_two_factor: require_two_factor
     })
   };
   return await getResponse("/admin/users", dat);
@@ -315,7 +330,7 @@ export async function createToken(name, server_id, expiry, claims) {
     method: "POST",
     body: JSON.stringify({ name: name, expiry: expiry, claims: claims })
   };
-  return await getResponse("/user/tokens/" + server_id, dat);
+  return await getResponse("/tokens/tokens/" + server_id, dat);
 }
 
 export async function login(username, password) {
@@ -326,8 +341,79 @@ export async function login(username, password) {
   return await getResponse("/signin", dat);
 }
 
+export async function twoFactorlogin(username, password, two_factor_code) {
+  var dat = {
+    method: "POST",
+    body: JSON.stringify({
+      username: username,
+      password: password,
+      two_factor_code: two_factor_code
+    })
+  };
+  return await getResponse("/signin", dat);
+}
+
+export async function startTwoFactorSetup() {
+  var dat = {
+    method: "POST"
+  };
+  return await getResponse("/user/enable_two_factor", dat);
+}
+
+export async function getTwoFactorBackups() {
+  var dat = {
+    method: "GET"
+  };
+  return await getResponse("/user/generate_two_factor_backups", dat);
+}
+
+export async function confirmTwoFactorBackups(backup_codes_signature) {
+  var dat = {
+    method: "POST",
+    body: JSON.stringify({
+      backup_codes_signature: backup_codes_signature
+    })
+  };
+  return await getResponse("/user/generate_two_factor_backups", dat);
+}
+
+export async function confirmTwoFactor(
+  two_factor_code,
+  secret,
+  backup_codes_signature
+) {
+  var dat = {
+    method: "POST",
+    body: JSON.stringify({
+      two_factor_code: two_factor_code,
+      secret: secret,
+      backup_codes_signature: backup_codes_signature
+    })
+  };
+  return await getResponse("/user/confirm_two_factor", dat);
+}
+
+export async function disableTwoFactor() {
+  var dat = {
+    method: "POST"
+  };
+  return await getResponse("/user/disable_two_factor", dat);
+}
+
 export async function isLoggedIn() {
   return await getResponseDefault("/is_signed_in");
+}
+
+export async function isTwoFactorActive() {
+  return await getResponseDefault("/user/two_factor_active");
+}
+
+export async function isTwoFactorRequired() {
+  return await getResponseDefault("/user/two_factor_required");
+}
+
+export async function getVersion() {
+  return await getResponseDefault("/version");
 }
 
 export async function logout() {

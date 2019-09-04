@@ -69,9 +69,9 @@ fi
 
 if [ $# -gt 0 ] && [ "$1" = "larger_data" ] || [ "$2" = "larger_data" ]
 then
-    export DOCKER_FLOWDB_HOST=flowdb_synthetic_data
+    export EXTRA_COMPOSE=docker-compose-syntheticdata.yml
 else
-    export DOCKER_FLOWDB_HOST=flowdb_testdata
+    export EXTRA_COMPOSE=docker-compose-testdata.yml
 fi
 
 if [ $# -gt 0 ] && [ "$1" = "examples" ] || [ "$2" = "examples" ]
@@ -79,9 +79,9 @@ then
     export WORKED_EXAMPLES=worked_examples
     if [ $# -gt 0 ] && [ "$1" = "smaller_data" ] || [ "$2" = "smaller_data" ]
     then
-        export DOCKER_FLOWDB_HOST=flowdb_testdata
+        export EXTRA_COMPOSE=docker-compose-testdata.yml
     else
-        export DOCKER_FLOWDB_HOST=flowdb_synthetic_data
+        export EXTRA_COMPOSE=docker-compose-syntheticdata.yml
     fi
 else
     export WORKED_EXAMPLES=
@@ -118,26 +118,25 @@ curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/doc
 curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-testdata.yml -o "$DOCKER_WORKDIR/docker-compose-testdata.yml"
 curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/docker-compose-syntheticdata.yml -o "$DOCKER_WORKDIR/docker-compose-syntheticdata.yml"
 
-DOCKER_COMPOSE="docker-compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/docker-compose-testdata.yml -f $DOCKER_WORKDIR/docker-compose-syntheticdata.yml"
+DOCKER_COMPOSE="docker-compose -p flowkit_qs -f $DOCKER_WORKDIR/docker-compose.yml -f $DOCKER_WORKDIR/$EXTRA_COMPOSE"
 
 if [ $# -gt 0 ] && [ "$1" = "stop" ]
 then
-    export DOCKER_FLOWDB_HOST=flowdb_testdata
     echo "Stopping containers"
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/development_environment)"
     $DOCKER_COMPOSE down -v
 else
     source /dev/stdin <<< "$(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/${GIT_REVISION}/development_environment)"
     echo "Starting containers (this may take a few minutes)"
-    RUNNING=`$DOCKER_COMPOSE ps -q $DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
+    RUNNING=`$DOCKER_COMPOSE ps -q flowdb flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES`
     if [[ "$RUNNING" != "" ]]; then
         confirm "Existing containers are running and will be replaced. Are you sure?" || exit 1
     fi
-    DOCKER_SERVICES="$DOCKER_FLOWDB_HOST flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES"
+    DOCKER_SERVICES="flowdb flowapi flowmachine flowauth flowmachine_query_locker $WORKED_EXAMPLES"
     $DOCKER_COMPOSE pull $DOCKER_SERVICES
-    $DOCKER_COMPOSE up -d $DOCKER_SERVICES
+    $DOCKER_COMPOSE up -d --renew-anon-volumes $DOCKER_SERVICES
     echo "Waiting for containers to be ready.."
-    docker exec ${DOCKER_FLOWDB_HOST} bash -c 'i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
+    docker exec flowdb bash -c 'i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (pg_isready -h 127.0.0.1 -p 5432) && exit_status=0; }; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status' || (>&2 echo "FlowDB failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowDB,bug including the output of running 'docker logs flowdb'" && exit 1)
     echo "FlowDB ready."
     (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (netstat -an | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=FlowMachine,bug including the output of running 'docker logs flowmachine'" && exit 1)
     echo "FlowMachine ready"
@@ -148,8 +147,8 @@ else
     if [[ "$WORKED_EXAMPLES" = "worked_examples" ]]
     then
         (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:$WORKED_EXAMPLES_PORT > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "Worked examples failed to start :( Please open an issue at https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md&labels=docs,bug including the output of running 'docker logs worked_examples'" && exit 1)
+        echo "Worked examples ready."
     fi
-    echo "Worked examples ready."
     echo "All containers ready!"
     echo "Access FlowDB using 'PGHOST=$FLOWDB_HOST PGPORT=$FLOWDB_PORT PGDATABASE=flowdb PGUSER=$FLOWMACHINE_FLOWDB_USER PGPASSWORD=$FLOWMACHINE_FLOWDB_PASSWORD psql'"
     echo "Access FlowAPI using FlowClient at http://localhost:$FLOWAPI_PORT"

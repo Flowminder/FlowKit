@@ -28,11 +28,26 @@ function getCookieValue(a) {
   var b = document.cookie.match("(^|;)\\s*" + a + "\\s*=\\s*([^;]+)");
   return b ? b.pop() : "";
 }
-
 Cypress.Commands.add("login", () =>
   cy.goto("/").request("POST", "/signin", {
     username: "TEST_USER",
     password: "DUMMY_PASSWORD"
+  })
+);
+Cypress.Commands.add("create_two_factor_user", (username, password) =>
+  cy.login_admin().then(response => {
+    return cy
+      .request({
+        method: "POST",
+        url: "/admin/users",
+        body: {
+          username: username,
+          password: password,
+          require_two_factor: true
+        },
+        headers: { "X-CSRF-Token": getCookieValue("X-CSRF") }
+      })
+      .its("body");
   })
 );
 Cypress.Commands.add("create_user", (username, password) =>

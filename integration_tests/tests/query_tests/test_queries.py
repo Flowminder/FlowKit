@@ -185,6 +185,22 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 "locations": flowclient.daily_location(
                     date="2016-01-01", aggregation_unit="admin3", method="last"
                 ),
+                "metric": flowclient.displacement(
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    statistic="avg",
+                    reference_location=flowclient.daily_location(
+                        date="2016-01-01", aggregation_unit="lon-lat", method="last"
+                    ),
+                ),
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
                 "metric": flowclient.pareto_interactions(
                     start="2016-01-01", stop="2016-01-02", proportion="0.8"
                 ),
@@ -533,6 +549,35 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                     method="last",
                 ),
                 "method": "distr",
+            },
+        ),
+        (
+            "spatial_aggregate",
+            {
+                "locations": flowclient.random_sample(
+                    query=flowclient.daily_location(
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="most-common",
+                    ),
+                    size=10,
+                )
+            },
+        ),
+        (
+            "spatial_aggregate",
+            {
+                "locations": flowclient.random_sample(
+                    query=flowclient.daily_location(
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="most-common",
+                    ),
+                    sampling_method="bernoulli",
+                    fraction=0.5,
+                    estimate_count=False,
+                    seed=0.2,
+                )
             },
         ),
     ],

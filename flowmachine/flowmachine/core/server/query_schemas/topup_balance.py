@@ -2,17 +2,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from marshmallow import Schema, fields, post_load
+from marshmallow import fields, post_load
 from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import TopUpBalance
-from .base_exposed_query import BaseExposedQuery
 from .custom_fields import Statistic, SubscriberSubset
+from .base_query_with_sampling import (
+    BaseQueryWithSamplingSchema,
+    BaseExposedQueryWithSampling,
+)
 
 __all__ = ["TopUpBalanceSchema", "TopUpBalanceExposed"]
 
 
-class TopUpBalanceSchema(Schema):
+class TopUpBalanceSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["topup_balance"]))
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
@@ -24,9 +27,15 @@ class TopUpBalanceSchema(Schema):
         return TopUpBalanceExposed(**params)
 
 
-class TopUpBalanceExposed(BaseExposedQuery):
+class TopUpBalanceExposed(BaseExposedQueryWithSampling):
     def __init__(
-        self, *, start_date, end_date, statistic="avg", subscriber_subset=None
+        self,
+        *,
+        start_date,
+        end_date,
+        statistic="avg",
+        subscriber_subset=None,
+        sampling=None
     ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
@@ -34,9 +43,10 @@ class TopUpBalanceExposed(BaseExposedQuery):
         self.end_date = end_date
         self.statistic = statistic
         self.subscriber_subset = subscriber_subset
+        self.sampling = sampling
 
     @property
-    def _flowmachine_query_obj(self):
+    def _unsampled_query_obj(self):
         """
         Return the underlying flowmachine TopUpBalance object.
 

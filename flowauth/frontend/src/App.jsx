@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import { logout } from "./util/api";
+import Version from "./Version";
 
 class App extends Component {
   constructor(props) {
@@ -33,11 +34,25 @@ class App extends Component {
     if (this.state.hasError) throw this.state.error;
 
     const { loggedIn, is_admin } = this.state;
+    let component;
     if (loggedIn) {
-      return <Dashboard setLoggedOut={this.setLoggedOut} is_admin={is_admin} />;
+      component = (
+        <Dashboard setLoggedOut={this.setLoggedOut} is_admin={is_admin} />
+      );
     } else {
-      return <Login setLoggedIn={this.setLoggedIn} />;
+      component = (
+        <Login
+          setLoggedIn={this.setLoggedIn}
+          setLoggedOut={this.setLoggedOut}
+        />
+      );
     }
+    return (
+      <>
+        {component}
+        <Version />
+      </>
+    );
   }
 }
 

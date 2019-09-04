@@ -8,7 +8,7 @@ Tests for query caching functions.
 
 import pytest
 
-from flowmachine.core.cache import cache_table_exists
+from flowmachine.core.cache import cache_table_exists, write_cache_metadata
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location, ModalLocation, Flows
 
@@ -31,7 +31,7 @@ def test_do_cache_simple(flowmachine_connect):
 
     """
     dl1 = daily_location("2016-01-01")
-    dl1._db_store_cache_metadata()
+    write_cache_metadata(flowmachine_connect, dl1)
     assert cache_table_exists(flowmachine_connect, dl1.md5)
 
 
@@ -42,7 +42,7 @@ def test_do_cache_multi(flowmachine_connect):
     """
 
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
-    hl1._db_store_cache_metadata()
+    write_cache_metadata(flowmachine_connect, hl1)
 
     assert cache_table_exists(flowmachine_connect, hl1.md5)
 
@@ -55,7 +55,7 @@ def test_do_cache_nested(flowmachine_connect):
     hl1 = ModalLocation(daily_location("2016-01-01"), daily_location("2016-01-02"))
     hl2 = ModalLocation(daily_location("2016-01-03"), daily_location("2016-01-04"))
     flow = Flows(hl1, hl2)
-    flow._db_store_cache_metadata()
+    write_cache_metadata(flowmachine_connect, flow)
 
     assert cache_table_exists(flowmachine_connect, flow.md5)
 

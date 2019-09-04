@@ -151,7 +151,7 @@ def test_rm_server(client, auth):
     assert 200 == response.status_code
     response = client.get("/admin/servers", headers={"X-CSRF-Token": csrf_cookie})
     assert [{"id": 1, "name": "DUMMY_SERVER_A"}] == response.get_json()
-    response = client.get("/user/tokens", headers={"X-CSRF-Token": csrf_cookie})
+    response = client.get("/tokens/tokens", headers={"X-CSRF-Token": csrf_cookie})
     assert [] == response.get_json()  # Should have no tokens
 
 

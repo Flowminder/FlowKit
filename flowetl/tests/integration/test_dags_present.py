@@ -32,6 +32,7 @@ def test_dags_present(airflow_local_setup):
                 "transform",
                 "success_branch",
                 "load",
+                "postload",
                 "archive",
                 "quarantine",
                 "clean",

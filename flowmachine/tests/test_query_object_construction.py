@@ -26,6 +26,33 @@ def test_construct_query(diff_reporter):
             },
         },
         {
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": None,
+                "sampling": None,
+            },
+        },
+        {
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": None,
+                "sampling": {
+                    "sampling_method": "system_rows",
+                    "size": 10,
+                    "fraction": None,
+                    "estimate_count": False,
+                },
+            },
+        },
+        {
             "query_kind": "location_event_counts",
             "start_date": "2016-01-01",
             "end_date": "2016-01-02",
@@ -264,3 +291,43 @@ def test_wrong_geography_aggregation_unit_raises_error():
         _ = FlowmachineQuerySchema().load(
             {"query_kind": "geography", "aggregation_unit": "DUMMY_AGGREGATION_UNIT"}
         )
+
+
+@pytest.mark.parametrize(
+    "sampling, message",
+    [
+        (
+            {"sampling_method": "system_rows", "size": 10, "fraction": 0.2},
+            "Must provide exactly one of 'size' or 'fraction' for a random sample",
+        ),
+        (
+            {"sampling_method": "system_rows"},
+            "Must provide exactly one of 'size' or 'fraction' for a random sample",
+        ),
+        (
+            {"sampling_method": "system_rows", "fraction": 1.2},
+            "Must be greater than 0.0 and less than 1.0.",
+        ),
+        (
+            {"sampling_method": "system_rows", "size": -1},
+            "Must be greater than or equal to 1.",
+        ),
+        (
+            {"sampling_method": "random_ids", "size": 10, "seed": 185},
+            "Must be greater than or equal to -1.0 and less than or equal to 1.0.",
+        ),
+    ],
+)
+def test_invalid_sampling_params_raises_error(sampling, message):
+    query_spec = {
+        "query_kind": "spatial_aggregate",
+        "locations": {
+            "query_kind": "daily_location",
+            "date": "2016-01-01",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "sampling": sampling,
+        },
+    }
+    with pytest.raises(ValidationError, match=message):
+        _ = FlowmachineQuerySchema().load(query_spec)
