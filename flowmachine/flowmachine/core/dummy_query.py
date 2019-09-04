@@ -1,3 +1,10 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+"""
+A dummy query class, primarily useful for testing.
+"""
+
 import structlog
 from .query import Query
 from .query_state import QueryStateMachine
@@ -28,6 +35,15 @@ class DummyQuery(Query):
     def column_names(self):
         return []
 
+    @property
+    def is_stored(self):
+        try:
+            status = self._dummy_stored_status
+        except AttributeError:
+            status = False
+            self._dummy_stored_status = status
+        return status
+
     def store(self):
         logger.debug(
             "Storing dummy query by marking the query state as 'finished' (but without actually writing to the database)."
@@ -35,6 +51,7 @@ class DummyQuery(Query):
         q_state_machine = QueryStateMachine(self.redis, self.md5)
         q_state_machine.enqueue()
         q_state_machine.execute()
+        self._dummy_stored_status = True
         q_state_machine.finish()
 
     def explain(self, format="text", analyse=False):
@@ -46,3 +63,14 @@ class DummyQuery(Query):
                 f"Only format='json' is supported by {self.__class__.__name__}.explain()"
             )
         return [{"Plan": {"Total Cost": 0.0}}]
+
+    def __getstate__(self):
+        """
+        Override Query.__getstate__ to remove _dummy_stored_status from state.
+        """
+        state = super().__getstate__()
+        try:
+            del state["_dummy_stored_status"]
+        except:
+            pass  # Not a problem if it doesn't exist
+        return state
