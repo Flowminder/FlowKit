@@ -108,6 +108,7 @@ COPY ./Pipfile* /tmp/
 RUN apt-get update \
         && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev \
         && pip3 install pgxnclient \
+        && pgxnclient install pg_median_utils \
         && pip3 install pipenv \
         && PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
         && apt-get remove -y python3-dev gcc m4 libxml2-dev libaio-dev \
