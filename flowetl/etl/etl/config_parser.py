@@ -37,9 +37,11 @@ def validate_config(*, global_config_dict: dict) -> Exception:
         )
 
     etl_keys = global_config_dict.get("etl", {}).keys()
-    if etl_keys != CDRType._value2member_map_.keys():
+    if not set(etl_keys).issubset(CDRType):
         exceptions.append(
-            ValueError(f"etl section must contain subsections for {list(CDRType)}")
+            ValueError(
+                f"Etl sections present in config.yml must be a subset of {[x.value for x in CDRType]}. Got: {set(etl_keys)}"
+            )
         )
 
     for key, value in global_config_dict.get("etl", {}).items():
@@ -70,4 +72,4 @@ def get_config_from_file(*, config_filepath: Path) -> dict:
         Yaml config loaded into a python dict
     """
     content = open(config_filepath, "r").read()
-    return yaml.load(content, Loader=yaml.FullLoader)
+    return yaml.load(content, Loader=yaml.SafeLoader)

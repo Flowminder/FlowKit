@@ -33,25 +33,31 @@ class UserAdminDetails extends React.Component {
     username_helper_text: "",
     password: "",
     password_helper_text: "",
+    require_two_factor: false,
     edit_mode: false,
     groups: [],
     servers: [],
     group_id: null,
     is_admin: false,
     password_strength: null,
+    has_two_factor: false,
+    two_factor_can_be_disabled: false,
     pageError: false,
     errors: { message: "" }
   };
-  componentDidMount() {
-    getUser(this.props.item_id)
-      .then(json => {
-        this.setState(Object.assign(json || {}, json && { edit_mode: true }));
-      })
-      .catch(err => {
-        if (err.code !== 404) {
-          this.setState({ hasError: true, error: err });
-        }
-      });
+  async componentDidMount() {
+    const json = getUser(this.props.item_id);
+    try {
+      this.setState(await json);
+      this.setState({ edit_mode: true });
+      if ((await json)["has_two_factor"]) {
+        this.setState({ two_factor_can_be_disabled: true });
+      }
+    } catch (err) {
+      if (err.code !== 404) {
+        this.setState({ hasError: true, error: err });
+      }
+    }
   }
 
   generatePassword = event => {
@@ -62,7 +68,12 @@ class UserAdminDetails extends React.Component {
       password_strength: passStrength.score
     });
   };
-
+  setTwoFactorRequired = event => {
+    this.setState({ require_two_factor: event.target.checked });
+  };
+  setHasTwoFactor = event => {
+    this.setState({ has_two_factor: event.target.checked });
+  };
   setAdmin = event => {
     this.setState({ is_admin: event.target.checked });
   };
@@ -118,15 +129,27 @@ class UserAdminDetails extends React.Component {
       groups,
       is_admin,
       username_helper_text,
-      password_strength
+      password_strength,
+      require_two_factor,
+      has_two_factor
     } = this.state;
-    if (username_helper_text === "" && password_strength > 3) {
+    if (
+      username_helper_text === "" &&
+      (password.length === 0 || password_strength > 3)
+    ) {
       var task;
       var uid;
       if (edit_mode) {
-        task = editUser(item_id, name, password, is_admin);
+        task = editUser(
+          item_id,
+          name,
+          password ? password.length > 0 : undefined,
+          is_admin,
+          require_two_factor,
+          has_two_factor
+        );
       } else {
-        task = createUser(name, password, is_admin);
+        task = createUser(name, password, is_admin, require_two_factor);
       }
       task
         .then(json => {
@@ -159,7 +182,11 @@ class UserAdminDetails extends React.Component {
       group_id,
       servers,
       edit_mode,
-      password_strength
+      password_strength,
+      require_two_factor,
+      has_two_factor,
+      two_factor_can_be_disabled,
+      is_admin
     } = this.state;
     return (
       <React.Fragment>
@@ -222,13 +249,47 @@ class UserAdminDetails extends React.Component {
           <FormControlLabel
             control={
               <Switch
-                checked={this.state.is_admin}
+                checked={is_admin}
                 onChange={this.setAdmin}
                 value="is_admin"
               />
             }
+            label={(is_admin && "User is admin") || "User is not admin"}
+          />
+        </Grid>
+        <Grid xs={12}>
+          <Typography variant="h5" component="h1">
+            Two-Factor Authentication
+          </Typography>
+        </Grid>
+        <Grid xs={2}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={require_two_factor}
+                onChange={this.setTwoFactorRequired}
+                value="require_two_factor"
+              />
+            }
             label={
-              (this.state.is_admin && "User is admin") || "User is not admin"
+              (require_two_factor && "Two-factor authentication required") ||
+              "Two-factor authentication not required"
+            }
+          />
+        </Grid>
+        <Grid xs={2}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={has_two_factor}
+                onChange={this.setHasTwoFactor}
+                value="has_two_factor"
+                disabled={!two_factor_can_be_disabled}
+              />
+            }
+            label={
+              (has_two_factor && "Two-factor authentication enabled") ||
+              "Two-factor authentication not enabled"
             }
           />
         </Grid>
@@ -254,7 +315,10 @@ class UserAdminDetails extends React.Component {
           message={this.state.errors.message}
         />
         <Grid item xs={12} />
-        <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
+        <SubmitButtons
+          handleSubmit={this.handleSubmit}
+          onClick={this.handleSubmit}
+        />
       </React.Fragment>
     );
   }

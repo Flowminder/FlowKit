@@ -14,7 +14,7 @@ def test_user_group_listing(client, auth, test_user):
 
     # Log in first
     response, csrf_cookie = auth.login(username, password)
-    response = client.get("/user/groups", headers={"X-CSRF-Token": csrf_cookie})
+    response = client.get("/tokens/groups", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
 
     assert [
@@ -27,7 +27,7 @@ def test_server_access(client, auth, test_user):
     uid, uname, upass = test_user
     # Log in first
     response, csrf_cookie = auth.login(uname, upass)
-    response = client.get("/user/servers", headers={"X-CSRF-Token": csrf_cookie})
+    response = client.get("/tokens/servers", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
     assert [{"id": 1, "server_name": "DUMMY_SERVER_A"}] == response.get_json()
 
@@ -37,7 +37,7 @@ def test_no_tokens(client, auth, test_user):
     uid, uname, upass = test_user
     # Log in first
     response, csrf_cookie = auth.login(uname, upass)
-    response = client.get("/user/tokens", headers={"X-CSRF-Token": csrf_cookie})
+    response = client.get("/tokens/tokens", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
     result = response.get_json()
 
@@ -49,7 +49,7 @@ def test_list_tokens(client, auth, test_admin):
     uid, uname, upass = test_admin
     # Log in first
     response, csrf_cookie = auth.login(uname, upass)
-    response = client.get("/user/tokens", headers={"X-CSRF-Token": csrf_cookie})
+    response = client.get("/tokens/tokens", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
     result = response.get_json()
 
@@ -70,7 +70,7 @@ def test_list_tokens_for_server(client, auth, test_admin):
     uid, uname, upass = test_admin
     # Log in first
     response, csrf_cookie = auth.login(uname, upass)
-    response = client.get("/user/tokens/2", headers={"X-CSRF-Token": csrf_cookie})
+    response = client.get("/tokens/tokens/2", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
     result = response.get_json()
 
@@ -85,7 +85,7 @@ def test_list_tokens_for_server(client, auth, test_admin):
         }
     ] == result
 
-    response = client.get("/user/tokens/1", headers={"X-CSRF-Token": csrf_cookie})
+    response = client.get("/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie})
     assert 200 == response.status_code  # Should get an OK
     result = response.get_json()
 

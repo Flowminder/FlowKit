@@ -7,27 +7,12 @@
 
 version: '3.5'
 
-networks:
-  db:
-
-
 services:
 
-  flowdb_synthetic_data:
-    container_name: flowdb_synthetic_data
+  flowdb:
+    container_name: flowdb
     image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
-    ports:
-      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:?Must set POSTGRES_USER env var}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
-      FLOWMACHINE_FLOWDB_USER: ${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
-      FLOWMACHINE_FLOWDB_PASSWORD: ${FLOWMACHINE_FLOWDB_PASSWORD:?Must set FLOWMACHINE_FLOWDB_PASSWORD env var}
-      FLOWAPI_FLOWDB_USER: ${FLOWAPI_FLOWDB_USER:?Must set FLOWAPI_FLOWDB_USER env var}
-      FLOWAPI_FLOWDB_PASSWORD: ${FLOWAPI_FLOWDB_PASSWORD:?Must set FLOWAPI_FLOWDB_PASSWORD env var}
-      CACHE_SIZE: ${CACHE_SIZE:-""}
-      CACHE_HALF_LIFE: ${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
-      FLOWDB_ENABLE_POSTGRES_DEBUG_MODE: ${FLOWDB_ENABLE_POSTGRES_DEBUG_MODE:?Must set FLOWDB_ENABLE_POSTGRES_DEBUG_MODE env var}
       SYNTHETIC_DATA_GENERATOR: ${SYNTHETIC_DATA_GENERATOR:?Must set SYNTHETIC_DATA_GENERATOR env var}
       N_SITES: ${N_SITES:?Must set N_SITES env var}
       N_CELLS: ${N_CELLS:?Must set N_CELLS env var}
@@ -42,11 +27,3 @@ services:
       INTERACTIONS_MULTIPLIER: ${INTERACTIONS_MULTIPLIER:?Must set INTERACTIONS_MULTIPLIER env var}
       DISASTER_START: ${DISASTER_START:?Must set DISASTER_START env var}
       DISASTER_END: ${DISASTER_END:?Must set DISASTER_END env var}
-    shm_size: 1G
-    tty: true
-    stdin_open: true
-    restart: always
-    networks:
-      db:
-        aliases:
-          - flowdb

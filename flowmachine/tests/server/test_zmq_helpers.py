@@ -3,8 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+from unittest.mock import Mock, patch
 
-from flowmachine.core.server.server import get_reply_for_message
+import rapidjson
+
+from flowmachine.core.server.server import (
+    get_reply_for_message,
+    calculate_and_send_reply_for_message,
+)
 from flowmachine.core.server.zmq_helpers import *
 
 
@@ -106,3 +112,27 @@ def test_zmq_msg_parse_error(bad_message, expected_message):
     reply = get_reply_for_message(bad_message)
     assert reply["status"] == "error"
     assert reply["msg"] == expected_message
+
+
+@pytest.mark.asyncio
+async def test_generic_error_catch():
+    """
+    Test that calculate_and_send_reply_for_message sends a reply if get_reply_for_message raises an unexpected error
+    """
+    mock_socket = Mock()
+    expected_response = [
+        "DUMMY_RETURN_ADDRESS",
+        b"",
+        rapidjson.dumps(
+            ZMQReply(status="error", msg="Could not get reply for message")
+        ).encode(),
+    ]
+    with patch(
+        "flowmachine.core.server.server.get_reply_for_message"
+    ) as mock_get_reply:
+        mock_get_reply.side_effect = Exception("Didn't see this one coming!")
+        await calculate_and_send_reply_for_message(
+            mock_socket, "DUMMY_RETURN_ADDRESS", "DUMMY_MESSAGE"
+        )
+        mock_get_reply.assert_called_once()
+        mock_socket.send_multipart.assert_called_once_with(expected_response)

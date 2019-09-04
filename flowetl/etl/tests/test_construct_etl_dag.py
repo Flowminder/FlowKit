@@ -111,7 +111,7 @@ def test_construct_etl_dag_with_no_owner_defaults_to_airflow():
         **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
     )
 
-    assert dag.owner == "Airflow"
+    assert dag.owner == "airflow"
 
 
 def test_construct_etl_dag_fails_with_bad_start_date():

@@ -33,7 +33,7 @@ def test_reject_when_claim_not_allowed(client, auth, test_user):
         },
     }
     response = client.post(
-        "/user/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
+        "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
     )
     assert 401 == response.status_code
     assert (
@@ -60,7 +60,7 @@ def test_token_generation(client, auth, app, test_user, public_key):
         },
     }
     response = client.post(
-        "/user/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
+        "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
     )
     assert 200 == response.status_code
     token_json = response.get_json()
@@ -98,7 +98,7 @@ def test_token_rejected_for_expiry(client, auth, app, test_user):
         },
     }
     response = client.post(
-        "/user/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
+        "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
     )
     assert 400 == response.status_code
     assert {
@@ -126,7 +126,7 @@ def test_token_rejected_for_bad_right_claim(client, auth, app, test_user):
         },
     }
     response = client.post(
-        "/user/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
+        "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
     )
     assert 401 == response.status_code
     assert (

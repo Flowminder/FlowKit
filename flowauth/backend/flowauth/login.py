@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import binascii
 
 from flask import request, jsonify, Blueprint, current_app, session
 from flask_login import login_user, logout_user, login_required, current_user
@@ -23,12 +24,29 @@ def signin():
     if user is not None:
         current_app.logger.debug(f"{user.username}:{user.id} trying to log in.")
         if user.is_correct_password(json["password"]):
+            two_factor = user.two_factor_auth
+            if two_factor is not None and two_factor.enabled:
+                if "two_factor_code" not in json or json["two_factor_code"] == "":
+                    raise InvalidUsage(
+                        "Must supply a two-factor authentication code.",
+                        payload={"need_two_factor": True},
+                    )
+                try:
+                    two_factor.validate(json["two_factor_code"])
+                except (Unauthorized, binascii.Error):
+                    two_factor.validate_backup_code(json["two_factor_code"])
             login_user(user, remember=False)
             identity_changed.send(
                 current_app._get_current_object(), identity=Identity(user.id)
             )
             session.modified = True
-            return jsonify({"logged_in": True, "is_admin": user.is_admin})
+            return jsonify(
+                {
+                    "logged_in": True,
+                    "is_admin": user.is_admin,
+                    "require_two_factor_setup": current_user.two_factor_setup_required,
+                }
+            )
     current_app.logger.debug(f"{json['username']} failed to log in.")
     raise Unauthorized("Incorrect username or password.")
 
@@ -36,7 +54,13 @@ def signin():
 @blueprint.route("/is_signed_in")
 @login_required
 def is_signed_in():
-    return jsonify({"logged_in": True, "is_admin": current_user.is_admin})
+    return jsonify(
+        {
+            "logged_in": True,
+            "is_admin": current_user.is_admin,
+            "require_two_factor_setup": current_user.two_factor_setup_required,
+        }
+    )
 
 
 @blueprint.route("/signout")

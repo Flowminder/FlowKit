@@ -10,45 +10,13 @@ from pathlib import Path
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.backends.openssl.rsa import _RSAPublicKey
 from cryptography.hazmat.primitives import serialization
+from get_secret_or_env_var import environ, getenv
 
 
 class UndefinedConfigOption(Exception):
     """
     Indicates that a required configuration option was not provided.
     """
-
-
-def get_secret_or_env_var(key: str) -> str:
-    """
-    Get a value from docker secrets (i.e. read it from a file in
-    /run/secrets) or from the environment variable with the same
-    name. Raises an error if neither is defined.
-
-    Parameters
-    ----------
-    key: str
-        Name of the secret / environment variable.
-
-    Returns
-    -------
-    str
-        Value in the file, or value of the environment variable.
-
-    Raises
-    ------
-    UndefinedConfigOption
-        If neither a docker secret nor an environment variable for the given key is defined.
-    """
-    try:
-        with open(Path("/run/secrets") / key, "r") as fin:
-            return fin.read().strip()
-    except FileNotFoundError:
-        try:
-            return os.environ[key]
-        except KeyError:
-            raise UndefinedConfigOption(
-                f"Undefined configuration option: '{key}'. Please set docker secret or environment variable."
-            )
 
 
 # Duplicated in flowkit_jwt_generator (cannot re-use the implementation
@@ -80,18 +48,23 @@ def load_public_key(key_string: str) -> _RSAPublicKey:
 
 def get_config():
 
-    jwt_public_key = load_public_key(get_secret_or_env_var("PUBLIC_JWT_SIGNING_KEY"))
+    try:
+        jwt_public_key = load_public_key(environ["PUBLIC_JWT_SIGNING_KEY"])
 
-    log_level = logging.getLevelName(os.getenv("FLOWAPI_LOG_LEVEL", "error").upper())
+        log_level = logging.getLevelName(getenv("FLOWAPI_LOG_LEVEL", "error").upper())
 
-    flowmachine_host = get_secret_or_env_var("FLOWMACHINE_HOST")
-    flowmachine_port = get_secret_or_env_var("FLOWMACHINE_PORT")
+        flowmachine_host = environ["FLOWMACHINE_HOST"]
+        flowmachine_port = environ["FLOWMACHINE_PORT"]
 
-    flowdb_user = get_secret_or_env_var("FLOWAPI_FLOWDB_USER")
-    flowdb_password = get_secret_or_env_var("FLOWAPI_FLOWDB_PASSWORD")
-    flowdb_host = get_secret_or_env_var("FLOWDB_HOST")
-    flowdb_port = get_secret_or_env_var("FLOWDB_PORT")
-    flowapi_server_id = get_secret_or_env_var("FLOWAPI_IDENTIFIER")
+        flowdb_user = environ["FLOWAPI_FLOWDB_USER"]
+        flowdb_password = environ["FLOWAPI_FLOWDB_PASSWORD"]
+        flowdb_host = environ["FLOWDB_HOST"]
+        flowdb_port = environ["FLOWDB_PORT"]
+        flowapi_server_id = environ["FLOWAPI_IDENTIFIER"]
+    except KeyError as e:
+        raise UndefinedConfigOption(
+            f"Undefined configuration option: '{e.args[0]}'. Please set docker secret or environment variable."
+        )
 
     return dict(
         JWT_PUBLIC_KEY=jwt_public_key,
