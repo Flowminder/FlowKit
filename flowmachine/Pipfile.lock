@@ -127,16 +127,16 @@
         },
         "pglast": {
             "hashes": [
-                "sha256:369a7ab5aa9b50d047f3e48f54496993ec14b8f8814c9649f15747947589b516",
-                "sha256:3be62523565af3f63b910cf13a8a3621a844f090940509c5bc7e2106fe501df8",
-                "sha256:4632f00f6e6c7b58dd7c4a052d5148f006a1c121a337af33a5473f9b787823b0",
-                "sha256:69565f07f8119e19b996fe60d9c91518db5e1214629e28b7909f563c0fe8c5a3",
-                "sha256:6dbac4f7a59a8cb6897a604e309bd87ba1b9ff7a731e7aedbfbfa5076bb15651",
-                "sha256:c4b8cbfe70522a19ee67b8fef7e5112c2fde3e920cc335b7c2bc97733816b02b",
-                "sha256:e98dcfeb43efb35b673e369f776229b8b770613b8b56be95f18d7442e5f2208f"
+                "sha256:06ff3191c34a90583f18b6aa6128d9e52cbc319855b4b1b427a1ece990f2761a",
+                "sha256:07fd56a43c21c2b49344a4f46283bfac289287502d686be22ee40285933fb5f8",
+                "sha256:1777214c75bc19acf815988cb7bf3a96a0a457d7cb56a99296bf9fa21e076859",
+                "sha256:368be0c839f7605f438e246b07d47b660c949076d78ab8ac90837258e4be661b",
+                "sha256:51bddd7019a2b3c1979577c330298189fe1f4d3ab1a61b70c561f502f305b27b",
+                "sha256:d8300ae990af54c332a8533d3e7d6768a5b0f4f73992565b7332d88f1339a5f1",
+                "sha256:dcbd8061c553b90440741b77fbb274beca84716641a50be8675a6afe6dfbcea2"
             ],
             "index": "pypi",
-            "version": "==1.5"
+            "version": "==1.6"
         },
         "psycopg2-binary": {
             "hashes": [
