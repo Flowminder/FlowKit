@@ -37,12 +37,11 @@ class DummyQuery(Query):
 
     @property
     def is_stored(self):
-        try:
-            status = self._dummy_stored_status
-        except AttributeError:
-            status = False
-            self._dummy_stored_status = status
-        return status
+        """
+        Determine dummy 'stored' status from redis, instead of checking the database.
+        """
+        q_state_machine = QueryStateMachine(self.redis, self.md5)
+        return q_state_machine.is_completed
 
     def store(self):
         logger.debug(
@@ -51,7 +50,6 @@ class DummyQuery(Query):
         q_state_machine = QueryStateMachine(self.redis, self.md5)
         q_state_machine.enqueue()
         q_state_machine.execute()
-        self._dummy_stored_status = True
         q_state_machine.finish()
 
     def explain(self, format="text", analyse=False):
@@ -63,14 +61,3 @@ class DummyQuery(Query):
                 f"Only format='json' is supported by {self.__class__.__name__}.explain()"
             )
         return [{"Plan": {"Total Cost": 0.0}}]
-
-    def __getstate__(self):
-        """
-        Override Query.__getstate__ to remove _dummy_stored_status from state.
-        """
-        state = super().__getstate__()
-        try:
-            del state["_dummy_stored_status"]
-        except:
-            pass  # Not a problem if it doesn't exist
-        return state
