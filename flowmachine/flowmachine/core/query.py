@@ -112,7 +112,10 @@ class Query(metaclass=ABCMeta):
             self._md5 = md5(str(hashes).encode()).hexdigest()
             return self._md5
 
-    query_id = md5  # alias which is more meaningful to users than 'md5'
+    @property
+    def query_id(self):
+        # alias which is more meaningful to users than 'md5'
+        return self.md5
 
     @abstractmethod
     def _make_query(self):
