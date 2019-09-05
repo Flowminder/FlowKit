@@ -5,7 +5,7 @@
 ## Alembic settings for FlowDB migrations
 ALEMBIC_FLOWDB_USER=flowdb
 ALEMBIC_FLOWDB_PASSWORD=flowflow
-ALEMBIC_FLOWDB_DATABASE=flowdb
+ALEMBIC_FLOWDB_DATABASE=flowdb_revised_schema
 
 ## FlowAuth settings
 # Database that stores users and servers, defaults to temporary sqlite
