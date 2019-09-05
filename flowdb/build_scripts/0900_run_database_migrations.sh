@@ -13,13 +13,6 @@ set -euo pipefail
 #  Run database migrations using alembic.
 #
 
-# Restart postgres and make it listen on localhost
-# so that Alembic can connect to it.
-pg_ctl -w \
-    -D "$PGDATA" \
-    -o "-c listen_addresses='127.0.0.1'" \
-	restart
-
 echo "---------------------------------"
 echo " * Applying database migrations. "
 echo "---------------------------------"
