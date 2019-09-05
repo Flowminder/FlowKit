@@ -5,13 +5,29 @@
 # !/usr/bin/env python
 
 """
-Small script for generating arbitrary volumes of CDR call data inside the flowdb
-container.
+A script for the generation of realistic and reproducible CDR data (based on a 
+normal distribution of movement and call volumes per subscriber) inside of the 
+flowdb container for n number of days.
 
-Produces sites, cells, tacs, call, sms and mds data.
+It starts by producing sites & cells according to the locations set in the 
+data/geom.dat file to ensure that they are always set according to specific fixed 
+locations. 
 
-Optionally simulates a 'disaster' where all subscribers must leave a designated admin2 region
-for a period of time.
+In producing tacs data, these are distributed accordingly between a list of brands
+to ensure a realistic distribution of handset data. A temporary list of subscribers 
+is also produced - each given a defined msisdn, imei & imsi. This is used as a 
+reference for all event data and removed once the seed process has completed.
+
+The volume of events per day for each type is determined by setting its mean and
+standard deviation - e.g. MEAN_CALLS and SD_CALLS respectively fo call events. These
+settings will result in a normally distributed pattern of calls across the defined
+number of subscribers along with the movement of each subscriber defined by the 
+data defined in the folder data/variations/*.dat. 
+
+It is possible to run the script in 'dryrun' mode to show the volumes of events of 
+each type that will be created by the defined args provided to the script. In this 
+way it's possible to define a combination of mean and sd for each event type that
+will give the volumes of event data required. 
 """
 
 import os
