@@ -13,8 +13,6 @@ set -euo pipefail
 #  Adds a table identifying which table the `location_id` column references.
 #
 
-export PGUSER="$POSTGRES_USER"
-
 psql --dbname="$POSTGRES_DB" -c "
     BEGIN;
         CREATE TABLE IF NOT EXISTS location_table (
