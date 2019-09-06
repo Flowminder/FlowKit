@@ -454,7 +454,7 @@ jobs:
     parameters:
       synthetic_data_generator:
         type: enum
-        enum: ["python", "sql"]
+        enum: ["python", "sql", "realistic"]
         default: "python"
     executor:
       name: python_with_flowdb
@@ -471,6 +471,36 @@ jobs:
       - run:
           name: Run tests
           command: pipenv run pytest --junit-xml=test_results/pytest/results.xml tests/test_synthetic_data.py
+      - store_test_results:
+          path: test_results
+  
+  run_flowdbsynthrealistic_tests:
+    parameters:
+      synthetic_data_generator:
+        type: enum
+        enum: ["python", "sql", "realistic"]
+        default: "realistic"
+      num_cells:
+        type: integer
+        default: 1
+      num_days:
+        type: integer
+        default: 1
+    executor:
+      name: python_with_flowdb
+      flowdb_image: "synthetic-data"
+      synthetic_data_generator: <<parameters.synthetic_data_generator>>
+    working_directory: /home/circleci/project/flowdb
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - run:
+          name: install deps
+          command: pipenv install --dev --deploy
+      - run: *wait_for_flowdb
+      - run:
+          name: Run tests
+          command: pipenv run pytest --junit-xml=test_results/pytest/results.xml tests/test_synthetic_data_realistic.py
       - store_test_results:
           path: test_results
 
@@ -965,6 +995,11 @@ workflows:
           requires:
             - build_flowdb_synthdata
           <<: *run_always_org_context
+      - run_flowdbsynthrealistic_tests:
+          name: synth_data_realistic_generator_tests
+          requires:
+            - build_flowdb_synthdata
+          <<: *run_always_org_context
       - build_docker_image:
           name: build_examples
           component: flowkit-examples
@@ -1060,6 +1095,7 @@ workflows:
             - run_flowetl_tests
             - synth_data_python_generator_tests
             - synth_data_sql_generator_tests
+            - synth_data_realistic_generator_tests
             - build_flowmachine_wheel
             - build_flowclient_wheel
             - run_flowmachine_tests
