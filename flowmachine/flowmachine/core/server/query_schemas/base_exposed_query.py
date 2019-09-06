@@ -4,12 +4,16 @@
 
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
+import structlog
+import networkx as nx
 
 from flowmachine.core import Query
 from flowmachine.core.query_info_lookup import QueryInfoLookup
 from flowmachine.utils import store_queries_in_order, unstored_dependencies_graph
 
 __all__ = ["BaseExposedQuery"]
+
+logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
 class BaseExposedQuery(metaclass=ABCMeta):
@@ -55,6 +59,10 @@ class BaseExposedQuery(metaclass=ABCMeta):
         q = self._flowmachine_query_obj
 
         if store_dependencies:
+            g = unstored_dependencies_graph(q)
+            logger.debug(
+                f"Dependencies to store (in reverse order): {list(nx.topological_sort(g))}"
+            )
             _ = store_queries_in_order(unstored_dependencies_graph(q))
 
         q.store()
