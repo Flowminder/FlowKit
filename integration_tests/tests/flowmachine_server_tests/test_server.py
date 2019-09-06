@@ -11,6 +11,7 @@ from flowmachine.features.dfs.total_amount_for_metric import DFSTotalMetricAmoun
 from flowmachine.features import daily_location, ModalLocation
 from flowmachine.utils import sort_recursively
 from approvaltests.approvals import verify
+from .helpers import poll_until_done
 
 
 def test_ping_flowmachine_server(zmq_host, zmq_port):
@@ -120,6 +121,11 @@ def test_run_daily_location_query(zmq_host, zmq_port):
     assert expected_query_id == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
 
+    # FIXME: At the moment we have to explicitly wait for all running queries
+    # to finish before finishing the test, otherwise unexpected behaviour may
+    # occur when we reset the cache before the next test.
+    poll_until_done(zmq_port, expected_query_id)
+
 
 def test_run_modal_location_query(zmq_host, zmq_port):
     """
@@ -177,6 +183,11 @@ def test_run_modal_location_query(zmq_host, zmq_port):
     assert expected_query_id == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
 
+    # FIXME: At the moment we have to explicitly wait for all running queries
+    # to finish before finishing the test, otherwise unexpected behaviour may
+    # occur when we reset the cache before the next test.
+    poll_until_done(zmq_port, expected_query_id)
+
 
 def test_run_dfs_metric_total_amount_query(zmq_host, zmq_port):
     """
@@ -206,3 +217,8 @@ def test_run_dfs_metric_total_amount_query(zmq_host, zmq_port):
     assert "success" == reply["status"]
     assert expected_query_id == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
+
+    # FIXME: At the moment we have to explicitly wait for all running queries
+    # to finish before finishing the test, otherwise unexpected behaviour may
+    # occur when we reset the cache before the next test.
+    poll_until_done(zmq_port, expected_query_id)
