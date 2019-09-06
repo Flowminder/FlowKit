@@ -13,7 +13,7 @@ from flowmachine.utils import store_queries_in_order, unstored_dependencies_grap
 
 __all__ = ["BaseExposedQuery"]
 
-logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
+query_run_log = structlog.get_logger("flowmachine.query_run_log")
 
 
 class BaseExposedQuery(metaclass=ABCMeta):
@@ -73,8 +73,8 @@ class BaseExposedQuery(metaclass=ABCMeta):
                 f"Tables recorded in cache.cached: {[table[0] for table in cached_tables]}"
             )
             g = unstored_dependencies_graph(q)
-            logger.debug(
-                f"Dependencies to store (in reverse order): {list(nx.topological_sort(g))}"
+            query_run_log.debug(
+                f"Caching dependencies with query IDs: {list(reversed(list(nx.topological_sort(g))))}"
             )
             _ = store_queries_in_order(unstored_dependencies_graph(q))
 
