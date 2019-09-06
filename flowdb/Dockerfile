@@ -138,6 +138,14 @@ ENV LOCATION_TABLE=infrastructure.cells
 #
 COPY --chown=postgres ./build_scripts/* /docker-entrypoint-initdb.d/
 
+# Also copy the old build scripts for the time being (to be removed
+# later), so that the existing flowdb schema is created for comparison
+# with the new one.
+COPY --chown=postgres ./bin/build/* /docker-entrypoint-initdb.d/
+COPY --chown=postgres ./sql/* /docker-entrypoint-initdb.d/
+COPY --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
+
+
 #
 #  Copy alembic migration scripts (which define the flowdb schema).
 #
