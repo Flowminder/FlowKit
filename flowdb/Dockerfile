@@ -133,21 +133,22 @@ ENV FLOWAPI_FLOWDB_USER=flowapi
 ENV LOCATION_TABLE=infrastructure.cells
 
 
-#
-#  Copy file spinup build scripts to be execed.
-#
-COPY --chown=postgres ./build_scripts/* /docker-entrypoint-initdb.d/
-
-# Also copy the old build scripts for the time being (to be removed
-# later), so that the existing flowdb schema is created for comparison
-# with the new one.
+# Copy the old build scripts for the time being (to be removed later),
+# so that the existing flowdb schema is created for comparison with
+# the new one.
 COPY --chown=postgres ./bin/build/* /docker-entrypoint-initdb.d/
 COPY --chown=postgres ./sql/* /docker-entrypoint-initdb.d/
 COPY --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
 
 
 #
-#  Copy alembic migration scripts (which define the flowdb schema).
+#  Copy file spinup build scripts to be execed.
+#
+COPY --chown=postgres ./build_scripts/* /docker-entrypoint-initdb.d/
+
+
+#
+#  Copy alembic migration scripts.
 #
 COPY --chown=postgres alembic.ini /docker-entrypoint-initdb.d/
 COPY --chown=postgres ./migrations/ /docker-entrypoint-initdb.d/migrations/
