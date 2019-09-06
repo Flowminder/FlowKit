@@ -59,6 +59,19 @@ class BaseExposedQuery(metaclass=ABCMeta):
         q = self._flowmachine_query_obj
 
         if store_dependencies:
+            with Query.connection.engine.begin() as trans:
+                cache_schema_tables_qry = f"SELECT table_name FROM information_schema.tables WHERE table_schema='cache'"
+                cached_tables_qry = (
+                    f"SELECT tablename FROM cache.cached WHERE schema='cache'"
+                )
+                cache_schema_tables = trans.execute(cache_schema_tables_qry).fetchall()
+                cached_tables = trans.execute(cached_tables_qry).fetchall()
+            logger.debug(
+                f"Tables in cache schema: {[table[0] for table in cache_schema_tables]}"
+            )
+            logger.debug(
+                f"Tables recorded in cache.cached: {[table[0] for table in cached_tables]}"
+            )
             g = unstored_dependencies_graph(q)
             logger.debug(
                 f"Dependencies to store (in reverse order): {list(nx.topological_sort(g))}"
