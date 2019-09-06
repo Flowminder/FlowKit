@@ -99,7 +99,7 @@ def access_token_builder(audience: Optional[str] = None) -> Callable:
             flowapi_identifier=audience,
             username="test",
             private_key=private_key,
-            lifetime=timedelta(seconds=180),
+            lifetime=timedelta(seconds=300),
             claims=claims,
         )
 
