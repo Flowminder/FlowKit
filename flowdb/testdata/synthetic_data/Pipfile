@@ -8,6 +8,8 @@ sqlalchemy = "*"
 "psycopg2-binary" = "*"
 structlog = "*"
 tohu = "==0.6.7"
+get-secret-or-env-var = "*"
+alembic = "*"
 
 [dev-packages]
 
