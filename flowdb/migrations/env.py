@@ -6,17 +6,21 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# this is the Alembic Config object, which provides
+# This is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-# this will overwrite the ini-file sqlalchemy.url with
-# connection details from relevant environment variables
-flowdb_host = getenv("FLOWDB_HOST", "localhost")
-flowdb_port = getenv("FLOWDB_PORT", "5432")
+# This will overwrite the dummy value of sqlalchemy.url
+# defined in alembic.ini with connection details from
+# relevant environment variables.
 flowdb_user = getenv("ALEMBIC_FLOWDB_USER", "flowdb")
 flowdb_password = environ["ALEMBIC_FLOWDB_PASSWORD"]
 flowdb_database = getenv("ALEMBIC_FLOWDB_DATABASE", "flowdb")
+# We hard-code the flowdb host and port because the
+# migrations are run within the docker container,
+# so the host and port are fixed.
+flowdb_host = "localhost"
+flowdb_port = "5432"
 conn_str = "postgresql://{}:{}@{}:{}/{}".format(
     flowdb_user, flowdb_password, flowdb_host, flowdb_port, flowdb_database
 )
