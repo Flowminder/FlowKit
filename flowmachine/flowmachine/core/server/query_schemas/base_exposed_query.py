@@ -66,12 +66,6 @@ class BaseExposedQuery(metaclass=ABCMeta):
                 )
                 cache_schema_tables = trans.execute(cache_schema_tables_qry).fetchall()
                 cached_tables = trans.execute(cached_tables_qry).fetchall()
-            logger.debug(
-                f"Tables in cache schema: {[table[0] for table in cache_schema_tables]}"
-            )
-            logger.debug(
-                f"Tables recorded in cache.cached: {[table[0] for table in cached_tables]}"
-            )
             g = unstored_dependencies_graph(q)
             query_run_log.debug(
                 f"Caching dependencies with query IDs: {list(reversed(list(nx.topological_sort(g))))}"
