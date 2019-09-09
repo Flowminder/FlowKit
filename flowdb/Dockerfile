@@ -158,8 +158,8 @@ COPY --chown=postgres ./migrations/ /docker-entrypoint-initdb.d/migrations/
 #  directory. Files in that directory will be
 #  ingested by PostgreSQL on build-time.
 #
-#ADD --chown=postgres ./sql/* /docker-entrypoint-initdb.d/
-#ADD --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
+ADD --chown=postgres ./sql/* /docker-entrypoint-initdb.d/
+ADD --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
 # Need to make postgres owner
 RUN chown -R postgres /docker-entrypoint-initdb.d
 
