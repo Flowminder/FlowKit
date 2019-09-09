@@ -486,6 +486,9 @@ jobs:
       num_days:
         type: integer
         default: 1
+      num_subscribers:
+        type: integer
+        default: 320
     executor:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
