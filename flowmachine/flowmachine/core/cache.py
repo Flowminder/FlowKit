@@ -194,13 +194,16 @@ def write_cache_metadata(
                 ),
             )
             con.execute("SELECT touch_cache(%s);", query.md5)
-            logger.debug("{} added to cache.".format(query.fully_qualified_table_name))
+
             if not in_cache:
                 for dep in query._get_stored_dependencies(exclude_self=True):
                     con.execute(
                         "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
                         (query.md5, dep.md5),
                     )
+                logger.debug(f"{query.fully_qualified_table_name} added to cache.")
+            else:
+                logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
     except NotImplementedError:
         logger.debug("Table has no standard name.")
 
