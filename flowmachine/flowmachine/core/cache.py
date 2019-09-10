@@ -196,7 +196,6 @@ def write_cache_metadata(
                 ),
             )
             con.execute("SELECT touch_cache(%s);", query.md5)
-            con.execute("SELECT pg_notify(%s, 'Done.')", query.md5)
             logger.debug("{} added to cache.".format(query.fully_qualified_table_name))
             if not in_cache:
                 for dep in query._get_stored_dependencies(exclude_self=True):
