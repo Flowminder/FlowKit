@@ -11,7 +11,6 @@ From a developer perspective, this is where one-time operations
 should live - for example configuring loggers.
 """
 
-import os
 import redis
 import structlog
 import warnings
