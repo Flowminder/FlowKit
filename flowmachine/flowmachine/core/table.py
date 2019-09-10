@@ -7,7 +7,6 @@
 Simple utility class that represents arbitrary tables in the
 database.
 """
-
 from typing import List
 
 from flowmachine.core.query_state import QueryStateMachine
