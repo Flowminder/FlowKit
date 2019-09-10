@@ -24,6 +24,7 @@ from flowmachine.core.errors.flowmachine_errors import (
     StoreFailedException,
 )
 from flowmachine.core.query_state import QueryStateMachine, QueryEvent
+from flowmachine import __version__
 
 if TYPE_CHECKING:
     from .query import Query
@@ -34,6 +35,7 @@ import structlog
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
+@profile
 def write_query_to_cache(
     *,
     name: str,
@@ -139,6 +141,7 @@ def write_query_to_cache(
         raise StoreFailedException(query.md5)
 
 
+@profile
 def write_cache_metadata(
     connection: "Connection", query: "Query", compute_time: Optional[float] = None
 ):
@@ -158,21 +161,20 @@ def write_cache_metadata(
 
     """
 
-    from ..__init__ import __version__
-
     con = connection.engine
 
     self_storage = b""
-    try:
-        self_storage = pickle.dumps(query)
-    except Exception as e:
-        logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
-        pass
 
     try:
         in_cache = bool(
             connection.fetch(f"SELECT * FROM cache.cached WHERE query_id='{query.md5}'")
         )
+        if not in_cache:
+            try:
+                self_storage = pickle.dumps(query)
+            except Exception as e:
+                logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
+                pass
 
         with con.begin():
             cache_record_insert = """
