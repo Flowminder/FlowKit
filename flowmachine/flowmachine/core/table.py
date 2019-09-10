@@ -119,10 +119,11 @@ class Table(Query):
         super().__init__()
         # Table is immediately in a 'finished executing' state
         q_state_machine = QueryStateMachine(self.redis, self.md5)
-        q_state_machine.enqueue()
-        q_state_machine.execute()
-        write_cache_metadata(self.connection, self, compute_time=0)
-        q_state_machine.finish()
+        if not q_state_machine.is_completed:
+            q_state_machine.enqueue()
+            q_state_machine.execute()
+            write_cache_metadata(self.connection, self, compute_time=0)
+            q_state_machine.finish()
 
     def __format__(self, fmt):
         return f"<Table: '{self.schema}.{self.name}', query_id: '{self.md5}'>"
