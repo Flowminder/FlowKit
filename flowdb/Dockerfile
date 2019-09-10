@@ -144,14 +144,14 @@ COPY --chown=postgres ./data/* /docker-entrypoint-initdb.d/data/csv/
 #
 #  Copy file spinup build scripts to be execed.
 #
-#COPY --chown=postgres ./build_scripts/* /docker-entrypoint-initdb.d/
+COPY --chown=postgres ./build_scripts/* /docker-entrypoint-initdb.d/
 
 
 #
 #  Copy alembic migration scripts.
 #
-#COPY --chown=postgres alembic.ini /docker-entrypoint-initdb.d/
-#COPY --chown=postgres ./migrations/ /docker-entrypoint-initdb.d/migrations/
+COPY --chown=postgres alembic.ini /docker-entrypoint-initdb.d/
+COPY --chown=postgres ./migrations/ /docker-entrypoint-initdb.d/migrations/
 
 #
 #  Add local data to PostgreSQL data ingestion
