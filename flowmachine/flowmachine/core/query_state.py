@@ -102,38 +102,40 @@ class QueryStateMachine:
     def __init__(self, redis_client: StrictRedis, query_id: str):
         self.redis_client = redis_client
         self.query_id = query_id
+        must_populate = redis_client.get(f"finist:{query_id}-state") is None
         self.state_machine = Finist(redis_client, f"{query_id}-state", QueryState.KNOWN)
-        self.state_machine.on(QueryEvent.QUEUE, QueryState.KNOWN, QueryState.QUEUED)
-        self.state_machine.on(
-            QueryEvent.EXECUTE, QueryState.QUEUED, QueryState.EXECUTING
-        )
-        self.state_machine.on(
-            QueryEvent.ERROR, QueryState.EXECUTING, QueryState.ERRORED
-        )
-        self.state_machine.on(
-            QueryEvent.FINISH, QueryState.EXECUTING, QueryState.COMPLETED
-        )
-        self.state_machine.on(
-            QueryEvent.CANCEL, QueryState.QUEUED, QueryState.CANCELLED
-        )
-        self.state_machine.on(
-            QueryEvent.CANCEL, QueryState.EXECUTING, QueryState.CANCELLED
-        )
-        self.state_machine.on(
-            QueryEvent.RESET, QueryState.CANCELLED, QueryState.RESETTING
-        )
-        self.state_machine.on(
-            QueryEvent.RESET, QueryState.ERRORED, QueryState.RESETTING
-        )
-        self.state_machine.on(
-            QueryEvent.RESET, QueryState.COMPLETED, QueryState.RESETTING
-        )
-        self.state_machine.on(
-            QueryEvent.RESET, QueryState.COMPLETED, QueryState.RESETTING
-        )
-        self.state_machine.on(
-            QueryEvent.FINISH_RESET, QueryState.RESETTING, QueryState.KNOWN
-        )
+        if must_populate:  # Need to create the state machine for this query
+            self.state_machine.on(QueryEvent.QUEUE, QueryState.KNOWN, QueryState.QUEUED)
+            self.state_machine.on(
+                QueryEvent.EXECUTE, QueryState.QUEUED, QueryState.EXECUTING
+            )
+            self.state_machine.on(
+                QueryEvent.ERROR, QueryState.EXECUTING, QueryState.ERRORED
+            )
+            self.state_machine.on(
+                QueryEvent.FINISH, QueryState.EXECUTING, QueryState.COMPLETED
+            )
+            self.state_machine.on(
+                QueryEvent.CANCEL, QueryState.QUEUED, QueryState.CANCELLED
+            )
+            self.state_machine.on(
+                QueryEvent.CANCEL, QueryState.EXECUTING, QueryState.CANCELLED
+            )
+            self.state_machine.on(
+                QueryEvent.RESET, QueryState.CANCELLED, QueryState.RESETTING
+            )
+            self.state_machine.on(
+                QueryEvent.RESET, QueryState.ERRORED, QueryState.RESETTING
+            )
+            self.state_machine.on(
+                QueryEvent.RESET, QueryState.COMPLETED, QueryState.RESETTING
+            )
+            self.state_machine.on(
+                QueryEvent.RESET, QueryState.COMPLETED, QueryState.RESETTING
+            )
+            self.state_machine.on(
+                QueryEvent.FINISH_RESET, QueryState.RESETTING, QueryState.KNOWN
+            )
 
     @property
     def current_query_state(self) -> QueryState:
