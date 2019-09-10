@@ -35,7 +35,6 @@ import structlog
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
-@profile
 def write_query_to_cache(
     *,
     name: str,
@@ -141,7 +140,6 @@ def write_query_to_cache(
         raise StoreFailedException(query.md5)
 
 
-@profile
 def write_cache_metadata(
     connection: "Connection", query: "Query", compute_time: Optional[float] = None
 ):
