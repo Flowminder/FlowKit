@@ -15,7 +15,7 @@ from flowapi.jwt_auth_callbacks import (
 
 
 @pytest.mark.asyncio
-async def test_invalid_token(app, json_log):
+async def test_invalid_token(app):
     """
     Test that invalid tokens are logged correctly.
 
@@ -24,13 +24,13 @@ async def test_invalid_token(app, json_log):
     app: tuple
         Pytest fixture providing the flowapi, with a mock for the db
     """
-    client, db, log_dir, app = app
-    await client.get("/")  # Need to trigger setup
 
-    async with app.test_request_context(method="GET", path="/"):
+    await app.client.get("/")  # Need to trigger setup
+
+    async with app.app.test_request_context(method="GET", path="/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await invalid_token_callback("DUMMY_ERROR_STRING")
-        log_lines = json_log().out
+        log_lines = app.log_capture().access
         assert len(log_lines) == 1
         assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "INVALID_TOKEN"
@@ -38,7 +38,7 @@ async def test_invalid_token(app, json_log):
 
 
 @pytest.mark.asyncio
-async def test_expired_token(app, json_log):
+async def test_expired_token(app):
     """
     Test that expired tokens are logged correctly.
 
@@ -47,8 +47,8 @@ async def test_expired_token(app, json_log):
     app: tuple
         Pytest fixture providing the flowapi, with a mock for the db
     """
-    client, db, log_dir, app = app
-    await client.get("/")  # Need to trigger setup
+
+    await app.client.get("/")  # Need to trigger setup
 
     # As of v3.16.0, flask-jwt-extended passes the decoded expired token to the callback
     # (see https://github.com/vimalloc/flask-jwt-extended/releases/tag/3.16.0), so we
@@ -65,10 +65,10 @@ async def test_expired_token(app, json_log):
         "user_claims": {},
     }
 
-    async with app.test_request_context(method="GET", path="/"):
+    async with app.app.test_request_context(method="GET", path="/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await expired_token_callback(dummy_decoded_expired_token)
-        log_lines = json_log().out
+        log_lines = app.log_capture().access
         assert len(log_lines) == 1
         assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "EXPIRED_TOKEN"
@@ -76,7 +76,7 @@ async def test_expired_token(app, json_log):
 
 
 @pytest.mark.asyncio
-async def test_claims_verify_fail(app, json_log):
+async def test_claims_verify_fail(app):
     """
     Test that failure to verify claims is logged.
 
@@ -85,13 +85,13 @@ async def test_claims_verify_fail(app, json_log):
     app: tuple
         Pytest fixture providing the flowapi, with a mock for the db
     """
-    client, db, log_dir, app = app
-    await client.get("/")  # Need to trigger setup
 
-    async with app.test_request_context(method="GET", path="/"):
+    await app.client.get("/")  # Need to trigger setup
+
+    async with app.app.test_request_context(method="GET", path="/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await claims_verification_failed_callback()
-        log_lines = json_log().out
+        log_lines = app.log_capture().access
         assert len(log_lines) == 1
         assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "CLAIMS_VERIFICATION_FAILED"
@@ -99,7 +99,7 @@ async def test_claims_verify_fail(app, json_log):
 
 
 @pytest.mark.asyncio
-async def test_revoked_token(app, json_log):
+async def test_revoked_token(app):
     """
     Test that revoked tokens are logged.
 
@@ -108,13 +108,13 @@ async def test_revoked_token(app, json_log):
     app: tuple
         Pytest fixture providing the flowapi, with a mock for the db
     """
-    client, db, log_dir, app = app
-    await client.get("/")  # Need to trigger setup
 
-    async with app.test_request_context(method="GET", path="/"):
+    await app.client.get("/")  # Need to trigger setup
+
+    async with app.app.test_request_context(method="GET", path="/"):
         request.request_id = "DUMMY_REQUEST_ID"
         await revoked_token_callback()
-        log_lines = json_log().out
+        log_lines = app.log_capture().access
         assert len(log_lines) == 1
         assert log_lines[0]["logger"] == "flowapi.access"
         assert log_lines[0]["event"] == "REVOKED_TOKEN"

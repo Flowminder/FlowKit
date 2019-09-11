@@ -12,7 +12,6 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
     """
     Test that correct status of 202 & redirect is returned when sending a query.
     """
-    client, db, log_dir, app = app
 
     token = access_token_builder(
         {
@@ -25,7 +24,7 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
     dummy_zmq_server.return_value = ZMQReply(
         status="success", payload={"query_id": "DUMMY_QUERY_ID"}
     )
-    response = await client.post(
+    response = await app.client.post(
         f"/api/0/run",
         headers={"Authorization": f"Bearer {token}"},
         json={
@@ -92,11 +91,10 @@ async def test_post_query_error(
     """
     Test that correct status of 400 is returned for a broken query.
     """
-    client, db, log_dir, app = app
 
     token = access_token_builder({"daily_location": {"permissions": {"run": True}}})
     dummy_zmq_server.return_value = ZMQReply(status="error", msg="Broken query")
-    response = await client.post(
+    response = await app.client.post(
         f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=query
     )
     json = await response.get_json()
