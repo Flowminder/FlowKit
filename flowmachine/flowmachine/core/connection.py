@@ -275,9 +275,6 @@ class Connection:
             if x.isnumeric()
         )
 
-    @cached(
-        TTLCache(1024, 120)
-    )  # Many dates to cache, two minutes seems reasonable to balance db access against speed boost
     def has_date(self, date, table, strictness=2, schema="events"):
         """
         Check against the database tables with varying strictness whether there

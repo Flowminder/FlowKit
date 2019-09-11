@@ -2,7 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
-import os
 from json import JSONDecodeError
 
 import asyncpg
@@ -13,30 +12,25 @@ from _pytest.capture import CaptureResult
 from flowapi.main import create_app
 from asynctest import MagicMock, Mock, CoroutineMock
 from zmq.asyncio import Context
-from asyncio import Future
+from collections import namedtuple
+
+TestApp = namedtuple("TestApp", ["client", "db_pool", "tmpdir", "app", "log_capture"])
+CaptureResult = namedtuple("CaptureResult", ["debug", "access"])
 
 
 @pytest.fixture
-def json_log(capsys):
+def json_log(caplog):
     def parse_json():
-        log_output = capsys.readouterr()
-        stdout = []
-        stderr = []
-        for l in log_output.out.split("\n"):
-            if l == "":
+        loggers = dict(debug=[], access=[])
+        for logger, level, msg in caplog.record_tuples:
+            if msg == "":
                 continue
             try:
-                stdout.append(json.loads(l))
+                parsed = json.loads(msg)
+                loggers[parsed["logger"].split(".")[1]].append(parsed)
             except JSONDecodeError:
-                stdout.append(l)
-        for l in log_output.err.split("\n"):
-            if l == "":
-                continue
-            try:
-                stderr.append(json.loads(l))
-            except JSONDecodeError:
-                stderr.append(l)
-        return CaptureResult(stdout, stderr)
+                loggers["debug"].append(msg)
+        return CaptureResult(loggers["debug"], loggers["access"])
 
     return parse_json
 
@@ -90,7 +84,8 @@ def dummy_db_pool(monkeypatch):
 
 
 @pytest.fixture
-def app(monkeypatch, tmpdir, dummy_db_pool):
+@pytest.mark.asyncio
+async def app(monkeypatch, tmpdir, dummy_db_pool, json_log):
     monkeypatch.setenv("FLOWAPI_LOG_LEVEL", "DEBUG")
     monkeypatch.setenv("FLOWMACHINE_HOST", "localhost")
     monkeypatch.setenv("FLOWMACHINE_PORT", "5555")
@@ -99,4 +94,8 @@ def app(monkeypatch, tmpdir, dummy_db_pool):
     monkeypatch.setenv("FLOWDB_PORT", "5432")
     monkeypatch.setenv("FLOWAPI_FLOWDB_PASSWORD", "foo")
     current_app = create_app()
-    yield current_app.test_client(), dummy_db_pool, tmpdir, current_app
+    await current_app.startup()
+    async with current_app.app_context():
+        yield TestApp(
+            current_app.test_client(), dummy_db_pool, tmpdir, current_app, json_log
+        )
