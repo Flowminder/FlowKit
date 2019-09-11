@@ -76,7 +76,7 @@ async def update_available_dates(
     return avail
 
 
-async def get_reply_for_message(msg_str: str) -> ZMQReply:
+def get_reply_for_message(msg_str: str) -> ZMQReply:
     """
     Parse the zmq message string, perform the desired action and return the result in JSON format.
 
@@ -101,7 +101,7 @@ async def get_reply_for_message(msg_str: str) -> ZMQReply:
             params=action_request.params,
         )
 
-        reply = await perform_action(action_request.action, action_request.params)
+        reply = perform_action(action_request.action, action_request.params)
 
         query_run_log.info(
             f"Action completed with status: '{reply.status}'",
@@ -203,7 +203,7 @@ async def calculate_and_send_reply_for_message(socket, return_address, msg_conte
         JSON string with the message contents.
     """
     try:
-        reply_json = await get_reply_for_message(msg_contents)
+        reply_json = get_reply_for_message(msg_contents)
     except Exception as exc:
         # Catch and log any unhandled errors, and send a generic error response to the API
         # TODO: Ensure that FlowAPI always returns the correct error code when receiving an error reply
