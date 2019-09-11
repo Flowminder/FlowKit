@@ -22,7 +22,7 @@ async def test_invalid_token(app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the flowapi, with a mock for the db
+        Pytest fixture providing the flowapi app
     """
 
     await app.client.get("/")  # Need to trigger setup
@@ -45,7 +45,7 @@ async def test_expired_token(app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the flowapi, with a mock for the db
+        Pytest fixture providing the flowapi app
     """
 
     await app.client.get("/")  # Need to trigger setup
@@ -83,7 +83,7 @@ async def test_claims_verify_fail(app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the flowapi, with a mock for the db
+        Pytest fixture providing the flowapi app
     """
 
     await app.client.get("/")  # Need to trigger setup
@@ -106,7 +106,7 @@ async def test_revoked_token(app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the flowapi, with a mock for the db
+        Pytest fixture providing the flowapi app
     """
 
     await app.client.get("/")  # Need to trigger setup

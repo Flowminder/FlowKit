@@ -13,7 +13,7 @@ async def test_app(app):
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the flowapi, with a mock for the db
+        Pytest fixture providing the flowapi app
     """
 
     response = await app.client.get("/")
