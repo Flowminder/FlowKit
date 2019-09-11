@@ -18,6 +18,9 @@ defaults:
     FLOWAPI_FLOWDB_USER: flowapi
     FLOWMACHINE_FLOWDB_PASSWORD: foo
     FLOWAPI_FLOWDB_PASSWORD: foo
+    ALEMBIC_FLOWDB_USER: flowdb
+    ALEMBIC_FLOWDB_PASSWORD: flowflow
+    ALEMBIC_FLOWDB_DATABASE: flowdb_revised_schema
   - &wait_for_flowdb
     name: Wait for flowdb to start
     command: |
