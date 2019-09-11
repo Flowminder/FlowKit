@@ -54,7 +54,7 @@ CREATE SCHEMA IF NOT EXISTS dfs;
         msisdn TEXT,
         imei   TEXT,
         imsi   TEXT,
-        tac    INTEGER NOT NULL
+        tac    BIGINT REFERENCES infrastructure.tacs(id)
 
         );
 
