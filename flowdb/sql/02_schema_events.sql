@@ -162,3 +162,12 @@ CREATE SCHEMA IF NOT EXISTS events;
         timestamp TIMESTAMPTZ NOT NULL
 
         );
+
+    CREATE TABLE IF NOT EXISTS events.locations(
+
+        cell_id TEXT,
+        position TEXT,
+        site_id TEXT,
+        mno_cell_code TEXT
+
+        );
