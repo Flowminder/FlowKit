@@ -121,6 +121,9 @@ executors:
           SYNTHETIC_DATA_GENERATOR: <<parameters.synthetic_data_generator>>
           FLOWMACHINE_FLOWDB_PASSWORD: foo
           FLOWAPI_FLOWDB_PASSWORD: foo
+          ALEMBIC_FLOWDB_USER: flowdb
+          ALEMBIC_FLOWDB_PASSWORD: flowflow
+          ALEMBIC_FLOWDB_DATABASE: flowdb_revised_schema
           POSTGRES_PASSWORD: flowflow
           SUBSCRIBERS_SEED: 12345
           CALLS_SEED: 22222
