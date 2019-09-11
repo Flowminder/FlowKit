@@ -24,7 +24,7 @@ async def test_protected_get_routes(route, app):
     response = await app.client.get(route)
     assert 401 == response.status_code
 
-    log_lines = log_lines = app.log_capture().access
+    log_lines = app.log_capture().access
     assert 1 == len(log_lines)  # One entry written to stdout
 
     assert "UNAUTHORISED" == log_lines[0]["event"]
