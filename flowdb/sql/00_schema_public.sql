@@ -34,3 +34,20 @@ CREATE TABLE IF NOT EXISTS public.files(
     log TEXT
 
     );
+    
+CREATE TABLE IF NOT EXISTS public.date_dim(
+
+    date_sk BIGSERIAL PRIMARY KEY,
+    date TIMESTAMPTZ,
+    day_of_week TEXT,
+    day_of_month TEXT,
+    year TEXT
+
+    );
+
+CREATE TABLE IF NOT EXISTS public.time_dimension(
+
+    time_sk BIGSERIAL PRIMARY KEY,
+    hour NUMERIC
+
+    );
