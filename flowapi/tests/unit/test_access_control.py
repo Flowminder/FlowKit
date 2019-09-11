@@ -9,25 +9,23 @@ from .utils import query_kinds, exemplar_query_params
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("route", ["/api/0/poll/foo", "/api/0/get/foo"])
-async def test_protected_get_routes(route, app, json_log):
+async def test_protected_get_routes(route, app):
     """
     Test that protected routes return a 401 without a valid token.
 
     Parameters
     ----------
     app: tuple
-        Pytest fixture providing the flowapi, with a mock for the db
+        Pytest fixture providing the flowapi app
     route: str
         Route to test
     """
-    client, db, log_dir, app = app
 
-    response = await client.get(route)
+    response = await app.client.get(route)
     assert 401 == response.status_code
 
-    log_lines = json_log().out
+    log_lines = app.log_capture().access
     assert 1 == len(log_lines)  # One entry written to stdout
-    assert log_lines[0]["logger"] == "flowapi.access"
 
     assert "UNAUTHORISED" == log_lines[0]["event"]
 
@@ -41,7 +39,6 @@ async def test_granular_run_access(
     Test that tokens grant granular access to running queries.
 
     """
-    client, db, log_dir, app = app
     token = access_token_builder(
         {
             query_kind: {
@@ -62,7 +59,7 @@ async def test_granular_run_access(
     responses = {}
     for q_kind in query_kinds:
         q_params = exemplar_query_params[q_kind]
-        response = await client.post(
+        response = await app.client.post(
             f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=q_params
         )
         responses[q_kind] = response.status_code
@@ -78,7 +75,6 @@ async def test_granular_poll_access(
     Test that tokens grant granular access to checking query status.
 
     """
-    client, db, log_dir, app = app
     token = access_token_builder(
         {
             query_kind: {
@@ -113,7 +109,7 @@ async def test_granular_poll_access(
                 },
             },
         )
-        response = await client.get(
+        response = await app.client.get(
             f"/api/0/poll/DUMMY_QUERY_ID",
             headers={"Authorization": f"Bearer {token}"},
             json={"query_kind": q_kind},
@@ -131,7 +127,6 @@ async def test_granular_json_access(
     Test that tokens grant granular access to query output.
 
     """
-    client, db, log_dir, app = app
     token = access_token_builder(
         {
             query_kind: {
@@ -161,7 +156,7 @@ async def test_granular_json_access(
                 "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
             },
         )
-        response = await client.get(
+        response = await app.client.get(
             f"/api/0/get/DUMMY_QUERY_ID",
             headers={"Authorization": f"Bearer {token}"},
             json={},
@@ -193,7 +188,6 @@ async def test_no_result_access_without_both_claims(
     Test that tokens grant granular access to query output.
 
     """
-    client, db, log_dir, app = app
     token = access_token_builder({"DUMMY_QUERY_KIND": claims})
     dummy_zmq_server.side_effect = (
         {
@@ -213,7 +207,7 @@ async def test_no_result_access_without_both_claims(
             "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
         },
     )
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert 403 == response.status_code
@@ -225,13 +219,12 @@ async def test_no_result_access_without_both_claims(
     "route", ["/api/0/poll/DUMMY_QUERY_ID", "/api/0/get/DUMMY_QUERY_ID"]
 )
 async def test_access_logs_gets(
-    query_kind, route, app, access_token_builder, dummy_zmq_server, json_log
+    query_kind, route, app, access_token_builder, dummy_zmq_server
 ):
     """
     Test that access logs are written for attempted unauthorized access to 'poll' and get' routes.
 
     """
-    client, db, log_dir, app = app
     token = access_token_builder({query_kind: {"permissions": {}}})
     dummy_zmq_server.side_effect = (
         {
@@ -250,45 +243,38 @@ async def test_access_logs_gets(
             "payload": {"query_id": "DUMMY_QUERY_ID", "query_kind": "dummy_query_kind"},
         },
     )
-    response = await client.get(route, headers={"Authorization": f"Bearer {token}"})
+    response = await app.client.get(route, headers={"Authorization": f"Bearer {token}"})
     assert 403 == response.status_code
-    log_lines = json_log().out
-    assert 3 == len(log_lines)  # One access log, two query logs
-    assert log_lines[0]["logger"] == "flowapi.access"
-    assert log_lines[1]["logger"] == "flowapi.access"
-    assert log_lines[2]["logger"] == "flowapi.access"
-    assert "CLAIMS_VERIFICATION_FAILED" == log_lines[2]["event"]
-    assert "test" == log_lines[0]["user"]
-    assert "test" == log_lines[1]["user"]
-    assert "test" == log_lines[2]["user"]
-    assert log_lines[0]["request_id"] == log_lines[1]["request_id"]
+    access_logs = app.log_capture().access
+    assert 3 == len(access_logs)  # One access log, two query logs
+    assert "CLAIMS_VERIFICATION_FAILED" == access_logs[2]["event"]
+    assert "test" == access_logs[0]["user"]
+    assert "test" == access_logs[1]["user"]
+    assert "test" == access_logs[2]["user"]
+    assert access_logs[0]["request_id"] == access_logs[1]["request_id"]
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("query_kind", query_kinds)
 async def test_access_logs_post(
-    query_kind, app, access_token_builder, dummy_zmq_server, json_log
+    query_kind, app, access_token_builder, dummy_zmq_server
 ):
     """
     Test that access logs are written for attempted unauthorized access to 'run' route.
 
     """
-    client, db, log_dir, app = app
     token = access_token_builder(
         {query_kind: {"permissions": {}, "spatial_aggregation": []}}
     )
-    response = await client.post(
+    response = await app.client.post(
         f"/api/0/run",
         headers={"Authorization": f"Bearer {token}"},
         json={"query_kind": query_kind, "aggregation_unit": "admin3"},
     )
     assert 403 == response.status_code
 
-    log_lines = json_log().out
+    log_lines = app.log_capture().access
     assert 3 == len(log_lines)  # One access log, two query logs
-    assert log_lines[0]["logger"] == "flowapi.access"
-    assert log_lines[1]["logger"] == "flowapi.access"
-    assert log_lines[2]["logger"] == "flowapi.access"
     assert log_lines[2]["json_payload"]["query_kind"] == query_kind
     assert "CLAIMS_VERIFICATION_FAILED" == log_lines[2]["event"]
     assert "test" == log_lines[0]["user"]
@@ -365,7 +351,6 @@ async def test_no_joined_aggregate_result_access_without_both_claims(
     units of _both_ is required for joined_spatial_aggregate.
     """
 
-    client, db, log_dir, app = app
     token = access_token_builder(
         {
             "DUMMY_METRIC_QUERY_KIND": metric_claims,
@@ -394,7 +379,7 @@ async def test_no_joined_aggregate_result_access_without_both_claims(
             "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
         },
     )
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == expected_status_code

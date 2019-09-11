@@ -14,12 +14,12 @@ async def test_get_query(app, access_token_builder, dummy_zmq_server):
     """
     Test that JSON is returned when getting a query.
     """
-    client, db, log_dir, app = app
+
     # Set the rows returned by iterating over the rows from the db
     # This is a long chain of mocks corresponding to getting a connection using
     # the pool's context manager, getting the cursor on that, and then looping
     # over the values in cursor
-    db.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
+    app.db_pool.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
         {"some": "valid"},
         {"json": "bits"},
     ]
@@ -48,7 +48,7 @@ async def test_get_query(app, access_token_builder, dummy_zmq_server):
         "payload": {"query_state": "completed", "sql": "SELECT 1;"},
     }
     dummy_zmq_server.side_effect = (reply_1, reply_2)
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     reply = await response.get_data()
@@ -89,7 +89,6 @@ async def test_get_json_status_code(
     """
     Test that correct status code and any redirect is returned when getting json.
     """
-    client, db, log_dir, app = app
 
     token = access_token_builder(
         {
@@ -125,7 +124,7 @@ async def test_get_json_status_code(
             },
         ),
     )
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert http_code == response.status_code
@@ -139,7 +138,6 @@ async def test_get_error_message_without_query_state(
     Test that the get/ endpoint returns the correct error message if the reply
     payload does not contain a query state.
     """
-    client, db, log_dir, app = app
 
     # Monkeypatch can_get_results_by_query_id so that we don't have to set a sequence
     # of replies as side-effects of dummy_zmq_server just to verify token permissions
@@ -148,7 +146,7 @@ async def test_get_error_message_without_query_state(
         CoroutineMock(return_value=True),
     )
     dummy_zmq_server.return_value = ZMQReply(status="error", msg="DUMMY_ERROR_MESSAGE")
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/get/DUMMY_QUERY_ID",
         headers={"Authorization": f"Bearer {access_token_builder({})}"},
     )

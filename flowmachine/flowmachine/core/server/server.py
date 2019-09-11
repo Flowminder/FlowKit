@@ -4,6 +4,7 @@
 
 import asyncio
 import os
+from concurrent.futures import Executor
 from json import JSONDecodeError
 import traceback
 
@@ -19,6 +20,7 @@ from marshmallow import ValidationError
 from zmq.asyncio import Context
 
 import flowmachine
+from flowmachine.core import Query, Connection
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply
@@ -27,6 +29,51 @@ from .action_handlers import perform_action
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 query_run_log = structlog.get_logger("flowmachine.query_run_log")
+
+
+async def update_available_dates(
+    *,
+    flowdb_connection: Connection,
+    pool: Executor,
+    sleep_time: int = 1800,
+    loop: bool = True,
+) -> None:
+    """
+    Background task to periodically refresh the cache entries for available dates
+    based on the content of the database.
+
+    Parameters
+    ----------
+    flowdb_connection : Connection
+        Flowdb connection to check dates on
+    pool : Executor
+        Executor to run the date check with
+    sleep_time : int, default 1800
+        Number of seconds to sleep for between checks
+    loop : bool, default True
+        Set to false to return after the first check
+
+    Returns
+    -------
+    None
+
+    """
+    check_func = partial(
+        flowdb_connection.available_dates.__wrapped__,
+        flowdb_connection,
+        table="all",
+        strictness=1,
+        schema="events",
+    )
+    while True:
+        logger.debug("Checking available dates.")
+        avail = await asyncio.get_running_loop().run_in_executor(
+            pool, check_func
+        )  # Note we're calling the uncached version here.
+        if not loop:
+            break
+        await asyncio.sleep(sleep_time)
+    return avail
 
 
 def get_reply_for_message(msg_str: str) -> ZMQReply:
@@ -184,7 +231,7 @@ def shutdown(socket):
     logger.debug("Cancelled all remaining tasks.")
 
 
-async def recv(port):
+async def recv(*, port, flowdb_connection):
     """
     Main receive-and-reply loop. Listens to zmq messages on the given port,
     processes them and sends back a reply with the result or an error message.
@@ -199,6 +246,11 @@ async def recv(port):
     main_loop = asyncio.get_event_loop()
     main_loop.add_signal_handler(signal.SIGTERM, partial(shutdown, socket=socket))
 
+    main_loop.create_task(
+        update_available_dates(
+            flowdb_connection=flowdb_connection, pool=Query.thread_pool_executor
+        )
+    )
     try:
         while True:
             await receive_next_zmq_message_and_send_back_reply(socket)
@@ -213,7 +265,7 @@ async def recv(port):
 
 def main():
     # Set up internals and connect to flowdb
-    flowmachine.connect()
+    flowdb_connection = flowmachine.connect()
 
     # Set debug mode if required
     debug_mode = "true" == os.getenv("FLOWMACHINE_SERVER_DEBUG_MODE", "false").lower()
@@ -223,7 +275,7 @@ def main():
     # Run receive loop which receives zmq messages and sends back replies
     port = os.getenv("FLOWMACHINE_PORT", 5555)
     asyncio.run(
-        recv(port), debug=debug_mode
+        recv(port=port, flowdb_connection=flowdb_connection), debug=debug_mode
     )  # note: asyncio.run() requires Python 3.7+
 
 
