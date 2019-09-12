@@ -50,7 +50,7 @@ class IntereventInterval(SubscriberFeature):
     Examples
     --------
 
-    >>> s = IntereventPeriod("2016-01-01", "2016-01-07")
+    >>> s = IntereventInterval("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
 
         subscriber       value
