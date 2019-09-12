@@ -30,7 +30,7 @@ class IntereventPeriod(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
-    time_resolution : str
+    time_resolution : {'second', 'minute', 'hour', 'day', 'month', 'year'}, default 'hour'
         Temporal resolution to return results at, e.g. 'hour' for fractional hours.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
