@@ -5,9 +5,24 @@
 """
 Unit tests for the Query() base class.
 """
-
+import pytest
 
 from flowmachine.features import NewSubscribers, UniqueSubscribers
+
+
+def test_subscriber_identifier_mismatch_error():
+    """
+    NewSubscribers requires matching subscriber_identifier
+    """
+    with pytest.raises(ValueError):
+        nu = NewSubscribers(
+            unique_subscribers_bench_mark=UniqueSubscribers(
+                "2016-01-01", "2016-01-03", subscriber_identifier="imei"
+            ),
+            unique_subscribers_focal=UniqueSubscribers(
+                "2016-01-05", "2016-01-07", subscriber_identifier="msisdn"
+            ),
+        )
 
 
 def test_has_right_columns(get_dataframe):

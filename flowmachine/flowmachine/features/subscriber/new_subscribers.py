@@ -50,8 +50,17 @@ class NewSubscribers(Query):
         unique_subscribers_bench_mark: UniqueSubscribers,
         unique_subscribers_focal: UniqueSubscribers,
     ):
-        self.unique_subscribers_bench_mark = unique_subscribers_bench_mark
-        self.unique_subscribers_focal = unique_subscribers_focal
+
+        if (
+            unique_subscribers_bench_mark.subscriber_identifier
+            == unique_subscribers_focal.subscriber_identifier
+        ):
+            self.unique_subscribers_bench_mark = unique_subscribers_bench_mark
+            self.unique_subscribers_focal = unique_subscribers_focal
+        else:
+            raise ValueError(
+                f"Mismatched subscriber_identifier: benchmark is '{unique_subscribers_bench_mark.subscriber_identifier}' but focal is '{unique_subscribers_focal.subscriber_identifier}'"
+            )
 
         super().__init__()
 
