@@ -11,6 +11,9 @@ This schema is a placeholder for all tables created
 automatically by shapefile and raster file transformation
 scripts.
 
+- geo_bridge:  this is populated with a link between the 
+               infrastructure.cells table, and each of the geography
+               types.
 -----------------------------------------------------------
 */
 CREATE SCHEMA IF NOT EXISTS geography;
