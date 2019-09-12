@@ -7,18 +7,17 @@
 Intervent period statistics, such as the average and standard deviation of the
 duration between calls.
 """
-from typing import List, Union, Tuple, Optional
+
+from typing import Union, Tuple, List, Optional
 
 from flowmachine.core import Query
-from flowmachine.features.subscriber.interevent_interval import IntereventInterval
-from .metaclasses import SubscriberFeature
+from flowmachine.features.utilities import EventsTablesUnion
+from flowmachine.features.subscriber.metaclasses import SubscriberFeature
 
-time_resolutions = dict(
-    second=1, minute=60, hour=3600, day=86400, month=2592000, year=31557600
-)
+valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
 
 
-class IntereventPeriod(SubscriberFeature):
+class IntereventInterval(SubscriberFeature):
     """
     This class calculates intervent period statistics such as the average and
     standard deviation of the duration between calls.
@@ -53,7 +52,7 @@ class IntereventPeriod(SubscriberFeature):
     >>> s = IntereventPeriod("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
 
-        subscriber       interevent_period_avg
+        subscriber       value
         JZoaw2jzvK2QMKYX       03:26:47.673913
         1QBlwRo4Kd5v3Ogz       03:23:03.979167
         V4DJ7AaxLLOyWEZ3       03:39:35.977778
@@ -69,29 +68,43 @@ class IntereventPeriod(SubscriberFeature):
         stop: str,
         statistic: str = "avg",
         *,
-        time_resolution: str = "hour",
         hours: Union[str, Tuple[int, int]] = "all",
         tables: Union[str, List[str]] = "all",
         subscriber_identifier: str = "msisdn",
         subscriber_subset: Optional[Query] = None,
         direction: str = "both",
     ):
-        try:
-            self.time_divisor = time_resolutions[time_resolution.lower()]
-        except KeyError:
+
+        self.start = start
+        self.stop = stop
+        self.hours = hours
+        self.tables = tables
+        self.subscriber_identifier = subscriber_identifier
+        self.direction = direction
+
+        if self.direction in {"both"}:
+            column_list = [self.subscriber_identifier, "datetime"]
+        elif self.direction in {"in", "out"}:
+            column_list = [self.subscriber_identifier, "datetime", "outgoing"]
+        else:
+            raise ValueError("{} is not a valid direction.".format(self.direction))
+
+        self.statistic = statistic.lower()
+        if self.statistic not in valid_stats:
             raise ValueError(
-                f"'{time_resolution}' is not a valid time resolution. Use one of {time_resolutions.keys()}"
+                "{} is not a valid statistic. Use one of {}".format(
+                    self.statistic, valid_stats
+                )
             )
 
-        self.event_interval = IntereventInterval(
-            start=start,
-            stop=stop,
-            statistic=statistic,
-            hours=hours,
-            tables=tables,
-            subscriber_identifier=subscriber_identifier,
+        self.unioned_query = EventsTablesUnion(
+            self.start,
+            self.stop,
+            tables=self.tables,
+            columns=column_list,
+            hours=self.hours,
+            subscriber_identifier=self.subscriber_identifier,
             subscriber_subset=subscriber_subset,
-            direction=direction,
         )
         super().__init__()
 
@@ -101,11 +114,30 @@ class IntereventPeriod(SubscriberFeature):
 
     def _make_query(self):
 
+        where_clause = ""
+        if self.direction != "both":
+            where_clause = (
+                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
+            )
+
+        # Postgres does not support the following three operations with intervals
+        if self.statistic in {"median", "stddev", "variance"}:
+            statistic_clause = (
+                f"MAKE_INTERVAL(secs => {self.statistic}(EXTRACT(EPOCH FROM delta)))"
+            )
+        else:
+            statistic_clause = f"{self.statistic}(delta)"
+
         sql = f"""
         SELECT
             subscriber,
-            EXTRACT(epoch FROM value/{self.time_divisor}) AS value
-        FROM ({self.event_interval.get_query()}) AS U
+            {statistic_clause} AS value
+        FROM (
+            SELECT subscriber, datetime - LAG(datetime, 1, NULL) OVER (PARTITION BY subscriber ORDER BY datetime) AS delta
+            FROM ({self.unioned_query.get_query()}) AS U
+            {where_clause}
+        ) AS U
+        GROUP BY subscriber
         """
 
         return sql
