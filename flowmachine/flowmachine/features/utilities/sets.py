@@ -7,7 +7,7 @@ Utility classes for subsetting CDRs.
 
 """
 
-from typing import List, Optional
+from typing import List, Optional, Union, Tuple
 
 from .event_table_subset import EventTableSubset
 from .events_tables_union import EventsTablesUnion
@@ -76,13 +76,13 @@ class UniqueSubscribers(Query):
 
     def __init__(
         self,
-        start,
-        stop,
+        start: str,
+        stop: str,
         *,
-        hours="all",
-        table="all",
-        subscriber_identifier="msisdn",
-        subscriber_subset=None,
+        hours: Union[str, Tuple[int, int]] = "all",
+        table: Union[str, List[str]] = "all",
+        subscriber_identifier: str = "msisdn",
+        subscriber_subset: Optional[Query] = None,
     ):
         self.start = start
         self.stop = stop
