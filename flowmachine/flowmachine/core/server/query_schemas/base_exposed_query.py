@@ -9,11 +9,8 @@ import networkx as nx
 
 from flowmachine.core import Query
 from flowmachine.core.query_info_lookup import QueryInfoLookup
-from flowmachine.utils import store_queries_in_order, unstored_dependencies_graph
 
 __all__ = ["BaseExposedQuery"]
-
-query_run_log = structlog.get_logger("flowmachine.query_run_log")
 
 
 class BaseExposedQuery(metaclass=ABCMeta):
@@ -39,7 +36,7 @@ class BaseExposedQuery(metaclass=ABCMeta):
         Query
         """
         raise NotImplementedError(
-            f"Class {self.__class__.__name__} does not have the fm_query_obj property set."
+            f"Class {self.__class__.__name__} does not have the _flowmachine_query_obj property set."
         )
 
     def store_async(self, store_dependencies=True):
@@ -59,22 +56,11 @@ class BaseExposedQuery(metaclass=ABCMeta):
         q = self._flowmachine_query_obj
 
         if store_dependencies:
-            with Query.connection.engine.begin() as trans:
-                cache_schema_tables_qry = f"SELECT table_name FROM information_schema.tables WHERE table_schema='cache'"
-                cached_tables_qry = (
-                    f"SELECT tablename FROM cache.cached WHERE schema='cache'"
-                )
-                cache_schema_tables = trans.execute(cache_schema_tables_qry).fetchall()
-                cached_tables = trans.execute(cached_tables_qry).fetchall()
-            g = unstored_dependencies_graph(q)
-            query_run_log.debug(
-                f"Caching dependencies with query IDs: {list(reversed(list(nx.topological_sort(g))))}"
-            )
-            _ = store_queries_in_order(unstored_dependencies_graph(q))
+            q.store_with_dependencies()
+        else:
+            q.store()
 
-        q.store()
-
-        return self.query_id
+        return q.md5
 
     @property
     def query_id(self):

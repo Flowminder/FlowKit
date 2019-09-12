@@ -37,7 +37,11 @@ from flowmachine.core.errors import (
 )
 
 import flowmachine
-from flowmachine.utils import _sleep
+from flowmachine.utils import (
+    _sleep,
+    unstored_dependencies_graph,
+    store_queries_in_order,
+)
 
 from flowmachine.core.cache import write_query_to_cache
 
@@ -711,6 +715,73 @@ class Query(metaclass=ABCMeta):
         schema, name = table_name.split(".")
 
         store_future = self.to_sql(name, schema=schema)
+        return store_future
+
+    def _get_unstored_dependency_graph_and_store(self):
+        """
+        Create background threads to store this query and its unstored dependencies.
+        
+        Returns
+        -------
+        Query
+            The query object which was written once the write has completed successfully.
+
+        Notes
+        -----
+        - Storing the results happens in background threads, but this function
+          will block until the query is no longer executing.
+        - If an exception is raised while creating the dependency graph or
+          submitting tasks to store the dependencies, the query state will be
+          cancelled.
+        - If an exception is raised while calling self.store(), the query state
+          will be errored.
+        """
+        logger.debug(
+            f"Creating background threads to store query '{self.md5}' and its dependencies."
+        )
+
+        try:
+            dependency_futures = store_queries_in_order(
+                unstored_dependencies_graph(self)
+            )
+        except Exception as exc:
+            # Need to handle any exceptions here so that the query is not left in a 'queued' state.
+            QueryStateMachine(self.redis, self.md5).cancel()
+            logger.error(
+                f"Error storing dependencies of query '{self.md5}'. Error was {exc}"
+            )
+            raise exc
+
+        try:
+            store_future = self.store()
+        except Exception as exc:
+            # Need to handle any exceptions here so that the query is not left in a 'queued' state.
+            QueryStateMachine(self.redis, self.md5).raise_error()
+            logger.error(f"Error storing query '{self.md5}'. Error was {exc}")
+            raise exc
+
+        # Wait for query to finish being stored, and return the result of write_query_to_cache.
+        return store_future.result()
+
+    def store_with_dependencies(self):
+        """
+        Enqueue this query, then submit a task to store this query and its dependencies.
+
+        Returns
+        -------
+        Future
+            Future object which can be queried to check the query is stored.
+        """
+        current_state, changed_to_queue = QueryStateMachine(
+            self.redis, self.md5
+        ).enqueue()
+        logger.debug(
+            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+        )
+        # Submit a background task so that calculating the dependency graph doesn't block the server.
+        store_future = self.thread_pool_executor.submit(
+            self._get_unstored_dependency_graph_and_store
+        )
         return store_future
 
     @property
