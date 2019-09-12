@@ -21,7 +21,8 @@ time_resolutions = dict(
 class IntereventPeriod(SubscriberFeature):
     """
     This class calculates intervent period statistics such as the average and
-    standard deviation of the duration between calls.
+    standard deviation of the duration between calls and returns them as fractional
+    time units.
 
     Parameters
     ----------

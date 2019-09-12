@@ -11,7 +11,7 @@ import pandas as pd
 @pytest.fixture()
 def intervent_period(get_dataframe):
     """ Returns a dataframe with the subscriber and datetime for each event. """
-    postgres_stat_to_pandas_stat = dict(avg="mean", stddev="std")
+    postgres_stat_to_pandas_stat = dict(avg="mean", stddev="std", median="median")
 
     def _intervent_period(*, start, stop, direction, subset, stat):
         events_query = EventsTablesUnion(

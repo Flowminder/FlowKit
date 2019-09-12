@@ -20,7 +20,8 @@ valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "varianc
 class IntereventInterval(SubscriberFeature):
     """
     This class calculates intervent period statistics such as the average and
-    standard deviation of the duration between calls.
+    standard deviation of the duration between calls and returns them as time
+    intervals.
 
     Parameters
     ----------
