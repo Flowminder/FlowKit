@@ -22,7 +22,7 @@ from .displacement import Displacement
 from .event_count import EventCount
 from .event_count import EventCount
 from .subscriber_degree import SubscriberDegree
-from .subscriber_location_cluster import subscriber_location_cluster, HartiganCluster
+from .hartigan_cluster import HartiganCluster
 from .most_frequent_location import MostFrequentLocation
 from .last_location import LastLocation
 
@@ -82,7 +82,6 @@ __all__ = [
     "DayTrajectories",
     "LocationVisits",
     "NewSubscribers",
-    "subscriber_location_cluster",
     "HartiganCluster",
     "UniqueLocationCounts",
     "SubscriberDegree",
