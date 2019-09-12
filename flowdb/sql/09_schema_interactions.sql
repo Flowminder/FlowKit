@@ -58,7 +58,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         cell_id TEXT,
         date_sk BIGINT REFERENCES interactions.date_dim(date_sk),
         time_sk BIGINT REFERENCES interactions.time_dimension(time_sk),
-        event_super_table_id BIGINT,
+        event_super_table_id TEXT,
         event_type INTEGER,
         timestamp TIMESTAMPTZ NOT NULL
 
