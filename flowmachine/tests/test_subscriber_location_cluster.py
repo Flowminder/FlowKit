@@ -22,7 +22,6 @@ from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features import (
     CallDays,
     HartiganCluster,
-    subscriber_location_cluster,
     EventScore,
     SubscriberLocations,
 )
@@ -283,49 +282,6 @@ def test_join_returns_the_same_clusters():
     cols = ["subscriber", "geometry", "rank", "calldays"]
     compare = joined[cols] == har_df[cols]
     assert all(compare.all())
-
-
-def test_unlisted_methods_raises_error():
-    """
-    Test whether unlisted methods raise error
-    """
-    with pytest.raises(ValueError):
-        subscriber_location_cluster(
-            method="not_listed", start="2016-01-01", stop="2016-01-04"
-        )
-
-
-def test_bad_subscriber_identifier_raises_error():
-    """
-    Test that passing an invalid subscriber_identifier raises an error.
-    """
-    with pytest.raises(ValueError):
-        subscriber_location_cluster(
-            method="hartigan",
-            start="2016-01-01",
-            stop="2016-01-04",
-            radius=1,
-            subscriber_identifier="BAD_SUBSCRIBER_ID",
-        )
-
-
-def test_lack_of_radius_with_hartigan_raises_error():
-    """
-    Test whether not passing a radius raises when choosing `hartigan` as a method raises an error
-    """
-    with pytest.raises(ValueError):
-        subscriber_location_cluster(
-            method="hartigan", start="2016-01-01", stop="2016-01-04"
-        )
-
-
-def test_subscriber_location_clusters_defaults():
-    """Test that minimal call to subscriber_location_cluster creates expected object."""
-    clus = subscriber_location_cluster(
-        method="hartigan", start="2016-01-01", stop="2016-01-04", radius=1
-    )
-    assert 0 == clus.buffer
-    assert 0 == clus.call_threshold
 
 
 def test_hartigan_cluster_bad_calldays_column_names_raises_error():

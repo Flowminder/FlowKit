@@ -6,7 +6,7 @@ from shapely.geometry.base import BaseGeometry
 from typing import List, Dict, Union, Any
 
 from .scores import EventScore
-from .subscriber_location_cluster import _JoinedHartiganCluster
+from .hartigan_cluster import _JoinedHartiganCluster
 from ...core import Query
 
 
