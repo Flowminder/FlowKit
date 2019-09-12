@@ -20,6 +20,7 @@ from pglast import prettify
 from psycopg2._psycopg import adapt
 from time import sleep
 from typing import List, Union, Tuple, Dict
+from flowmachine.core.errors import UnstorableQueryError
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -570,12 +571,13 @@ def store_queries_in_order(dependency_graph: "DiGraph") -> Dict[str, "Future"]:
     dict
         Mapping from query nodes to Future objects representing the store tasks
     """
-    ordered_list_of_queries = reversed(list(nx.topological_sort(dependency_graph)))
+    ordered_list_of_queries = list(nx.topological_sort(dependency_graph))[::-1]
+    logger.debug(f"Storing queries with IDs: {ordered_list_of_queries}")
     store_futures = {}
     for query in ordered_list_of_queries:
         try:
             store_futures[query] = dependency_graph.nodes[query]["query_object"].store()
-        except ValueError:
+        except UnstorableQueryError:
             # Some queries cannot be stored
             pass
     return store_futures

@@ -11,6 +11,7 @@ import flowmachine
 import pandas as pd
 import networkx as nx
 import concurrent.futures
+from flowmachine.core.errors import UnstorableQueryError
 
 flowmachine.connect()
 
@@ -272,7 +273,7 @@ all_query_stores = []
 for query in reversed(list(nx.topological_sort(full_graph))):
     try:
         all_query_stores.append(full_graph.nodes[query]["query_object"].store())
-    except ValueError:
+    except UnstorableQueryError:
         # Some dependencies cannot be stored
         pass
 

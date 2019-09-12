@@ -69,6 +69,23 @@ class QueryCancelledException(Exception):
         Exception.__init__(self, f"Query '{query_id}' was cancelled.")
 
 
+class UnstorableQueryError(Exception):
+    """
+    Error to raise when attempting to store an unstorable query object.
+
+    Parameters
+    ----------
+    query_obj : Query
+        Query object that cannot be stored.
+    """
+
+    def __init__(self, query_obj: "Query"):
+        Exception.__init__(
+            self,
+            f"Query '{query_obj.md5}' of type '{query_obj.__class__.__name__}' cannot be stored.",
+        )
+
+
 class NameTooLongError(Exception):
     """
     Custom error to pass when a table name is too

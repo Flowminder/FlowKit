@@ -11,6 +11,7 @@ from .flowmachine_errors import (
     NotConnectedError,
     InvalidSpatialUnitError,
     MissingDateError,
+    UnstorableQueryError,
 )
 
 __all__ = [
@@ -18,4 +19,5 @@ __all__ = [
     "NotConnectedError",
     "InvalidSpatialUnitError",
     "MissingDateError",
+    "UnstorableQueryError",
 ]

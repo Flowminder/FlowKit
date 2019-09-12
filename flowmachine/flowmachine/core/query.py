@@ -30,7 +30,11 @@ from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
-from flowmachine.core.errors import NameTooLongError, NotConnectedError
+from flowmachine.core.errors import (
+    NameTooLongError,
+    NotConnectedError,
+    UnstorableQueryError,
+)
 
 import flowmachine
 from flowmachine.utils import _sleep
@@ -702,7 +706,7 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
         except NotImplementedError:
-            raise ValueError("Cannot store an object of this type with these params")
+            raise UnstorableQueryError(self)
 
         schema, name = table_name.split(".")
 
