@@ -106,7 +106,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         # i.e. a subscriber can appear more than once in this list, up to a maximum
         # of the total time periods.
         self.unique_subscribers_table = self._get_unioned_subscribers_list(
-            hour=hours,
+            hours=hours,
             table=table,
             subscriber_identifier=subscriber_identifier,
             subscriber_subset=subscriber_subset,
@@ -148,7 +148,7 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
             UniqueSubscribers(
                 start,
                 stop,
-                hour=hours,
+                hours=hours,
                 table=table,
                 subscriber_identifier=subscriber_identifier,
                 subscriber_subset=subscriber_subset,
