@@ -20,8 +20,9 @@ References
 ----------
 [1] Veronique Lefebvre, https://docs.google.com/document/d/1BVOAM8bVacen0U0wXbxRmEhxdRbW8J_lyaOcUtDGhx8/edit
 """
-from typing import List
+from typing import List, Tuple, Union, Optional
 
+from flowmachine.core import Query
 from .metaclasses import SubscriberFeature
 from flowmachine.utils import time_period_add
 from ..utilities.sets import UniqueSubscribers
@@ -78,12 +79,16 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
     allowed_units = ["days", "hours", "minutes"]
 
     def __init__(
-        self, start, total_periods, period_length=1, period_unit="days", **kwargs
+        self,
+        start: str,
+        total_periods: int,
+        period_length: int = 1,
+        period_unit: str = "days",
+        hours: Union[str, Tuple[int, int]] = "all",
+        table: Union[str, List[str]] = "all",
+        subscriber_identifier: str = "msisdn",
+        subscriber_subset: Optional[Query] = None,
     ):
-        """
-
-        """
-
         self.start = start
         self.total_periods = total_periods
         self.period_length = period_length
@@ -100,7 +105,12 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         # This will be a long form table of unique subscribers in each time period
         # i.e. a subscriber can appear more than once in this list, up to a maximum
         # of the total time periods.
-        self.unique_subscribers_table = self._get_unioned_subscribers_list(**kwargs)
+        self.unique_subscribers_table = self._get_unioned_subscribers_list(
+            hour=hours,
+            table=table,
+            subscriber_identifier=subscriber_identifier,
+            subscriber_subset=subscriber_subset,
+        )
 
         super().__init__()
 
@@ -120,7 +130,13 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         ]
         return starts, stops
 
-    def _get_unioned_subscribers_list(self, **kwargs):
+    def _get_unioned_subscribers_list(
+        self,
+        hours: Union[str, Tuple[int, int]] = "all",
+        table: Union[str, List[str]] = "all",
+        subscriber_identifier: str = "msisdn",
+        subscriber_subset: Optional[Query] = None,
+    ):
         """
         Constructs a list of UniqueSubscribers for each time period.
         They will be unique within each time period. Joins
@@ -129,7 +145,14 @@ class TotalActivePeriodsSubscriber(SubscriberFeature):
         """
 
         all_subscribers = [
-            UniqueSubscribers(start, stop, **kwargs)
+            UniqueSubscribers(
+                start,
+                stop,
+                hour=hours,
+                table=table,
+                subscriber_identifier=subscriber_identifier,
+                subscriber_subset=subscriber_subset,
+            )
             for start, stop in zip(self.starts, self.stops)
         ]
         return reduce(lambda x, y: x.union(y), all_subscribers)

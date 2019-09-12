@@ -84,11 +84,6 @@ class UniqueSubscribers(Query):
         subscriber_identifier="msisdn",
         subscriber_subset=None,
     ):
-        """
-
-
-        """
-
         self.start = start
         self.stop = stop
         self.hours = hours
