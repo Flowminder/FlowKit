@@ -150,24 +150,3 @@ CREATE SCHEMA IF NOT EXISTS events;
         country_code NUMERIC
 
         );
-
-    CREATE TABLE IF NOT EXISTS events.subscriber_sightings_fact(
-
-        sighting_id SERIAL PRIMARY KEY,
-        subscriber_id BIGINT REFERENCES dfs.subscribers(id),
-        cell_id TEXT,
-        date_sk BIGINT REFERENCES public.date_dim(date_sk),
-        time_sk BIGINT REFERENCES public.time_dimension(time_sk),
-        event_super_table_id BIGINT,
-        timestamp TIMESTAMPTZ NOT NULL
-
-        );
-
-    CREATE TABLE IF NOT EXISTS events.locations(
-
-        cell_id TEXT,
-        position TEXT,
-        site_id TEXT,
-        mno_cell_code TEXT
-
-        );
