@@ -14,3 +14,4 @@ from .sets import UniqueSubscribers, SubscriberLocationSubset
 from .event_table_subset import EventTableSubset
 from .events_tables_union import EventsTablesUnion
 from .histogram_aggregation import HistogramAggregation
+from .subscriber_sightings import SubscriberSigntings
