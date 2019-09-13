@@ -644,7 +644,7 @@ class Query(metaclass=ABCMeta):
         opts = ["FORMAT {}".format(format)]
         if analyse:
             opts.append("ANALYZE")
-        Q = "EXPLAIN ({})".format(", ".join(opts)) + self.get_query()
+        Q = "EXPLAIN ({})".format(", ".join(opts)) + self._make_query()
 
         exp = self.connection.fetch(Q)
 
@@ -746,18 +746,18 @@ class Query(metaclass=ABCMeta):
             )
         except Exception as exc:
             # Need to handle any exceptions here so that the query is not left in a 'queued' state.
-            QueryStateMachine(self.redis, self.md5).cancel()
             logger.error(
                 f"Error storing dependencies of query '{self.md5}'. Error was {exc}"
             )
+            QueryStateMachine(self.redis, self.md5).cancel()
             raise exc
 
         try:
             store_future = self.store()
         except Exception as exc:
             # Need to handle any exceptions here so that the query is not left in a 'queued' state.
-            QueryStateMachine(self.redis, self.md5).raise_error()
             logger.error(f"Error storing query '{self.md5}'. Error was {exc}")
+            QueryStateMachine(self.redis, self.md5).raise_error()
             raise exc
 
         # Wait for query to finish being stored, and return the result of write_query_to_cache.
