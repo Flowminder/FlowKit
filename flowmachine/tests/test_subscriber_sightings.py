@@ -6,10 +6,14 @@ import pytest
 
 from flowmachine.features import SubscriberSigntings
 
-@pytest.mark.parametrize(
-    "columns", 
-)
 
-def test_something(columns):
+@pytest.mark.parametrize("identifier", ("msisdn", "imei", "imsi"))
+def test_colums_are_set(identifier):
     """Add a test to test something."""
+    ss = SubscriberSigntings(
+        "2016-01-01", "2016-01-02", subscriber_identifier=identifier
+    )
+
+    # TODO - check the columns
+
     assert True == True

@@ -15,36 +15,32 @@ from ...core.sqlalchemy_utils import (
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
+
 class SubscriberSigntings(Query):
     """
     TODO - add something here about how to use the object
     """
 
-    def __init__(
-        self,
-        start,
-        stop,
-        subscriber_identifier="msisdn",
-    ):
+    def __init__(self, start, stop, *, subscriber_identifier="msisdn"):
         # Set start stop dates
         if isinstance(start, datetime.date):
             start = start.strftime("%Y-%m-%d")
         if isinstance(stop, datetime.date):
             stop = stop.strftime("%Y-%m-%d")
-        
+
         self.start = start
         self.stop = stop
-        
-        # Chose the identifer from interactions.subscribers table 
+
+        # Chose the identifer from interactions.subscribers table
         # rather than subscriber_sightings_fact - as this will allow
         # us to select the required field.
         table = Table("interactions.subscribers", columns=[subscriber_identifier])
         self.columns = set(table.column_names)
-        
+
         self.sqlalchemy_table = get_sqlalchemy_table_definition(
             table.fully_qualified_table_name, engine=Query.connection.engine
         )
-        
+
         super().__init__()
 
     @property
@@ -52,14 +48,14 @@ class SubscriberSigntings(Query):
         return []
 
     def _make_query_with_sqlalchemy(self):
-        
+
         sqlalchemy_columns = [
             make_sqlalchemy_column_from_flowmachine_column_description(
                 self.sqlalchemy_table, column_str
             )
             for column_str in self.columns
         ]
-        
+
         return "TODO - add the SQL"
 
     _make_query = _make_query_with_sqlalchemy
