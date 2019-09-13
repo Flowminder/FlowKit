@@ -61,11 +61,11 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:5d6412948383b8d628b9d267045e83a5c4c387300ee7d7d57edc93d375be2660",
-                "sha256:76603a8a7517e753ff4ab811b8b987bc14cba206cf0aa7473142120dee6b9a78"
+                "sha256:4b790b6910c0261d22de296ed42569affcbd80097eb770eb6088a79bef69c330",
+                "sha256:fe31ac05fbde972909a752d12b808cbbc15a50ed0a692410e1b227ff10b483ff"
             ],
             "index": "pypi",
-            "version": "==3.0.4"
+            "version": "==3.0.5"
         },
         "marshmallow-oneofschema": {
             "hashes": [
