@@ -61,11 +61,11 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:4b790b6910c0261d22de296ed42569affcbd80097eb770eb6088a79bef69c330",
-                "sha256:fe31ac05fbde972909a752d12b808cbbc15a50ed0a692410e1b227ff10b483ff"
+                "sha256:65bdcf66dd338aee9104eaae209ac970c56d41f2ae77778596c32af59fdfaa49",
+                "sha256:c1e78710709733a553deff59ba90d72677684a32f5a998b68c44e67e3876f5cb"
             ],
             "index": "pypi",
-            "version": "==3.0.5"
+            "version": "==3.1.0"
         },
         "marshmallow-oneofschema": {
             "hashes": [
@@ -556,10 +556,10 @@
         },
         "jupyter-client": {
             "hashes": [
-                "sha256:73a809a2964afa07adcc1521537fddb58c2ffbb7e84d53dc5901cf80480465b3",
-                "sha256:98e8af5edff5d24e4d31e73bc21043130ae9d955a91aa93fc0bc3b1d0f7b5880"
+                "sha256:4274f2eef4265bfd00216f44993aa50d890a1abe55e414c817128cf0338ae66a",
+                "sha256:4c274aaa3d87b83fa6c6853463f54b8bbff137aeb71e65896ab111c17a62ae63"
             ],
-            "version": "==5.3.1"
+            "version": "==5.3.2"
         },
         "jupyter-core": {
             "hashes": [
