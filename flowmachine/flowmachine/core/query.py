@@ -969,13 +969,13 @@ class Query(metaclass=ABCMeta):
         objs = Query.connection.fetch(qry)
         return (pickle.loads(obj[0]) for obj in objs)
 
-    def random_sample(self, sampling_method="system_rows", **params):
+    def random_sample(self, sampling_method="random_ids", **params):
         """
         Draws a random sample from this query.
 
         Parameters
         ----------
-        sampling_method : {'system', 'system_rows', 'bernoulli', 'random_ids'}, default 'system_rows'
+        sampling_method : {'system', 'system_rows', 'bernoulli', 'random_ids'}, default 'random_ids'
             Specifies the method used to select the random sample.
             'system_rows': performs block-level sampling by randomly sampling
                 each physical storage page of the underlying relation. This

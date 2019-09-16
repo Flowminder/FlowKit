@@ -407,7 +407,7 @@ class RandomIDs(SeedableRandom):
         return sampled_query
 
 
-def random_factory(parent_class: Type[Query], sampling_method: str = "system_rows"):
+def random_factory(parent_class: Type[Query], sampling_method: str = "random_ids"):
     """
     Dynamically creates a random class as a descendant of parent_class.
     The resulting object will query the underlying object for attributes,
@@ -417,7 +417,7 @@ def random_factory(parent_class: Type[Query], sampling_method: str = "system_row
     ----------
     parent_class : class derived from flowmachine.core.Query
         Class from which to derive random class
-    sampling_method : str, default 'system_rows'
+    sampling_method : str, default 'random_ids'
         One of 'system_rows', 'system', 'bernoulli', 'random_ids'.
         Specifies the method used to select the random sample.
         'system_rows': performs block-level sampling by randomly sampling
