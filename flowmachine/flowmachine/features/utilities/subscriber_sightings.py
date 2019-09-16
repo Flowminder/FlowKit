@@ -5,7 +5,7 @@
 import structlog
 import datetime
 from typing import List
-from sqlalchemy import select
+from sqlalchemy import select, join
 
 from ...core import Query, Table
 from ...core.sqlalchemy_utils import (
@@ -32,15 +32,26 @@ class SubscriberSigntings(Query):
         self.start = start
         self.stop = stop
 
+        # Setup the main subscriber_sightings_fact table
+        self.mainTable = Table(
+            "interactions.subscriber_sightings_fact", columns=["timestamp", "cell_id"]
+        )
+        self.sqlalchemy_mainTable = get_sqlalchemy_table_definition(
+            self.mainTable.fully_qualified_table_name, engine=Query.connection.engine
+        )
+
         # Chose the identifer from interactions.subscribers table
         # rather than subscriber_sightings_fact - as this will allow
         # us to select the required field.
-        table = Table("interactions.subscriber", columns=[subscriber_identifier])
-        self.columns = set(table.column_names)
-
-        self.sqlalchemy_table = get_sqlalchemy_table_definition(
-            table.fully_qualified_table_name, engine=Query.connection.engine
+        self.subTable = Table(
+            "interactions.subscriber", columns=[subscriber_identifier]
         )
+        self.sqlalchemy_subTable = get_sqlalchemy_table_definition(
+            self.subTable.fully_qualified_table_name, engine=Query.connection.engine
+        )
+
+        # For referencing - we can get all the column name here - perhaps this isn't needed
+        self.columns = self.mainTable.column_names + self.subTable.column_names
 
         super().__init__()
 
@@ -49,14 +60,24 @@ class SubscriberSigntings(Query):
         return self.columns
 
     def _make_query_with_sqlalchemy(self):
+        subscriber_id = make_sqlalchemy_column_from_flowmachine_column_description(
+            self.sqlalchemy_mainTable, "subscriber_id"
+        )
+        id = make_sqlalchemy_column_from_flowmachine_column_description(
+            self.sqlalchemy_subTable, "id"
+        )
 
         sqlalchemy_columns = [
             make_sqlalchemy_column_from_flowmachine_column_description(
-                self.sqlalchemy_table, column_str
+                self.sqlalchemy_mainTable, column_str
             )
-            for column_str in self.columns
+            for column_str in self.mainTable.column_names
         ]
 
-        return select(sqlalchemy_columns)
+        return select(sqlalchemy_columns).select_from(
+            self.sqlalchemy_mainTable.join(
+                self.sqlalchemy_subTable, subscriber_id == id
+            )
+        )
 
     _make_query = _make_query_with_sqlalchemy

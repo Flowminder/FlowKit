@@ -7,6 +7,15 @@ import pytest
 from flowmachine.features import SubscriberSigntings
 
 
+def test_main_colums_are_set():
+    """Test that the main columns are set."""
+    ss = SubscriberSigntings(
+        "2016-01-01", "2016-01-02"
+    )
+
+    assert "timestamp" in ss.column_names
+    assert "cell_id" in ss.column_names
+
 @pytest.mark.parametrize("identifier", ("msisdn", "imei", "imsi"))
 def test_colums_are_set(identifier):
     """Add a test to test something."""
@@ -14,4 +23,4 @@ def test_colums_are_set(identifier):
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
 
-    assert identifier == ss.head(0).columns[0]
+    assert identifier in ss.head(0).columns[0]
