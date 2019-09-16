@@ -71,6 +71,8 @@ def start_flowmachine_server_with_or_without_dependency_caching(
     Tests using this fixture will run twice: once with dependency caching disabled,
     and again with dependency caching enabled.
     """
+    original_flowmachine_conn = Query.connection
+
     # Ensure this server runs on a different port from the session-scoped server
     main_zmq_port = os.getenv("FLOWMACHINE_PORT", "5555")
     monkeypatch.setenv("FLOWMACHINE_PORT", str(int(main_zmq_port) + 1))
@@ -79,9 +81,20 @@ def start_flowmachine_server_with_or_without_dependency_caching(
     # Start the server
     fm_thread = Process(target=flowmachine.core.server.server.main)
     fm_thread.start()
+
+    # Create a new flowmachine connection, because we can't use the old one after starting a new process.
+    new_conn = make_flowmachine_connection_object()
+    Query.connection = new_conn
+
     yield
+
+    new_conn.close()
+
     fm_thread.terminate()
     sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
+
+    # Switch flowmachine back to using the original connection for the remaining tests.
+    Query.connection = original_flowmachine_conn
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -172,10 +185,9 @@ def redis():
     return Query.redis
 
 
-@pytest.fixture(scope="session")
-def fm_conn():
+def make_flowmachine_connection_object():
     """
-    Returns a flowmachine Connection object which
+    Return a flowmachine Connection object.
 
     Returns
     -------
@@ -187,7 +199,20 @@ def fm_conn():
     FLOWDB_PORT = os.getenv("FLOWDB_PORT", "9000")
     conn_str = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{FLOWDB_HOST}:{FLOWDB_PORT}/flowdb"
 
-    fm_conn = Connection(conn_str=conn_str)
+    conn = Connection(conn_str=conn_str)
+    return conn
+
+
+@pytest.fixture(scope="session")
+def fm_conn():
+    """
+    Create a flowmachine Connection object, and connect flowmachine.
+
+    Yields
+    ------
+    flowmachine.core.connection.Connection
+    """
+    fm_conn = make_flowmachine_connection_object()
     flowmachine.connect(conn=fm_conn)
 
     yield fm_conn
