@@ -37,22 +37,6 @@ def test_construct_query(diff_reporter):
             },
         },
         {
-            "query_kind": "spatial_aggregate",
-            "locations": {
-                "query_kind": "daily_location",
-                "date": "2016-01-01",
-                "aggregation_unit": "admin3",
-                "method": "last",
-                "subscriber_subset": None,
-                "sampling": {
-                    "sampling_method": "system_rows",
-                    "size": 10,
-                    "fraction": None,
-                    "estimate_count": False,
-                },
-            },
-        },
-        {
             "query_kind": "location_event_counts",
             "start_date": "2016-01-01",
             "end_date": "2016-01-02",
@@ -297,19 +281,19 @@ def test_wrong_geography_aggregation_unit_raises_error():
     "sampling, message",
     [
         (
-            {"sampling_method": "system_rows", "size": 10, "fraction": 0.2},
+            {"sampling_method": "bernoulli", "size": 10, "fraction": 0.2},
             "Must provide exactly one of 'size' or 'fraction' for a random sample",
         ),
         (
-            {"sampling_method": "system_rows"},
+            {"sampling_method": "bernoulli"},
             "Must provide exactly one of 'size' or 'fraction' for a random sample",
         ),
         (
-            {"sampling_method": "system_rows", "fraction": 1.2},
+            {"sampling_method": "bernoulli", "fraction": 1.2},
             "Must be greater than 0.0 and less than 1.0.",
         ),
         (
-            {"sampling_method": "system_rows", "size": -1},
+            {"sampling_method": "bernoulli", "size": -1},
             "Must be greater than or equal to 1.",
         ),
         (
