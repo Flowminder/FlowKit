@@ -106,16 +106,13 @@ class Displacement(SubscriberFeature):
         subscriber_subset: Optional[Query] = None,
     ):
 
-        # need to subtract one day from hl end in order to be
-        # comparing over same period...
-        self.stop_sl = stop
-        self.stop_hl = str(parse_datestring(stop) - relativedelta(days=1))
         self.return_subscribers_not_seen = return_subscribers_not_seen
         self.start = start
+        self.stop = stop
         self.spatial_unit = reference_location.spatial_unit
         subscriber_locations = SubscriberLocations(
             self.start,
-            self.stop_sl,
+            self.stop,
             spatial_unit=self.spatial_unit,
             hours=hours,
             table=table,
