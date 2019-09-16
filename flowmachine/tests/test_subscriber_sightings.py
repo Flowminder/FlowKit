@@ -14,6 +14,4 @@ def test_colums_are_set(identifier):
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
 
-    # TODO - check the columns
-
-    assert True == True
+    assert identifier == ss.head(0).columns[0]

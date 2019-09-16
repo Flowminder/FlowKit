@@ -5,6 +5,7 @@
 import structlog
 import datetime
 from typing import List
+from sqlalchemy import select
 
 from ...core import Query, Table
 from ...core.sqlalchemy_utils import (
@@ -34,7 +35,7 @@ class SubscriberSigntings(Query):
         # Chose the identifer from interactions.subscribers table
         # rather than subscriber_sightings_fact - as this will allow
         # us to select the required field.
-        table = Table("interactions.subscribers", columns=[subscriber_identifier])
+        table = Table("interactions.subscriber", columns=[subscriber_identifier])
         self.columns = set(table.column_names)
 
         self.sqlalchemy_table = get_sqlalchemy_table_definition(
@@ -45,7 +46,7 @@ class SubscriberSigntings(Query):
 
     @property
     def column_names(self) -> List[str]:
-        return []
+        return self.columns
 
     def _make_query_with_sqlalchemy(self):
 
@@ -56,6 +57,6 @@ class SubscriberSigntings(Query):
             for column_str in self.columns
         ]
 
-        return "TODO - add the SQL"
+        return select(sqlalchemy_columns)
 
     _make_query = _make_query_with_sqlalchemy
