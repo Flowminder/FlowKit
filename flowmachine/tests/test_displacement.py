@@ -19,7 +19,7 @@ from unittest.mock import Mock
         ("stddev", 182.885304966881, 218.698764480622),
         ("avg", 370.301009034846, 389.155343931983),
         ("sum", 11109.0302710454, 11285.5049740275),
-        ("variance", 33447034.7728291, 47829149.5853505),
+        ("variance", 3344.70347728291, 47829.1495853505),
     ],
 )
 def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataframe):
