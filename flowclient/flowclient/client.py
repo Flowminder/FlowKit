@@ -1605,7 +1605,7 @@ def handset(
 def random_sample(
     *,
     query: Dict[str, Union[str, dict]],
-    sampling_method: str = "system_rows",
+    sampling_method: str = "random_ids",
     size: Union[int, None] = None,
     fraction: Union[float, None] = None,
     estimate_count: bool = True,
@@ -1618,12 +1618,8 @@ def random_sample(
     ----------
     query : dict
         Specification of the query to be sampled.
-    sampling_method : {'system_rows', 'system', 'bernoulli', 'random_ids'}, default 'system_rows'
+    sampling_method : {'system', 'bernoulli', 'random_ids'}, default 'random_ids'
         Specifies the method used to select the random sample.
-        'system_rows': performs block-level sampling by randomly sampling
-            each physical storage page of the underlying relation. This
-            sampling method is guaranteed to provide a sample of the specified
-            size
         'system': performs block-level sampling by randomly sampling each
             physical storage page for the underlying relation. This
             sampling method is not guaranteed to generate a sample of the
