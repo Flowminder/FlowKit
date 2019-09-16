@@ -1177,9 +1177,6 @@
           },
           {
             "$ref": "#/components/schemas/SystemRandomSample"
-          },
-          {
-            "$ref": "#/components/schemas/SystemRowsRandomSample"
           }
         ]
       },
@@ -1270,34 +1267,6 @@
           "seed": {
             "format": "float",
             "type": "number"
-          },
-          "size": {
-            "format": "int32",
-            "minimum": 1,
-            "nullable": true,
-            "type": "integer"
-          }
-        },
-        "type": "object"
-      },
-      "SystemRowsRandomSample": {
-        "properties": {
-          "estimate_count": {
-            "default": true,
-            "type": "boolean"
-          },
-          "fraction": {
-            "format": "float",
-            "maximum": 1.0,
-            "minimum": 0.0,
-            "nullable": true,
-            "type": "number"
-          },
-          "sampling_method": {
-            "enum": [
-              "system_rows"
-            ],
-            "type": "string"
           },
           "size": {
             "format": "int32",
