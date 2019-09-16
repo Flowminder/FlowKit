@@ -36,6 +36,10 @@ class DistanceMatrix(GraphMixin, Query):
         is an useful option if one is computing
         other geographic properties out of the
 
+    Notes
+    -----
+    Zero distances (e.g. between cells on the same site) are _not_ returned.
+
     """
 
     def __init__(
@@ -71,7 +75,10 @@ class DistanceMatrix(GraphMixin, Query):
             [f"B.{c} AS {c}_to" for c in self.spatial_unit.location_id_columns]
         )
 
-        geom_query = self.spatial_unit.get_geom_query()
+        geom_query = f"""
+            SELECT {", ".join(f"array_agg({col}) as {col}" for col in self.spatial_unit.location_id_columns)}, geom 
+                FROM ({self.spatial_unit.get_geom_query()}) _ GROUP BY geom
+        """
 
         if self.return_geometry:
             return_geometry_statement = """
@@ -83,7 +90,10 @@ class DistanceMatrix(GraphMixin, Query):
             return_geometry_statement = ""
 
         sql = f"""
-            SELECT
+            SELECT {", ".join(f"unnest({col}_{direction}) as {col}_{direction}" for col in self.spatial_unit.location_id_columns for direction in ("to", "from"))}, 
+            distance {return_geometry_statement}
+            FROM
+            (SELECT
                 {cols_A},
                 {cols_B},
                 ST_Distance(
@@ -92,7 +102,7 @@ class DistanceMatrix(GraphMixin, Query):
                 ) / 1000 AS distance
                 {return_geometry_statement}
             FROM ({geom_query}) AS A
-            CROSS JOIN ({geom_query}) AS B
+            CROSS JOIN ({geom_query}) AS B) _
             ORDER BY distance DESC
         """
 

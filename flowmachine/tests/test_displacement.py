@@ -19,7 +19,7 @@ from unittest.mock import Mock
         ("stddev", 182.885304966881, 218.698764480622),
         ("avg", 370.301009034846, 389.155343931983),
         ("sum", 11109.0302710454, 11285.5049740275),
-        ("variance", 3344.70347728291, 47829.1495853505),
+        ("variance", 33447.0347728291, 47829.1495853505),
     ],
 )
 def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataframe):
@@ -127,7 +127,9 @@ def test_get_all_users_in_reference_location(get_dataframe):
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
 
     rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
-    d = Displacement(p2[0], p2[1], reference_location=rl)
+    d = Displacement(
+        p2[0], p2[1], reference_location=rl, return_subscribers_not_seen=True
+    )
 
     ml_subscribers = set(get_dataframe(rl).subscriber)
     d_subscribers = set(get_dataframe(d).subscriber)
@@ -146,7 +148,9 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
     subscriber = "OdM7np8LYEp1mkvP"
 
     rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
-    d = Displacement(p2[0], p2[1], reference_location=rl)
+    d = Displacement(
+        p2[0], p2[1], reference_location=rl, return_subscribers_not_seen=True
+    )
 
     df = get_dataframe(d).set_index("subscriber")
 

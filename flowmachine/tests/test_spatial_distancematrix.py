@@ -26,11 +26,11 @@ def test_some_results(get_dataframe):
 
 @pytest.mark.parametrize(
     "spatial_unit_type, length",
-    [("versioned-cell", 62), ("versioned-site", 35), ("lon-lat", 62)],
+    [("versioned-cell", 2638), ("versioned-site", 1225), ("lon-lat", 2638)],
 )
 def test_result_has_correct_length(spatial_unit_type, length, get_length):
     """
-    DistanceMatrix() has the correct length.
+    DistanceMatrix has the correct length.
     """
     c = DistanceMatrix(spatial_unit=make_spatial_unit(spatial_unit_type))
-    assert get_length(c) == length ** 2
+    assert get_length(c) == length

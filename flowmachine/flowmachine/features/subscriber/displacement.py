@@ -4,20 +4,15 @@
 
 # -*- coding: utf-8 -*-
 """
-
 The maximum displacement of a user from its home location
-
-
-
 """
-from typing import List
+from typing import List, Union, Tuple, Optional
 
-from flowmachine.features.subscriber import daily_location
+from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
-from . import ModalLocation
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 from flowmachine.utils import parse_datestring, get_dist_query_string, list_of_dates
-from flowmachine.core import make_spatial_unit
+from flowmachine.core import make_spatial_unit, Table, Query
 
 from dateutil.relativedelta import relativedelta
 
@@ -68,14 +63,17 @@ class Displacement(SubscriberFeature):
         the data.
     table : str, default 'all'
         schema qualified name of the table which the analysis is
-        based upon. If 'ALL' it will use all tables that contain
-        location data, specified in flowmachine.yml.
+        based upon. If 'all' it will use all tables that contain
+        location data.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
+    return_subscribers_not_seen : bool, default False
+        By default, subscribers who are not seen in the time period are dropped. Set to Truw
+        to return them as NULL.
     ignore_nulls : bool, default True
         ignores those values that are null. Sometime data appears for which
         the cell is null. If set to true this will ignore those lines. If false
@@ -95,30 +93,30 @@ class Displacement(SubscriberFeature):
 
     def __init__(
         self,
-        start,
-        stop,
-        reference_location,
-        statistic="avg",
-        unit="km",
-        hours="all",
-        method="last",
-        table="all",
-        subscriber_identifier="msisdn",
-        ignore_nulls=True,
-        subscriber_subset=None,
+        start: str,
+        stop: str,
+        reference_location: BaseLocation,
+        statistic: str = "avg",
+        unit: str = "km",
+        hours: Union[str, Tuple[int, int]] = "all",
+        table: Union[str, List[str]] = "all",
+        subscriber_identifier: str = "msisdn",
+        ignore_nulls: bool = True,
+        return_subscribers_not_seen: bool = False,
+        subscriber_subset: Optional[Query] = None,
     ):
 
         # need to subtract one day from hl end in order to be
         # comparing over same period...
         self.stop_sl = stop
         self.stop_hl = str(parse_datestring(stop) - relativedelta(days=1))
-
+        self.return_subscribers_not_seen = return_subscribers_not_seen
         self.start = start
-
-        sl = SubscriberLocations(
+        self.spatial_unit = reference_location.spatial_unit
+        subscriber_locations = SubscriberLocations(
             self.start,
             self.stop_sl,
-            spatial_unit=make_spatial_unit("lon-lat"),
+            spatial_unit=self.spatial_unit,
             hours=hours,
             table=table,
             subscriber_identifier=subscriber_identifier,
@@ -134,21 +132,27 @@ class Displacement(SubscriberFeature):
                 )
             )
 
-        if isinstance(reference_location, BaseLocation):
-
-            self.joined = reference_location.join(
-                sl,
-                on_left="subscriber",
-                on_right="subscriber",
-                how="left",
-                left_append="_home_loc",
-                right_append="",
-            )
-            reference_location.spatial_unit.verify_criterion("has_lon_lat_columns")
-        else:
+        if not isinstance(reference_location, BaseLocation):
             raise ValueError(
                 "Argument 'reference_location' should be an instance of BaseLocation class. "
                 f"Got: {type(reference_location)}"
+            )
+        else:
+            self.reference_location = reference_location
+            self.joined = reference_location.join(
+                other=subscriber_locations,
+                on_left=["subscriber"],
+                left_append="_from",
+                right_append="_to",
+            ).join(
+                DistanceMatrix(spatial_unit=self.spatial_unit),
+                on_left=[
+                    f"{col}_{direction}"
+                    for direction in ("from", "to")
+                    for col in self.spatial_unit.location_id_columns
+                ],
+                right_append="_dist",
+                how="left outer",
             )
 
         self.unit = unit
@@ -161,28 +165,29 @@ class Displacement(SubscriberFeature):
 
     def _make_query(self):
 
-        dist_string = get_dist_query_string(
-            lon1="lon_home_loc", lat1="lat_home_loc", lon2="lon", lat2="lat"
-        )
+        if self.unit == "m":
+            multiplier = 1000
+        elif self.unit == "km":
+            multiplier = 1
 
-        if self.unit == "km":
-            divisor = 1000
-        elif self.unit == "m":
-            divisor = 1
-
-        sql = """
-        select 
+        sql = f"""
+        SELECT 
             subscriber,
-            {statistic}({dist_string}) / {divisor} as value
-        from 
-            ({join}) as foo
-        group by 
+            {self.statistic}(COALESCE(distance_dist, 0) * {multiplier}) as value
+        FROM 
+            ({self.joined.get_query()}) _
+        GROUP BY 
             subscriber
-        """.format(
-            statistic=self.statistic,
-            dist_string=dist_string,
-            divisor=divisor,
-            join=self.joined.get_query(),
-        )
+        """
+
+        if self.return_subscribers_not_seen:  # Join back onto the reference location
+            sql = f"""
+            SELECT subscriber, dists.value
+            FROM
+            ({self.reference_location.get_query()}) _
+            LEFT OUTER JOIN
+            ({sql}) dists
+            USING (subscriber)
+            """
 
         return sql
