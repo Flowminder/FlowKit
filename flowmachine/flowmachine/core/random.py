@@ -34,7 +34,7 @@ class RandomBase(metaclass=ABCMeta):
         *,
         size: Optional[int] = None,
         fraction: Optional[float] = None,
-        estimate_count: bool = True,
+        estimate_count: bool = False,
     ):
         if size is None and fraction is None:
             raise ValueError(
@@ -120,7 +120,7 @@ class RandomSystemRows(RandomBase):
     fraction : float, optional
         The fraction of rows to be selected from the table.
         Exactly one of the 'size' or 'fraction' arguments must be provided.
-    estimate_count : bool, default True
+    estimate_count : bool, default False
         Whether to estimate the number of rows in the table using
         information contained in the `pg_class` or whether to perform an
         actual count in the number of rows.
@@ -143,7 +143,7 @@ class RandomSystemRows(RandomBase):
         *,
         size: Optional[int] = None,
         fraction: Optional[float] = None,
-        estimate_count: bool = True,
+        estimate_count: bool = False,
     ):
         # Raise a value error if the query is a table, and has children, as the
         # method relies on it not having children.
@@ -192,7 +192,7 @@ class SeedableRandom(RandomBase, metaclass=ABCMeta):
         *,
         size: Optional[int] = None,
         fraction: Optional[float] = None,
-        estimate_count: bool = True,
+        estimate_count: bool = False,
         seed: Optional[float] = None,
     ):
         self._seed = seed
@@ -246,7 +246,7 @@ class RandomTablesample(SeedableRandom):
     fraction : float, optional
         The fraction of rows to be selected from the table.
         Exactly one of the 'size' or 'fraction' arguments must be provided.
-    estimate_count : bool, default True
+    estimate_count : bool, default False
         Whether to estimate the number of rows in the table using
         information contained in the `pg_class` or whether to perform an
         actual count in the number of rows.
@@ -270,7 +270,7 @@ class RandomTablesample(SeedableRandom):
         *,
         size: Optional[int] = None,
         fraction: Optional[float] = None,
-        estimate_count: bool = True,
+        estimate_count: bool = False,
         seed: Optional[float] = None,
     ):
         valid_methods = ["system", "bernoulli"]
@@ -339,7 +339,7 @@ class RandomIDs(SeedableRandom):
     fraction : float, optional
         The fraction of rows to be selected from the table.
         Exactly one of the 'size' or 'fraction' arguments must be provided.
-    estimate_count : bool, default True
+    estimate_count : bool, default False
         Whether to estimate the number of rows in the table using
         information contained in the `pg_class` or whether to perform an
         actual count in the number of rows.
@@ -362,7 +362,7 @@ class RandomIDs(SeedableRandom):
         *,
         size: Optional[int] = None,
         fraction: Optional[float] = None,
-        estimate_count: bool = True,
+        estimate_count: bool = False,
         seed: Optional[float] = None,
     ):
         if seed is not None and (seed > 1 or seed < -1):
@@ -397,10 +397,10 @@ class RandomIDs(SeedableRandom):
 
         sampled_query = f"""
         SELECT {columns} FROM (
-            (SELECT * FROM random_ints({seed}, {size}, {rowcount})) r
+            (SELECT id as rid FROM random_ints({seed}, {size}, {rowcount})) r
             LEFT JOIN
             (SELECT *, row_number() OVER () as rid FROM {self.query.fully_qualified_table_name}) s
-            ON r.id=s.rid
+            USING (rid)
         ) o
         """
 

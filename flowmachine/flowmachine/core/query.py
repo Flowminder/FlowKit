@@ -997,7 +997,7 @@ class Query(metaclass=ABCMeta):
         fraction : float, optional
             Fraction of rows to draw.
             Exactly one of the 'size' or 'fraction' arguments must be provided.
-        estimate_count : bool, default True
+        estimate_count : bool, default False
             Whether to estimate the number of rows in the table using
             information contained in the `pg_class` or whether to perform an
             actual count in the number of rows.
