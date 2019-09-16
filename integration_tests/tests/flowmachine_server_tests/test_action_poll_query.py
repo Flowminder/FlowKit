@@ -22,6 +22,9 @@ async def test_poll_existing_query(zmq_port, zmq_host):
     }
     assert expected_reply == reply
 
+    # Poll until done to ensure we don't send the poll message until the query state has finished updating.
+    poll_until_done(zmq_port, expected_query_id)
+
     msg = {
         "action": "poll_query",
         "params": {"query_id": expected_query_id},
