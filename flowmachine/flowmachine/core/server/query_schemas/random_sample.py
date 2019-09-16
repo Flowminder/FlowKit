@@ -27,18 +27,6 @@ class BaseRandomSampleSchema(Schema):
             )
 
 
-class SystemRowsRandomSampleSchema(BaseRandomSampleSchema):
-    # We must define the sampling_method field here for it to appear in the API spec.
-    # This field is removed by RandomSampleSchema before passing on to this schema,
-    # so the sampling_method parameter is never received here and is not included in the
-    # params passed to make_random_sampler.
-    sampling_method = fields.String(validate=OneOf(["system_rows"]))
-
-    @post_load
-    def make_random_sampler(self, params, **kwargs):
-        return RandomSampler(sampling_method="system_rows", **params)
-
-
 class SystemRandomSampleSchema(BaseRandomSampleSchema):
     # We must define the sampling_method field here for it to appear in the API spec.
     # This field is removed by RandomSampleSchema before passing on to this schema,
@@ -118,7 +106,6 @@ class RandomSampler:
 class RandomSampleSchema(OneOfSchema):
     type_field = "sampling_method"
     type_schemas = {
-        "system_rows": SystemRowsRandomSampleSchema,
         "system": SystemRandomSampleSchema,
         "bernoulli": BernoulliRandomSampleSchema,
         "random_ids": RandomIDsRandomSampleSchema,
