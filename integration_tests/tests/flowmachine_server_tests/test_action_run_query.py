@@ -140,8 +140,7 @@ async def test_cache_content(
                 pass
 
     # Check that we are starting with an empty cache.
-    reset_cache(fm_conn, redis, protect_table_objects=False)
-    assert cache_schema_is_empty(fm_conn)
+    assert cache_schema_is_empty(fm_conn, check_internal_tables_are_empty=False)
 
     # Send message to run the daily_location query, and check it was accepted
     reply = send_zmq_message_and_receive_reply(
