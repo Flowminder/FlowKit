@@ -98,8 +98,7 @@ def pytest_itemcollected(item):
     and also adds info about any parameters (if the test is parametrized).
     """
     if item.obj.__doc__:
-        item._nodeid = "* " + " ".join(item.obj.__doc__.split())
-        item._nodeid += get_string_with_test_parameter_values(item)
+        item._nodeid = f'{item._nodeid} ({" ".join(item.obj.__doc__.split())})'
 
 
 @pytest.fixture(autouse=True)
