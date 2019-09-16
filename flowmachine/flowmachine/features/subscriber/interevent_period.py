@@ -53,15 +53,20 @@ class IntereventPeriod(SubscriberFeature):
 
     >>> s = IntereventPeriod("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
+               subscriber     value
+    0    038OVABN11Ak4W5P  4.956230
+    1    09NrjaNNvDanD8pk  3.877348
+    2    0ayZGYEQrqYlKw6g  4.034907
+    3    0DB8zw67E9mZAPK2  6.541865
+    4    0Gl95NRLjW2aw8pW  5.739062
+    ..                ...       ...
+    495  ZQG8glazmxYa1K62  4.207696
+    496  Zv4W9eak2QN1M5A7  3.686201
+    497  zvaOknzKbEVD2eME  4.357561
+    498  Zy3DkbY7MDd6Er7l  4.550242
+    499  ZYPxqVGLzlQy6l7n  4.024503
 
-        subscriber       interevent_period_avg
-        JZoaw2jzvK2QMKYX       03:26:47.673913
-        1QBlwRo4Kd5v3Ogz       03:23:03.979167
-        V4DJ7AaxLLOyWEZ3       03:39:35.977778
-        woOyJvzKBALYj8za       03:14:27.780000
-        1NqnrAB9bRd597x2       03:57:17.926829
-                     ...                   ...
-
+    [500 rows x 2 columns]
     """
 
     def __init__(

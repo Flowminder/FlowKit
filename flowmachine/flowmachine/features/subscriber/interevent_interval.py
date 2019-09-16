@@ -52,14 +52,20 @@ class IntereventInterval(SubscriberFeature):
 
     >>> s = IntereventInterval("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
+               subscriber           value
+    0    038OVABN11Ak4W5P 04:57:22.428571
+    1    09NrjaNNvDanD8pk 03:52:38.454545
+    2    0ayZGYEQrqYlKw6g 04:02:05.666667
+    3    0DB8zw67E9mZAPK2 06:32:30.714285
+    4    0Gl95NRLjW2aw8pW 05:44:20.625000
+    ..                ...             ...
+    495  ZQG8glazmxYa1K62 04:12:27.705882
+    496  Zv4W9eak2QN1M5A7 03:41:10.323529
+    497  zvaOknzKbEVD2eME 04:21:27.218750
+    498  Zy3DkbY7MDd6Er7l 04:33:00.870968
+    499  ZYPxqVGLzlQy6l7n 04:01:28.212121
 
-        subscriber       value
-        JZoaw2jzvK2QMKYX       03:26:47.673913
-        1QBlwRo4Kd5v3Ogz       03:23:03.979167
-        V4DJ7AaxLLOyWEZ3       03:39:35.977778
-        woOyJvzKBALYj8za       03:14:27.780000
-        1NqnrAB9bRd597x2       03:57:17.926829
-                     ...                   ...
+    [500 rows x 2 columns]
 
     """
 
