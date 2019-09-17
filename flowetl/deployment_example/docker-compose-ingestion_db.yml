@@ -1,0 +1,41 @@
+#
+# DOCKER STACK FILE FOR FLOWETL EXAMPLE DEPLOYMENT
+#
+
+version: '3.5'
+
+
+networks:
+  ingestion_db_overlay:
+    name: ingestion_db_overlay
+    driver: overlay
+
+
+services:
+
+  ingestion_db:
+    container_name: ingestion_db
+    image: ${LOCAL_DOCKER_REGISTRY:?Must set LOCAL_DOCKER_REGISTRY env var}/ingestion_db:latest
+    build:
+      context: ingestion_db
+      dockerfile: Dockerfile
+    environment:
+      - POSTGRES_USER=${INGESTION_DB_ADMIN_USER:?Must set INGESTION_DB_ADMIN_USER env var}
+      - POSTGRES_PASSWORD=${INGESTION_DB_ADMIN_PASSWORD:?Must set INGESTION_DB_ADMIN_PASSWORD env var}
+      - POSTGRES_DB=ingestion_db
+      - INGESTION_DB_USER=${INGESTION_DB_USER:?Must set INGESTION_DB_USER env var}
+      - INGESTION_DB_PASSWORD=${INGESTION_DB_PASSWORD:?Must set INGESTION_DB_PASSWORD env var}
+    ports:
+      - ${INGESTION_DB_PORT:?Must set INGESTION_DB_PORT env var}:5432
+    tty: true
+    stdin_open: true
+    restart: always
+    shm_size: ${POSTGRES_SHM:-1G}
+    volumes:
+      - data_volume_ingestion_db:/var/lib/postgresql/data
+    networks:
+      - ingestion_db_overlay
+
+
+volumes:
+  data_volume_ingestion_db:
