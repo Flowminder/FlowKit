@@ -19,7 +19,23 @@ logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 class SubscriberSigntings(Query):
     """
-    TODO - add something here about how to use the object
+    Represents data contained in the subscriber_sightings_fact table.
+
+    Parameters
+    ----------
+    start : str, default None
+        date for the beginning of the time frame, e.g. 2016-01-01 or if None, 
+        it will use the min date seen in the `interactions.subscriber_sightings_fact` table.
+    stop : str, default None
+        date for the end of the time frame, e.g. 2016-01-04 or if None, 
+        it will use the max date seen in the `interactions.subscriber_sightings_fact` table.
+    subscriber_identifier : {'msisdn', 'imei', 'imsi'}, default 'msisdn'
+        The column that identifies the subscriber.
+
+    Examples
+    --------
+    >>> ss = SubscriberSigntings("2016-01-01", "2016-01-02", subscriber_identifier="imei")
+    >>> ss.head()
     """
 
     def __init__(self, start, stop, *, subscriber_identifier="msisdn"):
@@ -76,6 +92,7 @@ class SubscriberSigntings(Query):
             raise ValueError("Start and stop are the same.")
 
     def _make_query_with_sqlalchemy(self):
+        # Get the join columns
         subscriber_id = make_sqlalchemy_column_from_flowmachine_column_description(
             self.sqlalchemy_mainTable, "subscriber_id"
         )
@@ -83,6 +100,7 @@ class SubscriberSigntings(Query):
             self.sqlalchemy_subTable, "id"
         )
 
+        # Populate a list of columns that we want to select
         sqlalchemy_columns = [
             make_sqlalchemy_column_from_flowmachine_column_description(
                 self.sqlalchemy_mainTable, column_str
@@ -97,6 +115,7 @@ class SubscriberSigntings(Query):
             )
         )
 
+        # Finally produce the joined select
         select_stmt = select(sqlalchemy_columns).select_from(
             self.sqlalchemy_mainTable.join(
                 self.sqlalchemy_subTable, subscriber_id == id
