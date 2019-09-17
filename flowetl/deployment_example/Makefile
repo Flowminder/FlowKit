@@ -46,14 +46,14 @@ connect-flowdb:
 connect-ingestion_db:
 	psql "postgresql://ingestion_db:etletl@127.0.0.1:${INGESTION_DB_PORT}/ingestion_db"
 
-connect-flowetl_db:
-	psql "postgresql://flowetl:flowetl@127.0.0.1:${FLOWETL_DB_PORT}/flowetl"
+connect-flowetl_airflow_db:
+	psql "postgresql://flowetl:flowetl@127.0.0.1:${FLOWETL_AIRFLOW_DB_PORT}/flowetl"
 
 
-purge-all-db-volumes: purge-flowetl_db-volume purge-flowdb-volume purge-ingestion_db-volume
+purge-all-db-volumes: purge-flowetl_airflow_db-volume purge-flowdb-volume purge-ingestion_db-volume
 
-purge-flowetl_db-volume:
-	docker volume rm $(DOCKER_STACK_NAME)_data_volume_flowetl_db
+purge-flowetl_airflow_db-volume:
+	docker volume rm $(DOCKER_STACK_NAME)_data_volume_flowetl_airflow_db
 
 purge-flowdb-volume:
 	docker volume rm $(DOCKER_STACK_NAME)_data_volume_flowdb
