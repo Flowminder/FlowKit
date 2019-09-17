@@ -51,7 +51,7 @@ set -a && source ./defaults_ingestion_db.env && set +a
 ```
 
 ```
-make build-and-deploy-ingestion_db  # this is quick (~10s)
+make build-and-deploy-ingestion_db
 ```
 
 
@@ -69,7 +69,7 @@ make connect-ingestion_db
 Let's check that the sample data is present:
 ```
 ingestion_db=# SELECT * FROM events.sample LIMIT 3;
-          event_time           |                              msisdn                              | cell_id 
+          event_time           |                              msisdn                              | cell_id
 -------------------------------+------------------------------------------------------------------+---------
  2019-08-16 11:02:21.606812+00 | cfcd208495d565ef66e7dff9f98764dacfcd208495d565ef66e7dff9f98764da |  16284
  2019-08-16 11:02:22.606812+00 | c4ca4238a0b923820dcc509a6f75849bc4ca4238a0b923820dcc509a6f75849b |  42276
@@ -81,7 +81,8 @@ ingestion_db=# SELECT * FROM events.sample LIMIT 3;
 
 Next, set relevant environment variables for FlowDB and FlowETL.
 Most of them are pre-defined in `defaults.env`, but we need to set
-the path to the local clone of the FlowKit repo manually.
+the path to the local clone of the FlowKit repo manually (this variable
+is needed to build the docker images for FlowDB and FlowETL).
 
 ```bash
 set -a && source ./defaults_flowkit.env && set +a
@@ -105,23 +106,25 @@ make deploy-flowkit-stack
 ```
 
 After a few seconds, everything should be up and running.
-You can use `docker ps` to verify this.
+You can use `docker service ls` to verify this.
 ```bash
-$ docker ps
-CONTAINER ID        IMAGE                                COMMAND                  CREATED             STATUS              PORTS                          NAMES
-775cd091c3ce        postgres:11                          "docker-entrypoint.s…"   15 minutes ago      Up 15 minutes       5432/tcp                       flowetl_test_flowetl_db.1.4147uo75v40ay3x2fd8ubafd5
-a3416ac14fd0        127.0.0.1:5000/flowetl:latest        "/entrypoint.sh webs…"   15 minutes ago      Up 15 minutes       5555/tcp, 8080/tcp, 8793/tcp   flowetl_test_flowetl.1.kzpn9qnegj2x3ddt9w266jmaw
-a33f3e5fb102        127.0.0.1:5000/flowdb:latest         "docker-entrypoint.s…"   15 minutes ago      Up 15 minutes       5432/tcp                       flowetl_test_flowdb.1.x5f97ekyxkgvge7roxcasws01
-f0e74bccca10        127.0.0.1:5000/ingestion_db:latest   "docker-entrypoint.s…"   15 minutes ago      Up 15 minutes       0.0.0.0:5444->5432/tcp         ingestion_db
-edb31949db41        registry:2                           "/entrypoint.sh /etc…"   15 minutes ago      Up 15 minutes       5000/tcp                       registry.1.5f2bkf0fxyyiw00zanx9xajyp
+$ docker service ls
+ID                  NAME                              MODE                REPLICAS            IMAGE                           PORTS
+cyuqezddz3ck        flowetl_test_flowdb               replicated          1/1                 127.0.0.1:5000/flowdb:latest    *:12000->5432/tcp
+g2qicejmgc5g        flowetl_test_flowetl              replicated          1/1                 127.0.0.1:5000/flowetl:latest   *:8080->8080/tcp
+p9qkn3k6lsec        flowetl_test_flowetl_airflow_db   replicated          1/1                 postgres:11                     *:5433->5432/tcp
+cr06cx2pqiaq        registry                          replicated          1/1                 registry:2                      *:5000->5000/tcp
 ```
+Note that the `ingestion_db` container does _not_ show up in this list. This is because
+it has been deployed separately, not as part of this stack - which is intentional since
+we want to treat it like an external database that exists outside the FlowKit setup.
 
-You can connect to the databases `flowdb` and `flowetl_db` (= the database which the
+You can connect to the databases `flowdb` and `flowetl_airflow_db` (= the database which the
 Airflow instance in `flowetl` uses internally) by running the following convenience
 Makefile commands. (Of course, regular `psql` connection commands work as well.)
 ```bash
 make connect-flowdb
-make connect-flowetl_db
+make connect-flowetl_airflow_db
 ```
 
 If you want to shut down the docker services in the stack, use the following command.
@@ -138,7 +141,7 @@ previous Airflow runs).
 
 _Note:_ there is a convenience Makefile target to run the build and deploy commands for FlowDB and FlowETL in a single step:
 ```bash
-make build-and-deploy
+make build-and-deploy-flowkit-stack
 ```
 This is useful if you make changes to the source code, in which case you need to re-build the docker images
 for these changes to be picked up.
@@ -159,6 +162,17 @@ CREATE FOREIGN TABLE sample_data_fdw (
     )
     SERVER ingestion_db_server
     OPTIONS (schema_name 'events', table_name 'sample');
+```
+
+Let's verify that the foreign data wrapper was set up correctly, so that `flowdb` can now read data remotely from `ingestion_db`:
+```
+flowdb=# SELECT * FROM sample_data_fdw LIMIT 3;
+          event_time           |                              msisdn                              | cell_id
+-------------------------------+------------------------------------------------------------------+---------
+ 2019-08-17 10:44:31.173343+00 | cfcd208495d565ef66e7dff9f98764dacfcd208495d565ef66e7dff9f98764da |  72424
+ 2019-08-17 10:44:32.173343+00 | c4ca4238a0b923820dcc509a6f75849bc4ca4238a0b923820dcc509a6f75849b |  59569
+ 2019-08-17 10:44:33.173343+00 | c81e728d9d4c2f636f067f89cc14862cc81e728d9d4c2f636f067f89cc14862c |  81878
+(3 rows)
 ```
 
 
@@ -224,4 +238,22 @@ flowdb=# SELECT date, COUNT(*) FROM (SELECT datetime::date as date FROM events.s
  2019-01-01 |   100
  2019-01-02 |   120
  (1 row)
+```
+
+The ETL process also runs some informative "post-ETL" queries after the ingestion process has finished.
+The results are stored in the table `etl.post_etl_queries`:
+```
+flowdb=# SELECT * FROM etl.post_etl_queries;
+ id |  cdr_date  | cdr_type | type_of_query_or_check | outcome |          optional_comment_or_description          |           timestamp
+----+------------+----------+------------------------+---------+---------------------------------------------------+-------------------------------
+  1 | 2019-01-02 | sms      | num_total_events       | 120     | Total number of events for this CDR type and date | 2019-09-17 11:25:38.385034+00
+  2 | 2019-01-01 | sms      | num_total_events       | 100     | Total number of events for this CDR type and date | 2019-09-17 11:25:51.849039+00
+  3 | 2019-08-22 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:25:55.23984+00
+  4 | 2019-08-21 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:25:57.450631+00
+  5 | 2019-08-18 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:25:57.924872+00
+  6 | 2019-08-20 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:25:58.019103+00
+  7 | 2019-08-23 | calls    | num_total_events       | 20272   | Total number of events for this CDR type and date | 2019-09-17 11:25:58.897846+00
+  8 | 2019-08-17 | calls    | num_total_events       | 47729   | Total number of events for this CDR type and date | 2019-09-17 11:26:01.551755+00
+  9 | 2019-08-19 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:26:05.426472+00
+(9 rows)
 ```

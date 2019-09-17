@@ -3,8 +3,6 @@ DOCKER_STACK_NAME ?= flowetl_test
 DOCKER_STACK_FILE ?= docker-stack-flowkit.yml
 LOCAL_DOCKER_REGISTRY ?= 127.0.0.1:5000
 
-build-and-deploy: build-flowdb build-flowetl build-ingestion_db push-to-local-registry deploy-flowkit-stack
-
 #
 # Ingestion DB
 #
@@ -20,6 +18,8 @@ build-ingestion_db:
 #
 # FlowETL and FlowDB
 #
+
+build-and-deploy-flowkit-stack: build-flowdb build-flowetl push-to-local-registry deploy-flowkit-stack
 
 deploy-flowkit-stack:
 	docker stack deploy -c $(DOCKER_STACK_FILE) $(DOCKER_STACK_NAME)
