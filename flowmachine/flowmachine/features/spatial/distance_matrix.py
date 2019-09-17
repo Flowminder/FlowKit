@@ -17,8 +17,8 @@ from ...core.spatial_unit import LonLatSpatialUnit
 
 
 class _GeomDistanceMatrix(Query):
-    def __init__(self):
-        self.geom_table = Table("infrastructure.cells", columns=["geom_point"])
+    def __init__(self, *, geom_table):
+        self.geom_table = geom_table
         super().__init__()
 
     @property
@@ -77,7 +77,7 @@ class DistanceMatrix(GraphMixin, Query):
             self.spatial_unit = spatial_unit
 
         self.spatial_unit.verify_criterion("has_lon_lat_columns")
-        self.geom_matrix = _GeomDistanceMatrix()
+        self.geom_matrix = _GeomDistanceMatrix(geom_table=self.spatial_unit.geom_table)
         self.return_geometry = return_geometry
 
         super().__init__()
