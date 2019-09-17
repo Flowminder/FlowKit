@@ -1,4 +1,4 @@
--- Create a view into the source table containing the rows for the current date to be ingested.
+-- Create a view into the source table which contains the rows for the current date to be ingested.
 CREATE OR REPLACE VIEW {{ get_extract_view(ds_nodash) }} AS
 SELECT
     event_time,
