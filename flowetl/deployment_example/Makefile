@@ -61,4 +61,4 @@ purge-flowdb-volume:
 	docker volume rm $(DOCKER_STACK_NAME)_data_volume_flowdb
 
 purge-ingestion_db-volume:
-	docker volume rm $(DOCKER_STACK_NAME)_data_volume_ingestion_db
+	docker volume rm deployment_example_data_volume_ingestion_db
