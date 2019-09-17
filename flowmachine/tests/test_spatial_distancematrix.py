@@ -19,13 +19,13 @@ def test_some_results(get_dataframe):
     c = DistanceMatrix(spatial_unit=make_spatial_unit("versioned-site"))
     df = get_dataframe(c)
     set_df = df.set_index(["site_id_from", "version_from", "site_id_to", "version_to"])
-    assert set_df.loc[("8wPojr", 1, "GN2k0G", 0)]["distance"] == pytest.approx(
+    assert set_df.loc[("8wPojr", 1, "GN2k0G", 0)]["value"] == pytest.approx(
         789.23239740488
     )
-    assert set_df.loc[("8wPojr", 0, "GN2k0G", 0)]["distance"] == pytest.approx(
+    assert set_df.loc[("8wPojr", 0, "GN2k0G", 0)]["value"] == pytest.approx(
         769.20155628077
     )
-    assert set_df.loc[("8wPojr", 1, "DbWg4K", 0)]["distance"] == pytest.approx(
+    assert set_df.loc[("8wPojr", 1, "DbWg4K", 0)]["value"] == pytest.approx(
         757.97771793683
     )
 

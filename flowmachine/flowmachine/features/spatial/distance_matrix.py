@@ -23,7 +23,7 @@ class _GeomDistanceMatrix(Query):
 
     @property
     def column_names(self) -> List[str]:
-        return ["geom_origin", "geom_destination", "distance"]
+        return ["geom_origin", "geom_destination", "value"]
 
     def _make_query(self):
         geom_query = f"SELECT geom_point as geom FROM {self.geom_table.fully_qualified_table_name} GROUP BY geom"
@@ -35,7 +35,7 @@ class _GeomDistanceMatrix(Query):
                 ST_Distance(
                     A.geom::geography, 
                     B.geom::geography
-                ) / 1000 AS distance
+                ) / 1000 AS value
             FROM ({geom_query}) AS A
             CROSS JOIN ({geom_query}) AS B
         """
@@ -86,7 +86,7 @@ class DistanceMatrix(GraphMixin, Query):
     def column_names(self) -> List[str]:
         col_names = [f"{c}_from" for c in self.spatial_unit.location_id_columns]
         col_names += [f"{c}_to" for c in self.spatial_unit.location_id_columns]
-        col_names += ["distance"]
+        col_names += ["value"]
         if self.return_geometry:
             col_names += ["geom_origin", "geom_destination"]
         return col_names
@@ -103,7 +103,8 @@ class DistanceMatrix(GraphMixin, Query):
                 return_geometry_statement = ""
             return f"""
             SELECT ST_X(geom_origin) as lon_from, ST_Y(geom_origin) as lat_from,
-            ST_X(geom_destination) as lon_to, ST_Y(geom_destination) as lat_to
+            ST_X(geom_destination) as lon_to, ST_Y(geom_destination) as lat_to,
+            value
             {return_geometry_statement}
             FROM ({self.geom_matrix.get_query()}) G
             """
@@ -129,7 +130,7 @@ class DistanceMatrix(GraphMixin, Query):
             SELECT
                 {cols_A},
                 {cols_B},
-                distance
+                value
                 {return_geometry_statement}
             FROM ({geom_query}) AS A
             CROSS JOIN ({geom_query}) AS B
