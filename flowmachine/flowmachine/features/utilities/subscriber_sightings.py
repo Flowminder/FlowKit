@@ -74,6 +74,13 @@ class SubscriberSigntings(Query):
             for column_str in self.mainTable.column_names
         ]
 
+        # This may need to be updated if there are more cols on the subTable
+        sqlalchemy_columns.append(
+            make_sqlalchemy_column_from_flowmachine_column_description(
+                self.sqlalchemy_subTable, self.subTable.column_names[0]
+            )
+        )
+
         return select(sqlalchemy_columns).select_from(
             self.sqlalchemy_mainTable.join(
                 self.sqlalchemy_subTable, subscriber_id == id

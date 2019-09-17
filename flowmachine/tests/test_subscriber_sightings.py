@@ -8,19 +8,25 @@ from flowmachine.features import SubscriberSigntings
 
 
 def test_main_colums_are_set():
-    """Test that the main columns are set."""
-    ss = SubscriberSigntings(
-        "2016-01-01", "2016-01-02"
-    )
-
-    assert "timestamp" in ss.column_names
-    assert "cell_id" in ss.column_names
-
-@pytest.mark.parametrize("identifier", ("msisdn", "imei", "imsi"))
-def test_colums_are_set(identifier):
-    """Add a test to test something."""
+    """Test that all the columns and identifier are set on the object."""
+    identifier = "imei"
     ss = SubscriberSigntings(
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
 
-    assert identifier in ss.head(0).columns[0]
+    assert identifier in ss.column_names
+    assert "timestamp" in ss.column_names
+    assert "cell_id" in ss.column_names
+
+
+@pytest.mark.parametrize("identifier", ("msisdn", "imei", "imsi"))
+def test_colums_are_set(identifier):
+    """Test that all the columns and identifier are set in the SQL."""
+    ss = SubscriberSigntings(
+        "2016-01-01", "2016-01-02", subscriber_identifier=identifier
+    )
+    columns = ss.head(0).columns
+
+    assert identifier in columns
+    assert "timestamp" in columns
+    assert "cell_id" in columns
