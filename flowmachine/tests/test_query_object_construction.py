@@ -23,6 +23,23 @@ def test_construct_query(diff_reporter):
                 "aggregation_unit": "admin3",
                 "method": "last",
                 "subscriber_subset": None,
+                "sampling": {
+                    "sampling_method": "bernoulli",
+                    "size": 10,
+                    "seed": 0.5,
+                    "fraction": None,
+                    "estimate_count": False,
+                },
+            },
+        },
+        {
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": None,
             },
         },
         {
@@ -34,22 +51,6 @@ def test_construct_query(diff_reporter):
                 "method": "last",
                 "subscriber_subset": None,
                 "sampling": None,
-            },
-        },
-        {
-            "query_kind": "spatial_aggregate",
-            "locations": {
-                "query_kind": "daily_location",
-                "date": "2016-01-01",
-                "aggregation_unit": "admin3",
-                "method": "last",
-                "subscriber_subset": None,
-                "sampling": {
-                    "sampling_method": "system_rows",
-                    "size": 10,
-                    "fraction": None,
-                    "estimate_count": False,
-                },
             },
         },
         {
@@ -297,19 +298,23 @@ def test_wrong_geography_aggregation_unit_raises_error():
     "sampling, message",
     [
         (
-            {"sampling_method": "system_rows", "size": 10, "fraction": 0.2},
+            {"sampling_method": "bernoulli", "size": 10, "fraction": 0.2},
+            "Missing data for required field.",
+        ),
+        (
+            {"sampling_method": "bernoulli", "size": 10, "fraction": 0.2, "seed": 0.1},
             "Must provide exactly one of 'size' or 'fraction' for a random sample",
         ),
         (
-            {"sampling_method": "system_rows"},
+            {"sampling_method": "bernoulli", "seed": 0.1},
             "Must provide exactly one of 'size' or 'fraction' for a random sample",
         ),
         (
-            {"sampling_method": "system_rows", "fraction": 1.2},
+            {"sampling_method": "bernoulli", "fraction": 1.2, "seed": 0.1},
             "Must be greater than 0.0 and less than 1.0.",
         ),
         (
-            {"sampling_method": "system_rows", "size": -1},
+            {"sampling_method": "bernoulli", "size": -1, "seed": 0.1},
             "Must be greater than or equal to 1.",
         ),
         (
@@ -329,5 +334,6 @@ def test_invalid_sampling_params_raises_error(sampling, message):
             "sampling": sampling,
         },
     }
-    with pytest.raises(ValidationError, match=message):
+    with pytest.raises(ValidationError, match=message) as exc:
         _ = FlowmachineQuerySchema().load(query_spec)
+    print(exc)

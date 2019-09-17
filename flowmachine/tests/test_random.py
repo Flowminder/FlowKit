@@ -288,7 +288,7 @@ def test_pickling():
     Test that we can pickle and unpickle random classes.
     """
     ss1 = UniqueSubscribers(start="2016-01-01", stop="2016-01-04").random_sample(
-        size=10
+        size=10, sampling_method="system_rows"
     )
     ss2 = Table("events.calls").random_sample(
         size=10, sampling_method="bernoulli", seed=0.73

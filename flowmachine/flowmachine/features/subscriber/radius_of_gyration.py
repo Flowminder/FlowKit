@@ -117,45 +117,25 @@ class RadiusOfGyration(SubscriberFeature):
         return ["subscriber", "value"]
 
     def _make_query(self):
-
-        av_dist = f"""
-        SELECT 
-            subscriber_locs.subscriber, 
-            avg(lon) AS av_lon, 
-            avg(lat) AS av_lat
-        FROM ({self.ul.get_query()}) AS subscriber_locs
-        GROUP BY subscriber_locs.subscriber
-        """
-
-        distance_string = """
-        ST_Distance(ST_Point(locs.lon, locs.lat)::geography,
-                    ST_point(mean.av_lon, mean.av_lat)::geography)
-        """
-
-        # It seems like I'm creating the sub query twice here
-        # I wonder whether this slows things down at all.
-        dist = f"""
-        SELECT
-            locs.subscriber,
-            ({distance_string})^2
-            AS distance_sqr
-        FROM
-            ({self.ul.get_query()}) AS locs
-        INNER JOIN
-            ({av_dist}) AS mean
-            ON locs.subscriber=mean.subscriber
-        """
-
+        # Set the divisor
         if self.unit == "km":
             divisor = 1000
         elif self.unit == "m":
             divisor = 1
 
         return f"""
-        SELECT
-            dist.subscriber,
-            sqrt( avg( distance_sqr ) )/{divisor} AS value
-        FROM 
-            ({dist}) AS dist
-        GROUP BY dist.subscriber
+            SELECT subscriber,
+            SQRT(AVG(ST_DISTANCE(point, ST_point(av_lon, av_lat)::GEOGRAPHY) ^ 2)) / {divisor} as value
+            FROM (
+                SELECT *, UNNEST(points) as point 
+                FROM (
+                    SELECT subscriber_locs.subscriber,
+                           AVG(lon) as av_lon, AVG(lat) as av_lat,
+                           ARRAY_AGG(ST_POINT(lon, lat)) as points
+                    FROM ({self.ul.get_query()}) 
+                    AS subscriber_locs
+                    GROUP BY subscriber_locs.subscriber
+                ) _
+            ) AS dist
+            GROUP BY dist.subscriber
         """
