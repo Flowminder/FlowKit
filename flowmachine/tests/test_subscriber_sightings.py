@@ -30,3 +30,9 @@ def test_colums_are_set(identifier):
     assert identifier in columns
     assert "timestamp" in columns
     assert "cell_id" in columns
+
+
+def test_error_on_start_is_stop(get_dataframe):
+    """Test that a value error is raised when start == stop"""
+    with pytest.raises(ValueError):
+        SubscriberSigntings("2016-01-01", "2016-01-01")

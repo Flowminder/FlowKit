@@ -55,9 +55,18 @@ class SubscriberSigntings(Query):
 
         super().__init__()
 
+        # This needs to happen after the parent classes init method has been
+        # called as it relies upon the connection object existing
+        self._check_dates()
+
     @property
     def column_names(self) -> List[str]:
         return self.columns
+
+    def _check_dates(self):
+        # Check if the dates are the same
+        if self.start == self.stop:
+            raise ValueError("Start and stop are the same.")
 
     def _make_query_with_sqlalchemy(self):
         subscriber_id = make_sqlalchemy_column_from_flowmachine_column_description(
@@ -81,10 +90,12 @@ class SubscriberSigntings(Query):
             )
         )
 
-        return select(sqlalchemy_columns).select_from(
+        select_stmt = select(sqlalchemy_columns).select_from(
             self.sqlalchemy_mainTable.join(
                 self.sqlalchemy_subTable, subscriber_id == id
             )
         )
+
+        return select_stmt
 
     _make_query = _make_query_with_sqlalchemy
