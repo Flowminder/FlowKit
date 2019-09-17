@@ -15,6 +15,9 @@ deploy-ingestion_db:
 build-ingestion_db:
 	docker-compose -f $(INGESTION_DB_DOCKER_COMPOSE_FILE) build ingestion_db
 
+shut-down-ingestion_db:
+	docker-compose -f $(INGESTION_DB_DOCKER_COMPOSE_FILE) down
+
 #
 # FlowETL and FlowDB
 #
@@ -24,10 +27,10 @@ build-and-deploy-flowkit-stack: build-flowdb build-flowetl push-to-local-registr
 deploy-flowkit-stack:
 	docker stack deploy -c $(DOCKER_STACK_FILE) $(DOCKER_STACK_NAME)
 
-shut-down-stack-without-purging-volumes:
+shut-down-flowkit-stack-without-purging-volumes:
 	bash ./shut_down_docker_stack.sh $(DOCKER_STACK_NAME)
 
-shut-down-stack-and-purge-volumes: shut-down-stack-without-purging-volumes purge-all-db-volumes
+shut-down-flowkit-stack-and-purge-volumes: shut-down-flowkit-stack-without-purging-volumes purge-flowkit-db-volumes
 
 push-to-local-registry:
 	docker push $(LOCAL_DOCKER_REGISTRY)/flowdb:latest
@@ -49,7 +52,7 @@ connect-flowetl_airflow_db:
 	psql "postgresql://flowetl:flowetl@127.0.0.1:${FLOWETL_AIRFLOW_DB_PORT}/flowetl"
 
 
-purge-all-db-volumes: purge-flowetl_airflow_db-volume purge-flowdb-volume purge-ingestion_db-volume
+purge-flowkit-db-volumes: purge-flowetl_airflow_db-volume purge-flowdb-volume
 
 purge-flowetl_airflow_db-volume:
 	docker volume rm $(DOCKER_STACK_NAME)_data_volume_flowetl_airflow_db
