@@ -143,7 +143,7 @@ class HartiganCluster(BaseCluster):
                regexp_split_to_array(unnest(site_ids), '::') AS site_id,
                regexp_split_to_array(unnest(versions), '::')::integer[] AS version
         FROM (
-            SELECT calldays.subscriber, (hartigan(calldays.site_id, calldays.version, calldays.calldays::integer, {self.radius},
+            SELECT calldays.subscriber, (hartigan(calldays.site_id, calldays.version, calldays.value::integer, {self.radius},
                 {self.buffer}, {self.call_threshold})).*
             FROM {calldays}
             GROUP BY calldays.subscriber

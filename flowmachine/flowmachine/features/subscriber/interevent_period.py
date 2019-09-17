@@ -7,19 +7,22 @@
 Intervent period statistics, such as the average and standard deviation of the
 duration between calls.
 """
-import warnings
-from typing import List
+from typing import List, Union, Tuple, Optional
 
-from ..utilities import EventsTablesUnion
+from flowmachine.core import Query
+from flowmachine.features.subscriber.interevent_interval import IntereventInterval
 from .metaclasses import SubscriberFeature
 
-valid_stats = {"count", "sum", "avg", "max", "min", "median", "stddev", "variance"}
+time_resolutions = dict(
+    second=1, minute=60, hour=3600, day=86400, month=2592000, year=31557600
+)
 
 
 class IntereventPeriod(SubscriberFeature):
     """
     This class calculates intervent period statistics such as the average and
-    standard deviation of the duration between calls.
+    standard deviation of the duration between calls and returns them as fractional
+    time units.
 
     Parameters
     ----------
@@ -28,6 +31,8 @@ class IntereventPeriod(SubscriberFeature):
     hours : 2-tuple of floats, default 'all'
         Restrict the analysis to only a certain set
         of hours within each day.
+    time_resolution : {'second', 'minute', 'hour', 'day', 'month', 'year'}, default 'hour'
+        Temporal resolution to return results at, e.g. 'hour' for fractional hours.
     subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
         Either msisdn, or imei, the column that identifies the subscriber.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
@@ -48,60 +53,51 @@ class IntereventPeriod(SubscriberFeature):
 
     >>> s = IntereventPeriod("2016-01-01", "2016-01-07")
     >>> s.get_dataframe()
+               subscriber     value
+    0    038OVABN11Ak4W5P  4.956230
+    1    09NrjaNNvDanD8pk  3.877348
+    2    0ayZGYEQrqYlKw6g  4.034907
+    3    0DB8zw67E9mZAPK2  6.541865
+    4    0Gl95NRLjW2aw8pW  5.739062
+    ..                ...       ...
+    495  ZQG8glazmxYa1K62  4.207696
+    496  Zv4W9eak2QN1M5A7  3.686201
+    497  zvaOknzKbEVD2eME  4.357561
+    498  Zy3DkbY7MDd6Er7l  4.550242
+    499  ZYPxqVGLzlQy6l7n  4.024503
 
-        subscriber       interevent_period_avg
-        JZoaw2jzvK2QMKYX       03:26:47.673913
-        1QBlwRo4Kd5v3Ogz       03:23:03.979167
-        V4DJ7AaxLLOyWEZ3       03:39:35.977778
-        woOyJvzKBALYj8za       03:14:27.780000
-        1NqnrAB9bRd597x2       03:57:17.926829
-                     ...                   ...
-
+    [500 rows x 2 columns]
     """
 
     def __init__(
         self,
-        start,
-        stop,
-        statistic="avg",
+        start: str,
+        stop: str,
+        statistic: str = "avg",
         *,
-        hours="all",
-        tables="all",
-        subscriber_identifier="msisdn",
-        subscriber_subset=None,
-        direction="both",
+        time_resolution: str = "hour",
+        hours: Union[str, Tuple[int, int]] = "all",
+        tables: Union[str, List[str]] = "all",
+        subscriber_identifier: str = "msisdn",
+        subscriber_subset: Optional[Query] = None,
+        direction: str = "both",
     ):
-
-        self.start = start
-        self.stop = stop
-        self.hours = hours
-        self.tables = tables
-        self.subscriber_identifier = subscriber_identifier
-        self.direction = direction
-
-        if self.direction in {"both"}:
-            column_list = [self.subscriber_identifier, "datetime"]
-        elif self.direction in {"in", "out"}:
-            column_list = [self.subscriber_identifier, "datetime", "outgoing"]
-        else:
-            raise ValueError("{} is not a valid direction.".format(self.direction))
-
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
+        try:
+            self.time_divisor = time_resolutions[time_resolution.lower()]
+        except KeyError:
             raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
+                f"'{time_resolution}' is not a valid time resolution. Use one of {time_resolutions.keys()}"
             )
 
-        self.unioned_query = EventsTablesUnion(
-            self.start,
-            self.stop,
-            tables=self.tables,
-            columns=column_list,
-            hours=self.hours,
-            subscriber_identifier=self.subscriber_identifier,
+        self.event_interval = IntereventInterval(
+            start=start,
+            stop=stop,
+            statistic=statistic,
+            hours=hours,
+            tables=tables,
+            subscriber_identifier=subscriber_identifier,
             subscriber_subset=subscriber_subset,
+            direction=direction,
         )
         super().__init__()
 
@@ -111,30 +107,11 @@ class IntereventPeriod(SubscriberFeature):
 
     def _make_query(self):
 
-        where_clause = ""
-        if self.direction != "both":
-            where_clause = (
-                f"WHERE outgoing IS {'TRUE' if self.direction == 'out' else 'FALSE'}"
-            )
-
-        # Postgres does not support the following three operations with intervals
-        if self.statistic in {"median", "stddev", "variance"}:
-            statistic_clause = (
-                f"MAKE_INTERVAL(secs => {self.statistic}(EXTRACT(EPOCH FROM delta)))"
-            )
-        else:
-            statistic_clause = f"{self.statistic}(delta)"
-
         sql = f"""
         SELECT
             subscriber,
-            {statistic_clause} AS value
-        FROM (
-            SELECT subscriber, datetime - LAG(datetime, 1, NULL) OVER (PARTITION BY subscriber ORDER BY datetime) AS delta
-            FROM ({self.unioned_query.get_query()}) AS U
-            {where_clause}
-        ) AS U
-        GROUP BY subscriber
+            EXTRACT(epoch FROM value/{self.time_divisor}) AS value
+        FROM ({self.event_interval.get_query()}) AS U
         """
 
         return sql

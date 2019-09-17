@@ -44,7 +44,7 @@ def test_call_days_returns_expected_counts_per_subscriber(get_dataframe):
             )
         )
         df = get_dataframe(cd).query('subscriber == "{}"'.format(subscriber))
-        assert df.calldays.sum() == calls
+        assert df.value.sum() == calls
 
 
 def test_call_days_returns_expected_counts_per_subscriber_tower(get_dataframe):
@@ -66,7 +66,7 @@ def test_call_days_returns_expected_counts_per_subscriber_tower(get_dataframe):
         df = get_dataframe(cd).query(
             'subscriber == "{}" & site_id == "{}"'.format(subscriber, location)
         )
-        assert df.calldays.values[0] == calls
+        assert df.value.values[0] == calls
 
 
 def test_locations_are_only_repeated_once_per_subscriber(get_dataframe):
