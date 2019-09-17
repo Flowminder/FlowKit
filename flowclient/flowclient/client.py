@@ -1651,14 +1651,12 @@ def random_sample(
         Dict which functions as the query specification.
     """
     sampled_query = dict(query)
-    sampling = {
-        "sampling_method": sampling_method,
-        "size": size,
-        "fraction": fraction,
-        "estimate_count": estimate_count,
-    }
-    if seed is not None:
-        # 'system_rows' method doesn't accept a seed parameter, so if seed is None we don't include it in the spec
-        sampling["seed"] = seed
+    sampling = dict(
+        seed=seed,
+        sampling_method=sampling_method,
+        size=size,
+        fraction=fraction,
+        estimate_count=estimate_count,
+    )
     sampled_query["sampling"] = sampling
     return sampled_query
