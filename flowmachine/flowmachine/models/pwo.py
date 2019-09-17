@@ -81,7 +81,7 @@ class _populationBuffer(Query):
             SELECT
                 {froms},
                 {tos},
-                A.distance AS distance,
+                A.value AS distance,
                 A.geom_origin AS geom_origin,
                 A.geom_destination AS geom_destination,
                 ST_Buffer(A.geom_destination::geography, A.distance * 1000) AS geom_buffer
