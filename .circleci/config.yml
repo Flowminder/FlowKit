@@ -414,7 +414,7 @@ jobs:
                       --cov flowmachine/ \
                       --cov-report xml \
                       --cov-report term \
-                      --durations=10
+                      --durations=50
       - store_test_results:
           path: test_results
       - run:
