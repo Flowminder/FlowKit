@@ -47,13 +47,24 @@ curl -w '\n' http://127.0.0.1:5000/v2/
 For testing purposes, we build a separate PostgreSQL database (`ingestion_db`)
 which includes some sample data and which will serve as the "external" database
 from which we ingest data into FlowDB.
+
+First we set the relevant environment variables, which are defined in the file `defaults_ingestion_db.env`.
 ```bash
 set -a && source ./defaults_ingestion_db.env && set +a
 ```
 
+Then we can build and deploy the database.
 ```
 make build-and-deploy-ingestion_db
 ```
+
+Note that this step also creates an overlay network called `ingestion_db_overlay`.
+```bash
+$ docker network ls -f name=ingestion_db_overlay
+NETWORK ID          NAME                   DRIVER              SCOPE
+ky5npo99ik0z        ingestion_db_overlay   overlay             swarm
+```
+This network allows the `flowdb` docker container to talk to the `ingestion_db` container which we just created.
 
 
 ### Sample data in IngestionDB
@@ -69,6 +80,12 @@ make connect-ingestion_db
 
 Let's check that the sample data is present:
 ```
+ingestion_db=# SELECT COUNT(*) FROM events.sample;
+ count
+--------
+ 500001
+(1 row)
+
 ingestion_db=# SELECT * FROM events.sample LIMIT 3;
           event_time           |                              msisdn                              | cell_id
 -------------------------------+------------------------------------------------------------------+---------
@@ -80,7 +97,7 @@ ingestion_db=# SELECT * FROM events.sample LIMIT 3;
 
 ### Set up a docker stack with FlowDB and FlowETL
 
-Next, set relevant environment variables for FlowDB and FlowETL.
+Set relevant environment variables for FlowDB and FlowETL.
 Most of them are pre-defined in `defaults.env`, but we need to set
 the path to the local clone of the FlowKit repo manually (this variable
 is needed to build the docker images for FlowDB and FlowETL).
@@ -116,9 +133,10 @@ g2qicejmgc5g        flowetl_test_flowetl              replicated          1/1   
 p9qkn3k6lsec        flowetl_test_flowetl_airflow_db   replicated          1/1                 postgres:11                     *:5433->5432/tcp
 cr06cx2pqiaq        registry                          replicated          1/1                 registry:2                      *:5000->5000/tcp
 ```
-Note that the `ingestion_db` container does _not_ show up in this list. This is because
-it has been deployed separately, not as part of this stack - which is intentional since
-we want to treat it like an external database that exists outside the FlowKit setup.
+Note that the `ingestion_db` container does _not_ show up in this list (but it will show up
+if you run `docker ps`). This is because it has been deployed separately, not as part of
+this stack - which is intentional since we want to treat it like an external database that
+exists outside the FlowKit setup.
 
 You can connect to the databases `flowdb` and `flowetl_airflow_db` (= the database which the
 Airflow instance in `flowetl` uses internally) by running the following convenience

@@ -32,7 +32,6 @@ shut-down-stack-and-purge-volumes: shut-down-stack-without-purging-volumes purge
 push-to-local-registry:
 	docker push $(LOCAL_DOCKER_REGISTRY)/flowdb:latest
 	docker push $(LOCAL_DOCKER_REGISTRY)/flowetl:latest
-	docker push $(LOCAL_DOCKER_REGISTRY)/ingestion_db:latest
 
 build-flowdb:
 	docker-compose -f $(DOCKER_STACK_FILE) build flowdb
