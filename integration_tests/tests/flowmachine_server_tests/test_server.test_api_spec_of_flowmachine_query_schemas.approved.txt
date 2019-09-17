@@ -71,6 +71,9 @@
         "type": "integer"
       }
     },
+    "required": [
+      "seed"
+    ],
     "type": "object"
   },
   "DFSTotalMetricAmount": {
@@ -1211,6 +1214,9 @@
         "type": "integer"
       }
     },
+    "required": [
+      "seed"
+    ],
     "type": "object"
   },
   "RandomSample": {
@@ -1218,8 +1224,7 @@
       "mapping": {
         "bernoulli": "#/components/schemas/BernoulliRandomSample",
         "random_ids": "#/components/schemas/RandomIDsRandomSample",
-        "system": "#/components/schemas/SystemRandomSample",
-        "system_rows": "#/components/schemas/SystemRowsRandomSample"
+        "system": "#/components/schemas/SystemRandomSample"
       },
       "propertyName": "sampling_method"
     },
@@ -1232,9 +1237,6 @@
       },
       {
         "$ref": "#/components/schemas/SystemRandomSample"
-      },
-      {
-        "$ref": "#/components/schemas/SystemRowsRandomSample"
       }
     ]
   },
@@ -1331,34 +1333,9 @@
         "type": "integer"
       }
     },
-    "type": "object"
-  },
-  "SystemRowsRandomSample": {
-    "properties": {
-      "estimate_count": {
-        "default": true,
-        "type": "boolean"
-      },
-      "fraction": {
-        "format": "float",
-        "maximum": 1.0,
-        "minimum": 0.0,
-        "nullable": true,
-        "type": "number"
-      },
-      "sampling_method": {
-        "enum": [
-          "system_rows"
-        ],
-        "type": "string"
-      },
-      "size": {
-        "format": "int32",
-        "minimum": 1,
-        "nullable": true,
-        "type": "integer"
-      }
-    },
+    "required": [
+      "seed"
+    ],
     "type": "object"
   },
   "TopUpAmount": {
