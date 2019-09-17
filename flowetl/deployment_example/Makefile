@@ -9,6 +9,8 @@ build-and-deploy: build-flowdb build-flowetl build-ingestion_db push-to-local-re
 # Ingestion DB
 #
 
+build-and-deploy-ingestion_db: build-ingestion_db deploy-ingestion_db
+
 deploy-ingestion_db:
 	docker-compose -f $(INGESTION_DB_DOCKER_COMPOSE_FILE) up -d ingestion_db
 
