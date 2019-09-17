@@ -7,10 +7,10 @@
 Number of call days over a certain period
 of time that a given subscriber makes. This feature
 represent the number of days that a subscriber
-is connected to a given tower within a
+is connected to a given tower, or within a given location in a
 specified time period.
 """
-from typing import List, Union
+from typing import List
 
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations
@@ -39,14 +39,9 @@ class CallDays(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber"] + self.spatial_unit.location_id_columns + ["calldays"]
+        return ["subscriber"] + self.spatial_unit.location_id_columns + ["value"]
 
     def _make_query(self):
-        """
-        Default query method implemented in the
-        metaclass Query().
-        Returns a sorted calldays table.
-        """
         location_columns = ", ".join(self.spatial_unit.location_id_columns)
 
         sql = f"""
@@ -54,14 +49,14 @@ class CallDays(SubscriberFeature):
             SELECT
                 connections.subscriber,
                 {location_columns},
-                COUNT(*) AS calldays
+                COUNT(*) AS value
             FROM (
                 SELECT DISTINCT locations.subscriber, {location_columns}, locations.time::date
                 FROM ({self.ul.get_query()}) AS locations
             ) AS connections
             GROUP BY connections.subscriber, {location_columns}
         ) calldays
-        ORDER BY calldays.subscriber ASC, calldays.calldays DESC
+        ORDER BY calldays.subscriber ASC, calldays.value DESC
         """
 
         return sql
