@@ -1,4 +1,21 @@
 {
+  "0f2106014fee8e717c72d30b14fad8ab": {
+    "query_kind": "spatial_aggregate",
+    "locations": {
+      "query_kind": "daily_location",
+      "date": "2016-01-01",
+      "aggregation_unit": "admin3",
+      "method": "last",
+      "subscriber_subset": null,
+      "sampling": {
+        "sampling_method": "bernoulli",
+        "size": 10,
+        "seed": 0.5,
+        "fraction": null,
+        "estimate_count": false
+      }
+    }
+  },
   "75d67100b0382c34b4661a5ec8950fa6": {
     "query_kind": "spatial_aggregate",
     "locations": {

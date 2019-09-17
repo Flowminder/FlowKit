@@ -23,6 +23,23 @@ def test_construct_query(diff_reporter):
                 "aggregation_unit": "admin3",
                 "method": "last",
                 "subscriber_subset": None,
+                "sampling": {
+                    "sampling_method": "bernoulli",
+                    "size": 10,
+                    "seed": 0.5,
+                    "fraction": None,
+                    "estimate_count": False,
+                },
+            },
+        },
+        {
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": None,
             },
         },
         {
