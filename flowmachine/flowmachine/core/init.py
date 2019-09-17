@@ -11,7 +11,6 @@ From a developer perspective, this is where one-time operations
 should live - for example configuring loggers.
 """
 
-import os
 import redis
 import structlog
 import warnings
@@ -153,6 +152,7 @@ def connect(
             host=redis_host, port=redis_port, password=redis_password
         )
         _start_threadpool(thread_pool_size=flowdb_connection_pool_size)
+        conn.available_dates(table="all", strictness=1, schema="events")
 
         print(f"FlowMachine version: {flowmachine.__version__}")
 

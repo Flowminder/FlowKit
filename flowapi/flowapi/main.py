@@ -113,8 +113,8 @@ def create_app():
     app.config.from_mapping(get_config())
 
     jwt = JWTManager(app)
-    app.before_first_request(connect_logger)
-    app.before_first_request(create_db)
+    app.before_serving(connect_logger)
+    app.before_serving(create_db)
     app.before_request(add_uuid)
     app.before_request(connect_zmq)
     app.teardown_request(close_zmq)

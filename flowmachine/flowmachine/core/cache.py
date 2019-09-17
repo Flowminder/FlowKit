@@ -24,6 +24,7 @@ from flowmachine.core.errors.flowmachine_errors import (
     StoreFailedException,
 )
 from flowmachine.core.query_state import QueryStateMachine, QueryEvent
+from flowmachine import __version__
 
 if TYPE_CHECKING:
     from .query import Query
@@ -158,21 +159,20 @@ def write_cache_metadata(
 
     """
 
-    from ..__init__ import __version__
-
     con = connection.engine
 
     self_storage = b""
-    try:
-        self_storage = pickle.dumps(query)
-    except Exception as e:
-        logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
-        pass
 
     try:
         in_cache = bool(
             connection.fetch(f"SELECT * FROM cache.cached WHERE query_id='{query.md5}'")
         )
+        if not in_cache:
+            try:
+                self_storage = pickle.dumps(query)
+            except Exception as e:
+                logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
+                pass
 
         with con.begin():
             cache_record_insert = """
@@ -194,14 +194,16 @@ def write_cache_metadata(
                 ),
             )
             con.execute("SELECT touch_cache(%s);", query.md5)
-            con.execute("SELECT pg_notify(%s, 'Done.')", query.md5)
-            logger.debug("{} added to cache.".format(query.fully_qualified_table_name))
+
             if not in_cache:
                 for dep in query._get_stored_dependencies(exclude_self=True):
                     con.execute(
                         "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
                         (query.md5, dep.md5),
                     )
+                logger.debug(f"{query.fully_qualified_table_name} added to cache.")
+            else:
+                logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
     except NotImplementedError:
         logger.debug("Table has no standard name.")
 

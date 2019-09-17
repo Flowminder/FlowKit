@@ -7,7 +7,6 @@
 Simple utility class that represents arbitrary tables in the
 database.
 """
-
 from typing import List
 
 from flowmachine.core.query_state import QueryStateMachine
@@ -120,10 +119,11 @@ class Table(Query):
         super().__init__()
         # Table is immediately in a 'finished executing' state
         q_state_machine = QueryStateMachine(self.redis, self.md5)
-        q_state_machine.enqueue()
-        q_state_machine.execute()
-        write_cache_metadata(self.connection, self, compute_time=0)
-        q_state_machine.finish()
+        if not q_state_machine.is_completed:
+            q_state_machine.enqueue()
+            q_state_machine.execute()
+            write_cache_metadata(self.connection, self, compute_time=0)
+            q_state_machine.finish()
 
     def __format__(self, fmt):
         return f"<Table: '{self.schema}.{self.name}', query_id: '{self.md5}'>"
@@ -239,13 +239,13 @@ class Table(Query):
             name=name, schema=schema, cascade=cascade, drop=drop
         )
 
-    def random_sample(self, sampling_method="system_rows", **params):
+    def random_sample(self, sampling_method="random_ids", **params):
         """
         Draws a random sample from this table.
 
         Parameters
         ----------
-        sampling_method : {'system', 'system_rows', 'bernoulli', 'random_ids'}, default 'system_rows'
+        sampling_method : {'system', 'system_rows', 'bernoulli', 'random_ids'}, default 'random_ids'
             Specifies the method used to select the random sample.
             'system_rows': performs block-level sampling by randomly sampling
                 each physical storage page of the underlying relation. This

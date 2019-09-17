@@ -1605,11 +1605,11 @@ def handset(
 def random_sample(
     *,
     query: Dict[str, Union[str, dict]],
-    sampling_method: str = "system_rows",
+    seed: float,
+    sampling_method: str = "random_ids",
     size: Union[int, None] = None,
     fraction: Union[float, None] = None,
     estimate_count: bool = True,
-    seed: Union[float, None] = None,
 ) -> dict:
     """
     Return spec for a random sample from a query result.
@@ -1618,12 +1618,8 @@ def random_sample(
     ----------
     query : dict
         Specification of the query to be sampled.
-    sampling_method : {'system_rows', 'system', 'bernoulli', 'random_ids'}, default 'system_rows'
+    sampling_method : {'system', 'bernoulli', 'random_ids'}, default 'random_ids'
         Specifies the method used to select the random sample.
-        'system_rows': performs block-level sampling by randomly sampling
-            each physical storage page of the underlying relation. This
-            sampling method is guaranteed to provide a sample of the specified
-            size
         'system': performs block-level sampling by randomly sampling each
             physical storage page for the underlying relation. This
             sampling method is not guaranteed to generate a sample of the
@@ -1644,10 +1640,9 @@ def random_sample(
         Whether to estimate the number of rows in the table using
         information contained in the `pg_class` or whether to perform an
         actual count in the number of rows.
-    seed : float, optional
-        Optionally provide a seed for repeatable random samples.
+    seed : float
+        A seed for repeatable random samples.
         If using random_ids method, seed must be between -/+1.
-        Not available in combination with the system_rows method.
 
     Returns
     -------
@@ -1655,14 +1650,12 @@ def random_sample(
         Dict which functions as the query specification.
     """
     sampled_query = dict(query)
-    sampling = {
-        "sampling_method": sampling_method,
-        "size": size,
-        "fraction": fraction,
-        "estimate_count": estimate_count,
-    }
-    if seed is not None:
-        # 'system_rows' method doesn't accept a seed parameter, so if seed is None we don't include it in the spec
-        sampling["seed"] = seed
+    sampling = dict(
+        seed=seed,
+        sampling_method=sampling_method,
+        size=size,
+        fraction=fraction,
+        estimate_count=estimate_count,
+    )
     sampled_query["sampling"] = sampling
     return sampled_query

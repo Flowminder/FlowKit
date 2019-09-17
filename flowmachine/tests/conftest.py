@@ -18,7 +18,7 @@ from approvaltests.reporters.generic_diff_reporter_factory import (
 )
 
 import flowmachine
-from flowmachine.core import Query, make_spatial_unit
+from flowmachine.core import Query, make_spatial_unit, Connection
 from flowmachine.core.cache import reset_cache
 from flowmachine.features import EventTableSubset
 
@@ -142,13 +142,14 @@ def mocked_connections(monkeypatch):
         Mocks for init_logging, Connection, StrictRedis and _start_threadpool
 
     """
+
     logging_mock = Mock()
-    connection_mock = Mock(return_value=None)
+    connection_mock = Mock(spec=Connection)
     redis_mock = Mock()
     tp_mock = Mock()
     monkeypatch.delattr("flowmachine.core.query.Query.connection", raising=False)
     monkeypatch.setattr(flowmachine.core.init, "set_log_level", logging_mock)
-    monkeypatch.setattr(flowmachine.core.Connection, "__init__", connection_mock)
+    monkeypatch.setattr(flowmachine.core.init, "Connection", connection_mock)
     monkeypatch.setattr("redis.StrictRedis", redis_mock)
     monkeypatch.setattr(flowmachine.core.init, "_start_threadpool", tp_mock)
     yield logging_mock, connection_mock, redis_mock, tp_mock

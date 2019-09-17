@@ -24,57 +24,43 @@ class NewSubscribers(Query):
 
     Parameters
     ----------
-    start1 : str
-        The beginning of the comparison period
-    stop1 : str
-        The end of the comparison period
-    start2 : str
-        The beginning of the focal period
-    stop2 : str
-        The end of the focal periods
-    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
-        Either msisdn, or imei, the column that identifies the subscriber.
-    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
-        If provided, string or list of string which are msisdn or imeis to limit
-        results to; or, a query or table which has a column with a name matching
-        subscriber_identifier (typically, msisdn), to limit results to.
+    unique_subscribers_benchmark : UniqueSubscribers
+        Query returning the unique subscribers in the benchmark period
+    unique_subscribers_focal : UniqueSubscribers
+        Query returning the unique subscribers in the focal period
 
     Examples
     --------
-    >>> newbies = NewSubscribers('2016-01-01', '2016-01-07',
-                           '2016-03-01', '2016-03-07')
-        subscriber | location
-        ---------------
-          A  |  cellX
-          B  |  cellY
-          Z  |  cellW
+    >>>newbies = NewSubscribers(unique_subscribers_bench_mark=UniqueSubscribers('2016-01-01','2016-01-07'), unique_subscribers_focal=UniqueSubscribers('2016-03-01', '2016-03-07'))
+    subscriber | location
+    ---------------
+      A  |  cellX
+      B  |  cellY
+      Z  |  cellW
 
+
+    See Also
+    --------
+    flowmachine.utilities.sets.UniqueSubscribers
     """
 
     def __init__(
-        self, start1, stop1, start2, stop2, subscriber_identifier="msisdn", **kwargs
+        self,
+        *,
+        unique_subscribers_bench_mark: UniqueSubscribers,
+        unique_subscribers_focal: UniqueSubscribers,
     ):
-        """
 
-        """
-
-        self.start1 = start1
-        self.stop1 = stop1
-        self.start2 = start2
-        self.stop2 = stop2
-        self.subscriber_identifier = subscriber_identifier
-        self.unique_subscribers_bench_mark = UniqueSubscribers(
-            self.start1,
-            self.stop1,
-            subscriber_identifier=self.subscriber_identifier,
-            **kwargs
-        )
-        self.unique_subscribers_focal = UniqueSubscribers(
-            self.start2,
-            self.stop2,
-            subscriber_identifier=self.subscriber_identifier,
-            **kwargs
-        )
+        if (
+            unique_subscribers_bench_mark.subscriber_identifier
+            == unique_subscribers_focal.subscriber_identifier
+        ):
+            self.unique_subscribers_bench_mark = unique_subscribers_bench_mark
+            self.unique_subscribers_focal = unique_subscribers_focal
+        else:
+            raise ValueError(
+                f"Mismatched subscriber_identifier: benchmark is '{unique_subscribers_bench_mark.subscriber_identifier}' but focal is '{unique_subscribers_focal.subscriber_identifier}'"
+            )
 
         super().__init__()
 
