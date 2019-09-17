@@ -33,7 +33,7 @@ class SystemRandomSampleSchema(BaseRandomSampleSchema):
     # so the sampling_method parameter is never received here and is not included in the
     # params passed to make_random_sampler.
     sampling_method = fields.String(validate=OneOf(["system"]))
-    seed = fields.Float()
+    seed = fields.Float(required=True)
 
     @post_load
     def make_random_sampler(self, params, **kwargs):
@@ -46,7 +46,7 @@ class BernoulliRandomSampleSchema(BaseRandomSampleSchema):
     # so the sampling_method parameter is never received here and is not included in the
     # params passed to make_random_sampler.
     sampling_method = fields.String(validate=OneOf(["bernoulli"]))
-    seed = fields.Float()
+    seed = fields.Float(required=True)
 
     @post_load
     def make_random_sampler(self, params, **kwargs):
@@ -59,7 +59,7 @@ class RandomIDsRandomSampleSchema(BaseRandomSampleSchema):
     # so the sampling_method parameter is never received here and is not included in the
     # params passed to make_random_sampler.
     sampling_method = fields.String(validate=OneOf(["random_ids"]))
-    seed = fields.Float(validate=Range(-1.0, 1.0))
+    seed = fields.Float(validate=Range(-1.0, 1.0), required=True)
 
     @post_load
     def make_random_sampler(self, params, **kwargs):
