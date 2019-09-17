@@ -83,6 +83,10 @@ class DistanceMatrix(GraphMixin, Query):
         super().__init__()
 
     @property
+    def table_name(self):
+        raise NotImplementedError("Store this object's geom_matrix instead.")
+
+    @property
     def column_names(self) -> List[str]:
         col_names = [f"{c}_from" for c in self.spatial_unit.location_id_columns]
         col_names += [f"{c}_to" for c in self.spatial_unit.location_id_columns]
