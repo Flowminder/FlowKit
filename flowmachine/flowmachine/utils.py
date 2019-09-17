@@ -578,7 +578,7 @@ def unstored_dependencies_graph(query_obj: "Query") -> "DiGraph":
             g.add_node(f"x{n.md5}")
 
         for x, y in deps:
-            if x != 0:
+            if x != f"x{query_obj.md5}":
                 g.add_edge(*[f"x{z.md5}" for z in (x, y)])
 
     return g
