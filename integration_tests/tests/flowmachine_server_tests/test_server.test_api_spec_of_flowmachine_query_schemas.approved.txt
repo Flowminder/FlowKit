@@ -71,6 +71,9 @@
         "type": "integer"
       }
     },
+    "required": [
+      "seed"
+    ],
     "type": "object"
   },
   "DFSTotalMetricAmount": {
@@ -1211,6 +1214,9 @@
         "type": "integer"
       }
     },
+    "required": [
+      "seed"
+    ],
     "type": "object"
   },
   "RandomSample": {
@@ -1327,6 +1333,9 @@
         "type": "integer"
       }
     },
+    "required": [
+      "seed"
+    ],
     "type": "object"
   },
   "TopUpAmount": {
