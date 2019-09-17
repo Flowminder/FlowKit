@@ -11,7 +11,7 @@ defines methods that returns the query as a string and as a pandas dataframe.
 import rapidjson as json
 import pickle
 import weakref
-from concurrent.futures import Future
+from concurrent.futures import Future, wait
 
 
 import structlog
@@ -548,7 +548,46 @@ class Query(metaclass=ABCMeta):
             )
         return queries
 
-    def to_sql(self, name: str, schema: Union[str, None] = None) -> Future:
+    def _store_dependencies_and_make_sql(
+        self, name: str, schema: Union[str, None] = None
+    ) -> List[str]:
+        """
+        Store the dependencies of this query, and then return the SQL necessary
+        to store the result of this query back into the database.
+        
+        Parameters
+        ----------
+        name : str,
+            name of the table
+        schema : str, default None
+            Name of an existing schema. If none will use the postgres default,
+            see postgres docs for more info.
+
+        Returns
+        -------
+        list
+            Ordered list of SQL strings to execute.
+
+        Notes
+        -----
+        Storing the dependencies happens in background threads.
+        """
+        logger.debug(
+            f"Creating background threads to store dependencies of query '{self.md5}'."
+        )
+
+        dependency_futures = store_queries_in_order(unstored_dependencies_graph(self))
+
+        wait(list(dependency_futures.values()))
+
+        return self._make_sql(name, schema)
+
+    def to_sql(
+        self,
+        name: str,
+        schema: Union[str, None] = None,
+        store_dependencies: bool = False,
+    ) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -559,6 +598,8 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
+        store_dependencies : bool, default False
+            If True, store the dependencies of this query.
 
         Returns
         -------
@@ -599,6 +640,11 @@ class Query(metaclass=ABCMeta):
             logger.debug("Executed queries.")
             return plan_time
 
+        if store_dependencies:
+            ddl_ops_func = self._store_dependencies_and_make_sql
+        else:
+            ddl_ops_func = self._make_sql
+
         current_state, changed_to_queue = QueryStateMachine(
             self.redis, self.md5
         ).enqueue()
@@ -613,7 +659,7 @@ class Query(metaclass=ABCMeta):
             query=self,
             connection=self.connection,
             redis=self.redis,
-            ddl_ops_func=self._make_sql,
+            ddl_ops_func=ddl_ops_func,
             write_func=write_query,
         )
         return store_future
@@ -695,10 +741,15 @@ class Query(metaclass=ABCMeta):
         except NotImplementedError:
             return False
 
-    def store(self):
+    def store(self, store_dependencies: bool = False) -> Future:
         """
         Store the results of this computation with the correct table
         name using a background thread.
+
+        Parameters
+        ----------
+        store_dependencies : bool, default False
+            If True, store the dependencies of this query.
 
         Returns
         -------
@@ -714,75 +765,77 @@ class Query(metaclass=ABCMeta):
 
         schema, name = table_name.split(".")
 
-        store_future = self.to_sql(name, schema=schema)
-        return store_future
-
-    def _get_unstored_dependency_graph_and_store(self):
-        """
-        Create background threads to store this query and its unstored dependencies.
-        
-        Returns
-        -------
-        Query
-            The query object which was written once the write has completed successfully.
-
-        Notes
-        -----
-        - Storing the results happens in background threads, but this function
-          will block until the query is no longer executing.
-        - If an exception is raised while creating the dependency graph or
-          submitting tasks to store the dependencies, the query state will be
-          cancelled.
-        - If an exception is raised while calling self.store(), the query state
-          will be errored.
-        """
-        logger.debug(
-            f"Creating background threads to store query '{self.md5}' and its dependencies."
-        )
-
-        try:
-            dependency_futures = store_queries_in_order(
-                unstored_dependencies_graph(self)
-            )
-        except Exception as exc:
-            # Need to handle any exceptions here so that the query is not left in a 'queued' state.
-            logger.error(
-                f"Error storing dependencies of query '{self.md5}'. Error was {exc}"
-            )
-            QueryStateMachine(self.redis, self.md5).cancel()
-            raise exc
-
-        try:
-            store_future = self.store()
-        except Exception as exc:
-            # Need to handle any exceptions here so that the query is not left in a 'queued' state.
-            logger.error(f"Error storing query '{self.md5}'. Error was {exc}")
-            QueryStateMachine(self.redis, self.md5).raise_error()
-            raise exc
-
-        # Wait for query to finish being stored, and return the result of write_query_to_cache.
-        return store_future.result()
-
-    def store_with_dependencies(self):
-        """
-        Enqueue this query, then submit a task to store this query and its dependencies.
-
-        Returns
-        -------
-        Future
-            Future object which can be queried to check the query is stored.
-        """
-        current_state, changed_to_queue = QueryStateMachine(
-            self.redis, self.md5
-        ).enqueue()
-        logger.debug(
-            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
-        )
-        # Submit a background task so that calculating the dependency graph doesn't block the server.
-        store_future = self.thread_pool_executor.submit(
-            self._get_unstored_dependency_graph_and_store
+        store_future = self.to_sql(
+            name, schema=schema, store_dependencies=store_dependencies
         )
         return store_future
+
+    # def _get_unstored_dependency_graph_and_store(self):
+    #     """
+    #     Create background threads to store this query and its unstored dependencies.
+
+    #     Returns
+    #     -------
+    #     Query
+    #         The query object which was written once the write has completed successfully.
+
+    #     Notes
+    #     -----
+    #     - Storing the results happens in background threads, but this function
+    #       will block until the query is no longer executing.
+    #     - If an exception is raised while creating the dependency graph or
+    #       submitting tasks to store the dependencies, the query state will be
+    #       cancelled.
+    #     - If an exception is raised while calling self.store(), the query state
+    #       will be errored.
+    #     """
+    #     logger.debug(
+    #         f"Creating background threads to store query '{self.md5}' and its dependencies."
+    #     )
+
+    #     try:
+    #         dependency_futures = store_queries_in_order(
+    #             unstored_dependencies_graph(self)
+    #         )
+    #     except Exception as exc:
+    #         # Need to handle any exceptions here so that the query is not left in a 'queued' state.
+    #         logger.error(
+    #             f"Error storing dependencies of query '{self.md5}'. Error was {exc}"
+    #         )
+    #         QueryStateMachine(self.redis, self.md5).cancel()
+    #         raise exc
+
+    #     try:
+    #         store_future = self.store()
+    #     except Exception as exc:
+    #         # Need to handle any exceptions here so that the query is not left in a 'queued' state.
+    #         logger.error(f"Error storing query '{self.md5}'. Error was {exc}")
+    #         QueryStateMachine(self.redis, self.md5).raise_error()
+    #         raise exc
+
+    #     # Wait for query to finish being stored, and return the result of write_query_to_cache.
+    #     return store_future.result()
+
+    # def store_with_dependencies(self):
+    #     """
+    #     Enqueue this query, then submit a task to store this query and its dependencies.
+
+    #     Returns
+    #     -------
+    #     Future
+    #         Future object which can be queried to check the query is stored.
+    #     """
+    #     current_state, changed_to_queue = QueryStateMachine(
+    #         self.redis, self.md5
+    #     ).enqueue()
+    #     logger.debug(
+    #         f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+    #     )
+    #     # Submit a background task so that calculating the dependency graph doesn't block the server.
+    #     store_future = self.thread_pool_executor.submit(
+    #         self._get_unstored_dependency_graph_and_store
+    #     )
+    #     return store_future
 
     @property
     def dependencies(self):

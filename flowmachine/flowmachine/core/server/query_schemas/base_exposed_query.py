@@ -55,10 +55,7 @@ class BaseExposedQuery(metaclass=ABCMeta):
         """
         q = self._flowmachine_query_obj
 
-        if store_dependencies:
-            q.store_with_dependencies()
-        else:
-            q.store()
+        q.store(store_dependencies=store_dependencies)
 
         return q.md5
 
