@@ -15,7 +15,7 @@ services:
 
   ingestion_db:
     container_name: ingestion_db
-    image: ${LOCAL_DOCKER_REGISTRY:?Must set LOCAL_DOCKER_REGISTRY env var}/ingestion_db:latest
+    image: ingestion_db:latest
     build:
       context: ingestion_db
       dockerfile: Dockerfile
