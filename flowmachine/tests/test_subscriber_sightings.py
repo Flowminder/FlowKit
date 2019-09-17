@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+import pytz
+from datetime import datetime
 
 from flowmachine.features import SubscriberSigntings
 
@@ -39,16 +41,30 @@ def test_colums_are_set_in_sql(identifier):
     assert "cell_id" in columns
 
 
-def test_error_on_start_is_stop(get_dataframe):
+def test_error_on_start_is_stop():
     """Test that a value error is raised when start == stop"""
     with pytest.raises(ValueError):
         SubscriberSigntings("2016-01-01", "2016-01-01")
 
 
-def test_default_dates(get_dataframe):
+def test_set_min_max_dates():
     """Test setting min/max dates with None is provided."""
     ss = SubscriberSigntings(None, "2016-01-04")
     assert ss.start == "2016-01-01"
 
     ss = SubscriberSigntings("2016-01-02", None)
     assert ss.stop == "2016-01-01"
+
+
+def test_dates_select_correct_data():
+    """Test that dates select the correct data."""
+    ss = SubscriberSigntings("2016-01-01", "2016-01-02")
+    df = ss.head(50)
+
+    min = df["timestamp"].min().to_pydatetime()
+    max = df["timestamp"].max().to_pydatetime()
+    min_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 1))
+    max_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 2))
+
+    assert min.timestamp() > min_comparison.timestamp()
+    assert max.timestamp() < max_comparison.timestamp()

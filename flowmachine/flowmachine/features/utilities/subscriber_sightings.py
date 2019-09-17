@@ -4,6 +4,7 @@
 
 import structlog
 import datetime
+import pandas as pd
 from typing import List
 from sqlalchemy import select, join, func
 
@@ -87,19 +88,12 @@ class SubscriberSigntings(Query):
             )
             self.stop = query.fetchall()[0]["max_1"].strftime("%Y-%m-%d")
 
+        # TODO - perhaps add a check that the dates are actually in the main table.
         # Check if the dates are the same
         if self.start == self.stop:
             raise ValueError("Start and stop are the same.")
 
     def _make_query_with_sqlalchemy(self):
-        # Get the join columns
-        subscriber_id = make_sqlalchemy_column_from_flowmachine_column_description(
-            self.sqlalchemy_mainTable, "subscriber_id"
-        )
-        id = make_sqlalchemy_column_from_flowmachine_column_description(
-            self.sqlalchemy_subTable, "id"
-        )
-
         # Populate a list of columns that we want to select
         sqlalchemy_columns = [
             make_sqlalchemy_column_from_flowmachine_column_description(
@@ -118,9 +112,23 @@ class SubscriberSigntings(Query):
         # Finally produce the joined select
         select_stmt = select(sqlalchemy_columns).select_from(
             self.sqlalchemy_mainTable.join(
-                self.sqlalchemy_subTable, subscriber_id == id
+                self.sqlalchemy_subTable,
+                self.sqlalchemy_mainTable.c.subscriber_id
+                == self.sqlalchemy_subTable.c.id,
             )
         )
+
+        # Add the start date - this will need hours added to it at some point.
+        if self.start is not None:
+            select_stmt = select_stmt.where(
+                self.sqlalchemy_mainTable.c.timestamp >= f"{self.start} 00:00:00"
+            )
+
+        # Add the stop date - this will need hours added to it at some point.
+        if self.stop is not None:
+            select_stmt = select_stmt.where(
+                self.sqlalchemy_mainTable.c.timestamp < f"{self.stop} 23:59:59"
+            )
 
         return get_sql_string(select_stmt)
 
