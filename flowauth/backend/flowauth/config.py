@@ -40,7 +40,7 @@ def get_cache_backend() -> CacheRegion:
         cache_args = dict(
             host=environ["FLOWAUTH_REDIS_HOST"],
             port=int(getenv("FLOWAUTH_REDIS_PORT", "6379")),
-            db=int(getenv("FLOWAUTH_REDIS_DB", "6379")),
+            db=int(getenv("FLOWAUTH_REDIS_DB", "0")),
             redis_expiration_time=32,
             distributed_lock=True,
             password=getenv("FLOWAUTH_REDIS_PASSWORD", None),
