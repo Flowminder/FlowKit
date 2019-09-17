@@ -32,7 +32,7 @@ def test_some_results(get_dataframe):
 
 @pytest.mark.parametrize(
     "spatial_unit_type, length",
-    [("versioned-cell", 3844), ("versioned-site", 1225), ("lon-lat", 2638)],
+    [("versioned-cell", 3844), ("versioned-site", 1225), ("lon-lat", 1089)],
 )
 def test_result_has_correct_length(spatial_unit_type, length, get_length):
     """
