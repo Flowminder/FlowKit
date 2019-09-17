@@ -125,7 +125,12 @@ class ModelResult(Query):
         except AttributeError:
             return super().column_names
 
-    def to_sql(self, name: str, schema: Union[str, None] = None) -> Future:
+    def to_sql(
+        self,
+        name: str,
+        schema: Union[str, None] = None,
+        store_dependencies: bool = False,
+    ) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -136,17 +141,29 @@ class ModelResult(Query):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
+        store_dependencies : bool, default False
+            Required for compatibility with query.to_sql
+            store_dependencies=True raises NotImplementedError
 
         Returns
         -------
         Future
             Future object, containing this query and any result information.
+        
+        Raises
+        ------
+        NotImplementedError
+            If store_dependencies = True
 
         Notes
         -----
 
         This method will return a Future immediately.
         """
+        if store_dependencies:
+            raise NotImplementedError(
+                "ModelResult does not support storing dependencies."
+            )
 
         if not self.is_stored:
             try:
