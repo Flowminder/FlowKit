@@ -89,9 +89,15 @@ class DistanceMatrix(GraphMixin, Query):
             outer_geom_statement = ", geom_origin, geom_destination"
         else:
             return_geometry_statement = ""
+            outer_geom_statement = ""
 
+        unnested = ", ".join(
+            f"unnest({col}_{direction}) as {col}_{direction}"
+            for col in self.spatial_unit.location_id_columns
+            for direction in ("to", "from")
+        )
         sql = f"""
-            SELECT {", ".join(f"unnest({col}_{direction}) as {col}_{direction}" for col in self.spatial_unit.location_id_columns for direction in ("to", "from"))}, 
+            SELECT {unnested}, 
             distance{outer_geom_statement}
             FROM
             (SELECT
