@@ -47,20 +47,11 @@ class Displacement(SubscriberFeature):
     unit : {'km', 'm'}, default 'km'
         Unit with which to express the answers, currently the choices
         are kilometres ('km') or metres ('m')
-    
-    Other parameters
-    ----------------
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
         across all specified days. Or set to 'all' to include
         all hours.
-    method : str, default 'last'
-        The method by which to calculate the location of the subscriber.
-        This can be either 'most-common' or last. 'most-common' is
-        simply the modal location of the subscribers, whereas 'lsat' is
-        the location of the subscriber at the time of the final call in
-        the data.
     table : str, default 'all'
         schema qualified name of the table which the analysis is
         based upon. If 'all' it will use all tables that contain
