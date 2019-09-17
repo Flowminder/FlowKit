@@ -43,7 +43,7 @@ class DummyQuery(Query):
         q_state_machine = QueryStateMachine(self.redis, self.md5)
         return q_state_machine.is_completed
 
-    def store(self):
+    def store(self, store_dependencies=False):
         logger.debug(
             "Storing dummy query by marking the query state as 'finished' (but without actually writing to the database)."
         )
