@@ -19,8 +19,15 @@ def test_main_colums_are_set():
     assert "cell_id" in ss.column_names
 
 
+def test_msisdn_set_as_identifier():
+    """Test that msisdn is set as the default identifier."""
+    ss = SubscriberSigntings("2016-01-01", "2016-01-02")
+
+    assert "msisdn" in ss.column_names
+
+
 @pytest.mark.parametrize("identifier", ("msisdn", "imei", "imsi"))
-def test_colums_are_set(identifier):
+def test_colums_are_set_in_sql(identifier):
     """Test that all the columns and identifier are set in the SQL."""
     ss = SubscriberSigntings(
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
@@ -36,3 +43,12 @@ def test_error_on_start_is_stop(get_dataframe):
     """Test that a value error is raised when start == stop"""
     with pytest.raises(ValueError):
         SubscriberSigntings("2016-01-01", "2016-01-01")
+
+
+def test_default_dates(get_dataframe):
+    """Test setting min/max dates with None is provided."""
+    ss = SubscriberSigntings(None, "2016-01-04")
+    assert ss.start == "2016-01-01"
+
+    ss = SubscriberSigntings("2016-01-02", None)
+    assert ss.stop == "2016-01-01"

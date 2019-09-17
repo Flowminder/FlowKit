@@ -5,7 +5,7 @@
 import structlog
 import datetime
 from typing import List
-from sqlalchemy import select, join
+from sqlalchemy import select, join, func
 
 from ...core import Query, Table
 from ...core.sqlalchemy_utils import (
@@ -24,11 +24,6 @@ class SubscriberSigntings(Query):
 
     def __init__(self, start, stop, *, subscriber_identifier="msisdn"):
         # Set start stop dates
-        if isinstance(start, datetime.date):
-            start = start.strftime("%Y-%m-%d")
-        if isinstance(stop, datetime.date):
-            stop = stop.strftime("%Y-%m-%d")
-
         self.start = start
         self.stop = stop
 
@@ -55,8 +50,7 @@ class SubscriberSigntings(Query):
 
         super().__init__()
 
-        # This needs to happen after the parent classes init method has been
-        # called as it relies upon the connection object existing
+        # This relies upon the connection object existing
         self._check_dates()
 
     @property
@@ -64,6 +58,19 @@ class SubscriberSigntings(Query):
         return self.columns
 
     def _check_dates(self):
+        # Get min/max dates from interactions.subscriber_sightings_fact if we are provdied with None
+        if self.start is None:
+            query = self.connection.engine.execute(
+                select([func.min(self.sqlalchemy_mainTable.c.timestamp)])
+            )
+            self.start = query.fetchall()[0]["min_1"].strftime("%Y-%m-%d")
+
+        if self.stop is None:
+            query = self.connection.engine.execute(
+                select([func.max(self.sqlalchemy_mainTable.c.timestamp)])
+            )
+            self.stop = query.fetchall()[0]["max_1"].strftime("%Y-%m-%d")
+
         # Check if the dates are the same
         if self.start == self.stop:
             raise ValueError("Start and stop are the same.")
@@ -96,6 +103,6 @@ class SubscriberSigntings(Query):
             )
         )
 
-        return select_stmt
+        return get_sql_string(select_stmt)
 
     _make_query = _make_query_with_sqlalchemy
