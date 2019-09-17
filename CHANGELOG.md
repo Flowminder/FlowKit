@@ -25,8 +25,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Attempting to store a query that does not have a standard table name (e.g. `EventTableSubset` or unseeded random sample) will now raise an `UnstorableQueryError` instead of `ValueError`.
 - In the FlowETL deployment example, the external ingestion database is now set up separately from the FlowKit components and connected to FlowDB via a docker overlay network. [#1276](https://github.com/Flowminder/FlowKit/issues/1276)
 - The `md5` attribute of the `Query` class has been renamed to `query_id` [#1288](https://github.com/Flowminder/FlowKit/issues/1288).
-- `DistanceMatrix` no longer returns rows for zero distances, e.g. cells on the same site.
 - Previously, `Displacement` defaulted to returning `NaN` for subscribers who have a location in the reference location but were not seen in the time period for the displacment query. These subscribers are no longer returned unless the `return_subscribers_not_seen` argument is set to `True`.
+- `DistanceMatrix` no longer returns duplicate rows for the lon-lat spatial unit.
+- Previously, `Displacement` defaulted to returning `NaN` for subscribers who have a location in the reference location but were not seen in the time period for the displacement query. These subscribers are no longer returned unless the `return_subscribers_not_seen` argument is set to `True`.
 
 
 ### Fixed
