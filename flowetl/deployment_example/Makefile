@@ -1,6 +1,6 @@
 INGESTION_DB_DOCKER_COMPOSE_FILE ?= docker-compose-ingestion_db.yml
 DOCKER_STACK_NAME ?= flowetl_test
-DOCKER_STACK_FILE ?= docker-stack.yml
+DOCKER_STACK_FILE ?= docker-stack-flowkit.yml
 LOCAL_DOCKER_REGISTRY ?= 127.0.0.1:5000
 
 build-and-deploy: build-flowdb build-flowetl build-ingestion_db push-to-local-registry deploy-flowkit-stack
