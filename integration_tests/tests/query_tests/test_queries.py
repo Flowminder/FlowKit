@@ -561,6 +561,7 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                         method="most-common",
                     ),
                     size=10,
+                    seed=0.5,
                 )
             },
         ),
