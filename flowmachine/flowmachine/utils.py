@@ -20,6 +20,7 @@ from pglast import prettify
 from psycopg2._psycopg import adapt
 from time import sleep
 from typing import List, Union, Tuple, Dict
+from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.core.errors import UnstorableQueryError
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
@@ -541,20 +542,46 @@ def unstored_dependencies_graph(query_obj: "Query") -> "DiGraph":
     Returns
     -------
     networkx.DiGraph
+
+    Notes
+    -----
+    If store() or invalidate_db_cache() is called on any query while this
+    function is executing, the resulting graph may not be correct.
+    The queries listed as dependencies are not _guaranteed_ to be
+    used in the actual running of a query, only to be referenced by it.
     """
-    if query_obj.is_stored:
-        # If query is already stored, no need to store its dependencies
-        return nx.DiGraph()
-    else:
-        g = calculate_dependency_graph(query_obj, analyse=False)
-        # Remove already-stored queries from dependency graph
-        g.remove_nodes_from([node for node in g if g.nodes[node]["stored"]])
-        # Remove nodes that were only dependencies of already-stored queries
-        # Note: This line also removes the query_obj node itself.
-        g.remove_nodes_from(
-            [node for node in g if node not in nx.descendants(g, f"x{query_obj.md5}")]
+    g = nx.DiGraph()
+
+    if not query_obj.is_stored:
+        openlist = list(
+            zip([query_obj] * len(query_obj.dependencies), query_obj.dependencies)
         )
-        return g
+        deps = []
+
+        while openlist:
+            y, x = openlist.pop()
+            # Wait for query to complete before checking whether it's stored.
+            q_state_machine = QueryStateMachine(x.redis, x.md5)
+            q_state_machine.wait_until_complete()
+            if not x.is_stored:
+                deps.append((y, x))
+                openlist += list(zip([x] * len(x.dependencies), x.dependencies))
+
+        _, y = zip(*deps)
+        for n in set(y):
+            attrs = {}
+            attrs["query_object"] = n
+            attrs["name"] = query_obj.__class__.__name__
+            attrs["stored"] = False
+            attrs["shape"] = "rect"
+            attrs["label"] = f"{attrs['name']}."
+            g.add_node(f"x{n.md5}")
+
+        for x, y in deps:
+            if x != 0:
+                g.add_edge(*[f"x{z.md5}" for z in (x, y)])
+
+    return g
 
 
 def store_queries_in_order(dependency_graph: "DiGraph") -> Dict[str, "Future"]:
