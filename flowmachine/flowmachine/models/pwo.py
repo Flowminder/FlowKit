@@ -84,7 +84,7 @@ class _populationBuffer(Query):
                 A.value AS distance,
                 A.geom_origin AS geom_origin,
                 A.geom_destination AS geom_destination,
-                ST_Buffer(A.geom_destination::geography, A.distance * 1000) AS geom_buffer
+                ST_Buffer(A.geom_destination::geography, A.value * 1000) AS geom_buffer
             FROM ({distance_matrix_table}) AS A
 
         """.format(
