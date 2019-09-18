@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from marshmallow import fields, post_load
-from marshmallow.validate import OneOf, Length
+from marshmallow.validate import OneOf, Length, Range
 
 from flowmachine.features import NocturnalEvents
 from .custom_fields import SubscriberSubset
@@ -19,7 +19,10 @@ class NocturnalEventsSchema(BaseQueryWithSamplingSchema):
     query_kind = fields.String(validate=OneOf(["nocturnal_events"]))
     start = fields.Date(required=True)
     stop = fields.Date(required=True)
-    hours = fields.Tuple((fields.Integer(), fields.Integer()))
+    night_start_hour = fields.Integer(
+        validate=Range(0, 23)
+    )  # Tuples aren't supported by apispec https://github.com/marshmallow-code/apispec/issues/399
+    night_end_hour = fields.Integer(validate=Range(0, 23))
     subscriber_subset = SubscriberSubset()
 
     @post_load
@@ -28,12 +31,21 @@ class NocturnalEventsSchema(BaseQueryWithSamplingSchema):
 
 
 class NocturnalEventsExposed(BaseExposedQueryWithSampling):
-    def __init__(self, *, start, stop, hours, subscriber_subset=None, sampling=None):
+    def __init__(
+        self,
+        *,
+        start,
+        stop,
+        night_start_hour,
+        night_end_hour,
+        subscriber_subset=None,
+        sampling=None
+    ):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.start = start
         self.stop = stop
-        self.hours = hours
+        self.hours = (night_start_hour, night_end_hour)
         self.subscriber_subset = subscriber_subset
         self.sampling = sampling
 
