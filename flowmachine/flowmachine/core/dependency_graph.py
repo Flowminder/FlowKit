@@ -10,6 +10,7 @@ from io import BytesIO
 from typing import Union, Tuple, Dict, Sequence, Callable, Any, Optional
 from concurrent.futures import wait
 from flowmachine.core.errors import UnstorableQueryError
+from flowmachine.core.query_state import QueryStateMachine
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
