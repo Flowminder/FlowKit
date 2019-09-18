@@ -250,48 +250,6 @@ def test_plot_dependency_graph():
         plot_dependency_graph(query, format="foobar")
 
 
-def test_unstored_dependencies_graph():
-    """
-    Test that unstored_dependencies_graph() runs and returns the correct graph in an example case.
-    """
-    # Create dummy queries with dependency structure
-    #
-    #           5:unstored
-    #            /       \
-    #       3:stored    4:unstored
-    #      /       \     /
-    # 1:unstored   2:unstored
-    #
-    # Note: we add a string parameter to each query so that they have different query IDs
-    dummy1 = DummyQuery(dummy_param=["dummy1"])
-    dummy2 = DummyQuery(dummy_param=["dummy2"])
-    dummy3 = DummyQuery(dummy_param=["dummy3", dummy1, dummy2])
-    dummy4 = DummyQuery(dummy_param=["dummy4", dummy2])
-    dummy5 = DummyQuery(dummy_param=["dummy5", dummy3, dummy4])
-    dummy3.store()
-
-    expected_query_nodes = [dummy2, dummy4]
-    graph = unstored_dependencies_graph(dummy5)
-    assert not any(dict(graph.nodes(data="stored")).values())
-    assert len(graph) == len(expected_query_nodes)
-    for query in expected_query_nodes:
-        assert f"x{query.md5}" in graph.nodes()
-        assert graph.nodes[f"x{query.md5}"]["query_object"].md5 == query.md5
-
-
-def test_unstored_dependencies_graph_for_stored_query():
-    """
-    Test that the unstored dependencies graph for a stored query is empty.
-    """
-    dummy1 = DummyQuery(dummy_param=["dummy1"])
-    dummy2 = DummyQuery(dummy_param=["dummy2"])
-    dummy3 = DummyQuery(dummy_param=["dummy3", dummy1, dummy2])
-    dummy3.store()
-
-    graph = unstored_dependencies_graph(dummy3)
-    assert len(graph) == 0
-
-
 def test_store_queries_in_order():
     """
     Test that store_queries_in_order() stores each query's dependencies before storing that query itself.

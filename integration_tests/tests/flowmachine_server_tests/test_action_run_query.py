@@ -7,7 +7,6 @@ from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from flowmachine.core import make_spatial_unit
 from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
 from flowmachine.features import daily_location
-from flowmachine.utils import unstored_dependencies_graph
 from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
 logger = logging.getLogger("flowmachine").getChild(__name__)
@@ -129,7 +128,7 @@ async def test_cache_content(
     # Get list of tables that should be cached
     expected_cache_tables = [q.table_name]
     if "false" == os.getenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING"):
-        dependencies = unstored_dependencies_graph(q)
+        dependencies = q._unstored_dependencies_graph
         for node, query_obj in dependencies.nodes(data="query_object"):
             try:
                 schema, table_name = query_obj.fully_qualified_table_name.split(".")

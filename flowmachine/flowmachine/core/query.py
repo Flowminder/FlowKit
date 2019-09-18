@@ -37,11 +37,7 @@ from flowmachine.core.errors import (
 )
 
 import flowmachine
-from flowmachine.utils import (
-    _sleep,
-    unstored_dependencies_graph,
-    store_queries_in_order,
-)
+from flowmachine.utils import _sleep, assemble_dependency_graph, store_queries_in_order
 
 from flowmachine.core.cache import write_query_to_cache
 
@@ -548,6 +544,49 @@ class Query(metaclass=ABCMeta):
             )
         return queries
 
+    def _unstored_dependencies_graph(self) -> "DiGraph":
+        """
+        Produce a dependency graph of the unstored queries on which this query depends.
+
+        Returns
+        -------
+        networkx.DiGraph
+
+        Notes
+        -----
+        If store() or invalidate_db_cache() is called on any query while this
+        function is executing, the resulting graph may not be correct.
+        """
+        deps = []
+
+        def attrs_func(q):
+            attrs = {}
+            attrs["query_object"] = q
+            attrs["name"] = q.__class__.__name__
+            attrs["stored"] = False
+            attrs["shape"] = "rect"
+            attrs["label"] = f"{attrs['name']}."
+            return attrs
+
+        if not query_obj.is_stored:
+            openlist = list(
+                zip([query_obj] * len(query_obj.dependencies), query_obj.dependencies)
+            )
+
+            while openlist:
+                y, x = openlist.pop()
+                if y is query_obj:
+                    # We don't want to include query_obj in the graph, only its dependencies.
+                    y = None
+                # Wait for query to complete before checking whether it's stored.
+                q_state_machine = QueryStateMachine(x.redis, x.md5)
+                q_state_machine.wait_until_complete()
+                if not x.is_stored:
+                    deps.append((y, x))
+                    openlist += list(zip([x] * len(x.dependencies), x.dependencies))
+
+        return assemble_dependency_graph(dependencies=deps, attrs_func=attrs_func)
+
     def _store_dependencies_and_make_sql(
         self, name: str, schema: Union[str, None] = None
     ) -> List[str]:
@@ -576,7 +615,7 @@ class Query(metaclass=ABCMeta):
             f"Creating background threads to store dependencies of query '{self.md5}'."
         )
 
-        dependency_futures = store_queries_in_order(unstored_dependencies_graph(self))
+        dependency_futures = store_queries_in_order(self._unstored_dependencies_graph())
 
         wait(list(dependency_futures.values()))
 

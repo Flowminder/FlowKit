@@ -19,8 +19,7 @@ from pathlib import Path
 from pglast import prettify
 from psycopg2._psycopg import adapt
 from time import sleep
-from typing import List, Union, Tuple, Dict
-from flowmachine.core.query_state import QueryStateMachine
+from typing import List, Union, Tuple, Dict, Sequence, Callable, Any
 from flowmachine.core.errors import UnstorableQueryError
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
@@ -384,7 +383,40 @@ def _get_query_attrs_for_dependency_graph(query_obj, analyse=False):
     return attrs
 
 
-def calculate_dependency_graph(query_obj, analyse=False):
+def assemble_dependency_graph(
+    dependencies: Sequence[Tuple[Union["Query", None], "Query"]],
+    attrs_func: Callable[["Query"], Dict[str, Any]],
+) -> nx.DiGraph:
+    """
+    Helper function to assemble a dependency graph from a list of dependencies.
+
+    Parameters
+    ----------
+    dependencies : list of tuples (query1, query2) or (None, query2)
+        Dependencies between query objects.
+    attrs_func : function
+        Function that returns a dict of node attributes for a query object.
+    
+    Returns
+    -------
+    networkx.DiGraph
+    """
+    g = nx.DiGraph()
+
+    if dependencies:
+        _, y = zip(*dependencies)
+        for n in set(y):
+            attrs = attrs_func(n)
+            g.add_node(f"x{n.md5}", **attrs)
+
+    for x, y in dependencies:
+        if x is not None:
+            g.add_edge(*[f"x{z.md5}" for z in (x, y)])
+
+    return g
+
+
+def calculate_dependency_graph(query_obj: "Query", analyse: bool = False) -> nx.DiGraph:
     """
     Produce a graph of all the queries that go into producing this one, with their estimated
     run costs, and whether they are stored as node attributes.
@@ -438,8 +470,7 @@ def calculate_dependency_graph(query_obj, analyse=False):
     The queries listed as dependencies are not _guaranteed_ to be
     used in the actual running of a query, only to be referenced by it.
     """
-    g = nx.DiGraph()
-    openlist = [(0, query_obj)]
+    openlist = [(None, query_obj)]
     deps = []
 
     while openlist:
@@ -448,24 +479,19 @@ def calculate_dependency_graph(query_obj, analyse=False):
 
         openlist += list(zip([x] * len(x.dependencies), x.dependencies))
 
-    _, y = zip(*deps)
-    for n in set(y):
-        attrs = _get_query_attrs_for_dependency_graph(n, analyse=analyse)
+    def attrs_func(q):
+        attrs = _get_query_attrs_for_dependency_graph(q, analyse=analyse)
         attrs["shape"] = "rect"
-        attrs["query_object"] = n
+        attrs["query_object"] = q
         attrs["label"] = f"{attrs['name']}. Cost: {attrs['cost']}"
         if analyse:
             attrs["label"] += " Actual runtime: {}.".format(attrs["runtime"])
         if attrs["stored"]:
             attrs["fillcolor"] = "#b3de69"  # light green
             attrs["style"] = "filled"
-        g.add_node(f"x{n.md5}", **attrs)
+        return attrs
 
-    for x, y in deps:
-        if x != 0:
-            g.add_edge(*[f"x{z.md5}" for z in (x, y)])
-
-    return g
+    return assemble_dependency_graph(dependencies=deps, attrs_func=attrs_func)
 
 
 def plot_dependency_graph(
@@ -530,61 +556,7 @@ def plot_dependency_graph(
     return result
 
 
-def unstored_dependencies_graph(query_obj: "Query") -> "DiGraph":
-    """
-    Produce a dependency graph of the unstored queries on which this query depends.
-
-    Parameters
-    ----------
-    query_obj : Query
-        Query object to produce a dependency graph for.
-
-    Returns
-    -------
-    networkx.DiGraph
-
-    Notes
-    -----
-    If store() or invalidate_db_cache() is called on any query while this
-    function is executing, the resulting graph may not be correct.
-    The queries listed as dependencies are not _guaranteed_ to be
-    used in the actual running of a query, only to be referenced by it.
-    """
-    g = nx.DiGraph()
-
-    if not query_obj.is_stored:
-        openlist = list(
-            zip([query_obj] * len(query_obj.dependencies), query_obj.dependencies)
-        )
-        deps = []
-
-        while openlist:
-            y, x = openlist.pop()
-            # Wait for query to complete before checking whether it's stored.
-            q_state_machine = QueryStateMachine(x.redis, x.md5)
-            q_state_machine.wait_until_complete()
-            if not x.is_stored:
-                deps.append((y, x))
-                openlist += list(zip([x] * len(x.dependencies), x.dependencies))
-
-        _, y = zip(*deps)
-        for n in set(y):
-            attrs = {}
-            attrs["query_object"] = n
-            attrs["name"] = query_obj.__class__.__name__
-            attrs["stored"] = False
-            attrs["shape"] = "rect"
-            attrs["label"] = f"{attrs['name']}."
-            g.add_node(f"x{n.md5}")
-
-        for x, y in deps:
-            if x != f"x{query_obj.md5}":
-                g.add_edge(*[f"x{z.md5}" for z in (x, y)])
-
-    return g
-
-
-def store_queries_in_order(dependency_graph: "DiGraph") -> Dict[str, "Future"]:
+def store_queries_in_order(dependency_graph: nx.DiGraph) -> Dict[str, "Future"]:
     """
     Execute queries in an order that ensures each query store is triggered after its dependencies.
 
