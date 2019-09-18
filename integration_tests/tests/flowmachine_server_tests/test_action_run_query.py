@@ -128,7 +128,7 @@ async def test_cache_content(
     # Get list of tables that should be cached
     expected_cache_tables = [q.table_name]
     if "false" == os.getenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING"):
-        dependencies = q._unstored_dependencies_graph
+        dependencies = q._unstored_dependencies_graph()
         for node, query_obj in dependencies.nodes(data="query_object"):
             try:
                 schema, table_name = query_obj.fully_qualified_table_name.split(".")
