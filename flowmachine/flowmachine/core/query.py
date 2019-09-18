@@ -727,7 +727,7 @@ class Query(metaclass=ABCMeta):
         opts = ["FORMAT {}".format(format)]
         if analyse:
             opts.append("ANALYZE")
-        Q = "EXPLAIN ({})".format(", ".join(opts)) + self._make_query()
+        Q = "EXPLAIN ({})".format(", ".join(opts)) + self.get_query()
 
         exp = self.connection.fetch(Q)
 
