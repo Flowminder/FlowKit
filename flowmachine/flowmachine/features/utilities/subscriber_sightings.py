@@ -39,31 +39,27 @@ class SubscriberSigntings(Query):
     >>> ss.head()
     """
 
-    def __init__(self, start, stop, *, subscriber_identifier="msisdn"):
-        # Set start stop dates
+    def __init__(
+        self, start, stop, *, subscriber_identifier="msisdn"
+    ):
+        # Set start stop dates, subscriber_subsetter & subscriber_identifier
         self.start = start
         self.stop = stop
+        self.subscriber_identifier = subscriber_identifier.lower()
 
-        # Setup the main subscriber_sightings_fact table
-        self.mainTable = Table(
-            "interactions.subscriber_sightings_fact", columns=["timestamp", "cell_id"]
-        )
+        # Setup the main subscriber_sightings_fact & subscriber tables
         self.sqlalchemy_mainTable = get_sqlalchemy_table_definition(
-            self.mainTable.fully_qualified_table_name, engine=Query.connection.engine
-        )
-
-        # Chose the identifer from interactions.subscribers table
-        # rather than subscriber_sightings_fact - as this will allow
-        # us to select the required field.
-        self.subTable = Table(
-            "interactions.subscriber", columns=[subscriber_identifier.lower()]
+            "interactions.subscriber_sightings_fact", engine=Query.connection.engine
         )
         self.sqlalchemy_subTable = get_sqlalchemy_table_definition(
-            self.subTable.fully_qualified_table_name, engine=Query.connection.engine
+            "interactions.subscriber", engine=Query.connection.engine
         )
 
-        # For referencing - we can get all the column name here - perhaps this isn't needed
-        self.columns = self.mainTable.column_names + self.subTable.column_names
+        self.columns = [
+            "timestamp AS datetime",
+            "cell_id AS location_id",
+            f"{self.subscriber_identifier} AS subscriber",
+        ]
 
         super().__init__()
 
@@ -72,7 +68,7 @@ class SubscriberSigntings(Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.columns
+        return [c.split(" AS ")[-1] for c in self.columns]
 
     def _check_dates(self):
         # Get min/max dates from interactions.subscriber_sightings_fact if we are provdied with None
@@ -94,20 +90,19 @@ class SubscriberSigntings(Query):
             raise ValueError("Start and stop are the same.")
 
     def _make_query_with_sqlalchemy(self):
-        # Populate a list of columns that we want to select
+        # As we are adding from multiple tables, we need to add one by one - here we need
+        # to substitute the fieldnames for referencing later according to self.column_names
         sqlalchemy_columns = [
             make_sqlalchemy_column_from_flowmachine_column_description(
-                self.sqlalchemy_mainTable, column_str
-            )
-            for column_str in self.mainTable.column_names
-        ]
-
-        # This may need to be updated if there are more cols on the subTable
-        sqlalchemy_columns.append(
+                self.sqlalchemy_mainTable, self.columns[0]
+            ),
             make_sqlalchemy_column_from_flowmachine_column_description(
-                self.sqlalchemy_subTable, self.subTable.column_names[0]
-            )
-        )
+                self.sqlalchemy_mainTable, self.columns[1]
+            ),
+            make_sqlalchemy_column_from_flowmachine_column_description(
+                self.sqlalchemy_subTable, self.columns[2]
+            ),
+        ]
 
         # Finally produce the joined select
         select_stmt = select(sqlalchemy_columns).select_from(

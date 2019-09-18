@@ -9,16 +9,17 @@ from datetime import datetime
 from flowmachine.features import SubscriberSigntings
 
 
-def test_main_colums_are_set():
+def test_columns_and_identifier_are_set():
     """Test that all the columns and identifier are set on the object."""
     identifier = "imei"
     ss = SubscriberSigntings(
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
 
-    assert identifier in ss.column_names
-    assert "timestamp" in ss.column_names
-    assert "cell_id" in ss.column_names
+    assert identifier == ss.subscriber_identifier
+    assert "subscriber" in ss.column_names
+    assert "datetime" in ss.column_names
+    assert "location_id" in ss.column_names
 
 
 def test_subscriber_identifier_can_be_uppercase():
@@ -28,27 +29,24 @@ def test_subscriber_identifier_can_be_uppercase():
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
 
-    assert identifier.lower() in ss.column_names
+    assert identifier.lower() == ss.subscriber_identifier
 
 
 def test_msisdn_set_as_identifier():
     """Test that msisdn is set as the default identifier."""
     ss = SubscriberSigntings("2016-01-01", "2016-01-02")
 
-    assert "msisdn" in ss.column_names
+    assert "msisdn" == ss.subscriber_identifier
 
 
 @pytest.mark.parametrize("identifier", ("msisdn", "imei", "imsi"))
 def test_colums_are_set_in_sql(identifier):
-    """Test that all the columns and identifier are set in the SQL."""
+    """Test that the identifier is set an the colums."""
     ss = SubscriberSigntings(
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
-    columns = ss.head(0).columns
 
-    assert identifier in columns
-    assert "timestamp" in columns
-    assert "cell_id" in columns
+    assert f"{identifier} AS subscriber" in ss.columns
 
 
 def test_error_on_start_is_stop():
@@ -62,7 +60,7 @@ def test_set_date_none():
     ss = SubscriberSigntings(None, "2016-01-04")
     df = ss.head()
 
-    min = df["timestamp"].min().to_pydatetime()
+    min = df["datetime"].min().to_pydatetime()
     min_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 1, 0, 0, 0))
 
     assert min.timestamp() > min_comparison.timestamp()
@@ -70,7 +68,7 @@ def test_set_date_none():
     ss = SubscriberSigntings("2016-01-01", None)
     df = ss.head()
 
-    max = df["timestamp"].max().to_pydatetime()
+    max = df["datetime"].max().to_pydatetime()
     max_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 10, 0, 0, 0))
 
     assert max.timestamp() < max_comparison.timestamp()
@@ -81,8 +79,8 @@ def test_dates_select_correct_data():
     ss = SubscriberSigntings("2016-01-01", "2016-01-02")
     df = ss.head(50)
 
-    min = df["timestamp"].min().to_pydatetime()
-    max = df["timestamp"].max().to_pydatetime()
+    min = df["datetime"].min().to_pydatetime()
+    max = df["datetime"].max().to_pydatetime()
     min_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 1, 0, 0, 0))
     max_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 10, 0, 0, 0))
 
