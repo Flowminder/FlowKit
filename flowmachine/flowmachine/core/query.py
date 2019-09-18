@@ -568,15 +568,13 @@ class Query(metaclass=ABCMeta):
             attrs["label"] = f"{attrs['name']}."
             return attrs
 
-        if not query_obj.is_stored:
-            openlist = list(
-                zip([query_obj] * len(query_obj.dependencies), query_obj.dependencies)
-            )
+        if not self.is_stored:
+            openlist = list(zip([self] * len(self.dependencies), self.dependencies))
 
             while openlist:
                 y, x = openlist.pop()
-                if y is query_obj:
-                    # We don't want to include query_obj in the graph, only its dependencies.
+                if y is self:
+                    # We don't want to include this query in the graph, only its dependencies.
                     y = None
                 # Wait for query to complete before checking whether it's stored.
                 q_state_machine = QueryStateMachine(x.redis, x.md5)
