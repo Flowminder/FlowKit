@@ -37,7 +37,7 @@ fi
 pipenv install
 pipenv run flowmachine &
 echo "Started FlowMachine."
-pipenv run quart run --port 9090 &
+pipenv run hypercorn --bind 0.0.0.0:9090 "flowapi.main:create_app()" &
 echo "Retrieving API spec"
 sleep 5
 curl http://localhost:9090/api/0/spec/openapi-redoc.json -o source/_static/openapi-redoc.json
