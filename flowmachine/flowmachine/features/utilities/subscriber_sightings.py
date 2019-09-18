@@ -14,6 +14,7 @@ from ...core.sqlalchemy_utils import (
     make_sqlalchemy_column_from_flowmachine_column_description,
     get_sql_string,
 )
+from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
@@ -30,6 +31,10 @@ class SubscriberSigntings(Query):
     stop : str, default None
         date for the end of the time frame, e.g. 2016-01-04 or if None, 
         it will use the max date seen in the `interactions.subscriber_sightings_fact` table.
+    subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
+        If provided, string or list of string which are msisdn or imeis to limit
+        results to; or, a query or table which has a column with a name matching
+        subscriber_identifier (typically, msisdn), to limit results to.
     subscriber_identifier : {'msisdn', 'imei', 'imsi'}, default 'msisdn'
         The column that identifies the subscriber.
 
@@ -40,11 +45,12 @@ class SubscriberSigntings(Query):
     """
 
     def __init__(
-        self, start, stop, *, subscriber_identifier="msisdn"
+        self, start, stop, *, subscriber_subset=None, subscriber_identifier="msisdn"
     ):
         # Set start stop dates, subscriber_subsetter & subscriber_identifier
         self.start = start
         self.stop = stop
+        self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
 
         # Setup the main subscriber_sightings_fact & subscriber tables
