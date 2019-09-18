@@ -54,5 +54,6 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
 
     # FIXME: At the moment we have to explicitly wait for all running queries
     # to finish before finishing the test, otherwise unexpected behaviour may
-    # occur when we reset the cache before the next test.
+    # occur when we reset the cache before the next test
+    # (see https://github.com/Flowminder/FlowKit/issues/1245).
     poll_until_done(zmq_port, expected_query_id)

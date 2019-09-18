@@ -123,7 +123,8 @@ def test_run_daily_location_query(zmq_host, zmq_port):
 
     # FIXME: At the moment we have to explicitly wait for all running queries
     # to finish before finishing the test, otherwise unexpected behaviour may
-    # occur when we reset the cache before the next test.
+    # occur when we reset the cache before the next test
+    # (see https://github.com/Flowminder/FlowKit/issues/1245).
     poll_until_done(zmq_port, expected_query_id)
 
 
@@ -185,7 +186,8 @@ def test_run_modal_location_query(zmq_host, zmq_port):
 
     # FIXME: At the moment we have to explicitly wait for all running queries
     # to finish before finishing the test, otherwise unexpected behaviour may
-    # occur when we reset the cache before the next test.
+    # occur when we reset the cache before the next test
+    # (see https://github.com/Flowminder/FlowKit/issues/1245).
     poll_until_done(zmq_port, expected_query_id)
 
 
@@ -220,5 +222,6 @@ def test_run_dfs_metric_total_amount_query(zmq_host, zmq_port):
 
     # FIXME: At the moment we have to explicitly wait for all running queries
     # to finish before finishing the test, otherwise unexpected behaviour may
-    # occur when we reset the cache before the next test.
+    # occur when we reset the cache before the next test
+    # (see https://github.com/Flowminder/FlowKit/issues/1245).
     poll_until_done(zmq_port, expected_query_id)
