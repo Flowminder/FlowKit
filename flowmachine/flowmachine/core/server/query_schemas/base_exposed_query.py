@@ -4,8 +4,6 @@
 
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
-import structlog
-import networkx as nx
 
 from flowmachine.core import Query
 from flowmachine.core.query_info_lookup import QueryInfoLookup
