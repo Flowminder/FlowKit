@@ -110,7 +110,7 @@ class IntereventPeriod(SubscriberFeature):
         sql = f"""
         SELECT
             subscriber,
-            EXTRACT(epoch FROM value/{self.time_divisor}) AS value
+            FLOOR(EXTRACT(epoch FROM value)/{self.time_divisor}) AS value
         FROM ({self.event_interval.get_query()}) AS U
         """
 
