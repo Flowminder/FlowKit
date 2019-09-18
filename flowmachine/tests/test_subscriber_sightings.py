@@ -21,6 +21,16 @@ def test_main_colums_are_set():
     assert "cell_id" in ss.column_names
 
 
+def test_subscriber_identifier_can_be_uppercase():
+    """Test that subscriber_identifier can be provided in uppercase."""
+    identifier = "IMEI"
+    ss = SubscriberSigntings(
+        "2016-01-01", "2016-01-02", subscriber_identifier=identifier
+    )
+
+    assert identifier.lower() in ss.column_names
+
+
 def test_msisdn_set_as_identifier():
     """Test that msisdn is set as the default identifier."""
     ss = SubscriberSigntings("2016-01-01", "2016-01-02")
@@ -47,13 +57,23 @@ def test_error_on_start_is_stop():
         SubscriberSigntings("2016-01-01", "2016-01-01")
 
 
-def test_set_min_max_dates():
-    """Test setting min/max dates with None is provided."""
+def test_set_date_none():
+    """Test that setting a start/stop to None will use min/max dates."""
     ss = SubscriberSigntings(None, "2016-01-04")
-    assert ss.start == "2016-01-01"
+    df = ss.head()
 
-    ss = SubscriberSigntings("2016-01-02", None)
-    assert ss.stop == "2016-01-01"
+    min = df["timestamp"].min().to_pydatetime()
+    min_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 1, 0, 0, 0))
+
+    assert min.timestamp() > min_comparison.timestamp()
+
+    ss = SubscriberSigntings("2016-01-01", None)
+    df = ss.head()
+
+    max = df["timestamp"].max().to_pydatetime()
+    max_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 10, 0, 0, 0))
+
+    assert max.timestamp() < max_comparison.timestamp()
 
 
 def test_dates_select_correct_data():
@@ -63,8 +83,8 @@ def test_dates_select_correct_data():
 
     min = df["timestamp"].min().to_pydatetime()
     max = df["timestamp"].max().to_pydatetime()
-    min_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 1))
-    max_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 2))
+    min_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 1, 0, 0, 0))
+    max_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 10, 0, 0, 0))
 
     assert min.timestamp() > min_comparison.timestamp()
     assert max.timestamp() < max_comparison.timestamp()

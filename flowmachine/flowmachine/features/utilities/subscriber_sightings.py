@@ -56,7 +56,7 @@ class SubscriberSigntings(Query):
         # rather than subscriber_sightings_fact - as this will allow
         # us to select the required field.
         self.subTable = Table(
-            "interactions.subscriber", columns=[subscriber_identifier]
+            "interactions.subscriber", columns=[subscriber_identifier.lower()]
         )
         self.sqlalchemy_subTable = get_sqlalchemy_table_definition(
             self.subTable.fully_qualified_table_name, engine=Query.connection.engine
