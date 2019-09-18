@@ -35,7 +35,7 @@ def intervent_period(get_dataframe):
         agg = events.groupby("subscriber").agg(
             lambda x: getattr(x, postgres_stat_to_pandas_stat[stat])()
         )
-        agg = (pd.to_numeric(agg["duration"]) / 1000000000.0).to_dict()
+        agg = (agg["duration"].astype("timedelta64[s]")).to_dict()
 
         return agg
 
@@ -59,7 +59,11 @@ def test_interevent_period(
     """
 
     query = IntereventPeriod(
-        start=start, stop=stop, direction=direction, statistic=stat
+        start=start,
+        stop=stop,
+        direction=direction,
+        statistic=stat,
+        time_resolution="second",
     )
     df = get_dataframe(query).set_index("subscriber")
     sample = df.sample(n=5)
@@ -67,7 +71,7 @@ def test_interevent_period(
         start=start, stop=stop, direction=direction, stat=stat, subset=sample
     )
     assert query.column_names == ["subscriber", "value"]
-    assert (sample["value"] * query.time_divisor).to_dict() == pytest.approx(want)
+    assert (sample["value"]).to_dict() == pytest.approx(want)
 
 
 @pytest.mark.parametrize(
@@ -95,9 +99,7 @@ def test_interevent_interval(
         start=start, stop=stop, direction=direction, stat=stat, subset=sample
     )
     assert query.column_names == ["subscriber", "value"]
-    assert (pd.to_numeric(sample["value"]) / 1000000000.0).to_dict() == pytest.approx(
-        want
-    )
+    assert (sample["value"].astype("timedelta64[s]")).to_dict() == pytest.approx(want)
 
 
 @pytest.mark.parametrize("kwarg", ["direction", "statistic"])
