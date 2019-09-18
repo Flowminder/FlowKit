@@ -11,7 +11,7 @@ defines methods that returns the query as a string and as a pandas dataframe.
 import rapidjson as json
 import pickle
 import weakref
-from concurrent.futures import Future, wait
+from concurrent.futures import Future
 
 
 import structlog
@@ -37,7 +37,8 @@ from flowmachine.core.errors import (
 )
 
 import flowmachine
-from flowmachine.utils import _sleep, assemble_dependency_graph, store_queries_in_order
+from flowmachine.utils import _sleep
+from flowmachine.core.dependency_graph import store_all_unstored_dependencies
 
 from flowmachine.core.cache import write_query_to_cache
 
@@ -544,81 +545,6 @@ class Query(metaclass=ABCMeta):
             )
         return queries
 
-    def _unstored_dependencies_graph(self) -> "DiGraph":
-        """
-        Produce a dependency graph of the unstored queries on which this query depends.
-
-        Returns
-        -------
-        networkx.DiGraph
-
-        Notes
-        -----
-        If store() or invalidate_db_cache() is called on any query while this
-        function is executing, the resulting graph may not be correct.
-        """
-        deps = []
-
-        def attrs_func(q):
-            attrs = {}
-            attrs["query_object"] = q
-            attrs["name"] = q.__class__.__name__
-            attrs["stored"] = False
-            attrs["shape"] = "rect"
-            attrs["label"] = f"{attrs['name']}."
-            return attrs
-
-        if not self.is_stored:
-            openlist = list(zip([self] * len(self.dependencies), self.dependencies))
-
-            while openlist:
-                y, x = openlist.pop()
-                if y is self:
-                    # We don't want to include this query in the graph, only its dependencies.
-                    y = None
-                # Wait for query to complete before checking whether it's stored.
-                q_state_machine = QueryStateMachine(x.redis, x.md5)
-                q_state_machine.wait_until_complete()
-                if not x.is_stored:
-                    deps.append((y, x))
-                    openlist += list(zip([x] * len(x.dependencies), x.dependencies))
-
-        return assemble_dependency_graph(dependencies=deps, attrs_func=attrs_func)
-
-    def _store_dependencies_and_make_sql(
-        self, name: str, schema: Union[str, None] = None
-    ) -> List[str]:
-        """
-        Store the dependencies of this query, and then return the SQL necessary
-        to store the result of this query back into the database.
-        
-        Parameters
-        ----------
-        name : str,
-            name of the table
-        schema : str, default None
-            Name of an existing schema. If none will use the postgres default,
-            see postgres docs for more info.
-
-        Returns
-        -------
-        list
-            Ordered list of SQL strings to execute.
-
-        Notes
-        -----
-        Storing the dependencies happens in background threads.
-        """
-        logger.debug(
-            f"Creating background threads to store dependencies of query '{self.md5}'."
-        )
-
-        dependency_futures = store_queries_in_order(self._unstored_dependencies_graph())
-
-        wait(list(dependency_futures.values()))
-
-        return self._make_sql(name, schema)
-
     def to_sql(
         self,
         name: str,
@@ -678,7 +604,11 @@ class Query(metaclass=ABCMeta):
             return plan_time
 
         if store_dependencies:
-            ddl_ops_func = self._store_dependencies_and_make_sql
+
+            def ddl_ops_func(name: str, schema: Union[str, None] = None) -> List[str]:
+                store_all_unstored_dependencies(self)
+                return self._make_sql(name, schema)
+
         else:
             ddl_ops_func = self._make_sql
 
