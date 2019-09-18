@@ -131,6 +131,12 @@ class SubscriberSigntings(Query):
                 self.sqlalchemy_mainTable.c.timestamp < f"{self.stop} 23:59:59"
             )
 
+        # Added the subscriber_subsetter
+        if self.subscriber_subsetter is not None:
+            select_stmt = self.subscriber_subsetter.apply_subset_if_needed(
+                select_stmt, subscriber_identifier=self.subscriber_identifier
+            )
+
         return get_sql_string(select_stmt)
 
     _make_query = _make_query_with_sqlalchemy
