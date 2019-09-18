@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `NewSubscribers` now takes a pair of `UniqueSubscribers` queries instead of the arguments to them
 - Flowmachine's default random sampling method is now `random_ids` rather than the non-reproducible `system_rows`. [#1263](https://github.com/Flowminder/FlowKit/issues/1263)
 - `IntereventPeriod` now returns stats over the gap between events in fractional time units, instead of time intervals. [#1265](https://github.com/Flowminder/FlowKit/issues/1265)
+- Attempting to store a query that does not have a standard table name (e.g. `EventTableSubset` or unseeded random sample) will now raise an `UnstorableQueryError` instead of `ValueError`.
 
 ### Fixed
 - Quickstart will no longer fail if it has been run previously with a different FlowDB data size and not explicitly shut down. [#900](https://github.com/Flowminder/FlowKit/issues/900)
