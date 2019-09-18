@@ -35,9 +35,10 @@
         },
         "apispec-oneofschema": {
             "hashes": [
-                "sha256:a02d1ae2279dbf5b64ce8459728d4c8ca674548c509fae45c95f9f4dd45f454f"
+                "sha256:044072c19a0080d3eeb9f92d379c88a17e6feb65c749625668be51e44c45e2dd",
+                "sha256:2bea35797f4df97372b80d8b4e4c0a33c0b84e87760b9e6fbe67c6a1fac10bb4"
             ],
-            "version": "==2.0.2"
+            "version": "==2.1.0"
         },
         "approvaltests": {
             "hashes": [
