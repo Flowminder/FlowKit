@@ -14,6 +14,7 @@ from sqlalchemy.exc import ProgrammingError
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.query import Query
 from flowmachine.features import daily_location
+from flowmachine.core.dummy_query import DummyQuery
 
 
 def test_bad_sql_logged_and_raised(caplog):
