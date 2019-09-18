@@ -66,7 +66,7 @@ def test_interevent_period(
         time_resolution="second",
     )
     df = get_dataframe(query).set_index("subscriber")
-    sample = df.sample(n=5)
+    sample = df.head(n=5)
     want = intervent_period(
         start=start, stop=stop, direction=direction, stat=stat, subset=sample
     )
@@ -94,7 +94,7 @@ def test_interevent_interval(
         start=start, stop=stop, direction=direction, statistic=stat
     )
     df = get_dataframe(query).set_index("subscriber")
-    sample = df.sample(n=5)
+    sample = df.head(n=5)
     want = intervent_period(
         start=start, stop=stop, direction=direction, stat=stat, subset=sample
     )
