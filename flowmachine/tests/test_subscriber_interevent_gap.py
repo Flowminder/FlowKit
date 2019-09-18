@@ -71,7 +71,7 @@ def test_interevent_period(
         start=start, stop=stop, direction=direction, stat=stat, subset=sample
     )
     assert query.column_names == ["subscriber", "value"]
-    assert (sample["value"]).to_dict() == pytest.approx(want)
+    assert (sample["value"]).to_dict() == pytest.approx(want, nan_ok=True)
 
 
 @pytest.mark.parametrize(
@@ -99,7 +99,9 @@ def test_interevent_interval(
         start=start, stop=stop, direction=direction, stat=stat, subset=sample
     )
     assert query.column_names == ["subscriber", "value"]
-    assert (sample["value"].astype("timedelta64[s]")).to_dict() == pytest.approx(want)
+    assert (sample["value"].astype("timedelta64[s]")).to_dict() == pytest.approx(
+        want, nan_ok=True
+    )
 
 
 @pytest.mark.parametrize("kwarg", ["direction", "statistic"])
