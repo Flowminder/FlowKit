@@ -520,7 +520,7 @@ def test_cache_ddl_op_error(dummy_redis):
     Test that errors when generating SQL leave the query state machine in error state.
     """
 
-    query_mock = Mock(md5="DUMMY_MD5")
+    query_mock = Mock(query_id="DUMMY_MD5")
     qsm = QueryStateMachine(dummy_redis, "DUMMY_MD5")
     qsm.enqueue()
 
