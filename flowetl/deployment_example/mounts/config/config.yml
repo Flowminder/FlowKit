@@ -7,6 +7,7 @@ etl:
     source:
       source_type: sql
       table_name: "sample_data_fdw"
+      event_time_column: "event_time"
   sms:
     concurrency: 2
     source:

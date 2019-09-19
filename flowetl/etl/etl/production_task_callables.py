@@ -179,6 +179,7 @@ def production_trigger__callable(
                 )
         elif source_type == "sql":
             source_table = cfg["source"]["table_name"]
+            event_time_column = cfg["source"]["event_time_column"]
 
             # Extract unprocessed dates from source_table
 
@@ -187,7 +188,7 @@ def production_trigger__callable(
             # already been processed). If it turns out too sluggish might be good to
             # think about a more efficient way to determine dates with unprocessed data.
             dates_present = find_distinct_dates_in_table(
-                session, source_table, event_time_col="event_time"
+                session, source_table, event_time_column=event_time_column
             )
             unprocessed_dates = [
                 date

@@ -17,6 +17,7 @@ etl:
     source:
       source_type: sql
       table_name: "mds_raw_data_dump"
+      event_time_column: "event_time"
   topups:
     concurrency: 4
     source:
