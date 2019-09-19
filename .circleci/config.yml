@@ -757,9 +757,9 @@ jobs:
       - run:
           name: Wait for FlowMachine and FlowAPI
           command: |
-            (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (netstat -an | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start" && exit 1)
+            (i=0; until { [ $i -ge 60 ] && exit_status=1; } || { (netstat -an | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 1s; sleep 1; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start" && exit 1)
             echo "FlowMachine ready"
-            (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:9090/api/0/spec/openapi.json > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowAPI failed to start" && exit 1)
+            (i=0; until { [ $i -ge 60 ] && exit_status=1; } || { (curl -s http://localhost:9090/api/0/spec/openapi.json > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 1s; sleep 1; done; exit $exit_status) || (>&2 echo "FlowAPI failed to start" && exit 1)
             echo "FlowAPI ready"
       - when:
           condition: << parameters.deploy >>
