@@ -43,7 +43,7 @@ def print_dependency_tree(
     prefix = "" if indent_level == 0 else "- "
     fmt = "query_id" if not show_stored else "query_id,is_stored"
     stream.write(f"{indent}{prefix}{query_obj:{fmt}}\n")
-    deps_sorted_by_query_id = sorted(query_obj.dependencies, key=lambda q: q.md5)
+    deps_sorted_by_query_id = sorted(query_obj.dependencies, key=lambda q: q.query_id)
     for dep in deps_sorted_by_query_id:
         print_dependency_tree(
             dep, indent_level=indent_level + 1, stream=stream, show_stored=show_stored
@@ -74,11 +74,11 @@ def _assemble_dependency_graph(
         _, y = zip(*dependencies)
         for n in set(y):
             attrs = attrs_func(n)
-            g.add_node(f"x{n.md5}", **attrs)
+            g.add_node(f"x{n.query_id}", **attrs)
 
     for x, y in dependencies:
         if x is not None:
-            g.add_edge(*[f"x{z.md5}" for z in (x, y)])
+            g.add_edge(*[f"x{z.query_id}" for z in (x, y)])
 
     return g
 
@@ -224,7 +224,7 @@ def unstored_dependencies_graph(query_obj: "Query") -> nx.DiGraph:
                 # We don't want to include this query in the graph, only its dependencies.
                 y = None
             # Wait for query to complete before checking whether it's stored.
-            q_state_machine = QueryStateMachine(x.redis, x.md5)
+            q_state_machine = QueryStateMachine(x.redis, x.query_id)
             q_state_machine.wait_until_complete()
             if not x.is_stored:
                 deps.append((y, x))
@@ -351,7 +351,7 @@ def store_all_unstored_dependencies(query_obj: "Query") -> None:
     but this function will not return until all the dependencies are stored.
     """
     logger.debug(
-        f"Creating background threads to store dependencies of query '{query_obj.md5}'."
+        f"Creating background threads to store dependencies of query '{query_obj.query_id}'."
     )
     dependency_futures = store_queries_in_order(unstored_dependencies_graph(query_obj))
 

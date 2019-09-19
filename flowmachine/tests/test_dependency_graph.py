@@ -81,8 +81,8 @@ def test_calculate_dependency_graph():
         stop="2016-01-02",
         columns=["msisdn", "datetime", "location_id"],
     )
-    assert f"x{sd.md5}" in G.nodes()
-    assert G.nodes[f"x{sd.md5}"]["query_object"].md5 == sd.md5
+    assert f"x{sd.query_id}" in G.nodes()
+    assert G.nodes[f"x{sd.query_id}"]["query_object"].query_id == sd.query_id
 
 
 def test_unstored_dependencies_graph():
@@ -110,8 +110,10 @@ def test_unstored_dependencies_graph():
     assert not any(dict(graph.nodes(data="stored")).values())
     assert len(graph) == len(expected_query_nodes)
     for query in expected_query_nodes:
-        assert f"x{query.md5}" in graph.nodes()
-        assert graph.nodes[f"x{query.md5}"]["query_object"].md5 == query.md5
+        assert f"x{query.query_id}" in graph.nodes()
+        assert (
+            graph.nodes[f"x{query.query_id}"]["query_object"].query_id == query.query_id
+        )
 
 
 def test_unstored_dependencies_graph_for_stored_query():

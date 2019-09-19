@@ -82,7 +82,7 @@ class UnstorableQueryError(Exception):
     def __init__(self, query_obj: "Query"):
         Exception.__init__(
             self,
-            f"Query '{query_obj.md5}' of type '{query_obj.__class__.__name__}' cannot be stored.",
+            f"Query '{query_obj.query_id}' of type '{query_obj.__class__.__name__}' cannot be stored.",
         )
 
 

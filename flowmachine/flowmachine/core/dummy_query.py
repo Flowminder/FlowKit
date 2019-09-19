@@ -40,7 +40,7 @@ class DummyQuery(Query):
         """
         Determine dummy 'stored' status from redis, instead of checking the database.
         """
-        q_state_machine = QueryStateMachine(self.redis, self.md5)
+        q_state_machine = QueryStateMachine(self.redis, self.query_id)
         return q_state_machine.is_completed
 
     def store(self, store_dependencies=False):
