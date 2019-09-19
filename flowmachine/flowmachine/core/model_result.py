@@ -173,14 +173,14 @@ class ModelResult(Query):
 
         def write_model_result(query_ddl_ops: List[str], connection: Engine) -> float:
             self._df.to_sql(name, connection, schema=schema, index=False)
-            QueryStateMachine(self.redis, self.md5).finish()
+            QueryStateMachine(self.redis, self.query_id).finish()
             return self._runtime
 
         current_state, changed_to_queue = QueryStateMachine(
-            self.redis, self.md5
+            self.redis, self.query_id
         ).enqueue()
         logger.debug(
-            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+            f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
         # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
         store_future = self.thread_pool_executor.submit(

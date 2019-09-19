@@ -66,12 +66,12 @@ def test_interevent_period(
         time_resolution="second",
     )
     df = get_dataframe(query).set_index("subscriber")
-    sample = df.sample(n=5)
+    sample = df.head(n=5)
     want = intervent_period(
         start=start, stop=stop, direction=direction, stat=stat, subset=sample
     )
     assert query.column_names == ["subscriber", "value"]
-    assert (sample["value"]).to_dict() == pytest.approx(want)
+    assert (sample["value"]).to_dict() == pytest.approx(want, nan_ok=True)
 
 
 @pytest.mark.parametrize(
@@ -94,12 +94,14 @@ def test_interevent_interval(
         start=start, stop=stop, direction=direction, statistic=stat
     )
     df = get_dataframe(query).set_index("subscriber")
-    sample = df.sample(n=5)
+    sample = df.head(n=5)
     want = intervent_period(
         start=start, stop=stop, direction=direction, stat=stat, subset=sample
     )
     assert query.column_names == ["subscriber", "value"]
-    assert (sample["value"].astype("timedelta64[s]")).to_dict() == pytest.approx(want)
+    assert (sample["value"].astype("timedelta64[s]")).to_dict() == pytest.approx(
+        want, nan_ok=True
+    )
 
 
 @pytest.mark.parametrize("kwarg", ["direction", "statistic"])

@@ -1,13 +1,14 @@
 #
-# DOCKER STACK FILE FOR FLOWETL EXAMPLE DEPLOYMENT
+# DOCKER STACK FILE FOR FLOWETL DEPLOYMENT EXAMPLE
 #
 
 version: '3'
 
 networks:
   flowdb:
-  flowetl_db:
-  ingestion_db:
+  flowetl_airflow_db:
+  ingestion_db_overlay:
+    external: true
 
 services:
 
@@ -38,30 +39,7 @@ services:
       - ${FLOWETL_HOST_FILES_DIR:?Must set FLOWETL_HOST_FILES_DIR env var}:/mounts/files:ro
     networks:
       - flowdb
-      - ingestion_db
-
-  ingestion_db:
-    container_name: ingestion_db
-    image: ${LOCAL_DOCKER_REGISTRY:?Must set LOCAL_DOCKER_REGISTRY env var}/ingestion_db:latest
-    build:
-      context: ingestion_db
-      dockerfile: Dockerfile
-    environment:
-      - POSTGRES_USER=${INGESTION_DB_ADMIN_USER:?Must set INGESTION_DB_ADMIN_USER env var}
-      - POSTGRES_PASSWORD=${INGESTION_DB_ADMIN_PASSWORD:?Must set INGESTION_DB_ADMIN_PASSWORD env var}
-      - POSTGRES_DB=ingestion_db
-      - INGESTION_DB_USER=${INGESTION_DB_USER:?Must set INGESTION_DB_USER env var}
-      - INGESTION_DB_PASSWORD=${INGESTION_DB_PASSWORD:?Must set INGESTION_DB_PASSWORD env var}
-    ports:
-      - ${INGESTION_DB_PORT:?Must set INGESTION_DB_PORT env var}:5432
-    tty: true
-    stdin_open: true
-    restart: always
-    shm_size: ${POSTGRES_SHM:-1G}
-    volumes:
-      - data_volume_ingestion_db:/var/lib/postgresql/data
-    networks:
-      - ingestion_db
+      - ingestion_db_overlay
 
   flowetl:
     container_name: flowetl
@@ -91,24 +69,24 @@ services:
       # This will hopefully be unnecessary once this PR is merged: https://github.com/puckel/docker-airflow/pull/253
       POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
       POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
-      POSTGRES_HOST: flowetl_db
+      POSTGRES_HOST: flowetl_airflow_db
       POSTGRES_DB: flowetl
       FLOWETL_RUNTIME_CONFIG: ${FLOWETL_RUNTIME_CONFIG:?Must set FLOWETL_RUNTIME_CONFIG env var}
 
     networks:
       - flowdb
-      - flowetl_db
+      - flowetl_airflow_db
 
-  flowetl_db:
+  flowetl_airflow_db:
     image: postgres:11
-    container_name: flowetl_db
+    container_name: flowetl_airflow_db
 
     tty: true
     stdin_open: true
     restart: always
 
     ports:
-      - ${FLOWETL_DB_PORT:?Must set FLOWETL_DB_PORT env var}:5432
+      - ${FLOWETL_AIRFLOW_DB_PORT:?Must set FLOWETL_AIRFLOW_DB_PORT env var}:5432
 
     environment:
       POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
@@ -116,13 +94,12 @@ services:
       POSTGRES_DB: flowetl
 
     volumes:
-      - data_volume_flowetl_db:/var/lib/postgresql/data
+      - data_volume_flowetl_airflow_db:/var/lib/postgresql/data
 
     networks:
-      - flowetl_db
+      - flowetl_airflow_db
 
 
 volumes:
   data_volume_flowdb:
-  data_volume_flowetl_db:
-  data_volume_ingestion_db:
+  data_volume_flowetl_airflow_db:

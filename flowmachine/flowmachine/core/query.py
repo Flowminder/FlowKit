@@ -67,7 +67,7 @@ class Query(metaclass=ABCMeta):
     _QueryPool = weakref.WeakValueDictionary()
 
     def __init__(self, cache=True):
-        obj = Query._QueryPool.get(self.md5)
+        obj = Query._QueryPool.get(self.query_id)
         if obj is None:
             try:
                 self.connection
@@ -75,12 +75,12 @@ class Query(metaclass=ABCMeta):
                 raise NotConnectedError()
 
             self._cache = cache
-            Query._QueryPool[self.md5] = self
+            Query._QueryPool[self.query_id] = self
         else:
             self.__dict__ = obj.__dict__
 
     @property
-    def md5(self):
+    def query_id(self):
         """
         Generate a uniquely identifying hash of this query,
         based on the parameters of it and the subqueries it is
@@ -89,21 +89,21 @@ class Query(metaclass=ABCMeta):
         Returns
         -------
         str
-            md5 hash string
+            query_id hash string
         """
         try:
             return self._md5
         except:
             dependencies = self.dependencies
             state = self.__getstate__()
-            hashes = sorted([x.md5 for x in dependencies])
+            hashes = sorted([x.query_id for x in dependencies])
             for key, item in sorted(state.items()):
                 if isinstance(item, Query) and item in dependencies:
                     # this item is already included in `hashes`
                     continue
                 elif isinstance(item, list) or isinstance(item, tuple):
                     item = sorted(
-                        item, key=lambda x: x.md5 if isinstance(x, Query) else x
+                        item, key=lambda x: x.query_id if isinstance(x, Query) else x
                     )
                 elif isinstance(item, dict):
                     item = json.dumps(item, sort_keys=True, default=str)
@@ -116,11 +116,6 @@ class Query(metaclass=ABCMeta):
             hashes.sort()
             self._md5 = md5(str(hashes).encode()).hexdigest()
             return self._md5
-
-    @property
-    def query_id(self):
-        # alias which is more meaningful to users than 'md5'
-        return self.md5
 
     @abstractmethod
     def _make_query(self):
@@ -238,7 +233,7 @@ class Query(metaclass=ABCMeta):
         flowmachine.core.query_state.QueryState
             The current query state
         """
-        state_machine = QueryStateMachine(self.redis, self.md5)
+        state_machine = QueryStateMachine(self.redis, self.query_id)
         return state_machine.current_query_state
 
     @property
@@ -268,13 +263,13 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
-            state_machine = QueryStateMachine(self.redis, self.md5)
+            state_machine = QueryStateMachine(self.redis, self.query_id)
             state_machine.wait_until_complete()
             if state_machine.is_completed and self.connection.has_table(
                 schema=schema, name=name
             ):
                 try:
-                    touch_cache(self.connection, self.md5)
+                    touch_cache(self.connection, self.query_id)
                 except ValueError:
                     pass  # Cache record not written yet, which can happen for Models
                     # which will call through to this method from their `_make_query` method while writing metadata.
@@ -613,10 +608,10 @@ class Query(metaclass=ABCMeta):
             ddl_ops_func = self._make_sql
 
         current_state, changed_to_queue = QueryStateMachine(
-            self.redis, self.md5
+            self.redis, self.query_id
         ).enqueue()
         logger.debug(
-            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+            f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
         # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
         store_future = self.thread_pool_executor.submit(
@@ -691,7 +686,7 @@ class Query(metaclass=ABCMeta):
         str
             String form of the table's fqn
         """
-        return f"x{self.md5}"
+        return f"x{self.query_id}"
 
     @property
     def is_stored(self):
@@ -819,7 +814,7 @@ class Query(metaclass=ABCMeta):
         drop : bool
             Set to false to remove the cache record without dropping the table
         """
-        q_state_machine = QueryStateMachine(self.redis, self.md5)
+        q_state_machine = QueryStateMachine(self.redis, self.query_id)
         current_state, this_thread_is_owner = q_state_machine.reset()
         if this_thread_is_owner:
             con = self.connection.engine
@@ -836,12 +831,12 @@ class Query(metaclass=ABCMeta):
                     """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
                     ON cache.cached.query_id=cache.dependencies.query_id
                     WHERE depends_on='{}'""".format(
-                        self.md5
+                        self.query_id
                     )
                 )
                 with con.begin():
                     con.execute(
-                        "DELETE FROM cache.cached WHERE query_id=%s", (self.md5,)
+                        "DELETE FROM cache.cached WHERE query_id=%s", (self.query_id,)
                     )
                     logger.debug(
                         "Deleted cache record for {}.".format(
@@ -884,12 +879,12 @@ class Query(metaclass=ABCMeta):
             q_state_machine.finish_resetting()
         elif q_state_machine.is_resetting:
             logger.debug(
-                f"Query '{self.md5}' is being reset from elsewhere, waiting for reset to finish."
+                f"Query '{self.query_id}' is being reset from elsewhere, waiting for reset to finish."
             )
             while q_state_machine.is_resetting:
                 _sleep(1)
         if not q_state_machine.is_known:
-            raise QueryResetFailedException(self.md5)
+            raise QueryResetFailedException(self.query_id)
 
     @property
     def index_cols(self):

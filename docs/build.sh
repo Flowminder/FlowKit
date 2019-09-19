@@ -31,17 +31,18 @@ trap TrapQuit EXIT
 if [ "$CI" != "true" ]; then
     (pushd .. && make down && make up && popd)
     echo "Waiting for flowdb to be ready"
-    docker exec flowdb_synthetic_data bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
+    pipenv install
+    docker exec flowdb bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
+    echo "Finished pre-caching queries"
+    pipenv run flowmachine &
+    echo "Started FlowMachine."
+    pipenv run hypercorn --bind 0.0.0.0:9090 "flowapi.main:create_app()" &
+    echo "Started FlowAPI."
+    sleep 5
 fi
 
-pipenv install
-pipenv run flowmachine &
-echo "Started FlowMachine."
-pipenv run hypercorn --bind 0.0.0.0:9090 "flowapi.main:create_app()" &
 echo "Retrieving API spec"
-sleep 5
 curl http://localhost:9090/api/0/spec/openapi-redoc.json -o source/_static/openapi-redoc.json
-echo "Started FlowAPI."
 echo "Starting build."
 
 # Note: the DOCS_BRANCH variable is used by `mkdocs.yml` to pick up the correct git repositories for building API docs

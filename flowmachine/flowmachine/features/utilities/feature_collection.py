@@ -134,8 +134,8 @@ def _join_queries(queries, dropna):
         append = "_" + q.__class__.__name__.lower() + "_{}".format(i + 2)
         running_join = running_join.join(q, on_left=col, right_append=append, how=how)
         # Trigger memoization
-        _ = q.md5
-        _ = running_join.md5
+        _ = q.query_id
+        _ = running_join.query_id
         _ = running_join.column_names
 
     return running_join

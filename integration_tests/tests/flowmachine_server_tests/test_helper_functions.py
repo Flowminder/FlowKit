@@ -42,7 +42,7 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
             subscriber_subset=None,
         )
     )
-    expected_query_id = q.md5
+    expected_query_id = q.query_id
 
     # Check that the flowmachine server sends the expected reply
     reply = send_zmq_message_and_receive_reply(

@@ -115,7 +115,7 @@ def test_run_daily_location_query(zmq_host, zmq_port):
             subscriber_subset=None,
         )
     )
-    expected_query_id = q.md5
+    expected_query_id = q.query_id
 
     assert "success" == reply["status"]
     assert expected_query_id == reply["payload"]["query_id"]
@@ -178,7 +178,7 @@ def test_run_modal_location_query(zmq_host, zmq_port):
             ),
         )
     )
-    expected_query_id = q.md5
+    expected_query_id = q.query_id
 
     assert "success" == reply["status"]
     assert expected_query_id == reply["payload"]["query_id"]
@@ -214,7 +214,7 @@ def test_run_dfs_metric_total_amount_query(zmq_host, zmq_port):
         end_date="2016-01-05",
         aggregation_unit="admin2",
     )
-    expected_query_id = q.md5
+    expected_query_id = q.query_id
 
     assert "success" == reply["status"]
     assert expected_query_id == reply["payload"]["query_id"]

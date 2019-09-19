@@ -295,4 +295,4 @@ def test_pickling():
     )
     for ss in [ss1, ss2]:
         assert ss.get_query() == pickle.loads(pickle.dumps(ss)).get_query()
-        assert ss.md5 == pickle.loads(pickle.dumps(ss)).md5
+        assert ss.query_id == pickle.loads(pickle.dumps(ss)).query_id

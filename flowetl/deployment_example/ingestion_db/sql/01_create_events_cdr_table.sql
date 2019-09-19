@@ -11,7 +11,7 @@ CREATE SCHEMA IF NOT EXISTS events;
 
 CREATE SCHEMA IF NOT EXISTS reference;
 
-create table if not exists events.cdr (
+CREATE TABLE IF NOT EXISTS events.cdr (
         event_time          timestamptz not null,
         msisdn              text not null,
         cell_id             text not null
@@ -25,4 +25,4 @@ to a day would be appropriate.
 If you are writing 190GB per day and have 128GB of memory, setting the time interval
 to 4 hours would be appropriate.
 */
-select create_hypertable('events.cdr', 'event_time', chunk_time_interval => interval '1 day');
+SELECT create_hypertable('events.cdr', 'event_time', chunk_time_interval => interval '1 day', associated_schema_name => 'events');

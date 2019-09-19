@@ -218,7 +218,7 @@ class SeedableRandom(RandomBase, metaclass=ABCMeta):
     def table_name(self) -> str:
         if self.seed is None:
             raise NotImplementedError("Unseeded random samples cannot be stored.")
-        return f"x{self.md5}"
+        return f"x{self.query_id}"
 
 
 class RandomTablesample(SeedableRandom):

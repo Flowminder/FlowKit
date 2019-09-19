@@ -749,6 +749,14 @@ jobs:
             sudo dpkg -i pandoc-1.19.2.1-1-amd64.deb
       - run: pipenv install
       - run: *wait_for_flowdb
+      - run:
+          name: Start flowmachine
+          command: FLOWMACHINE_LOG_LEVEL=debug pipenv run flowmachine
+          background: true
+      - run:
+          name: Start flowapi
+          command: FLOWAPI_LOG_LEVEL=debug pipenv run hypercorn --bind 0.0.0.0:9090 "flowapi.main:create_app()"
+          background: true
       - when:
           condition: << parameters.deploy >>
           steps:

@@ -117,10 +117,10 @@ def test_exception_on_unstored():
 def test_iteration():
     """Test that we can iterate and it doesn't break hashing"""
     dl = daily_location("2016-01-01")
-    md5 = dl.md5
+    md5 = dl.query_id
     for _ in dl:
         pass
-    assert md5 == dl.md5
+    assert md5 == dl.query_id
 
 
 def test_limited_head():

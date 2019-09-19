@@ -40,7 +40,7 @@ async def test_get_sql(zmq_port, zmq_host):
             subscriber_subset=None,
         )
     )
-    expected_query_id = q.md5
+    expected_query_id = q.query_id
 
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     # assert reply["status"] in ("executing", "queued", "completed")
