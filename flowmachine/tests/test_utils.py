@@ -189,9 +189,9 @@ def test_print_dependency_tree():
     expected_output = textwrap.dedent(
         """\
         <Query of type: MostFrequentLocation, query_id: 'xxxxx'>
+          - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+             - <Table: 'geography.admin3', query_id: 'xxxxx'>
           - <Query of type: SubscriberLocations, query_id: 'xxxxx'>
-             - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
-                - <Table: 'geography.admin3', query_id: 'xxxxx'>
              - <Query of type: JoinToLocation, query_id: 'xxxxx'>
                 - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
                    - <Table: 'geography.admin3', query_id: 'xxxxx'>
@@ -204,8 +204,8 @@ def test_print_dependency_tree():
                       - <Query of type: CustomQuery, query_id: 'xxxxx'>
                       - <Table: 'events.calls', query_id: 'xxxxx'>
                          - <Table: 'events.calls', query_id: 'xxxxx'>
-          - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
-             - <Table: 'geography.admin3', query_id: 'xxxxx'>
+             - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
+                - <Table: 'geography.admin3', query_id: 'xxxxx'>
         """
     )
 
@@ -228,8 +228,8 @@ def test_calculate_dependency_graph():
         stop="2016-01-02",
         columns=["msisdn", "datetime", "location_id"],
     )
-    assert f"x{sd.md5}" in G.nodes()
-    assert G.nodes[f"x{sd.md5}"]["query_object"].md5 == sd.md5
+    assert f"x{sd.query_id}" in G.nodes()
+    assert G.nodes[f"x{sd.query_id}"]["query_object"].query_id == sd.query_id
 
 
 def test_plot_dependency_graph():

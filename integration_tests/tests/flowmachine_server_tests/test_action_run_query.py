@@ -38,7 +38,7 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
             subscriber_subset=None,
         )
     )
-    expected_query_id = q.md5
+    expected_query_id = q.query_id
 
     #
     # Check that we are starting with a clean slate (no cache tables, empty redis).

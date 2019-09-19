@@ -50,7 +50,7 @@ class BaseExposedQuery(metaclass=ABCMeta):
         q = self._flowmachine_query_obj
         q.store()
 
-        query_id = q.md5
+        query_id = q.query_id
 
         return query_id
 
@@ -61,6 +61,6 @@ class BaseExposedQuery(metaclass=ABCMeta):
         #    return md5(json.dumps(self.query_params, sort_keys=True).encode()).hexdigest()
         #
         # However, the resulting md5 hash is different from the one produced internally
-        # by flowmachine.core.Query.md5, and the latter is currently being used by
+        # by flowmachine.core.Query.query_id, and the latter is currently being used by
         # the QueryStateMachine, so we need to use it to check the query state.
-        return self._flowmachine_query_obj.md5
+        return self._flowmachine_query_obj.query_id

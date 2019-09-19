@@ -114,11 +114,11 @@ class Table(Query):
                     )
                 )
 
-        # Record provided columns to ensure that md5 differs with different columns
+        # Record provided columns to ensure that query_id differs with different columns
         self.columns = columns
         super().__init__()
         # Table is immediately in a 'finished executing' state
-        q_state_machine = QueryStateMachine(self.redis, self.md5)
+        q_state_machine = QueryStateMachine(self.redis, self.query_id)
         if not q_state_machine.is_completed:
             q_state_machine.enqueue()
             q_state_machine.execute()
@@ -126,7 +126,7 @@ class Table(Query):
             q_state_machine.finish()
 
     def __format__(self, fmt):
-        return f"<Table: '{self.schema}.{self.name}', query_id: '{self.md5}'>"
+        return f"<Table: '{self.schema}.{self.name}', query_id: '{self.query_id}'>"
 
     @property
     def column_names(self) -> List[str]:
@@ -143,7 +143,7 @@ class Table(Query):
         with self.connection.engine.begin():
             self.connection.engine.execute(
                 "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(
-                    self.md5
+                    self.query_id
                 )
             )
         return self._make_query()
