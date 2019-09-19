@@ -33,12 +33,15 @@ if [ "$CI" != "true" ]; then
     echo "Waiting for flowdb to be ready"
     pipenv install
     docker exec flowdb bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
-    echo "Finished pre-caching queries"
+    echo "FlowDB ready"
     pipenv run flowmachine &
     echo "Started FlowMachine."
     pipenv run hypercorn --bind 0.0.0.0:9090 "flowapi.main:create_app()" &
     echo "Started FlowAPI."
-    sleep 5
+    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (netstat -an | grep -q $FLOWMACHINE_PORT) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowMachine failed to start" && exit 1)
+    echo "FlowMachine ready"
+    (i=0; until { [ $i -ge 24 ] && exit_status=1; } || { (curl -s http://localhost:9090/api/0/spec/openapi.json > /dev/null) && exit_status=0; } ; do let i=i+1; echo Waiting 10s; sleep 10; done; exit $exit_status) || (>&2 echo "FlowAPI failed to start" && exit 1)
+    echo "FlowAPI ready"
 fi
 
 echo "Retrieving API spec"
