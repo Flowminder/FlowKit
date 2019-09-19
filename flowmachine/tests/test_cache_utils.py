@@ -339,7 +339,7 @@ def test_cache_miss_value_error_score():
 
 def test_get_query_object_by_id(flowmachine_connect):
     """
-    Test that we can get a query object back out of the database by the query_id id
+    Test that we can get a query object back out of the database by the query's id
     """
     dl = daily_location("2016-01-01").store().result()
     retrieved_query = get_query_object_by_id(flowmachine_connect, dl.query_id)
@@ -349,7 +349,7 @@ def test_get_query_object_by_id(flowmachine_connect):
 
 def test_delete_query_by_id(flowmachine_connect):
     """
-    Test that we can remove a query from cache by the query_id id
+    Test that we can remove a query from cache by the query's id
     """
     dl = daily_location("2016-01-01").store().result()
     retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.query_id)

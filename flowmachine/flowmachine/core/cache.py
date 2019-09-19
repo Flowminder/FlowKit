@@ -218,7 +218,7 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
     ----------
     connection : Connection
     query_id : str
-        query_id id of the query to touch
+        Unique id of the query to touch
 
     Returns
     -------
@@ -323,7 +323,7 @@ def invalidate_cache_by_id(
     ----------
     connection : Connection
     query_id : str
-        query_id id of the query
+        Unique id of the query
     cascade : bool, default False
         Set to true to remove any queries that depend on the one being removed
 
@@ -346,7 +346,7 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
     ----------
     connection : Connection
     query_id : str
-        query_id id of the query
+        Unique id of the query
 
     Returns
     -------
@@ -604,7 +604,7 @@ def get_compute_time(connection: "Connection", query_id: str) -> float:
     ----------
     connection : "Connection"
     query_id : str
-        query_id identifier of the query
+        Unique id of the query
 
     Returns
     -------
@@ -631,7 +631,7 @@ def get_score(connection: "Connection", query_id: str) -> float:
     ----------
     connection: "Connection"
     query_id : str
-        query_id id of the cached query
+        Unique id of the cached query
 
     Returns
     -------
@@ -659,7 +659,7 @@ def cache_table_exists(connection: "Connection", query_id: str) -> bool:
     ----------
     connection: "Connection"
     query_id : str
-        query_id id of the cached query
+        Unique id of the cached query
 
     Returns
     -------
