@@ -1079,8 +1079,17 @@
       },
       "NocturnalEvents": {
         "properties": {
-          "hours": {
-            "type": "string"
+          "night_end_hour": {
+            "format": "int32",
+            "maximum": 23,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "night_start_hour": {
+            "format": "int32",
+            "maximum": 23,
+            "minimum": 0,
+            "type": "integer"
           },
           "query_kind": {
             "enum": [

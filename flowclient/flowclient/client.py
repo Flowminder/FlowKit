@@ -1540,6 +1540,7 @@ def nocturnal_events(
     stop : str
         ISO format date of the day _after_ the final date for which to count nocturnal events, e.g. "2016-01-08"
     hours: tuple(int,int)
+        Tuple defining beginning and end of night
 
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
@@ -1556,7 +1557,8 @@ def nocturnal_events(
         "query_kind": "nocturnal_events",
         "start": start,
         "stop": stop,
-        "hours": hours,
+        "night_start_hour": hours[0],
+        "night_end_hour": hours[1],
         "subscriber_subset": subscriber_subset,
     }
 
