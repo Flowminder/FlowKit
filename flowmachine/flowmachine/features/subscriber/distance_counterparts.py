@@ -103,7 +103,7 @@ class DistanceCounterparts(SubscriberFeature):
             subscriber_identifier="msisdn",
             hours=hours,
             subscriber_subset=subscriber_subset,
-        ).get_query()
+        )
 
         self.unioned_to_query = EventsTablesUnion(
             self.start,
@@ -113,7 +113,7 @@ class DistanceCounterparts(SubscriberFeature):
             subscriber_identifier="msisdn_counterpart",
             hours=hours,
             subscriber_subset=subscriber_subset,
-        ).get_query()
+        )
 
         self.distance_matrix = DistanceMatrix()
 
@@ -141,8 +141,8 @@ class DistanceCounterparts(SubscriberFeature):
         FROM
             (
                 SELECT A.subscriber, A.location_id AS location_id_from, B.location_id AS location_id_to FROM
-                ({self.unioned_from_query}) AS A
-                JOIN ({self.unioned_to_query}) AS B
+                ({self.unioned_from_query.get_query()}) AS A
+                JOIN ({self.unioned_to_query.get_query()}) AS B
                 ON A.id = B.id AND A.outgoing != B.outgoing {on_filters}
             ) U
         JOIN
