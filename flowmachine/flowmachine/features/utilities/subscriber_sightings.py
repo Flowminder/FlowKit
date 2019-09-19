@@ -128,7 +128,7 @@ class SubscriberSigntings(Query):
         # Add the stop date - this will need hours added to it at some point.
         if self.stop is not None:
             select_stmt = select_stmt.where(
-                self.sqlalchemy_mainTable.c.timestamp < f"{self.stop} 23:59:59"
+                self.sqlalchemy_mainTable.c.timestamp < f"{self.stop} 00:00:00"
             )
 
         # Added the subscriber_subsetter
