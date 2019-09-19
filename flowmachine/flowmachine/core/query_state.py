@@ -90,7 +90,7 @@ class QueryStateMachine:
     redis_client : StrictRedis
         Client for redis
     query_id : str
-        md5 query identifier
+        query_id query identifier
 
     Notes
     -----

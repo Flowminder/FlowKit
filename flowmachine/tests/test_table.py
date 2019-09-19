@@ -82,7 +82,7 @@ def test_dependencies():
     t2 = Table("events.calls", columns=["id"])
     assert len(t2.dependencies) == 1
     t2_parent = t2.dependencies.pop()
-    assert "057addedac04dbeb1dcbbb6b524b43f0" == t2_parent.md5
+    assert "057addedac04dbeb1dcbbb6b524b43f0" == t2_parent.query_id
 
 
 def test_subset():
@@ -103,4 +103,4 @@ def test_pickling():
         "id", ["5wNJA-PdRJ4-jxEdG-yOXpZ", "5wNJA-PdRJ4-jxEdG-yOXpZ"]
     )
     assert ss.get_query() == pickle.loads(pickle.dumps(ss)).get_query()
-    assert ss.md5 == pickle.loads(pickle.dumps(ss)).md5
+    assert ss.query_id == pickle.loads(pickle.dumps(ss)).query_id

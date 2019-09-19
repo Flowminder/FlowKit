@@ -64,7 +64,7 @@ def test_get_query_blocks_on_store():
     timer = []
 
     def unlock(timer):
-        qsm = QueryStateMachine(dl.redis, dl.md5)
+        qsm = QueryStateMachine(dl.redis, dl.query_id)
         qsm.enqueue()
         for i in range(101):
             timer.append(i)
@@ -91,7 +91,7 @@ def test_blocks_on_store_cascades():
     timer = []
 
     def unlock(timer):
-        qsm = QueryStateMachine(dl.redis, dl.md5)
+        qsm = QueryStateMachine(dl.redis, dl.query_id)
         qsm.enqueue()
         for i in range(101):
             timer.append(i)

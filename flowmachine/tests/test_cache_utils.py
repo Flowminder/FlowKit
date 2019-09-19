@@ -49,24 +49,24 @@ def test_scoring(flowmachine_connect):
     Test that score updating algorithm is correct by comparing to cachey as reference implementation
     """
     dl = daily_location("2016-01-01").store().result()
-    dl_time = get_compute_time(flowmachine_connect, dl.md5)
+    dl_time = get_compute_time(flowmachine_connect, dl.query_id)
     dl_size = get_size_of_table(flowmachine_connect, dl.table_name, "cache")
-    initial_score = get_score(flowmachine_connect, dl.md5)
+    initial_score = get_score(flowmachine_connect, dl.query_id)
     cachey_scorer = Scorer(halflife=1000.0)
     cache_score = cachey_scorer.touch("dl", dl_time / dl_size)
     assert cache_score == pytest.approx(initial_score)
 
     # Touch again
-    new_score = touch_cache(flowmachine_connect, dl.md5)
+    new_score = touch_cache(flowmachine_connect, dl.query_id)
     updated_cache_score = cachey_scorer.touch("dl")
     assert updated_cache_score == pytest.approx(new_score)
 
     # Add another unrelated cache record, which should have a higher initial score
     dl_2 = daily_location("2016-01-02").store().result()
-    dl_time = get_compute_time(flowmachine_connect, dl_2.md5)
+    dl_time = get_compute_time(flowmachine_connect, dl_2.query_id)
     dl_size = get_size_of_table(flowmachine_connect, dl_2.table_name, "cache")
     cache_score = cachey_scorer.touch("dl_2", dl_time / dl_size)
-    assert cache_score == pytest.approx(get_score(flowmachine_connect, dl_2.md5))
+    assert cache_score == pytest.approx(get_score(flowmachine_connect, dl_2.query_id))
 
 
 def test_touch_cache_record_for_query(flowmachine_connect):
@@ -78,17 +78,17 @@ def test_touch_cache_record_for_query(flowmachine_connect):
     assert (
         1
         == flowmachine_connect.fetch(
-            f"SELECT access_count FROM cache.cached WHERE query_id='{table.md5}'"
+            f"SELECT access_count FROM cache.cached WHERE query_id='{table.query_id}'"
         )[0][0]
     )
     accessed_at = flowmachine_connect.fetch(
-        f"SELECT last_accessed FROM cache.cached WHERE query_id='{table.md5}'"
+        f"SELECT last_accessed FROM cache.cached WHERE query_id='{table.query_id}'"
     )[0][0]
-    touch_cache(flowmachine_connect, table.md5)
+    touch_cache(flowmachine_connect, table.query_id)
     assert (
         2
         == flowmachine_connect.fetch(
-            f"SELECT access_count FROM cache.cached WHERE query_id='{table.md5}'"
+            f"SELECT access_count FROM cache.cached WHERE query_id='{table.query_id}'"
         )[0][0]
     )
     # Two cache touches should have been recorded
@@ -98,7 +98,7 @@ def test_touch_cache_record_for_query(flowmachine_connect):
     assert (
         accessed_at
         < flowmachine_connect.fetch(
-            f"SELECT last_accessed FROM cache.cached WHERE query_id='{table.md5}'"
+            f"SELECT last_accessed FROM cache.cached WHERE query_id='{table.query_id}'"
         )[0][0]
     )
 
@@ -109,24 +109,24 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     """
     table = Table("events.calls_20160101")
     flowmachine_connect.engine.execute(
-        f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%s", table.md5
+        f"UPDATE cache.cached SET compute_time = 1 WHERE query_id=%s", table.query_id
     )  # Compute time for tables is zero, so set to 1 to avoid zeroing out
-    assert 0 == get_score(flowmachine_connect, table.md5)
+    assert 0 == get_score(flowmachine_connect, table.query_id)
     assert (
         1
         == flowmachine_connect.fetch(
-            f"SELECT access_count FROM cache.cached WHERE query_id='{table.md5}'"
+            f"SELECT access_count FROM cache.cached WHERE query_id='{table.query_id}'"
         )[0][0]
     )
     accessed_at = flowmachine_connect.fetch(
-        f"SELECT last_accessed FROM cache.cached WHERE query_id='{table.md5}'"
+        f"SELECT last_accessed FROM cache.cached WHERE query_id='{table.query_id}'"
     )[0][0]
-    touch_cache(flowmachine_connect, table.md5)
-    assert 0 == get_score(flowmachine_connect, table.md5)
+    touch_cache(flowmachine_connect, table.query_id)
+    assert 0 == get_score(flowmachine_connect, table.query_id)
     assert (
         2
         == flowmachine_connect.fetch(
-            f"SELECT access_count FROM cache.cached WHERE query_id='{table.md5}'"
+            f"SELECT access_count FROM cache.cached WHERE query_id='{table.query_id}'"
         )[0][0]
     )
     # No cache touch should be recorded
@@ -136,7 +136,7 @@ def test_touch_cache_record_for_table(flowmachine_connect):
     assert (
         accessed_at
         < flowmachine_connect.fetch(
-            f"SELECT last_accessed FROM cache.cached WHERE query_id='{table.md5}'"
+            f"SELECT last_accessed FROM cache.cached WHERE query_id='{table.query_id}'"
         )[0][0]
     )
 
@@ -161,8 +161,8 @@ def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
     # Should prefer the larger, but slower to calculate and more used dl over the aggregation
     cached_queries = get_cached_query_objects_ordered_by_score(flowmachine_connect)
     assert 2 == len(cached_queries)
-    assert dl_agg.md5 == cached_queries[0][0].md5
-    assert dl.md5 == cached_queries[1][0].md5
+    assert dl_agg.query_id == cached_queries[0][0].query_id
+    assert dl.query_id == cached_queries[1][0].query_id
     assert 2 == len(cached_queries[0])
 
 
@@ -173,13 +173,13 @@ def test_shrink_one(flowmachine_connect):
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     flowmachine_connect.engine.execute(
-        f"UPDATE cache.cached SET cache_score_multiplier = 1 WHERE query_id='{dl_aggregate.md5}'"
+        f"UPDATE cache.cached SET cache_score_multiplier = 1 WHERE query_id='{dl_aggregate.query_id}'"
     )
     flowmachine_connect.engine.execute(
-        f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.md5}'"
+        f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
     removed_query, table_size = shrink_one(flowmachine_connect)
-    assert dl.md5 == removed_query.md5
+    assert dl.query_id == removed_query.query_id
     assert not dl.is_stored
     assert dl_aggregate.is_stored
 
@@ -231,8 +231,8 @@ def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
         flowmachine_connect, shrink_to, dry_run=True
     )
     removed_queries = shrink_below_size(flowmachine_connect, shrink_to, dry_run=False)
-    assert [q.md5 for q in removed_queries] == [
-        q.md5 for q in queries_that_would_be_removed
+    assert [q.query_id for q in removed_queries] == [
+        q.query_id for q in queries_that_would_be_removed
     ]
 
 
@@ -243,10 +243,10 @@ def test_shrink_to_size_uses_score(flowmachine_connect):
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     flowmachine_connect.engine.execute(
-        f"UPDATE cache.cached SET cache_score_multiplier = 100 WHERE query_id='{dl_aggregate.md5}'"
+        f"UPDATE cache.cached SET cache_score_multiplier = 100 WHERE query_id='{dl_aggregate.query_id}'"
     )
     flowmachine_connect.engine.execute(
-        f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.md5}'"
+        f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
     table_size = get_size_of_table(flowmachine_connect, dl.table_name, "cache")
     removed_queries = shrink_below_size(flowmachine_connect, table_size)
@@ -262,13 +262,13 @@ def test_shrink_one(flowmachine_connect):
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     flowmachine_connect.engine.execute(
-        f"UPDATE cache.cached SET cache_score_multiplier = 100 WHERE query_id='{dl_aggregate.md5}'"
+        f"UPDATE cache.cached SET cache_score_multiplier = 100 WHERE query_id='{dl_aggregate.query_id}'"
     )
     flowmachine_connect.engine.execute(
-        f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.md5}'"
+        f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
     removed_query, table_size = shrink_one(flowmachine_connect)
-    assert dl.md5 == removed_query.md5
+    assert dl.query_id == removed_query.query_id
     assert not dl.is_stored
     assert dl_aggregate.is_stored
 
@@ -339,21 +339,21 @@ def test_cache_miss_value_error_score():
 
 def test_get_query_object_by_id(flowmachine_connect):
     """
-    Test that we can get a query object back out of the database by the md5 id
+    Test that we can get a query object back out of the database by the query_id id
     """
     dl = daily_location("2016-01-01").store().result()
-    retrieved_query = get_query_object_by_id(flowmachine_connect, dl.md5)
-    assert dl.md5 == retrieved_query.md5
+    retrieved_query = get_query_object_by_id(flowmachine_connect, dl.query_id)
+    assert dl.query_id == retrieved_query.query_id
     assert dl.get_query() == retrieved_query.get_query()
 
 
 def test_delete_query_by_id(flowmachine_connect):
     """
-    Test that we can remove a query from cache by the md5 id
+    Test that we can remove a query from cache by the query_id id
     """
     dl = daily_location("2016-01-01").store().result()
-    retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.md5)
-    assert dl.md5 == retrieved_query.md5
+    retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.query_id)
+    assert dl.query_id == retrieved_query.query_id
     assert not dl.is_stored
 
 
@@ -363,8 +363,8 @@ def test_delete_query_by_id_does_not_cascade_by_default(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl_agg = dl.aggregate().store().result()
-    retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.md5)
-    assert dl.md5 == retrieved_query.md5
+    retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.query_id)
+    assert dl.query_id == retrieved_query.query_id
     assert not dl.is_stored
     assert dl_agg.is_stored
 
@@ -375,8 +375,10 @@ def test_delete_query_by_id_can_cascade(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl_agg = dl.aggregate().store().result()
-    retrieved_query = invalidate_cache_by_id(flowmachine_connect, dl.md5, cascade=True)
-    assert dl.md5 == retrieved_query.md5
+    retrieved_query = invalidate_cache_by_id(
+        flowmachine_connect, dl.query_id, cascade=True
+    )
+    assert dl.query_id == retrieved_query.query_id
     assert not dl.is_stored
     assert not dl_agg.is_stored
 
@@ -421,7 +423,7 @@ def test_cache_table_exists(flowmachine_connect):
     """
     assert not cache_table_exists(flowmachine_connect, "NONEXISTENT_CACHE_ID")
     assert cache_table_exists(
-        flowmachine_connect, daily_location("2016-01-01").store().result().md5
+        flowmachine_connect, daily_location("2016-01-01").store().result().query_id
     )
 
 
@@ -431,19 +433,19 @@ def test_redis_resync(flowmachine_connect):
     """
     stored_query = daily_location("2016-01-01").store().result()
     assert (
-        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        QueryStateMachine(Table.redis, stored_query.query_id).current_query_state
         == QueryState.COMPLETED
     )
     assert stored_query.is_stored
     Table.redis.flushdb()
     assert stored_query.is_stored
     assert (
-        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        QueryStateMachine(Table.redis, stored_query.query_id).current_query_state
         == QueryState.KNOWN
     )
     resync_redis_with_cache(flowmachine_connect, Table.redis)
     assert (
-        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        QueryStateMachine(Table.redis, stored_query.query_id).current_query_state
         == QueryState.COMPLETED
     )
 
@@ -454,13 +456,13 @@ def test_cache_reset(flowmachine_connect):
     """
     stored_query = daily_location("2016-01-01").store().result()
     assert (
-        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        QueryStateMachine(Table.redis, stored_query.query_id).current_query_state
         == QueryState.COMPLETED
     )
     assert stored_query.is_stored
     reset_cache(flowmachine_connect, Table.redis)
     assert (
-        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        QueryStateMachine(Table.redis, stored_query.query_id).current_query_state
         == QueryState.KNOWN
     )
     assert not stored_query.is_stored
@@ -474,7 +476,7 @@ def test_cache_reset_protects_tables(flowmachine_connect):
     dl_query = daily_location(date="2016-01-03", method="last")
     reset_cache(flowmachine_connect, dl_query.redis)
     for dep in dl_query._get_stored_dependencies():
-        assert dep.md5 in [x.md5 for x in Query.get_stored()]
+        assert dep.query_id in [x.query_id for x in Query.get_stored()]
     dl_query.store().result()  # Original bug caused this to error
 
 
@@ -484,7 +486,7 @@ def test_redis_resync_runtimeerror(flowmachine_connect, dummy_redis):
     """
     stored_query = daily_location("2016-01-01").store().result()
     assert (
-        QueryStateMachine(Table.redis, stored_query.md5).current_query_state
+        QueryStateMachine(Table.redis, stored_query.query_id).current_query_state
         == QueryState.COMPLETED
     )
     dummy_redis.allow_flush = False
@@ -508,7 +510,7 @@ def test_cache_metadata_write_error(flowmachine_connect, dummy_redis, monkeypatc
         store_future.result()
     assert not dl_query.is_stored
     assert (
-        QueryStateMachine(dl_query.redis, dl_query.md5).current_query_state
+        QueryStateMachine(dl_query.redis, dl_query.query_id).current_query_state
         == QueryState.ERRORED
     )
 

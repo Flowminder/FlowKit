@@ -347,7 +347,7 @@ def print_dependency_tree(query_obj, show_stored=False, stream=None, indent_leve
     prefix = "" if indent_level == 0 else "- "
     fmt = "query_id" if not show_stored else "query_id,is_stored"
     stream.write(f"{indent}{prefix}{query_obj:{fmt}}\n")
-    deps_sorted_by_query_id = sorted(query_obj.dependencies, key=lambda q: q.md5)
+    deps_sorted_by_query_id = sorted(query_obj.dependencies, key=lambda q: q.query_id)
     for dep in deps_sorted_by_query_id:
         print_dependency_tree(
             dep, indent_level=indent_level + 1, stream=stream, show_stored=show_stored
@@ -457,11 +457,11 @@ def calculate_dependency_graph(query_obj, analyse=False):
         if attrs["stored"]:
             attrs["fillcolor"] = "#b3de69"  # light green
             attrs["style"] = "filled"
-        g.add_node(f"x{n.md5}", **attrs)
+        g.add_node(f"x{n.query_id}", **attrs)
 
     for x, y in deps:
         if x != 0:
-            g.add_edge(*[f"x{z.md5}" for z in (x, y)])
+            g.add_edge(*[f"x{z.query_id}" for z in (x, y)])
 
     return g
 

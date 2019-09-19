@@ -294,13 +294,13 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
 
     def __eq__(self, other):
         try:
-            return self.md5 == other.md5
+            return self.query_id == other.query_id
         except AttributeError:
             return False
 
     def __hash__(self):
         # Must define this because we explicitly define self.__eq__
-        return hash(self.md5)
+        return hash(self.query_id)
 
     def _get_aliased_geom_table_cols(self, table_alias: str) -> List[str]:
         return [f"{table_alias}.{c}" for c in self._geom_table_cols]

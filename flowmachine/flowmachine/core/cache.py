@@ -94,11 +94,11 @@ def write_query_to_cache(
     This is a _blocking function_, and will not return until the query is no longer in an executing state.
 
     """
-    logger.debug(f"Trying to switch '{query.md5}' to executing state.")
-    q_state_machine = QueryStateMachine(redis, query.md5)
+    logger.debug(f"Trying to switch '{query.query_id}' to executing state.")
+    q_state_machine = QueryStateMachine(redis, query.query_id)
     current_state, this_thread_is_owner = q_state_machine.execute()
     if this_thread_is_owner:
-        logger.debug(f"In charge of executing '{query.md5}'.")
+        logger.debug(f"In charge of executing '{query.query_id}'.")
         try:
             query_ddl_ops = ddl_ops_func(name, schema)
         except Exception as exc:
@@ -128,16 +128,16 @@ def write_query_to_cache(
     if q_state_machine.is_completed:
         return query
     elif q_state_machine.is_cancelled:
-        logger.error(f"Query '{query.md5}' was cancelled.")
-        raise QueryCancelledException(query.md5)
+        logger.error(f"Query '{query.query_id}' was cancelled.")
+        raise QueryCancelledException(query.query_id)
     elif q_state_machine.is_errored:
-        logger.error(f"Query '{query.md5}' finished with an error.")
-        raise QueryErroredException(query.md5)
+        logger.error(f"Query '{query.query_id}' finished with an error.")
+        raise QueryErroredException(query.query_id)
     else:
         logger.error(
-            f"Query '{query.md5}' not stored. State is {q_state_machine.current_query_state}"
+            f"Query '{query.query_id}' not stored. State is {q_state_machine.current_query_state}"
         )
-        raise StoreFailedException(query.md5)
+        raise StoreFailedException(query.query_id)
 
 
 def write_cache_metadata(
@@ -165,7 +165,9 @@ def write_cache_metadata(
 
     try:
         in_cache = bool(
-            connection.fetch(f"SELECT * FROM cache.cached WHERE query_id='{query.md5}'")
+            connection.fetch(
+                f"SELECT * FROM cache.cached WHERE query_id='{query.query_id}'"
+            )
         )
         if not in_cache:
             try:
@@ -184,7 +186,7 @@ def write_cache_metadata(
             con.execute(
                 cache_record_insert,
                 (
-                    query.md5,
+                    query.query_id,
                     __version__,
                     query._make_query(),
                     compute_time,
@@ -193,13 +195,13 @@ def write_cache_metadata(
                     psycopg2.Binary(self_storage),
                 ),
             )
-            con.execute("SELECT touch_cache(%s);", query.md5)
+            con.execute("SELECT touch_cache(%s);", query.query_id)
 
             if not in_cache:
                 for dep in query._get_stored_dependencies(exclude_self=True):
                     con.execute(
                         "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
-                        (query.md5, dep.md5),
+                        (query.query_id, dep.query_id),
                     )
                 logger.debug(f"{query.fully_qualified_table_name} added to cache.")
             else:
@@ -216,7 +218,7 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
     ----------
     connection : Connection
     query_id : str
-        md5 id of the query to touch
+        query_id id of the query to touch
 
     Returns
     -------
@@ -321,7 +323,7 @@ def invalidate_cache_by_id(
     ----------
     connection : Connection
     query_id : str
-        md5 id of the query
+        query_id id of the query
     cascade : bool, default False
         Set to true to remove any queries that depend on the one being removed
 
@@ -344,7 +346,7 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
     ----------
     connection : Connection
     query_id : str
-        md5 id of the query
+        query_id id of the query
 
     Returns
     -------
@@ -404,7 +406,7 @@ def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
     obj_to_remove, obj_size = get_cached_query_objects_ordered_by_score(connection)[0]
 
     logger.info(
-        f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.md5} of type {obj_to_remove.__class__}"
+        f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.query_id} of type {obj_to_remove.__class__}"
     )
     logger.info(
         f"Table {obj_to_remove.fully_qualified_table_name} ({obj_size} bytes) {'would' if dry_run else 'will'} be removed."
@@ -446,7 +448,7 @@ def shrink_below_size(
         def dry_run_shrink(connection):
             obj, obj_size = cached_queries.__next__()
             logger.info(
-                f"Would remove cache record for {obj.md5} of type {obj.__class__}"
+                f"Would remove cache record for {obj.query_id} of type {obj.__class__}"
             )
             logger.info(
                 f"Table {obj.fully_qualified_table_name} ({obj_size} bytes) would be removed."
@@ -602,7 +604,7 @@ def get_compute_time(connection: "Connection", query_id: str) -> float:
     ----------
     connection : "Connection"
     query_id : str
-        md5 identifier of the query
+        query_id identifier of the query
 
     Returns
     -------
@@ -629,7 +631,7 @@ def get_score(connection: "Connection", query_id: str) -> float:
     ----------
     connection: "Connection"
     query_id : str
-        md5 id of the cached query
+        query_id id of the cached query
 
     Returns
     -------
@@ -657,7 +659,7 @@ def cache_table_exists(connection: "Connection", query_id: str) -> bool:
     ----------
     connection: "Connection"
     query_id : str
-        md5 id of the cached query
+        query_id id of the cached query
 
     Returns
     -------
