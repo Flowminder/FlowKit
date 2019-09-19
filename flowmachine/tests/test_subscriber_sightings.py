@@ -7,7 +7,8 @@ import pytz
 from datetime import datetime
 
 from flowmachine.features import SubscriberSigntings
-
+from flowmachine.core import CustomQuery
+from flowmachine.core.subscriber_subsetter import SubscriberSubsetterForFlowmachineQuery
 
 def test_columns_and_identifier_are_set():
     """Test that all the columns and identifier are set on the object."""
@@ -86,3 +87,17 @@ def test_dates_select_correct_data():
 
     assert min.timestamp() > min_comparison.timestamp()
     assert max.timestamp() < max_comparison.timestamp()
+
+def test_that_subscriber_subset_is_added(get_dataframe):
+    """Test that subscriber_subset is added to the output SQL."""
+    subsetter = SubscriberSubsetterForFlowmachineQuery(CustomQuery(
+        "SELECT duration, msisdn as subscriber FROM events.calls WHERE duration < 400",
+        ["subscriber"],
+    ))
+    
+    ss = SubscriberSigntings("2016-01-01", "2016-01-02", subscriber_subset=subsetter)
+    query = ss.get_query()
+    
+    assert "FROM events.calls" in query
+    assert "WHERE duration < 400" in query
+    assert "tbl.subscriber = subset_query.subscriber" in query
