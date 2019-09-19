@@ -179,17 +179,12 @@ def production_trigger__callable(
                 )
         elif source_type == "sql":
             source_table = cfg["source"]["table_name"]
-            event_time_column = cfg["source"]["event_time_column"]
+            sql_find_available_dates = cfg["source"]["sql_find_available_dates"]
 
-            # Extract unprocessed dates from source_table
-
-            # TODO: this requires a full parse of the existing data so may not be
-            # the most be efficient if a lot of data is present (esp. data that has
-            # already been processed). If it turns out too sluggish might be good to
-            # think about a more efficient way to determine dates with unprocessed data.
-            dates_present = find_distinct_dates_in_table(
-                session, source_table, event_time_column=event_time_column
-            )
+            dates_present = [
+                pendulum.parse(row["date"].strftime("%Y-%m-%d"))
+                for row in session.execute(sql_find_available_dates).fetchall()
+            ]
             unprocessed_dates = [
                 date
                 for date in dates_present

@@ -19,7 +19,11 @@ etl:
     source:
       source_type: sql
       table_name: "mds_raw_data_dump"
-      event_time_column: "event_time"
+      sql_find_available_dates: |
+          SELECT DISTINCT date
+          FROM (
+              SELECT event_time::date as date FROM mds_raw_data_dump
+          ) tmp
   topups:
     concurrency: 4
     source:
