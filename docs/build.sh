@@ -45,4 +45,4 @@ echo "Started FlowAPI."
 echo "Starting build."
 
 # Note: the DOCS_BRANCH variable is used by `mkdocs.yml` to pick up the correct git repositories for building API docs
-DOCS_BRANCH=${CIRCLE_BRANCH:="master"} FLOWMACHINE_LOG_LEVEL=error pipenv run mkdocs "${@:-build}"
+DOCS_BRANCH=${CIRCLE_BRANCH:="master"} pipenv run mkdocs "${@:-build}"

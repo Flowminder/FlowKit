@@ -732,6 +732,9 @@ jobs:
       disaster_start_date: 2016-02-11
       disaster_end_date: 2016-03-01
     working_directory: /home/circleci/project/docs
+    environment:
+      FLOWMACHINE_LOG_LEVEL: debug
+      FLOWAPI_LOG_LEVEL: debug
     steps:
       - checkout:
           path: /home/circleci/project/
