@@ -90,21 +90,20 @@ def action_handler__run_query(
     parameters needed to construct the query.
     """
     try:
-        try:
-            query_obj = FlowmachineQuerySchema().load(action_params)
-        except TypeError as exc:
-            # We need to catch TypeError here, otherwise they propagate up to
-            # perform_action() and result in a very misleading error message.
-            orig_error_msg = exc.args[0]
-            error_msg = (
-                f"Internal flowmachine server error: could not create query object using query schema. "
-                f"The original error was: '{orig_error_msg}'"
-            )
-            return ZMQReply(
-                status="error",
-                msg=error_msg,
-                payload={"params": action_params, "orig_error_msg": orig_error_msg},
-            )
+        query_obj = FlowmachineQuerySchema().load(action_params)
+    except TypeError as exc:
+        # We need to catch TypeError here, otherwise they propagate up to
+        # perform_action() and result in a very misleading error message.
+        orig_error_msg = exc.args[0]
+        error_msg = (
+            f"Internal flowmachine server error: could not create query object using query schema. "
+            f"The original error was: '{orig_error_msg}'"
+        )
+        return ZMQReply(
+            status="error",
+            msg=error_msg,
+            payload={"params": action_params, "orig_error_msg": orig_error_msg},
+        )
     except ValidationError as exc:
         # The dictionary of marshmallow errors can contain integers as keys,
         # which will raise an error when converting to JSON (where the keys
@@ -279,53 +278,43 @@ def action_handler__get_geography(
     Returns SQL to get geography for the given `aggregation_unit` as GeoJSON.
     """
     try:
-        try:
-            try:
-                query_obj = GeographySchema().load(
-                    {"aggregation_unit": aggregation_unit}
-                )
-            except TypeError as exc:
-                # We need to catch TypeError here, otherwise they propagate up to
-                # perform_action() and result in a very misleading error message.
-                orig_error_msg = exc.args[0]
-                error_msg = (
-                    f"Internal flowmachine server error: could not create query object using query schema. "
-                    f"The original error was: '{orig_error_msg}'"
-                )
-                return ZMQReply(
-                    status="error",
-                    msg=error_msg,
-                    payload={
-                        "params": {"aggregation_unit": aggregation_unit},
-                        "orig_error_msg": orig_error_msg,
-                    },
-                )
-        except ValidationError as exc:
-            # The dictionary of marshmallow errors can contain integers as keys,
-            # which will raise an error when converting to JSON (where the keys
-            # must be strings). Therefore we transform the keys to strings here.
-            error_msg = "Parameter validation failed."
-            validation_error_messages = convert_dict_keys_to_strings(exc.messages)
-            return ZMQReply(
-                status="error", msg=error_msg, payload=validation_error_messages
-            )
-
-        # We don't cache the query, because it just selects columns from a
-        # geography table. If we expose an aggregation unit which relies on another
-        # query to create the geometry (e.g. grid), we may want to reconsider this
-        # decision.
-
-        sql = query_obj.geojson_sql
-        # TODO: put query_run_log back in!
-        # query_run_log.info("get_geography", **run_log_dict)
-        payload = {"query_state": QueryState.COMPLETED, "sql": sql}
-        return ZMQReply(status="success", payload=payload)
-    except Exception as exc:
-        # If we don't catch exceptions here, the server will die and FlowAPI will hang indefinitely.
-        error_msg = f"Internal flowmachine server error: '{exc.args[0]}'"
-        return ZMQReply(
-            status="error", msg=error_msg, payload={"error_msg": exc.args[0]}
+        query_obj = GeographySchema().load({"aggregation_unit": aggregation_unit})
+    except TypeError as exc:
+        # We need to catch TypeError here, otherwise they propagate up to
+        # perform_action() and result in a very misleading error message.
+        orig_error_msg = exc.args[0]
+        error_msg = (
+            f"Internal flowmachine server error: could not create query object using query schema. "
+            f"The original error was: '{orig_error_msg}'"
         )
+        return ZMQReply(
+            status="error",
+            msg=error_msg,
+            payload={
+                "params": {"aggregation_unit": aggregation_unit},
+                "orig_error_msg": orig_error_msg,
+            },
+        )
+    except ValidationError as exc:
+        # The dictionary of marshmallow errors can contain integers as keys,
+        # which will raise an error when converting to JSON (where the keys
+        # must be strings). Therefore we transform the keys to strings here.
+        error_msg = "Parameter validation failed."
+        validation_error_messages = convert_dict_keys_to_strings(exc.messages)
+        return ZMQReply(
+            status="error", msg=error_msg, payload=validation_error_messages
+        )
+
+    # We don't cache the query, because it just selects columns from a
+    # geography table. If we expose an aggregation unit which relies on another
+    # query to create the geometry (e.g. grid), we may want to reconsider this
+    # decision.
+
+    sql = query_obj.geojson_sql
+    # TODO: put query_run_log back in!
+    # query_run_log.info("get_geography", **run_log_dict)
+    payload = {"query_state": QueryState.COMPLETED, "sql": sql}
+    return ZMQReply(status="success", payload=payload)
 
 
 def action_handler__get_available_dates(config: "FlowmachineServerConfig") -> ZMQReply:

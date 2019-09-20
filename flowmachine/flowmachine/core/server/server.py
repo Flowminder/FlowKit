@@ -98,7 +98,21 @@ def get_reply_for_message(
 
     try:
         action_request = ActionRequest().loads(msg_str)
+    except ValidationError as exc:
+        # The dictionary of marshmallow errors can contain integers as keys,
+        # which will raise an error when converting to JSON (where the keys
+        # must be strings). Therefore we transform the keys to strings here.
+        error_msg = "Invalid action request."
+        validation_error_messages = convert_dict_keys_to_strings(exc.messages)
+        logger.error(
+            "Invalid action request while getting reply for ZMQ message.",
+            **validation_error_messages,
+        )
+        return ZMQReply(
+            status="error", msg=error_msg, payload=validation_error_messages
+        )
 
+    try:
         query_run_log.info(
             f"Attempting to perform action: '{action_request.action}'",
             request_id=action_request.request_id,
@@ -120,17 +134,12 @@ def get_reply_for_message(
             reply_payload=reply.payload,
         )
     except FlowmachineServerError as exc:
-        return ZMQReply(status="error", msg=exc.error_msg)
-    except ValidationError as exc:
-        # The dictionary of marshmallow errors can contain integers as keys,
-        # which will raise an error when converting to JSON (where the keys
-        # must be strings). Therefore we transform the keys to strings here.
-        error_msg = "Invalid action request."
-        validation_error_messages = convert_dict_keys_to_strings(exc.messages)
-        return ZMQReply(
-            status="error", msg=error_msg, payload=validation_error_messages
+        logger.error(
+            f"Caught Flowmachine server error while getting reply for ZMQ message: {exc.error_msg}"
         )
+        return ZMQReply(status="error", msg=exc.error_msg)
     except JSONDecodeError as exc:
+        logger.error(f"Invalid JSON while getting reply for ZMQ message: {exc.msg}")
         return ZMQReply(
             status="error", msg="Invalid JSON.", payload={"decode_error": exc.msg}
         )
