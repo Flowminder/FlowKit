@@ -77,6 +77,25 @@ def validate_config(global_config_dict: dict) -> None:
 
 
 def fill_config_default_values(*, global_config_dict: dict) -> dict:
+    """
+    Fill the given config dict with default value, in case they
+    were not provided by the user.
+
+    Note that this returns a new copy of the config dict with
+    the additional values filled in, i.e. the input config dict
+    is not modified.
+
+    Parameters
+    ----------
+    global_config_dict : dict
+        dict containing global config for ETL
+
+    Returns
+    -------
+    dict
+        A copy of the config dict with any missing default values
+        filled in.
+    """
     global_config_dict = deepcopy(global_config_dict)
 
     for cdr_type, value in global_config_dict["etl"].items():
