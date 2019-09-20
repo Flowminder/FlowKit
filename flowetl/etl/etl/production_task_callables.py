@@ -177,10 +177,7 @@ def production_trigger__callable(
                 )
         elif source_type == "sql":
             source_table = cfg["source"]["table_name"]
-            sql_find_available_dates = cfg["source"].get(
-                "sql_find_available_dates",
-                f"SELECT DISTINCT event_time::date as date FROM {source_table}",
-            )
+            sql_find_available_dates = cfg["source"]["sql_find_available_dates"]
 
             dates_present = [
                 pendulum.parse(row["date"].strftime("%Y-%m-%d"))
