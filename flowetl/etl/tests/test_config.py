@@ -44,6 +44,18 @@ def test_config_validation_fails_no_etl_section(sample_config_dict):
     assert len(raised_exception.value.args[0]) == 1
 
 
+def test_config_validation_fails_for_invalid_etl_section(sample_config_dict):
+    bad_config = deepcopy(sample_config_dict)
+    bad_config["etl"]["foobar"] = {}
+
+    expected_error_msg = (
+        "Etl sections present in config.yml must be a subset of \['calls', 'sms', 'mds', 'topups'\]. "
+        "Unexpected keys: \['foobar'\]"
+    )
+    with pytest.raises(ValueError, match=expected_error_msg):
+        validate_config(global_config_dict=bad_config)
+
+
 def test_config_validation_fails_no_default_args_section(sample_config_dict):
     """
     Check that we get an exception raised if default args
@@ -169,27 +181,3 @@ def test_extract_date_from_filename():
         ValueError, match="Filename 'foobar.csv.gz' does not match the pattern"
     ):
         extract_date_from_filename(filename, filename_pattern)
-
-
-def test_error_invalid_etl_section(tmpdir):
-    config_file = tmpdir.join("config.yml")
-    config_file.write(
-        textwrap.dedent(
-            """
-            default_args:
-              owner: flowminder
-              start_date: '1900-01-01'
-            etl:
-              foobar:
-                concurrency: 4
-                source:
-                  source_type: csv
-                  filename_pattern: CALLS_(\d{8}).csv.gz
-            """
-        )
-    )
-    cfg = get_config_from_file(config_filepath=config_file)
-
-    expected_error_msg = "Etl sections present in config.yml must be a subset of \['calls', 'sms', 'mds', 'topups'\]. Unexpected keys: \['foobar'\]"
-    with pytest.raises(ValueError, match=expected_error_msg):
-        validate_config(global_config_dict=cfg)
