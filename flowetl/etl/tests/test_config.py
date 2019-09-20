@@ -251,6 +251,6 @@ def test_sql_find_available_dates(sample_config_dict):
     )
     config_dict = yaml.safe_load(config_without_explicit_sql)
 
-    config_dict = fill_config_default_values(global_config_dict=config_dict)
+    config_dict = fill_config_default_values(config_dict)
     sql = config_dict["etl"]["calls"]["source"]["sql_find_available_dates"]
     assert sql == "SELECT DISTINCT event_time::date as date FROM calls_raw_data_dump"

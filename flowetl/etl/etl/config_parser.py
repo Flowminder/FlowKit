@@ -76,7 +76,7 @@ def validate_config(global_config_dict: dict) -> None:
         raise ValueError(exceptions)
 
 
-def fill_config_default_values(*, global_config_dict: dict) -> dict:
+def fill_config_default_values(global_config_dict: dict) -> dict:
     """
     Fill the given config dict with default value, in case they
     were not provided by the user.

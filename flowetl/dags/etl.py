@@ -53,9 +53,7 @@ elif flowetl_runtime_config == "production":
         config_filepath=Path("/mounts/config/config.yml")
     )
     validate_config(global_config_dict)
-    global_config_dict = fill_config_default_values(
-        global_config_dict=global_config_dict
-    )
+    global_config_dict = fill_config_default_values(global_config_dict)
 
     default_args = global_config_dict["default_args"]
 
