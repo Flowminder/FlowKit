@@ -147,9 +147,7 @@ def action_handler__run_query(
     return ZMQReply(status="success", payload={"query_id": query_id})
 
 
-def _get_query_kind_for_query_id(
-    config: "FlowmachineServerConfig", query_id: str
-) -> Union[None, str]:
+def _get_query_kind_for_query_id(query_id: str) -> Union[None, str]:
     """
     Helper function to look up the query kind corresponding to the
     given query id. Returns `None` if the query_id does not exist.
