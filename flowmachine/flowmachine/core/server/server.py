@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import asyncio
-import os
 from concurrent.futures import Executor
 from json import JSONDecodeError
 import traceback
@@ -26,6 +25,7 @@ from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply
 from flowmachine.core.server.action_request_schema import ActionRequest
 from .action_handlers import perform_action
+from .server_config import get_server_config
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 query_run_log = structlog.get_logger("flowmachine.query_run_log")
@@ -76,7 +76,9 @@ async def update_available_dates(
     return avail
 
 
-def get_reply_for_message(msg_str: str) -> ZMQReply:
+def get_reply_for_message(
+    *, msg_str: str, config: "FlowmachineServerConfig"
+) -> ZMQReply:
     """
     Parse the zmq message string, perform the desired action and return the result in JSON format.
 
@@ -84,6 +86,8 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
     ----------
     msg_str : str
         The message string as received from zmq. See the docstring of `parse_zmq_message` for valid structure.
+    config : FlowmachineServerConfig
+        Server config options
 
     Returns
     -------
@@ -101,7 +105,9 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
             params=action_request.params,
         )
 
-        reply = perform_action(action_request.action, action_request.params)
+        reply = perform_action(
+            action_request.action, action_request.params, config=config
+        )
 
         query_run_log.info(
             f"Action completed with status: '{reply.status}'",
@@ -132,7 +138,7 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
     return reply
 
 
-async def receive_next_zmq_message_and_send_back_reply(socket):
+async def receive_next_zmq_message_and_send_back_reply(*, socket, config):
     """
     Listen on the given zmq socket for the next multipart message, .
 
@@ -146,6 +152,8 @@ async def receive_next_zmq_message_and_send_back_reply(socket):
     ----------
     socket : zmq.asyncio.Socket
         zmq socket to use for sending the message
+    config : FlowmachineServerConfig
+        Server config options
 
     Returns
     -------
@@ -183,11 +191,18 @@ async def receive_next_zmq_message_and_send_back_reply(socket):
         f"Creating background task to calculate reply and return it to the sender."
     )
     asyncio.create_task(
-        calculate_and_send_reply_for_message(socket, return_address, msg_contents)
+        calculate_and_send_reply_for_message(
+            socket=socket,
+            return_address=return_address,
+            msg_contents=msg_contents,
+            config=config,
+        )
     )
 
 
-async def calculate_and_send_reply_for_message(socket, return_address, msg_contents):
+async def calculate_and_send_reply_for_message(
+    *, socket, return_address, msg_contents, config
+):
     """
     Calculate the reply to a zmq message and return the result to the sender.
     This function is a small wrapper around `get_reply_for_message` which can
@@ -201,9 +216,11 @@ async def calculate_and_send_reply_for_message(socket, return_address, msg_conte
         The zmq return address to which to send the reply.
     msg_contents : str
         JSON string with the message contents.
+    config : FlowmachineServerConfig
+        Server config options
     """
     try:
-        reply_json = get_reply_for_message(msg_contents)
+        reply_json = get_reply_for_message(msg_str=msg_contents, config=config)
     except Exception as exc:
         # Catch and log any unhandled errors, and send a generic error response to the API
         # TODO: Ensure that FlowAPI always returns the correct error code when receiving an error reply
@@ -231,16 +248,23 @@ def shutdown(socket):
     logger.debug("Cancelled all remaining tasks.")
 
 
-async def recv(*, port, flowdb_connection):
+async def recv(*, config, flowdb_connection):
     """
     Main receive-and-reply loop. Listens to zmq messages on the given port,
     processes them and sends back a reply with the result or an error message.
+
+    Parameters
+    ----------
+    config : FlowmachineServerConfig
+        Server config options
+    flowdb_connection : Connection
+        FlowDB connection
     """
-    logger.info(f"Flowmachine server is listening on port {port}")
+    logger.info(f"Flowmachine server is listening on port {config.port}")
 
     ctx = Context.instance()
     socket = ctx.socket(zmq.ROUTER)
-    socket.bind(f"tcp://*:{port}")
+    socket.bind(f"tcp://*:{config.port}")
 
     # Get the loop and attach a sigterm handler to allow coverage data to be written
     main_loop = asyncio.get_event_loop()
@@ -253,7 +277,9 @@ async def recv(*, port, flowdb_connection):
     )
     try:
         while True:
-            await receive_next_zmq_message_and_send_back_reply(socket)
+            await receive_next_zmq_message_and_send_back_reply(
+                socket=socket, config=config
+            )
     except Exception as exc:
         logger.error(
             f"Received exception: {type(exc).__name__}: {exc}",
@@ -264,18 +290,20 @@ async def recv(*, port, flowdb_connection):
 
 
 def main():
-    # Set up internals and connect to flowdb
+    # Read config options from environment variables
+    config = get_server_config()
+    # Connect to flowdb
     flowdb_connection = flowmachine.connect()
 
-    # Set debug mode if required
-    debug_mode = "true" == os.getenv("FLOWMACHINE_SERVER_DEBUG_MODE", "false").lower()
-    if debug_mode:
+    if not config.store_dependencies:
+        logger.info("Dependency caching is disabled.")
+    if config.debug_mode:
         logger.info("Enabling asyncio's debugging mode.")
 
     # Run receive loop which receives zmq messages and sends back replies
-    port = os.getenv("FLOWMACHINE_PORT", 5555)
     asyncio.run(
-        recv(port=port, flowdb_connection=flowdb_connection), debug=debug_mode
+        recv(config=config, flowdb_connection=flowdb_connection),
+        debug=config.debug_mode,
     )  # note: asyncio.run() requires Python 3.7+
 
 
