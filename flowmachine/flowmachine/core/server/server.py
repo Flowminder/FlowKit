@@ -14,6 +14,7 @@ import signal
 import structlog
 import zmq
 from functools import partial
+from typing import NoReturn
 
 from marshmallow import ValidationError
 from zmq.asyncio import Context
@@ -138,7 +139,9 @@ def get_reply_for_message(
     return reply
 
 
-async def receive_next_zmq_message_and_send_back_reply(*, socket, config):
+async def receive_next_zmq_message_and_send_back_reply(
+    *, socket: "zmq.asyncio.Socket", config: "FlowmachineServerConfig"
+) -> None:
     """
     Listen on the given zmq socket for the next multipart message, .
 
@@ -154,11 +157,6 @@ async def receive_next_zmq_message_and_send_back_reply(*, socket, config):
         zmq socket to use for sending the message
     config : FlowmachineServerConfig
         Server config options
-
-    Returns
-    -------
-    flowmachine.core.server.zmq_interface.ZMQMultipartMessage
-        The message received over the socket
     """
     logger.debug("Waiting for messages.")
     multipart_msg = await socket.recv_multipart()
@@ -201,8 +199,12 @@ async def receive_next_zmq_message_and_send_back_reply(*, socket, config):
 
 
 async def calculate_and_send_reply_for_message(
-    *, socket, return_address, msg_contents, config
-):
+    *,
+    socket: "zmq.asyncio.Socket",
+    return_address: bytes,
+    msg_contents: str,
+    config: "FlowmachineServerConfig",
+) -> None:
     """
     Calculate the reply to a zmq message and return the result to the sender.
     This function is a small wrapper around `get_reply_for_message` which can
@@ -232,7 +234,7 @@ async def calculate_and_send_reply_for_message(
     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
 
 
-def shutdown(socket):
+def shutdown(socket: "zmq.asyncio.Socket") -> None:
     """
     Handler for SIGTERM to allow test coverage data to be written during integration tests.
     """
@@ -248,7 +250,9 @@ def shutdown(socket):
     logger.debug("Cancelled all remaining tasks.")
 
 
-async def recv(*, config, flowdb_connection):
+async def recv(
+    *, config: "FlowmachineServerConfig", flowdb_connection: Connection
+) -> NoReturn:
     """
     Main receive-and-reply loop. Listens to zmq messages on the given port,
     processes them and sends back a reply with the result or an error message.
