@@ -73,5 +73,5 @@ def get_config_from_file(*, config_filepath: Path) -> dict:
     dict
         Yaml config loaded into a python dict
     """
-    content = open(config_filepath, "r").read()
+    content = config_filepath.open("r").read()
     return yaml.load(content, Loader=yaml.SafeLoader)
