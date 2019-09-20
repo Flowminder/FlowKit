@@ -14,7 +14,7 @@ from pathlib import Path
 from etl.etl_utils import CDRType
 
 
-def validate_config(*, global_config_dict: dict) -> None:
+def validate_config(global_config_dict: dict) -> None:
     """
     Function used to validate the config.yml file. Makes sure we
     have entries for each CDR type in CDRType enum and that each

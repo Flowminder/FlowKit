@@ -30,7 +30,7 @@ def test_config_validation(sample_config_dict):
     """
     Check that with valid config dict we get no exception
     """
-    validate_config(global_config_dict=sample_config_dict)
+    validate_config(sample_config_dict)
 
 
 def test_config_validation_fails_no_etl_section(sample_config_dict):
@@ -43,7 +43,7 @@ def test_config_validation_fails_no_etl_section(sample_config_dict):
     bad_config.pop("etl")
 
     with pytest.raises(ValueError) as raised_exception:
-        validate_config(global_config_dict=bad_config)
+        validate_config(bad_config)
 
     assert len(raised_exception.value.args[0]) == 1
 
@@ -57,7 +57,7 @@ def test_config_validation_fails_for_invalid_etl_section(sample_config_dict):
         "Unexpected keys: \['foobar'\]"
     )
     with pytest.raises(ValueError, match=expected_error_msg):
-        validate_config(global_config_dict=bad_config)
+        validate_config(bad_config)
 
 
 def test_config_validation_fails_no_default_args_section(sample_config_dict):
@@ -69,7 +69,7 @@ def test_config_validation_fails_no_default_args_section(sample_config_dict):
     bad_config.pop("default_args")
 
     with pytest.raises(ValueError) as raised_exception:
-        validate_config(global_config_dict=bad_config)
+        validate_config(bad_config)
 
     assert len(raised_exception.value.args[0]) == 1
 
@@ -83,7 +83,7 @@ def test_config_validation_fails_bad_etl_subsection(sample_config_dict):
     bad_config["etl"]["calls"].pop("source")
 
     with pytest.raises(ValueError) as raised_exception:
-        validate_config(global_config_dict=bad_config)
+        validate_config(bad_config)
 
     assert len(raised_exception.value.args[0]) == 1
 
@@ -100,7 +100,7 @@ def test_config_validation_fails_for_missing_source_type(sample_config_dict):
         "Subsection 'source' is is missing the 'source_type' key for cdr_type 'calls'."
     )
     with pytest.raises(ValueError, match=expected_error_msg):
-        validate_config(global_config_dict=bad_config)
+        validate_config(bad_config)
 
 
 def test_config_validation_fails_for_invalid_source_type(sample_config_dict):
@@ -113,7 +113,7 @@ def test_config_validation_fails_for_invalid_source_type(sample_config_dict):
 
     expected_error_msg = "Invalid source type: 'foobar'. Allowed values: 'csv', 'sql'"
     with pytest.raises(ValueError, match=expected_error_msg):
-        validate_config(global_config_dict=bad_config)
+        validate_config(bad_config)
 
 
 def test_config_validation_fails_if_table_name_key_is_missing(sample_config_dict):
@@ -128,7 +128,7 @@ def test_config_validation_fails_if_table_name_key_is_missing(sample_config_dict
         "Missing 'table_name' key in 'source' subsection of cdr type 'mds'"
     )
     with pytest.raises(ValueError, match=expected_error_msg):
-        validate_config(global_config_dict=bad_config)
+        validate_config(bad_config)
 
 
 def test_find_files_default_filter(tmpdir):
