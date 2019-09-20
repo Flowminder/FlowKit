@@ -26,49 +26,49 @@ CREATE SCHEMA IF NOT EXISTS interactions;
 
     CREATE TABLE IF NOT EXISTS interactions.subscriber(
 
-        id     BIGSERIAL PRIMARY KEY,
-        msisdn TEXT,
-        imei   TEXT,
-        imsi   TEXT,
-        tac    BIGINT REFERENCES infrastructure.tacs(id)
+        id                      BIGSERIAL PRIMARY KEY,
+        msisdn                  TEXT,
+        imei                    TEXT,
+        imsi                    TEXT,
+        tac                     BIGINT REFERENCES infrastructure.tacs(id)
 
         );
 
     CREATE TABLE IF NOT EXISTS interactions.date_dim(
 
-        date_sk BIGSERIAL PRIMARY KEY,
-        date TIMESTAMPTZ,
-        day_of_week TEXT,
-        day_of_month TEXT,
-        year TEXT
+        date_sk                 SERIAL PRIMARY KEY,
+        date                    TIMESTAMPTZ,
+        day_of_week             TEXT,
+        day_of_month            TEXT,
+        year                    TEXT
 
         );
 
     CREATE TABLE IF NOT EXISTS interactions.time_dimension(
 
-        time_sk BIGSERIAL PRIMARY KEY,
-        hour NUMERIC
+        time_sk                 SERIAL PRIMARY KEY,
+        hour                    NUMERIC
 
         );
 
     CREATE TABLE IF NOT EXISTS interactions.subscriber_sightings_fact(
 
-        sighting_id SERIAL PRIMARY KEY,
-        subscriber_id BIGINT REFERENCES interactions.subscriber(id),
-        cell_id TEXT,
-        date_sk BIGINT REFERENCES interactions.date_dim(date_sk),
-        time_sk BIGINT REFERENCES interactions.time_dimension(time_sk),
-        event_super_table_id TEXT,
-        event_type INTEGER,
-        timestamp TIMESTAMPTZ NOT NULL
+        sighting_id             BIGSERIAL PRIMARY KEY,
+        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
+        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
+        time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
+        event_super_table_id    TEXT,
+        event_type              INTEGER,
+        timestamp               TIMESTAMPTZ NOT NULL
 
         );
 
     CREATE TABLE IF NOT EXISTS interactions.locations(
 
-        cell_id TEXT,
-        position TEXT,
-        site_id TEXT,
-        mno_cell_code TEXT
+        cell_id                 BIGSERIAL PRIMARY KEY,
+        position                TEXT,
+        site_id                 TEXT,
+        mno_cell_code           TEXT
 
         );
