@@ -19,7 +19,7 @@ from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 
-class SubscriberSigntings(Query):
+class SubscriberSightings(Query):
     """
     Represents data contained in the subscriber_sightings_fact table.
 
@@ -40,7 +40,7 @@ class SubscriberSigntings(Query):
 
     Examples
     --------
-    >>> ss = SubscriberSigntings("2016-01-01", "2016-01-02", subscriber_identifier="imei")
+    >>> ss = SubscriberSightings("2016-01-01", "2016-01-02", subscriber_identifier="imei")
     >>> ss.head()
     """
 
@@ -52,6 +52,9 @@ class SubscriberSigntings(Query):
         self.stop = stop
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
+
+        Table("interactions.subscriber_sightings_fact", columns=["timestamp", "cell_id"])
+        Table("interactions.subscriber", columns=[self.subscriber_identifier])
 
         # Setup the main subscriber_sightings_fact & subscriber tables
         self.sqlalchemy_mainTable = get_sqlalchemy_table_definition(
