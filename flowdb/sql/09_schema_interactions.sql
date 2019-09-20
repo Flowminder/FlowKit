@@ -67,8 +67,13 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.locations(
 
         cell_id                 BIGSERIAL PRIMARY KEY,
-        position                TEXT,
         site_id                 TEXT,
         mno_cell_code           TEXT
 
         );
+    
+    SELECT AddGeometryColumn('interactions', 'locations', 'position', 4326, 'POINT', 2);
+
+    CREATE INDEX IF NOT EXISTS interactions_locations_position_index
+        ON interactions.locations
+        USING GIST (position);
