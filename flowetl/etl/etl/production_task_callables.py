@@ -7,7 +7,6 @@
 Contains the definition of callables to be used in the production ETL dag.
 """
 import pendulum
-import re
 import structlog
 
 from pathlib import Path
@@ -22,7 +21,6 @@ from etl.etl_utils import (
     get_session,
     find_files_matching_pattern,
     extract_date_from_filename,
-    find_distinct_dates_in_table,
 )
 
 logger = structlog.get_logger("flowetl")
