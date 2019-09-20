@@ -171,8 +171,21 @@ for these changes to be picked up.
 Run the following from within `flowdb` (you can connect to flowdb by running `make connect-flowdb`).
 ```
 CREATE EXTENSION IF NOT EXISTS postgres_fdw;
-CREATE SERVER IF NOT EXISTS ingestion_db_server FOREIGN DATA WRAPPER postgres_fdw OPTIONS (host 'ingestion_db', port '5432', dbname 'ingestion_db');
-CREATE USER MAPPING IF NOT EXISTS FOR flowdb SERVER ingestion_db_server OPTIONS (user 'ingestion_db', password 'etletl');
+
+CREATE SERVER IF NOT EXISTS ingestion_db_server
+    FOREIGN DATA WRAPPER postgres_fdw
+    OPTIONS (
+        host 'ingestion_db',
+        port '5432',
+        dbname 'ingestion_db'
+    );
+
+CREATE USER MAPPING IF NOT EXISTS FOR flowdb
+    SERVER ingestion_db_server
+    OPTIONS (
+        user 'ingestion_db',
+        password 'etletl'
+    );
 
 CREATE FOREIGN TABLE sample_data_fdw (
         event_time TIMESTAMPTZ,
