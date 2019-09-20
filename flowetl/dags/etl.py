@@ -20,7 +20,11 @@ from etl.dag_task_callable_mappings import (
     PRODUCTION_ETL_TASK_CALLABLES,
 )
 from etl.etl_utils import construct_etl_dag, CDRType
-from etl.config_parser import validate_config, get_config_from_file
+from etl.config_parser import (
+    get_config_from_file,
+    validate_config,
+    fill_config_default_values,
+)
 
 logger = structlog.get_logger("flowetl")
 default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
@@ -49,6 +53,9 @@ elif flowetl_runtime_config == "production":
         config_filepath=Path("/mounts/config/config.yml")
     )
     validate_config(global_config_dict=global_config_dict)
+    global_config_dict = fill_config_default_values(
+        global_config_dict=global_config_dict
+    )
 
     default_args = global_config_dict["default_args"]
 

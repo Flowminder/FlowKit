@@ -8,12 +8,13 @@ functions used for parsing global config
 """
 import yaml
 
+from copy import deepcopy
 from pathlib import Path
 
 from etl.etl_utils import CDRType
 
 
-def validate_config(*, global_config_dict: dict) -> Exception:
+def validate_config(*, global_config_dict: dict) -> None:
     """
     Function used to validate the config.yml file. Makes sure we
     have entries for each CDR type in CDRType enum and that each
@@ -46,17 +47,50 @@ def validate_config(*, global_config_dict: dict) -> Exception:
             )
         )
 
-    for key, value in global_config_dict.get("etl", {}).items():
+    for cdr_type, value in global_config_dict.get("etl", {}).items():
         if set(value.keys()) != set(["source", "concurrency"]):
             exc_msg = (
                 "Each etl subsection must contain a 'source' and 'concurrency' "
-                f"subsection - not present for '{key}'. "
+                f"subsection - not present for '{cdr_type}'. "
                 f"[DDD] value.keys(): {value.keys()}"
             )
             exceptions.append(ValueError(exc_msg))
+        else:
+            if "source_type" not in value["source"]:
+                exceptions.append(
+                    ValueError(
+                        f"Subsection 'source' is is missing the 'source_type' key for cdr_type '{cdr_type}'."
+                    )
+                )
+            else:
+                if value["source"]["source_type"] not in ["csv", "sql"]:
+                    exc_msg = f"Invalid source type: '{value['source']['source_type']}'. Allowed values: 'csv', 'sql'"
+                    exceptions.append(ValueError(exc_msg))
+
+                if value["source"]["source_type"] == "sql":
+                    if "table_name" not in value["source"]:
+                        exc_msg = f"Missing 'table_name' key in 'source' subsection of cdr type '{cdr_type}'."
+                        exceptions.append(ValueError(exc_msg))
 
     if exceptions != []:
         raise ValueError(exceptions)
+
+
+def fill_config_default_values(*, global_config_dict: dict) -> dict:
+    global_config_dict = deepcopy(global_config_dict)
+
+    for cdr_type, value in global_config_dict["etl"].items():
+        if (
+            value["source"]["source_type"] == "sql"
+            and "sql_find_available_dates" not in value["source"]
+        ):
+            source_table = value["source"]["table_name"]
+            default_sql = (
+                f"SELECT DISTINCT event_time::date as date FROM {source_table}"
+            )
+            value["source"]["sql_find_available_dates"] = default_sql
+
+    return global_config_dict
 
 
 def get_config_from_file(*, config_filepath: Path) -> dict:
