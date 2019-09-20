@@ -171,7 +171,7 @@ def test_extract_date_from_filename():
         extract_date_from_filename(filename, filename_pattern)
 
 
-def test_error_foobar(tmpdir):
+def test_error_invalid_etl_section(tmpdir):
     config_file = tmpdir.join("config.yml")
     config_file.write(
         textwrap.dedent(
@@ -184,7 +184,7 @@ def test_error_foobar(tmpdir):
                 concurrency: 4
                 source:
                   source_type: csv
-                  filename_pattern: CALLS_(\d{4}[01]\d[0123]\d).csv.gz
+                  filename_pattern: CALLS_(\d{8}).csv.gz
             """
         )
     )
