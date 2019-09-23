@@ -39,8 +39,9 @@ FlowKit implements a caching system to enhance performance. Queries requested vi
 
 Once cached, a query will not be recalulated - the cached version will simply be returned instead, which can save significant computation time. In addition to queries which are _directly_ returned, FlowKit may cache queries which are used in calculating other queries. For example, calculating a modal location aggregate, and a daily location aggregate will both use the same underlying query when the dates (and other parameters) overlap. Hence, caching the underlying query allows both the aggregate and the modal location aggregate to be produced faster.
 
-
 This performance boost is achieved at the cost of disk space usage, and management of the cached data will sometimes be required.
+
+When a query is requested via the API, the query itself will be cached along with all of the other queries on which its calculation depends. For complex queries this can result in a large number of tables being added to the cache. This default behaviour can be changed by setting the environment variable `FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING=true` when starting the FlowMachine server, which will result in only the specific queries requested being cached. Computation times may be significantly longer when dependency caching is turned off.
 
 ### Cache Management
 
