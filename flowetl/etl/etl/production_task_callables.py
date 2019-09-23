@@ -7,7 +7,6 @@
 Contains the definition of callables to be used in the production ETL dag.
 """
 import pendulum
-import re
 import structlog
 
 from pathlib import Path
@@ -22,7 +21,6 @@ from etl.etl_utils import (
     get_session,
     find_files_matching_pattern,
     extract_date_from_filename,
-    find_distinct_dates_in_table,
 )
 
 logger = structlog.get_logger("flowetl")
@@ -179,16 +177,12 @@ def production_trigger__callable(
                 )
         elif source_type == "sql":
             source_table = cfg["source"]["table_name"]
+            sql_find_available_dates = cfg["source"]["sql_find_available_dates"]
 
-            # Extract unprocessed dates from source_table
-
-            # TODO: this requires a full parse of the existing data so may not be
-            # the most be efficient if a lot of data is present (esp. data that has
-            # already been processed). If it turns out too sluggish might be good to
-            # think about a more efficient way to determine dates with unprocessed data.
-            dates_present = find_distinct_dates_in_table(
-                session, source_table, event_time_col="event_time"
-            )
+            dates_present = [
+                pendulum.parse(row["date"].strftime("%Y-%m-%d"))
+                for row in session.execute(sql_find_available_dates).fetchall()
+            ]
             unprocessed_dates = [
                 date
                 for date in dates_present

@@ -1,3 +1,5 @@
+# This is an example flowetl config file which
+# is also used in the flowetl unit tests.
 default_args:
   owner: flowminder
   start_date: '1900-01-01'
@@ -17,6 +19,8 @@ etl:
     source:
       source_type: sql
       table_name: "mds_raw_data_dump"
+      sql_find_available_dates: |
+          SELECT DISTINCT event_time::date as date FROM mds_raw_data_dump
   topups:
     concurrency: 4
     source:
