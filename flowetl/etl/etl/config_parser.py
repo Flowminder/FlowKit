@@ -8,12 +8,13 @@ functions used for parsing global config
 """
 import yaml
 
+from copy import deepcopy
 from pathlib import Path
 
 from etl.etl_utils import CDRType
 
 
-def validate_config(*, global_config_dict: dict) -> Exception:
+def validate_config(global_config_dict: dict) -> None:
     """
     Function used to validate the config.yml file. Makes sure we
     have entries for each CDR type in CDRType enum and that each
@@ -38,23 +39,77 @@ def validate_config(*, global_config_dict: dict) -> Exception:
 
     etl_keys = global_config_dict.get("etl", {}).keys()
     if not set(etl_keys).issubset(CDRType):
+        unexpected_keys = list(set(etl_keys).difference(CDRType))
         exceptions.append(
             ValueError(
-                f"Etl sections present in config.yml must be a subset of {[x.value for x in CDRType]}. Got: {set(etl_keys)}"
+                f"Etl sections present in config.yml must be a subset of {[x.value for x in CDRType]}. "
+                f"Unexpected keys: {unexpected_keys}"
             )
         )
 
-    for key, value in global_config_dict.get("etl", {}).items():
+    for cdr_type, value in global_config_dict.get("etl", {}).items():
         if set(value.keys()) != set(["source", "concurrency"]):
             exc_msg = (
                 "Each etl subsection must contain a 'source' and 'concurrency' "
-                f"subsection - not present for '{key}'. "
+                f"subsection - not present for '{cdr_type}'. "
                 f"[DDD] value.keys(): {value.keys()}"
             )
             exceptions.append(ValueError(exc_msg))
+        else:
+            if "source_type" not in value["source"]:
+                exceptions.append(
+                    ValueError(
+                        f"Subsection 'source' is is missing the 'source_type' key for cdr_type '{cdr_type}'."
+                    )
+                )
+            else:
+                if value["source"]["source_type"] not in ["csv", "sql"]:
+                    exc_msg = f"Invalid source type: '{value['source']['source_type']}'. Allowed values: 'csv', 'sql'"
+                    exceptions.append(ValueError(exc_msg))
+
+                if value["source"]["source_type"] == "sql":
+                    if "table_name" not in value["source"]:
+                        exc_msg = f"Missing 'table_name' key in 'source' subsection of cdr type '{cdr_type}'."
+                        exceptions.append(ValueError(exc_msg))
 
     if exceptions != []:
         raise ValueError(exceptions)
+
+
+def fill_config_default_values(global_config_dict: dict) -> dict:
+    """
+    Fill the given config dict with default value, in case they
+    were not provided by the user.
+
+    Note that this returns a new copy of the config dict with
+    the additional values filled in, i.e. the input config dict
+    is not modified.
+
+    Parameters
+    ----------
+    global_config_dict : dict
+        dict containing global config for ETL
+
+    Returns
+    -------
+    dict
+        A copy of the config dict with any missing default values
+        filled in.
+    """
+    global_config_dict = deepcopy(global_config_dict)
+
+    for cdr_type, value in global_config_dict["etl"].items():
+        if (
+            value["source"]["source_type"] == "sql"
+            and "sql_find_available_dates" not in value["source"]
+        ):
+            source_table = value["source"]["table_name"]
+            default_sql = (
+                f"SELECT DISTINCT event_time::date as date FROM {source_table}"
+            )
+            value["source"]["sql_find_available_dates"] = default_sql
+
+    return global_config_dict
 
 
 def get_config_from_file(*, config_filepath: Path) -> dict:
@@ -71,5 +126,5 @@ def get_config_from_file(*, config_filepath: Path) -> dict:
     dict
         Yaml config loaded into a python dict
     """
-    content = open(config_filepath, "r").read()
+    content = config_filepath.open("r").read()
     return yaml.load(content, Loader=yaml.SafeLoader)

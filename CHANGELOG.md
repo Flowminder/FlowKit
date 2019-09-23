@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - New aggregate added to FlowMachine - `HistogramAggregation`, which constructs histograms over the results of other queries. [#1075](https://github.com/Flowminder/FlowKit/issues/1075)
 - New `IntereventInterval` query class - returns stats over the gap between events as a time interval.
 - Added submodule `flowmachine.core.dependency_graph`, which contains functions related to creating or using query dependency graphs (previously these were in `utils.py`).
+- New config option `sql_find_available_dates` in FlowETL to provide SQL code to determine the available dates. [#1295](https://github.com/Flowminder/FlowKit/issues/1295)
 
 ### Changed
 - FlowDB is now based on PostgreSQL 11.5 and PostGIS 2.5.3
