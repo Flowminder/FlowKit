@@ -95,14 +95,14 @@ class Connection:
         else:
             pass
 
-        app_name = "flowmachine"
+        self.app_name = "flowmachine"
         try:
-            app_name = "-".join((app_name, os.getlogin()))
+            self.app_name = "-".join((self.app_name, os.getlogin()))
         except (FileNotFoundError, OSError):
             logger.info(
-                "Couldn't get username for application name, using 'flowmachine'"
+                f"Couldn't get username for application name, using '{self.app_name}'"
             )
-        connect_args = {"application_name": app_name}
+        connect_args = {"application_name": self.app_name}
         self.engine = sqlalchemy.create_engine(
             conn_str,
             echo=False,

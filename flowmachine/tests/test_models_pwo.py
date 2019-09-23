@@ -160,6 +160,19 @@ def test_get_stored():
     assert sum(1 for x in PopulationWeightedOpportunities.get_stored()) == 1
 
 
+def test_model_result_store_dependencies():
+    """
+    Test that storing a ModelResult with store_dependencies=True stores the model's dependencies.
+    """
+    p = PopulationWeightedOpportunities("2016-01-01", "2016-01-02")
+    mr = p.run(departure_rate_vector={"0xqNDj": 0.9}, ignore_missing=True)
+    deps = mr.dependencies
+    # Check that the dependencies aren't all already stored
+    assert not all([dep.is_stored for dep in deps])
+    mr.store(store_dependencies=True).result()
+    assert all([dep.is_stored for dep in deps])
+
+
 def test_model_result_string_rep():
     """Test that ModelResult string rep has name of the model class"""
     p = PopulationWeightedOpportunities("2016-01-01", "2016-01-02")

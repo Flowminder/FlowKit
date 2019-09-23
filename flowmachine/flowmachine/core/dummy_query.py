@@ -1,3 +1,10 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+"""
+A dummy query class, primarily useful for testing.
+"""
+
 import structlog
 from .query import Query
 from .query_state import QueryStateMachine
@@ -28,7 +35,15 @@ class DummyQuery(Query):
     def column_names(self):
         return []
 
-    def store(self):
+    @property
+    def is_stored(self):
+        """
+        Determine dummy 'stored' status from redis, instead of checking the database.
+        """
+        q_state_machine = QueryStateMachine(self.redis, self.query_id)
+        return q_state_machine.is_completed
+
+    def store(self, store_dependencies=False):
         logger.debug(
             "Storing dummy query by marking the query state as 'finished' (but without actually writing to the database)."
         )
@@ -36,3 +51,13 @@ class DummyQuery(Query):
         q_state_machine.enqueue()
         q_state_machine.execute()
         q_state_machine.finish()
+
+    def explain(self, format="json", analyse=False):
+        """
+        Override Query.explain so that no SQL is executed
+        """
+        if format.upper() != "JSON":
+            raise NotImplementedError(
+                f"Only format='json' is supported by {self.__class__.__name__}.explain()"
+            )
+        return [{"Plan": {"Total Cost": 0.0}}]
