@@ -96,7 +96,7 @@ class DistanceMatrix(GraphMixin, Query):
         return col_names
 
     def _make_query(self):
-        if self.spatial_unit.md5 == LonLatSpatialUnit().md5:
+        if self.spatial_unit == LonLatSpatialUnit():
             if self.return_geometry:
                 return_geometry_statement = """
                     ,
