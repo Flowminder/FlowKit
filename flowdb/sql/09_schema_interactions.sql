@@ -34,6 +34,9 @@ CREATE SCHEMA IF NOT EXISTS interactions;
 
         );
 
+    CREATE INDEX ON interactions.subscriber (id);
+    CREATE INDEX ON interactions.subscriber (id, msisdn);
+
     CREATE TABLE IF NOT EXISTS interactions.date_dim(
 
         date_sk                 SERIAL PRIMARY KEY,
@@ -63,6 +66,9 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         timestamp               TIMESTAMPTZ NOT NULL
 
         );
+
+    CREATE INDEX ON interactions.subscriber_sightings_fact ("timestamp");
+    CREATE INDEX ON interactions.subscriber_sightings_fact (sighting_id, "timestamp");
 
     CREATE TABLE IF NOT EXISTS interactions.locations(
 
