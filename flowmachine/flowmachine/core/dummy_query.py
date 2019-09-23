@@ -52,7 +52,7 @@ class DummyQuery(Query):
         q_state_machine.execute()
         q_state_machine.finish()
 
-    def explain(self, format="text", analyse=False):
+    def explain(self, format="json", analyse=False):
         """
         Override Query.explain so that no SQL is executed
         """
