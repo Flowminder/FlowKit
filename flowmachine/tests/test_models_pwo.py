@@ -167,9 +167,10 @@ def test_model_result_store_dependencies():
     p = PopulationWeightedOpportunities("2016-01-01", "2016-01-02")
     mr = p.run(departure_rate_vector={"0xqNDj": 0.9}, ignore_missing=True)
     deps = mr.dependencies
+    # Check that the dependencies aren't all already stored
+    assert not all([dep.is_stored for dep in deps])
     mr.store(store_dependencies=True).result()
-    for dep in deps:
-        assert dep.is_stored
+    assert all([dep.is_stored for dep in deps])
 
 
 def test_model_result_string_rep():
