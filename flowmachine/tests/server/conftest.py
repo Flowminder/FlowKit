@@ -11,6 +11,7 @@ from asynctest import Mock as AMock
 import pytest
 import zmq
 from flowmachine.core import Query
+from flowmachine.core.server.server_config import FlowmachineServerConfig
 
 
 @pytest.fixture
@@ -73,3 +74,11 @@ def flowmachine_connect():
     Query.connection = Mock()
     Query.redis = Mock()
     print("Replacing connections with mocks.")
+
+
+@pytest.fixture(scope="session")
+def server_config():
+    """
+    Returns a FlowmachineServerConfig object, required as a parameter for server functions and action handlers.
+    """
+    return FlowmachineServerConfig(port=5555, debug_mode=False, store_dependencies=True)

@@ -30,10 +30,15 @@ from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
-from flowmachine.core.errors import NameTooLongError, NotConnectedError
+from flowmachine.core.errors import (
+    NameTooLongError,
+    NotConnectedError,
+    UnstorableQueryError,
+)
 
 import flowmachine
 from flowmachine.utils import _sleep
+from flowmachine.core.dependency_graph import store_all_unstored_dependencies
 
 from flowmachine.core.cache import write_query_to_cache
 
@@ -535,7 +540,12 @@ class Query(metaclass=ABCMeta):
             )
         return queries
 
-    def to_sql(self, name: str, schema: Union[str, None] = None) -> Future:
+    def to_sql(
+        self,
+        name: str,
+        schema: Union[str, None] = None,
+        store_dependencies: bool = False,
+    ) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -546,6 +556,8 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
+        store_dependencies : bool, default False
+            If True, store the dependencies of this query.
 
         Returns
         -------
@@ -586,6 +598,15 @@ class Query(metaclass=ABCMeta):
             logger.debug("Executed queries.")
             return plan_time
 
+        if store_dependencies:
+
+            def ddl_ops_func(name: str, schema: Union[str, None] = None) -> List[str]:
+                store_all_unstored_dependencies(self)
+                return self._make_sql(name, schema)
+
+        else:
+            ddl_ops_func = self._make_sql
+
         current_state, changed_to_queue = QueryStateMachine(
             self.redis, self.query_id
         ).enqueue()
@@ -600,7 +621,7 @@ class Query(metaclass=ABCMeta):
             query=self,
             connection=self.connection,
             redis=self.redis,
-            ddl_ops_func=self._make_sql,
+            ddl_ops_func=ddl_ops_func,
             write_func=write_query,
         )
         return store_future
@@ -682,10 +703,15 @@ class Query(metaclass=ABCMeta):
         except NotImplementedError:
             return False
 
-    def store(self):
+    def store(self, store_dependencies: bool = False) -> Future:
         """
         Store the results of this computation with the correct table
         name using a background thread.
+
+        Parameters
+        ----------
+        store_dependencies : bool, default False
+            If True, store the dependencies of this query.
 
         Returns
         -------
@@ -697,11 +723,13 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
         except NotImplementedError:
-            raise ValueError("Cannot store an object of this type with these params")
+            raise UnstorableQueryError(self)
 
         schema, name = table_name.split(".")
 
-        store_future = self.to_sql(name, schema=schema)
+        store_future = self.to_sql(
+            name, schema=schema, store_dependencies=store_dependencies
+        )
         return store_future
 
     @property

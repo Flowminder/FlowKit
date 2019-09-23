@@ -34,22 +34,26 @@ class BaseExposedQuery(metaclass=ABCMeta):
         Query
         """
         raise NotImplementedError(
-            f"Class {self.__class__.__name__} does not have the fm_query_obj property set."
+            f"Class {self.__class__.__name__} does not have the _flowmachine_query_obj property set."
         )
 
-    def store_async(self):
+    def store_async(self, store_dependencies=True):
         """
         Store this query using a background thread.
 
+        Parameters
+        ----------
+        store_dependencies : bool, default True
+            If True, set the dependencies of this query running first.
+
         Returns
         -------
-        Future
-            Future object representing the calculation.
-
+        str
+            Query ID that can be used to check the query state.
         """
         q = self._flowmachine_query_obj
-        q.store()
 
+        q.store(store_dependencies=store_dependencies)
         query_id = q.query_id
 
         return query_id

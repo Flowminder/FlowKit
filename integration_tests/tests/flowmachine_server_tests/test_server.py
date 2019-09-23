@@ -5,29 +5,31 @@
 import json
 
 from flowmachine.core import make_spatial_unit
+from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
 from flowmachine.features.dfs.total_amount_for_metric import DFSTotalMetricAmount
 from flowmachine.features import daily_location, ModalLocation
 from flowmachine.utils import sort_recursively
 from approvaltests.approvals import verify
+from .helpers import poll_until_done
 
 
-def test_ping_flowmachine_server(send_zmq_message_and_receive_reply):
+def test_ping_flowmachine_server(zmq_host, zmq_port):
     """
     Sending the 'ping' action to the flowmachine server evokes a successful 'pong' response.
     """
     msg = {"action": "ping", "request_id": "DUMMY_ID"}
-    reply = send_zmq_message_and_receive_reply(msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     expected_reply = {"status": "success", "msg": "pong", "payload": {}}
     assert expected_reply == reply
 
 
-def test_unknown_action_returns_error(send_zmq_message_and_receive_reply):
+def test_unknown_action_returns_error(zmq_host, zmq_port):
     """
     Unknown action returns an error response.
     """
     msg = {"action": "foobar", "request_id": "DUMMY_ID"}
-    reply = send_zmq_message_and_receive_reply(msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     expected_reply = {
         "status": "error",
         "msg": "Invalid action request.",
@@ -40,12 +42,12 @@ def test_unknown_action_returns_error(send_zmq_message_and_receive_reply):
     assert expected_reply == reply
 
 
-def test_get_available_queries(send_zmq_message_and_receive_reply):
+def test_get_available_queries(zmq_host, zmq_port):
     """
     Action 'get_available_queries' returns list of available queries.
     """
     msg = {"action": "get_available_queries", "request_id": "DUMMY_ID"}
-    reply = send_zmq_message_and_receive_reply(msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     expected_reply = {
         "status": "success",
         "msg": "",
@@ -71,14 +73,12 @@ def test_get_available_queries(send_zmq_message_and_receive_reply):
     assert expected_reply == reply
 
 
-def test_api_spec_of_flowmachine_query_schemas(
-    send_zmq_message_and_receive_reply, diff_reporter
-):
+def test_api_spec_of_flowmachine_query_schemas(zmq_host, zmq_port, diff_reporter):
     """
     Verify the API spec for flowmachine queries.
     """
     msg = {"action": "get_query_schemas", "request_id": "DUMMY_ID"}
-    reply = send_zmq_message_and_receive_reply(msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
     print(reply)
     assert "success" == reply["status"]
     spec_as_json_string = json.dumps(
@@ -87,7 +87,7 @@ def test_api_spec_of_flowmachine_query_schemas(
     verify(spec_as_json_string, diff_reporter)
 
 
-def test_run_daily_location_query(send_zmq_message_and_receive_reply):
+def test_run_daily_location_query(zmq_host, zmq_port):
     """
     Can run daily location query and receive successful response including the query_id.
     """
@@ -105,7 +105,7 @@ def test_run_daily_location_query(send_zmq_message_and_receive_reply):
         },
         "request_id": "DUMMY_ID",
     }
-    reply = send_zmq_message_and_receive_reply(msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
 
     q = SpatialAggregate(
         locations=daily_location(
@@ -121,8 +121,14 @@ def test_run_daily_location_query(send_zmq_message_and_receive_reply):
     assert expected_query_id == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
 
+    # FIXME: At the moment we have to explicitly wait for all running queries
+    # to finish before finishing the test, otherwise unexpected behaviour may
+    # occur when we reset the cache before the next test
+    # (see https://github.com/Flowminder/FlowKit/issues/1245).
+    poll_until_done(zmq_port, expected_query_id)
 
-def test_run_modal_location_query(send_zmq_message_and_receive_reply):
+
+def test_run_modal_location_query(zmq_host, zmq_port):
     """
     Can run modal location query and receive successful response including the query_id.
     """
@@ -154,7 +160,7 @@ def test_run_modal_location_query(send_zmq_message_and_receive_reply):
         },
         "request_id": "DUMMY_ID",
     }
-    reply = send_zmq_message_and_receive_reply(msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
 
     q = SpatialAggregate(
         locations=ModalLocation(
@@ -178,8 +184,14 @@ def test_run_modal_location_query(send_zmq_message_and_receive_reply):
     assert expected_query_id == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
 
+    # FIXME: At the moment we have to explicitly wait for all running queries
+    # to finish before finishing the test, otherwise unexpected behaviour may
+    # occur when we reset the cache before the next test
+    # (see https://github.com/Flowminder/FlowKit/issues/1245).
+    poll_until_done(zmq_port, expected_query_id)
 
-def test_run_dfs_metric_total_amount_query(send_zmq_message_and_receive_reply):
+
+def test_run_dfs_metric_total_amount_query(zmq_host, zmq_port):
     """
     Can run dfs metric query and receive successful response including the query_id.
     """
@@ -194,7 +206,7 @@ def test_run_dfs_metric_total_amount_query(send_zmq_message_and_receive_reply):
         },
         "request_id": "DUMMY_ID",
     }
-    reply = send_zmq_message_and_receive_reply(msg)
+    reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
 
     q = DFSTotalMetricAmount(
         metric="commission",
@@ -207,3 +219,9 @@ def test_run_dfs_metric_total_amount_query(send_zmq_message_and_receive_reply):
     assert "success" == reply["status"]
     assert expected_query_id == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
+
+    # FIXME: At the moment we have to explicitly wait for all running queries
+    # to finish before finishing the test, otherwise unexpected behaviour may
+    # occur when we reset the cache before the next test
+    # (see https://github.com/Flowminder/FlowKit/issues/1245).
+    poll_until_done(zmq_port, expected_query_id)

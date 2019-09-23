@@ -151,6 +151,9 @@ async def poll_query(query_id):
         }
     )
     reply = await request.socket.recv_json()
+    current_app.flowapi_logger.debug(
+        f"Received reply {reply}", request_id=request.request_id
+    )
 
     if reply["status"] == "error":
         return jsonify({"status": "error", "msg": reply[""]}), 500
@@ -322,6 +325,9 @@ async def get_available_dates():
         {"request_id": request.request_id, "action": "get_available_dates"}
     )
     reply = await request.socket.recv_json()
+    current_app.flowapi_logger.debug(
+        f"Received reply {reply}", request_id=request.request_id
+    )
 
     if reply["status"] == "success":
         return jsonify({"available_dates": reply["payload"]}), 200

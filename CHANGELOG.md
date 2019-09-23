@@ -13,13 +13,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Random sampling is now exposed via the API, for all non-aggregated query kinds. [#1007](https://github.com/Flowminder/FlowKit/issues/1007)
 - New aggregate added to FlowMachine - `HistogramAggregation`, which constructs histograms over the results of other queries. [#1075](https://github.com/Flowminder/FlowKit/issues/1075)
 - New `IntereventInterval` query class - returns stats over the gap between events as a time interval.
+- Added submodule `flowmachine.core.dependency_graph`, which contains functions related to creating or using query dependency graphs (previously these were in `utils.py`).
 - New config option `sql_find_available_dates` in FlowETL to provide SQL code to determine the available dates. [#1295](https://github.com/Flowminder/FlowKit/issues/1295)
 
 ### Changed
 - FlowDB is now based on PostgreSQL 11.5 and PostGIS 2.5.3
+- When running queries through FlowAPI, the query's dependencies will also be cached by default. This behaviour can be switched off by setting `FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING=true`. [#1152](https://github.com/Flowminder/FlowKit/issues/1152)
 - `NewSubscribers` now takes a pair of `UniqueSubscribers` queries instead of the arguments to them
 - Flowmachine's default random sampling method is now `random_ids` rather than the non-reproducible `system_rows`. [#1263](https://github.com/Flowminder/FlowKit/issues/1263)
 - `IntereventPeriod` now returns stats over the gap between events in fractional time units, instead of time intervals. [#1265](https://github.com/Flowminder/FlowKit/issues/1265)
+- Attempting to store a query that does not have a standard table name (e.g. `EventTableSubset` or unseeded random sample) will now raise an `UnstorableQueryError` instead of `ValueError`.
 - In the FlowETL deployment example, the external ingestion database is now set up separately from the FlowKit components and connected to FlowDB via a docker overlay network. [#1276](https://github.com/Flowminder/FlowKit/issues/1276)
 - The `md5` attribute of the `Query` class has been renamed to `query_id` [#1288](https://github.com/Flowminder/FlowKit/issues/1288).
 
