@@ -15,6 +15,7 @@ def test_get_server_config(monkeypatch):
     monkeypatch.setenv("FLOWMACHINE_SERVER_DEBUG_MODE", "true")
     monkeypatch.setenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", "true")
     config = get_server_config()
+    assert len(config) == 3
     assert config.port == 5678
     assert config.debug_mode == True
     assert config.store_dependencies == False
@@ -28,6 +29,7 @@ def test_get_server_config_defaults(monkeypatch):
     monkeypatch.delenv("FLOWMACHINE_SERVER_DEBUG_MODE", raising=False)
     monkeypatch.delenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", raising=False)
     config = get_server_config()
+    assert len(config) == 3
     assert config.port == 5555
     assert config.debug_mode == False
     assert config.store_dependencies == True
