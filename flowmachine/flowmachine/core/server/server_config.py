@@ -34,7 +34,7 @@ def get_server_config() -> FlowmachineServerConfig:
     FlowMachineServerConfig
         A namedtuple containing the config options
     """
-    port = os.getenv("FLOWMACHINE_PORT", 5555)
+    port = int(os.getenv("FLOWMACHINE_PORT", 5555))
     debug_mode = "true" == os.getenv("FLOWMACHINE_SERVER_DEBUG_MODE", "false").lower()
     store_dependencies = not (
         "true"
