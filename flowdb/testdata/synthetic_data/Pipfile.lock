@@ -25,10 +25,10 @@
         },
         "bidict": {
             "hashes": [
-                "sha256:70af520df680b00a8ff554e60ce305644a59e8d693af1ab28bd89ad2b6a4232f",
-                "sha256:ba01c15664af7bd2b032a60fa21ed3575a66fd8b20b35436bedce45837ae556d"
+                "sha256:1742a25a9ef1b1ac4000683406879a3e1a6577faa02f31e482e6c84e2e3bf628",
+                "sha256:621db384daef94b7031897ca479f4feed025989a64e91c6fae88fb88a842488c"
             ],
-            "version": "==0.18.2"
+            "version": "==0.18.3"
         },
         "faker": {
             "hashes": [
@@ -189,10 +189,10 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:4c34f077399736e5dbf403183b5f0f1bda46e06433a3f93812386a9d56b28004",
-                "sha256:74d40d49cab95a93735323e450161f1e580dac42b25bf39770f6e3501d36ebfb"
+                "sha256:abc25d0ce2397d070ef07d8c7e706aede7920da163c64997585d42d3537ece3d",
+                "sha256:dd3fcca8488bb1d416aa7469d2f277902f26260c45aa86b667b074cd44b3b115"
             ],
-            "version": "==4.36.0"
+            "version": "==4.36.1"
         }
     },
     "develop": {}
