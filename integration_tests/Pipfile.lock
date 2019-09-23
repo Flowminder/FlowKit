@@ -165,10 +165,10 @@
         },
         "contextlib2": {
             "hashes": [
-                "sha256:509f9419ee91cdd00ba34443217d5ca51f5a364a404e1dce9e8979cea969ca48",
-                "sha256:f5260a6e679d2ff42ec91ec5252f4eeffdcf21053db9113bd0a8e4d953769c00"
+                "sha256:7197aa736777caac513dbd800944c209a49765bf1979b12b037dce0277077ed3",
+                "sha256:9d2c67f18c1f9b6db1b46317f7f784aa82789d2ee5dea5d9c0f0f2a764eb862e"
             ],
-            "version": "==0.5.5"
+            "version": "==0.6.0"
         },
         "coverage": {
             "hashes": [
@@ -629,10 +629,10 @@
         },
         "python-box": {
             "hashes": [
-                "sha256:3a5837245b264c7c8b79b019b2853db59ab8472a8a6a02407b7982d6f3321c4f",
-                "sha256:449f90ea30d7bc48d0f2242bac5299d87d1c1cc471464823e0a05fc1980a87fd"
+                "sha256:4c698279ec1e28089389659b21610093f81fa5d59a0090af4dadc08ca6fe08dc",
+                "sha256:5b044a055f9f93ca7e19343bf0f2e8f13a45ef3dfa37d67d9d98e52601372e89"
             ],
-            "version": "==3.4.3"
+            "version": "==3.4.4"
         },
         "python-dateutil": {
             "hashes": [
@@ -833,10 +833,10 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:b246607a25ac80bedac05c6f282e3cdaf3afb65420fd024ac94435cabe6e18d1",
-                "sha256:dbe59173209418ae49d485b87d1681aefa36252ee85884c31346debd19463232"
+                "sha256:2f3eadfea5d92bc7899e75b5968410b749a054b492d5a6379c1344a1481bc2cb",
+                "sha256:9c6c593cb28f52075016307fc26b0a0f8e82bc7d1ff19aaaa959b91710a56c47"
             ],
-            "version": "==1.25.3"
+            "version": "==1.25.5"
         },
         "wcwidth": {
             "hashes": [
@@ -847,10 +847,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:00d32beac38fcd48d329566f80d39f10ec2ed994efbecfb8dd4b320062d05902",
-                "sha256:0a24d43be6a7dce81bae05292356176d6c46d63e42a0dd3f9504b210a9cfaa43"
+                "sha256:7280924747b5733b246fe23972186c6b348f9ae29724135a6dfc1e53cea433e7",
+                "sha256:e5f4a1f98b52b18a93da705a7458e55afb26f32bff83ff5d19189f92462d65c4"
             ],
-            "version": "==0.15.6"
+            "version": "==0.16.0"
         },
         "wsproto": {
             "hashes": [
