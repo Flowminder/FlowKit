@@ -53,7 +53,9 @@ class SubscriberSightings(Query):
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
 
-        Table("interactions.subscriber_sightings_fact", columns=["timestamp", "cell_id"])
+        Table(
+            "interactions.subscriber_sightings_fact", columns=["timestamp", "cell_id"]
+        )
         Table("interactions.subscriber", columns=[self.subscriber_identifier])
 
         # Setup the main subscriber_sightings_fact & subscriber tables
