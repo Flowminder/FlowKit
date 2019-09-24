@@ -118,16 +118,30 @@ class PopulationWeightedOpportunities(Query):
 
     Parameters
     ----------
-    start
-    stop
-    spatial_unit
-    departure_rate
-    hours
-    method
-    table
-    subscriber_identifier
-    ignore_nulls
-    subscriber_subset
+    start : str
+        ISO format date string denoting the first day of data to include
+    stop : str
+        ISO format date string denoting the last day of data to include
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
+        Spatial unit to which subscriber locations will be mapped. See the
+        docstring of make_spatial_unit for more information.
+    departure_rate : float, or Dataframe, default 0.1
+        Either one uniform departure rate, or a dataframe with a rate column
+        and columns matching those of the spatial unit. If the latter, results
+        are only returned for locations in this dataframe
+    hours : 'all', or tuple of ints, default 'all'
+        The hours of the day to include activity in
+    method : {'last', 'most-common'}, default 'last'
+        Method used to resolve a daily location
+    table : str, or list of str, default 'all'
+        Specify which event types to include. 'all', all available event
+        types are included. Otherwise, should be a (schema qualified) list of
+        events tables.
+    subscriber_identifier : {'msisdn', 'imei'}, default 'msisdn'
+        Either msisdn, or imei, the column that identifies the subscriber.
+    subscriber_subset : flowmachine.core.Query, default None
+        If provided, a query or table which has a column with a named
+        subscriber to limit results to.
     """
 
     def __init__(
@@ -141,7 +155,6 @@ class PopulationWeightedOpportunities(Query):
         method: str = "last",
         table: Union[str, List[str]] = "all",
         subscriber_identifier: str = "msisdn",
-        ignore_nulls: bool = True,
         subscriber_subset: Optional[Query] = None,
     ):
 
@@ -180,7 +193,7 @@ class PopulationWeightedOpportunities(Query):
                     method=method,
                     table=table,
                     subscriber_identifier=subscriber_identifier,
-                    ignore_nulls=ignore_nulls,
+                    ignore_nulls=True,
                     subscriber_subset=subscriber_subset,
                 )
                 for d in list_of_dates(self.start, self.stop)

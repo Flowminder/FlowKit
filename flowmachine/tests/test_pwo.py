@@ -55,9 +55,8 @@ def test_run_with_location_vector(get_dataframe):
             "2016-01-07",
             departure_rate=pd.DataFrame([{"site_id": "0xqNDj", "rate": 0.9}]),
         )
-    )
+    ).set_index("site_id_from")
 
-    set_df = set_df.set_index("site_id_from")
     assert set_df.loc["0xqNDj"]["site_id_to"].values[1] == "8wPojr"
     assert set_df.loc["0xqNDj"]["site_id_to"].values[3] == "B8OaG5"
     assert set_df.loc["0xqNDj"]["site_id_to"].values[7] == "DonxkP"
