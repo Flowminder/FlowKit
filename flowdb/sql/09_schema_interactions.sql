@@ -56,16 +56,17 @@ CREATE SCHEMA IF NOT EXISTS interactions;
 
     CREATE TABLE IF NOT EXISTS interactions.subscriber_sightings_fact(
 
-        sighting_id             BIGSERIAL PRIMARY KEY,
+        sighting_id             BIGSERIAL,
         subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
         date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
         time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
         event_super_table_id    TEXT,
         event_type              INTEGER,
-        timestamp               TIMESTAMPTZ NOT NULL
+        timestamp               TIMESTAMPTZ NOT NULL,
+        PRIMARY KEY (sighting_id, date_sk)
 
-        );
+    ) PARTITION BY LIST (date_sk);
 
     CREATE INDEX ON interactions.subscriber_sightings_fact ("timestamp");
     CREATE INDEX ON interactions.subscriber_sightings_fact (sighting_id, "timestamp");
