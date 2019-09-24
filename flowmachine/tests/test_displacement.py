@@ -132,7 +132,6 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
     but has a home location returns a nan value
     """
 
-    p1 = ("2016-01-02 10:00:00", "2016-01-02 12:00:00")
     p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
     subscriber = "OdM7np8LYEp1mkvP"
 
@@ -144,3 +143,20 @@ def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
     df = get_dataframe(d).set_index("subscriber")
 
     assert isnan(df.loc[subscriber].value)
+
+
+def test_subscriber_with_home_loc_but_no_calls_is_ommitted(get_dataframe):
+    """
+    Test that a subscriber who has no activity between start and stop
+    but has a home location is omitted by default.
+    """
+
+    p2 = ("2016-01-01 12:01:00", "2016-01-01 15:20:00")
+    subscriber = "OdM7np8LYEp1mkvP"
+
+    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("lon-lat"))
+    d = Displacement(*p2, reference_location=rl)
+
+    df = get_dataframe(d).set_index("subscriber")
+
+    assert subscriber not in df
