@@ -171,7 +171,7 @@ class PopulationWeightedOpportunities(Query):
     population leaving the origin (T_i). That is, how
     likely it is that a person leaving the origin will
     be found in a given destination.
-    
+
     References
     ----------
     .. [1] Yan X-Y, Zhao C, Fan Y, Di Z, Wang W-X. 2014 "Universal predictability of mobility patterns in cities". J. R. Soc. Interface 11: 20140834. http://dx.doi.org/10.1098/rsif.2014.0834
@@ -201,8 +201,10 @@ class PopulationWeightedOpportunities(Query):
         if isinstance(departure_rate, pd.DataFrame):
             self.departure_rate = departure_rate.rename(
                 columns=lambda x: x if x == "rate" else f"{x}_from"
+            ).apply(lambda x: x.sort_values().values)
+            self.departure_rate = self.departure_rate.reindex(
+                columns=sorted(self.departure_rate.columns)
             )
-            self.departure_rate_values = departure_rate.values.tolist()
         elif isinstance(departure_rate, float):
             self.departure_rate = departure_rate
         else:
@@ -252,7 +254,6 @@ class PopulationWeightedOpportunities(Query):
                 f"SELECT buffer.src_pop*{self.departure_rate} as T_i, * FROM buffer"
             )
         elif isinstance(self.departure_rate, pd.DataFrame):
-            # select * from (VALUES ('a', 0, 1)) as t(name, version, value);
             scaled_buffer_query = f"""
             SELECT buffer.*, buffer.src_pop*rate as T_i FROM 
             (VALUES {", ".join([str(tuple(x)) for x in self.departure_rate.values])}) 
