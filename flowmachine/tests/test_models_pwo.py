@@ -50,13 +50,14 @@ def test_run_with_location_vector(get_dataframe):
     """
     PopulationWeightedOpportunities().run() takes a location probability vector.
     """
-    p = PopulationWeightedOpportunities("2016-01-01", "2016-01-07")
     set_df = get_dataframe(
-        p.run(
-            departure_rate_vector=pd.DataFrame([{"site_id": "0xqNDj", "rate": 0.9}]),
-            ignore_missing=True,
+        PWO(
+            "2016-01-01",
+            "2016-01-07",
+            departure_rate=pd.DataFrame([{"site_id": "0xqNDj", "rate": 0.9}]),
         )
     )
+
     set_df = set_df.set_index("site_id_from")
     assert set_df.loc["0xqNDj"]["site_id_to"].values[1] == "8wPojr"
     assert set_df.loc["0xqNDj"]["site_id_to"].values[3] == "B8OaG5"

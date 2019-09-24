@@ -159,7 +159,16 @@ class PWO(Query):
             + "(http://dx.doi.org/10.1098/rsif.2014.0834) "
             + "before using this model in production."
         )
-        self.departure_rate = departure_rate
+
+        if isinstance(departure_rate, pd.DataFrame):
+            self.departure_rate = departure_rate.rename(
+                columns=lambda x: x if x == "rate" else f"{x}_from"
+            )
+            self.departure_rate_values = departure_rate.values.tolist()
+        elif isinstance(departure_rate, float):
+            self.departure_rate = departure_rate
+        else:
+            raise TypeError(f"{departure_rate} must be a float or dataframe")
         self.start = start
         self.stop = stop
         self.method = method
@@ -193,6 +202,24 @@ class PWO(Query):
         ] + ["prediction", "probability"]
 
     def _make_query(self):
+        if isinstance(self.departure_rate, float):
+            scaled_buffer_query = (
+                f"SELECT buffer.src_pop*{self.departure_rate} as T_i, * FROM buffer"
+            )
+        elif isinstance(self.departure_rate, pd.DataFrame):
+            # select * from (VALUES ('a', 0, 1)) as t(name, version, value);
+            scaled_buffer_query = f"""
+            SELECT buffer.*, buffer.src_pop*rate as T_i FROM 
+            (VALUES {", ".join([str(tuple(x)) for x in self.departure_rate.values])}) 
+                AS t({", ".join(c for c in self.departure_rate.columns)})
+                LEFT JOIN buffer
+                USING ({", ".join(c for c in self.departure_rate.columns if c != 'rate')})
+            """
+        else:
+            raise ValueError(
+                "Unexpected departure rate type! Got {self.departure_rate}."
+            )
+
         return f"""
         WITH buffer AS ({self.population_buffer_object.get_query()}),
         beta AS (SELECT 1.0/sum(total) as beta FROM ({self.population_object.get_query()}) pops),
@@ -205,16 +232,19 @@ class PWO(Query):
         )
         SELECT {", ".join("{}_{}".format(c, d)
             for d in ("from", "to")
+            for c in self.spatial_unit.location_id_columns)}, prediction, COALESCE(prediction / T_i, 0.) as probability
+        FROM
+        (SELECT {", ".join("{}_{}".format(c, d)
+            for d in ("from", "to")
             for c in self.spatial_unit.location_id_columns)},
-            (T_i*sink_pop*(buffer_population-(SELECT beta FROM beta)))/sigma as prediction,
-            COALESCE((T_i*sink_pop*(buffer_population-(SELECT beta FROM beta))/sigma) / NULLIF(T_i, 0), 0.) as probability
+            NULLIF(T_i, 0) as T_i,
+            (T_i*sink_pop*(buffer_population-(SELECT beta FROM beta)))/sigma as prediction
         
         FROM
-        (SELECT buffer.src_pop*{self.departure_rate} as T_i, *
-        FROM buffer
+        ({scaled_buffer_query}) scaled_buf
         LEFT JOIN
         sigma
-        USING ({", ".join(f"{c}_from" for c in self.spatial_unit.location_id_columns)})) scaled
+        USING ({", ".join(f"{c}_from" for c in self.spatial_unit.location_id_columns)}) ) pwo_pred
             
         """
 
