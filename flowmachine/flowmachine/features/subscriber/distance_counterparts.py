@@ -147,7 +147,7 @@ class DistanceCounterparts(SubscriberFeature):
             ) U
         JOIN
             ({self.distance_matrix.get_query()}) D
-        ON U.location_id_from = D.location_id_from AND U.location_id_to = D.location_id_to
+        USING (location_id_from, location_id_to)
         GROUP BY U.subscriber
         """
 
