@@ -26,7 +26,7 @@ References
 """
 
 import warnings
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import pandas as pd
 
@@ -140,6 +140,85 @@ class _populationBuffer(Query):
         return sql
 
 
+class PWO(Query):
+    def __init__(
+        self,
+        start,
+        stop,
+        *,
+        method="home-location",
+        spatial_unit: Optional[LonLatSpatialUnit] = None,
+        departure_rate: Union[pd.DataFrame, float] = 0.1,
+        ignore_missing: bool = False,
+        **kwargs,
+    ):
+
+        warnings.warn(
+            "The PWO model is currently **experimental**. "
+            + "Please review Yan X-Y et al. "
+            + "(http://dx.doi.org/10.1098/rsif.2014.0834) "
+            + "before using this model in production."
+        )
+        self.departure_rate = departure_rate
+        self.start = start
+        self.stop = stop
+        self.method = method
+        if spatial_unit is None:
+            self.spatial_unit = make_spatial_unit("versioned-site")
+        else:
+            self.spatial_unit = spatial_unit
+        self.distance_matrix = DistanceMatrix(
+            spatial_unit=self.spatial_unit, return_geometry=True
+        )
+
+        if self.method == "home-location":
+            self.population_object = ModalLocation(
+                *[
+                    daily_location(d, spatial_unit=self.spatial_unit, **kwargs)
+                    for d in list_of_dates(self.start, self.stop)
+                ]
+            ).aggregate()
+
+        self.population_buffer_object = _populationBuffer(
+            population_object=self.population_object,
+            distance_matrix=self.distance_matrix,
+        )
+
+    @property
+    def column_names(self) -> List[str]:
+        return [
+            "{}_{}".format(c, d)
+            for d in ("from", "to")
+            for c in self.spatial_unit.location_id_columns
+        ] + ["prediction", "probability"]
+
+    def _make_query(self):
+        return f"""
+        WITH buffer AS ({self.population_buffer_object.get_query()}),
+        beta AS (SELECT 1.0/sum(total) as beta FROM ({self.population_object.get_query()}) pops),
+        sigma AS (
+            SELECT
+             {", ".join(f"{c}_from" for c in self.spatial_unit.location_id_columns)},
+             sum(sink_pop*(buffer_population-(SELECT beta FROM beta))) as sigma
+             FROM buffer
+             GROUP BY {", ".join(f"{c}_from" for c in self.spatial_unit.location_id_columns)}
+        )
+        SELECT {", ".join("{}_{}".format(c, d)
+            for d in ("from", "to")
+            for c in self.spatial_unit.location_id_columns)},
+            (T_i*sink_pop*(buffer_population-(SELECT beta FROM beta)))/sigma as prediction,
+            COALESCE((T_i*sink_pop*(buffer_population-(SELECT beta FROM beta))/sigma) / NULLIF(T_i, 0), 0.) as probability
+        
+        FROM
+        (SELECT buffer.src_pop*{self.departure_rate} as T_i, *
+        FROM buffer
+        LEFT JOIN
+        sigma
+        USING ({", ".join(f"{c}_from" for c in self.spatial_unit.location_id_columns)})) scaled
+            
+        """
+
+
 class PopulationWeightedOpportunities(Model):
     """
     Population-weighted opportunities model [1]_.
@@ -251,58 +330,12 @@ class PopulationWeightedOpportunities(Model):
             distance_matrix=self.distance_matrix,
         )
 
-    def __get_population(self, df, i):
-        """
-        Protected getter method for getting
-        the location value of the self.population_df
-        DataFrame.
-
-        Parameters
-        ----------
-        i : object
-            The index in the self.population_df DataFrame
-            containing the location identifier.
-
-        Returns
-        -------
-        A float value with the population value
-        for location i.
-
-        """
-        return df.loc[tuple(i), "total"]
-
-    def __get_buffer_population(self, df, i, j):
-        """
-        Protected getter method for getting
-        the location value of the self.population_buffer
-        DataFrame.
-
-        Parameters
-        ----------
-        i : str
-            Location identifier of the origin location
-            in the self.population_buffer DataFrame.
-        j : str
-            Location identifier of the destination location
-            in the self.population_buffer DataFrame.
-
-        Returns
-        -------
-        A float value with the population value for
-        a pair of origin (i) and destination (j)
-        locations.
-
-        """
-        filtered = df.loc[tuple(i + j)]
-
-        return filtered["buffer_population"]
-
     @model_result
     def run(
         self,
-        uniform_departure_rate=0.1,
-        departure_rate_vector=None,
-        ignore_missing=False,
+        uniform_departure_rate: float = 0.1,
+        departure_rate_vector: Optional[pd.DataFrame] = None,
+        ignore_missing: bool = False,
     ):
         """
         Runs model.
@@ -315,12 +348,11 @@ class PopulationWeightedOpportunities(Model):
             This proportion applies to all locations
             uniformly.
 
-        departure_rate_vector : dict
-            A dictionary that contains the proportion
+        departure_rate_vector : pd.Dataframe
+            A dataframe that contains the proportion
             of the population from locations i that have
-            departed those locations. The keys of the
-            dictionaries must be the location identifier
-            and the values the departure rate.
+            departed those locations. The dataframe should contain
+            a rate column giving the rate.
             If passed, this will be used over the
             `uniform_departure_rate` parameter.
 
@@ -343,12 +375,6 @@ class PopulationWeightedOpportunities(Model):
 
             population_df = self.population_object.get_dataframe()
             population_buffer = self.population_buffer_object.get_dataframe()
-            ix = [
-                "{}_{}".format(c, d)
-                for d in ("from", "to")
-                for c in self.spatial_unit.location_id_columns
-            ]
-            # population_buffer.set_index(ix, inplace=True)
 
             M = population_df["total"].sum()
 
@@ -359,7 +385,7 @@ class PopulationWeightedOpportunities(Model):
             ].values.tolist()
             population_df.set_index(self.spatial_unit.location_id_columns, inplace=True)
 
-        if not departure_rate_vector:
+        if departure_rate_vector is None:
             logger.warning(
                 " Using an uniform departure "
                 + "rate of {} for ".format(uniform_departure_rate)
@@ -373,8 +399,22 @@ class PopulationWeightedOpportunities(Model):
                 + "without rates should be ignored."
             )
 
-        results = []
-        population_buffer["T_i"] = population_buffer["src_pop"] * uniform_departure_rate
+        if departure_rate_vector is not None:
+
+            population_buffer = population_buffer.merge(
+                departure_rate_vector.rename(
+                    columns=lambda x: x if x == "rate" else f"{x}_from"
+                ),
+                how="left",
+            )
+            population_buffer.rate.fillna(0)
+            population_buffer["T_i"] = (
+                population_buffer.src_pop * population_buffer.rate
+            )
+        else:
+            population_buffer["T_i"] = (
+                population_buffer["src_pop"] * uniform_departure_rate
+            )
         population_buffer["sigma"] = population_buffer["sink_pop"] * (
             population_buffer["buffer_population"] - beta
         )
