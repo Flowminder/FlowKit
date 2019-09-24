@@ -96,10 +96,9 @@ class _populationBuffer(Query):
         cols = self.spatial_unit.location_id_columns
 
         return (
-            ["id"]
-            + [f"{c}_from" for c in cols]
+            [f"{c}_from" for c in cols]
             + [f"{c}_to" for c in cols]
-            + ["distance", "buffer_population", "n_sites"]
+            + ["buffer_population"]
         )
 
     def _make_query(self):
@@ -110,23 +109,27 @@ class _populationBuffer(Query):
         """
         cols = self.spatial_unit.location_id_columns
 
+        #
+        # The summing over partition - this works because at each row you're summing over the pops of all
+        # rows with a distance less than the current one with the partitions over the destination row.
+        #
+
         sql = f"""
-        WITH foo as (SELECT * FROM 
-        (SELECT {", ".join(f"hl_{direction}.{c} as {c}_{direction}" for c in cols for direction in ("to", "from"))}, hl_from.total as src_pop, hl_to.total as sink_pop
-        FROM
-        ({self.population_object.get_query()}) as hl_from
-        CROSS JOIN 
-        ({self.population_object.get_query()}) as hl_to
-        ) pops
-        LEFT JOIN
-        ({self.distance_matrix.get_query()}) as dm
-        USING ({", ".join(f"{c}_{direction}" for c in cols for direction in ("to", "from") if c != "value")}))
-        select row_number() OVER(ORDER BY value) as id,  
+        SELECT   
         {", ".join(f"{c}_{direction}" for direction in ("from", "to") for c in cols  if c != "value")},
-         value*1000 as distance, 
-         sum(src_pop) over (partition by {", ".join(f"{c}_to" for c in cols if c != "value")} order by value)-src_pop as buffer_population, 
-         row_number() over (partition by {", ".join(f"{c}_to" for c in cols if c != "value")} order by value) as n_sites 
-         from foo 
+         sum(src_pop) over (partition by {", ".join(f"{c}_to" for c in cols if c != "value")} order by value)-src_pop as buffer_population 
+         FROM (
+            (SELECT * FROM 
+            (SELECT {", ".join(f"hl_{direction}.{c} as {c}_{direction}" for c in cols for direction in ("to", "from"))}, hl_from.total as src_pop, hl_to.total as sink_pop
+            FROM
+            ({self.population_object.get_query()}) as hl_from
+            CROSS JOIN 
+            ({self.population_object.get_query()}) as hl_to
+            ) pops
+            LEFT JOIN
+            ({self.distance_matrix.get_query()}) as dm
+            USING ({", ".join(f"{c}_{direction}" for c in cols for direction in ("to", "from") if c != "value")}))
+         ) distance_pop_matrix
         
         """
 
@@ -344,9 +347,7 @@ class PopulationWeightedOpportunities(Model):
             population_buffer.set_index(ix, inplace=True)
 
             M = population_df["total"].sum()
-            N = len(
-                population_df[self.spatial_unit.location_id_columns].drop_duplicates()
-            )
+
             beta = 1 / M
 
             locations = population_df[
