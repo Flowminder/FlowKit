@@ -116,19 +116,22 @@ class _populationBuffer(Query):
 
         sql = f"""
         SELECT   
-        {", ".join(f"{c}_{direction}" for direction in ("from", "to") for c in cols  if c != "value")},
-         sum(src_pop) over (partition by {", ".join(f"{c}_to" for c in cols if c != "value")} order by value)-src_pop as buffer_population 
+        {", ".join(f"{c}_{direction}" for direction in ("from", "to") for c in cols)},
+         1/(sum(src_pop) over (partition by {", ".join(f"{c}_to" for c in cols)} order by value)+sink_pop-src_pop) as buffer_population 
          FROM (
             (SELECT * FROM 
             (SELECT {", ".join(f"hl_{direction}.{c} as {c}_{direction}" for c in cols for direction in ("to", "from"))}, hl_from.total as src_pop, hl_to.total as sink_pop
             FROM
             ({self.population_object.get_query()}) as hl_from
-            CROSS JOIN 
+            LEFT JOIN 
             ({self.population_object.get_query()}) as hl_to
+            ON 
+                {" OR ".join(f"hl_from.{c} != hl_to.{c}" for c in cols)}
             ) pops
             LEFT JOIN
             ({self.distance_matrix.get_query()}) as dm
-            USING ({", ".join(f"{c}_{direction}" for c in cols for direction in ("to", "from") if c != "value")}))
+            USING ({", ".join(f"{c}_{direction}" for c in cols for direction in ("to", "from"))})
+            )
          ) distance_pop_matrix
         
         """
@@ -389,13 +392,13 @@ class PopulationWeightedOpportunities(Model):
                 m_k = self.__get_population(population_df, k)
                 S_ik = self.__get_buffer_population(population_buffer, i, k)
 
-                sigma += m_k * ((1 / S_ik) - beta)
+                sigma += m_k * (S_ik - beta)
 
             for j in [l for l in locations if l != i]:
                 m_j = self.__get_population(population_df, j)
                 S_ij = self.__get_buffer_population(population_buffer, i, j)
 
-                T_ij = (T_i * m_j * ((1 / S_ij) - beta)) / sigma
+                T_ij = (T_i * m_j * (S_ij - beta)) / sigma
 
                 if T_i != 0:
                     probability = T_ij / T_i
