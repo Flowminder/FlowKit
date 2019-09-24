@@ -103,5 +103,3 @@ def test_pwo_result_cols():
         "probability",
     ]
     assert mr.column_names == cols
-    mr.store().result()
-    assert mr.column_names == cols
