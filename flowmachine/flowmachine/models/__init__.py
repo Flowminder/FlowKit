@@ -9,6 +9,5 @@ of data that make predictions from that data.
 
 """
 from .louvain import Louvain
-from .pwo import PopulationWeightedOpportunities
 
-__all__ = ["Louvain", "PopulationWeightedOpportunities"]
+__all__ = ["Louvain"]
