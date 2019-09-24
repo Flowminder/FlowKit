@@ -115,6 +115,12 @@ class _PopulationBuffer(Query):
 
 class PopulationWeightedOpportunities(Query):
     """
+    Population-weighted opportunities model [1]_.
+    The model predicts the mobility between populated
+    areas in cities based only on the population densities
+    of those areas, their spatial distribution, and
+    the number of people that depart a certain area. This
+    model is useful for studying mobility pattern in cities.
 
     Parameters
     ----------
@@ -142,6 +148,33 @@ class PopulationWeightedOpportunities(Query):
     subscriber_subset : flowmachine.core.Query, default None
         If provided, a query or table which has a column with a named
         subscriber to limit results to.
+
+    Examples
+    --------
+    >>> p = PopulationWeightedOpportunities('2016-01-01', '2016-01-07', departure_rate=pd.Dataframe([{"site_id":'0xqNDj', "rate":0.9}]))
+
+    One can also run the model with uniform departure
+    rates for all locations as follows:
+
+    >>> PopulationWeightedOpportunities('2016-01-01', '2016-01-07', departure_rate=0.5).head()
+        origin  destination  prediction  probability
+    0  0xqNDj        8wPojr    0.384117     0.010670
+    1  0xqNDj        B8OaG5    0.344384     0.009566
+    2  0xqNDj        DonxkP    0.715311     0.019870
+    3  0xqNDj        zdNQx2    0.267854     0.007440
+
+    Where prediction is the absolute number of people
+    that move from one location to another. (This should
+    be interpreted as a integer, but floats are provided
+    for evaluating results in a continuous scale.) And
+    probability is the predicted value over the total
+    population leaving the origin (T_i). That is, how
+    likely it is that a person leaving the origin will
+    be found in a given destination.
+    
+    References
+    ----------
+    .. [1] Yan X-Y, Zhao C, Fan Y, Di Z, Wang W-X. 2014 "Universal predictability of mobility patterns in cities". J. R. Soc. Interface 11: 20140834. http://dx.doi.org/10.1098/rsif.2014.0834
     """
 
     def __init__(
