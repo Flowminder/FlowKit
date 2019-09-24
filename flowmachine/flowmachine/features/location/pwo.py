@@ -199,6 +199,8 @@ class PopulationWeightedOpportunities(Query):
         )
 
         if isinstance(departure_rate, pd.DataFrame):
+            # Rename the columns to match what we'll join to
+            # sort the dataframe so we'll have a consistent md5
             self.departure_rate = departure_rate.rename(
                 columns=lambda x: x if x == "rate" else f"{x}_from"
             ).apply(lambda x: x.sort_values().values)
