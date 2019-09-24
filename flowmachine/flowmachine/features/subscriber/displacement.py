@@ -61,7 +61,7 @@ class Displacement(SubscriberFeature):
         results to; or, a query or table which has a column with a name matching
         subscriber_identifier (typically, msisdn), to limit results to.
     return_subscribers_not_seen : bool, default False
-        By default, subscribers who are not seen in the time period are dropped. Set to Truw
+        By default, subscribers who are not seen in the time period are dropped. Set to True
         to return them as NULL.
     ignore_nulls : bool, default True
         ignores those values that are null. Sometime data appears for which
