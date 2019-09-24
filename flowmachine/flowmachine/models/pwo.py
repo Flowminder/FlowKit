@@ -98,7 +98,7 @@ class _populationBuffer(Query):
         return (
             [f"{c}_from" for c in cols]
             + [f"{c}_to" for c in cols]
-            + ["buffer_population"]
+            + ["buffer_population", "src_pop", "sink_pop"]
         )
 
     def _make_query(self):
@@ -117,7 +117,8 @@ class _populationBuffer(Query):
         sql = f"""
         SELECT   
         {", ".join(f"{c}_{direction}" for direction in ("from", "to") for c in cols)},
-         1/(sum(src_pop) over (partition by {", ".join(f"{c}_to" for c in cols)} order by value)+sink_pop-src_pop) as buffer_population 
+         1/(sum(src_pop) over (partition by {", ".join(f"{c}_to" for c in cols)} order by value)+sink_pop-src_pop) as buffer_population,
+         src_pop, sink_pop 
          FROM (
             (SELECT * FROM 
             (SELECT {", ".join(f"hl_{direction}.{c} as {c}_{direction}" for c in cols for direction in ("to", "from"))}, hl_from.total as src_pop, hl_to.total as sink_pop
@@ -347,7 +348,7 @@ class PopulationWeightedOpportunities(Model):
                 for d in ("from", "to")
                 for c in self.spatial_unit.location_id_columns
             ]
-            population_buffer.set_index(ix, inplace=True)
+            # population_buffer.set_index(ix, inplace=True)
 
             M = population_df["total"].sum()
 
@@ -373,44 +374,29 @@ class PopulationWeightedOpportunities(Model):
             )
 
         results = []
-        for i in locations:
-            sigma = 0
-            m_i = self.__get_population(population_df, i)
+        population_buffer["T_i"] = population_buffer["src_pop"] * uniform_departure_rate
+        population_buffer["sigma"] = population_buffer["sink_pop"] * (
+            population_buffer["buffer_population"] - beta
+        )
+        population_buffer["sigma"] = population_buffer.groupby(
+            [f"{c}_from" for c in self.spatial_unit.location_id_columns]
+        ).sigma.transform(sum)
 
-            if departure_rate_vector:
-                try:
-                    T_i = m_i * departure_rate_vector[i[0]]
-                except KeyError:
-                    try:
-                        T_i = m_i * departure_rate_vector[tuple(i[:1])]
-                    except KeyError:
-                        T_i = 0
-            else:
-                T_i = m_i * uniform_departure_rate
+        population_buffer["prediction"] = (
+            population_buffer.T_i
+            * population_buffer.sink_pop
+            * (population_buffer.buffer_population - beta)
+        ) / population_buffer.sigma
+        population_buffer["probability"] = (
+            population_buffer.prediction / population_buffer.T_i
+        ).fillna(0)
 
-            for k in [l for l in locations if l != i]:
-                m_k = self.__get_population(population_df, k)
-                S_ik = self.__get_buffer_population(population_buffer, i, k)
-
-                sigma += m_k * (S_ik - beta)
-
-            for j in [l for l in locations if l != i]:
-                m_j = self.__get_population(population_df, j)
-                S_ij = self.__get_buffer_population(population_buffer, i, j)
-
-                T_ij = (T_i * m_j * (S_ij - beta)) / sigma
-
-                if T_i != 0:
-                    probability = T_ij / T_i
-                else:
-                    probability = 0
-
-                results.append(i + j + [T_ij, probability])
         ix = [
             "{}_{}".format(c, d)
             for d in ("from", "to")
             for c in self.spatial_unit.location_id_columns
         ]
         ix += ["prediction", "probability"]
-        res = pd.DataFrame(results, columns=ix)
-        return res
+        res2 = population_buffer.reset_index()[ix]
+        return res2
+        # return res
