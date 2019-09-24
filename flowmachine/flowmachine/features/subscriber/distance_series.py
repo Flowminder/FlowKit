@@ -82,6 +82,10 @@ class DistanceSeries(SubscriberFeature):
             self.reference_location = None
             self.joined = subscriber_locations
         elif isinstance(reference_location, BaseLocation):
+            if reference_location.spatial_unit != subscriber_locations.spatial_unit:
+                raise ValueError(
+                    "reference_location must have the same spatial unit as subscriber_locations."
+                )
             self.reference_location = reference_location
             self.joined = reference_location.join(
                 other=subscriber_locations,
@@ -104,7 +108,12 @@ class DistanceSeries(SubscriberFeature):
                 f"Got: {type(reference_location)}"
             )
 
-        self.unit = unit
+        if unit.lower() in {"m", "km"}:
+            self.unit = unit.lower()
+        else:
+            raise ValueError(
+                f"'{unit}' is not a valid value for unit. Use one of 'm' or 'km'"
+            )
 
         super().__init__()
 
