@@ -105,14 +105,16 @@ class ModelResult(Query):
         if self.is_stored:
             return super().__iter__()
         else:
-            self._query_object = self._df.iterrows()
+            self._query_object = self._df.itertuples(
+                index=False
+            )  # No index because we're impersonating a rowproxy
         return self
 
     def __next__(self):
         if self.is_stored:
             return super().__next__()
         else:
-            return self._query_object.__next__()
+            return tuple(self._query_object.__next__())  # Pandas tuples aren't tuples
 
     def __len__(self):
         try:
@@ -125,7 +127,18 @@ class ModelResult(Query):
         try:
             return self._df.columns.tolist()
         except AttributeError:
-            return super().column_names
+            if self.is_stored:
+                return [
+                    x[0]
+                    for x in self.connection.fetch(
+                        f"""
+                SELECT column_name
+                  FROM information_schema.columns
+                 WHERE table_schema = 'cache'
+                   AND table_name   = '{self.table_name}'
+                """
+                    )
+                ]
 
     def to_sql(
         self,

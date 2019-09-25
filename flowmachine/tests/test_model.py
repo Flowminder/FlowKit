@@ -124,3 +124,85 @@ def test_repr():
         "Model result of type DummyModel: run(2)"
         == ModelResult(dummy, run_args=[2]).__repr__()
     )
+
+
+def test_class_get_stored():
+    """
+    Test that stored model results can be retrieved.
+    """
+
+    dq = DummyQuery("DUMMY")
+    dummy = DummyModel(dq, [1], {1: 1})
+    dummy_result = dummy.run(2)
+    dummy_result.store().result()
+    assert [dummy_result.query_id] == [q.query_id for q in ModelResult.get_stored()]
+
+
+def test_model_result_column_names():
+    """
+    Test that model result columns are correct
+    """
+    dq = DummyQuery("DUMMY")
+    dummy = DummyModel(dq, [1], {1: 1})
+    dummy_result = dummy.run(2)
+    assert ["DUMMY_COLUMN"] == dummy_result.column_names
+
+
+def test_model_result_column_names_without_df():
+    """
+    Test that model result columns are correct when coming from db.
+    """
+    dq = DummyQuery("DUMMY")
+    dummy = DummyModel(dq, [1], {1: 1})
+    dummy_result = dummy.run(2)
+    dummy_result.store().result()
+    del dummy_result._df
+    assert ["DUMMY_COLUMN"] == dummy_result.column_names
+
+
+def test_model_result_len():
+    """
+    Test that model result length is correct.
+    """
+    dq = DummyQuery("DUMMY")
+    dummy = DummyModel(dq, [1], {1: 1})
+    dummy_result = dummy.run(2)
+    assert 4 == len(dummy_result)
+
+
+def test_model_result_len_without_df():
+    """
+    Test that model result length is correct when coming from db.
+    """
+    dq = DummyQuery("DUMMY")
+    dummy = DummyModel(dq, [1], {1: 1})
+    dummy_result = dummy.run(2)
+    dummy_result.store().result()
+    del dummy_result._df
+    assert 4 == len(dummy_result)
+
+
+def test_model_result_iteration():
+    """
+    Test that we can iterate over model results.
+    """
+    dq = DummyQuery("DUMMY")
+    dummy = DummyModel(dq, [1], {1: 1})
+    dummy_result = dummy.run(2)
+    df = dummy_result._df
+    for row_a, row_b in zip(df.itertuples(index=False), dummy_result):
+        assert row_a == row_b
+
+
+def test_model_result_iteration_with_no_df():
+    """
+    Test that we can iterate over model results from the db.
+    """
+    dq = DummyQuery("DUMMY")
+    dummy = DummyModel(dq, [1], {1: 1})
+    dummy_result = dummy.run(2)
+    dummy_result.store().result()
+    df = dummy_result._df
+    del dummy_result._df
+    for row_a, row_b in zip(df.itertuples(index=False), dummy_result):
+        assert tuple(row_a) == row_b
