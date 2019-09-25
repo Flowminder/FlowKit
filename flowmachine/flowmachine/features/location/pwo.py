@@ -265,7 +265,7 @@ class PopulationWeightedOpportunities(Query):
             """
         else:
             raise ValueError(
-                "Unexpected departure rate type! Got {self.departure_rate}."
+                f"Unexpected departure rate type! Got {self.departure_rate}."
             )
 
         return f"""
