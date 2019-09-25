@@ -19,7 +19,7 @@ valid_time_buckets = ["second", "minute", "hour", "day", "month", "year", "centu
 
 class DistanceSeries(SubscriberFeature):
     """
-    Per subscriber time series of distances from some reference location.
+    Per subscriber time series of distance in meters from some reference location.
 
     Parameters
     ----------
@@ -31,9 +31,6 @@ class DistanceSeries(SubscriberFeature):
     statistic : str
         the statistic to calculate one of 'sum', 'avg', 'max', 'min', 
         'median', 'stddev' or 'variance'
-    unit : {'km', 'm'}, default 'km'
-        Unit with which to express the answers, currently the choices
-        are kilometres ('km') or metres ('m')
     time_bucket : {"second", "minute", "hour", "day", "month", "year", "century"}, default "day"
         Time bucket to calculate the statistic over.
 
@@ -55,7 +52,6 @@ class DistanceSeries(SubscriberFeature):
         subscriber_locations: SubscriberLocations,
         reference_location: Optional[BaseLocation] = None,
         statistic: str = "avg",
-        unit: str = "km",
         time_bucket: str = "day",
     ):
         subscriber_locations.spatial_unit.verify_criterion("has_geography")
@@ -108,13 +104,6 @@ class DistanceSeries(SubscriberFeature):
                 f"Got: {type(reference_location)}"
             )
 
-        if unit.lower() in {"m", "km"}:
-            self.unit = unit.lower()
-        else:
-            raise ValueError(
-                f"'{unit}' is not a valid value for unit. Use one of 'm' or 'km'"
-            )
-
         super().__init__()
 
     @property
@@ -130,11 +119,6 @@ class DistanceSeries(SubscriberFeature):
         else:
             joined = self.joined.get_query()
 
-        if self.unit == "m":
-            multiplier = 1000
-        elif self.unit == "km":
-            multiplier = 1
-
         if valid_time_buckets.index(self.aggregate_by) > valid_time_buckets.index(
             "hour"
         ):  # Slightly nicer to cast things which aren't timestamps to a date
@@ -146,7 +130,7 @@ class DistanceSeries(SubscriberFeature):
         SELECT 
             subscriber,
             date_trunc('{self.aggregate_by}', time_to){date_cast} as datetime,
-            {self.statistic}(COALESCE(value_dist, 0) * {multiplier}) as value
+            {self.statistic}(COALESCE(value_dist, 0) as value
         FROM 
             ({joined}) _
         GROUP BY 
