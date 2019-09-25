@@ -52,7 +52,9 @@ def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataf
         ("variance", 45647162968.0, 32692040947.3485),
     ],
 )
-def test_returns_expected_values(stat, sub_a_expected, sub_b_expected, get_dataframe):
+def test_returns_expected_values_fixed_point(
+    stat, sub_a_expected, sub_b_expected, get_dataframe
+):
     """
     Test that we get expected return values for the various statistics with 0, 0 reference
     """
@@ -73,8 +75,6 @@ def test_error_when_subs_locations_not_point_geom():
     """
     Test that error is raised if the spatial unit of the subscriber locations isn't point.
     """
-
-    rl = daily_location("2016-01-01")
 
     with pytest.raises(ValueError):
         DistanceSeries(
@@ -110,4 +110,43 @@ def test_invalid_statistic_raises_error():
                 "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
             ),
             statistic="NOT_A_STATISTIC",
+        )
+
+
+def test_invalid_time_bucket_raises_error():
+    """
+    Test that passing an invalid time bucket raises an error.
+    """
+    with pytest.raises(ValueError):
+        DistanceSeries(
+            subscriber_locations=SubscriberLocations(
+                "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
+            ),
+            time_bucket="NOT_A_BUCKET",
+        )
+
+
+def test_invalid_unit_raises_error():
+    """
+    Test that passing an invalid unit raises an error.
+    """
+    with pytest.raises(ValueError):
+        DistanceSeries(
+            subscriber_locations=SubscriberLocations(
+                "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
+            ),
+            unit="NOT_A_UNIT",
+        )
+
+
+def test_reference_raises_error():
+    """
+    Test that passing an invalid reference location raises an error.
+    """
+    with pytest.raises(ValueError):
+        DistanceSeries(
+            subscriber_locations=SubscriberLocations(
+                "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
+            ),
+            reference_location="NOT_A_LOCATION",
         )
