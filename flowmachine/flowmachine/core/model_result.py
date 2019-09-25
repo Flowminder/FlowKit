@@ -15,7 +15,7 @@ of postgres.
 from concurrent.futures import Future
 from time import sleep
 
-from typing import List, Union
+from typing import List, Union, Any, Optional, Dict
 
 import pandas as pd
 from sqlalchemy.engine import Engine
@@ -47,17 +47,18 @@ class ModelResult(Query):
         List of arguments passed in the Model.run() method
     run_kwargs : dict, optional
         List of named arguments passed in the Model.run() method
-    df : pandas.DataFrame, optional
-        Results of model.run()
     """
 
-    def __init__(self, parent, run_args=None, run_kwargs=None, df=None):
+    def __init__(
+        self,
+        parent: "Model",
+        run_args: Optional[List[Any]] = None,
+        run_kwargs: Optional[Dict[Any, Any]] = None,
+    ):
         self.model_dependencies, self.model_args = self._split_query_objects(parent)
         self.parent_class = parent.__class__.__name__
-        self.run_args = run_args
-        self.run_kwargs = run_kwargs
-        if df is not None:
-            self._df = df
+        self.run_args = run_args if run_args is not None else []
+        self.run_kwargs = run_kwargs if run_kwargs is not None else {}
 
         super().__init__()
 
