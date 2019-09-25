@@ -1,14 +1,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from datetime import date
+from datetime import date, datetime
 
 import pytest
 from flowmachine.features import DistanceSeries, daily_location, SubscriberLocations
-from numpy import isnan
 
 from flowmachine.core import make_spatial_unit
-from unittest.mock import Mock
 
 
 @pytest.mark.parametrize(
@@ -69,6 +67,21 @@ def test_returns_expected_values_fixed_point(
     ).set_index(["subscriber", "datetime"])
     assert df.loc[(sub_a_id, date(2016, 1, 1))].value == pytest.approx(sub_a_expected)
     assert df.loc[(sub_b_id, date(2016, 1, 6))].value == pytest.approx(sub_b_expected)
+
+
+def test_no_cast_for_below_day(get_dataframe):
+    """
+    Test that results aren't cast to date for smaller time buckets.
+    """
+    df = get_dataframe(
+        DistanceSeries(
+            subscriber_locations=SubscriberLocations(
+                "2016-01-01", "2016-01-02", spatial_unit=make_spatial_unit("lon-lat")
+            ),
+            time_bucket="hour",
+        )
+    )
+    assert isinstance(df.datetime[0], datetime)
 
 
 def test_error_when_subs_locations_not_point_geom():
