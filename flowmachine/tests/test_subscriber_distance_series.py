@@ -139,19 +139,6 @@ def test_invalid_time_bucket_raises_error():
         )
 
 
-def test_invalid_unit_raises_error():
-    """
-    Test that passing an invalid unit raises an error.
-    """
-    with pytest.raises(ValueError):
-        DistanceSeries(
-            subscriber_locations=SubscriberLocations(
-                "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
-            ),
-            unit="NOT_A_UNIT",
-        )
-
-
 def test_reference_raises_error():
     """
     Test that passing an invalid reference location raises an error.
