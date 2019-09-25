@@ -8,6 +8,7 @@ Tests for the PopulationWeightedOpportunities() class.
 
 import pytest
 
+from flowmachine.core.errors import UnstorableQueryError
 from flowmachine.models import PopulationWeightedOpportunities
 
 
@@ -25,23 +26,23 @@ def test_returns_correct_results(get_dataframe):
     assert set_df.loc["0xqNDj"]["site_id_to"].values[7] == "DonxkP"
 
     assert set_df.loc["0xqNDj"]["prediction"].values[1] == pytest.approx(
-        0.00425979428316989
+        0.00428076166366159
     )
     assert set_df.loc["0xqNDj"]["prediction"].values[3] == pytest.approx(
-        0.0159849136646041
+        0.0160635939352117
     )
     assert set_df.loc["0xqNDj"]["prediction"].values[7] == pytest.approx(
-        0.00687498444435647
+        0.0069088242040108
     )
 
     assert set_df.loc["0xqNDj"]["probability"].values[1] == pytest.approx(
-        0.00193627012871359
+        0.00194580075620981
     )
     assert set_df.loc["0xqNDj"]["probability"].values[3] == pytest.approx(
-        0.00726586984754731
+        0.00730163360691442
     )
     assert set_df.loc["0xqNDj"]["probability"].values[7] == pytest.approx(
-        0.00312499292925294
+        0.00314037463818673
     )
 
 
@@ -60,23 +61,23 @@ def test_run_with_location_vector(get_dataframe):
     assert set_df.loc["0xqNDj"]["site_id_to"].values[7] == "DonxkP"
 
     assert set_df.loc["0xqNDj"]["prediction"].values[1] == pytest.approx(
-        0.038338148548529
+        0.0385268549729543
     )
     assert set_df.loc["0xqNDj"]["prediction"].values[3] == pytest.approx(
-        0.143864222981437
+        0.144572345416906
     )
     assert set_df.loc["0xqNDj"]["prediction"].values[7] == pytest.approx(
-        0.0618748599992082
+        0.0621794178360972
     )
 
     assert set_df.loc["0xqNDj"]["probability"].values[1] == pytest.approx(
-        0.00193627012871359
+        0.00194580075620981
     )
     assert set_df.loc["0xqNDj"]["probability"].values[3] == pytest.approx(
-        0.00726586984754731
+        0.00730163360691442
     )
     assert set_df.loc["0xqNDj"]["probability"].values[7] == pytest.approx(
-        0.00312499292925294
+        0.00314037463818673
     )
 
 
@@ -162,7 +163,7 @@ def test_get_stored():
 
 def test_model_result_store_dependencies():
     """
-    Test that storing a ModelResult with store_dependencies=True stores the model's dependencies.
+    Test that storing a ModelResult with store_dependencies=True stores the model's (storable) dependencies.
     """
     p = PopulationWeightedOpportunities("2016-01-01", "2016-01-02")
     mr = p.run(departure_rate_vector={"0xqNDj": 0.9}, ignore_missing=True)
@@ -170,7 +171,12 @@ def test_model_result_store_dependencies():
     # Check that the dependencies aren't all already stored
     assert not all([dep.is_stored for dep in deps])
     mr.store(store_dependencies=True).result()
-    assert all([dep.is_stored for dep in deps])
+    for dep in deps:
+        try:
+            dep.table_name
+            assert dep.is_stored
+        except NotImplementedError:
+            assert not dep.is_stored
 
 
 def test_model_result_string_rep():

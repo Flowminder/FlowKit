@@ -9,10 +9,38 @@ matrix from a given point collection.
 """
 from typing import List, Optional
 
+from flowmachine.core import Table
 from ...core.query import Query
 from ...core.mixins import GraphMixin
 from ...core import make_spatial_unit
 from ...core.spatial_unit import LonLatSpatialUnit
+
+
+class _GeomDistanceMatrix(Query):
+    def __init__(self, *, geom_table):
+        self.geom_table = geom_table
+        super().__init__()
+
+    @property
+    def column_names(self) -> List[str]:
+        return ["geom_origin", "geom_destination", "value"]
+
+    def _make_query(self):
+        geom_query = f"SELECT geom_point as geom FROM {self.geom_table.fully_qualified_table_name} GROUP BY geom"
+
+        sql = f"""
+            SELECT
+                A.geom as geom_origin,
+                B.geom as geom_destination,
+                ST_Distance(
+                    A.geom::geography, 
+                    B.geom::geography
+                ) / 1000 AS value
+            FROM ({geom_query}) AS A
+            CROSS JOIN ({geom_query}) AS B
+        """
+
+        return sql
 
 
 class DistanceMatrix(GraphMixin, Query):
@@ -49,21 +77,41 @@ class DistanceMatrix(GraphMixin, Query):
             self.spatial_unit = spatial_unit
 
         self.spatial_unit.verify_criterion("has_lon_lat_columns")
-
+        self.geom_matrix = _GeomDistanceMatrix(geom_table=self.spatial_unit.geom_table)
         self.return_geometry = return_geometry
 
         super().__init__()
 
     @property
+    def table_name(self):
+        raise NotImplementedError("Store this object's geom_matrix instead.")
+
+    @property
     def column_names(self) -> List[str]:
         col_names = [f"{c}_from" for c in self.spatial_unit.location_id_columns]
         col_names += [f"{c}_to" for c in self.spatial_unit.location_id_columns]
-        col_names += ["distance"]
+        col_names += ["value"]
         if self.return_geometry:
             col_names += ["geom_origin", "geom_destination"]
         return col_names
 
     def _make_query(self):
+        if self.spatial_unit == LonLatSpatialUnit():
+            if self.return_geometry:
+                return_geometry_statement = """
+                    ,
+                    geom_origin,
+                    geom_destination
+                """
+            else:
+                return_geometry_statement = ""
+            return f"""
+            SELECT ST_X(geom_origin) as lon_from, ST_Y(geom_origin) as lat_from,
+            ST_X(geom_destination) as lon_to, ST_Y(geom_destination) as lat_to,
+            value
+            {return_geometry_statement}
+            FROM ({self.geom_matrix.get_query()}) G
+            """
         cols_A = ",".join(
             [f"A.{c} AS {c}_from" for c in self.spatial_unit.location_id_columns]
         )
@@ -86,14 +134,15 @@ class DistanceMatrix(GraphMixin, Query):
             SELECT
                 {cols_A},
                 {cols_B},
-                ST_Distance(
-                    A.geom::geography, 
-                    B.geom::geography
-                ) / 1000 AS distance
+                value
                 {return_geometry_statement}
             FROM ({geom_query}) AS A
             CROSS JOIN ({geom_query}) AS B
-            ORDER BY distance DESC
+            LEFT JOIN
+            ({self.geom_matrix.get_query()}) G
+            ON A.geom=G.geom_origin
+            AND
+            B.geom=G.geom_destination
         """
 
         return sql

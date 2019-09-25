@@ -74,24 +74,20 @@ class _populationBuffer(Query):
         """
         cols = self.spatial_unit.location_id_columns
 
-        from_cols = ", ".join("{c}_from".format(c=c) for c in cols)
-        to_cols = ", ".join("{c}_to".format(c=c) for c in cols)
-        sql = """
+        from_cols = ", ".join(f"{c}_from" for c in cols)
+        to_cols = ", ".join(f"{c}_to" for c in cols)
+        sql = f"""
 
             SELECT
-                {froms},
-                {tos},
-                A.distance AS distance,
+                {from_cols},
+                {to_cols},
+                A.value AS distance,
                 A.geom_origin AS geom_origin,
                 A.geom_destination AS geom_destination,
-                ST_Buffer(A.geom_destination::geography, A.distance * 1000) AS geom_buffer
-            FROM ({distance_matrix_table}) AS A
+                ST_Buffer(A.geom_destination::geography, A.value * 1000) AS geom_buffer
+            FROM ({self.distance_matrix.geom_matrix.get_query()}) AS A
 
-        """.format(
-            distance_matrix_table=self.distance_matrix.get_query(),
-            froms=from_cols,
-            tos=to_cols,
-        )
+        """
 
         return sql
 
@@ -100,10 +96,9 @@ class _populationBuffer(Query):
         cols = self.spatial_unit.location_id_columns
 
         return (
-            ["id"]
-            + [f"{c}_from" for c in cols]
+            [f"{c}_from" for c in cols]
             + [f"{c}_to" for c in cols]
-            + ["distance", "geom_buffer", "buffer_population", "n_sites"]
+            + ["buffer_population"]
         )
 
     def _make_query(self):
@@ -114,52 +109,29 @@ class _populationBuffer(Query):
         """
         cols = self.spatial_unit.location_id_columns
 
-        from_cols = ", ".join("B.{c}_from".format(c=c) for c in cols)
-        outer_from_cols = ", ".join("C.{c}_from".format(c=c) for c in cols)
-        to_cols = ", ".join("B.{c}_to".format(c=c) for c in cols)
-        outer_to_cols = ", ".join("C.{c}_to".format(c=c) for c in cols)
-        pop_join = " AND ".join("A.{c} = B.{c}_to".format(c=c) for c in cols)
-        sql = """
-            SELECT row_number() OVER(ORDER BY C.geom_buffer) AS id,
-                {froms_outer},
-                {tos_outer},
-                C.distance,
-                C.geom_buffer,
-                sum(C.destination_population) AS buffer_population,
-                count(*) AS n_sites
-                FROM
-                (SELECT
-                    {froms},
-                    {tos},
-                    B.distance,
-                    B.geom_buffer,
-                    A.destination_population
-                FROM (
-                    SELECT DISTINCT ON ({tos})
-                        {tos},
-                        B.geom_destination,
-                        A.total AS destination_population
-                    FROM ({population_table}) AS A
-                    JOIN ({location_buffer_table}) AS B
-                        ON {pop_join}
-                ) AS A
-                INNER JOIN ({location_buffer_table}) AS B
-                    ON ST_Intersects(B.geom_buffer::geography,          
-                                    A.geom_destination::geography)) AS C
-            GROUP BY {froms_outer},
-                    {tos_outer},
-                    C.distance,
-                    C.geom_buffer
+        #
+        # The summing over partition - this works because at each row you're summing over the pops of all
+        # rows with a distance less than the current one with the partitions over the destination row.
+        #
 
-        """.format(
-            population_table=self.population_object.get_query(),
-            location_buffer_table=self.__get_location_buffer(),
-            pop_join=pop_join,
-            froms=from_cols,
-            tos=to_cols,
-            froms_outer=outer_from_cols,
-            tos_outer=outer_to_cols,
-        )
+        sql = f"""
+        SELECT   
+        {", ".join(f"{c}_{direction}" for direction in ("from", "to") for c in cols  if c != "value")},
+         sum(src_pop) over (partition by {", ".join(f"{c}_to" for c in cols if c != "value")} order by value)-src_pop as buffer_population 
+         FROM (
+            (SELECT * FROM 
+            (SELECT {", ".join(f"hl_{direction}.{c} as {c}_{direction}" for c in cols for direction in ("to", "from"))}, hl_from.total as src_pop, hl_to.total as sink_pop
+            FROM
+            ({self.population_object.get_query()}) as hl_from
+            CROSS JOIN 
+            ({self.population_object.get_query()}) as hl_to
+            ) pops
+            LEFT JOIN
+            ({self.distance_matrix.get_query()}) as dm
+            USING ({", ".join(f"{c}_{direction}" for c in cols for direction in ("to", "from") if c != "value")}))
+         ) distance_pop_matrix
+        
+        """
 
         return sql
 
@@ -375,9 +347,7 @@ class PopulationWeightedOpportunities(Model):
             population_buffer.set_index(ix, inplace=True)
 
             M = population_df["total"].sum()
-            N = len(
-                population_df[self.spatial_unit.location_id_columns].drop_duplicates()
-            )
+
             beta = 1 / M
 
             locations = population_df[
