@@ -8,17 +8,15 @@ Per subscriber time series of distances from some reference location.
 """
 from typing import List, Optional
 
+from flowmachine.core import Query
 from flowmachine.features import DistanceSeries
 from flowmachine.features.spatial import DistanceMatrix
+from flowmachine.features.subscriber.distance_series import valid_time_buckets
 from .metaclasses import SubscriberFeature
 from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 
 
-valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
-valid_time_buckets = ["second", "minute", "hour", "day", "month", "year", "century"]
-
-
-class ImputedDistanceSeries(DistanceSeries):
+class ImputedDistanceSeries(Query):
     """
     Per subscriber time series of distances from some reference location, with gaps
     filled using a rolling median.
@@ -39,13 +37,26 @@ class ImputedDistanceSeries(DistanceSeries):
 
         super().__init__()
 
+    @property
+    def column_names(self) -> List[str]:
+        return self.distance_series.column_names
+
     def _make_query(self):
         # First we need to make the series sparse
+        if valid_time_buckets.index(
+            self.distance_series.aggregate_by
+        ) > valid_time_buckets.index(
+            "hour"
+        ):  # Slightly nicer to cast things which aren't timestamps to a date
+            date_cast = "::date"
+        else:
+            date_cast = ""
         return f"""
-        SELECT subscriber, datetime, rolling_median_impute(value, {self.window_size}) as value FROM
+        SELECT subscriber, datetime{date_cast}, rolling_median_impute(value, {self.window_size}) OVER(partition by subscriber order by datetime) as value FROM
         (SELECT subscriber, 
-        generate_series(timestamptz '{self.distance_series.start}', '{self.distance_series.stop}'::timestamptz + interval '1' day, '1 {self.distance_series.aggregate_by}') 
-            FROM ({self.distance_series.get_query()}) _ GROUP BY subscriber) full
+        generate_series(timestamptz '{self.distance_series.start}', '{self.distance_series.stop}'::timestamptz - interval '1' second, '1 {self.distance_series.aggregate_by}') as datetime 
+            FROM ({self.distance_series.get_query()}) _ GROUP BY subscriber HAVING COUNT(value) > {self.window_size}) sparse
         LEFT JOIN
             ({self.distance_series.get_query()}) series
+        USING (subscriber, datetime)
         """
