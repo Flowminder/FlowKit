@@ -103,7 +103,8 @@ class Query(metaclass=ABCMeta):
                     continue
                 elif isinstance(item, list) or isinstance(item, tuple):
                     item = sorted(
-                        item, key=lambda x: x.query_id if isinstance(x, Query) else x
+                        item,
+                        key=lambda x: x.query_id if isinstance(x, Query) else str(x),
                     )
                 elif isinstance(item, dict):
                     item = json.dumps(item, sort_keys=True, default=str)

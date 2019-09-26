@@ -15,7 +15,7 @@ of postgres.
 from concurrent.futures import Future
 from time import sleep
 
-from typing import List, Union
+from typing import List, Union, Any, Optional, Dict
 
 import pandas as pd
 from sqlalchemy.engine import Engine
@@ -47,17 +47,18 @@ class ModelResult(Query):
         List of arguments passed in the Model.run() method
     run_kwargs : dict, optional
         List of named arguments passed in the Model.run() method
-    df : pandas.DataFrame, optional
-        Results of model.run()
     """
 
-    def __init__(self, parent, run_args=None, run_kwargs=None, df=None):
+    def __init__(
+        self,
+        parent: "Model",
+        run_args: Optional[List[Any]] = None,
+        run_kwargs: Optional[Dict[Any, Any]] = None,
+    ):
         self.model_dependencies, self.model_args = self._split_query_objects(parent)
         self.parent_class = parent.__class__.__name__
-        self.run_args = run_args
-        self.run_kwargs = run_kwargs
-        if df is not None:
-            self._df = df
+        self.run_args = run_args if run_args is not None else []
+        self.run_kwargs = run_kwargs if run_kwargs is not None else {}
 
         super().__init__()
 
@@ -104,14 +105,16 @@ class ModelResult(Query):
         if self.is_stored:
             return super().__iter__()
         else:
-            self._query_object = self._df.iterrows()
+            self._query_object = self._df.itertuples(
+                index=False
+            )  # No index because we're impersonating a rowproxy
         return self
 
     def __next__(self):
         if self.is_stored:
             return super().__next__()
         else:
-            return self._query_object.__next__()
+            return tuple(self._query_object.__next__())  # Pandas tuples aren't tuples
 
     def __len__(self):
         try:
@@ -124,7 +127,18 @@ class ModelResult(Query):
         try:
             return self._df.columns.tolist()
         except AttributeError:
-            return super().column_names
+            if self.is_stored:
+                return [
+                    x[0]
+                    for x in self.connection.fetch(
+                        f"""
+                SELECT column_name
+                  FROM information_schema.columns
+                 WHERE table_schema = 'cache'
+                   AND table_name   = '{self.table_name}'
+                """
+                    )
+                ]
 
     def to_sql(
         self,
