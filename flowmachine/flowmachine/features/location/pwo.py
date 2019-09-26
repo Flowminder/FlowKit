@@ -128,7 +128,7 @@ class PopulationWeightedOpportunities(Query):
         ISO format date string denoting the first day of data to include
     stop : str
         ISO format date string denoting the last day of data to include
-    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default admin3
+    spatial_unit : flowmachine.core.spatial_unit.*SpatialUnit, default versioned-site
         Spatial unit to which subscriber locations will be mapped. See the
         docstring of make_spatial_unit for more information.
     departure_rate : float, or Dataframe, default 0.1
