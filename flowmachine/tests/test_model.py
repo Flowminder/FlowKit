@@ -138,6 +138,18 @@ def test_class_get_stored():
     assert [dummy_result.query_id] == [q.query_id for q in ModelResult.get_stored()]
 
 
+def test_class_get_stored():
+    """
+    Test that stored model results are retrieved by a call to get_stored on a model class.
+    """
+
+    dq = DummyQuery("DUMMY")
+    dummy = DummyModel(dq, [1], {1: 1})
+    dummy_result = dummy.run(2)
+    dummy_result.store().result()
+    assert [dummy_result.query_id] == [q.query_id for q in DummyModel.get_stored()]
+
+
 def test_model_result_column_names():
     """
     Test that model result columns are correct
