@@ -6,7 +6,7 @@ import pytest
 import pytz
 from datetime import datetime
 
-from flowmachine.features import SubscriberSigntings
+from flowmachine.features import SubscriberSightings
 from flowmachine.core import CustomQuery
 from flowmachine.core.subscriber_subsetter import SubscriberSubsetterForFlowmachineQuery
 
@@ -14,7 +14,7 @@ from flowmachine.core.subscriber_subsetter import SubscriberSubsetterForFlowmach
 def test_columns_and_identifier_are_set():
     """Test that all the columns and identifier are set on the object."""
     identifier = "imei"
-    ss = SubscriberSigntings(
+    ss = SubscriberSightings(
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
 
@@ -27,7 +27,7 @@ def test_columns_and_identifier_are_set():
 def test_subscriber_identifier_can_be_uppercase():
     """Test that subscriber_identifier can be provided in uppercase."""
     identifier = "IMEI"
-    ss = SubscriberSigntings(
+    ss = SubscriberSightings(
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
 
@@ -36,7 +36,7 @@ def test_subscriber_identifier_can_be_uppercase():
 
 def test_msisdn_set_as_identifier():
     """Test that msisdn is set as the default identifier."""
-    ss = SubscriberSigntings("2016-01-01", "2016-01-02")
+    ss = SubscriberSightings("2016-01-01", "2016-01-02")
 
     assert "msisdn" == ss.subscriber_identifier
 
@@ -44,7 +44,7 @@ def test_msisdn_set_as_identifier():
 @pytest.mark.parametrize("identifier", ("msisdn", "imei", "imsi"))
 def test_colums_are_set_in_sql(identifier):
     """Test that the identifier is set an the colums."""
-    ss = SubscriberSigntings(
+    ss = SubscriberSightings(
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
 
@@ -54,12 +54,12 @@ def test_colums_are_set_in_sql(identifier):
 def test_error_on_start_is_stop():
     """Test that a value error is raised when start == stop"""
     with pytest.raises(ValueError):
-        SubscriberSigntings("2016-01-01", "2016-01-01")
+        SubscriberSightings("2016-01-01", "2016-01-01")
 
 
 def test_set_date_none():
     """Test that setting a start/stop to None will use min/max dates."""
-    ss = SubscriberSigntings(None, "2016-01-04")
+    ss = SubscriberSightings(None, "2016-01-04")
     df = ss.head()
 
     min = df["datetime"].min().to_pydatetime()
@@ -67,7 +67,7 @@ def test_set_date_none():
 
     assert min.timestamp() > min_comparison.timestamp()
 
-    ss = SubscriberSigntings("2016-01-01", None)
+    ss = SubscriberSightings("2016-01-01", None)
     df = ss.head()
 
     max = df["datetime"].max().to_pydatetime()
@@ -78,7 +78,7 @@ def test_set_date_none():
 
 def test_dates_select_correct_data():
     """Test that dates select the correct data."""
-    ss = SubscriberSigntings("2016-01-01", "2016-01-02")
+    ss = SubscriberSightings("2016-01-01", "2016-01-02")
     df = ss.head(50)
 
     min = df["datetime"].min().to_pydatetime()
@@ -99,7 +99,7 @@ def test_that_subscriber_subset_is_added(get_dataframe):
         )
     )
 
-    ss = SubscriberSigntings("2016-01-01", "2016-01-02", subscriber_subset=subsetter)
+    ss = SubscriberSightings("2016-01-01", "2016-01-02", subscriber_subset=subsetter)
     query = ss.get_query()
 
     assert "FROM events.calls" in query
