@@ -68,9 +68,6 @@ CREATE SCHEMA IF NOT EXISTS interactions;
 
     ) PARTITION BY LIST (date_sk);
 
-    CREATE INDEX ON interactions.subscriber_sightings_fact (date_sk);
-    CREATE INDEX ON interactions.subscriber_sightings_fact (date_sk, sighting_id);
-
     CREATE TABLE IF NOT EXISTS interactions.locations(
 
         cell_id                 BIGSERIAL PRIMARY KEY,
