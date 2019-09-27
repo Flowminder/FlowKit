@@ -94,6 +94,20 @@ class SubscriberSightings(Query):
                 select([func.max(self.sqlalchemy_mainTable.c.timestamp)])
             )
             self.stop = query.fetchall()[0]["max_1"].strftime("%Y-%m-%d")
+            
+        # Convert dates to integers
+        table = get_sqlalchemy_table_definition(
+            "interactions.date_dim", engine=Query.connection.engine
+        )
+        query = self.connection.engine.execute(
+            select([table.c.date_sk]).where(table.c.date == self.start)
+        )
+        
+        self.start = query.first()["date_sk"]
+        query = self.connection.engine.execute(
+            select([table.c.date_sk]).where(table.c.date == self.stop)
+        )
+        self.stop = query.first()["date_sk"]
 
         # TODO - perhaps add a check that the dates are actually in the main table.
         # Check if the dates are the same
@@ -127,13 +141,13 @@ class SubscriberSightings(Query):
         # Add the start date - this will need hours added to it at some point.
         if self.start is not None:
             select_stmt = select_stmt.where(
-                self.sqlalchemy_mainTable.c.timestamp >= f"{self.start} 00:00:00"
+                self.sqlalchemy_mainTable.c.date_sk >= self.start
             )
 
         # Add the stop date - this will need hours added to it at some point.
         if self.stop is not None:
             select_stmt = select_stmt.where(
-                self.sqlalchemy_mainTable.c.timestamp < f"{self.stop} 00:00:00"
+                self.sqlalchemy_mainTable.c.date_sk < self.stop
             )
 
         # Added the subscriber_subsetter
