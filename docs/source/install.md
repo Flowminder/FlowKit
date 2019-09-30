@@ -27,7 +27,7 @@ There are additional requirements for a development setup. See the [Developer in
 
 ## Quick Install
 
-This quick install guide will install the major components of FlowKit together with an intial setup and example analysis query.
+This quick install guide will install the major components of FlowKit together with an initial setup and example analysis query.
 
 The bulk of the installation process consists of using [Docker Compose](https://docs.docker.com/compose/) to download [Docker](https://docs.docker.com/install/) containers from [Docker Hub](https://hub.docker.com/u/flowminder), followed by a `pip install` of FlowClient.
 
@@ -35,7 +35,7 @@ These instructions assume use of [Pyenv](https://github.com/pyenv/pyenv) and [Pi
 
 Docker containers for FlowAPI, FlowMachine, FlowDB, FlowAuth and the worked examples are provided in the Docker Hub repositories [flowminder/flowapi](https://hub.docker.com/r/flowminder/flowapi), [flowminder/flowmachine](https://hub.docker.com/r/flowminder/flowmachine), [flowminder/flowdb](https://hub.docker.com/r/flowminder/flowdb), [flowminder/flowauth](https://hub.docker.com/r/flowminder/flowauth), and [flowminder/flowkit-examples](https://hub.docker.com/r/flowminder/flowkit-examples) respectively. To install them, you will need [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
-Start the FlowKit test system by running
+Ensure that you have a Docker installed and running, then start the FlowKit test system by running
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick_start.sh)
