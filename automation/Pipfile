@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+geopandas = "*"
+descartes = "*"
+flowclient = {editable = true,path = "./../flowclient"}
+jupyterlab = "*"
+matplotlib = "*"
+papermill = "*"
+prefect = "*"
+nteract-scrapbook = "*"
+ipywidgets = "*"
+sh = "*"
+
+[requires]
+python_version = "3.7"
