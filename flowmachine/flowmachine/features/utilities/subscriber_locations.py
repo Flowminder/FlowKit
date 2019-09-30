@@ -14,6 +14,7 @@ later used for computing subscriber features.
 
 
 from .events_tables_union import EventsTablesUnion
+from .subscriber_sightings import SubscriberSightings
 from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
 
 from ...core.query import Query
@@ -102,8 +103,10 @@ class SubscriberLocations(Query):
 
         self.tables = table
         cols = [self.subscriber_identifier, "datetime", "location_id"]
-        self.unioned = location_joined_query(
-            EventsTablesUnion(
+        # Note: the columns, tables and hours arguments are only
+        # passed for completeness, they don't do anything.
+        self.sightings = location_joined_query(
+            SubscriberSightings(
                 self.start,
                 self.stop,
                 columns=cols,
@@ -124,7 +127,7 @@ class SubscriberLocations(Query):
     def _make_query(self):
 
         if self.ignore_nulls:
-            where_clause = "WHERE location_id IS NOT NULL AND location_id !=''"
+            where_clause = "WHERE location_id IS NOT NULL AND location_id != 0"
         else:
             where_clause = ""
 
@@ -134,7 +137,7 @@ class SubscriberLocations(Query):
                 SELECT
                     subscriber, datetime as time, {location_cols}
                 FROM
-                    ({self.unioned.get_query()}) AS foo
+                    ({self.sightings.get_query()}) AS foo
                 {where_clause}
                 """
         return sql
