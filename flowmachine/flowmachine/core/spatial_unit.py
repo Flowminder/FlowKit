@@ -332,7 +332,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         """
 
     def _make_query(self):
-        loc_table_alias = "loc_table"
+        loc_table_alias = "geo_bridge"
 
         if hasattr(self.geom_table, "fully_qualified_table_name") and (
             self.geom_table.fully_qualified_table_name == self.connection.location_table
@@ -348,7 +348,7 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
             self._get_aliased_geom_table_cols(geom_table_alias)
         )
 
-        loc_table_cols_string = f"{loc_table_alias}.id AS location_id"
+        loc_table_cols_string = f"{loc_table_alias}.cell_id AS location_id"
 
         geom_table_col_aliases = [
             get_name_and_alias(c)[1] for c in self._geom_table_cols
@@ -360,15 +360,17 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
             # If we're not selecting dates from the geom table, we need to
             # select them from the location table
             loc_table_cols_string += f""",
-            {loc_table_alias}.date_of_first_service,
-            {loc_table_alias}.date_of_last_service
+            {loc_table_alias}.valid_from AS date_of_first_service,
+            {loc_table_alias}.valid_to AS date_of_last_service
             """
 
+        # Note: geography.geo_bridge is a temp replacement for usual
+        # connection to self.connection.location_table
         sql = f"""
         SELECT
             {loc_table_cols_string},
             {geom_table_cols_string}
-        FROM {self.connection.location_table} AS {loc_table_alias}
+        FROM geography.geo_bridge AS {loc_table_alias}
         {join_clause}
         """
 
@@ -616,13 +618,10 @@ class PolygonSpatialUnit(GeomSpatialUnit):
 
     def _join_clause(self, loc_table_alias: str, geom_table_alias: str) -> str:
         return f"""
-        INNER JOIN geography.geo_bridge AS geo_bridge
-        ON geo_bridge.cell_id = {loc_table_alias}.id
-        AND linkage_method = '{self.ident}'
-        
         INNER JOIN
             ({self.geom_table.get_query()}) AS {geom_table_alias}
         ON {geom_table_alias}.gid = geo_bridge.geo_id
+        AND geo_bridge.linkage_method = '{self.ident}'
         """
 
 
