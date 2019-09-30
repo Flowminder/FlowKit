@@ -314,10 +314,10 @@
         },
         "hypercorn": {
             "hashes": [
-                "sha256:21d9be84ea2a227e8332074b4269d5a1a044d3bb3884887d2a54cf6d23945574",
-                "sha256:e451b8cbfd58a12015e8b840cb9b0f531d2c16310c7175f6910fbd02ddc97448"
+                "sha256:cc5d6e0f99b5b04be1f21677ee1144e0d34681261ed2322aede75054349f0beb",
+                "sha256:d367f25c015ddd815639fe64cd2bea1fc4cfe22ad62970944e79bf45ac5f93f4"
             ],
-            "version": "==0.8.2"
+            "version": "==0.8.4"
         },
         "hyperframe": {
             "hashes": [
@@ -629,10 +629,10 @@
         },
         "python-box": {
             "hashes": [
-                "sha256:4c698279ec1e28089389659b21610093f81fa5d59a0090af4dadc08ca6fe08dc",
-                "sha256:5b044a055f9f93ca7e19343bf0f2e8f13a45ef3dfa37d67d9d98e52601372e89"
+                "sha256:7d091f833680a02b6f1fc6c062ea8f6e5ece28b30b13675b2cdb8d9eb07db918",
+                "sha256:ff2ccbbc06b9b8cfb4d00e3113079bfcd4a050365ad9aa774cb3003da705ad06"
             ],
-            "version": "==3.4.4"
+            "version": "==3.4.5"
         },
         "python-dateutil": {
             "hashes": [
@@ -833,10 +833,10 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:2f3eadfea5d92bc7899e75b5968410b749a054b492d5a6379c1344a1481bc2cb",
-                "sha256:9c6c593cb28f52075016307fc26b0a0f8e82bc7d1ff19aaaa959b91710a56c47"
+                "sha256:3de946ffbed6e6746608990594d08faac602528ac7015ac28d33cee6a45b7398",
+                "sha256:9a107b99a5393caf59c7aa3c1249c16e6879447533d0887f4336dde834c7be86"
             ],
-            "version": "==1.25.5"
+            "version": "==1.25.6"
         },
         "wcwidth": {
             "hashes": [
