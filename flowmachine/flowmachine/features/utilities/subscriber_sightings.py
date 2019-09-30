@@ -45,8 +45,19 @@ class SubscriberSightings(Query):
     """
 
     def __init__(
-        self, start, stop, *, subscriber_subset=None, subscriber_identifier="msisdn"
+        self,
+        start,
+        stop,
+        *,
+        subscriber_subset=None,
+        subscriber_identifier="msisdn",
+        columns,
+        tables=None,
+        hours="all",
     ):
+        # Note: the columns, tables and hours arguments are only
+        # passed for completeness, they will need to be added in.
+
         # Set start stop dates, subscriber_subsetter & subscriber_identifier
         self.start = start
         self.stop = stop
@@ -94,7 +105,7 @@ class SubscriberSightings(Query):
                 select([func.max(self.sqlalchemy_mainTable.c.timestamp)])
             )
             self.stop = query.fetchall()[0]["max_1"].strftime("%Y-%m-%d")
-            
+
         # Convert dates to integers
         table = get_sqlalchemy_table_definition(
             "interactions.date_dim", engine=Query.connection.engine
@@ -102,7 +113,7 @@ class SubscriberSightings(Query):
         query = self.connection.engine.execute(
             select([table.c.date_sk]).where(table.c.date == self.start)
         )
-        
+
         self.start = query.first()["date_sk"]
         query = self.connection.engine.execute(
             select([table.c.date_sk]).where(table.c.date == self.stop)
