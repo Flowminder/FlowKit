@@ -69,9 +69,6 @@ parser.add_argument(
     "--n-sites", type=int, default=10000, help="Number of sites to generate."
 )
 parser.add_argument(
-    "--n-cells", type=int, default=1, help="Number of cells to generate per site."
-)
-parser.add_argument(
     "--n-tacs", type=int, default=2000, help="Number of phone models to generate."
 )
 parser.add_argument(
@@ -270,7 +267,6 @@ if __name__ == "__main__":
     with log_duration("Generating synthetic data..", **vars(args)):
         # Limit num_sites to 10000 due to geom.dat.
         num_sites = min(10000, args.n_sites)
-        num_cells = args.n_cells
         num_tacs = args.n_tacs
         num_subscribers = args.n_subscribers
         num_days = args.n_days
@@ -375,20 +371,22 @@ if __name__ == "__main__":
             # The following generates the infrastructure & interactions schema data
             # 1. Sites and cells
             with log_duration(
-                job=f"Generating {num_sites} sites with {num_cells} cell per site."
+                job=f"Generating {num_sites} sites/locations & populating geo_bridge."
             ):
                 with open(f"{dir}/../synthetic_data/data/geom.dat", "r") as f:
                     # First truncate the tables
                     connection.execute("TRUNCATE infrastructure.sites;")
-                    connection.execute("TRUNCATE TABLE infrastructure.cells CASCADE;")
+                    connection.execute("TRUNCATE geography.geo_bridge;")
+                    connection.execute("TRUNCATE TABLE interactions.locations CASCADE;")
 
                     cell_id = start_id
 
                     # First create each site
-                    for x in range(start_id, num_sites + start_id):
+                    for x in range(1, num_sites + 1):
                         hash = generate_hash(x + 1000)
                         geom_point = f.readline().strip()
-
+                        
+                        # Insert sites
                         connection.execute(
                             f"""
                                 INSERT INTO infrastructure.sites (id, version, date_of_first_service, date_of_last_service, geom_point) 
@@ -396,16 +394,23 @@ if __name__ == "__main__":
                             """
                         )
 
-                        # And for each site, create n number of cells
-                        for y in range(0, num_cells):
-                            cellhash = generate_hash(cell_id)
+                        # Insert locations
+                        connection.execute(
+                            f"""
+                                INSERT INTO interactions.locations (cell_id, site_id, "position") 
+                                VALUES ({x}, '{hash}', '{geom_point}');
+                            """
+                        )
+                        
+                        # Populate the geo_bridge table
+                        for y in ["admin1", "admin2", "admin3"]:
                             connection.execute(
                                 f"""
-                                    INSERT INTO infrastructure.cells (id, version, site_id, date_of_first_service, date_of_last_service, geom_point) 
-                                    VALUES ('{cellhash}', 0, '{hash}', (date '{start_date}')::date, (date '{start_date}' + interval '{num_days} days')::date, '{geom_point}');
+                                    INSERT INTO geography.geo_bridge (cell_id, geo_id, valid_from, valid_to, linkage_method) (
+                                        SELECT {x}, gid, (date '{start_date}')::date, (date '{start_date}' + interval '{num_days} days')::date, '{y}' FROM geography.{y}
+                                        WHERE ST_WITHIN('{geom_point}'::GEOMETRY, ST_SETSRID(geom, 4326)::GEOMETRY)); 
                                 """
                             )
-                            cell_id += 1000
 
                     f.close()
 
