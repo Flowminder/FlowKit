@@ -323,6 +323,7 @@ if __name__ == "__main__":
         with connection.begin() as trans:
             # Setup stage: Tidy up old event tables on previous runs
             with log_duration(job=f"Tidy up event tables"):
+                # TODO - this will need to remove the subscriber_sightings_fact partitions
                 tables = connection.execute(
                     "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ '^calls_|sms_|mds_'"
                 ).fetchall()
@@ -330,7 +331,7 @@ if __name__ == "__main__":
                 for t in tables:
                     connection.execute(f"DROP TABLE events.{t[1]};")
 
-            # Steup stage 2. Load the variantions into a temp table
+            # Setup stage 2. Load the variantions into a temp table
             with log_duration(job=f"Import variation data"):
                 connection.execute(
                     f"""
@@ -360,7 +361,18 @@ if __name__ == "__main__":
 
                     f.close()
 
-            # The following generates the infrastructure schema data
+            # Setup stage 3. Create time dimension table
+            with log_duration(job=f"Populate the time_dimension table"):
+                # First truncate the tables
+                connection.execute("TRUNCATE interactions.time_dimension CASCADE;")
+                connection.execute(
+                    f"""
+                        INSERT INTO interactions.time_dimension (time_sk, hour)
+	                        SELECT id, id - 1 FROM (SELECT ROW_NUMBER() OVER() AS id FROM generate_series(1, 24, 1)) _
+                    """
+                )
+
+            # The following generates the infrastructure & interactions schema data
             # 1. Sites and cells
             with log_duration(
                 job=f"Generating {num_sites} sites with {num_cells} cell per site."
