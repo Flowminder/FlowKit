@@ -400,7 +400,7 @@ if __name__ == "__main__":
             # 2. TACS
             with log_duration(f"Generating {num_tacs} tacs."):
                 # First truncate the table
-                connection.execute("TRUNCATE infrastructure.tacs;")
+                connection.execute("TRUNCATE infrastructure.tacs CASCADE;")
                 # Then setup the temp sequences
                 brands = [
                     "Nokia",
