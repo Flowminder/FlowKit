@@ -337,9 +337,10 @@ class GeomSpatialUnit(SpatialUnitMixin, Query):
         if hasattr(self.geom_table, "fully_qualified_table_name") and (
             self.geom_table.fully_qualified_table_name == self.connection.location_table
         ):
-            # No need to join location_table to itself
-            geom_table_alias = loc_table_alias
-            join_clause = ""
+            # We need to join to the location_table, this seems like
+            # a temporary solution and would benefit from going elsewhere
+            geom_table_alias = "locations"
+            join_clause = f"INNER JOIN {self.connection.location_table} AS {geom_table_alias} USING (cell_id)"
         else:
             geom_table_alias = "geom_table"
             join_clause = self._join_clause(loc_table_alias, geom_table_alias)
@@ -455,7 +456,7 @@ class LonLatSpatialUnit(GeomSpatialUnit):
         geom_table_column_names: Union[str, Iterable[str]] = (),
         location_id_column_names: Union[str, Iterable[str]] = (),
         geom_table: Optional[Union[Query, str]] = None,
-        geom_column: str = "geom_point",
+        geom_column: str = "position",
         geom_table_join_on: Optional[str] = None,
         location_table_join_on: Optional[str] = None,
     ):
