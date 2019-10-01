@@ -7,6 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+
+## [0.9.0]
+
+### Added
 - FlowAuth now makes version information available at `/version` and displays it in the web ui. [#835](https://github.com/Flowminder/FlowKit/issues/835)
 - FlowETL now comes with a deployment example (in `flowetl/deployment_example/`). [#1126](https://github.com/Flowminder/FlowKit/issues/1126)
 - FlowETL now allows to run supplementary post-ETL queries. [#989](https://github.com/Flowminder/FlowKit/issues/989)
@@ -489,7 +500,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.8.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.9.0...master
+[0.9.0]: https://github.com/Flowminder/FlowKit/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/Flowminder/FlowKit/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/Flowminder/FlowKit/compare/0.6.4...0.7.0
 [0.6.4]: https://github.com/Flowminder/FlowKit/compare/0.6.3...0.6.4
