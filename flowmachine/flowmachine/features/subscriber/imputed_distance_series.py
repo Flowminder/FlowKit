@@ -6,14 +6,11 @@
 """
 Per subscriber time series of distances from some reference location.
 """
-from typing import List, Optional
+from typing import List
 
 from flowmachine.core import Query
 from flowmachine.features import DistanceSeries
-from flowmachine.features.spatial import DistanceMatrix
 from flowmachine.features.subscriber.distance_series import valid_time_buckets
-from .metaclasses import SubscriberFeature
-from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 
 
 class ImputedDistanceSeries(Query):
@@ -26,7 +23,7 @@ class ImputedDistanceSeries(Query):
     distance_series : DistanceSeries
         A subscriber distance series which may contain gaps.
     window_size : int, default 3
-        Number of observations to use for imputation.
+        Number of observations to use for imputation. Must be odd and positive.
 
 
     References
@@ -37,6 +34,10 @@ class ImputedDistanceSeries(Query):
     def __init__(self, *, distance_series: DistanceSeries, window_size: int = 3):
         self.distance_series = distance_series
         self.window_size = window_size
+        if self.window_size % 2 == 0:
+            raise ValueError("Window size must be odd.")
+        if self.window_size <= 1:
+            raise ValueError("Window size should be postive and greater than 1.")
 
         super().__init__()
 

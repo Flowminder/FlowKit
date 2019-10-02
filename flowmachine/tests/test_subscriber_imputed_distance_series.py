@@ -68,3 +68,14 @@ def test_impute(get_dataframe):
                 imputed.value.values.tolist()
                 == sql[sql.subscriber == sub].value.tolist()
             )
+
+
+@pytest.mark.parametrize(
+    "size, match", [(1, "positive"), (0, "positive"), (-1, "positive"), (4, "odd")]
+)
+def test_bad_window(size, match):
+    """
+    Test some median unfriendly window sizes raise errors.
+    """
+    with pytest.raises(ValueError, match=match):
+        ImputedDistanceSeries(None, window_size=size)
