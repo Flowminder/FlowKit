@@ -40,7 +40,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.date_dim(
 
         date_sk                 SERIAL PRIMARY KEY,
-        date                    TIMESTAMPTZ,
+        date                    DATE,
         day_of_week             TEXT,
         day_of_month            TEXT,
         year                    TEXT
