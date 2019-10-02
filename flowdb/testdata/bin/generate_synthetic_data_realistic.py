@@ -585,6 +585,14 @@ if __name__ == "__main__":
                       """
                 )
 
+                # 4.2 Create the subscriber_sightings_fact partition
+                connection.execute(
+                    f"""
+                    CREATE TABLE interactions.subscriber_sightings_fact_{str(i + 1).rjust(5, '0')} 
+                    PARTITION OF interactions.subscriber_sightings_fact FOR VALUES IN ({i + 1});
+                """
+                )
+
                 # 4.1 Calls
                 if num_calls > 0:
                     with log_duration(f"Generating {num_calls} call events for {date}"):
