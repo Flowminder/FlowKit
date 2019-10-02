@@ -15,7 +15,7 @@ class IterativeMedianFilter(Query):
     query_to_filter : Query
         Query to apply iterated median filter to.
     filter_window_size : int
-        Size of filter window - must be odd.
+        Size of filter window - must be odd, positive and more than 1.
     column_to_filter : str, default 'value'
         Column to apply the filter to.
     partition_column : str, default 'subscriber'
@@ -38,6 +38,8 @@ class IterativeMedianFilter(Query):
         self.filter_window_size = filter_window_size
         if (filter_window_size % 2) == 0:
             raise ValueError("filter_window_size must be odd.")
+        if not (filter_window_size > 1):
+            raise ValueError("filter_window_size must be positive and more than 1.")
         self.column_to_filter = column_to_filter
         if column_to_filter not in query_to_filter.column_names:
             raise ValueError(

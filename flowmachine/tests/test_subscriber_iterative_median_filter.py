@@ -3,16 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-from flowmachine.features import DistanceSeries, SubscriberLocations
-
-from flowmachine.core import make_spatial_unit, CustomQuery
-
-from flowmachine.features.subscriber.imputed_distance_series import (
+from flowmachine.features import (
+    DistanceSeries,
+    SubscriberLocations,
     ImputedDistanceSeries,
-)
-from flowmachine.features.subscriber.iterative_median_filter import (
     IterativeMedianFilter,
 )
+
+from flowmachine.core import make_spatial_unit, CustomQuery
 
 
 def test_partition_and_order_can_be_ommitted(get_dataframe):
@@ -70,11 +68,14 @@ def test_column_must_exist(column_arg):
         )
 
 
-def test_window_must_be_odd():
+@pytest.mark.parametrize(
+    "size, match", [(1, "positive"), (0, "positive"), (-1, "positive"), (4, "odd")]
+)
+def test_bad_window(size, match):
     """
-    Check window size must be odd.
+    Test some median unfriendly window sizes raise errors.
     """
-    with pytest.raises(ValueError, match="odd"):
+    with pytest.raises(ValueError, match=match):
         sl = SubscriberLocations(
             "2016-01-01",
             "2016-01-07",
@@ -84,7 +85,7 @@ def test_window_must_be_odd():
         ds = DistanceSeries(subscriber_locations=sl, statistic="min")
         IterativeMedianFilter(
             query_to_filter=ImputedDistanceSeries(distance_series=ds),
-            filter_window_size=2,
+            filter_window_size=size,
         )
 
 
