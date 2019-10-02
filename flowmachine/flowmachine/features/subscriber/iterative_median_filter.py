@@ -36,10 +36,10 @@ class IterativeMedianFilter(Query):
 
         self.query_to_filter = query_to_filter
         self.filter_window_size = filter_window_size
-        if (filter_window_size % 2) == 0:
-            raise ValueError("filter_window_size must be odd.")
         if not (filter_window_size > 1):
             raise ValueError("filter_window_size must be positive and more than 1.")
+        if (filter_window_size % 2) == 0:
+            raise ValueError("filter_window_size must be odd.")
         self.column_to_filter = column_to_filter
         if column_to_filter not in query_to_filter.column_names:
             raise ValueError(
