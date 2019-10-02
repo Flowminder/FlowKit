@@ -535,7 +535,7 @@ if __name__ == "__main__":
 
             trans.commit()
 
-        # 4. Subscriber sightings fact
+        # 4. Subscriber sightings fact data
         # Stores the PostgreSQL WITH statement to get subscribers
         with_sql = """
             WITH callers AS (
@@ -571,10 +571,19 @@ if __name__ == "__main__":
             """
         )
         # Loop over the days and generate all the types required
-        for date in (start_date + datetime.timedelta(days=i) for i in range(num_days)):
+        for i in range(num_days):
             with connection.begin() as trans:
                 # The date for the extended table names
-                table = date.strftime("%Y%m%d")
+                date = start_date + datetime.timedelta(days=i)
+
+                # 4.1 Create the date_dim row
+                connection.execute(
+                    f"""
+                    INSERT INTO interactions.date_dim (date_sk, date, day_of_week, day_of_month, year) VALUES (
+                        {i + 1}, DATE('{date}'), TO_CHAR(DATE('{date}'), 'day'), DATE_PART('day', DATE('{date}')), 
+                        DATE_PART('year', DATE('{date}')))
+                      """
+                )
 
                 # 4.1 Calls
                 if num_calls > 0:
