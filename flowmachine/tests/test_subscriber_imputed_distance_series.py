@@ -1,16 +1,14 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from datetime import date, datetime
 
 import pytest
-from flowmachine.features import DistanceSeries, daily_location, SubscriberLocations
+from flowmachine.features import DistanceSeries, SubscriberLocations
 
 from flowmachine.core import make_spatial_unit
 
 import pandas as pd
 
-# "AZj6MqBAryVyNRDo"
 from flowmachine.features.subscriber.imputed_distance_series import (
     ImputedDistanceSeries,
 )
@@ -64,9 +62,8 @@ def test_impute(get_dataframe):
         if ds_df[ds_df.subscriber == sub].datetime.nunique() > 3:
             to_be_imputed = ds_df[ds_df.subscriber == sub].sort_values("datetime")
             imputed = fill_in_dates(to_be_imputed, 3, sl.start, sl.stop)
-            assert (
-                imputed.value.values.tolist()
-                == sql[sql.subscriber == sub].value.tolist()
+            assert imputed.value.values.tolist() == pytest.approx(
+                sql[sql.subscriber == sub].value.tolist()
             )
 
 
@@ -78,4 +75,4 @@ def test_bad_window(size, match):
     Test some median unfriendly window sizes raise errors.
     """
     with pytest.raises(ValueError, match=match):
-        ImputedDistanceSeries(None, window_size=size)
+        ImputedDistanceSeries(distance_series=None, window_size=size)

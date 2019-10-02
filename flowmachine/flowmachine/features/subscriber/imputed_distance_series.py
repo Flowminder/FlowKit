@@ -9,7 +9,7 @@ Per subscriber time series of distances from some reference location.
 from typing import List
 
 from flowmachine.core import Query
-from flowmachine.features import DistanceSeries
+from flowmachine.features.subscriber.distance_series import DistanceSeries
 from flowmachine.features.subscriber.distance_series import valid_time_buckets
 
 
@@ -34,10 +34,10 @@ class ImputedDistanceSeries(Query):
     def __init__(self, *, distance_series: DistanceSeries, window_size: int = 3):
         self.distance_series = distance_series
         self.window_size = window_size
+        if self.window_size <= 1:
+            raise ValueError("Window size should be positive and greater than 1.")
         if self.window_size % 2 == 0:
             raise ValueError("Window size must be odd.")
-        if self.window_size <= 1:
-            raise ValueError("Window size should be postive and greater than 1.")
 
         super().__init__()
 
