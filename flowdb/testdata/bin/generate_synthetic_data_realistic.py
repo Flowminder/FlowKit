@@ -318,14 +318,16 @@ if __name__ == "__main__":
         # Main generation process
         with connection.begin() as trans:
             # Setup stage: Tidy up old event tables on previous runs
-            with log_duration(job=f"Tidy up event tables"):
-                # TODO - this will need to remove the subscriber_sightings_fact partitions
+            with log_duration(
+                job=f"Tidy up subscriber_sightings_fact and date_dim tables"
+            ):
+                connection.execute("TRUNCATE TABLE interactions.date_dim CASCADE;")
                 tables = connection.execute(
-                    "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ '^calls_|sms_|mds_'"
+                    "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ 'subscriber_sightings_fact_[0-9]+'"
                 ).fetchall()
 
                 for t in tables:
-                    connection.execute(f"DROP TABLE events.{t[1]};")
+                    connection.execute(f"DROP TABLE {t[0]}.{t[1]};")
 
             # Setup stage 2. Load the variantions into a temp table
             with log_duration(job=f"Import variation data"):
@@ -533,7 +535,7 @@ if __name__ == "__main__":
 
             trans.commit()
 
-        # 4. Event SQL
+        # 4. Subscriber sightings fact
         # Stores the PostgreSQL WITH statement to get subscribers
         with_sql = """
             WITH callers AS (
