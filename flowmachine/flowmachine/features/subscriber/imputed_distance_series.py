@@ -19,7 +19,7 @@ from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 class ImputedDistanceSeries(Query):
     """
     Per subscriber time series of distances from some reference location, with gaps
-    filled using a rolling median.
+    filled using a rolling median as used in[1]_.
 
     Parameters
     ----------
@@ -29,6 +29,9 @@ class ImputedDistanceSeries(Query):
         Number of observations to use for imputation.
 
 
+    References
+    ----------
+    .. [1] T. Li et al. https://arxiv.org/pdf/1908.02377.pdf
     """
 
     def __init__(self, *, distance_series: DistanceSeries, window_size: int = 3):
