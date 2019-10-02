@@ -385,7 +385,7 @@ if __name__ == "__main__":
                     for x in range(1, num_sites + 1):
                         hash = generate_hash(x + 1000)
                         geom_point = f.readline().strip()
-                        
+
                         # Insert sites
                         connection.execute(
                             f"""
@@ -401,7 +401,7 @@ if __name__ == "__main__":
                                 VALUES ({x}, '{hash}', '{geom_point}');
                             """
                         )
-                        
+
                         # Populate the geo_bridge table
                         for y in ["admin1", "admin2", "admin3"]:
                             connection.execute(
@@ -413,6 +413,17 @@ if __name__ == "__main__":
                             )
 
                     f.close()
+
+                    # Analyze the location tables
+                    deferred_sql.append(
+                        (
+                            "Analyzing the location and geo_bridge tables",
+                            [
+                                "ANALYZE geography.geo_bridge;",
+                                "ANALYZE interactions.locations;",
+                            ],
+                        )
+                    )
 
             # 2. TACS
             with log_duration(f"Generating {num_tacs} tacs."):
@@ -451,8 +462,11 @@ if __name__ == "__main__":
                     """
                 )
 
-            # 3. Temporary subscribers
+            # 3. Subscribers
             with log_duration(f"Generating {num_subscribers} subscribers."):
+                # First truncate the table
+                connection.execute("TRUNCATE TABLE interactions.subscriber CASCADE;")
+
                 # Add the subscriber counts for variants
                 weights = [0.35, 0.25, 0.25, 0.15]
                 variants = ["a", "b", "c", "d"]
@@ -478,7 +492,7 @@ if __name__ == "__main__":
                     f"CREATE TEMPORARY SEQUENCE brandcount MINVALUE 0 maxvalue {round(num_tacs / len(brands)) - 1} CYCLE;"
                 )
 
-                # Then insert the subscribers
+                # Insert the temp subscribers with variant data
                 connection.execute(
                     f"""
                     CREATE TABLE subs as
@@ -493,12 +507,28 @@ if __name__ == "__main__":
                 """
                 )
 
+                # Copy only the relevant fields to interactions.subscriber
+                connection.execute(
+                    """
+                    INSERT INTO interactions.subscriber (id, msisdn, imei, imsi, tac)
+                        SELECT id, msisdn, imei, imsi, tac from subs;
+                """
+                )
+
                 # Add index and ANALYZE
                 connection.execute(
                     """
                     CREATE INDEX on subs (id);
                     ANALYZE subs;
                 """
+                )
+
+                # Analyze subscribers
+                deferred_sql.append(
+                    (
+                        "Analyzing the subscriber table",
+                        ["ANALYZE interactions.subscriber;"],
+                    )
                 )
 
             trans.commit()
