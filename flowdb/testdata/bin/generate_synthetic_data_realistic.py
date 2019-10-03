@@ -33,7 +33,6 @@ will give the volumes of event data required.
 import os
 import argparse
 import datetime
-import time
 from hashlib import md5
 from concurrent.futures.thread import ThreadPoolExecutor
 from contextlib import contextmanager
@@ -195,7 +194,7 @@ def generateNormalDistribution(size, mu=0, sigma=1, plot=False):
 
 
 # Generate distributed types
-def generatedDistributedTypes(trans, dist, date, table, query):
+def generatedDistributedTypes(trans, dist, date, date_sk, query):
     sql = []
     type_count = 0
     caller_id = 1
@@ -223,11 +222,11 @@ def generatedDistributedTypes(trans, dist, date, table, query):
             to_count = from_count + (d * 2) - 1
             trans.execute(
                 query.format(
-                    table=table,
+                    date_sk=date_sk,
                     caller_id=caller_id,
                     from_count=from_count,
                     to_count=to_count,
-                    timestamp=time.mktime(date.timetuple()),
+                    date=date,
                 )
             )
             to_id += 1
@@ -317,11 +316,14 @@ if __name__ == "__main__":
 
         # Main generation process
         with connection.begin() as trans:
-            # Setup stage: Tidy up old event tables on previous runs
+            # Setup stage: Tidy up subscriber_sightings_fact generated on previous runs
             with log_duration(
                 job=f"Tidy up subscriber_sightings_fact and date_dim tables"
             ):
                 connection.execute("TRUNCATE TABLE interactions.date_dim CASCADE;")
+                connection.execute(
+                    "ALTER SEQUENCE interactions.subscriber_sightings_fact_sighting_id_seq RESTART WITH 1 INCREMENT BY 1;"
+                )
                 tables = connection.execute(
                     "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ 'subscriber_sightings_fact_[0-9]+'"
                 ).fetchall()
@@ -540,11 +542,9 @@ if __name__ == "__main__":
         with_sql = """
             WITH callers AS (
                 SELECT 
-                    s1.id AS id1, s2.id AS id2, s1.msisdn, s2.msisdn AS msisdn_counterpart, 
-                    concat(v1.row, v2.row) as inc, v1.value AS caller_loc, v2.value AS callee_loc,
-                    s1.imsi AS caller_imsi, s1.imei AS caller_imei, s1.tac AS caller_tac,
-                    s2.imsi AS callee_imsi, s2.imei AS callee_imei, s2.tac AS callee_tac,
-                    FLOOR(CAST(nextval('duration') as FLOAT) / 10 * 2600)  AS duration
+                    s1.id AS id1, s2.id AS id2, v1.value AS caller_loc, v2.value AS callee_loc, 
+                    NEXTVAL('time_dimension') AS time_sk, NEXTVAL('minutes') AS minutes,
+                    NEXTVAL('seconds') AS seconds
                 FROM subs s1
                     LEFT JOIN subs s2 
                     -- Series generator to provide the call count for each caller
@@ -562,12 +562,14 @@ if __name__ == "__main__":
                 WHERE s1.id = {caller_id}
             )
         """
-        # Create a temp rowcount/pointcount sequence to select the variation rows/points
+        # Create a temp sequences to select the variation and generate times
         connection.execute(
             """
                 CREATE TEMPORARY SEQUENCE rowcount MINVALUE 1 maxvalue 50 CYCLE;
                 CREATE TEMPORARY SEQUENCE pointcount MINVALUE 0 maxvalue 99 CYCLE;
-                CREATE TEMPORARY SEQUENCE duration MINVALUE 1 maxvalue 10 cycle;
+                CREATE TEMPORARY SEQUENCE time_dimension MINVALUE 1 maxvalue 24 CYCLE;
+                CREATE TEMPORARY SEQUENCE minutes MINVALUE 0 maxvalue 59 CYCLE;
+                CREATE TEMPORARY SEQUENCE seconds MINVALUE 0 maxvalue 59 cycle increment -1;
             """
         )
         # Loop over the days and generate all the types required
@@ -596,47 +598,27 @@ if __name__ == "__main__":
                 # 4.1 Calls
                 if num_calls > 0:
                     with log_duration(f"Generating {num_calls} call events for {date}"):
-                        # Create the table
-                        connection.execute(
-                            f"CREATE TABLE events.calls_{table} () INHERITS (events.calls);"
-                        )
-
                         # Generate the distributed calls for this day
                         generatedDistributedTypes(
                             connection,
                             dist_calls,
                             date,
-                            table,
+                            (i + 1),
                             with_sql
                             + """
-                                INSERT INTO events.calls_{table} (id, outgoing, datetime, duration, msisdn, msisdn_counterpart, location_id, imsi, imei, tac) 
+                                INSERT INTO interactions.subscriber_sightings_fact (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
                                 (
                                     SELECT
-                                        md5(concat({timestamp}, id)) AS id, outgoing,
-                                        '{table}'::TIMESTAMPTZ + interval '1 seconds' * (datetime / 2) AS datetime,
-                                        duration,
-                                        msisdn, msisdn_counterpart,
-                                        (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
-                                        imsi, imei, tac
+                                        id AS subscriber_id, (SELECT id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 1,
+                                        CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ
                                     FROM (
-                                        SELECT CONCAT(id1::text, inc, id2::text) AS id, id1 AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
-                                        caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac, duration from callers
+                                        SELECT id1 AS id, caller_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
                                         UNION ALL
-                                        SELECT CONCAT(id2::text, (inc::INTEGER * id2), id1::text) AS id, id1 AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
-                                        msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
-                                        callee_tac AS tac, duration from callers
+                                        SELECT id2 AS id, callee_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
                                     ) _
                                 )
                             """,
                         )
-
-                    # Add the indexes for this day
-                    deferred_sql.append(
-                        (
-                            f"Adding table analyzing for calls_{table}",
-                            addEventSQL("calls", table),
-                        )
-                    )
 
                 # 4.2 SMS
                 if num_sms > 0:
@@ -734,8 +716,8 @@ if __name__ == "__main__":
         # Add all the ANALYZE calls for the events tables.
         deferred_sql.append(
             (
-                "Analyzing the main event tables",
-                ["ANALYZE events.calls;", "ANALYZE events.sms;", "ANALYZE events.mds;"],
+                "Analyzing the subscriber_sightings_fact table",
+                ["ANALYZE interactions.subscriber_sightings_fact;"],
             )
         )
 
