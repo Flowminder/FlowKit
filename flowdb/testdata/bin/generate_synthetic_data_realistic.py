@@ -595,7 +595,7 @@ if __name__ == "__main__":
                 """
                 )
 
-                # 4.1 Calls
+                # 4.2 Calls
                 if num_calls > 0:
                     with log_duration(f"Generating {num_calls} call events for {date}"):
                         # Generate the distributed calls for this day
@@ -620,48 +620,30 @@ if __name__ == "__main__":
                             """,
                         )
 
-                # 4.2 SMS
+                # 4.3 SMS
                 if num_sms > 0:
                     with log_duration(f"Generating {num_sms} sms events for {date}"):
-                        connection.execute(
-                            f"CREATE TABLE IF NOT EXISTS events.sms_{table} () INHERITS (events.sms);"
-                        )
-
                         # Generate the distributed sms for this day
                         generatedDistributedTypes(
                             connection,
                             dist_sms,
                             date,
-                            table,
+                            (i + 1),
                             with_sql
                             + """
-                                INSERT INTO events.sms_{table} (id, outgoing, datetime, msisdn, msisdn_counterpart, location_id, imsi, imei, tac) 
+                                INSERT INTO interactions.subscriber_sightings_fact (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
                                 (
                                     SELECT
-                                        md5(concat({timestamp}, id)) AS id, outgoing,
-                                        '{table}'::TIMESTAMPTZ + interval '1 seconds' * (datetime / 2) AS datetime,
-                                        msisdn, msisdn_counterpart,
-                                        (SELECT id FROM infrastructure.cells where ST_Equals(geom_point,loc::geometry)) AS location_id,
-                                        imsi, imei, tac
+                                        id AS subscriber_id, (SELECT id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 2,
+                                        CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ
                                     FROM (
-                                        SELECT CONCAT(id1::text, inc, id2::text) AS id, id1 AS datetime, true AS outgoing, msisdn, msisdn_counterpart, 
-                                        caller_loc->>nextval('pointcount')::INTEGER AS loc, caller_imsi AS imsi, caller_imei AS imei, caller_tac AS tac from callers
+                                        SELECT id1 AS id, caller_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
                                         UNION ALL
-                                        SELECT CONCAT(id2::text, (inc::INTEGER * id2), id1::text) AS id, id1 AS datetime, false AS outgoing, msisdn_counterpart AS msisdn, 
-                                        msisdn AS msisdn_counterpart, callee_loc->>nextval('pointcount')::INTEGER AS loc, callee_imsi AS imsi, callee_imei AS imei, 
-                                        callee_tac AS tac from callers
+                                        SELECT id2 AS id, callee_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
                                     ) _
                                 )
                             """,
                         )
-
-                    # Add the indexes for this day
-                    deferred_sql.append(
-                        (
-                            f"Adding table analyzing for sms_{table}",
-                            addEventSQL("sms", table),
-                        )
-                    )
 
                 # 4.3 MDS
                 if num_mds > 0:
