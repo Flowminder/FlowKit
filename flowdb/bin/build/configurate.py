@@ -65,7 +65,7 @@ workers_per_gather = int(os.getenv("MAX_WORKERS_PER_GATHER", ceil(cores / 2)))
 effective_cache_size = os.getenv(
     "EFFECTIVE_CACHE_SIZE", _humansize(ceil(0.75 * total_mem))
 )
-use_jit = "on" if bool_env("JIT") else "off"
+use_jit = "off" if bool_env("NO_USE_JIT") else "on"
 stats_target = int(
     os.getenv("STATS_TARGET", 10000)
 )  # Default to higher than pg default
