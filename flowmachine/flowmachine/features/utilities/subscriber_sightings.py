@@ -51,7 +51,7 @@ class SubscriberSightings(Query):
         *,
         subscriber_subset=None,
         subscriber_identifier="msisdn",
-        columns,
+        columns=[],
         tables=None,
         hours="all",
     ):
