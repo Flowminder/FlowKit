@@ -8,7 +8,7 @@ import pandas as pd
 from typing import List
 from sqlalchemy import select, join, func
 
-from ...core import Query, Table
+from ...core import Query
 from ...core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
     make_sqlalchemy_column_from_flowmachine_column_description,
@@ -63,11 +63,6 @@ class SubscriberSightings(Query):
         self.stop = stop
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
-
-        Table(
-            "interactions.subscriber_sightings_fact", columns=["timestamp", "cell_id"]
-        )
-        Table("interactions.subscriber", columns=[self.subscriber_identifier])
 
         # Setup the main subscriber_sightings_fact & subscriber tables
         self.sqlalchemy_mainTable = get_sqlalchemy_table_definition(
