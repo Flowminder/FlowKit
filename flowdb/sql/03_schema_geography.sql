@@ -20,11 +20,11 @@ CREATE SCHEMA IF NOT EXISTS geography;
 
     CREATE TABLE IF NOT EXISTS geography.geo_bridge (
 
-        cell_id BIGINT REFERENCES interactions.locations(cell_id),
+        cell_id BIGINT,
         geo_id NUMERIC,
         outgoing BOOLEAN,
-		valid_from DATE,
-		valid_to DATE,
+        valid_from DATE,
+        valid_to DATE,
         linkage_method TEXT
 
         );

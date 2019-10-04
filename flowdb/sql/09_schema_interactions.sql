@@ -54,20 +54,6 @@ CREATE SCHEMA IF NOT EXISTS interactions;
 
         );
 
-    CREATE TABLE IF NOT EXISTS interactions.subscriber_sightings_fact(
-
-        sighting_id             BIGSERIAL,
-        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
-        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
-        date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
-        time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
-        event_super_table_id    TEXT,
-        event_type              INTEGER,
-        timestamp               TIMESTAMPTZ NOT NULL,
-        PRIMARY KEY (sighting_id, date_sk)
-
-    ) PARTITION BY LIST (date_sk);
-
     CREATE TABLE IF NOT EXISTS interactions.locations(
 
         cell_id                 BIGSERIAL PRIMARY KEY,
@@ -81,3 +67,20 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE INDEX IF NOT EXISTS interactions_locations_position_index
         ON interactions.locations
         USING GIST (position);
+    
+    CREATE TABLE IF NOT EXISTS interactions.subscriber_sightings_fact(
+
+        sighting_id             BIGSERIAL,
+        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
+        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
+        time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
+        event_super_table_id    TEXT,
+        event_type              INTEGER,
+        timestamp               TIMESTAMPTZ NOT NULL,
+        PRIMARY KEY (sighting_id, date_sk)
+
+    ) PARTITION BY LIST (date_sk);
+    
+    /* We need to an the CONSTRAINT for geography.geo_bridge here */
+    ALTER TABLE geography.geo_bridge ADD CONSTRAINT locations_fkey FOREIGN KEY (cell_id) REFERENCES interactions.locations(cell_id);
