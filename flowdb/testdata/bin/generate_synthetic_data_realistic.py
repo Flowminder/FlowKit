@@ -609,7 +609,7 @@ if __name__ == "__main__":
                                 INSERT INTO interactions.subscriber_sightings_fact (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
                                 (
                                     SELECT
-                                        id AS subscriber_id, (SELECT id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 1,
+                                        id AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 1,
                                         CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ
                                     FROM (
                                         SELECT id1 AS id, caller_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
@@ -634,7 +634,7 @@ if __name__ == "__main__":
                                 INSERT INTO interactions.subscriber_sightings_fact (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
                                 (
                                     SELECT
-                                        id AS subscriber_id, (SELECT id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 2,
+                                        id AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 2,
                                         CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ
                                     FROM (
                                         SELECT id1 AS id, caller_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
@@ -645,53 +645,37 @@ if __name__ == "__main__":
                             """,
                         )
 
-                # 4.3 MDS
+                # 4.4 MDS
                 if num_mds > 0:
                     with log_duration(f"Generating {num_mds} mds events for {date}"):
-                        connection.execute(
-                            f"CREATE TABLE IF NOT EXISTS events.mds_{table} () INHERITS (events.mds);"
-                        )
-
                         # Generate the distributed mds for this day
                         generatedDistributedTypes(
                             connection,
                             dist_mds,
                             date,
-                            table,
+                            (i + 1),
                             """
                                 WITH callers AS (
-                                    SELECT s.msisdn, s.imei, s.imsi, s.tac, v.value as loc, round(0.5 * 100000) as volume
+                                    SELECT s.id, v.value as loc, NEXTVAL('time_dimension') AS time_sk
                                     FROM subs s
                                         
                                         LEFT JOIN variations v
                                         ON v.type  = s.variant
                                         AND v.row = (select nextval('rowcount'))
                                     
-                                    WHERE s.id = {caller_id}
+                                    WHERE s.id = 1
                                 )
-                                INSERT INTO events.mds_{table} (id, datetime, duration, volume_total, volume_upload, volume_download, msisdn, imei, imsi, tac, location_id) (
+                                INSERT INTO interactions.subscriber_sightings_fact (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") (
                                     SELECT 
-                                    MD5(CONCAT({timestamp}, s.id, c.msisdn)) AS id,
-                                    '{table}'::TIMESTAMPTZ + interval '1 seconds' * (point / 3) AS datetime,
-                                    FLOOR(CAST(nextval('duration') as FLOAT) / 10 * 2600)  AS duration,
-                                    c.volume * 2 AS volume_total,
-                                    c.volume AS volume_upload,
-                                    c.volume AS volume_download,
-                                    c.msisdn, c.imei, c.imsi, c.tac, (SELECT id FROM infrastructure.cells where ST_Equals(geom_point, (c.loc->>s.point::INTEGER)::geometry)) AS loc
+                                        c.id AS subscriber_id, 
+                                        (SELECT cell_id FROM interactions.locations where ST_Equals("position",(c.loc->>s.point::INTEGER)::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 3,
+                                        CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(NEXTVAL('minutes')::TEXT, 2, '0'), ':', LPAD(NEXTVAL('seconds')::TEXT, 2, '0'))::TIMESTAMPTZ
                                     FROM
-                                    callers c,
-                                    (SELECT row_number() over() AS id, nextval('pointcount') AS point FROM generate_series({from_count}, {to_count}, 2)) s
+                                        callers c,
+                                        (SELECT row_number() over() AS id, nextval('pointcount') AS point FROM generate_series({from_count}, {to_count}, 2)) s
                                 )
                             """,
                         )
-
-                    # Add the indexes for this day
-                    deferred_sql.append(
-                        (
-                            f"Adding table analyzing for mds_{table}",
-                            addEventSQL("mds", table),
-                        )
-                    )
 
                 trans.commit()
 
