@@ -70,7 +70,6 @@ python3 /opt/synthetic_data/generate_synthetic_data_sql.py \
 elif [ -f /opt/synthetic_data/generate_synthetic_data_realistic.py ] && [  "$SYNTHETIC_DATA_GENERATOR" = "realistic" ]; then
   python3 /opt/synthetic_data/generate_synthetic_data_realistic.py \
       --n-subscribers ${N_SUBSCRIBERS} \
-      --n-cells ${N_CELLS} \
       --n-days ${N_DAYS} \
       --n-tacs ${N_TACS} \
       --n-mean_calls ${N_MEAN_CALLS} \
