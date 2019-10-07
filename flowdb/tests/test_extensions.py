@@ -19,7 +19,8 @@ def activate_pg_cron(cursor):
 
 @pytest.mark.parametrize(
     "extension",
-    ["postgis", "file_fdw", "uuid-ossp", "pgrouting", "pldbgapi", "pg_median_utils"],
+
+    ["postgis", "postgis_raster", "file_fdw", "uuid-ossp", "pgrouting", "pldbgapi", "pg_median_utils"],
 )
 def test_extension_available(pg_available_extensions, extension):
     """Extension is installed."""
