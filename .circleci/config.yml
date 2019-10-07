@@ -480,9 +480,6 @@ jobs:
         type: enum
         enum: ["python", "sql", "realistic"]
         default: "realistic"
-      num_cells:
-        type: integer
-        default: 1
       num_days:
         type: integer
         default: 1
