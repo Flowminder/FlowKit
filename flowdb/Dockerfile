@@ -18,9 +18,9 @@ FROM postgres:$POSTGRES_RELEASE@sha256:$POSTGRES_DIGEST
 
 ARG POSTGRES_RELEASE
 ENV POSTGRES_RELEASE=$POSTGRES_RELEASE
-ARG POSTGIS_MAJOR=2.5
+ARG POSTGIS_MAJOR=3.0
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
-ARG POSTGIS_VERSION=2.5.3
+ARG POSTGIS_VERSION=3.0.0
 ENV POSTGIS_VERSION=$POSTGIS_VERSION
 ENV POSTGRES_DB=flowdb
 ARG POSTGRES_USER=flowdb
@@ -29,8 +29,12 @@ ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
 
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR postgis postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts gdal-bin postgresql-$PG_MAJOR-pgrouting \
+        &&
+        apt-get upgrade libgeos-c1v5 libproj15 \
+        && apt-get install -y --no-install-recommends \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR  \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
+        gdal-bin postgresql-$PG_MAJOR-pgrouting \
         && rm -rf /var/lib/apt/lists/* \
         && apt-get purge -y --auto-remove
 
