@@ -34,7 +34,9 @@ if flowetl_runtime_config == "testing":
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
     logger.info("Running in testing environment")
 
-    dag = construct_etl_dag(**task_callable_mapping, cdr_type="testing")
+    dag = construct_etl_dag(
+        **task_callable_mapping, cdr_type="testing", max_active_runs_per_dag=1
+    )
 elif flowetl_runtime_config == "production":
     task_callable_mapping = PRODUCTION_ETL_TASK_CALLABLES
     logger.info("Running in production environment")

@@ -30,7 +30,9 @@ def test_construct_etl_dag_with_test_callables():
     }
     cdr_type = "spaghetti"
 
-    dag = construct_etl_dag(**task_callable_mapping, cdr_type=cdr_type)
+    dag = construct_etl_dag(
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
+    )
 
     assert dag.dag_id == f"etl_{cdr_type}"
 
@@ -57,7 +59,9 @@ def test_construct_etl_dag_with_production_callables():
     }
     cdr_type = "spaghetti"
 
-    dag = construct_etl_dag(**task_callable_mapping, cdr_type=cdr_type)
+    dag = construct_etl_dag(
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
+    )
 
     assert dag.dag_id == f"etl_{cdr_type}"
 
@@ -82,7 +86,9 @@ def test_construct_etl_dag_sets_owner_to_airflow():
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
     cdr_type = "spaghetti"
 
-    dag = construct_etl_dag(**task_callable_mapping, cdr_type=cdr_type)
+    dag = construct_etl_dag(
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
+    )
 
     assert dag.owner == "flowminder"
 
@@ -94,9 +100,25 @@ def test_construct_etl_dag_sets_start_date_correctly():
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
     cdr_type = "spaghetti"
 
-    dag = construct_etl_dag(**task_callable_mapping, cdr_type=cdr_type)
+    dag = construct_etl_dag(
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
+    )
 
     assert dag.start_date == parse("1900-01-01")
+
+
+def test_construct_etl_dag_concurrency_setting():
+    """
+    Make sure that the DAG's `max_active_runs` is set correctly.
+    """
+    task_callable_mapping = TEST_ETL_TASK_CALLABLES
+    cdr_type = "spaghetti"
+
+    dag = construct_etl_dag(
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=42
+    )
+
+    assert dag.max_active_runs == 42
 
 
 def test_construct_etl_dag_fails_with_incorrect_mapping_keys():
@@ -109,4 +131,6 @@ def test_construct_etl_dag_fails_with_incorrect_mapping_keys():
 
     # pylint: disable=unused-variable
     with pytest.raises(TypeError):
-        dag = construct_etl_dag(**task_callable_mapping, cdr_type=cdr_type)
+        dag = construct_etl_dag(
+            **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
+        )
