@@ -40,8 +40,8 @@ def construct_etl_sensor_dag(*, callable: Callable) -> DAG:
     """
     default_args = {"owner": "flowminder"}
 
-    # Note: in order for Airflow to actually run the DAG when it is triggered
-    # we need to set the start_date parameter to a date in the past.
+    # Note: the `start_date` parameter needs to be set to a date in the past,
+    # otherwise Airflow won't run the DAG when it is triggered.
     with DAG(
         dag_id=f"etl_sensor",
         start_date=pendulum.parse("1900-01-01"),
@@ -67,7 +67,6 @@ def construct_etl_dag(
     quarantine: Callable,
     clean: Callable,
     fail: Callable,
-    default_args: dict,
     cdr_type: str,
     config_path: str = "/mounts/config",
 ) -> DAG:
@@ -98,10 +97,6 @@ def construct_etl_dag(
         The clean task callable.
     fail : Callable
         The fail task callable.
-    default_args : dict
-        A set of default args to pass to all callables.
-        Must containt at least "owner" key and "start" key (which must be a
-        pendulum date object)
     cdr_type : str
         The type of CDR that this ETL DAG will process.
     config_path : str
@@ -113,8 +108,13 @@ def construct_etl_dag(
         Specification of Airflow DAG for ETL
     """
 
+    default_args = {"owner": "flowminder"}
+
+    # Note: the `start_date` parameter needs to be set to a date in the past,
+    # otherwise Airflow won't run the DAG when it is triggered.
     with DAG(
         dag_id=f"etl_{cdr_type}",
+        start_date=pendulum.parse("1900-01-01"),
         schedule_interval=None,
         default_args=default_args,
         template_searchpath=config_path,  # template paths will be relative to this
