@@ -10,6 +10,7 @@ import yaml
 
 from copy import deepcopy
 from pathlib import Path
+from typing import Union
 
 from etl.etl_utils import CDRType
 
@@ -107,7 +108,7 @@ def fill_config_default_values(global_config_dict: dict) -> dict:
     return global_config_dict
 
 
-def get_config_from_file(config_filepath: Path) -> dict:
+def get_config_from_file(config_filepath: Union[Path, str]) -> dict:
     """
     Function used to load configuration from YAML file.
     This also validates the structure of the config and
@@ -115,7 +116,7 @@ def get_config_from_file(config_filepath: Path) -> dict:
 
     Parameters
     ----------
-    config_filepath : Path
+    config_filepath : Path or str
         Location of the file config.yml
 
     Returns

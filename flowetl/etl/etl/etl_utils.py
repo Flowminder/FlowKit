@@ -68,6 +68,7 @@ def construct_etl_dag(
     clean: Callable,
     fail: Callable,
     cdr_type: str,
+    max_active_runs_per_dag: int,
     config_path: str = "/mounts/config",
 ) -> DAG:
     """
@@ -99,6 +100,8 @@ def construct_etl_dag(
         The fail task callable.
     cdr_type : str
         The type of CDR that this ETL DAG will process.
+    max_active_runs_per_dag : int
+        The maximum number of active DAG runs per DAG.
     config_path : str
         The config path used to look for the sql templates.
 
@@ -116,6 +119,7 @@ def construct_etl_dag(
         dag_id=f"etl_{cdr_type}",
         start_date=pendulum.parse("1900-01-01"),
         schedule_interval=None,
+        max_active_runs=max_active_runs_per_dag,
         default_args=default_args,
         template_searchpath=config_path,  # template paths will be relative to this
         user_defined_macros={

@@ -40,20 +40,22 @@ elif flowetl_runtime_config == "production":
     logger.info("Running in production environment")
 
     # read and validate the config file before creating the DAGs
-    global_config_dict = get_config_from_file(
-        config_filepath="/mounts/config/config.yml"
-    )
-    print(f"[FFF] global_config_dict={global_config_dict}")
+    global_config_dict = get_config_from_file("/mounts/config/config.yml")
 
-    # create DAG for each cdr_type
+    # Create DAG for each cdr_type occurring in the config
     for cdr_type in CDRType:
         # Ensure `cdr_type` is a string (e.g. "sms", instead of the raw value `CDRType.SMS`)
         # so that interpolation in SQL templates works as expected.
-        cdr_type = cdr_type.value
+        cdr_type = CDRType(cdr_type).value
 
-        globals()[f"etl_{cdr_type}"] = construct_etl_dag(
-            **task_callable_mapping, cdr_type=cdr_type
-        )
+        # Only process CDR types that are actually specified in the config
+        if cdr_type in global_config_dict["etl"]:
+            max_active_runs_per_dag = global_config_dict["etl"][cdr_type]["concurrency"]
+            globals()[f"etl_{cdr_type}"] = construct_etl_dag(
+                **task_callable_mapping,
+                cdr_type=cdr_type,
+                max_active_runs_per_dag=max_active_runs_per_dag,
+            )
 else:
     raise ValueError(
         f"Invalid config name: '{flowetl_runtime_config}'. "
