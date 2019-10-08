@@ -95,7 +95,7 @@ ut = [
     "UniqueSubscribers",
     "EventsTablesUnion",
     "EventTableSubset",
-    "SubscriberSigntings",
+    "SubscriberSightings",
 ]
 
 sub_modules = ["location", "subscriber", "network", "utilities", "raster", "spatial"]
