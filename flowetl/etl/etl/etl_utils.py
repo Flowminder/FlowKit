@@ -9,7 +9,6 @@ Contains utility functions for use in the ETL dag and it's callables
 import os
 import pendulum
 import re
-import sqlalchemy
 
 from typing import List, Callable
 from enum import Enum
@@ -23,7 +22,7 @@ from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import PythonOperator
 
 
-def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
+def construct_etl_sensor_dag(*, callable: Callable) -> DAG:
     """
     This function constructs the sensor single task DAG that triggers ETL
     DAGS with correct config based on filename.
@@ -33,14 +32,16 @@ def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
     callable : Callable
         The sense callable that deals with finding files and triggering
         ETL DAGs
-    default_args : dict
-        Default arguments for DAG
 
     Returns
     -------
     DAG
         Airflow DAG
     """
+    # Note: we set `start_date` to a date in the past so that Airflow
+    # definitely executes it when it is triggered.
+    default_args = {"owner": "flowminder", "start_date": pendulum.parse("1900-01-01")}
+
     with DAG(
         dag_id=f"etl_sensor", schedule_interval=None, default_args=default_args
     ) as dag:
