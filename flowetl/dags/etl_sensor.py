@@ -16,8 +16,6 @@ from etl.dag_task_callable_mappings import (
     PRODUCTION_ETL_SENSOR_TASK_CALLABLE,
 )
 
-logger = structlog.get_logger("flowetl")
-
 ETL_SENSOR_TASK_CALLABLES = {
     "testing": TEST_ETL_SENSOR_TASK_CALLABLE,
     "production": PRODUCTION_ETL_SENSOR_TASK_CALLABLE,
@@ -33,5 +31,6 @@ except KeyError:
         f"Valid config names are: {list(ETL_SENSOR_TASK_CALLABLES.keys())}"
     )
 
+logger = structlog.get_logger("flowetl")
 logger.info(f"Running in {flowetl_runtime_config} environment")
 dag = construct_etl_sensor_dag(callable=etl_sensor_task_callable)
