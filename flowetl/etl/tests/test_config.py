@@ -193,7 +193,7 @@ def test_get_config_from_file(tmpdir):
     config_file = config_dir.join("config.yml")
     config_file.write(yaml.dump(sample_dict))
 
-    config = get_config_from_file(config_filepath=Path(config_file))
+    config = get_config_from_file(config_filepath=config_file)
     assert config == sample_dict
 
 

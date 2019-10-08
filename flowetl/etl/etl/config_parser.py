@@ -107,7 +107,7 @@ def fill_config_default_values(global_config_dict: dict) -> dict:
     return global_config_dict
 
 
-def get_config_from_file(*, config_filepath: Path) -> dict:
+def get_config_from_file(config_filepath: Path) -> dict:
     """
     Function used to load configuration from YAML file.
     This also validates the structure of the config and
@@ -123,6 +123,9 @@ def get_config_from_file(*, config_filepath: Path) -> dict:
     dict
         Yaml config loaded into a python dict
     """
+    # Ensure config_filepath is actually a Path object (e.g. in case a string is passed)
+    config_filepath = Path(config_filepath)
+
     content = config_filepath.open("r").read()
     config_dict = yaml.load(content, Loader=yaml.SafeLoader)
     validate_config(config_dict)

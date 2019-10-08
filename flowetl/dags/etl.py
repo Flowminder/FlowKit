@@ -9,8 +9,6 @@ Skeleton specification for ETL DAG
 import os
 import structlog
 
-from pathlib import Path
-
 # Need to import the DAG class (even if it is not directly
 # used in this file) so that Airflow looks here for a DAG.
 from airflow import DAG  # pylint: disable=unused-import
@@ -20,11 +18,7 @@ from etl.dag_task_callable_mappings import (
     PRODUCTION_ETL_TASK_CALLABLES,
 )
 from etl.etl_utils import construct_etl_dag, CDRType
-from etl.config_parser import (
-    get_config_from_file,
-    validate_config,
-    fill_config_default_values,
-)
+from etl.config_parser import get_config_from_file
 
 logger = structlog.get_logger("flowetl")
 
@@ -47,7 +41,7 @@ elif flowetl_runtime_config == "production":
 
     # read and validate the config file before creating the DAGs
     global_config_dict = get_config_from_file(
-        config_filepath=Path("/mounts/config/config.yml")
+        config_filepath="/mounts/config/config.yml"
     )
     print(f"[FFF] global_config_dict={global_config_dict}")
 
