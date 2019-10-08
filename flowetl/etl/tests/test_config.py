@@ -200,7 +200,10 @@ def test_get_config_from_file(tmpdir):
     """
     Test that we can load yaml to dict from file
     """
-    sample_dict = {"A": 23, "B": [1, 2, 34], "C": {"A": "bob"}}
+    sample_dict = {
+        "etl": {"calls": {"concurrency": 3, "source": {"source_type": "csv"}}},
+        "default_args": {},
+    }
     config_dir = tmpdir.mkdir("config")
     config_file = config_dir.join("config.yml")
     config_file.write(yaml.dump(sample_dict))
