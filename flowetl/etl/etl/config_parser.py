@@ -110,6 +110,8 @@ def fill_config_default_values(global_config_dict: dict) -> dict:
 def get_config_from_file(*, config_filepath: Path) -> dict:
     """
     Function used to load configuration from YAML file.
+    This also validates the structure of the config and
+    fills any optional settings with default values.
 
     Parameters
     ----------
