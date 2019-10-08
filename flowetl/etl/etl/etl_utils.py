@@ -38,12 +38,13 @@ def construct_etl_sensor_dag(*, callable: Callable) -> DAG:
     DAG
         Airflow DAG
     """
-    # Note: we set `start_date` to a date in the past so that Airflow
-    # definitely executes it when it is triggered.
-    default_args = {"owner": "flowminder", "start_date": pendulum.parse("1900-01-01")}
+    default_args = {"owner": "flowminder"}
 
     with DAG(
-        dag_id=f"etl_sensor", schedule_interval=None, default_args=default_args
+        dag_id=f"etl_sensor",
+        start_date=pendulum.parse("1900-01-01"),
+        schedule_interval=None,
+        default_args=default_args,
     ) as dag:
         sense = PythonOperator(
             task_id="sense", python_callable=callable, provide_context=True
