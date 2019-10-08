@@ -11,7 +11,8 @@ import structlog
 
 from pathlib import Path
 
-# need to import and not use so that airflow looks here for a DAG
+# Need to import the DAG class (even if it is not directly
+# used in this file) so that Airflow looks here for a DAG.
 from airflow import DAG  # pylint: disable=unused-import
 
 from etl.dag_task_callable_mappings import (
