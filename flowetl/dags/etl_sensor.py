@@ -6,7 +6,8 @@
 import os
 import structlog
 
-# need to import and not use so that airflow looks here for a DAG
+# Need to import the DAG class (even if it is not directly
+# used in this file) so that Airflow looks here for a DAG.
 from airflow import DAG  # pylint: disable=unused-import
 
 from etl.etl_utils import construct_etl_sensor_dag
