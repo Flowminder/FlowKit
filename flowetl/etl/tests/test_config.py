@@ -60,20 +60,6 @@ def test_config_validation_fails_for_invalid_etl_section(sample_config_dict):
         validate_config(bad_config)
 
 
-def test_config_validation_fails_no_default_args_section(sample_config_dict):
-    """
-    Check that we get an exception raised if default args
-    subsection missing.
-    """
-    bad_config = deepcopy(sample_config_dict)
-    bad_config.pop("default_args")
-
-    with pytest.raises(ValueError) as raised_exception:
-        validate_config(bad_config)
-
-    assert len(raised_exception.value.args[0]) == 1
-
-
 def test_config_validation_fails_bad_etl_subsection(sample_config_dict):
     """
     Check that we get an exception raised if an etl subsection
@@ -201,8 +187,7 @@ def test_get_config_from_file(tmpdir):
     Test that we can load yaml to dict from file
     """
     sample_dict = {
-        "etl": {"calls": {"concurrency": 3, "source": {"source_type": "csv"}}},
-        "default_args": {},
+        "etl": {"calls": {"concurrency": 3, "source": {"source_type": "csv"}}}
     }
     config_dir = tmpdir.mkdir("config")
     config_file = config_dir.join("config.yml")
@@ -241,9 +226,6 @@ def test_sql_find_available_dates(sample_config_dict):
 
     config_without_explicit_sql = textwrap.dedent(
         """
-        default_args:
-          owner: flowminder
-          start_date: '1900-01-01'
         etl:
           calls:
             concurrency: 4

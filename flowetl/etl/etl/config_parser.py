@@ -32,11 +32,6 @@ def validate_config(global_config_dict: dict) -> None:
     if "etl" not in keys:
         exceptions.append(ValueError("etl must be a toplevel key in the config file"))
 
-    if "default_args" not in keys:
-        exceptions.append(
-            ValueError("default_args must be a toplevel key in the config file")
-        )
-
     etl_keys = global_config_dict.get("etl", {}).keys()
     if not set(etl_keys).issubset(CDRType):
         unexpected_keys = list(set(etl_keys).difference(CDRType))

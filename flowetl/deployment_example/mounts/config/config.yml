@@ -1,6 +1,3 @@
-default_args:
-  owner: flowminder
-  start_date: '1900-01-01'
 etl:
   calls:
     concurrency: 4
