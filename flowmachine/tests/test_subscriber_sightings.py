@@ -57,6 +57,22 @@ def test_error_on_start_is_stop():
         SubscriberSightings("2016-01-01", "2016-01-01")
 
 
+def test_start_stop_integer_conversion():
+    """Test that setting a start/stop will get date integers."""
+
+    ss = SubscriberSightings("2016-01-01", "2016-01-02")
+    assert ss.start == 1
+    assert ss.stop == 2
+
+
+def test_start_stop_non_exist_will_result_in_min_max():
+    """Test that setting non existing dates will result in min/max."""
+
+    ss = SubscriberSightings("2012-01-01", "2012-01-02")
+    assert ss.start == 1
+    assert ss.stop == 5
+
+
 def test_set_date_none():
     """Test that setting a start/stop to None will use min/max dates."""
     ss = SubscriberSightings(None, "2016-01-04")

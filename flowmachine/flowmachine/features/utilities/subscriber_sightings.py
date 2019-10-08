@@ -88,34 +88,41 @@ class SubscriberSightings(Query):
         return [c.split(" AS ")[-1] for c in self.columns]
 
     def _check_dates(self):
-        # Get min/max dates from interactions.subscriber_sightings_fact if we are provdied with None
-        if self.start is None:
-            query = self.connection.engine.execute(
-                select([func.min(self.sqlalchemy_mainTable.c.timestamp)])
-            )
-            self.start = query.fetchall()[0]["min_1"].strftime("%Y-%m-%d")
-
-        if self.stop is None:
-            query = self.connection.engine.execute(
-                select([func.max(self.sqlalchemy_mainTable.c.timestamp)])
-            )
-            self.stop = query.fetchall()[0]["max_1"].strftime("%Y-%m-%d")
-
-        # Convert dates to integers
         table = get_sqlalchemy_table_definition(
             "interactions.date_dim", engine=Query.connection.engine
         )
-        query = self.connection.engine.execute(
-            select([table.c.date_sk]).where(table.c.date == self.start)
-        )
 
-        self.start = query.first()["date_sk"]
-        query = self.connection.engine.execute(
-            select([table.c.date_sk]).where(table.c.date == self.stop)
-        )
-        self.stop = query.first()["date_sk"]
+        # First, if there are dates, then we should convert them to integers
+        for param in ("start", "stop"):
+            val = getattr(self, param)
+            if val is not None:
+                query = self.connection.engine.execute(
+                    select([table.c.date_sk]).where(table.c.date == val)
+                )
+                row = query.first()
+                setattr(self, param, (row["date_sk"] if row is not None else None))
 
-        # TODO - perhaps add a check that the dates are actually in the main table.
+        # If we still have None, then we should get min/max dates from interactions.date_dim
+        # Process self.start
+        if self.start is None:
+            query = self.connection.engine.execute(
+                select([table.c.date_sk]).where(
+                    table.c.date == select([func.min(table.c.date)])
+                )
+            )
+            row = query.first()
+            self.start = row["date_sk"] if row is not None else None
+
+        # Then self.stop
+        if self.stop is None:
+            query = self.connection.engine.execute(
+                select([table.c.date_sk]).where(
+                    table.c.date == select([func.max(table.c.date)])
+                )
+            )
+            row = query.first()
+            self.stop = row["date_sk"] if row is not None else None
+
         # Check if the dates are the same
         if self.start == self.stop:
             raise ValueError("Start and stop are the same.")
