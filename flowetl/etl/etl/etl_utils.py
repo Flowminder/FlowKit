@@ -40,6 +40,8 @@ def construct_etl_sensor_dag(*, callable: Callable) -> DAG:
     """
     default_args = {"owner": "flowminder"}
 
+    # Note: in order for Airflow to actually run the DAG when it is triggered
+    # we need to set the start_date parameter to a date in the past.
     with DAG(
         dag_id=f"etl_sensor",
         start_date=pendulum.parse("1900-01-01"),
