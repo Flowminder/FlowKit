@@ -83,6 +83,8 @@ FLOWAPI_FLOWDB_PASSWORD=foo
 CACHE_SIZE=""
 # Decay rate for cache records
 CACHE_HALF_LIFE=10000
+# Number of seconds to protect cache records from deletion
+CACHE_PROTECTED_PERIOD=3600
 # Max number of CPUs to use
 #MAX_CPUS
 # Max number of worker processes to use

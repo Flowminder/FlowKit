@@ -31,6 +31,8 @@ from flowmachine.core.cache import (
     reset_cache,
     write_cache_metadata,
     write_query_to_cache,
+    get_cache_protected_period,
+    set_cache_protected_period,
 )
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 from flowmachine.features import daily_location
@@ -164,6 +166,27 @@ def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
     assert dl_agg.query_id == cached_queries[0][0].query_id
     assert dl.query_id == cached_queries[1][0].query_id
     assert 2 == len(cached_queries[0])
+
+
+def test_get_cached_query_objects_protected_period(flowmachine_connect):
+    """
+    Test that all records which are queries are returned in correct order, but queries within protected period are omitted.
+    """
+    dl = daily_location("2016-01-01").store().result()
+    dl_agg = dl.aggregate().store().result()
+    table = dl.get_table()
+
+    cached_queries = get_cached_query_objects_ordered_by_score(
+        flowmachine_connect, protected_period=-1
+    )
+    assert 2 == len(cached_queries)
+    assert dl_agg.query_id == cached_queries[0][0].query_id
+    assert dl.query_id == cached_queries[1][0].query_id
+    assert 2 == len(cached_queries[0])
+    cached_queries = get_cached_query_objects_ordered_by_score(
+        flowmachine_connect, protected_period=1
+    )
+    assert 0 == len(cached_queries)
 
 
 def test_shrink_one(flowmachine_connect):
@@ -391,9 +414,11 @@ def flowmachine_connect_with_cache_settings_reset(flowmachine_connect):
     """
     max_cache_size = get_max_size_of_cache(flowmachine_connect)
     cache_half_life = get_cache_half_life(flowmachine_connect)
+    cache_protect_period = get_cache_protected_period(flowmachine_connect)
     yield flowmachine_connect
     set_max_size_of_cache(flowmachine_connect, max_cache_size)
     set_cache_half_life(flowmachine_connect, cache_half_life)
+    set_cache_protected_period(flowmachine_connect)
 
 
 def test_get_set_cache_size_limit(flowmachine_connect_with_cache_settings_reset):

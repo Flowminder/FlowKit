@@ -310,3 +310,21 @@ $$
 $$ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public, pg_temp;
+
+/*
+cache_protected_period
+
+Returns the current setting for cache protected period as an integer number of seconds.
+ */
+
+CREATE OR REPLACE FUNCTION cache_protected_period()
+	RETURNS bigint AS
+$$
+  DECLARE cache_protected_period bigint;
+  BEGIN
+  SELECT value INTO cache_protected_period FROM cache.cache_config WHERE key='cache_protected_period';
+  RETURN cache_protected_period;
+  END
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp;

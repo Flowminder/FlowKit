@@ -363,7 +363,7 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
 
 
 def get_cached_query_objects_ordered_by_score(
-    connection: "Connection"
+    connection: "Connection", protected_period: Optional[int] = None
 ) -> List[Tuple["Query", int]]:
     """
     Get all cached query objects in ascending cache score order.
@@ -371,6 +371,10 @@ def get_cached_query_objects_ordered_by_score(
     Parameters
     ----------
     connection : Connection
+    protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded. If None,
+        the value stored in cache.cache_config will be used. Set to -1 to ignore cache protection
+        completely.
 
     Returns
     -------
@@ -378,16 +382,26 @@ def get_cached_query_objects_ordered_by_score(
         Returns a list of cached Query objects with their on disk sizes
 
     """
-    qry = """SELECT obj, table_size(tablename, schema) as table_size
+    protected_period_clause = (
+        (f" AND NOW()-created > INTERVAL '{protected_period} seconds'")
+        if protected_period is not None
+        else " AND NOW()-created > (cache_protected_period()*INTERVAL '1 seconds')"
+    )
+    qry = f"""SELECT obj, table_size(tablename, schema) as table_size
         FROM cache.cached
         WHERE NOT cached.class='Table'
+        {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
     cache_queries = connection.fetch(qry)
     return [(pickle.loads(obj), table_size) for obj, table_size in cache_queries]
 
 
-def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
+def shrink_one(
+    connection: "Connection",
+    dry_run: bool = False,
+    protected_period: Optional[int] = None,
+) -> "Query":
     """
     Remove the lowest scoring cached query from cache and return it and size of it
     in bytes.
@@ -397,13 +411,19 @@ def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
     connection : "Connection"
     dry_run : bool, default False
         Set to true to just report the object that would be removed and not remove it
+     protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded. If None,
+        the value stored in cache.cache_config will be used. Set to -1 to ignore cache protection
+        completely.
 
     Returns
     -------
     tuple of "Query", int
         The "Query" object that was removed from cache and the size of it
     """
-    obj_to_remove, obj_size = get_cached_query_objects_ordered_by_score(connection)[0]
+    obj_to_remove, obj_size = get_cached_query_objects_ordered_by_score(
+        connection, protected_period=protected_period
+    )[0]
 
     logger.info(
         f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.query_id} of type {obj_to_remove.__class__}"
@@ -418,7 +438,10 @@ def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
 
 
 def shrink_below_size(
-    connection: "Connection", size_threshold: int = None, dry_run: bool = False
+    connection: "Connection",
+    size_threshold: int = None,
+    dry_run: bool = False,
+    protected_period: Optional[int] = None,
 ) -> "Query":
     """
     Remove queries from the cache until it is below a specified size threshold.
@@ -430,6 +453,10 @@ def shrink_below_size(
         Optionally override the maximum cache size set in flowdb.
     dry_run : bool, default False
         Set to true to just report the objects that would be removed and not remove them
+    protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded. If None,
+        the value stored in cache.cache_config will be used. Set to -1 to ignore cache protection
+        completely.
 
     Returns
     -------
@@ -443,7 +470,11 @@ def shrink_below_size(
     )
 
     if dry_run:
-        cached_queries = iter(get_cached_query_objects_ordered_by_score(connection))
+        cached_queries = iter(
+            get_cached_query_objects_ordered_by_score(
+                connection, protected_period=protected_period
+            )
+        )
 
         def dry_run_shrink(connection):
             obj, obj_size = cached_queries.__next__()
@@ -463,7 +494,9 @@ def shrink_below_size(
         size_threshold = get_max_size_of_cache(connection)
 
     while initial_cache_size > size_threshold:
-        obj_removed, cache_reduction = shrink(connection)
+        obj_removed, cache_reduction = shrink(
+            connection, protected_period=protected_period
+        )
         removed.append(obj_removed)
         initial_cache_size -= cache_reduction
     logger.info(
@@ -576,6 +609,40 @@ def set_cache_half_life(connection: "Connection", cache_half_life: float) -> Non
     """
 
     sql = f"UPDATE cache.cache_config SET value='{float(cache_half_life)}' WHERE key='half_life'"
+    with connection.engine.begin() as trans:
+        trans.execute(sql)
+
+
+def get_cache_protected_period(connection: "Connection") -> float:
+    """
+    Get the current setting for cache protected period.
+
+    Parameters
+    ----------
+    connection : "Connection"
+
+    Returns
+    -------
+    int
+        Cache protected period
+
+    """
+    sql = "SELECT cache_protected_period()"
+    return float(connection.fetch(sql)[0][0])
+
+
+def set_cache_protected_period(connection: "Connection", protected_period: int) -> None:
+    """
+    Set the cache's half-life.
+
+    Parameters
+    ----------
+    connection : "Connection"
+    protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded.
+    """
+
+    sql = f"UPDATE cache.cache_config SET value='{int(protected_period)}' WHERE key='protected_period'"
     with connection.engine.begin() as trans:
         trans.execute(sql)
 

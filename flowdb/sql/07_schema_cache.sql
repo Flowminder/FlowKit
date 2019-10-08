@@ -48,3 +48,4 @@ CREATE TABLE IF NOT EXISTS cache.dependencies
 CREATE TABLE cache.cache_config (key text, value text);
 INSERT INTO cache.cache_config (key, value) VALUES ('half_life', NULL);
 INSERT INTO cache.cache_config (key, value) VALUES ('cache_size', NULL);
+INSERT INTO cache.cache_config (key, value) VALUES ('cache_protected_period', NULL);
