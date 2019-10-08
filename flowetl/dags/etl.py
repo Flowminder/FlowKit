@@ -49,8 +49,6 @@ elif flowetl_runtime_config == "production":
     global_config_dict = get_config_from_file(
         config_filepath=Path("/mounts/config/config.yml")
     )
-    validate_config(global_config_dict)
-    global_config_dict = fill_config_default_values(global_config_dict)
 
     # create DAG for each cdr_type
     for cdr_type in CDRType:
