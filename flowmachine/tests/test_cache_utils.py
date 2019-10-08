@@ -418,7 +418,7 @@ def flowmachine_connect_with_cache_settings_reset(flowmachine_connect):
     yield flowmachine_connect
     set_max_size_of_cache(flowmachine_connect, max_cache_size)
     set_cache_half_life(flowmachine_connect, cache_half_life)
-    set_cache_protected_period(flowmachine_connect)
+    set_cache_protected_period(flowmachine_connect, cache_protect_period)
 
 
 def test_get_set_cache_size_limit(flowmachine_connect_with_cache_settings_reset):
