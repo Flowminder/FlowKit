@@ -476,7 +476,7 @@ def shrink_below_size(
             )
         )
 
-        def dry_run_shrink(connection):
+        def dry_run_shrink(connection, protected_period):
             obj, obj_size = cached_queries.__next__()
             logger.info(
                 f"Would remove cache record for {obj.query_id} of type {obj.__class__}"
