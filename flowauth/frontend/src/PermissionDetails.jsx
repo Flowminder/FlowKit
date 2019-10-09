@@ -127,15 +127,24 @@ class PermissionDetails extends React.Component {
   };
 
   static getDerivedStateFromProps(props, state) {
-    const { permitted } = props;
+    const { permitted, rights } = props;
+
     if (permitted) {
       const totalAggUnits = Object.keys(permitted).reduce(
         (acc, k) => acc + permitted[k].spatial_aggregation.length,
         0
       );
+      const permissionSet = new Set();
+      for (const keys in rights) {
+        for (const key in rights[keys].permissions) {
+          if (permitted[keys].permissions[key]) {
+            permissionSet.add(rights[keys].permissions[key]);
+          }
+        }
+      }
       return {
         totalAggregateUnits: totalAggUnits,
-        ...state
+        permissionIndeterminate: permissionSet.size > 1
       };
     } else {
       return state;
@@ -171,8 +180,7 @@ class PermissionDetails extends React.Component {
 
   renderAggUnits = () => {
     var perms = [];
-    const { rights, permitted } = this.props;
-    const { isAggregationChecked } = this.state;
+    const { rights } = this.props;
     for (const key in rights) {
       perms.push([
         <ServerAggregationUnits
@@ -206,7 +214,7 @@ class PermissionDetails extends React.Component {
       isPermissionChecked,
       permissionIndeterminate
     } = this.state;
-    const { classes, onClick, permitted } = this.props;
+    const { classes, permitted } = this.props;
 
     if (permitted) {
       return (

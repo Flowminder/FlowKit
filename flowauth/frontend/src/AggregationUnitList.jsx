@@ -119,6 +119,7 @@ class AggregationUnitList extends React.Component {
                 <IconButton
                   color="inherit"
                   aria-label="New"
+                  id="new"
                   onClick={this.addCap}
                 >
                   <AddIcon />
