@@ -6,7 +6,7 @@
 """
 Per subscriber time series of distances from some reference location.
 """
-from typing import List, Optional
+from typing import List, Optional, Union, Tuple
 
 from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
@@ -20,14 +20,21 @@ valid_time_buckets = ["second", "minute", "hour", "day", "month", "year", "centu
 class DistanceSeries(SubscriberFeature):
     """
     Per subscriber time series of distance in meters from some reference location.
+    For the time series, returns the first date/datetime within the time bucket for each
+    row, e.g. 1/1/1999 for a year bucket, 1/1/2026, 1/2/2026 and so on for a month bucket.
+
+    Notes
+    -----
+    The datetime column will contain dates for time buckets longer than an hour, and datetimes for
+    time buckets less than a day.
 
     Parameters
     ----------
     subscriber_locations : SubscriberLocations
         A subscriber locations query with a lon-lat spatial unit to build the distance series against.
-    reference_location : BaseLocation or None, default None
-        The set of home locations from which to calculate distance at each sighting.
-        If not given then distances will be from (0, 0).
+    reference_location : BaseLocation or tuple of int, default (0, 0)
+        The set of home locations from which to calculate distance at each sighting, or a tuple
+        of lon-lat in WS84 projection.
     statistic : str
         the statistic to calculate one of 'sum', 'avg', 'max', 'min', 
         'median', 'stddev' or 'variance'
@@ -50,7 +57,7 @@ class DistanceSeries(SubscriberFeature):
         self,
         *,
         subscriber_locations: SubscriberLocations,
-        reference_location: Optional[BaseLocation] = None,
+        reference_location: Union[BaseLocation, Tuple[float, float]] = (0, 0),
         statistic: str = "avg",
         time_bucket: str = "day",
     ):
@@ -71,9 +78,8 @@ class DistanceSeries(SubscriberFeature):
             )
         self.start = subscriber_locations.start
         self.stop = subscriber_locations.stop
-        if reference_location is None:
-            # Using 0, 0
-            self.reference_location = None
+        if isinstance(reference_location, tuple):
+            self.reference_location = reference_location
             self.joined = subscriber_locations
         elif isinstance(reference_location, BaseLocation):
             if reference_location.spatial_unit != subscriber_locations.spatial_unit:
@@ -98,7 +104,7 @@ class DistanceSeries(SubscriberFeature):
             )
         else:
             raise ValueError(
-                "Argument 'reference_location' should be an instance of BaseLocation class or None. "
+                "Argument 'reference_location' should be an instance of BaseLocation class or a tuple of two floats. "
                 f"Got: {type(reference_location)}"
             )
 
@@ -109,9 +115,9 @@ class DistanceSeries(SubscriberFeature):
         return ["subscriber", "datetime", "value"]
 
     def _make_query(self):
-        if self.reference_location is None:
+        if isinstance(self.reference_location, tuple):
             joined = f"""
-            SELECT subscriber, time as time_to, ST_Distance(ST_Point(0, 0)::geography, ST_Point(lon, lat)::geography) as value_dist
+            SELECT subscriber, time as time_to, ST_Distance(ST_Point{self.reference_location}::geography, ST_Point(lon, lat)::geography) as value_dist
             FROM ({self.joined.get_query()}) _
             """
         else:
