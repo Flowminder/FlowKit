@@ -743,7 +743,7 @@ def cache_table_exists(connection: "Connection", query_id: str) -> bool:
 
 async def watch_and_shrink_cache(
     *,
-    flowdb_connection: Connection,
+    flowdb_connection: "Connection",
     pool: Executor,
     sleep_time: int = 86400,
     timeout: Optional[int] = 600,
