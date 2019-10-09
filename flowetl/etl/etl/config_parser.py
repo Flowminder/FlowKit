@@ -10,6 +10,7 @@ import yaml
 
 from copy import deepcopy
 from pathlib import Path
+from typing import Union
 
 from etl.etl_utils import CDRType
 
@@ -31,11 +32,6 @@ def validate_config(global_config_dict: dict) -> None:
     exceptions = []
     if "etl" not in keys:
         exceptions.append(ValueError("etl must be a toplevel key in the config file"))
-
-    if "default_args" not in keys:
-        exceptions.append(
-            ValueError("default_args must be a toplevel key in the config file")
-        )
 
     etl_keys = global_config_dict.get("etl", {}).keys()
     if not set(etl_keys).issubset(CDRType):
@@ -112,13 +108,15 @@ def fill_config_default_values(global_config_dict: dict) -> dict:
     return global_config_dict
 
 
-def get_config_from_file(*, config_filepath: Path) -> dict:
+def get_config_from_file(config_filepath: Union[Path, str]) -> dict:
     """
     Function used to load configuration from YAML file.
+    This also validates the structure of the config and
+    fills any optional settings with default values.
 
     Parameters
     ----------
-    config_filepath : Path
+    config_filepath : Path or str
         Location of the file config.yml
 
     Returns
@@ -126,5 +124,10 @@ def get_config_from_file(*, config_filepath: Path) -> dict:
     dict
         Yaml config loaded into a python dict
     """
+    # Ensure config_filepath is actually a Path object (e.g. in case a string is passed)
+    config_filepath = Path(config_filepath)
+
     content = config_filepath.open("r").read()
-    return yaml.load(content, Loader=yaml.SafeLoader)
+    config_dict = yaml.load(content, Loader=yaml.SafeLoader)
+    validate_config(config_dict)
+    return fill_config_default_values(config_dict)

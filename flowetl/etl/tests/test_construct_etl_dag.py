@@ -8,10 +8,8 @@ Tests for the construction of the ETL DAG
 """
 import pytest
 from pendulum import parse
-from pendulum.parsing.exceptions import ParserError
 from unittest.mock import Mock
 
-from airflow.exceptions import AirflowException
 from airflow.operators.python_operator import PythonOperator
 
 from etl.etl_utils import construct_etl_dag
@@ -27,14 +25,13 @@ def test_construct_etl_dag_with_test_callables():
     specified in the task_callable_mapping argument. Use TEST_ETL_TASK_CALLABLES
     mapping.
     """
-    default_args = {"owner": "bob", "start_date": parse("1900-01-01")}
     task_callable_mapping = {
         t: Mock(wraps=v) for (t, v) in TEST_ETL_TASK_CALLABLES.items()
     }
     cdr_type = "spaghetti"
 
     dag = construct_etl_dag(
-        **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
     )
 
     assert dag.dag_id == f"etl_{cdr_type}"
@@ -57,14 +54,13 @@ def test_construct_etl_dag_with_production_callables():
     specified in the task_callable_mapping argument. Use PRODUCTION_ETL_TASK_CALLABLES
     mapping.
     """
-    default_args = {"owner": "bob", "start_date": parse("1900-01-01")}
     task_callable_mapping = {
         t: Mock(wraps=v) for (t, v) in PRODUCTION_ETL_TASK_CALLABLES.items()
     }
     cdr_type = "spaghetti"
 
     dag = construct_etl_dag(
-        **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
     )
 
     assert dag.dag_id == f"etl_{cdr_type}"
@@ -83,50 +79,46 @@ def test_construct_etl_dag_with_production_callables():
     [t.assert_called_once() for _, t in task_callable_mapping.items()]
 
 
-def test_construct_etl_dag_fails_with_no_start_date():
+def test_construct_etl_dag_sets_owner_to_airflow():
     """
-    Make sure we get an exception if default_args does not contain a start_date
+    Make sure that the DAG owner of the constructed DAG is Flowminder.
     """
-    default_args = {"owner": "bob"}
-    task_callable_mapping = TEST_ETL_TASK_CALLABLES
-    cdr_type = "spaghetti"
-
-    # pylint: disable=unused-variable
-    with pytest.raises(AirflowException):
-        dag = construct_etl_dag(
-            **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
-        )
-
-
-def test_construct_etl_dag_with_no_owner_defaults_to_airflow():
-    """
-    Make sure that if we pass no owner in default_args the owner is
-    Airflow.
-    """
-    default_args = {"start_date": parse("1900-01-01")}
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
     cdr_type = "spaghetti"
 
     dag = construct_etl_dag(
-        **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
     )
 
-    assert dag.owner == "airflow"
+    assert dag.owner == "flowminder"
 
 
-def test_construct_etl_dag_fails_with_bad_start_date():
+def test_construct_etl_dag_sets_start_date_correctly():
     """
-    If the start_date is not a valid date we get an error
+    Make sure that the start_date of the DAG is the expected date in the past.
     """
-    default_args = {"owner": "bob", "start_date": "bob_time"}
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
     cdr_type = "spaghetti"
 
-    # pylint: disable=unused-variable
-    with pytest.raises(ParserError):
-        dag = construct_etl_dag(
-            **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
-        )
+    dag = construct_etl_dag(
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
+    )
+
+    assert dag.start_date == parse("1900-01-01")
+
+
+def test_construct_etl_dag_concurrency_setting():
+    """
+    Make sure that the DAG's `max_active_runs` is set correctly.
+    """
+    task_callable_mapping = TEST_ETL_TASK_CALLABLES
+    cdr_type = "spaghetti"
+
+    dag = construct_etl_dag(
+        **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=42
+    )
+
+    assert dag.max_active_runs == 42
 
 
 def test_construct_etl_dag_fails_with_incorrect_mapping_keys():
@@ -134,12 +126,11 @@ def test_construct_etl_dag_fails_with_incorrect_mapping_keys():
     If the dictionary we pass to task_callable_mapping does not have
     correct keys we get a TypeError.
     """
-    default_args = {"owner": "bob", "start_date": "bob_time"}
     task_callable_mapping = {}
     cdr_type = "spaghetti"
 
     # pylint: disable=unused-variable
     with pytest.raises(TypeError):
         dag = construct_etl_dag(
-            **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
+            **task_callable_mapping, cdr_type=cdr_type, max_active_runs_per_dag=1
         )

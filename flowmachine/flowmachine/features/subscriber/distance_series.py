@@ -6,7 +6,7 @@
 """
 Per subscriber time series of distances from some reference location.
 """
-from typing import List, Optional
+from typing import List, Optional, Union, Tuple
 
 from flowmachine.features.spatial import DistanceMatrix
 from .metaclasses import SubscriberFeature
@@ -14,24 +14,41 @@ from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 
 
 valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
-valid_time_buckets = ["second", "minute", "hour", "day", "month", "year", "century"]
+valid_time_buckets = [
+    "second",
+    "minute",
+    "hour",
+    "day",
+    "week",
+    "month",
+    "quarter",
+    "year",
+    "century",
+]
 
 
 class DistanceSeries(SubscriberFeature):
     """
     Per subscriber time series of distance in meters from some reference location.
+    For the time series, returns the first date/datetime within the time bucket for each
+    row, e.g. 1/1/1999 for a year bucket, 1/1/2026, 1/2/2026 and so on for a month bucket.
+
+    Notes
+    -----
+    The datetime column will contain dates for time buckets longer than an hour, and datetimes for
+    time buckets less than a day.
 
     Parameters
     ----------
     subscriber_locations : SubscriberLocations
         A subscriber locations query with a lon-lat spatial unit to build the distance series against.
-    reference_location : BaseLocation or None, default None
-        The set of home locations from which to calculate distance at each sighting.
-        If not given then distances will be from (0, 0).
+    reference_location : BaseLocation or tuple of int, default (0, 0)
+        The set of home locations from which to calculate distance at each sighting, or a tuple
+        of lon-lat in WS84 projection.
     statistic : str
         the statistic to calculate one of 'sum', 'avg', 'max', 'min', 
         'median', 'stddev' or 'variance'
-    time_bucket : {"second", "minute", "hour", "day", "month", "year", "century"}, default "day"
+    time_bucket : {"second", "minute", "hour", "day", "week", "month", "quarter", "year", "century"}, default "day"
         Time bucket to calculate the statistic over.
 
     Examples
@@ -50,7 +67,7 @@ class DistanceSeries(SubscriberFeature):
         self,
         *,
         subscriber_locations: SubscriberLocations,
-        reference_location: Optional[BaseLocation] = None,
+        reference_location: Union[BaseLocation, Tuple[float, float]] = (0, 0),
         statistic: str = "avg",
         time_bucket: str = "day",
     ):
@@ -64,18 +81,15 @@ class DistanceSeries(SubscriberFeature):
                 f"'{time_bucket}' is not a valid value for time_bucket. Use one of {valid_time_buckets}"
             )
 
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
+        if statistic.lower() not in valid_stats:
             raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
+                f"'{statistic}' is not a valid statistic. Use one of {valid_stats}"
             )
+        self.statistic = statistic.lower()
         self.start = subscriber_locations.start
         self.stop = subscriber_locations.stop
-        if reference_location is None:
-            # Using 0, 0
-            self.reference_location = None
+        if isinstance(reference_location, tuple):
+            self.reference_location = reference_location
             self.joined = subscriber_locations
         elif isinstance(reference_location, BaseLocation):
             if reference_location.spatial_unit != subscriber_locations.spatial_unit:
@@ -100,8 +114,8 @@ class DistanceSeries(SubscriberFeature):
             )
         else:
             raise ValueError(
-                "Argument 'reference_location' should be an instance of BaseLocation class or None. "
-                f"Got: {type(reference_location)}"
+                "Argument 'reference_location' should be an instance of BaseLocation class or a tuple of two floats. "
+                f"Got: {type(reference_location).__name__}"
             )
 
         super().__init__()
@@ -111,11 +125,14 @@ class DistanceSeries(SubscriberFeature):
         return ["subscriber", "datetime", "value"]
 
     def _make_query(self):
-        if self.reference_location is None:
+        if isinstance(self.reference_location, tuple):
             joined = f"""
-            SELECT subscriber, time as time_to, ST_Distance(ST_Point(0, 0)::geography, ST_Point(lon, lat)::geography) as value_dist
-            FROM ({self.joined.get_query()}) _
-            """
+                SELECT
+                    subscriber,
+                    time as time_to,
+                    ST_Distance(ST_Point{self.reference_location}::geography, ST_Point(lon, lat)::geography) as value_dist
+                FROM ({self.joined.get_query()}) _
+                """
         else:
             joined = self.joined.get_query()
 
@@ -127,14 +144,14 @@ class DistanceSeries(SubscriberFeature):
             date_cast = ""
 
         sql = f"""
-        SELECT 
-            subscriber,
-            date_trunc('{self.aggregate_by}', time_to){date_cast} as datetime,
-            {self.statistic}(COALESCE(value_dist, 0)) as value
-        FROM 
-            ({joined}) _
-        GROUP BY 
-            subscriber, date_trunc('{self.aggregate_by}', time_to)
-        """
+            SELECT 
+                subscriber,
+                date_trunc('{self.aggregate_by}', time_to){date_cast} as datetime,
+                {self.statistic}(COALESCE(value_dist, 0)) as value
+            FROM 
+                ({joined}) _
+            GROUP BY 
+                subscriber, date_trunc('{self.aggregate_by}', time_to)
+            """
 
         return sql

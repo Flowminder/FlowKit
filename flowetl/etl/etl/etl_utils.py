@@ -9,7 +9,6 @@ Contains utility functions for use in the ETL dag and it's callables
 import os
 import pendulum
 import re
-import sqlalchemy
 
 from typing import List, Callable
 from enum import Enum
@@ -23,7 +22,7 @@ from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import PythonOperator
 
 
-def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
+def construct_etl_sensor_dag(*, callable: Callable) -> DAG:
     """
     This function constructs the sensor single task DAG that triggers ETL
     DAGS with correct config based on filename.
@@ -33,16 +32,21 @@ def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
     callable : Callable
         The sense callable that deals with finding files and triggering
         ETL DAGs
-    default_args : dict
-        Default arguments for DAG
 
     Returns
     -------
     DAG
         Airflow DAG
     """
+    default_args = {"owner": "flowminder"}
+
+    # Note: the `start_date` parameter needs to be set to a date in the past,
+    # otherwise Airflow won't run the DAG when it is triggered.
     with DAG(
-        dag_id=f"etl_sensor", schedule_interval=None, default_args=default_args
+        dag_id=f"etl_sensor",
+        start_date=pendulum.parse("1900-01-01"),
+        schedule_interval=None,
+        default_args=default_args,
     ) as dag:
         sense = PythonOperator(
             task_id="sense", python_callable=callable, provide_context=True
@@ -63,8 +67,8 @@ def construct_etl_dag(
     quarantine: Callable,
     clean: Callable,
     fail: Callable,
-    default_args: dict,
     cdr_type: str,
+    max_active_runs_per_dag: int,
     config_path: str = "/mounts/config",
 ) -> DAG:
     """
@@ -94,12 +98,10 @@ def construct_etl_dag(
         The clean task callable.
     fail : Callable
         The fail task callable.
-    default_args : dict
-        A set of default args to pass to all callables.
-        Must containt at least "owner" key and "start" key (which must be a
-        pendulum date object)
     cdr_type : str
         The type of CDR that this ETL DAG will process.
+    max_active_runs_per_dag : int
+        The maximum number of active DAG runs per DAG.
     config_path : str
         The config path used to look for the sql templates.
 
@@ -109,9 +111,15 @@ def construct_etl_dag(
         Specification of Airflow DAG for ETL
     """
 
+    default_args = {"owner": "flowminder"}
+
+    # Note: the `start_date` parameter needs to be set to a date in the past,
+    # otherwise Airflow won't run the DAG when it is triggered.
     with DAG(
         dag_id=f"etl_{cdr_type}",
+        start_date=pendulum.parse("1900-01-01"),
         schedule_interval=None,
+        max_active_runs=max_active_runs_per_dag,
         default_args=default_args,
         template_searchpath=config_path,  # template paths will be relative to this
         user_defined_macros={

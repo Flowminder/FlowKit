@@ -46,6 +46,7 @@ class AggregationUnitSetting extends React.Component {
                 control={
                   <Checkbox
                     checked={permissions[key]}
+                    data-aggregation-id={claim + "_" + key}
                     onChange={checkedHandler(claim_id, claim, key)}
                     value={claim + ":" + key}
                     color="primary"

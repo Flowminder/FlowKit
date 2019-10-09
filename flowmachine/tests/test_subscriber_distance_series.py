@@ -89,10 +89,12 @@ def test_error_when_subs_locations_not_point_geom():
     Test that error is raised if the spatial unit of the subscriber locations isn't point.
     """
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="does not have longitude/latitude columns"):
         DistanceSeries(
             subscriber_locations=SubscriberLocations(
-                "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("admin3")
+                "2016-01-01",
+                "2016-01-07",
+                spatial_unit=make_spatial_unit("admin", level=3),
             )
         )
 
@@ -102,9 +104,12 @@ def test_error_on_spatial_unit_mismatch():
     Test that error is raised if the spatial unit of the subscriber locations isn't point.
     """
 
-    rl = daily_location("2016-01-01")
+    rl = daily_location("2016-01-01", spatial_unit=make_spatial_unit("admin", level=3))
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="reference_location must have the same spatial unit as subscriber_locations.",
+    ):
         DistanceSeries(
             subscriber_locations=SubscriberLocations(
                 "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
@@ -117,7 +122,7 @@ def test_invalid_statistic_raises_error():
     """
     Test that passing an invalid statistic raises an error.
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="'NOT_A_STATISTIC' is not a valid statistic"):
         DistanceSeries(
             subscriber_locations=SubscriberLocations(
                 "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
@@ -130,7 +135,9 @@ def test_invalid_time_bucket_raises_error():
     """
     Test that passing an invalid time bucket raises an error.
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="'NOT_A_BUCKET' is not a valid value for time_bucket"
+    ):
         DistanceSeries(
             subscriber_locations=SubscriberLocations(
                 "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
@@ -139,11 +146,14 @@ def test_invalid_time_bucket_raises_error():
         )
 
 
-def test_reference_raises_error():
+def test_invalid_reference_raises_error():
     """
     Test that passing an invalid reference location raises an error.
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="Argument 'reference_location' should be an instance of BaseLocation class or a tuple of two floats. Got: str",
+    ):
         DistanceSeries(
             subscriber_locations=SubscriberLocations(
                 "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
