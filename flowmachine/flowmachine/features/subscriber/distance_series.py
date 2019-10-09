@@ -14,7 +14,17 @@ from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 
 
 valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
-valid_time_buckets = ["second", "minute", "hour", "day", "week", "month", "quarter", "year", "century"]
+valid_time_buckets = [
+    "second",
+    "minute",
+    "hour",
+    "day",
+    "week",
+    "month",
+    "quarter",
+    "year",
+    "century",
+]
 
 
 class DistanceSeries(SubscriberFeature):
@@ -70,7 +80,6 @@ class DistanceSeries(SubscriberFeature):
             raise ValueError(
                 f"'{time_bucket}' is not a valid value for time_bucket. Use one of {valid_time_buckets}"
             )
-
 
         if statistic not in valid_stats:
             raise ValueError(
