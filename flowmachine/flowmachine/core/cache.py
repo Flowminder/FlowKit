@@ -746,6 +746,7 @@ async def watch_and_shrink_cache(
     flowdb_connection: Connection,
     pool: Executor,
     sleep_time: int = 86400,
+    timeout: Optional[int] = 600,
     loop: bool = True,
     size_threshold: int = None,
     dry_run: bool = False,
@@ -762,6 +763,8 @@ async def watch_and_shrink_cache(
         Executor to run the date check with
     sleep_time : int, default 86400
         Number of seconds to sleep for between checks
+    timeout : int or None, default 600
+        Seconds to wait for a cache shrink to complete before cancelling it
     loop : bool, default True
         Set to false to return after the first check
     size_threshold : int, default None
@@ -786,9 +789,17 @@ async def watch_and_shrink_cache(
         protected_period=protected_period,
     )
     while True:
-        logger.debug("Checking available dates.")
-        avail = await asyncio.get_running_loop().run_in_executor(pool, shrink_func)
+        logger.debug("Checking if cache should be shrunk.")
+
+        try:
+            await asyncio.wait_for(
+                asyncio.get_running_loop().run_in_executor(pool, shrink_func),
+                timeout=timeout,
+            )
+        except TimeoutError:
+            logger.error(
+                f"Failed to complete cache shrink within {timeout}s. Trying again in {sleep_time}s."
+            )
         if not loop:
             break
         await asyncio.sleep(sleep_time)
-    return avail
