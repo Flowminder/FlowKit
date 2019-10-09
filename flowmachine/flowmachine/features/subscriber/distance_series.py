@@ -127,9 +127,12 @@ class DistanceSeries(SubscriberFeature):
     def _make_query(self):
         if isinstance(self.reference_location, tuple):
             joined = f"""
-            SELECT subscriber, time as time_to, ST_Distance(ST_Point{self.reference_location}::geography, ST_Point(lon, lat)::geography) as value_dist
-            FROM ({self.joined.get_query()}) _
-            """
+                SELECT
+                    subscriber,
+                    time as time_to,
+                    ST_Distance(ST_Point{self.reference_location}::geography, ST_Point(lon, lat)::geography) as value_dist
+                FROM ({self.joined.get_query()}) _
+                """
         else:
             joined = self.joined.get_query()
 
@@ -141,14 +144,14 @@ class DistanceSeries(SubscriberFeature):
             date_cast = ""
 
         sql = f"""
-        SELECT 
-            subscriber,
-            date_trunc('{self.aggregate_by}', time_to){date_cast} as datetime,
-            {self.statistic}(COALESCE(value_dist, 0)) as value
-        FROM 
-            ({joined}) _
-        GROUP BY 
-            subscriber, date_trunc('{self.aggregate_by}', time_to)
-        """
+            SELECT 
+                subscriber,
+                date_trunc('{self.aggregate_by}', time_to){date_cast} as datetime,
+                {self.statistic}(COALESCE(value_dist, 0)) as value
+            FROM 
+                ({joined}) _
+            GROUP BY 
+                subscriber, date_trunc('{self.aggregate_by}', time_to)
+            """
 
         return sql
