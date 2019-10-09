@@ -92,6 +92,44 @@ def test_edit_user_requires_enforces_passwword_strength(client, auth, test_admin
     } == response.get_json()
 
 
+def test_remove_two_factor_regression(client, auth, test_admin):
+    """
+    Regression test for #1374 - check that removing two factor from a user with no two factor doesn't error.
+    """
+    uid, username, password = test_admin
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/users",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "username": "TEST_USER",
+            "password": "A_VERY_STRONG_DUMMY_PASSWORD_THAT_IS_VERY_LONG",
+        },
+    )
+    assert 200 == response.status_code
+
+    response = client.patch(
+        "/admin/users/2",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={"has_two_factor": False},
+    )
+    assert 200 == response.status_code
+
+    response = client.get("/admin/users/2", headers={"X-CSRF-Token": csrf_cookie})
+
+    assert {
+        "id": 2,
+        "name": "TEST_USER",
+        "is_admin": False,
+        "has_two_factor": False,
+        "require_two_factor": False,
+        "groups": [{"id": 2, "name": "TEST_USER"}],
+        "servers": [],
+        "group_id": 2,
+    } == response.get_json()
+
+
 def test_edit_user(client, auth, test_admin):
     uid, username, password = test_admin
     # Log in first
