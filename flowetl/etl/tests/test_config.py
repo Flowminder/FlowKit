@@ -60,20 +60,6 @@ def test_config_validation_fails_for_invalid_etl_section(sample_config_dict):
         validate_config(bad_config)
 
 
-def test_config_validation_fails_no_default_args_section(sample_config_dict):
-    """
-    Check that we get an exception raised if default args
-    subsection missing.
-    """
-    bad_config = deepcopy(sample_config_dict)
-    bad_config.pop("default_args")
-
-    with pytest.raises(ValueError) as raised_exception:
-        validate_config(bad_config)
-
-    assert len(raised_exception.value.args[0]) == 1
-
-
 def test_config_validation_fails_bad_etl_subsection(sample_config_dict):
     """
     Check that we get an exception raised if an etl subsection
@@ -200,13 +186,37 @@ def test_get_config_from_file(tmpdir):
     """
     Test that we can load yaml to dict from file
     """
-    sample_dict = {"A": 23, "B": [1, 2, 34], "C": {"A": "bob"}}
+    sample_dict = {
+        "etl": {"calls": {"concurrency": 3, "source": {"source_type": "csv"}}}
+    }
     config_dir = tmpdir.mkdir("config")
     config_file = config_dir.join("config.yml")
     config_file.write(yaml.dump(sample_dict))
 
-    config = get_config_from_file(config_filepath=Path(config_file))
+    config = get_config_from_file(config_filepath=config_file)
     assert config == sample_dict
+
+
+def test_loading_invalid_config_file_raises_error(tmpdir):
+    """
+    Test that the config is validated when loading from a file and errors are raised.
+    """
+    invalid_config = textwrap.dedent(
+        """
+        etl:
+          calls:
+            source:
+              source_type: sql
+              table_name: "sample_data_fdw"
+        """
+    )
+
+    config_file = tmpdir.join("config.yml")
+    config_file.write(invalid_config)
+
+    error_msg = "Each etl subsection must contain a 'source' and 'concurrency' subsection - not present for 'calls'."
+    with pytest.raises(ValueError, match=error_msg):
+        get_config_from_file(config_filepath=config_file)
 
 
 def test_extract_date_from_filename():
@@ -238,9 +248,6 @@ def test_sql_find_available_dates(sample_config_dict):
 
     config_without_explicit_sql = textwrap.dedent(
         """
-        default_args:
-          owner: flowminder
-          start_date: '1900-01-01'
         etl:
           calls:
             concurrency: 4

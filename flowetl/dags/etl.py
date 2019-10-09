@@ -9,25 +9,18 @@ Skeleton specification for ETL DAG
 import os
 import structlog
 
-from pathlib import Path
-
-# need to import and not use so that airflow looks here for a DAG
+# Need to import the DAG class (even if it is not directly
+# used in this file) so that Airflow looks here for a DAG.
 from airflow import DAG  # pylint: disable=unused-import
 
-from pendulum import parse
 from etl.dag_task_callable_mappings import (
     TEST_ETL_TASK_CALLABLES,
     PRODUCTION_ETL_TASK_CALLABLES,
 )
 from etl.etl_utils import construct_etl_dag, CDRType
-from etl.config_parser import (
-    get_config_from_file,
-    validate_config,
-    fill_config_default_values,
-)
+from etl.config_parser import get_config_from_file
 
 logger = structlog.get_logger("flowetl")
-default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
 ETL_TASK_CALLABLES = {
     "testing": TEST_ETL_TASK_CALLABLES,
@@ -39,33 +32,32 @@ flowetl_runtime_config = os.environ.get("FLOWETL_RUNTIME_CONFIG", "production")
 # Determine if we are in a testing environment - use dummy callables if so
 if flowetl_runtime_config == "testing":
     task_callable_mapping = TEST_ETL_TASK_CALLABLES
-    logger.info("running in testing environment")
+    logger.info("Running in testing environment")
 
     dag = construct_etl_dag(
-        **task_callable_mapping, default_args=default_args, cdr_type="testing"
+        **task_callable_mapping, cdr_type="testing", max_active_runs_per_dag=1
     )
 elif flowetl_runtime_config == "production":
     task_callable_mapping = PRODUCTION_ETL_TASK_CALLABLES
-    logger.info("running in production environment")
+    logger.info("Running in production environment")
 
     # read and validate the config file before creating the DAGs
-    global_config_dict = get_config_from_file(
-        config_filepath=Path("/mounts/config/config.yml")
-    )
-    validate_config(global_config_dict)
-    global_config_dict = fill_config_default_values(global_config_dict)
+    global_config_dict = get_config_from_file("/mounts/config/config.yml")
 
-    default_args = global_config_dict["default_args"]
-
-    # create DAG for each cdr_type
+    # Create DAG for each cdr_type occurring in the config
     for cdr_type in CDRType:
         # Ensure `cdr_type` is a string (e.g. "sms", instead of the raw value `CDRType.SMS`)
         # so that interpolation in SQL templates works as expected.
-        cdr_type = cdr_type.value
+        cdr_type = CDRType(cdr_type).value
 
-        globals()[f"etl_{cdr_type}"] = construct_etl_dag(
-            **task_callable_mapping, default_args=default_args, cdr_type=cdr_type
-        )
+        # Only process CDR types that are actually specified in the config
+        if cdr_type in global_config_dict["etl"]:
+            max_active_runs_per_dag = global_config_dict["etl"][cdr_type]["concurrency"]
+            globals()[f"etl_{cdr_type}"] = construct_etl_dag(
+                **task_callable_mapping,
+                cdr_type=cdr_type,
+                max_active_runs_per_dag=max_active_runs_per_dag,
+            )
 else:
     raise ValueError(
         f"Invalid config name: '{flowetl_runtime_config}'. "
