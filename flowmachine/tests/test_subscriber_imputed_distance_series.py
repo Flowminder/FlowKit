@@ -14,20 +14,31 @@ from flowmachine.features.subscriber.imputed_distance_series import (
 )
 
 
-def fill_in_dates(df, window, start, stop):
+def fill_in_dates(df: pd.DataFrame, window_size: int, start: str, stop: str):
     """
-    :param df: input df, assumed to have columns ['subscriber', 'date', 'dist_to_hl']
-    :param window: window size for calculating rolling median
-    :return: df with 'missing' dates filled in. Also adds a 'days since last call' and 'rolling_median' column
+
+    Parameters
+    ----------
+    df : pandas.Dataframe
+        input df, assumed to have columns ['subscriber', 'date', 'dist_to_hl']
+    window_size : int
+        window_size size for calculating rolling median
+    start, stop : str
+        ISO format date
+
+    Returns
+    -------
+    pd.Dataframe
     """
+
     df.set_index(df["datetime"].apply(lambda x: pd.to_datetime(x).date()), inplace=True)
 
     df["days_since_last_call"] = df["datetime"].diff()
 
-    df["rolling_median"] = df.rolling(window)["value"].median()
+    df["rolling_median"] = df.rolling(window_size)["value"].median()
     df["rolling_median"].fillna(
         method="backfill", inplace=True
-    )  # This is just to fill in the first (window-1) entries
+    )  # This is just to fill in the first (window_size-1) entries
 
     date_range = pd.date_range(start, stop, closed="left")
     df = df.reindex(index=date_range)  # Fill in missing dates
@@ -72,7 +83,7 @@ def test_impute(get_dataframe):
 )
 def test_bad_window(size, match):
     """
-    Test some median unfriendly window sizes raise errors.
+    Test some median unfriendly window_size sizes raise errors.
     """
     with pytest.raises(ValueError, match=match):
         ImputedDistanceSeries(distance_series=None, window_size=size)
