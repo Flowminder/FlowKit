@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowETL now only creates DAGs for CDR types which are present in the config, leading to a better user experience in the Airflow UI. [#1376](https://github.com/Flowminder/FlowKit/issues/1376)
 - The `concurrency` settings in the FlowETL config are no longer ignored. [#1378](https://github.com/Flowminder/FlowKit/issues/1378)
 - The FlowETL deployment example has been updated so that it no longer fails due to a missing foreign data wrapper for the available CDR dates. [#1379](https://github.com/Flowminder/FlowKit/issues/1379)
-- Fixed not being able to enable a newly added api route on existing servers. [#1373](https://github.com/Flowminder/FlowKit/issues/1373)
+- Fixed not being able to enable a newly added api route on existing servers in FlowAuth. [#1373](https://github.com/Flowminder/FlowKit/issues/1373)
 
 ### Removed
 
