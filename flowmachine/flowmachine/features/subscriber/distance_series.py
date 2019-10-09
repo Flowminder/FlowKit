@@ -71,11 +71,12 @@ class DistanceSeries(SubscriberFeature):
                 f"'{time_bucket}' is not a valid value for time_bucket. Use one of {valid_time_buckets}"
             )
 
-        self.statistic = statistic.lower()
-        if self.statistic not in valid_stats:
+
+        if statistic not in valid_stats:
             raise ValueError(
-                f"{self.statistic} is not a valid statistic. Use one of {valid_stats}"
+                f"'{statistic}' is not a valid statistic. Use one of {valid_stats}"
             )
+        self.statistic = statistic.lower()
         self.start = subscriber_locations.start
         self.stop = subscriber_locations.stop
         if isinstance(reference_location, tuple):
@@ -105,7 +106,7 @@ class DistanceSeries(SubscriberFeature):
         else:
             raise ValueError(
                 "Argument 'reference_location' should be an instance of BaseLocation class or a tuple of two floats. "
-                f"Got: {type(reference_location)}"
+                f"Got: {type(reference_location).__name__}"
             )
 
         super().__init__()
