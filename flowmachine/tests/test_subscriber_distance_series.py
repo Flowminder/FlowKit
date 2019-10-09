@@ -139,7 +139,7 @@ def test_invalid_time_bucket_raises_error():
         )
 
 
-def test_reference_raises_error():
+def test_invalid_reference_raises_error():
     """
     Test that passing an invalid reference location raises an error.
     """
