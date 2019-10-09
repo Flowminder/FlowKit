@@ -54,8 +54,7 @@ describe("Server management", function() {
     cy.contains(route_name)
       .parent()
       .parent()
-      .children()
-      .last()
+      .find("button")
       .click({
         force: true
       });
