@@ -67,9 +67,7 @@ class DistanceSeries(SubscriberFeature):
         self.statistic = statistic.lower()
         if self.statistic not in valid_stats:
             raise ValueError(
-                "{} is not a valid statistic. Use one of {}".format(
-                    self.statistic, valid_stats
-                )
+                f"{self.statistic} is not a valid statistic. Use one of {valid_stats}"
             )
         self.start = subscriber_locations.start
         self.stop = subscriber_locations.stop
