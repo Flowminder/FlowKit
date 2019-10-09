@@ -7,8 +7,10 @@
 """
 Functions which deal with inspecting and managing the query cache.
 """
-
+import asyncio
 import pickle
+from concurrent.futures import Executor
+from functools import partial
 
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
 
@@ -737,3 +739,56 @@ def cache_table_exists(connection: "Connection", query_id: str) -> bool:
         return True
     except ValueError:
         return False
+
+
+async def watch_and_shrink_cache(
+    *,
+    flowdb_connection: Connection,
+    pool: Executor,
+    sleep_time: int = 86400,
+    loop: bool = True,
+    size_threshold: int = None,
+    dry_run: bool = False,
+    protected_period: Optional[int] = None,
+) -> None:
+    """
+    Background task to periodically trigger a shrink of the cache.
+
+    Parameters
+    ----------
+    flowdb_connection : Connection
+        Flowdb connection to check dates on
+    pool : Executor
+        Executor to run the date check with
+    sleep_time : int, default 86400
+        Number of seconds to sleep for between checks
+    loop : bool, default True
+        Set to false to return after the first check
+    size_threshold : int, default None
+        Optionally override the maximum cache size set in flowdb.
+    dry_run : bool, default False
+        Set to true to just report the objects that would be removed and not remove them
+    protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded. If None,
+        the value stored in cache.cache_config will be used. Set to -1 to ignore cache protection
+        completely.
+
+    Returns
+    -------
+    None
+
+    """
+    shrink_func = partial(
+        shrink_below_size,
+        connection=flowdb_connection,
+        size_threshold=size_threshold,
+        dry_run=dry_run,
+        protected_period=protected_period,
+    )
+    while True:
+        logger.debug("Checking available dates.")
+        avail = await asyncio.get_running_loop().run_in_executor(pool, shrink_func)
+        if not loop:
+            break
+        await asyncio.sleep(sleep_time)
+    return avail
