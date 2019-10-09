@@ -197,6 +197,28 @@ def test_get_config_from_file(tmpdir):
     assert config == sample_dict
 
 
+def test_loading_invalid_config_file_raises_error(tmpdir):
+    """
+    Test that the config is validated when loading from a file and errors are raised.
+    """
+    invalid_config = textwrap.dedent(
+        """
+        etl:
+          calls:
+            source:
+              source_type: sql
+              table_name: "sample_data_fdw"
+        """
+    )
+
+    config_file = tmpdir.join("config.yml")
+    config_file.write(invalid_config)
+
+    error_msg = "Each etl subsection must contain a 'source' and 'concurrency' subsection - not present for 'calls'."
+    with pytest.raises(ValueError, match=error_msg):
+        get_config_from_file(config_filepath=config_file)
+
+
 def test_extract_date_from_filename():
     filename = "CALLS_20160101.csv.gz"
     filename_pattern = r"CALLS_(\d{8}).csv.gz"
