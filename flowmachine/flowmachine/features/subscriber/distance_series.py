@@ -81,7 +81,7 @@ class DistanceSeries(SubscriberFeature):
                 f"'{time_bucket}' is not a valid value for time_bucket. Use one of {valid_time_buckets}"
             )
 
-        if statistic not in valid_stats:
+        if statistic.lower() not in valid_stats:
             raise ValueError(
                 f"'{statistic}' is not a valid statistic. Use one of {valid_stats}"
             )
