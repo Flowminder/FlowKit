@@ -12,7 +12,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- The FlowETL config file is now always validated, avoiding runtime errors if a config setting is wrong or missing. [#1375](https://github.com/Flowminder/FlowKit/issues/1375)
+- FlowETL now only creates DAGs for CDR types which are present in the config, leading to a better user experience in the Airflow UI. [#1376](https://github.com/Flowminder/FlowKit/issues/1376)
+- The `concurrency` settings in the FlowETL config are no longer ignored. [#1378](https://github.com/Flowminder/FlowKit/issues/1378)
+- The FlowETL deployment example has been updated so that it no longer fails due to a missing foreign data wrapper for the available CDR dates. [#1379](https://github.com/Flowminder/FlowKit/issues/1379)
+
 ### Removed
+
+- The `default_args` section in the FlowETL config file has been removed. [#1377](https://github.com/Flowminder/FlowKit/issues/1377)
 
 
 ## [0.9.0]
@@ -45,10 +52,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Quickstart will no longer fail if it has been run previously with a different FlowDB data size and not explicitly shut down. [#900](https://github.com/Flowminder/FlowKit/issues/900)
 
-
 ### Removed
 - Flowmachine's `subscriber_locations_cluster` function has been removed - use `HartiganCluster` or `MeaningfulLocations` directly.
 - FlowAPI no longer supports the non-reproducible random sampling method `system_rows`. [#1263](https://github.com/Flowminder/FlowKit/issues/1263)
+
 
 ## [0.8.0]
 
