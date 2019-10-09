@@ -72,3 +72,4 @@ from .per_contact_event_stats import PerContactEventStats
 from .per_location_event_stats import PerLocationEventStats
 from .handset_stats import HandsetStats
 from .interevent_interval import IntereventInterval
+from .distance_series import DistanceSeries

@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Added new `DistanceSeries` query to Flowmachine, which produces per-subscriber time series of distance from a reference point. [#1313](https://github.com/Flowminder/FlowKit/issues/1313)
 
 ### Changed
 
