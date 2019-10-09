@@ -14,7 +14,7 @@ from ..utilities.subscriber_locations import SubscriberLocations, BaseLocation
 
 
 valid_stats = {"sum", "avg", "max", "min", "median", "stddev", "variance"}
-valid_time_buckets = ["second", "minute", "hour", "day", "month", "year", "century"]
+valid_time_buckets = ["second", "minute", "hour", "day", "week", "month", "quarter", "year", "century"]
 
 
 class DistanceSeries(SubscriberFeature):
@@ -38,7 +38,7 @@ class DistanceSeries(SubscriberFeature):
     statistic : str
         the statistic to calculate one of 'sum', 'avg', 'max', 'min', 
         'median', 'stddev' or 'variance'
-    time_bucket : {"second", "minute", "hour", "day", "month", "year", "century"}, default "day"
+    time_bucket : {"second", "minute", "hour", "day", "week", "month", "quarter", "year", "century"}, default "day"
         Time bucket to calculate the statistic over.
 
     Examples
