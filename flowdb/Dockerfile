@@ -104,7 +104,7 @@ RUN mkdir -p /docker-entrypoint-initdb.d
 #  together with the appropriate headers, otherwise
 #  psutil fails to install.
 #
-# We'll also install any postgres extensions distributed via PGXN.
+# We'll also install useful postgres extensions distributed via PGXN.
 #
 COPY ./Pipfile* /tmp/
 RUN apt-get update \
