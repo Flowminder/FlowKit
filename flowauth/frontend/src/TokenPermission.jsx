@@ -45,6 +45,7 @@ class TokenPermission extends React.Component {
                 control={
                   <Checkbox
                     data-cy="permission-nested"
+                    data-permission-id={claim + "_" + key}
                     id="permission"
                     checked={permissions[key]}
                     onChange={checkedHandler(claim, key)}

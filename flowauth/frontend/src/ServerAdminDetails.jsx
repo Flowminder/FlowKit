@@ -163,12 +163,13 @@ class ServerAdminDetails extends React.Component {
           this.setState({
             name: name,
             rights: rights,
-            permitted: JSON.parse(JSON.stringify(rights || {})),
             latest_expiry: json.latest_token_expiry,
             max_life: json.longest_token_life,
             edit_mode: true
           });
+          return getAllCapabilities();
         })
+        .then(json => this.setState({ permitted: json }))
         .catch(err => {
           this.setState({ hasError: true, error: err });
         });

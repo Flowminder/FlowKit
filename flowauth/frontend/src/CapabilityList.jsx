@@ -104,7 +104,7 @@ class CapabilityList extends React.Component {
           {this.renderCapabilities()}
           <Grid item xs={6}>
             <TextField
-              id="standard-name"
+              id="name"
               label="New Route"
               className={classes.textField}
               value={new_cap}
@@ -119,6 +119,7 @@ class CapabilityList extends React.Component {
                 color="inherit"
                 aria-label="New"
                 onClick={this.addCap}
+                id="new"
               >
                 <AddIcon />
               </IconButton>
