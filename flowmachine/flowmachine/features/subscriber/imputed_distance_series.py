@@ -23,7 +23,7 @@ class ImputedDistanceSeries(Query):
     distance_series : DistanceSeries
         A subscriber distance series which may contain gaps.
     window_size : int, default 3
-        Number of observations to use for imputation. Must be odd and positive.
+        Number of observations to use for imputation. Must be odd, positive and greater than 1.
 
 
     References
