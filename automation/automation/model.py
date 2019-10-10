@@ -19,6 +19,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 
+from .utils import get_params_hash
+
 Base = declarative_base()
 
 
@@ -42,7 +44,7 @@ class workflow_runs(Base):
 
     id = Column(Integer, primary_key=True)
     workflow_name = Column(String)
-    workflow_params = Column(JSON)
+    workflow_params_hash = Column(String)
     reference_date = Column(Date)
     scheduled_start_time = Column(DateTime(timezone=True))
     state = Column(Enum(RunState))
@@ -51,13 +53,15 @@ class workflow_runs(Base):
     def __init__(
         self,
         workflow_name,
-        workflow_params,
+        workflow_params_hash,
         reference_date,
         scheduled_start_time,
         state,
     ):
         self.workflow_name = workflow_name
-        self.workflow_params = workflow_params
+        self.workflow_params_hash = (
+            workflow_params_hash
+        )  # Hash generated from workflow parameters dict
         self.reference_date = reference_date
         self.scheduled_start_time = (
             scheduled_start_time
@@ -84,7 +88,7 @@ class workflow_runs(Base):
             Name of the workflow
         workflow_params : dict
             Parameters passed when running the workflow
-        reference_date : Date
+        reference_date : date
             The date with which the workflow run is associated
         scheduled_start_time : datetime
             Scheduled start time of the workflow run
@@ -93,8 +97,13 @@ class workflow_runs(Base):
         session : Session
             A sqlalchemy session for a DB in which this model exists.
         """
+        workflow_params_hash = get_params_hash(workflow_params)
         row = cls(
-            workflow_name, workflow_params, reference_date, scheduled_start_time, state
+            workflow_name,
+            workflow_params_hash,
+            reference_date,
+            scheduled_start_time,
+            state,
         )
         session.add(row)
         session.commit()
@@ -111,7 +120,7 @@ class workflow_runs(Base):
             Name of the workflow
         workflow_params : dict
             Parameters passed when running the workflow
-        reference_date : Date
+        reference_date : date
             The date with which the workflow run is associated
         session : Session
             A sqlalchemy session for a DB in which this model exists.
@@ -121,11 +130,12 @@ class workflow_runs(Base):
         bool
             OK to process?
         """
+        workflow_params_hash = get_params_hash(workflow_params)
         most_recent = (
             session.query(cls)
             .filter(
                 cls.workflow_name == workflow_name,
-                cls.workflow_params == workflow_params,
+                cls.workflow_params_hash == workflow_params_hash,
                 cls.reference_date == reference_date,
             )
             .order_by(cls.timestamp.desc())
