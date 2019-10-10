@@ -3,9 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from prefect import Flow, Parameter, unmapped
+from prefect.schedules import IntervalSchedule
+from datetime import timedelta
 from . import tasks
 
-with Flow("Date-triggered-notebooks") as date_triggered_notebooks_workflow:
+schedule = IntervalSchedule(interval=timedelta(days=1))
+
+with Flow("Date-triggered-notebooks", schedule) as date_triggered_notebooks_workflow:
     # Parameters required in any date-triggered-notebooks workflow (should all have defaults)
     api_url = Parameter("api_url")  # TODO: set default here
     cdr_types = Parameter("cdr_types", default=None, required=False)
