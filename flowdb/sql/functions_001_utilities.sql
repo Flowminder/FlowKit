@@ -236,7 +236,7 @@ Returns the current setting for cache size in bytes.
 CREATE OR REPLACE FUNCTION cache_max_size()
 	RETURNS bigint AS
 $$
-  DECLARE cache_size float;
+  DECLARE cache_size bigint;
   BEGIN
   SELECT value INTO cache_size FROM cache.cache_config WHERE key='cache_size';
   RETURN cache_size;
@@ -255,7 +255,7 @@ Get the size on disk in bytes of a table in the database.
 CREATE OR REPLACE FUNCTION table_size(IN tablename TEXT, IN table_schema TEXT)
 	RETURNS float AS
 $$
-  DECLARE table_size float;
+  DECLARE table_size bigint;
   BEGIN
   SELECT pg_total_relation_size(c.oid) INTO table_size
               FROM pg_class c

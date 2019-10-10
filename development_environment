@@ -80,7 +80,7 @@ FLOWMACHINE_FLOWDB_PASSWORD=foo
 # Password for flowapi user
 FLOWAPI_FLOWDB_PASSWORD=foo
 # Size in bytes to limit cache to
-CACHE_SIZE=""
+CACHE_SIZE=100000
 # Decay rate for cache records
 CACHE_HALF_LIFE=10000
 # Number of seconds to protect cache records from deletion

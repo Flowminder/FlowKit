@@ -9,7 +9,7 @@ Functions which deal with inspecting and managing the query cache.
 """
 import asyncio
 import pickle
-from concurrent.futures import Executor
+from concurrent.futures import Executor, TimeoutError
 from functools import partial
 
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
@@ -466,9 +466,14 @@ def shrink_below_size(
         List of the queries that were removed
     """
     initial_cache_size = get_size_of_cache(connection)
+    if size_threshold is None:
+        size_threshold = get_max_size_of_cache(connection)
     removed = []
     logger.info(
-        f"Shrinking cache from {initial_cache_size} to below {size_threshold}{' (dry run)' if dry_run else ''}."
+        f"Shrinking cache from {initial_cache_size} to below {size_threshold}{' (dry run)' if dry_run else ''}.",
+        initial_cache_size=initial_cache_size,
+        size_threshold=size_threshold,
+        dry_run=dry_run,
     )
 
     if dry_run:
@@ -492,17 +497,20 @@ def shrink_below_size(
     else:
         shrink = shrink_one
 
-    if size_threshold is None:
-        size_threshold = get_max_size_of_cache(connection)
-
-    while initial_cache_size > size_threshold:
+    current_cache_size = initial_cache_size
+    while current_cache_size > size_threshold:
         obj_removed, cache_reduction = shrink(
             connection, protected_period=protected_period
         )
         removed.append(obj_removed)
-        initial_cache_size -= cache_reduction
+        current_cache_size -= cache_reduction
     logger.info(
-        f"New cache size {'would' if dry_run else 'will'} be {initial_cache_size}."
+        f"New cache size {'would' if dry_run else 'will'} be {current_cache_size}.",
+        removed=[q.query_id for q in removed],
+        dry_run=dry_run,
+        initial_cache_size=initial_cache_size,
+        current_cache_size=current_cache_size,
+        size_threshold=size_threshold,
     )
     return removed
 
