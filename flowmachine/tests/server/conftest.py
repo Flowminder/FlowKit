@@ -56,4 +56,10 @@ def server_config():
     """
     Returns a FlowmachineServerConfig object, required as a parameter for server functions and action handlers.
     """
-    return FlowmachineServerConfig(port=5555, debug_mode=False, store_dependencies=True)
+    return FlowmachineServerConfig(
+        port=5555,
+        debug_mode=False,
+        store_dependencies=True,
+        cache_pruning_frequency=86400,
+        cache_pruning_timeout=600,
+    )

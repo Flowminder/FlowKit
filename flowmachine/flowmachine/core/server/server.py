@@ -291,7 +291,10 @@ async def recv(
     )
     main_loop.create_task(
         watch_and_shrink_cache(
-            flowdb_connection=flowdb_connection, pool=Query.thread_pool_executor
+            flowdb_connection=flowdb_connection,
+            pool=Query.thread_pool_executor,
+            sleep_time=config.cache_pruning_frequency,
+            timeout=config.cache_pruning_timeout,
         )
     )
     try:

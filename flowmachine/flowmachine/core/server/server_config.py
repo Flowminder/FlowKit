@@ -18,11 +18,17 @@ class FlowmachineServerConfig(NamedTuple):
         True to enable asyncio's debugging mode
     store_dependencies : bool
         If True, store a query's dependencies when running the query
+    cache_pruning_frequency : int
+        Number of seconds to wait between cache shrinks (if negative, no shrinks will ever be done).
+    cache_pruning_timeout : int
+        Maximum number of seconds to wait for a cache pruning operation to complete.
     """
 
     port: int
     debug_mode: bool
     store_dependencies: bool
+    cache_pruning_frequency: int
+    cache_pruning_timeout: int
 
 
 def get_server_config() -> FlowmachineServerConfig:
@@ -40,7 +46,15 @@ def get_server_config() -> FlowmachineServerConfig:
         "true"
         == os.getenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", "false").lower()
     )
+    cache_pruning_frequency = int(
+        os.getenv("FLOWMACHINE_CACHE_PRUNING_FREQUENCY", 86400)
+    )
+    cache_pruning_timeout = int(os.getenv("FLOWMACHINE_CACHE_PRUNING_TIMEOUT", 600))
 
     return FlowmachineServerConfig(
-        port=port, debug_mode=debug_mode, store_dependencies=store_dependencies
+        port=port,
+        debug_mode=debug_mode,
+        store_dependencies=store_dependencies,
+        cache_pruning_frequency=cache_pruning_frequency,
+        cache_pruning_timeout=cache_pruning_timeout,
     )
