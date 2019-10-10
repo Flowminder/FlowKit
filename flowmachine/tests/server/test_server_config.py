@@ -20,7 +20,7 @@ def test_get_server_config(monkeypatch):
     assert len(config) == 5
     assert config.port == 5678
     assert config.debug_mode
-    assert config.store_dependencies
+    assert not config.store_dependencies
     assert config.cache_pruning_timeout == 2
     assert config.cache_pruning_frequency == 1
 
@@ -37,7 +37,7 @@ def test_get_server_config_defaults(monkeypatch):
     config = get_server_config()
     assert len(config) == 5
     assert config.port == 5555
-    assert config.debug_mode
+    assert not config.debug_mode
     assert config.store_dependencies
     assert config.cache_pruning_timeout == 600
     assert config.cache_pruning_frequency == 86400
