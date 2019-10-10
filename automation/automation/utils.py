@@ -31,7 +31,7 @@ def get_output_filename(input_filename: str, label: str = "") -> str:
         Output filename
     """
     input_filename = Path(input_filename)
-    now_string = pendulum.now("utc").isoformat(timespec="seconds")
+    now_string = pendulum.now("utc").format("YYYYMMDDTHHmmss[Z]")
     return f"{input_filename.stem}{label}__{now_string}{input_filename.suffix}"
 
 
