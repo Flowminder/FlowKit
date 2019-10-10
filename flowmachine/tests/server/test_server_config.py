@@ -14,11 +14,15 @@ def test_get_server_config(monkeypatch):
     monkeypatch.setenv("FLOWMACHINE_PORT", 5678)
     monkeypatch.setenv("FLOWMACHINE_SERVER_DEBUG_MODE", "true")
     monkeypatch.setenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", "true")
+    monkeypatch.setenv("FLOWMACHINE_CACHE_PRUNING_FREQUENCY", 1)
+    monkeypatch.setenv("FLOWMACHINE_CACHE_PRUNING_TIMEOUT", 2)
     config = get_server_config()
-    assert len(config) == 3
+    assert len(config) == 5
     assert config.port == 5678
-    assert config.debug_mode == True
-    assert config.store_dependencies == False
+    assert config.debug_mode
+    assert config.store_dependencies
+    assert config.cache_pruning_timeout == 2
+    assert config.cache_pruning_frequency == 1
 
 
 def test_get_server_config_defaults(monkeypatch):
@@ -28,8 +32,12 @@ def test_get_server_config_defaults(monkeypatch):
     monkeypatch.delenv("FLOWMACHINE_PORT", raising=False)
     monkeypatch.delenv("FLOWMACHINE_SERVER_DEBUG_MODE", raising=False)
     monkeypatch.delenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", raising=False)
+    monkeypatch.delenv("FLOWMACHINE_CACHE_PRUNING_FREQUENCY", raising=False)
+    monkeypatch.delenv("FLOWMACHINE_CACHE_PRUNING_TIMEOUT", raising=False)
     config = get_server_config()
-    assert len(config) == 3
+    assert len(config) == 5
     assert config.port == 5555
-    assert config.debug_mode == False
-    assert config.store_dependencies == True
+    assert config.debug_mode
+    assert config.store_dependencies
+    assert config.cache_pruning_timeout == 600
+    assert config.cache_pruning_frequency == 86400
