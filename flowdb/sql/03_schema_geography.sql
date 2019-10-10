@@ -25,6 +25,7 @@ CREATE SCHEMA IF NOT EXISTS geography;
         outgoing BOOLEAN,
         valid_from DATE,
         valid_to DATE,
-        linkage_method TEXT
+        linkage_method TEXT,
+        PRIMARY KEY (cell_id, geo_id)
 
         );
