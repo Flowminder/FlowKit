@@ -67,7 +67,19 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE INDEX IF NOT EXISTS interactions_locations_position_index
         ON interactions.locations
         USING GIST (position);
-    
+
+    CREATE TABLE IF NOT EXISTS interactions.event_supertable_fact (
+
+        event_id                BIGSERIAL,
+        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
+        date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
+        event_type              INTEGER,
+        timestamp               TIMESTAMPTZ NOT NULL,
+        PRIMARY KEY (event_id, date_sk)
+
+    ) PARTITION BY LIST (date_sk);
+
     CREATE TABLE IF NOT EXISTS interactions.subscriber_sightings_fact(
 
         sighting_id             BIGSERIAL,
@@ -75,8 +87,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
         date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
         time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
-        event_super_table_id    TEXT,
-        event_type              INTEGER,
+        event_super_table_id    BIGINT REFERENCES interactions.event_supertable_fact(event_id),
         timestamp               TIMESTAMPTZ NOT NULL,
         PRIMARY KEY (sighting_id, date_sk)
 
@@ -84,3 +95,17 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     
     /* We need to an the CONSTRAINT for geography.geo_bridge here */
     ALTER TABLE geography.geo_bridge ADD CONSTRAINT locations_fkey FOREIGN KEY (cell_id) REFERENCES interactions.locations(cell_id);
+
+    CREATE TABLE IF NOT EXISTS interactions.calls_fact(
+
+        super_table_id          BIGSERIAL,
+        calling_party_cell_id   BIGINT REFERENCES interactions.locations(cell_id),
+        called_party_cell_id    BIGINT REFERENCES interactions.locations(cell_id),
+        date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
+        time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
+        calling_party_msisdn    TEXT,
+        called_party_msisdn     TEXT,
+        call_duration           NUMERIC,
+        PRIMARY KEY (super_table_id, date_sk)
+
+    ) PARTITION BY LIST (date_sk);
