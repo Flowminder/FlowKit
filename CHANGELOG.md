@@ -7,6 +7,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+
+## [0.9.1]
+
+### Added
 - Added new `DistanceSeries` query to Flowmachine, which produces per-subscriber time series of distance from a reference point. [#1313](https://github.com/Flowminder/FlowKit/issues/1313)
 - Added new `ImputedDistanceSeries` query to Flowmachine, which produces contiguous per-subscriber time series of distance from a reference point by filling in gaps using the rolling median. [#1337](https://github.com/Flowminder/FlowKit/issues/1337)
 
@@ -511,7 +522,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.9.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.9.1...master
+[0.9.1]: https://github.com/Flowminder/FlowKit/compare/0.9.0...0.9.1
 [0.9.0]: https://github.com/Flowminder/FlowKit/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/Flowminder/FlowKit/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/Flowminder/FlowKit/compare/0.6.4...0.7.0
