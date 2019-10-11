@@ -256,10 +256,10 @@
         },
         "redis": {
             "hashes": [
-                "sha256:98a22fb750c9b9bb46e75e945dc3f61d0ab30d06117cbb21ff9cd1d315fedd3b",
-                "sha256:c504251769031b0dd7dd5cf786050a6050197c6de0d37778c80c08cb04ae8275"
+                "sha256:a657a62ca12d20deb700c3c00b4923bc29893740f2c072e7b1b669777401295d",
+                "sha256:bf027fdd92aead8e49ab9d29e72498eef6ca7a38a15b2f88c5d9146145e93049"
             ],
-            "version": "==3.3.8"
+            "version": "==3.3.10"
         },
         "shapely": {
             "hashes": [
