@@ -163,6 +163,11 @@ def filter_dates_by_stencil(
             - an int corresponding to an offset (in days) relative to a date in 'dates',
             - a length-2 list [start, end] of dates or offsets, corresponding to a
               date interval (inclusive of both limits).
+    
+    Returns
+    -------
+    list of date
+        Filtered list of dates
     """
     if date_stencil is None:
         return dates
@@ -180,6 +185,16 @@ def filter_dates_by_previous_runs(
 ) -> List["datetime.date"]:
     """
     Filter task to return only dates for which the workflow hasn't previously run successfully.
+
+    Parameters
+    ----------
+    dates : list of date
+        List of dates to filter
+    
+    Returns
+    -------
+    list of date
+        Filtered list of dates
     """
     session = get_session()
     filtered_dates = [
@@ -275,7 +290,7 @@ def record_workflows_failed(reference_dates: List["datetime.date"]) -> None:
 
 
 @task
-def mappable_dict(**kwargs):
+def mappable_dict(**kwargs) -> Dict[str, Any]:
     """
     Task that returns keyword arguments as a dict.
     Equivalent to calling dict(**kwargs) within a Flow context,

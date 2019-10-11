@@ -6,6 +6,7 @@ import os
 import enum
 import pendulum
 import json
+from typing import Dict, Any, Optional
 
 from sqlalchemy import (
     Column,
@@ -52,11 +53,11 @@ class workflow_runs(Base):
 
     def __init__(
         self,
-        workflow_name,
-        workflow_params_hash,
-        reference_date,
-        scheduled_start_time,
-        state,
+        workflow_name: str,
+        workflow_params_hash: str,
+        reference_date: "datetime.date",
+        scheduled_start_time: "datetime.datetime",
+        state: str,
     ):
         self.workflow_name = workflow_name
         self.workflow_params_hash = (
@@ -72,13 +73,13 @@ class workflow_runs(Base):
     @classmethod
     def set_state(
         cls,
-        workflow_name,
-        workflow_params,
-        reference_date,
-        scheduled_start_time,
-        state,
-        session,
-    ):
+        workflow_name: str,
+        workflow_params: Dict[str, Any],
+        reference_date: "datetime.date",
+        scheduled_start_time: "datetime.datetime",
+        state: str,
+        session: "sqlalchemy.orm.session.Session",
+    ) -> None:
         """
         Add a new row to the workflow runs table.
 
@@ -110,8 +111,12 @@ class workflow_runs(Base):
 
     @classmethod
     def get_most_recent_state(
-        cls, workflow_name, workflow_params, reference_date, session
-    ):
+        cls,
+        workflow_name: str,
+        workflow_params: Dict[str, Any],
+        reference_date: "datetime.date",
+        session: "sqlalchemy.orm.session.Session",
+    ) -> Optional[RunState]:
         """
         Get the most recent state for a given (workflow_name, workflow_params, reference_date) combination.
 
@@ -148,7 +153,13 @@ class workflow_runs(Base):
             return None
 
     @classmethod
-    def can_process(cls, workflow_name, workflow_params, reference_date, session):
+    def can_process(
+        cls,
+        workflow_name: str,
+        workflow_params: Dict[str, Any],
+        reference_date: "datetime.date",
+        session: "sqlalchemy.orm.session.Session",
+    ) -> bool:
         """
         Determine if a given (workflow_name, workflow_params, reference_date) combination is OK to process.
         Should process if we have never seen this combination or if its current state is 'failed'.
@@ -175,7 +186,13 @@ class workflow_runs(Base):
         return (most_recent is None) or (most_recent == RunState.failed)
 
     @classmethod
-    def is_done(cls, workflow_name, workflow_params, reference_date, session):
+    def is_done(
+        cls,
+        workflow_name: str,
+        workflow_params: Dict[str, Any],
+        reference_date: "datetime.date",
+        session: "sqlalchemy.orm.session.Session",
+    ) -> bool:
         """
         Determine if a given (workflow_name, workflow_params, reference_date) combination is in 'done' state.
 
