@@ -14,7 +14,7 @@ from pathlib import Path
 import pendulum
 import json
 from hashlib import md5
-import os
+from get_secret_or_env_var import environ
 
 import flowclient
 
@@ -100,10 +100,16 @@ def get_available_dates(
     list of pendulum.Date
         List of available dates, in chronological order
     """
-    conn = flowclient.connect(url=api_url, token=os.environ["FLOWCLIENT_TOKEN"])
+    context.logger.info(f"Getting available dates from FlowAPI at '{api_url}'.")
+    conn = flowclient.connect(url=api_url, token=environ["FLOWCLIENT_TOKEN"])
     dates = flowclient.get_available_dates(connection=conn)
     if cdr_types is None:
+        context.logger.debug(
+            "No CDR types provided. Will return available dates for all CDR types."
+        )
         cdr_types = dates.keys()
+    else:
+        context.logger.debug(f"Returning available dates for CDR types {cdr_types}.")
     dates_union = set().union(
         *[
             set(pendulum.parse(date, exact=True) for date in dates[cdr_type])
@@ -133,7 +139,11 @@ def filter_dates_by_earliest_date(
     list of date
         Filtered list of dates
     """
+    context.logger.info(f"Filtering out dates earlier than {earliest_date}.")
     if earliest_date is None:
+        context.logger.debug(
+            "No earliest date provided. Returning unfiltered list of dates."
+        )
         return dates
     else:
         return [date for date in dates if date >= earliest_date]
@@ -169,9 +179,14 @@ def filter_dates_by_stencil(
     list of date
         Filtered list of dates
     """
+    context.logger.info("Filtering dates by stencil.")
     if date_stencil is None:
+        context.logger.debug("No stencil provided. Returning unfiltered list of dates.")
         return dates
     else:
+        context.logger.debug(
+            f"Returning reference dates for which all dates in stencil {date_stencil} are available."
+        )
         return [
             date
             for date in dates
@@ -196,6 +211,9 @@ def filter_dates_by_previous_runs(
     list of date
         Filtered list of dates
     """
+    context.logger.info(
+        "Filtering out dates for which this workflow has already run successfully."
+    )
     session = get_session()
     filtered_dates = [
         date
@@ -221,6 +239,9 @@ def record_workflow_in_process(reference_date: "datetime.date") -> None:
     reference_date : date
         Reference date for which the workflow is running
     """
+    context.logger.debug(
+        f"Recording workflow run 'in_process' for reference date {reference_date}."
+    )
     session = get_session()
     workflow_runs.set_state(
         workflow_name=context.flow_name,
@@ -243,6 +264,9 @@ def record_workflow_done(reference_date: "datetime.date") -> None:
     reference_date : date
         Reference date for which the workflow is running
     """
+    context.logger.debug(
+        f"Recording workflow run 'done' for reference date {reference_date}."
+    )
     session = get_session()
     workflow_runs.set_state(
         workflow_name=context.flow_name,
@@ -270,6 +294,9 @@ def record_workflows_failed(reference_dates: List["datetime.date"]) -> None:
     # (i.e. it takes a list of dates, not a single date). This is because if this
     # task was mapped, and a mistake when defining the workflow meant that a previous
     # task failed to map, this task would also fail to map and would therefore not run.
+    context.logger.debug(
+        f"Some tasks failed. Ensuring no workflow runs are left in 'in_process' state."
+    )
     session = get_session()
     for reference_date in reference_dates:
         if not workflow_runs.is_done(
@@ -278,6 +305,9 @@ def record_workflows_failed(reference_dates: List["datetime.date"]) -> None:
             reference_date=reference_date,
             session=session,
         ):
+            context.logger.debug(
+                f"Recording workflow run 'failed' for reference date {reference_date}."
+            )
             workflow_runs.set_state(
                 workflow_name=context.flow_name,
                 workflow_params=context.parameters,
@@ -325,13 +355,6 @@ def papermill_execute_notebook(
     str
         Path to executed notebook
     """
-    # TODO: Shouldn't be reading env vars here
-    inputs_dir = os.environ["AUTOMATION_INPUTS_DIR"]
-    outputs_dir = os.environ["AUTOMATION_OUTPUTS_DIR"]
-    output_filename = get_output_filename(input_filename, output_label)
-    input_path = str(Path(inputs_dir) / "notebooks" / input_filename)
-    output_path = str(Path(outputs_dir) / "notebooks" / output_filename)
-
     # Papermill injects all parameters into the notebook metadata, which then gets
     # json-serialised, so all parameters must be json serialisable
     # (see https://github.com/nteract/papermill/issues/412).
@@ -339,7 +362,22 @@ def papermill_execute_notebook(
     # lists, where we would otherwise have to register a custom papermill translator
     # for tuples.
     safe_params = make_json_serialisable(parameters)
+    context.logger.info(
+        f"Executing notebook '{input_filename}' with parameters {safe_params}."
+    )
+
+    # TODO: Shouldn't be reading env vars here
+    inputs_dir = environ["AUTOMATION_INPUTS_DIR"]
+    outputs_dir = environ["AUTOMATION_OUTPUTS_DIR"]
+    output_filename = get_output_filename(input_filename, output_label)
+    input_path = str(Path(inputs_dir) / "notebooks" / input_filename)
+    output_path = str(Path(outputs_dir) / "notebooks" / output_filename)
+
+    context.logger.debug(f"Output notebook will be '{output_path}'.")
+
     pm.execute_notebook(input_path, output_path, parameters=safe_params, **kwargs)
+
+    context.logger.info(f"Finished executing notebook.")
 
     return output_path
 
@@ -369,8 +407,9 @@ def convert_notebook_to_pdf(
     str
         Path to output PDF file
     """
+    context.logger.info(f"Converting notebook '{notebook_path}' to PDF.")
     # TODO: Shouldn't be reading env vars here
-    outputs_dir = os.environ["AUTOMATION_OUTPUTS_DIR"]
+    outputs_dir = environ["AUTOMATION_OUTPUTS_DIR"]
     if output_filename is None:
         output_filename = f"{Path(notebook_path).stem}.pdf"
     output_path = str(Path(outputs_dir) / "reports" / output_filename)
@@ -378,15 +417,21 @@ def convert_notebook_to_pdf(
     with open(notebook_path) as nb_file:
         nb_read = nbformat.read(nb_file, as_version=4)
 
-    # TODO: To allow using the Jupyter default, should probably let None mean 'no template file' here, and instead handle passing the default when creating a workflow
     if asciidoc_template is None:
-        asciidoc_template = os.environ["AUTOMATION_ASCIIDOC_TEMPLATE"]
+        asciidoc_template = environ["AUTOMATION_ASCIIDOC_TEMPLATE"]
+    # TODO: default asciidoc template probably won't be in the inputs dir.
     asciidoc_template_path = str(
-        Path(os.environ["AUTOMATION_INPUTS_DIR"]) / asciidoc_template
+        Path(environ["AUTOMATION_INPUTS_DIR"]) / asciidoc_template
+    )
+    context.logger.debug(
+        f"Using template '{asciidoc_template_path}' to convert notebook to asciidoc."
     )
 
     exporter = ASCIIDocExporter(template_file=asciidoc_template_path)
     body, resources = exporter.from_notebook_node(nb_read)
+
+    context.logger.debug("Converted notebook to asciidoc.")
+    context.logger.debug("Converting asciidoc to PDF...")
 
     with TemporaryDirectory() as tmpdir:
         with open(f"{tmpdir}/tmp.asciidoc", "w") as f_tmp:
@@ -395,5 +440,7 @@ def convert_notebook_to_pdf(
             with open(f"{tmpdir}/{fname}", "wb") as fout:
                 fout.write(content)
         asciidoctor_pdf(f"{tmpdir}/tmp.asciidoc", o=output_path)
+
+    context.logger.info(f"Created report '{output_filename}'.")
 
     return output_path
