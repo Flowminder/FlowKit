@@ -109,6 +109,45 @@ class workflow_runs(Base):
         session.commit()
 
     @classmethod
+    def get_most_recent_state(
+        cls, workflow_name, workflow_params, reference_date, session
+    ):
+        """
+        Get the most recent state for a given (workflow_name, workflow_params, reference_date) combination.
+
+        Parameters
+        ----------
+        workflow_name : str
+            Name of the workflow
+        workflow_params : dict
+            Parameters passed when running the workflow
+        reference_date : date
+            The date with which the workflow run is associated
+        session : Session
+            A sqlalchemy session for a DB in which this model exists.
+
+        Returns
+        -------
+        RunState or None
+            Most recent state, or None if no state has been set.
+        """
+        workflow_params_hash = get_params_hash(workflow_params)
+        most_recent_row = (
+            session.query(cls)
+            .filter(
+                cls.workflow_name == workflow_name,
+                cls.workflow_params_hash == workflow_params_hash,
+                cls.reference_date == reference_date,
+            )
+            .order_by(cls.timestamp.desc())
+            .first()
+        )
+        if most_recent_row is not None:
+            return most_recent_row.state
+        else:
+            return None
+
+    @classmethod
     def can_process(cls, workflow_name, workflow_params, reference_date, session):
         """
         Determine if a given (workflow_name, workflow_params, reference_date) combination is OK to process.
@@ -130,22 +169,36 @@ class workflow_runs(Base):
         bool
             OK to process?
         """
-        workflow_params_hash = get_params_hash(workflow_params)
-        most_recent = (
-            session.query(cls)
-            .filter(
-                cls.workflow_name == workflow_name,
-                cls.workflow_params_hash == workflow_params_hash,
-                cls.reference_date == reference_date,
-            )
-            .order_by(cls.timestamp.desc())
-            .first()
+        most_recent = cls.get_most_recent_state(
+            workflow_name, workflow_params, reference_date, session
         )
-        if (most_recent is None) or (most_recent.state.name == "failed"):
-            process = True
-        else:
-            process = False
-        return process
+        return (most_recent is None) or (most_recent == RunState.failed)
+
+    @classmethod
+    def is_done(cls, workflow_name, workflow_params, reference_date, session):
+        """
+        Determine if a given (workflow_name, workflow_params, reference_date) combination is in 'done' state.
+
+        Parameters
+        ----------
+        workflow_name : str
+            Name of the workflow
+        workflow_params : dict
+            Parameters passed when running the workflow
+        reference_date : date
+            The date with which the workflow run is associated
+        session : Session
+            A sqlalchemy session for a DB in which this model exists.
+
+        Returns
+        -------
+        bool
+            Done?
+        """
+        most_recent = cls.get_most_recent_state(
+            workflow_name, workflow_params, reference_date, session
+        )
+        return most_recent == RunState.done
 
 
 def init_db(db_uri: str, force: bool = False) -> None:
@@ -161,12 +214,7 @@ def init_db(db_uri: str, force: bool = False) -> None:
     """
     # db_uri = getenv("AUTOMATION_DB_URI", "sqlite:////tmp/test.db")
     # db_uri = db_uri.format(getenv("AUTOMATION_DB_PASSWORD", ""))
-    engine = create_engine(
-        db_uri, json_serializer=lambda obj: json.dumps(obj, sort_keys=True, default=str)
-    )
-    # if engine.dialect.name == "sqlite":
-    #     with engine.connect() as conn:
-    #         conn.execute("attach ':memory:' as automation")
+    engine = create_engine(db_uri)
     if force:
         Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

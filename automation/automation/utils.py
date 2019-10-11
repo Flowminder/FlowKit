@@ -244,9 +244,7 @@ def get_session() -> "sqlalchemy.orm.session.Session":
     # TODO: This is not the right place to be reading env vars
     db_uri = getenv("AUTOMATION_DB_URI", "sqlite:////tmp/test.db")
     db_uri = db_uri.format(getenv("AUTOMATION_DB_PASSWORD", ""))
-    engine = create_engine(
-        db_uri, json_serializer=lambda obj: json.dumps(obj, sort_keys=True, default=str)
-    )
+    engine = create_engine(db_uri)
     return sessionmaker(bind=engine)()
 
 

@@ -204,7 +204,7 @@ def record_workflow_in_process(reference_date: "datetime.date") -> None:
     Parameters
     ----------
     reference_date : date
-        Refefence date for which the workflow is running
+        Reference date for which the workflow is running
     """
     session = get_session()
     workflow_runs.set_state(
@@ -226,7 +226,7 @@ def record_workflow_done(reference_date: "datetime.date") -> None:
     Parameters
     ----------
     reference_date : date
-        Refefence date for which the workflow is running
+        Reference date for which the workflow is running
     """
     session = get_session()
     workflow_runs.set_state(
@@ -241,24 +241,36 @@ def record_workflow_done(reference_date: "datetime.date") -> None:
 
 
 @task(trigger=any_failed)
-def record_workflow_failed(reference_date: "datetime.date") -> None:
+def record_workflows_failed(reference_dates: List["datetime.date"]) -> None:
     """
-    Add a row to the database to record that a workflow failed.
+    For each of the provided reference dates, if the corresponding workflow run is
+    recorded as 'in_process', add a row to the database to record that the workflow failed.
 
     Parameters
     ----------
-    reference_date : date
-        Refefence date for which the workflow is running
+    reference_dates : list of date
+        List of reference dates for which the workflow ran
     """
+    # Note: unlike the other two 'record_workflows_*' tasks, this task is not mapped
+    # (i.e. it takes a list of dates, not a single date). This is because if this
+    # task was mapped, and a mistake when defining the workflow meant that a previous
+    # task failed to map, this task would also fail to map and would therefore not run.
     session = get_session()
-    workflow_runs.set_state(
-        workflow_name=context.flow_name,
-        workflow_params=context.parameters,
-        reference_date=reference_date,
-        scheduled_start_time=context.scheduled_start_time,
-        state="failed",
-        session=session,
-    )
+    for reference_date in reference_dates:
+        if not workflow_runs.is_done(
+            workflow_name=context.flow_name,
+            workflow_params=context.parameters,
+            reference_date=reference_date,
+            session=session,
+        ):
+            workflow_runs.set_state(
+                workflow_name=context.flow_name,
+                workflow_params=context.parameters,
+                reference_date=reference_date,
+                scheduled_start_time=context.scheduled_start_time,
+                state="failed",
+                session=session,
+            )
     session.close()
 
 

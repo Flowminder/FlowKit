@@ -32,15 +32,11 @@ with Flow("Date-triggered-notebooks", schedule) as date_triggered_notebooks_work
     )
     new_dates = tasks.filter_dates_by_previous_runs(dates_with_available_stencil)
 
+    # Record each workflow run as 'in_process'
+    in_process = tasks.record_workflow_in_process.map(reference_date=new_dates)
+
     # Get date ranges and unique label for each reference date
-    label = tasks.get_label.map(
-        reference_date=new_dates,
-        upstream_tasks=[
-            tasks.record_workflow_in_process.map(
-                reference_date=new_dates
-            )  # Record that the workflow run has started before getting label
-        ],
-    )
+    label = tasks.get_label.map(reference_date=new_dates, upstream_tasks=[in_process])
     date_ranges = tasks.get_date_ranges.map(
         reference_date=new_dates, date_stencil=unmapped(date_stencil)
     )
@@ -72,8 +68,8 @@ with Flow("Date-triggered-notebooks", schedule) as date_triggered_notebooks_work
         asciidoc_template=unmapped(asciidoc_template),
     )
 
-    # Record whether each workflow run succeeded or failed
-    tasks.record_workflow_done.map(
+    # Record each successful workflow run as 'done'
+    done = tasks.record_workflow_done.map(
         reference_date=new_dates,
         upstream_tasks=[
             run_flows_output_notebook,
@@ -81,11 +77,10 @@ with Flow("Date-triggered-notebooks", schedule) as date_triggered_notebooks_work
             flows_report_pdf,
         ],
     )
-    tasks.record_workflow_failed.map(
-        reference_date=new_dates,
-        upstream_tasks=[
-            run_flows_output_notebook,
-            flows_report_output_notebook,
-            flows_report_pdf,
-        ],
+
+    # Record any unsuccessful workflow runs as 'failed'
+    tasks.record_workflows_failed(
+        reference_dates=new_dates, upstream_tasks=[in_process, done]
     )
+
+date_triggered_notebooks_workflow.set_reference_tasks([done])
