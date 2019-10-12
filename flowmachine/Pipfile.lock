@@ -488,11 +488,11 @@
         },
         "geopandas": {
             "hashes": [
-                "sha256:3e98a2d21917562256ac01e2f1d568b7410f0476793fb70d4191777de6322b04",
-                "sha256:b9a7e3ad3afe59396a3fcb1cf8d2004f4302aab0ccd7ffbe4648a0a03a506a83"
+                "sha256:205fc407deb3a31742f90e6e0e478fdb5c3352604223324e5236d6e2037aa2b5",
+                "sha256:b72b8a870d55b30836cb4bea9e1b58b8317c008bcff8c86738f7ee5a69042b54"
             ],
             "index": "pypi",
-            "version": "==0.6.0"
+            "version": "==0.6.1"
         },
         "heapdict": {
             "hashes": [
