@@ -13,37 +13,38 @@ from flowmachine.features import (
 from flowmachine.core import make_spatial_unit, CustomQuery
 
 
-def test_partition_and_order_can_be_ommitted(get_dataframe):
+@pytest.mark.parametrize(
+    "partition_column, order_column, expected",
+    [
+        (None, None, [1, 1, 1, 1.1, 1.1, 1.95, 2, 2, 2.05, 2.99, 3, 3, 3]),
+        ("part", None, [1, 1, 0.9, 0.95, 0.95, 0.95, 1.95, 2, 2, 2.99, 3, 3, 3]),
+        ("part", "ord", [0.9, 1, 1, 0.95, 0.95, 0.95, 2, 2, 1.95, 3, 3, 3, 2.99]),
+        (None, "ord", [2.1, 2.1, 2.05, 2, 2, 2, 1.95, 1.1, 1.1, 1.1, 1.1, 2.99, 2.99]),
+    ],
+)
+def test_partition_and_order_can_be_ommitted(
+    partition_column, order_column, expected, get_dataframe
+):
     """
     Test that the filter can be applied without partitioning or ordering.
     """
     test_query = CustomQuery(
-        "SELECT v as value FROM (VALUES (1), (1.1), (0.9), (1.1), (0.95), (2.1), (1.95), (2.0), (2.05), (3.11), (2.99), (3.05), (3.0)) as t(v);",
-        column_names=["value"],
+        """SELECT * FROM (VALUES 
+            (1, 1, 3), (1.1, 1, 2), (0.9, 1, 1), (1.1, 2, 3), 
+            (0.95, 2, 2), (2.1, 2, 1), (1.95, 3, 3), (2.0, 3, 2),
+             (2.05, 3, 1), (3.11, 4, 4), (2.99, 4, 3), (3.05, 4, 2), 
+             (3.0, 4, 1)) as t(value, part, ord)""",
+        column_names=["value", "part", "ord"],
     )
     smoothed = get_dataframe(
         IterativeMedianFilter(
             query_to_filter=test_query,
             filter_window_size=3,
-            partition_column=None,
-            order_column=None,
+            partition_column=partition_column,
+            order_column=order_column,
         )
     )
-    assert smoothed.value.tolist() == [
-        1,
-        1,
-        1,
-        1.1,
-        1.1,
-        1.95,
-        2,
-        2,
-        2.05,
-        2.99,
-        3,
-        3,
-        3,
-    ]
+    assert smoothed.value.tolist() == expected
 
 
 @pytest.mark.parametrize(
