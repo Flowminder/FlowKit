@@ -71,6 +71,7 @@ def test_get_available_queries(zmq_host, zmq_port):
                 "dfs_metric_total_amount",
                 "spatial_aggregate",
                 "joined_spatial_aggregate",
+                "histogram_aggregate",
             ]
         },
     }

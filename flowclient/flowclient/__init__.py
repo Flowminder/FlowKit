@@ -50,6 +50,7 @@ from .aggregates import (
     aggregate_network_objects,
     spatial_aggregate,
     joined_spatial_aggregate,
+    histogram_aggregate,
 )
 
 __all__ = [
@@ -90,4 +91,5 @@ __all__ = [
     "aggregate_network_objects",
     "spatial_aggregate",
     "joined_spatial_aggregate",
+    "histogram_aggregate",
 ]
