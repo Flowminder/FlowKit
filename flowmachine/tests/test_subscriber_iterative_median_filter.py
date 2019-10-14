@@ -69,7 +69,13 @@ def test_column_must_exist(column_arg):
 
 
 @pytest.mark.parametrize(
-    "size, match", [(1, "positive"), (0, "positive"), (-1, "positive"), (4, "odd")]
+    "size, match",
+    [
+        (1, "filter_window_size must be positive and greater than 1"),
+        (0, "filter_window_size must be positive and greater than 1"),
+        (-1, "filter_window_size must be positive and greater than 1"),
+        (4, "filter_window_size must be odd"),
+    ],
 )
 def test_bad_window(size, match):
     """

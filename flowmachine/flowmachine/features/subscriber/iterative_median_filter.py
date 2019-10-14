@@ -4,6 +4,10 @@
 from typing import List
 
 from flowmachine.core import Query
+from flowmachine.features.utilities.validators import (
+    valid_median_window,
+    validate_column_present,
+)
 
 
 class IterativeMedianFilter(Query):
@@ -35,32 +39,20 @@ class IterativeMedianFilter(Query):
     ):
 
         self.query_to_filter = query_to_filter
-        self.filter_window_size = filter_window_size
-        if not (filter_window_size > 1):
-            raise ValueError("filter_window_size must be positive and more than 1.")
-        if (filter_window_size % 2) == 0:
-            raise ValueError("filter_window_size must be odd.")
-        self.column_to_filter = column_to_filter
-        if column_to_filter not in query_to_filter.column_names:
-            raise ValueError(
-                f"Invalid column_to_filter: '{column_to_filter}' not in query's columns. Must be one of {query_to_filter.column_names}"
-            )
-        self.partition_column = partition_column
-        if (
-            partition_column is not None
-            and partition_column not in query_to_filter.column_names
-        ):
-            raise ValueError(
-                f"Invalid partition_column: '{partition_column}' not in query's columns. Must be one of {query_to_filter.column_names}"
-            )
-        self.order_column = order_column
-        if (
-            order_column is not None
-            and order_column not in query_to_filter.column_names
-        ):
-            raise ValueError(
-                f"Invalid order_column: '{order_column}' not in query's columns. Must be one of {query_to_filter.column_names}"
-            )
+        self.filter_window_size = valid_median_window(
+            "filter_window_size", filter_window_size
+        )
+        self.column_to_filter = validate_column_present(
+            "column_to_filter", column_to_filter, query_to_filter
+        )
+        self.partition_column = validate_column_present(
+            "partition_column", partition_column, query_to_filter
+        )
+
+        self.order_column = validate_column_present(
+            "order_column", order_column, query_to_filter
+        )
+
         super().__init__()
 
     @property
