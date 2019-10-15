@@ -23,6 +23,7 @@ subscribers.
   - subscriber_sightings:       contains a row per subscriber sighting event
   - calls:                      stores the additional call type data
   - sms:                        stores the additional sms type data
+  - mds:                        stores the additional mds type data
 -----------------------------------------------------------
 */
 CREATE SCHEMA IF NOT EXISTS interactions;
@@ -132,6 +133,21 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         calling_party_msisdn          TEXT,
         receiving_parties_msisdns     TEXT,
         timestamp                     TIMESTAMPTZ NOT NULL,
+        PRIMARY KEY (super_table_id, date_sk)
+
+    ) PARTITION BY LIST (date_sk);
+    
+    CREATE TABLE IF NOT EXISTS interactions.mds(
+
+        super_table_id          BIGSERIAL,
+        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
+        time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
+        data_volume_total       NUMERIC,
+        data_volume_up          NUMERIC,
+        data_volume_down        NUMERIC,
+        duration                NUMERIC,
+        timestamp               TIMESTAMPTZ NOT NULL
         PRIMARY KEY (super_table_id, date_sk)
 
     ) PARTITION BY LIST (date_sk);
