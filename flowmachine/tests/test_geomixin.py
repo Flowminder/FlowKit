@@ -153,7 +153,7 @@ def test_reprojection():
     ).aggregate()
     js = dl.to_geojson(crs=2770)  # OSGB36
     assert js["features"][0]["geometry"]["coordinates"] == pytest.approx(
-        [-8094697.51781301, 9465052.88370377]
+        [-8094697.52, 9465052.88]
     )
     assert js["properties"]["crs"] == proj4string(dl.connection, 2770)
 
