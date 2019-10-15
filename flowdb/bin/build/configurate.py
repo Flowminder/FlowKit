@@ -10,7 +10,7 @@ with placeholder fields:
 
 - `cores` (sets to floor(0.9*n_cores))
 - `workers` (ceil(cores/2)
-- `preloads` (contains pg_cron, pg_stat_activity and plugin_debugger if the DEBUG env var is set)
+- `preloads` (contains pg_stat_activity and plugin_debugger if the DEBUG env var is set)
 - `effective_cache_size` (75% of total memory)
 - `shared_buffers` (25% of total memory up to a max of 16GB)
 - `gendate` (Run time stamp of this script)
@@ -74,7 +74,7 @@ config_path = os.getenv(
     "AUTO_CONFIG_PATH", "/var/lib/postgresql/data/postgresql.configurator.conf"
 )
 
-preload_libraries = ["pg_cron", "pg_stat_statements"]
+preload_libraries = ["pg_stat_statements"]
 if bool_env("FLOWDB_ENABLE_POSTGRES_DEBUG_MODE"):
     preload_libraries.append("plugin_debugger")
 
