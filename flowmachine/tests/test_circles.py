@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import pytest
 
 from flowmachine.features import CircleGeometries, Circle
 
@@ -147,7 +148,7 @@ def test_circle_geometries():
     """
     c_locs = [Circle(*vals) for vals in zip(lons, lats, radii, names)]
     geoms = CircleGeometries(c_locs)
-    assert geoms.to_geojson() == geojson
+    assert geoms.to_geojson() == pytest.approx(geojson)
 
 
 def test_rastersum(get_dataframe):

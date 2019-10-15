@@ -95,7 +95,7 @@ def test_flows_geojson_correct():
     reference_file = os.path.join(directory, "./data/", "flows_reference.json")
     with open(reference_file) as ref:
         ref_json = json.load(ref)
-    assert ref_json == fl_json
+    assert pytest.approx(ref_json) == fl_json
 
 
 def test_valid_flows_geojson(exemplar_spatial_unit_param):
