@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- `histogram_aggregate` added to FlowAPI. Allows the user to obtain a histogram over a per-subscriber metric. [#1076](https://github.com/Flowminder/FlowKit/issues/1076)
 
 ### Changed
 
