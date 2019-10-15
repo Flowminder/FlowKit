@@ -21,6 +21,11 @@ ENV POSTGRES_RELEASE=$POSTGRES_RELEASE
 ARG POSTGIS_MAJOR=3
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
 ARG POSTGIS_VERSION=3.0.0
+ARG GEOS_VERSION=3.7.1-1
+ARG PROJ_VERSION=5.2.0-1
+ARG GDAL_VERSION=2.4.0+dfsg-1+b1
+ARG PGROUTING_VERSION=2.6.2-1.pgdg100+1
+ARG PG_MEDIAN_UTILS_VERSION=0.0.7
 ENV POSTGIS_VERSION=$POSTGIS_VERSION
 ENV POSTGRES_DB=flowdb
 ARG POSTGRES_USER=flowdb
@@ -32,7 +37,7 @@ ENV LC_CTYPE=en_US.UTF-8
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg-testing main $PG_MAJOR" >> /etc/apt/sources.list.d/pgdg.list;
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
-        binutils libproj-dev gdal-bin \
+        libgeos-c1v5=$GEOS_VERSION libproj13=$PROJ_VERSION libgdal20=$GDAL_VERSION \
         postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR  \
         postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
         postgresql-$PG_MAJOR-pgrouting \
@@ -114,7 +119,7 @@ COPY ./Pipfile* /tmp/
 RUN apt-get update \
         && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev postgresql-server-dev-$PG_MAJOR \
         && pip3 install pgxnclient \
-        && pgxnclient install "pg_median_utils=0.0.7" \
+        && pgxnclient install "pg_median_utils=$PG_MEDIAN_UTILS_VERSION" \
         && pip3 install pipenv \
         && PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
         && apt-get remove -y python3-dev gcc m4 libxml2-dev libaio-dev \
