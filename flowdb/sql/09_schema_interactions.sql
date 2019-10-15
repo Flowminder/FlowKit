@@ -61,7 +61,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         mno_cell_code           TEXT
 
         );
-    
+
     SELECT AddGeometryColumn('interactions', 'locations', 'position', 4326, 'POINT', 2);
 
     CREATE INDEX IF NOT EXISTS interactions_locations_position_index
@@ -87,7 +87,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
         date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
         time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
-        event_super_table_id    BIGINT REFERENCES interactions.event_supertable_fact(event_id),
+        event_super_table_id    BIGINT, /* REFERENCES interactions.event_supertable_fact(event_id), - this can be added in PG12 */ 
         timestamp               TIMESTAMPTZ NOT NULL,
         PRIMARY KEY (sighting_id, date_sk)
 
