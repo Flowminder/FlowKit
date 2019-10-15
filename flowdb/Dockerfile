@@ -60,7 +60,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends locales locales
 #
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
-        unzip curl make postgresql-plpython-$PG_MAJOR \
+        unzip curl make postgresql-plpython3-$PG_MAJOR \
         postgresql-$PG_MAJOR-cron \
         libaio1  \
         parallel nano vim python3-pip wget python3-setuptools\
