@@ -16,7 +16,7 @@ subscribers.
                                 specific date.
   - time_dimension:             stores relevant information about a 
                                 specific time.
-  - subscriber_sightings_fact:  contains a row per subscriber - with one
+  - subscriber_sightings:       contains a row per subscriber - with one
                                 event expanding to multiple sightings.
   - locations:                  contains a new row for each time a 
                                 subscriber moves.
@@ -68,7 +68,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         ON interactions.locations
         USING GIST (position);
 
-    CREATE TABLE IF NOT EXISTS interactions.event_supertable_fact (
+    CREATE TABLE IF NOT EXISTS interactions.event_supertable (
 
         event_id                BIGSERIAL,
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
@@ -80,14 +80,14 @@ CREATE SCHEMA IF NOT EXISTS interactions;
 
     ) PARTITION BY LIST (date_sk);
 
-    CREATE TABLE IF NOT EXISTS interactions.subscriber_sightings_fact(
+    CREATE TABLE IF NOT EXISTS interactions.subscriber_sightings(
 
         sighting_id             BIGSERIAL,
         subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
         date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
         time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
-        event_super_table_id    BIGINT, /* REFERENCES interactions.event_supertable_fact(event_id), - this can be added in PG12 */ 
+        event_super_table_id    BIGINT, /* REFERENCES interactions.event_supertable(event_id), - this can be added in PG12 */ 
         timestamp               TIMESTAMPTZ NOT NULL,
         PRIMARY KEY (sighting_id, date_sk)
 
@@ -96,7 +96,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     /* We need to an the CONSTRAINT for geography.geo_bridge here */
     ALTER TABLE geography.geo_bridge ADD CONSTRAINT locations_fkey FOREIGN KEY (cell_id) REFERENCES interactions.locations(cell_id);
 
-    CREATE TABLE IF NOT EXISTS interactions.calls_fact(
+    CREATE TABLE IF NOT EXISTS interactions.calls(
 
         super_table_id          BIGSERIAL,
         calling_party_cell_id   BIGINT REFERENCES interactions.locations(cell_id),
