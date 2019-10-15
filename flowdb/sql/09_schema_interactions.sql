@@ -16,10 +16,13 @@ subscribers.
                                 specific date.
   - time_dimension:             stores relevant information about a 
                                 specific time.
-  - subscriber_sightings:       contains a row per subscriber - with one
-                                event expanding to multiple sightings.
-  - locations:                  contains a new row for each time a 
-                                subscriber moves.
+  - locations:                  contains a new row for each time a cell
+                                moves
+  - receiving_parties:
+  - event_supertable:           contains a row per call/mds/sms event
+  - subscriber_sightings:       contains a row per subscriber sighting event
+  - calls:                      stores the additional call type data
+  - sms:                        stores the additional sms type data
 -----------------------------------------------------------
 */
 CREATE SCHEMA IF NOT EXISTS interactions;
@@ -68,6 +71,14 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         ON interactions.locations
         USING GIST (position);
 
+    CREATE TABLE IF NOT EXISTS interactions.receiving_parties(
+
+        parties_key             BIGSERIAL PRIMARY KEY,
+        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        party_msisdn            TEXT
+
+        );
+    
     CREATE TABLE IF NOT EXISTS interactions.event_supertable (
 
         event_id                BIGSERIAL,
@@ -106,6 +117,21 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         calling_party_msisdn    TEXT,
         called_party_msisdn     TEXT,
         call_duration           NUMERIC,
+        timestamp               TIMESTAMPTZ NOT NULL
+        PRIMARY KEY (super_table_id, date_sk)
+
+    ) PARTITION BY LIST (date_sk);
+    
+    CREATE TABLE IF NOT EXISTS interactions.sms(
+
+        super_table_id                BIGSERIAL,
+        calling_party_cell_id         BIGINT REFERENCES interactions.locations(cell_id),
+        parties_key                   BIGINT REFERENCES interactions.receiving_parties(parties_key),
+        date_sk                       BIGINT REFERENCES interactions.date_dim(date_sk),
+        time_sk                       BIGINT REFERENCES interactions.time_dimension(time_sk),
+        calling_party_msisdn          TEXT,
+        receiving_parties_msisdns     TEXT,
+        timestamp                     TIMESTAMPTZ NOT NULL,
         PRIMARY KEY (super_table_id, date_sk)
 
     ) PARTITION BY LIST (date_sk);
