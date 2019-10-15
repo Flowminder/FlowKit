@@ -45,7 +45,7 @@ if [ "$CI" != "true" ]; then
 fi
 
 echo "Retrieving API spec"
-curl http://localhost:9090/api/0/spec/openapi-redoc.json -o source/_static/openapi-redoc.json
+curl http://localhost:9090/api/0/spec/openapi.json -o source/_static/openapi.json
 echo "Starting build."
 
 # Note: the DOCS_BRANCH variable is used by `mkdocs.yml` to pick up the correct git repositories for building API docs
