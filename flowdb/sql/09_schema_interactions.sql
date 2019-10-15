@@ -19,11 +19,15 @@ subscribers.
   - locations:                  contains a new row for each time a cell
                                 moves
   - receiving_parties:
-  - event_supertable:           contains a row per call/mds/sms event
+  - event_supertable:           contains a row per call/mds/sms event. The
+                                event_type field can be an integer for 
+                                each type 1. calls, 2. sms, 3. mds and
+                                fianlly 4. topup
   - subscriber_sightings:       contains a row per subscriber sighting event
   - calls:                      stores the additional call type data
   - sms:                        stores the additional sms type data
-  - mds:                        stores the additional mds type data
+  - mds:                        stores the additional mobile data type data
+  - topup:                      stores the additional topup type data
 -----------------------------------------------------------
 */
 CREATE SCHEMA IF NOT EXISTS interactions;
@@ -118,7 +122,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         calling_party_msisdn    TEXT,
         called_party_msisdn     TEXT,
         call_duration           NUMERIC,
-        timestamp               TIMESTAMPTZ NOT NULL
+        timestamp               TIMESTAMPTZ NOT NULL,
         PRIMARY KEY (super_table_id, date_sk)
 
     ) PARTITION BY LIST (date_sk);
@@ -147,7 +151,24 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         data_volume_up          NUMERIC,
         data_volume_down        NUMERIC,
         duration                NUMERIC,
-        timestamp               TIMESTAMPTZ NOT NULL
+        timestamp               TIMESTAMPTZ NOT NULL,
+        PRIMARY KEY (super_table_id, date_sk)
+
+    ) PARTITION BY LIST (date_sk);
+
+    CREATE TABLE IF NOT EXISTS interactions.topup(
+
+        super_table_id          BIGSERIAL,
+        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
+        time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
+        type                    INTEGER,
+        recharge_amount         NUMERIC,
+        airtime_fee             NUMERIC,
+        tax_and_fee             NUMERIC,
+        pre_event_balance       NUMERIC,
+        post_event_balance      NUMERIC,
+        timestamp               TIMESTAMPTZ NOT NULL,
         PRIMARY KEY (super_table_id, date_sk)
 
     ) PARTITION BY LIST (date_sk);
