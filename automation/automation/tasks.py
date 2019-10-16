@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from prefect import task, context
+from prefect import task, config, context
 from prefect.triggers import all_successful, any_failed
 import papermill as pm
-from typing import Optional, Dict, Sequence, List, Tuple, Union, Set, Any
+from typing import Optional, Dict, Sequence, List, Tuple, Any
 import nbformat
 from nbconvert import ASCIIDocExporter
 from tempfile import TemporaryDirectory
@@ -13,8 +13,7 @@ from sh import asciidoctor_pdf
 from pathlib import Path
 import pendulum
 import json
-from hashlib import md5
-from get_secret_or_env_var import environ
+from get_secret_or_env_var import environ, getenv
 
 import flowclient
 
@@ -81,16 +80,29 @@ def get_date_ranges(
 
 
 @task
+def get_flowapi_url() -> str:
+    """
+    Task to return FlowAPI URL.
+
+    Returns
+    -------
+    str
+        FlowAPI URL
+    """
+    # This task is defined so that the flowapi url can be passed as a parameter
+    # to other tasks in a workflow.
+    return config.flowapi_url
+
+
+@task
 def get_available_dates(
-    api_url: str, cdr_types: Optional[Sequence[str]] = None
+    cdr_types: Optional[Sequence[str]] = None
 ) -> List[pendulum.Date]:
     """
     Task to return a union of the dates for which data is available in FlowDB for the specified set of CDR types.
     
     Parameters
     ----------
-    api_url : str
-        The url to connect to FlowAPI
     cdr_types : list of str, optional
         Subset of CDR types for which to find available dates.
         If not provided, the union of available dates for all CDR types will be returned.
@@ -100,8 +112,10 @@ def get_available_dates(
     list of pendulum.Date
         List of available dates, in chronological order
     """
-    context.logger.info(f"Getting available dates from FlowAPI at '{api_url}'.")
-    conn = flowclient.connect(url=api_url, token=environ["FLOWCLIENT_TOKEN"])
+    context.logger.info(
+        f"Getting available dates from FlowAPI at '{config.flowapi_url}'."
+    )
+    conn = flowclient.connect(url=config.flowapi_url, token=environ["FLOWAPI_TOKEN"])
     dates = flowclient.get_available_dates(connection=conn)
     if cdr_types is None:
         context.logger.debug(
@@ -214,7 +228,7 @@ def filter_dates_by_previous_runs(
     context.logger.info(
         "Filtering out dates for which this workflow has already run successfully."
     )
-    session = get_session()
+    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
     filtered_dates = [
         date
         for date in dates
@@ -242,7 +256,7 @@ def record_workflow_in_process(reference_date: "datetime.date") -> None:
     context.logger.debug(
         f"Recording workflow run 'in_process' for reference date {reference_date}."
     )
-    session = get_session()
+    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
     workflow_runs.set_state(
         workflow_name=context.flow_name,
         workflow_params=context.parameters,
@@ -267,7 +281,7 @@ def record_workflow_done(reference_date: "datetime.date") -> None:
     context.logger.debug(
         f"Recording workflow run 'done' for reference date {reference_date}."
     )
-    session = get_session()
+    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
     workflow_runs.set_state(
         workflow_name=context.flow_name,
         workflow_params=context.parameters,
@@ -297,7 +311,7 @@ def record_workflows_failed(reference_dates: List["datetime.date"]) -> None:
     context.logger.debug(
         f"Some tasks failed. Ensuring no workflow runs are left in 'in_process' state."
     )
-    session = get_session()
+    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
     for reference_date in reference_dates:
         if not workflow_runs.is_done(
             workflow_name=context.flow_name,
@@ -342,7 +356,7 @@ def papermill_execute_notebook(
     Parameters
     ----------
     input_filename : str
-        Filename of input notebook (assumed to be in directory '${AUTOMATION_INPUTS_DIR}/notebooks/')
+        Filename of input notebook (assumed to be in the inputs directory)
     output_label : str
         Label to append to output filename
     parameters : dict, optional
@@ -366,12 +380,9 @@ def papermill_execute_notebook(
         f"Executing notebook '{input_filename}' with parameters {safe_params}."
     )
 
-    # TODO: Shouldn't be reading env vars here
-    inputs_dir = environ["AUTOMATION_INPUTS_DIR"]
-    outputs_dir = environ["AUTOMATION_OUTPUTS_DIR"]
     output_filename = get_output_filename(input_filename, output_label)
-    input_path = str(Path(inputs_dir) / "notebooks" / input_filename)
-    output_path = str(Path(outputs_dir) / "notebooks" / output_filename)
+    input_path = str(Path(config.inputs.inputs_dir) / input_filename)
+    output_path = str(Path(config.outputs.notebooks_dir) / output_filename)
 
     context.logger.debug(f"Output notebook will be '{output_path}'.")
 
@@ -400,7 +411,7 @@ def convert_notebook_to_pdf(
         If not provided, this will be the name of the input notebook with the extension changed to '.pdf'
     asciidoc_template : str, optional
         Filename of a non-default template to use when exporting to asciidoc
-        (assumed to be in directory '${AUTOMATION_INPUTS_DIR}/')
+        (assumed to be in the inputs directory)
     
     Returns
     -------
@@ -408,21 +419,17 @@ def convert_notebook_to_pdf(
         Path to output PDF file
     """
     context.logger.info(f"Converting notebook '{notebook_path}' to PDF.")
-    # TODO: Shouldn't be reading env vars here
-    outputs_dir = environ["AUTOMATION_OUTPUTS_DIR"]
     if output_filename is None:
         output_filename = f"{Path(notebook_path).stem}.pdf"
-    output_path = str(Path(outputs_dir) / "reports" / output_filename)
+    output_path = str(Path(config.outputs.reports_dir) / output_filename)
 
     with open(notebook_path) as nb_file:
         nb_read = nbformat.read(nb_file, as_version=4)
 
     if asciidoc_template is None:
-        asciidoc_template = environ["AUTOMATION_ASCIIDOC_TEMPLATE"]
-    # TODO: default asciidoc template probably won't be in the inputs dir.
-    asciidoc_template_path = str(
-        Path(environ["AUTOMATION_INPUTS_DIR"]) / asciidoc_template
-    )
+        asciidoc_template_path = config.asciidoc_template_path
+    else:
+        asciidoc_template_path = str(Path(config.inputs.inputs_dir) / asciidoc_template)
     context.logger.debug(
         f"Using template '{asciidoc_template_path}' to convert notebook to asciidoc."
     )

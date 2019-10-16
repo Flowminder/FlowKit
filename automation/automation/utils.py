@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Union, Dict, Any, List, Sequence, Set, Tuple
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from get_secret_or_env_var import environ, getenv
 
 
 def get_output_filename(input_filename: str, label: str = "") -> str:
@@ -232,18 +231,20 @@ def dates_are_available(
     return dates_from_stencil.issubset(set(available_dates))
 
 
-def get_session() -> "sqlalchemy.orm.session.Session":
+def get_session(db_uri: str) -> "sqlalchemy.orm.session.Session":
     """
     Create a sqlalchemy session.
+
+    Parameters
+    ----------
+    db_uri : str
+        Database URI
 
     Returns
     -------
     Session
         A sqlalchemy session
     """
-    # TODO: This is not the right place to be reading env vars
-    db_uri = getenv("AUTOMATION_DB_URI", "sqlite:////tmp/test.db")
-    db_uri = db_uri.format(getenv("AUTOMATION_DB_PASSWORD", ""))
     engine = create_engine(db_uri)
     return sessionmaker(bind=engine)()
 
