@@ -57,7 +57,7 @@ To identify which tables should be discarded from cache, FlowKit keeps track of 
 
 Each cache table has a cache score, with a higher score indicating that the table has more cache value.
 
-FlowMachine provides two functions which make use of this cache score to reduce the size of the cache - [`shrink_below_size`](../flowmachine/flowmachine/core/cache/#shrink_below_size), and [`shrink_one`](../flowmachine/flowmachine/core/cache/#shrink_one). `shrink_one` flushes the table with the _lowest_ cache score. `shrink_below_size` flushes tables until the disk space used by the cache falls below a threshold[^1] by calling `shrink_one` repeatedly.
+FlowMachine provides two functions which make use of this cache score to reduce the size of the cache - [`shrink_below_size`](../flowmachine/flowmachine/core/cache/#shrink_below_size), and [`shrink_one`](../flowmachine/flowmachine/core/cache/#shrink_one). `shrink_one` flushes the table with the _lowest_ cache score. `shrink_below_size` flushes tables until the disk space used by the cache falls below a threshold[^1] by calling `shrink_one` repeatedly. By default, queries which have been recently calculated are *excluded* from removal. To configure the global default for the exclusion period, set the `CACHE_PROTECTED_PERIOD` environment variable for FlowDB, or update the `cache_protected_period` key in the `cache.cache_config` table. The default exclusion period is `86400`s (24 hours). This can also be overridden when calling the cache management functions directly.
 
 If necessary, the cache can also be completely reset using the [`reset_cache`](../flowmachine/flowmachine/core/cache/#reset_cache) function.
 
@@ -69,7 +69,7 @@ By default, this function only removes that specific query from cache. However, 
 
 #### Configuring the Cache
 
-There are two parameters which control FlowKit's cache, both of which are in the `cache.cache_config` table. `half_life` controls how much weight is given to recency of access when updating the cache score. `half_life` is in units of number of cache retrievals, so a larger value for `half_life` will give less weight to recency and frequency of access. 
+There are three parameters which control FlowKit's cache, both of which are in the `cache.cache_config` table. `half_life` controls how much weight is given to recency of access when updating the cache score. `half_life` is in units of number of cache retrievals, so a larger value for `half_life` will give less weight to recency and frequency of access. 
 
 !!! example
     `big_query` and `small_query` both took 100 seconds to calculate. `big_query` takes 100 bytes to store, and `small_query` takes 10 bytes.
@@ -83,7 +83,9 @@ There are two parameters which control FlowKit's cache, both of which are in the
  
 `cache_size` is the maximum size in bytes that the cache tables should occupy on disk. These settings default to 1000.0, and 10% of available space on the drive where `/var/lib/postgresql/data` is located.
 
-These values can be overridden when creating a new FlowDB container by setting the `CACHE_SIZE` and `CACHE_HALF_LIFE` environment variables for the container, set by updating the `cache.cache_config` table after connecting directly to FlowDB, or modified using the cache submodule.
+`cache_protected_period` is the length of time in seconds that a cache table is, by default, immune from being removed by a cache shrinkage operation. This defaults to `86400`s, or 24 hours. During this time, cache tables will not be removed by automatic cache shrinking, and will be default be excluded from the cache management functions.
+
+These values can be overridden when creating a new FlowDB container by setting the `CACHE_SIZE`, `CACHE_HALF_LIFE` and  `CACHE_PROTECTED_PERIOD` environment variables for the container, set by updating the `cache.cache_config` table after connecting directly to FlowDB, or modified using the cache submodule.
 
 #### Redis and the Query Cache
 
