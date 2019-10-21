@@ -34,6 +34,7 @@ ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
 
 
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg-testing main $PG_MAJOR" >> /etc/apt/sources.list.d/pgdg.list;
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
         libgeos-c1v5=$GEOS_VERSION libproj13=$PROJ_VERSION libgdal20=$GDAL_VERSION \
