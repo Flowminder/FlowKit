@@ -34,13 +34,12 @@ ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
 
 
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main $PG_MAJOR" >> /etc/apt/sources.list.d/pgdg.list;
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
         libgeos-c1v5=$GEOS_VERSION libproj13=$PROJ_VERSION libgdal20=$GDAL_VERSION \
         postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR  \
         postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
-        postgresql-$PG_MAJOR-pgrouting \
+        postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
         && rm -rf /var/lib/apt/lists/* \
         && apt-get purge -y --auto-remove
 
