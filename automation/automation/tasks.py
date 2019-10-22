@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from prefect import task, config, context
-from prefect.triggers import all_successful, all_finished
+from prefect.triggers import all_successful, any_failed, all_finished
 from prefect.engine import signals
 import papermill as pm
 from typing import Optional, Dict, Sequence, List, Tuple, Any
@@ -246,18 +246,24 @@ def filter_dates_by_previous_runs(
 
 
 @task
-def record_workflow_in_process(reference_date: "datetime.date") -> None:
+def record_workflow_in_process(
+    reference_date: Optional["datetime.date"] = None
+) -> None:
     """
     Add a row to the database to record that a workflow is running.
 
     Parameters
     ----------
-    reference_date : date
+    reference_date : date, optional
         Reference date for which the workflow is running
     """
-    context.logger.debug(
-        f"Recording workflow run 'in_process' for reference date {reference_date}."
-    )
+    if reference_date is not None:
+        message = (
+            f"Recording workflow run 'in_process' for reference date {reference_date}."
+        )
+    else:
+        message = "Recording workflow run 'in_process'."
+    context.logger.debug(message)
     session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
     workflow_runs.set_state(
         workflow_name=context.flow_name,
@@ -271,18 +277,20 @@ def record_workflow_in_process(reference_date: "datetime.date") -> None:
 
 
 @task(trigger=all_successful)
-def record_workflow_done(reference_date: "datetime.date") -> None:
+def record_workflow_done(reference_date: Optional["datetime.date"] = None) -> None:
     """
     Add a row to the database to record that a workflow completed successfully.
 
     Parameters
     ----------
-    reference_date : date
+    reference_date : date, optional
         Reference date for which the workflow is running
     """
-    context.logger.debug(
-        f"Recording workflow run 'done' for reference date {reference_date}."
-    )
+    if reference_date is not None:
+        message = f"Recording workflow run 'done' for reference date {reference_date}."
+    else:
+        message = "Recording workflow run 'done'."
+    context.logger.debug(message)
     session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
     workflow_runs.set_state(
         workflow_name=context.flow_name,
@@ -290,6 +298,35 @@ def record_workflow_done(reference_date: "datetime.date") -> None:
         reference_date=reference_date,
         scheduled_start_time=context.scheduled_start_time,
         state="done",
+        session=session,
+    )
+    session.close()
+
+
+@task(trigger=any_failed)
+def record_workflow_failed(reference_date: Optional["datetime.date"] = None) -> None:
+    """
+    Add a row to the database to record that a workflow failed.
+
+    Parameters
+    ----------
+    reference_date : date, optional
+        Reference date for which the workflow is running
+    """
+    if reference_date is not None:
+        message = (
+            f"Recording workflow run 'failed' for reference date {reference_date}."
+        )
+    else:
+        message = "Recording workflow run 'failed'."
+    context.logger.debug(message)
+    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
+    workflow_runs.set_state(
+        workflow_name=context.flow_name,
+        workflow_params=context.parameters,
+        reference_date=reference_date,
+        scheduled_start_time=context.scheduled_start_time,
+        state="failed",
         session=session,
     )
     session.close()
@@ -306,10 +343,10 @@ def record_any_failed_workflows(reference_dates: List["datetime.date"]) -> None:
     reference_dates : list of date
         List of reference dates for which the workflow ran
     """
-    # Note: unlike the other two 'record_workflows_*' tasks, this task is not mapped
-    # (i.e. it takes a list of dates, not a single date). This is because if this
-    # task was mapped, and a mistake when defining the workflow meant that a previous
-    # task failed to map, this task would also fail to map and would therefore not run.
+    # Note: unlike the 'record_workflow_failed' task, this task takes a list of dates,
+    # not a single date. This is because if this task was mapped, and a mistake when
+    # defining the workflow meant that a previous task failed to map, this task would
+    # also fail to map and would therefore not run.
     context.logger.debug(f"Ensuring no workflow runs are left in 'in_process' state.")
     some_failed = False
     session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))

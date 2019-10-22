@@ -5,58 +5,11 @@
 from prefect import Flow, Parameter, unmapped, config
 from prefect.schedules import CronSchedule
 from pathlib import Path
-from datetime import timedelta
-from typing import List, Set, Dict, Tuple, Any, Optional
+from typing import List, Set, Dict, Tuple, Any
 import yaml
 
 from . import tasks
-
-
-def get_parameter_names(
-    notebooks: List[Dict[str, Any]], reserved_parameter_names: Optional[Set[str]] = None
-) -> Tuple[Set[str], Set[str], Set[str]]:
-    """
-    Extract sets of parameter names from a list of notebook task specifications.
-
-    Parameters
-    ----------
-    notebooks : list of dict
-        List of dictionaries describing notebook tasks.
-    reserved_parameter_names : set of str, optional
-        Names of parameters used within workflow, which cannot be used as notebook labels.
-    
-    Returns
-    -------
-    notebook_parameter_names : set of str
-        Names of parameters passed to notebooks
-    notebook_labels : set of str
-        Notebook labels, which can be used as parameter names in other notebook tasks
-    additional_parameter_names_for_notebooks : set of str
-        Names of parameters used by notebooks which are not either reserved parameter names or notebook labels
-    """
-    if reserved_parameter_names is None:
-        reserved_parameter_names = set()
-    # Labels for notebook tasks
-    notebook_labels = set(notebook["label"] for notebook in notebooks)
-    forbidden_labels = notebook_labels.intersection(reserved_parameter_names)
-    if forbidden_labels:
-        raise ValueError(
-            f"Notebook labels {forbidden_labels} are forbidden for this workflow. "
-            f"Reserved parameter names are {reserved_parameter_names}."
-        )
-    # Parameters requested in notebooks
-    notebook_parameter_names = set.union(
-        *[set(notebook["parameters"].values()) for notebook in notebooks]
-    )
-    # Additional parameters required for notebooks
-    additional_parameter_names_for_notebooks = notebook_parameter_names.difference(
-        reserved_parameter_names
-    ).difference(notebook_labels)
-    return (
-        notebook_parameter_names,
-        notebook_labels,
-        additional_parameter_names_for_notebooks,
-    )
+from .utils import get_parameter_names
 
 
 def new_dates_subflow(
@@ -98,37 +51,98 @@ def new_dates_subflow(
     return new_dates
 
 
-def add_mapped_notebooks_tasks(
+def add_notebooks_tasks(
     notebooks: List[Dict[str, Any]],
-    tag: List["prefect.Task"],
+    tag: "prefect.Task",
     parameter_tasks: Dict[str, "prefect.Task"],
-    output_tasks: List["prefect.Task"],
-    mappable_parameter_names: Set[str],
-) -> None:
+) -> Tuple[List["prefect.Task"], List["prefect.Task"]]:
     """
-    Add a series of tasks to execute notebooks, and optionally produce PDF outputs.
+    Add a series of tasks that execute notebooks, and tasks that convert notebooks to outputs.
 
     Parameters
     ----------
     notebooks : list of dict
         List of dictionaries describing notebook tasks.
         Each should have keys 'label', 'filename', 'parameters', and optionally 'output'.
-    tag : list of Task
-        Tags to append to output filenames. This list will be mapped over.
+    tag : Task
+        Tag to append to output filenames.
     parameter_tasks : dict
         Mapping from parameter names to prefect tasks.
         Notebook execution tasks will be added to this dict.
+    
+    Returns
+    -------
+    notebook_tasks : list of Task
+        list of prefect tasks that execute notebooks
     output_tasks : list of Task
-        List of prefect tasks that create outputs.
-        PDF output tasks will be appended to this list.
-    mappable_parameter_names : set of str
-        Names of parameters which should be mapped over.
+        List of prefect tasks that create outputs from notebooks.
     
     Notes
     -----
 
     This function must be called within a prefect Flow context.
     """
+    notebook_tasks = []
+    output_tasks = []
+    for notebook in notebooks:
+        parameter_tasks[notebook["label"]] = tasks.papermill_execute_notebook(
+            input_filename=notebook["filename"],
+            output_tag=tag,
+            parameters={
+                key: (parameter_tasks[value])
+                for key, value in notebook["parameters"].items()
+            },
+        )
+        notebook_tasks.append(parameter_tasks[notebook["label"]])
+        if "output" in notebook:
+            # Create PDF report from notebook
+            output_tasks.append(
+                tasks.convert_notebook_to_pdf(
+                    notebook_path=parameter_tasks[notebook["label"]],
+                    asciidoc_template=notebook["output"]["template"],
+                )
+            )
+
+    return notebook_tasks, output_tasks
+
+
+def add_mapped_notebooks_tasks(
+    notebooks: List[Dict[str, Any]],
+    tag: "prefect.Task",
+    parameter_tasks: Dict[str, "prefect.Task"],
+    mappable_parameter_names: Set[str],
+) -> Tuple[List["prefect.Task"], List["prefect.Task"]]:
+    """
+    Add a series of tasks that execute notebooks, and tasks that convert notebooks to outputs.
+    Unlike in 'add_notebooks_tasks', these tasks will be mapped over input parameters.
+
+    Parameters
+    ----------
+    notebooks : list of dict
+        List of dictionaries describing notebook tasks.
+        Each should have keys 'label', 'filename', 'parameters', and optionally 'output'.
+    tag : Task
+        Tag to append to output filenames. The output of this task will be mapped over.
+    parameter_tasks : dict
+        Mapping from parameter names to prefect tasks.
+        Notebook execution tasks will be added to this dict.
+    mappable_parameter_names : set of str
+        Names of parameters which should be mapped over.
+    
+    Returns
+    -------
+    notebook_tasks : list of Task
+        list of mapped prefect tasks that execute notebooks
+    output_tasks : list of Task
+        List of mapped prefect tasks that create outputs from notebooks.
+    
+    Notes
+    -----
+
+    This function must be called within a prefect Flow context.
+    """
+    notebook_tasks = []
+    output_tasks = []
     for notebook in notebooks:
         parameter_tasks[notebook["label"]] = tasks.papermill_execute_notebook.map(
             input_filename=unmapped(notebook["filename"]),
@@ -144,7 +158,7 @@ def add_mapped_notebooks_tasks(
                 }
             ),
         )
-        # TODO: on parsing input file, remove "output" key if no output requested, and make it a dict otherwise (with key "template", default None)
+        notebook_tasks.append(parameter_tasks[notebook["label"]])
         if "output" in notebook:
             # Create PDF report from notebook
             output_tasks.append(
@@ -154,11 +168,52 @@ def add_mapped_notebooks_tasks(
                 )
             )
 
+    return notebook_tasks, output_tasks
+
 
 def make_scheduled_notebooks_workflow(
     name: str, schedule: str, notebooks: List[Dict[str, Any]]
 ) -> Flow:
-    raise NotImplementedError("Scheduled notebooks workflow maker not implemented yet.")
+    # Create schedule
+    flow_schedule = CronSchedule(schedule)
+
+    # Get parameter names
+    notebook_labels, additional_parameter_names_for_notebooks = get_parameter_names(
+        notebooks=notebooks, reserved_parameter_names={"flowapi_url"}
+    )
+
+    # Define workflow
+    with Flow(name=name, schedule=flow_schedule) as workflow:
+        # Parameters
+        parameter_tasks = {
+            pname: Parameter(pname)
+            for pname in additional_parameter_names_for_notebooks
+        }
+
+        # Get FlowAPI URL so that it can be passed as a parameter to notebook execution tasks
+        parameter_tasks["flowapi_url"] = tasks.get_flowapi_url()
+
+        # Record workflow run as 'in_process'
+        in_process = tasks.record_workflow_in_process()
+
+        # Get unique tag for this workflow run
+        tag = tasks.get_tag(upstream_tasks=[in_process])
+
+        # Execute notebooks
+        notebook_tasks, output_tasks = add_notebooks_tasks(
+            notebooks=notebooks, tag=tag, parameter_tasks=parameter_tasks
+        )
+
+        # Record workflow run as 'done', if successful
+        done = tasks.record_workflow_done(upstream_tasks=notebook_tasks + output_tasks)
+        # Record workflow run as 'failed', if failed
+        failed = tasks.record_workflow_failed(
+            upstream_tasks=notebook_tasks + output_tasks
+        )
+
+    # Set tasks that define the workflow state
+    workflow.set_reference_tasks([done])
+    return workflow
 
 
 def make_date_triggered_notebooks_workflow(
@@ -170,7 +225,8 @@ def make_date_triggered_notebooks_workflow(
     # Get parameter names
     # Parameters required for date filter (will all have default None)
     date_filter_parameter_names = {"cdr_types", "earliest_date", "date_stencil"}
-    notebook_parameter_names, notebook_labels, additional_parameter_names_for_notebooks = get_parameter_names(
+    # Parameters used in notebooks
+    notebook_labels, additional_parameter_names_for_notebooks = get_parameter_names(
         notebooks=notebooks,
         reserved_parameter_names=date_filter_parameter_names.union(
             {"flowapi_url", "reference_date", "date_ranges"}
@@ -193,9 +249,8 @@ def make_date_triggered_notebooks_workflow(
             }
         )
 
-        # Get FlowAPI URL so that it can be passed as a parameter to notebook execution tasks, if required
-        if "flowapi_url" in notebook_parameter_names:
-            parameter_tasks["flowapi_url"] = tasks.get_flowapi_url()
+        # Get FlowAPI URL so that it can be passed as a parameter to notebook execution tasks
+        parameter_tasks["flowapi_url"] = tasks.get_flowapi_url()
 
         # Get list of dates
         parameter_tasks["reference_date"] = new_dates_subflow(
@@ -215,28 +270,24 @@ def make_date_triggered_notebooks_workflow(
             upstream_tasks=[in_process],
         )
 
-        # Get date ranges for each reference date, if required
-        if "date_ranges" in notebook_parameter_names:
-            parameter_tasks["date_ranges"] = tasks.get_date_ranges.map(
-                reference_date=parameter_tasks["reference_date"],
-                date_stencil=unmapped(parameter_tasks["date_stencil"]),
-            )
+        # Get date ranges for each reference date
+        parameter_tasks["date_ranges"] = tasks.get_date_ranges.map(
+            reference_date=parameter_tasks["reference_date"],
+            date_stencil=unmapped(parameter_tasks["date_stencil"]),
+        )
 
-        output_tasks = []
-        # Run notebooks for each reference date
-        add_mapped_notebooks_tasks(
+        # Execute notebooks for each reference date
+        notebook_tasks, output_tasks = add_mapped_notebooks_tasks(
             notebooks=notebooks,
             tag=tag,
             parameter_tasks=parameter_tasks,
-            output_tasks=output_tasks,
             mappable_parameter_names=mappable_parameter_names,
         )
 
         # Record each successful workflow run as 'done'
         done = tasks.record_workflow_done.map(
             reference_date=parameter_tasks["reference_date"],
-            upstream_tasks=[parameter_tasks[nblabel] for nblabel in notebook_labels]
-            + output_tasks,
+            upstream_tasks=notebook_tasks + output_tasks,
         )
 
         # Record any unsuccessful workflow runs as 'failed'
@@ -245,6 +296,7 @@ def make_date_triggered_notebooks_workflow(
             upstream_tasks=[in_process, done],
         )
 
+    # Set tasks that define the workflow state
     workflow.set_reference_tasks([done, failed])
     return workflow
 

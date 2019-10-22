@@ -7,7 +7,7 @@ import datetime
 import pendulum
 from hashlib import md5
 from pathlib import Path
-from typing import Union, Dict, Any, List, Sequence, Set, Tuple
+from typing import Union, Dict, Any, List, Sequence, Set, Tuple, Optional
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -265,3 +265,44 @@ def make_json_serialisable(obj: Any) -> Union[dict, list, str, int, float, bool,
         The same object after dumping to json (converting to str if necessary) and loading
     """
     return json.loads(json.dumps(obj, default=str))
+
+
+def get_parameter_names(
+    notebooks: List[Dict[str, Any]], reserved_parameter_names: Optional[Set[str]] = None
+) -> Tuple[Set[str], Set[str]]:
+    """
+    Extract parameter names from a list of notebook task specifications.
+
+    Parameters
+    ----------
+    notebooks : list of dict
+        List of dictionaries describing notebook tasks.
+    reserved_parameter_names : set of str, optional
+        Names of parameters used within workflow, which cannot be used as notebook labels.
+    
+    Returns
+    -------
+    notebook_labels : set of str
+        Notebook labels, which can be used as parameter names in other notebook tasks
+    additional_parameter_names_for_notebooks : set of str
+        Names of parameters used by notebooks which are not either reserved parameter names or notebook labels
+    """
+    if reserved_parameter_names is None:
+        reserved_parameter_names = set()
+    # Labels for notebook tasks
+    notebook_labels = set(notebook["label"] for notebook in notebooks)
+    forbidden_labels = notebook_labels.intersection(reserved_parameter_names)
+    if forbidden_labels:
+        raise ValueError(
+            f"Notebook labels {forbidden_labels} are forbidden for this workflow. "
+            f"Reserved parameter names are {reserved_parameter_names}."
+        )
+    # Parameters requested in notebooks
+    notebook_parameter_names = set.union(
+        *[set(notebook["parameters"].values()) for notebook in notebooks]
+    )
+    # Additional parameters required for notebooks
+    additional_parameter_names_for_notebooks = notebook_parameter_names.difference(
+        reserved_parameter_names
+    ).difference(notebook_labels)
+    return notebook_labels, additional_parameter_names_for_notebooks

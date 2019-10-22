@@ -6,7 +6,7 @@ import os
 import enum
 import pendulum
 import json
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Union
 
 from sqlalchemy import (
     Column,
@@ -55,7 +55,7 @@ class workflow_runs(Base):
         self,
         workflow_name: str,
         workflow_params_hash: str,
-        reference_date: "datetime.date",
+        reference_date: Union["datetime.date", None],
         scheduled_start_time: "datetime.datetime",
         state: str,
     ):
@@ -75,7 +75,7 @@ class workflow_runs(Base):
         cls,
         workflow_name: str,
         workflow_params: Dict[str, Any],
-        reference_date: "datetime.date",
+        reference_date: Union["datetime.date", None],
         scheduled_start_time: "datetime.datetime",
         state: str,
         session: "sqlalchemy.orm.session.Session",
@@ -89,7 +89,7 @@ class workflow_runs(Base):
             Name of the workflow
         workflow_params : dict
             Parameters passed when running the workflow
-        reference_date : date
+        reference_date : date or None
             The date with which the workflow run is associated
         scheduled_start_time : datetime
             Scheduled start time of the workflow run
