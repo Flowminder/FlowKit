@@ -3,7 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from prefect import task, config, context
-from prefect.triggers import all_successful, any_failed
+from prefect.triggers import all_successful, all_finished
+from prefect.engine import signals
 import papermill as pm
 from typing import Optional, Dict, Sequence, List, Tuple, Any
 import nbformat
@@ -30,23 +31,24 @@ from .model import workflow_runs
 
 
 @task
-def get_label(reference_date: "datetime.date") -> str:
+def get_tag(reference_date: Optional["datetime.date"] = None) -> str:
     """
     Task to get a string to append to output filenames from this workflow run.
-    The label is unique for each set of workflow parameters and reference date.
+    The tag is unique for each set of workflow parameters and reference date.
 
     Parameters
     ----------
-    reference_date : date
+    reference_date : date, optional
         Reference date for which the workflow is running
 
     Returns
     -------
     str
-        Label for output filenames
+        Tag for output filenames
     """
     params_hash = get_params_hash(context.parameters)
-    return f"__{context.flow_name}_{params_hash}_{reference_date}"
+    ref_date_string = f"_{reference_date}" if reference_date is not None else ""
+    return f"__{context.flow_name}_{params_hash}{ref_date_string}"
 
 
 @task
@@ -293,8 +295,8 @@ def record_workflow_done(reference_date: "datetime.date") -> None:
     session.close()
 
 
-@task(trigger=any_failed)
-def record_workflows_failed(reference_dates: List["datetime.date"]) -> None:
+@task(trigger=all_finished)
+def record_any_failed_workflows(reference_dates: List["datetime.date"]) -> None:
     """
     For each of the provided reference dates, if the corresponding workflow run is
     recorded as 'in_process', add a row to the database to record that the workflow failed.
@@ -308,9 +310,8 @@ def record_workflows_failed(reference_dates: List["datetime.date"]) -> None:
     # (i.e. it takes a list of dates, not a single date). This is because if this
     # task was mapped, and a mistake when defining the workflow meant that a previous
     # task failed to map, this task would also fail to map and would therefore not run.
-    context.logger.debug(
-        f"Some tasks failed. Ensuring no workflow runs are left in 'in_process' state."
-    )
+    context.logger.debug(f"Ensuring no workflow runs are left in 'in_process' state.")
+    some_failed = False
     session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
     for reference_date in reference_dates:
         if not workflow_runs.is_done(
@@ -319,6 +320,7 @@ def record_workflows_failed(reference_dates: List["datetime.date"]) -> None:
             reference_date=reference_date,
             session=session,
         ):
+            some_failed = True
             context.logger.debug(
                 f"Recording workflow run 'failed' for reference date {reference_date}."
             )
@@ -331,13 +333,15 @@ def record_workflows_failed(reference_dates: List["datetime.date"]) -> None:
                 session=session,
             )
     session.close()
+    if some_failed:
+        raise signals.FAIL()
 
 
 @task
 def mappable_dict(**kwargs) -> Dict[str, Any]:
     """
     Task that returns keyword arguments as a dict.
-    Equivalent to calling dict(**kwargs) within a Flow context,
+    Equivalent to passing dict(**kwargs) within a Flow context,
     except that this is a prefect task so it can be mapped.
     """
     return kwargs
@@ -346,7 +350,7 @@ def mappable_dict(**kwargs) -> Dict[str, Any]:
 @task
 def papermill_execute_notebook(
     input_filename: str,
-    output_label: str,
+    output_tag: str,
     parameters: Optional[Dict[str, Any]] = None,
     **kwargs,
 ) -> str:
@@ -357,8 +361,8 @@ def papermill_execute_notebook(
     ----------
     input_filename : str
         Filename of input notebook (assumed to be in the inputs directory)
-    output_label : str
-        Label to append to output filename
+    output_tag : str
+        Tag to append to output filename
     parameters : dict, optional
         Parameters to pass to the notebook
     **kwargs
@@ -380,7 +384,7 @@ def papermill_execute_notebook(
         f"Executing notebook '{input_filename}' with parameters {safe_params}."
     )
 
-    output_filename = get_output_filename(input_filename, output_label)
+    output_filename = get_output_filename(input_filename, output_tag)
     input_path = str(Path(config.inputs.inputs_dir) / input_filename)
     output_path = str(Path(config.outputs.notebooks_dir) / output_filename)
 

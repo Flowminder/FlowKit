@@ -8,17 +8,22 @@ pandas = "*"
 geopandas = "*"
 descartes = "*"
 flowclient = {editable = true,path = "./../flowclient"}
-jupyterlab = "*"
+pyyaml = "*"
 matplotlib = "*"
-papermill = "*"
+papermill = ">=1.2.1"
 prefect = "*"
 nteract-scrapbook = "*"
-ipywidgets = "*"
 sh = "*"
 pendulum = "*"
 get-secret-or-env-var = "*"
 psycopg2 = "*"
 sqlalchemy = "*"
+
+[dev-packages]
+pytest = "*"
+ipywidgets = "*"
+jupyterlab = "*"
+black = "==19.3b0"
 
 [requires]
 python_version = "3.7"

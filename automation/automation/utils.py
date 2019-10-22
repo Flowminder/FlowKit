@@ -12,7 +12,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
-def get_output_filename(input_filename: str, label: str = "") -> str:
+def get_output_filename(input_filename: str, tag: str = "") -> str:
     """
     Given an input filename, construct an output filename with the same extension,
     with a timestamp (and optionally a label) added to the stem.
@@ -21,8 +21,8 @@ def get_output_filename(input_filename: str, label: str = "") -> str:
     ----------
     input_filename : str
         Input filename
-    label : str, optional
-        A label to append to the file stem
+    tag : str, optional
+        A tag to append to the file stem
     
     Returns
     -------
@@ -31,7 +31,7 @@ def get_output_filename(input_filename: str, label: str = "") -> str:
     """
     input_filename = Path(input_filename)
     now_string = pendulum.now("utc").format("YYYYMMDDTHHmmss[Z]")
-    return f"{input_filename.stem}{label}__{now_string}{input_filename.suffix}"
+    return f"{input_filename.stem}{tag}__{now_string}{input_filename.suffix}"
 
 
 def get_params_hash(parameters: Dict[str, Any]) -> str:
