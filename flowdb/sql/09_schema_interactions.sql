@@ -87,6 +87,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.event_supertable (
 
         event_id                BIGSERIAL,
+        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
         time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
         date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
@@ -115,6 +116,8 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.calls(
 
         super_table_id          BIGSERIAL,
+        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
+        called_subscriber_id    BIGINT REFERENCES interactions.subscriber(id),
         calling_party_cell_id   BIGINT REFERENCES interactions.locations(cell_id),
         called_party_cell_id    BIGINT REFERENCES interactions.locations(cell_id),
         date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
@@ -130,6 +133,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.sms(
 
         super_table_id                BIGSERIAL,
+        subscriber_id                 BIGINT REFERENCES interactions.subscriber(id),
         calling_party_cell_id         BIGINT REFERENCES interactions.locations(cell_id),
         parties_key                   BIGINT REFERENCES interactions.receiving_parties(parties_key),
         date_sk                       BIGINT REFERENCES interactions.date_dim(date_sk),
@@ -144,6 +148,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.mds(
 
         super_table_id          BIGSERIAL,
+        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
         date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
         time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
@@ -159,6 +164,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.topup(
 
         super_table_id          BIGSERIAL,
+        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
         date_sk                 BIGINT REFERENCES interactions.date_dim(date_sk),
         time_sk                 BIGINT REFERENCES interactions.time_dimension(time_sk),
