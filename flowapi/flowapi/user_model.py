@@ -27,9 +27,7 @@ class UserObject:
         Dictionary giving a whitelist of the user's claims
     """
 
-    def __init__(
-        self, username: str, scope_set: Set[FrozenSet[str, Tuple[str, str]]]
-    ) -> None:
+    def __init__(self, username: str, scope_set: Set[FrozenSet]) -> None:
         self.username = username
         self.scope_set = scope_set
 

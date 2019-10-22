@@ -16,49 +16,13 @@ def dummy_flowapi(monkeypatch):
     the expected decoded user claims dict.
     """
     get_mock = Mock()
-    get_mock.return_value.json.return_value = {
-        "components": {
-            "schemas": {
-                "DUMMY_QUERY": {
-                    "properties": {
-                        "query_kind": {"enum": ["DUMMY_QUERY_KIND"]},
-                        "aggregation_unit": {
-                            "enum": ["admin0", "admin1", "admin2", "admin3"],
-                            "type": "string",
-                        },
-                    }
-                },
-                "NOT_A_DUMMY_QUERY": {
-                    "properties": {
-                        "aggregation_unit": {
-                            "enum": ["admin0", "admin1", "admin2", "admin3"],
-                            "type": "string",
-                        }
-                    }
-                },
-                "DUMMY_QUERY_WITH_NO_AGGREGATIONS": {
-                    "properties": {
-                        "query_kind": {
-                            "enum": ["DUMMY_QUERY_WITH_NO_AGGREGATIONS_KIND"]
-                        }
-                    }
-                },
-            }
-        }
-    }
+    get_mock.return_value.json.return_value = dict(
+        components=dict(
+            securitySchemes=dict(
+                token={"x-security-scopes": ["get_result:DUMMY_QUERY_KIND:admin0"]}
+            )
+        )
+    )
+
     monkeypatch.setattr("requests.get", get_mock)
-    return {
-        "DUMMY_QUERY_KIND": {
-            "permissions": {"get_result": True, "poll": True, "run": True},
-            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
-        },
-        "DUMMY_QUERY_WITH_NO_AGGREGATIONS_KIND": {
-            "permissions": {"get_result": True, "poll": True, "run": True},
-            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
-        },
-        "available_dates": {"permissions": {"get_result": True}},
-        "geography": {
-            "permissions": {"get_result": True, "poll": True, "run": True},
-            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
-        },
-    }
+    return ["get_result:DUMMY_QUERY_KIND:admin0"]

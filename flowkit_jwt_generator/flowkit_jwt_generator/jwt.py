@@ -6,6 +6,7 @@ import datetime
 import os
 import uuid
 import binascii
+from itertools import chain
 from json import JSONEncoder
 from typing import Dict, List, Union, Callable, Tuple, Optional
 from collections import ChainMap
@@ -114,7 +115,7 @@ def generate_token(
     username: str,
     private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
-    claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
+    claims: List[str],
 ) -> str:
     """
 
@@ -161,9 +162,7 @@ def generate_token(
     ).decode("utf-8")
 
 
-def get_all_claims_from_flowapi(
-    flowapi_url: str,
-) -> Dict[str, Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]]]:
+def get_all_claims_from_flowapi(flowapi_url: str) -> List[str]:
     """
     Retrieve all the query types available on an instance of flowapi and
     generate a claims dictionary which grants total access to them.
@@ -179,37 +178,11 @@ def get_all_claims_from_flowapi(
         Claims dictionary
 
     """
-    query_kinds = []
-    aggregation_types = set()
     spec = requests.get(f"{flowapi_url}/api/0/spec/openapi.json").json()
-    for q_class, q_spec in spec["components"]["schemas"].items():
-        try:
-            query_kinds.append(q_spec["properties"]["query_kind"]["enum"][0])
-            aggregation_types.update(q_spec["properties"]["aggregation_unit"]["enum"])
-        except KeyError:
-            pass
-    query_kinds = sorted(query_kinds)
-    aggregation_types = sorted(aggregation_types)
-    all_claims = {
-        query_kind: {
-            "permissions": permissions_types,
-            "spatial_aggregation": aggregation_types,
-        }
-        for query_kind in query_kinds
-    }
-    all_claims.update(
-        {
-            "geography": {
-                "permissions": permissions_types,
-                "spatial_aggregation": aggregation_types,
-            },
-            "available_dates": {"permissions": {"get_result": True}},
-        }
-    )
-    return all_claims
+    return spec["components"]["securitySchemes"]["token"]["x-security-scopes"]
 
 
-@click.group(chain=True)
+@click.command()
 @click.option("--username", type=str, required=True, help="Username this token is for.")
 @click.option(
     "--private-key",
@@ -227,81 +200,6 @@ def get_all_claims_from_flowapi(
     required=True,
     help="FlowAPI server this token may be used with.",
 )
-def print_token(username, private_key, lifetime, audience):
-    """
-    Generate a JWT token for access to FlowAPI.
-
-    Use the --all-access option to generate a token which allows full access to a
-    specific FlowAPI server, or specify the queries you want the token to grant
-    access to by providing multiple --query options.
-
-    For example:
-
-    \b
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER all-access -u http://localhost:9090
-
-    Or,
-
-    \b
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER query -a admin0 -a admin1 -p run -p get_result -q daily_location query -a admin0 -p get_result -q flows
-
-    \b
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER all-access -u http://localhost:9090
-
-    Or,
-
-    \b
-    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER query -a admin0 -a admin1 -p run -p get_result -q daily_location query -a admin0 -p get_result -q flows
-    """
-    pass
-
-
-@print_token.resultcallback()
-def output_token(claims, username, private_key, lifetime, audience):
-    click.echo(
-        generate_token(
-            flowapi_identifier=audience,
-            username=username,
-            private_key=load_private_key(private_key),
-            lifetime=datetime.timedelta(days=lifetime),
-            claims=dict(ChainMap(*claims)),
-        )
-    )
-
-
-@print_token.command("query")
-@click.option(
-    "--query-name", "-q", type=str, help="Name of the query type.", required=True
-)
-@click.option(
-    "--permission",
-    "-p",
-    type=click.Choice(permissions_types.keys()),
-    multiple=True,
-    help="Types of access allowed.",
-)
-@click.option(
-    "--aggregation",
-    "-a",
-    type=click.Choice(aggregation_types),
-    multiple=True,
-    help="Spatial aggregation level of access allowed.",
-)
-def named_query(query_name, permission, aggregation):
-    if len(permission) == 0 and len(aggregation) == 0:
-        click.confirm(
-            f"This will grant _no_ permissions for '{query_name}'. Are you sure?",
-            abort=True,
-        )
-    return {
-        query_name: {
-            "permissions": {p: True for p in permission},
-            "spatial_aggregation": aggregation,
-        }
-    }
-
-
-@print_token.command("all-access")
 @click.option(
     "--flowapi-url",
     "-u",
@@ -309,5 +207,21 @@ def named_query(query_name, permission, aggregation):
     required=True,
     help="URL of the FlowAPI server to grant access to.",
 )
-def print_all_access_token(flowapi_url):
-    return get_all_claims_from_flowapi(flowapi_url=flowapi_url)
+def print_token(username, private_key, lifetime, audience, flowapi_url):
+    """
+    Generate a JWT token for access to FlowAPI.
+
+    For example:
+
+    \b
+    generate-jwt --username TEST_USER --private-key $PRIVATE_JWT_SIGNING_KEY --lifetime 1 --audience TEST_SERVER -u http://localhost:9090
+    """
+    click.echo(
+        generate_token(
+            flowapi_identifier=audience,
+            username=username,
+            private_key=load_private_key(private_key),
+            lifetime=datetime.timedelta(days=lifetime),
+            claims=get_all_claims_from_flowapi(flowapi_url=flowapi_url),
+        )
+    )
