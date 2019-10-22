@@ -1,12 +1,21 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-
-from typing import List, Iterable, Set
+from itertools import takewhile, product, chain
+from typing import List, Iterable, Set, FrozenSet
 
 
 def get_nested_objects(schema: dict) -> dict:
+    """
+
+    Parameters
+    ----------
+    schema
+
+    Returns
+    -------
+
+    """
     return {
         q: [qref["$ref"].split("/")[-1] for qref in qbod["oneOf"]]
         for q, qbod in schema.items()
@@ -15,6 +24,16 @@ def get_nested_objects(schema: dict) -> dict:
 
 
 def get_queries(schema: dict) -> dict:
+    """
+
+    Parameters
+    ----------
+    schema
+
+    Returns
+    -------
+
+    """
     return {
         q: qbod["properties"]
         for q, qbod in schema.items()
@@ -23,6 +42,17 @@ def get_queries(schema: dict) -> dict:
 
 
 def get_reffed_params(qs: dict, nested: dict) -> dict:
+    """
+
+    Parameters
+    ----------
+    qs
+    nested
+
+    Returns
+    -------
+
+    """
     q_treed = {}
     for q, qbod in qs.items():
         q_treed[q] = {}
@@ -34,6 +64,17 @@ def get_reffed_params(qs: dict, nested: dict) -> dict:
 
 
 def build_tree(roots: List[str], q_treed: dict) -> dict:
+    """
+
+    Parameters
+    ----------
+    roots
+    q_treed
+
+    Returns
+    -------
+
+    """
     tree = {}
     for r in roots:
         params = q_treed[r]
@@ -58,6 +99,17 @@ def build_tree(roots: List[str], q_treed: dict) -> dict:
 
 
 def enum_paths(parents: List[str], tree: dict):
+    """
+
+    Parameters
+    ----------
+    parents
+    tree
+
+    Returns
+    -------
+
+    """
     if len(tree) == 0:
         yield parents, tree
     else:
@@ -66,6 +118,18 @@ def enum_paths(parents: List[str], tree: dict):
 
 
 def make_per_query_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
+    """
+
+    Parameters
+    ----------
+    tree
+    all_queries
+
+    Returns
+    -------
+
+    """
+    units_superset = set()
     for path, _ in list(enum_paths([], tree)):
         kind_path = [
             all_queries.get(p, {}).get("query_kind", {}).get("enum", [p])[0]
@@ -73,22 +137,48 @@ def make_per_query_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
         ]  # Want the snake-cased variant
         try:
             units = all_queries[path[-1]]["aggregation_unit"]["enum"]
+            units_superset.update(units)
             yield from (
                 ":".join(kind_path + ["aggregation_unit", unit]) for unit in units
             )
         except KeyError:
             yield ":".join(kind_path)
-
-
-def make_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
     yield from (
-        f"{action}:{scope}"
-        for action in ("read", "write")
-        for scope in make_per_query_scopes(tree, all_queries)
+        ":".join(["geography", "aggregation_unit", unit]) for unit in units_superset
     )
 
 
+def make_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
+    """
+
+    Parameters
+    ----------
+    tree
+    all_queries
+
+    Returns
+    -------
+
+    """
+    yield from (
+        f"{action}:{scope}"
+        for action in ("get_result", "run")
+        for scope in make_per_query_scopes(tree, all_queries)
+    )
+    yield "get_result:available_dates"
+
+
 def schema_to_scopes(flowmachine_query_schemas: dict) -> Iterable[str]:
+    """
+
+    Parameters
+    ----------
+    flowmachine_query_schemas
+
+    Returns
+    -------
+
+    """
     yield from make_scopes(
         build_tree(
             get_nested_objects(flowmachine_query_schemas)["FlowmachineQuerySchema"],
@@ -101,15 +191,58 @@ def schema_to_scopes(flowmachine_query_schemas: dict) -> Iterable[str]:
     )
 
 
+def scope_to_sets(scope: str) -> Iterable[FrozenSet]:
+    """
+
+    Parameters
+    ----------
+    scope
+
+    Returns
+    -------
+
+    """
+    actions, query_kind, *scope = scope.split(":")
+    scopeit = iter(scope)
+    scope = takewhile(lambda x: x != "aggregation_unit", scopeit)
+    scope_set_it = [list(scope)]
+    try:
+        agg_units = next(scopeit)
+        scope_set_it = [
+            [*scope_set_it[0], "aggregation_unit", unit]
+            for unit in agg_units.split(",")
+        ]
+    except StopIteration:  # No aggregation units for this scope
+        pass
+    for action, scope in product(actions.split(","), scope_set_it):
+        yield frozenset([action, query_kind, *zip(scope[::2], scope[1::2])])
+
+
 def scopes_to_sets(scopes: List[str]) -> Set:
-    scopesets = set()
-    for scope in scopes:
-        action, query_kind, *scope = scope.split(":")
-        scopesets.add(frozenset([action, query_kind, *zip(scope[::2], scope[1::2])]))
-    return scopesets
+    """
+
+    Parameters
+    ----------
+    scopes
+
+    Returns
+    -------
+
+    """
+    return set(chain.from_iterable(scope_to_sets(scope) for scope in scopes))
 
 
 def query_to_scope_set(query: dict) -> Set:
+    """
+
+    Parameters
+    ----------
+    query
+
+    Returns
+    -------
+
+    """
     ss = set([query["action"], query["query_kind"]])
     if "aggregation_unit" in query:
         ss.add(("aggregation_unit", query["aggregation_unit"]))
