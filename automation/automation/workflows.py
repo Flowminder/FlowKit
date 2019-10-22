@@ -400,4 +400,3 @@ def parse_workflows_yaml(
         run_parameters[workflow_spec["name"]] = parameters
 
     return workflows, run_parameters
-
