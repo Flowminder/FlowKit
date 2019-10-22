@@ -7,6 +7,7 @@ from apispec import APISpec, yaml_utils
 from quart import Blueprint, request, jsonify, render_template, current_app
 from zmq.asyncio import Socket
 from flowapi import __version__
+from flowapi.permissions import schema_to_scopes
 
 blueprint = Blueprint("spec", __name__)
 
@@ -53,7 +54,13 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     )
     spec.components._schemas = flowmachine_query_schemas
     spec.components.security_scheme(
-        "token", dict(type="http", scheme="bearer", bearerFormat="JWT")
+        "token",
+        {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+            "x-security-scopes": list(schema_to_scopes(flowmachine_query_schemas)),
+        },
     )
     # Loop over all the registered views and try to parse a yaml
     # openapi spec from their docstrings
