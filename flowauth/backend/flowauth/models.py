@@ -1,7 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 import datetime
 import pyotp
@@ -24,40 +24,6 @@ group_memberships = db.Table(
     "group_memberships",
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
     db.Column("group_id", db.Integer, db.ForeignKey("group.id"), primary_key=True),
-)
-
-# Link table for mapping spatial aggregation units to server capabilities
-spatial_capabilities = db.Table(
-    "spatial_capabilities",
-    db.Column(
-        "spatial_aggregation_unit_id",
-        db.Integer,
-        db.ForeignKey("spatial_aggregation_unit.id"),
-        primary_key=True,
-    ),
-    db.Column(
-        "server_capability_id",
-        db.Integer,
-        db.ForeignKey("server_capability.id"),
-        primary_key=True,
-    ),
-)
-
-# Link table for mapping spatial aggregation units to group permissions
-group_spatial_capabilities = db.Table(
-    "group_spatial_capabilities",
-    db.Column(
-        "spatial_aggregation_unit_id",
-        db.Integer,
-        db.ForeignKey("spatial_aggregation_unit.id"),
-        primary_key=True,
-    ),
-    db.Column(
-        "group_server_permission_id",
-        db.Integer,
-        db.ForeignKey("group_server_permission.id"),
-        primary_key=True,
-    ),
 )
 
 
@@ -131,7 +97,7 @@ class User(db.Model):
         """
         return argon2.verify(plaintext, self._password)
 
-    def allowed_claims(self, server) -> dict:
+    def allowed_claims(self, server) -> List[str]:
         """
         Get the claims the user is allowed to generate tokens for on a server.
 
@@ -142,29 +108,13 @@ class User(db.Model):
 
         Returns
         -------
-        dict
+        list of str
 
         """
 
-        allowed = {}
-        for cap in server.capabilities:
-            using_groups = cap.group_uses
-            my_rights = [p for p in using_groups if p.group in self.groups]
-            get_result = cap.get_result and any(p.get_result for p in my_rights)
-            run = cap.run and any(p.run for p in my_rights)
-            poll = cap.poll and any(p.poll for p in my_rights)
-            group_agg_units = set(
-                chain(*[right.spatial_aggregation for right in my_rights])
-            )
-            agg_units = [
-                agg.name for agg in cap.spatial_aggregation if agg in group_agg_units
-            ]
-            if any((run, poll, get_result)):
-                allowed[cap.capability.name] = {
-                    "permissions": {"run": run, "poll": poll, "get_result": get_result},
-                    "spatial_aggregation": agg_units,
-                }
-        return allowed
+        return sorted(
+            set(chain.from_iterable(group.rights(server) for group in self.groups))
+        )
 
     def latest_token_expiry(self, server: "Server") -> datetime.datetime:
         """
@@ -513,21 +463,14 @@ class Server(db.Model):
 
 class ServerCapability(db.Model):
     """
-    The set of API capabilities which are available on a server, which is
-    a subset of Capabilities.
+    The set of API capabilities which are available on a server.
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    get_result = db.Column(db.Boolean, default=False)
-    run = db.Column(db.Boolean, default=False)
-    poll = db.Column(db.Boolean, default=False)
-
     server_id = db.Column(db.Integer, db.ForeignKey("server.id"), nullable=False)
     server = db.relationship("Server", back_populates="capabilities", lazy=True)
-    capability_id = db.Column(
-        db.Integer, db.ForeignKey("capability.id"), nullable=False
-    )
-    capability = db.relationship("Capability", back_populates="usages", lazy=True)
+    capability = db.Column(db.String, nullable=False)
+    enabled = db.Column(db.Boolean, default=False)
     group_uses = db.relationship(
         "GroupServerPermission",
         back_populates="server_capability",
@@ -535,11 +478,11 @@ class ServerCapability(db.Model):
         cascade="all, delete, delete-orphan",
     )
     __table_args__ = (
-        db.UniqueConstraint("server_id", "capability_id", name="_server_cap_uc"),
+        db.UniqueConstraint("server_id", "capability", name="_server_cap_uc"),
     )  # Enforce only one of each capability per server
 
     def __repr__(self) -> str:
-        return f"<ServerCapability {self.capability}> {self.get_result}:{self.run}:{self.poll}, {self.spatial_aggregation}@{self.server}>"
+        return f"<ServerCapability {self.capability}@{self.server}>"
 
 
 class GroupServerTokenLimits(db.Model):
@@ -570,9 +513,6 @@ class GroupServerPermission(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    get_result = db.Column(db.Boolean, default=False)
-    run = db.Column(db.Boolean, default=False)
-    poll = db.Column(db.Boolean, default=False)
     group_id = db.Column(db.Integer, db.ForeignKey("group.id"), nullable=False)
     group = db.relationship("Group", back_populates="server_permissions", lazy=True)
     server_capability_id = db.Column(
@@ -588,49 +528,7 @@ class GroupServerPermission(db.Model):
     )  # Enforce only only group - capability pair
 
     def __repr__(self) -> str:
-        return f"<GroupServerPermission {self.server_capability.capability}> {self.get_result}:{self.run}:{self.poll}, {self.spatial_aggregation} {self.group}@{self.server_capability.server}>"
-
-
-class SpatialAggregationUnit(db.Model):
-    """
-    An unit of spatial aggregation.
-    """
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
-    server_usages = db.relationship(
-        "ServerCapability",
-        secondary=spatial_capabilities,
-        lazy="subquery",
-        backref=db.backref("spatial_aggregation", lazy=True),
-    )
-
-    group_server_capability_usages = db.relationship(
-        "GroupServerPermission",
-        secondary=group_spatial_capabilities,
-        lazy="subquery",
-        backref=db.backref("spatial_aggregation", lazy=True),
-    )
-
-    def __repr__(self) -> str:
-        return f"<SpatialAggregationUnit {self.name}>"
-
-
-class Capability(db.Model):
-    """
-    An API capability.
-    """
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
-    usages = db.relationship(
-        "ServerCapability",
-        back_populates="capability",
-        cascade="all, delete, delete-orphan",
-    )
-
-    def __repr__(self) -> str:
-        return f"<Capability {self.name}>"
+        return f"<GroupServerPermission {self.server_capability}-{self.group}>"
 
 
 class Group(db.Model):
@@ -651,6 +549,14 @@ class Group(db.Model):
         back_populates="group",
         cascade="all, delete, delete-orphan",
     )
+
+    def rights(self, server: Server) -> List[str]:
+        return [
+            perm.server_capability.capability
+            for perm in self.server_permissions
+            if perm.server_capability.server.id == server.id
+            and perm.server_capability.enabled
+        ]
 
     def __repr__(self) -> str:
         return f"<Group {self.name}>"
@@ -742,11 +648,6 @@ def make_demodata():
     current_app.logger.debug("Creating demo data.")
     db.drop_all()
     db.create_all()
-    agg_units = [SpatialAggregationUnit(name=f"admin{x}") for x in range(4)]
-    agg_units += [
-        SpatialAggregationUnit(name="lon-lat"),
-    ]
-    db.session.add_all(agg_units)
     users = [User(username="TEST_USER"), User(username="TEST_ADMIN", is_admin=True)]
     for user in users:
         user.password = "DUMMY_PASSWORD"
@@ -764,36 +665,371 @@ def make_demodata():
     for x in users + groups:
         db.session.add(x)
     # Add some things that you can do
-    caps = []
-    for c in (
-        "available_dates",
-        "flows",
-        "meaningful_locations_aggregate",
-        "meaningful_locations_between_label_od_matrix",
-        "meaningful_locations_between_dates_od_matrix",
-        "geography",
-        "location_event_counts",
-        "unique_subscriber_counts",
-        "location_introversion",
-        "total_network_objects",
-        "aggregate_network_objects",
-        "dfs_metric_total_amount",
-        "daily_location",
-        "modal_location",
-        "radius_of_gyration",
-        "unique_location_counts",
-        "topup_balance",
-        "subscriber_degree",
-        "topup_amount",
-        "event_count",
-        "handset",
-        "pareto_interactions",
-        "nocturnal_events",
-        "displacement",
-    ):
-        c = Capability(name=c)
-        db.session.add(c)
-        caps.append(c)
+    caps = [
+        "get_result:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin0",
+        "get_result:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin1",
+        "get_result:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin2",
+        "get_result:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin3",
+        "get_result:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:lon-lat",
+        "get_result:available_dates",
+        "get_result:dfs_metric_total_amount:aggregation_unit:admin0",
+        "get_result:dfs_metric_total_amount:aggregation_unit:admin1",
+        "get_result:dfs_metric_total_amount:aggregation_unit:admin2",
+        "get_result:dfs_metric_total_amount:aggregation_unit:admin3",
+        "get_result:dfs_metric_total_amount:aggregation_unit:lon-lat",
+        "get_result:dummy_query",
+        "get_result:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:admin0",
+        "get_result:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:admin1",
+        "get_result:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:admin2",
+        "get_result:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:admin3",
+        "get_result:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:lon-lat",
+        "get_result:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:admin0",
+        "get_result:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:admin1",
+        "get_result:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:admin2",
+        "get_result:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:admin3",
+        "get_result:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:lon-lat",
+        "get_result:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:admin0",
+        "get_result:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:admin1",
+        "get_result:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:admin2",
+        "get_result:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:admin3",
+        "get_result:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:lon-lat",
+        "get_result:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:admin0",
+        "get_result:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:admin1",
+        "get_result:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:admin2",
+        "get_result:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:admin3",
+        "get_result:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:lon-lat",
+        "get_result:geography:aggregation_unit:admin0",
+        "get_result:geography:aggregation_unit:admin1",
+        "get_result:geography:aggregation_unit:admin2",
+        "get_result:geography:aggregation_unit:admin3",
+        "get_result:geography:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:admin0",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:admin1",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:admin2",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:admin3",
+        "get_result:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:location_event_counts:aggregation_unit:admin0",
+        "get_result:location_event_counts:aggregation_unit:admin1",
+        "get_result:location_event_counts:aggregation_unit:admin2",
+        "get_result:location_event_counts:aggregation_unit:admin3",
+        "get_result:location_event_counts:aggregation_unit:lon-lat",
+        "get_result:location_introversion:aggregation_unit:admin0",
+        "get_result:location_introversion:aggregation_unit:admin1",
+        "get_result:location_introversion:aggregation_unit:admin2",
+        "get_result:location_introversion:aggregation_unit:admin3",
+        "get_result:location_introversion:aggregation_unit:lon-lat",
+        "get_result:meaningful_locations_aggregate:aggregation_unit:admin0",
+        "get_result:meaningful_locations_aggregate:aggregation_unit:admin1",
+        "get_result:meaningful_locations_aggregate:aggregation_unit:admin2",
+        "get_result:meaningful_locations_aggregate:aggregation_unit:admin3",
+        "get_result:meaningful_locations_aggregate:aggregation_unit:lon-lat",
+        "get_result:meaningful_locations_between_dates_od_matrix:aggregation_unit:admin0",
+        "get_result:meaningful_locations_between_dates_od_matrix:aggregation_unit:admin1",
+        "get_result:meaningful_locations_between_dates_od_matrix:aggregation_unit:admin2",
+        "get_result:meaningful_locations_between_dates_od_matrix:aggregation_unit:admin3",
+        "get_result:meaningful_locations_between_dates_od_matrix:aggregation_unit:lon-lat",
+        "get_result:meaningful_locations_between_label_od_matrix:aggregation_unit:admin0",
+        "get_result:meaningful_locations_between_label_od_matrix:aggregation_unit:admin1",
+        "get_result:meaningful_locations_between_label_od_matrix:aggregation_unit:admin2",
+        "get_result:meaningful_locations_between_label_od_matrix:aggregation_unit:admin3",
+        "get_result:meaningful_locations_between_label_od_matrix:aggregation_unit:lon-lat",
+        "get_result:spatial_aggregate:locations:daily_location:aggregation_unit:admin0",
+        "get_result:spatial_aggregate:locations:daily_location:aggregation_unit:admin1",
+        "get_result:spatial_aggregate:locations:daily_location:aggregation_unit:admin2",
+        "get_result:spatial_aggregate:locations:daily_location:aggregation_unit:admin3",
+        "get_result:spatial_aggregate:locations:daily_location:aggregation_unit:lon-lat",
+        "get_result:spatial_aggregate:locations:modal_location:aggregation_unit:admin0",
+        "get_result:spatial_aggregate:locations:modal_location:aggregation_unit:admin1",
+        "get_result:spatial_aggregate:locations:modal_location:aggregation_unit:admin2",
+        "get_result:spatial_aggregate:locations:modal_location:aggregation_unit:admin3",
+        "get_result:spatial_aggregate:locations:modal_location:aggregation_unit:lon-lat",
+        "get_result:total_network_objects:aggregation_unit:admin0",
+        "get_result:total_network_objects:aggregation_unit:admin1",
+        "get_result:total_network_objects:aggregation_unit:admin2",
+        "get_result:total_network_objects:aggregation_unit:admin3",
+        "get_result:total_network_objects:aggregation_unit:lon-lat",
+        "get_result:unique_subscriber_counts:aggregation_unit:admin0",
+        "get_result:unique_subscriber_counts:aggregation_unit:admin1",
+        "get_result:unique_subscriber_counts:aggregation_unit:admin2",
+        "get_result:unique_subscriber_counts:aggregation_unit:admin3",
+        "get_result:unique_subscriber_counts:aggregation_unit:lon-lat",
+        "run:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin0",
+        "run:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin1",
+        "run:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin2",
+        "run:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin3",
+        "run:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:lon-lat",
+        "run:dfs_metric_total_amount:aggregation_unit:admin0",
+        "run:dfs_metric_total_amount:aggregation_unit:admin1",
+        "run:dfs_metric_total_amount:aggregation_unit:admin2",
+        "run:dfs_metric_total_amount:aggregation_unit:admin3",
+        "run:dfs_metric_total_amount:aggregation_unit:lon-lat",
+        "run:dummy_query",
+        "run:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:admin0",
+        "run:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:admin1",
+        "run:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:admin2",
+        "run:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:admin3",
+        "run:flows:from_location:daily_location:to_location:daily_location:aggregation_unit:lon-lat",
+        "run:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:admin0",
+        "run:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:admin1",
+        "run:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:admin2",
+        "run:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:admin3",
+        "run:flows:from_location:daily_location:to_location:modal_location:aggregation_unit:lon-lat",
+        "run:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:admin0",
+        "run:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:admin1",
+        "run:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:admin2",
+        "run:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:admin3",
+        "run:flows:from_location:modal_location:to_location:daily_location:aggregation_unit:lon-lat",
+        "run:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:admin0",
+        "run:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:admin1",
+        "run:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:admin2",
+        "run:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:admin3",
+        "run:flows:from_location:modal_location:to_location:modal_location:aggregation_unit:lon-lat",
+        "run:geography:aggregation_unit:admin0",
+        "run:geography:aggregation_unit:admin1",
+        "run:geography:aggregation_unit:admin2",
+        "run:geography:aggregation_unit:admin3",
+        "run:geography:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:displacement:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:displacement:locations:modal_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:event_count:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:event_count:locations:modal_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:handset:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:handset:locations:modal_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:nocturnal_events:locations:modal_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:pareto_interactions:locations:modal_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:radius_of_gyration:locations:modal_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:subscriber_degree:locations:modal_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:topup_amount:locations:modal_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:topup_balance:locations:modal_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:daily_location:aggregation_unit:lon-lat",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:admin0",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:admin1",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:admin2",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:admin3",
+        "run:joined_spatial_aggregate:metric:unique_location_counts:locations:modal_location:aggregation_unit:lon-lat",
+        "run:location_event_counts:aggregation_unit:admin0",
+        "run:location_event_counts:aggregation_unit:admin1",
+        "run:location_event_counts:aggregation_unit:admin2",
+        "run:location_event_counts:aggregation_unit:admin3",
+        "run:location_event_counts:aggregation_unit:lon-lat",
+        "run:location_introversion:aggregation_unit:admin0",
+        "run:location_introversion:aggregation_unit:admin1",
+        "run:location_introversion:aggregation_unit:admin2",
+        "run:location_introversion:aggregation_unit:admin3",
+        "run:location_introversion:aggregation_unit:lon-lat",
+        "run:meaningful_locations_aggregate:aggregation_unit:admin0",
+        "run:meaningful_locations_aggregate:aggregation_unit:admin1",
+        "run:meaningful_locations_aggregate:aggregation_unit:admin2",
+        "run:meaningful_locations_aggregate:aggregation_unit:admin3",
+        "run:meaningful_locations_aggregate:aggregation_unit:lon-lat",
+        "run:meaningful_locations_between_dates_od_matrix:aggregation_unit:admin0",
+        "run:meaningful_locations_between_dates_od_matrix:aggregation_unit:admin1",
+        "run:meaningful_locations_between_dates_od_matrix:aggregation_unit:admin2",
+        "run:meaningful_locations_between_dates_od_matrix:aggregation_unit:admin3",
+        "run:meaningful_locations_between_dates_od_matrix:aggregation_unit:lon-lat",
+        "run:meaningful_locations_between_label_od_matrix:aggregation_unit:admin0",
+        "run:meaningful_locations_between_label_od_matrix:aggregation_unit:admin1",
+        "run:meaningful_locations_between_label_od_matrix:aggregation_unit:admin2",
+        "run:meaningful_locations_between_label_od_matrix:aggregation_unit:admin3",
+        "run:meaningful_locations_between_label_od_matrix:aggregation_unit:lon-lat",
+        "run:spatial_aggregate:locations:daily_location:aggregation_unit:admin0",
+        "run:spatial_aggregate:locations:daily_location:aggregation_unit:admin1",
+        "run:spatial_aggregate:locations:daily_location:aggregation_unit:admin2",
+        "run:spatial_aggregate:locations:daily_location:aggregation_unit:admin3",
+        "run:spatial_aggregate:locations:daily_location:aggregation_unit:lon-lat",
+        "run:spatial_aggregate:locations:modal_location:aggregation_unit:admin0",
+        "run:spatial_aggregate:locations:modal_location:aggregation_unit:admin1",
+        "run:spatial_aggregate:locations:modal_location:aggregation_unit:admin2",
+        "run:spatial_aggregate:locations:modal_location:aggregation_unit:admin3",
+        "run:spatial_aggregate:locations:modal_location:aggregation_unit:lon-lat",
+        "run:total_network_objects:aggregation_unit:admin0",
+        "run:total_network_objects:aggregation_unit:admin1",
+        "run:total_network_objects:aggregation_unit:admin2",
+        "run:total_network_objects:aggregation_unit:admin3",
+        "run:total_network_objects:aggregation_unit:lon-lat",
+        "run:unique_subscriber_counts:aggregation_unit:admin0",
+        "run:unique_subscriber_counts:aggregation_unit:admin1",
+        "run:unique_subscriber_counts:aggregation_unit:admin2",
+        "run:unique_subscriber_counts:aggregation_unit:admin3",
+        "run:unique_subscriber_counts:aggregation_unit:lon-lat",
+    ]
     # Add some servers
     test_server = Server(
         name="TEST_SERVER",
@@ -806,23 +1042,13 @@ def make_demodata():
     # Add some things that you can do on the servers
     scs = []
     for cap in caps:
-        scs.append(
-            ServerCapability(
-                capability=cap, server=test_server, get_result=True, run=True, poll=True
-            )
-        )
-
-    for sc in scs:
-        sc.spatial_aggregation = agg_units
+        sc = ServerCapability(capability=cap, server=test_server, enabled=True)
+        scs.append(sc)
         db.session.add(sc)
-    # Give bob group permissions on Haiti
-    for sc in test_server.capabilities:
-        gsp = GroupServerPermission(
-            group=groups[0], server_capability=sc, get_result=True, run=True, poll=True
-        )
-        for agg_unit in agg_units[:4]:  # Give Bob access to adminX agg units
-            gsp.spatial_aggregation.append(agg_unit)
 
+    # Give bob group permissions on test server
+    for sc in test_server.capabilities:
+        gsp = GroupServerPermission(group=groups[0], server_capability=sc)
         db.session.add(gsp)
     db.session.add(
         GroupServerTokenLimits(

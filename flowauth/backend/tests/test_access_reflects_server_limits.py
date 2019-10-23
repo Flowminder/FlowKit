@@ -3,42 +3,52 @@ from flowauth import (
     Group,
     Server,
     datetime,
-    Capability,
     ServerCapability,
     GroupServerPermission,
     GroupServerTokenLimits,
+    db,
 )
 
 
 def test_disallow_right_on_server_disallows_for_group(app):
     """Test that if a claim is disallowed on a server, it will be disallowed even if previously granted to groups."""
     with app.app_context():
+        session = db.session
         user = User(username="TEST_USER", password="TEST_PASSWORD")
+
         user_group = Group(name="TEST_USER", user_group=True)
         user.groups.append(user_group)
+
+        session.add(user)
+        session.add(user_group)
         server = Server(
             name="TEST_SERVER",
             longest_token_life=2880,
             latest_token_expiry=datetime.datetime(2020, 1, 1),
         )
-        capability = Capability(name="TEST_ROUTE")
+        session.add(server)
         server_capability = ServerCapability(
-            server=server, capability=capability, poll=True
+            server=server, capability="get_result:DUMMY_ROUTE", enabled=True
         )
+        session.add(server_capability)
         gsp = GroupServerPermission(
-            group=user_group, server_capability=server_capability, poll=True
+            group=user_group, server_capability=server_capability
         )
+        session.add(gsp)
         token_limits = GroupServerTokenLimits(
             group=user_group,
             longest_life=1440,
             latest_end=datetime.datetime(2019, 1, 1),
             server=server,
         )
+        session.add(token_limits)
+        session.commit()
         claims = user.allowed_claims(server)
-        assert claims["TEST_ROUTE"]["permissions"]["poll"]
-        server_capability.poll = False
+        assert "get_result:DUMMY_ROUTE" in claims
+        session.delete(gsp)
+        session.commit()
         claims = user.allowed_claims(server)
-        assert {} == claims
+        assert [] == claims
 
 
 def test_token_time_limits_reflect_server_limits(app):
