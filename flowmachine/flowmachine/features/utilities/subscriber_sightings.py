@@ -75,6 +75,7 @@ class SubscriberSightings(Query):
         self.columns = [
             "timestamp AS datetime",
             "cell_id AS location_id",
+            "subscriber_id",
             f"{self.subscriber_identifier} AS subscriber",
         ]
 
@@ -138,7 +139,10 @@ class SubscriberSightings(Query):
                 self.sqlalchemy_mainTable, self.columns[1]
             ),
             make_sqlalchemy_column_from_flowmachine_column_description(
-                self.sqlalchemy_subTable, self.columns[2]
+                self.sqlalchemy_mainTable, self.columns[2]
+            ),
+            make_sqlalchemy_column_from_flowmachine_column_description(
+                self.sqlalchemy_subTable, self.columns[3]
             ),
         ]
 
