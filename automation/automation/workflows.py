@@ -174,6 +174,25 @@ def add_mapped_notebooks_tasks(
 def make_scheduled_notebooks_workflow(
     name: str, schedule: str, notebooks: List[Dict[str, Any]]
 ) -> Flow:
+    """
+    Build a prefect workflow that runs a set of Jupyter notebooks on a schedule.
+    The FlowAPI URL will be available to the notebooks as parameter 'flowapi_url'.
+
+    Parameters
+    ----------
+    name : str
+        Name for the workflow
+    schedule : str
+        Cron string describing the schedule on which the workflow will run the notebooks.
+    notebooks : list of dict
+        List of dictionaries describing notebook tasks.
+        Each should have keys 'label', 'filename', 'parameters', and optionally 'output'.
+    
+    Returns
+    -------
+    Flow
+        Prefect workflow
+    """
     # Create schedule
     flow_schedule = CronSchedule(schedule)
 
@@ -219,6 +238,37 @@ def make_scheduled_notebooks_workflow(
 def make_date_triggered_notebooks_workflow(
     name: str, schedule: str, notebooks: List[Dict[str, Any]]
 ) -> Flow:
+    """
+    Build a prefect workflow that runs a set of Jupyter notebooks for each new date
+    of data available in FlowKit.
+    In addition to parameters requested in the notebooks, this workflow will have
+    the following parameters:
+        - cdr_types:     A list of CDR types for which available dates will be
+                         checked (default is all available CDR types).
+        - earliest_date: The earliest date for which the notebooks should run.
+        - date_stencil:  A list of dates (either absolute dates or offsets relative
+                         to a reference date), or pairs of dates defining an interval.
+                         For each available date, the availability of all dates
+                         included in the stencil will be checked.
+    For each date, the date itself and the date ranges corresponding to the stencil
+    will be available to notebooks as parameters 'reference_date' and 'date_ranges',
+    respectively. The FlowAPI URL will be available as parameter 'flowapi_url'.
+
+    Parameters
+    ----------
+    name : str
+        Name for the workflow
+    schedule : str
+        Cron string describing the schedule on which the workflow will check for new data.
+    notebooks : list of dict
+        List of dictionaries describing notebook tasks.
+        Each should have keys 'label', 'filename', 'parameters', and optionally 'output'.
+    
+    Returns
+    -------
+    Flow
+        Prefect workflow
+    """
     # Create schedule
     flow_schedule = CronSchedule(schedule)
 
@@ -314,7 +364,7 @@ def make_workflow(kind: str, **kwargs):
 
 
 def load_and_validate_workflows_yaml(filename: str) -> List[Dict[str, Any]]:
-    # TODO: This would be neater and more robust with marshmallow
+    # TODO: This would be neater and more robust as a marshmallow schema
     with open(filename, "r") as f:
         workflows_spec = yaml.safe_load(f)
 
