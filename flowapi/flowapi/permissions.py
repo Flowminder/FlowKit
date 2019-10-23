@@ -87,7 +87,7 @@ def build_tree(roots: List[str], q_treed: dict) -> dict:
         params = q_treed[root]
         tree[root] = {}
         refs = tree[root]
-        sorted_params = sorted(params.items(), key=lambda x: -len(x[1]))
+        sorted_params = sorted(params.items(), key=lambda x: (-len(x[1]), x[0]))
         try:
             longest_param, *others = sorted_params
             param_name, param_spec = longest_param
