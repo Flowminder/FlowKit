@@ -31,6 +31,12 @@ class UserObject:
         self.username = username
         self.scope_set = scope_set
 
+    def has_access(self, *, actions: List[str], query_json: dict) -> bool:
+        for action in actions:
+            if query_to_scope_set(action=action, query=query_json) in self.scope_set:
+                return True
+        raise UserClaimsVerificationError
+
     def can_run(self, *, query_json: dict) -> bool:
         """
         Returns true if the user can run this query.
@@ -52,7 +58,7 @@ class UserObject:
 
         """
 
-        return query_to_scope_set(dict(action="run", **query_json)) in self.scope_set
+        return self.has_access(actions=["run"], query_json=query_json)
 
     async def can_poll_by_query_id(self, *, query_id) -> bool:
         """
@@ -97,11 +103,7 @@ class UserObject:
             If the user cannot get the status of this kind of query at this level of aggregation
         """
 
-        return (
-            query_to_scope_set(dict(action="run", **query_json)) in self.scope_set
-            or query_to_scope_set(dict(action="get_result", **query_json))
-            in self.scope_set
-        )
+        return self.has_access(actions=["run", "get_result"], query_json=query_json)
 
     async def can_get_results_by_query_id(self, *, query_id) -> bool:
         """
@@ -145,10 +147,7 @@ class UserObject:
             If the user cannot get the results of this kind of query at this level of aggregation
         """
 
-        return (
-            query_to_scope_set(dict(action="get_result", **query_json))
-            in self.scope_set
-        )
+        return self.has_access(actions=["get_result"], query_json=query_json)
 
     def can_get_geography(self, *, aggregation_unit: str) -> bool:
         """
@@ -169,22 +168,14 @@ class UserObject:
         UserClaimsVerificationError
             If the user get geography at this level
         """
-
-        return (
-            query_to_scope_set(
-                dict(
-                    action="get_result",
-                    query_kind="geography",
-                    aggregation_unit=aggregation_unit,
-                )
-            )
-            in self.scope_set
+        return self.has_access(
+            actions=["get_result"],
+            query_json=dict(query_kind="geography", aggregation_unit=aggregation_unit),
         )
 
     def can_get_available_dates(self) -> bool:
-        return (
-            query_to_scope_set(dict(action="get_result", query_kind="available_dates"))
-            in self.scope_set
+        return self.has_access(
+            actions=["get_result"], query_json=dict(query_kind="available_dates")
         )
 
 
