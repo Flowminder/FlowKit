@@ -21,16 +21,16 @@ logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 
 class SubscriberSightings(Query):
     """
-    Represents data contained in the subscriber_sightings_fact table.
+    Represents data contained in the subscriber_sightings table.
 
     Parameters
     ----------
     start : str, default None
         date for the beginning of the time frame, e.g. 2016-01-01 or if None, 
-        it will use the min date seen in the `interactions.subscriber_sightings_fact` table.
+        it will use the min date seen in the `interactions.subscriber_sightings` table.
     stop : str, default None
         date for the end of the time frame, e.g. 2016-01-04 or if None, 
-        it will use the max date seen in the `interactions.subscriber_sightings_fact` table.
+        it will use the max date seen in the `interactions.subscriber_sightings` table.
     subscriber_subset : str, list, flowmachine.core.Query, flowmachine.core.Table, default None
         If provided, string or list of string which are msisdn or imeis to limit
         results to; or, a query or table which has a column with a name matching
@@ -64,9 +64,9 @@ class SubscriberSightings(Query):
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
         self.subscriber_identifier = subscriber_identifier.lower()
 
-        # Setup the main subscriber_sightings_fact & subscriber tables
+        # Setup the main subscriber_sightings & subscriber tables
         self.sqlalchemy_mainTable = get_sqlalchemy_table_definition(
-            "interactions.subscriber_sightings_fact", engine=Query.connection.engine
+            "interactions.subscriber_sightings", engine=Query.connection.engine
         )
         self.sqlalchemy_subTable = get_sqlalchemy_table_definition(
             "interactions.subscriber", engine=Query.connection.engine
