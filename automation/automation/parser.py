@@ -11,6 +11,19 @@ from .workflows import make_workflow
 
 
 def load_and_validate_workflows_yaml(filename: str) -> List[Dict[str, Any]]:
+    """
+    Load a yaml file that defines workflows, and validate its contents.
+
+    Parameters
+    ----------
+    filename : str
+        Name of yaml input file
+
+    Returns
+    -------
+    list of dict
+        List of dictionaries defining workflows
+    """
     # TODO: This would be neater and more robust as a marshmallow schema
     with open(filename, "r") as f:
         workflows_spec = yaml.safe_load(f)
@@ -106,7 +119,7 @@ def load_and_validate_workflows_yaml(filename: str) -> List[Dict[str, Any]]:
 
 def parse_workflows_yaml(
     filename: str
-) -> Tuple[List[Flow], Dict[str, List[Dict[str, Any]]]]:
+) -> Tuple[List["prefect.Flow"], Dict[str, List[Dict[str, Any]]]]:
     """
     Construct workflows defined in an input file.
 

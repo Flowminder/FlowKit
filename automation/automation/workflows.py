@@ -4,7 +4,7 @@
 
 from prefect import Flow, Parameter, unmapped
 from prefect.schedules import CronSchedule
-from typing import List, Set, Dict, Tuple, Any
+from typing import List, Set, Dict, Tuple, Any, NoReturn
 
 from . import tasks
 from .utils import get_parameter_names
@@ -374,3 +374,30 @@ def make_workflow(kind: str, **kwargs):
             f"Unrecognised workflow kind: '{kind}'. "
             "Expected 'scheduled_notebooks' or 'date_triggered_notebooks'."
         )
+
+
+def run_workflows(
+    workflows: List[Flow], parameters: Dict[str, List[Dict[str, Any]]]
+) -> NoReturn:
+    """
+    Run workflows with the provided sets of parameters.
+
+    Parameters
+    ----------
+    workflows : list of Flow
+        List of workflows to run
+    parameters : dict
+        Mapping from each workflow name to a list of parameter sets for which the workflow should run.
+    
+    Notes
+    -----
+
+    At the moment, this function will only run the first workflow in the list,
+    with the first set of parameters for that workflow.
+    """
+    # TODO: workflow.run() is synchronous, so the second workflow will not run
+    # until the first has finished (i.e. never, if the schedule has no end).
+    # There should be a way around this using the lower-level FlowRunner class.
+    for workflow in workflows:
+        for params in parameters[workflow.name]:
+            workflow.run(parameters=params)
