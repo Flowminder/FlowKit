@@ -39,71 +39,6 @@ def get_server(server_id):
     return jsonify({"id": server.id, "name": server.name})
 
 
-@blueprint.route("/capabilities")
-@login_required
-@admin_permission.require(http_exception=401)
-def list_all_capabilities():
-    """
-    Get a list of all the capabilities.
-
-    Notes
-    -----
-    Responds with {<capability_name>: {"id":<capability_id>, "permissions":{<right>:False}}}
-    """
-    default_permission_setting: bool = current_app.config["DEMO_MODE"]
-    aggregations = (
-        [agg.name for agg in SpatialAggregationUnit.query.all()]
-        if current_app.config["DEMO_MODE"]
-        else []
-    )
-    return jsonify(
-        {
-            cap.name: {
-                "id": cap.id,
-                "permissions": {
-                    "get_result": default_permission_setting,
-                    "run": default_permission_setting,
-                    "poll": default_permission_setting,
-                },
-                "spatial_aggregation": aggregations,
-            }
-            for cap in Capability.query.all()
-        }
-    )
-
-
-@blueprint.route("/capabilities", methods=["POST"])
-@login_required
-@admin_permission.require(http_exception=401)
-def add_capability():
-    """
-    Add a new capability.
-
-    Notes
-    -----
-    Expects json with a "name" field.
-    Responds with {"name":<capability_name>, "id":<capability_id>}
-    """
-    cap = request.get_json()
-    cap = Capability(**cap)
-    db.session.add(cap)
-    db.session.commit()
-    return jsonify({"name": cap.name, "id": cap.id})
-
-
-@blueprint.route("/capabilities/<cap_id>", methods=["DELETE"])
-@login_required
-@admin_permission.require(http_exception=401)
-def rm_capability(cap_id):
-    """
-    Delete a capability.
-    """
-    cap = Capability.query.filter(Capability.id == cap_id).first_or_404()
-    db.session.delete(cap)
-    db.session.commit()
-    return jsonify(), 200
-
-
 @blueprint.route("/servers/<server_id>/capabilities")
 @login_required
 @admin_permission.require(http_exception=401)
@@ -113,42 +48,10 @@ def list_server_capabilities(server_id):
 
     Notes
     -----
-    Responds with {<capability_name>: {"id":<capability_id>, "permissions":{<right>:<bool>}}}
-
-    Note that this will also include capabilities not explicitly added to the server, but
-    will list all their permissions as False.
+    Responds with {<capability_name>: <enabled>}
     """
     server = Server.query.filter(Server.id == server_id).first_or_404()
-    agg_units = SpatialAggregationUnit.query.all()
-    caps = {
-        cap.name: {
-            "id": cap.id,
-            "permissions": {"get_result": False, "run": False, "poll": False},
-            "spatial_aggregation": sorted([unit.name for unit in agg_units]),
-        }
-        for cap in Capability.query.all()
-    }
-    caps.update(
-        {
-            cap.capability.name: {
-                "id": cap.capability.id,
-                "permissions": {
-                    "get_result": cap.get_result,
-                    "run": cap.run,
-                    "poll": cap.poll,
-                },
-                "spatial_aggregation": sorted(
-                    [
-                        unit.name
-                        for unit in cap.spatial_aggregation
-                        if unit.name in caps[cap.capability.name]["spatial_aggregation"]
-                    ]
-                ),
-            }
-            for cap in server.capabilities
-        }
-    )
-    return jsonify(caps)
+    return jsonify({cap.capability: cap.enabled for cap in server.capabilities})
 
 
 @blueprint.route("/servers/<server_id>/capabilities", methods=["PATCH"])
@@ -166,36 +69,14 @@ def edit_server_capabilities(server_id):
     """
     server_obj = Server.query.filter(Server.id == server_id).first_or_404()
     json = request.get_json()
-    caps = []
-    print(json)
-    for cap, rights in json.items():
-        cap = ServerCapability.query.filter(
-            ServerCapability.server_id == server_id,
-            ServerCapability.capability_id == rights["id"],
-        ).first()
-        if cap is None:
-            cap = ServerCapability(
-                server=server_obj,
-                capability=Capability.query.filter(
-                    Capability.id == rights["id"]
-                ).first_or_404(),
-                **rights["permissions"],
-            )
+
+    for cap in server_obj.capabilities:
+        if cap.capability in json:
+            cap.enabled = True
         else:
-            for right, value in rights["permissions"].items():
-                setattr(cap, right, value)
-        if "spatial_aggregation" in rights:
-            agg_units = [
-                SpatialAggregationUnit.query.filter(
-                    SpatialAggregationUnit.name == name
-                ).first()
-                for name in rights["spatial_aggregation"]
-            ]
-            cap.spatial_aggregation = agg_units
-        caps.append(cap)
+            cap.enabled = False
         db.session.add(cap)
-    server_obj.capabilities = caps
-    db.session.add(server_obj)
+
     db.session.commit()
     return jsonify({"poll": "OK"})
 
@@ -431,36 +312,7 @@ def group_server_rights(group_id, server_id):
     """
     group = Group.query.filter(Group.id == group_id).first_or_404()
     server = Server.query.filter(Server.id == server_id).first_or_404()
-    group_permissions = [
-        p for p in group.server_permissions if p.server_capability.server == server
-    ]
-    group_rights = {
-        cap.capability.name: {
-            "id": cap.id,
-            "permissions": {"run": False, "get_result": False, "poll": False},
-            "spatial_aggregation": [agg.name for agg in cap.spatial_aggregation],
-        }
-        for cap in server.capabilities
-    }
-    print(f"Group rights: {group_rights}")
-    for p in group_permissions:
-        print(p.spatial_aggregation)
-        group_rights[p.server_capability.capability.name] = {
-            "id": p.server_capability.id,
-            "permissions": {
-                "run": p.run and p.server_capability.run,
-                "get_result": p.get_result and p.server_capability.get_result,
-                "poll": p.poll and p.server_capability.poll,
-            },
-            "spatial_aggregation": [
-                agg.name
-                for agg in p.spatial_aggregation
-                if agg.name
-                in group_rights[p.server_capability.capability.name][
-                    "spatial_aggregation"
-                ]
-            ],
-        }
+    group_rights = group.rights(server)
     return jsonify(group_rights)
 
 
@@ -487,9 +339,7 @@ def edit_group_servers(group_id):
     group = Group.query.filter(Group.id == group_id).first_or_404()
     print(servers)
     existing_limits = group.server_token_limits
-    existing_perms = group.server_permissions
     revised_limits = []
-    revised_perms = []
     db.session.add(group)
     for server in servers:
         server_obj = Server.query.filter(Server.id == server["id"]).first_or_404()
@@ -522,54 +372,32 @@ def edit_group_servers(group_id):
         revised_limits.append(limits)
         db.session.add(limits)
         # Create permissions
-        for right_name, right in server["rights"].items():
-            try:
-                server_capability = [
-                    cap
-                    for cap in server_obj.capabilities
-                    if cap.capability.name == right_name
-                ][0]
-
-                perm = GroupServerPermission.query.filter(
-                    GroupServerPermission.group_id == group.id,
-                    GroupServerPermission.server_capability_id == server_capability.id,
+        to_remove = [
+            gsp
+            for gsp in GroupServerPermission.query.filter(Group.id == group.id)
+            if gsp.server_capability.capability not in server["rights"]
+        ]
+        for right in server["rights"]:
+            existing = GroupServerPermission.query.filter(
+                ServerCapability.capability == right, Group.id == group.id
+            ).first()
+            if existing is None:
+                cap = ServerCapability.query.filter(
+                    ServerCapability.capability == right, Server.id == server_obj.id
                 ).first()
-                if perm is None:
-                    perm = GroupServerPermission(
-                        server_capability=server_capability,
-                        group=group,
-                        **right["permissions"],
-                    )
-                else:
-                    for name, val in right["permissions"].items():
-                        setattr(perm, name, val)
-                        if val and not getattr(server_capability, name):
-                            raise InvalidUsage(
-                                f"Permission '{name}' not enabled for this server.",
-                                payload={"bad_field": name},
-                            )
-                if "spatial_aggregation" in right:
-                    print(right["spatial_aggregation"])
-                    agg_units = [
-                        agg
-                        for agg in server_capability.spatial_aggregation
-                        if agg.name in right["spatial_aggregation"]
-                    ]
-                    db.session.add_all(agg_units)
-                    perm.spatial_aggregation = agg_units
-                    print(perm.spatial_aggregation)
-                revised_perms.append(perm)
-                db.session.add(perm)
-            except IndexError:
-                pass  # The capability isn't turned on at all for this server, so ignore
+                if cap is None or not cap.enabled:
+                    raise InvalidUsage(f"{right} not enabled for this server.")
+                gsp = GroupServerPermission(
+                    server=server_obj, group=group, server_capability=cap
+                )
+                db.session.add(gsp)
 
     # clean up
     for limit in existing_limits:
         if limit not in revised_limits:
             db.session.delete(limit)
-    for perm in existing_perms:
-        if perm not in revised_perms:
-            db.session.delete(perm)
+    for gsp in to_remove:
+        db.session.delete(gsp)
     db.session.commit()
     return jsonify({"id": group.id, "name": group.name})
 

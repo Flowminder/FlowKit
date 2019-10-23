@@ -22,29 +22,19 @@ def test_reject_when_claim_not_allowed(client, auth, test_user):
     expiry = (datetime.datetime.now() + datetime.timedelta(minutes=2)).strftime(
         "%Y-%m-%dT%H:%M:%S.%fZ"
     )
-    token_eq = {
-        "name": "TEST_TOKEN",
-        "expiry": expiry,
-        "claims": {
-            "DUMMY_ROUTE_A": {
-                "permissions": {"get_data": True, "run": True},
-                "spatial_aggregation": ["admin0"],
-            }
-        },
-    }
+    token_eq = {"name": "TEST_TOKEN", "expiry": expiry, "claims": ["run:DUMMY_ROUTE_A"]}
     response = client.post(
         "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
     )
     assert 401 == response.status_code
     assert (
-        b"You do not have access to DUMMY_ROUTE_A on DUMMY_SERVER_A"
+        b"You do not have access to run:DUMMY_ROUTE_A on DUMMY_SERVER_A"
         in response.get_data()
     )
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
 def test_token_generation(client, auth, app, test_user, public_key):
-
     # Log in first
     uid, uname, upass = test_user
     response, csrf_cookie = auth.login(uname, upass)
@@ -52,12 +42,10 @@ def test_token_generation(client, auth, app, test_user, public_key):
     token_eq = {
         "name": "DUMMY_TOKEN",
         "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-        "claims": {
-            "DUMMY_ROUTE_A": {
-                "permissions": {"get_result": True, "run": True},
-                "spatial_aggregation": ["admin0"],
-            }
-        },
+        "claims": [
+            "run:DUMMY_ROUTE_A:aggregation_unit:admin0",
+            "get_result:DUMMY_ROUTE_A:aggregation_unit:admin0",
+        ],
     }
     response = client.post(
         "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
@@ -70,12 +58,9 @@ def test_token_generation(client, auth, app, test_user, public_key):
         algorithms=["RS256"],
         audience="DUMMY_SERVER_A",
     )
-    assert {
-        "DUMMY_ROUTE_A": {
-            "permissions": {"get_result": True, "run": True},
-            "spatial_aggregation": ["admin0"],
-        }
-    } == decoded_token["user_claims"]
+    assert ["run,get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"] == decoded_token[
+        "user_claims"
+    ]
     assert "TEST_USER" == decoded_token["identity"]
     assert approx(expiry.timestamp()) == decoded_token["exp"]
 
@@ -90,12 +75,7 @@ def test_token_rejected_for_expiry(client, auth, app, test_user):
     token_eq = {
         "name": "DUMMY_TOKEN",
         "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-        "claims": {
-            "DUMMY_ROUTE_A": {
-                "permissions": {"get_result": True, "run": True},
-                "spatial_aggregation": ["admin0"],
-            }
-        },
+        "claims": ["run:DUMMY_ROUTE_A:aggregation_unit:admin0"],
     }
     response = client.post(
         "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
@@ -106,33 +86,6 @@ def test_token_rejected_for_expiry(client, auth, app, test_user):
         "message": "Token lifetime too long",
         "bad_field": "expiry",
     } == response.get_json()
-
-
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_token_rejected_for_bad_right_claim(client, auth, app, test_user):
-
-    # Log in first
-    uid, uname, upass = test_user
-    response, csrf_cookie = auth.login(uname, upass)
-    expiry = datetime.datetime.now() + datetime.timedelta(minutes=1)
-    token_eq = {
-        "name": "DUMMY_TOKEN",
-        "expiry": expiry.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-        "claims": {
-            "DUMMY_ROUTE_A": {
-                "permissions": {"get_result": True, "run": True, "poll": True},
-                "spatial_aggregation": ["admin0"],
-            }
-        },
-    }
-    response = client.post(
-        "/tokens/tokens/1", headers={"X-CSRF-Token": csrf_cookie}, json=token_eq
-    )
-    assert 401 == response.status_code
-    assert (
-        b"You do not have access to DUMMY_ROUTE_A:poll on DUMMY_SERVER_A"
-        in response.get_data()
-    )
 
 
 def test_against_general_generator(app, public_key):

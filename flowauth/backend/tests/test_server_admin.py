@@ -198,27 +198,11 @@ def test_edit_server_capabilities(client, auth):
     )
     assert 200 == response.status_code
     existing_routes = response.get_json()
-    assert {
-        "DUMMY_ROUTE_A": {
-            "id": 1,
-            "permissions": {"get_result": True, "run": True, "poll": False},
-            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
-        },
-        "DUMMY_ROUTE_B": {
-            "id": 2,
-            "permissions": {"get_result": True, "run": True, "poll": False},
-            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
-        },
-    } == existing_routes  # Two routes available
+    assert all(existing_routes.values())
     response = client.patch(
         "/admin/servers/1/capabilities",
         headers={"X-CSRF-Token": csrf_cookie},
-        json={
-            "DUMMY_ROUTE_A": {
-                "id": 1,
-                "permissions": {"get_result": True, "run": True, "poll": True},
-            }
-        },
+        json=["run:DUMMY_ROUTE_B:aggregation_unit:admin3"],
     )
     assert 200 == response.status_code
     response = client.get(
@@ -226,51 +210,8 @@ def test_edit_server_capabilities(client, auth):
     )
     assert 200 == response.status_code
     new_routes = response.get_json()
-    assert {
-        "DUMMY_ROUTE_A": {
-            "id": 1,
-            "permissions": {"get_result": True, "run": True, "poll": True},
-            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
-        },
-        "DUMMY_ROUTE_B": {
-            "id": 2,
-            "permissions": {"get_result": False, "run": False, "poll": False},
-            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
-        },
-    } == new_routes  # Both capacities still listed, but now no rights
-
-
-@pytest.mark.usefixtures("test_data_with_access_rights")
-def test_add_server_capabilities(client, auth):
-    response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
-    response = client.post(
-        "/admin/capabilities",
-        headers={"X-CSRF-Token": csrf_cookie},
-        json={"name": "DUMMY_ROUTE_C"},
-    )  # Add a new capability first
-
-    response = client.patch(
-        "/admin/servers/1/capabilities",
-        headers={"X-CSRF-Token": csrf_cookie},
-        json={
-            "DUMMY_ROUTE_C": {
-                "id": 3,
-                "permissions": {"get_result": True, "run": True, "poll": False},
-                "spatial_aggregation": ["admin0"],
-            }
-        },
-    )  # Then add it to the server
-    assert 200 == response.status_code
-    response = client.get(
-        "/admin/servers/1/capabilities", headers={"X-CSRF-Token": csrf_cookie}
-    )
-    assert 200 == response.status_code
-    new_routes = response.get_json()
-    assert {
-        "id": 3,
-        "permissions": {"get_result": True, "run": True, "poll": False},
-        "spatial_aggregation": ["admin0"],
-    } == new_routes["DUMMY_ROUTE_C"]
+    assert new_routes["run:DUMMY_ROUTE_B:aggregation_unit:admin3"]
+    assert not new_routes["run:DUMMY_ROUTE_B:aggregation_unit:admin2"]
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -312,12 +253,24 @@ def test_group_server_rights(client, auth, test_admin, test_group):
 
     assert 200 == response.status_code
     json = response.get_json()
-    assert {"get_result": True, "run": True, "poll": False} == json["DUMMY_ROUTE_A"][
-        "permissions"
-    ]
-    assert {"get_result": False, "run": False, "poll": False} == json["DUMMY_ROUTE_B"][
-        "permissions"
-    ]
+    assert [
+        "get_result:DUMMY_ROUTE_A:aggregation_unit:admin0",
+        "get_result:DUMMY_ROUTE_A:aggregation_unit:admin1",
+        "get_result:DUMMY_ROUTE_A:aggregation_unit:admin2",
+        "get_result:DUMMY_ROUTE_A:aggregation_unit:admin3",
+        "get_result:DUMMY_ROUTE_B:aggregation_unit:admin0",
+        "get_result:DUMMY_ROUTE_B:aggregation_unit:admin1",
+        "get_result:DUMMY_ROUTE_B:aggregation_unit:admin2",
+        "get_result:DUMMY_ROUTE_B:aggregation_unit:admin3",
+        "run:DUMMY_ROUTE_A:aggregation_unit:admin0",
+        "run:DUMMY_ROUTE_A:aggregation_unit:admin1",
+        "run:DUMMY_ROUTE_A:aggregation_unit:admin2",
+        "run:DUMMY_ROUTE_A:aggregation_unit:admin3",
+        "run:DUMMY_ROUTE_B:aggregation_unit:admin0",
+        "run:DUMMY_ROUTE_B:aggregation_unit:admin1",
+        "run:DUMMY_ROUTE_B:aggregation_unit:admin2",
+        "run:DUMMY_ROUTE_B:aggregation_unit:admin3",
+    ] == json
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -333,7 +286,7 @@ def test_edit_group_server_rights(client, auth, test_admin, test_group):
                     "id": 1,
                     "max_life": 1,
                     "latest_expiry": "2018-01-01T00:00:00.0Z",
-                    "rights": {"DUMMY_ROUTE_A": {"permissions": {"get_result": False}}},
+                    "rights": ["get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"],
                 }
             ]
         },
@@ -347,12 +300,7 @@ def test_edit_group_server_rights(client, auth, test_admin, test_group):
 
     assert 200 == response.status_code
     json = response.get_json()
-    assert {"get_result": False, "run": True, "poll": False} == json["DUMMY_ROUTE_A"][
-        "permissions"
-    ]
-    assert {"get_result": False, "run": False, "poll": False} == json["DUMMY_ROUTE_B"][
-        "permissions"
-    ]
+    assert ["get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"] == json
 
     response = client.get(
         f"/admin/groups/{test_group.id}/servers/1/time_limits",
@@ -375,7 +323,7 @@ def test_edit_group_server_rights_rejected_for_max_life(client, auth):
                     "id": 1,
                     "max_life": 99,
                     "latest_expiry": "2018-01-01T00:00:00.0Z",
-                    "rights": {"DUMMY_ROUTE_A": {"permissions": {"get_result": False}}},
+                    "rights": ["get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"],
                 }
             ]
         },
@@ -400,7 +348,7 @@ def test_edit_group_server_rights_rejected_for_expiry(client, auth):
                     "id": 1,
                     "max_life": 1,
                     "latest_expiry": "2040-01-01T00:00:00.0Z",
-                    "rights": {"DUMMY_ROUTE_A": {"permissions": {"get_result": False}}},
+                    "rights": ["get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"],
                 }
             ]
         },
@@ -428,12 +376,7 @@ def test_edit_group_server_rights_rejected_for_rights(
                     "id": 1,
                     "max_life": 1,
                     "latest_expiry": "2018-01-01T00:00:00.0Z",
-                    "rights": {
-                        "DUMMY_ROUTE_A": {
-                            "permissions": {"poll": True},
-                            "spatial_aggregation": ["admin0"],
-                        }
-                    },
+                    "rights": ["poll:DUMMY_ROUTE_A:aggregation_unit:admin0"],
                 }
             ]
         },
@@ -441,6 +384,5 @@ def test_edit_group_server_rights_rejected_for_rights(
     assert 400 == response.status_code
     assert {
         "code": 400,
-        "message": "Permission 'poll' not enabled for this server.",
-        "bad_field": "poll",
+        "message": "poll:DUMMY_ROUTE_A:aggregation_unit:admin0 not enabled for this server.",
     } == response.get_json()

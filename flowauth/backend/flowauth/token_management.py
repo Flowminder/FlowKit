@@ -1,17 +1,16 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from itertools import takewhile
+
 from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey
-from flask import jsonify, Blueprint, request, current_app
-import jwt
-import uuid
+from flask import jsonify, Blueprint, request
 from flask.json import JSONEncoder
 from flask_login import login_required, current_user
-from typing import Dict, List, Union, Optional
+from typing import Optional, Iterable
 
 from .models import *
 from .invalid_usage import InvalidUsage, Unauthorized
-from zxcvbn import zxcvbn
 import jwt
 import uuid
 
@@ -161,19 +160,9 @@ def add_token(server):
     allowed_claims = current_user.allowed_claims(server)
 
     current_app.logger.debug(allowed_claims)
-    for claim, rights in json["claims"].items():
+    for claim in json["claims"]:
         if claim not in allowed_claims:
             raise Unauthorized(f"You do not have access to {claim} on {server.name}")
-        for right, setting in rights["permissions"].items():
-            if setting and not allowed_claims[claim]["permissions"][right]:
-                raise Unauthorized(
-                    f"You do not have access to {claim}:{right} on {server.name}"
-                )
-        for agg_unit in rights["spatial_aggregation"]:
-            if agg_unit not in allowed_claims[claim]["spatial_aggregation"]:
-                raise Unauthorized(
-                    f"You do not have access to {claim} at {agg_unit} on {server.name}"
-                )
 
     token_string = generate_token(
         username=current_user.username,
@@ -201,13 +190,50 @@ def add_token(server):
 # this module is outside the docker build context for FlowAuth).
 # Duplicated in FlowAuth (cannot use this implementation there because
 # this module is outside the docker build context for FlowAuth).
+def squashed_scopes(scopes: List[str]) -> Iterable[str]:
+    """
+
+    Parameters
+    ----------
+    scopes
+
+    Returns
+    -------
+
+    """
+    squashed_scopes = {}
+    for (
+        scope
+    ) in scopes:  # Map from scopes to list of their components without read/get result
+        rw, *scope = scope.split(":")
+        ll = squashed_scopes.setdefault(":".join(scope), [])
+        ll.append(rw)  # Accumulate variants
+    ss = (
+        ":".join(x for x in [",".join(v), k] if x) for k, v in squashed_scopes.items()
+    )
+    squashed_scopes = {}
+    for scope in ss:
+        scope = scope.split(":")
+        scopeit = iter(scope)
+        scope = takewhile(lambda x: x != "aggregation_unit", scopeit)
+        ll = squashed_scopes.setdefault(":".join(scope), [])
+        try:
+            unit = next(scopeit)
+            ll.append(":".join(["aggregation_unit", unit]))
+        except StopIteration:
+            pass  # No agg unit
+    yield from (
+        ":".join(x for x in [k, ",".join(v)] if x) for k, v in squashed_scopes.items()
+    )
+
+
 def generate_token(
     *,
     flowapi_identifier: Optional[str] = None,
     username: str,
     private_key: Union[str, _RSAPrivateKey],
     lifetime: datetime.timedelta,
-    claims: Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]],
+    claims: List[str],
 ) -> str:
     """
 
@@ -243,7 +269,7 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        user_claims=claims,
+        user_claims=list(squashed_scopes(claims)),
         identity=username,
         exp=now + lifetime,
     )

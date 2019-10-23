@@ -4,6 +4,8 @@
 from collections import namedtuple
 
 import datetime
+from itertools import product
+
 import pyotp
 import pytest
 
@@ -13,12 +15,10 @@ from flowauth import (
     User,
     Group,
     Server,
-    Capability,
     ServerCapability,
     GroupServerPermission,
     GroupServerTokenLimits,
     Token,
-    SpatialAggregationUnit,
     TwoFactorAuth,
     TwoFactorBackup,
 )
@@ -140,20 +140,13 @@ def test_group(app):
 @pytest.fixture
 def test_data(app, test_admin, test_user, test_group):
     with app.app_context():
-        agg_units = [SpatialAggregationUnit(name=f"admin{x}") for x in range(4)]
-        db.session.add_all(agg_units)
 
         test_group = Group.query.filter(Group.id == test_group.id).first()
         # Each user is also a group
         for user in User.query.all():
             test_group.members.append(user)
         db.session.add(test_group)
-        # Add some things that you can do
-        caps = []
-        for c in ("DUMMY_ROUTE_A", "DUMMY_ROUTE_B"):
-            c = Capability(name=c)
-            db.session.add(c)
-            caps.append(c)
+
         # Add some servers
         dummy_server_a = Server(
             name="DUMMY_SERVER_A",
@@ -170,20 +163,25 @@ def test_data(app, test_admin, test_user, test_group):
 
         # Add some things that you can do on the servers
         scs = []
-        for cap in caps:
-            scs.append(
-                ServerCapability(
-                    capability=cap,
-                    server=dummy_server_a,
-                    get_result=True,
-                    run=True,
-                    poll=False,
-                )
+        for action, cap, admin_unit in product(
+            ("get_result", "run"),
+            ("DUMMY_ROUTE_A", "DUMMY_ROUTE_B"),
+            (f"admin{x}" for x in range(4)),
+        ):
+            sc_a = ServerCapability(
+                capability=f"{action}:{cap}:aggregation_unit:{admin_unit}",
+                server=dummy_server_a,
+                enabled=True,
             )
-            scs.append(ServerCapability(capability=cap, server=dummy_server_b))
-        for sc in scs:
-            sc.spatial_aggregation = agg_units
-            db.session.add(sc)
+            scs.append(sc_a)
+            db.session.add(sc_a)
+            sc_b = ServerCapability(
+                capability=f"{action}:{cap}:aggregation_unit:{admin_unit}",
+                server=dummy_server_b,
+                enabled=True,
+            )
+            scs.append(sc_b)
+            db.session.add(sc_b)
         # Give test user group permissions on Haiti
         for sc in dummy_server_a.capabilities:
             gsp = GroupServerPermission(group=test_group, server_capability=sc)
@@ -211,28 +209,11 @@ def test_data(app, test_admin, test_user, test_group):
 
 
 @pytest.fixture
-def test_data_with_access_rights(app, test_data, test_group):
-    with app.app_context():
-        dl_capability = Capability.query.filter(
-            Capability.name == "DUMMY_ROUTE_A"
-        ).first()
-        sc = ServerCapability.query.filter(
-            ServerCapability.capability_id == dl_capability.id
-        ).first()
-        gsp = GroupServerPermission.query.filter(
-            GroupServerPermission.server_capability == sc
-            and GroupServerPermission.group_id == test_group.id
-        ).first()
-        admin0_agg_unit = SpatialAggregationUnit.query.filter(
-            SpatialAggregationUnit.name == "admin0"
-        ).first()
-        gsp.get_result = True
-        gsp.run = True
-        gsp.spatial_aggregation = [admin0_agg_unit]
-        db.session.add(gsp)
-        db.session.commit()
+def auth(client):
+    return AuthActions(client)
 
 
 @pytest.fixture
-def auth(client):
-    return AuthActions(client)
+def test_data_with_access_rights(app, test_data, test_group):
+    with app.app_context():
+        yield
