@@ -242,7 +242,7 @@ def set_user_groups(user_id):
     user = User.query.filter(User.id == user_id).first_or_404()
     user_group = [g for g in user.groups if g.user_group][0]
     groups = request.get_json()["groups"]
-    print(groups)
+    current_app.logger.debug(groups)
     groups = [
         Group.query.filter(Group.id == group["id"]).first_or_404() for group in groups
     ]
