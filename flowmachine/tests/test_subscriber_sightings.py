@@ -110,7 +110,7 @@ def test_that_subscriber_subset_is_added(get_dataframe):
     """Test that subscriber_subset is added to the output SQL."""
     subsetter = SubscriberSubsetterForFlowmachineQuery(
         CustomQuery(
-            "SELECT duration, msisdn as subscriber FROM events.calls WHERE duration < 400",
+            "SELECT subscriber_id AS subscriber FROM interactions.calls c WHERE call_duration < 400",
             ["subscriber"],
         )
     )
@@ -118,6 +118,6 @@ def test_that_subscriber_subset_is_added(get_dataframe):
     ss = SubscriberSightings("2016-01-01", "2016-01-02", subscriber_subset=subsetter)
     query = ss.get_query()
 
-    assert "FROM events.calls" in query
-    assert "WHERE duration < 400" in query
+    assert "FROM interactions.calls" in query
+    assert "WHERE call_duration < 400" in query
     assert "tbl.subscriber = subset_query.subscriber" in query
