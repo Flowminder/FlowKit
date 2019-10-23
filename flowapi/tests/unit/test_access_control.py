@@ -39,15 +39,15 @@ async def test_granular_run_access(
     Test that tokens grant granular access to running queries.
 
     """
+    middle = (
+        ":to_location:daily_location:from_location:daily_location"
+        if query_kind == "flow"
+        else ""
+    )
     token = access_token_builder(
-        {
-            query_kind: {
-                "permissions": {"run": True},
-                "spatial_aggregation": [
-                    exemplar_query_params[query_kind]["aggregation_unit"]
-                ],
-            }
-        }
+        [
+            f"run:{query_kind}{middle}:aggregation_unit:{exemplar_query_params[query_kind]['aggregation_unit']}"
+        ]
     )
     expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 202
@@ -75,16 +75,17 @@ async def test_granular_poll_access(
     Test that tokens grant granular access to checking query status.
 
     """
-    token = access_token_builder(
-        {
-            query_kind: {
-                "permissions": {"poll": True},
-                "spatial_aggregation": [
-                    exemplar_query_params[query_kind]["aggregation_unit"]
-                ],
-            }
-        }
+    middle = (
+        ":to_location:daily_location:from_location:daily_location"
+        if query_kind == "flow"
+        else ""
     )
+    token = access_token_builder(
+        [
+            f"run,get_result:{query_kind}{middle}:aggregation_unit:{exemplar_query_params[query_kind]['aggregation_unit']}"
+        ]
+    )
+
     expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 303
 
@@ -127,16 +128,17 @@ async def test_granular_json_access(
     Test that tokens grant granular access to query output.
 
     """
-    token = access_token_builder(
-        {
-            query_kind: {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": [
-                    exemplar_query_params[query_kind]["aggregation_unit"]
-                ],
-            }
-        }
+    middle = (
+        ":to_location:daily_location:from_location:daily_location"
+        if query_kind == "flow"
+        else ""
     )
+    token = access_token_builder(
+        [
+            f"get_result:{query_kind}{middle}:aggregation_unit:{exemplar_query_params[query_kind]['aggregation_unit']}"
+        ]
+    )
+
     expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 200
     responses = {}
@@ -169,16 +171,10 @@ async def test_granular_json_access(
 @pytest.mark.parametrize(
     "claims",
     [
-        {"permissions": {"get_result": True}, "spatial_aggregation": []},
-        {"permissions": {}, "spatial_aggregation": ["DUMMY_AGGREGATION"]},
-        {
-            "permissions": {"get_result": True},
-            "spatial_aggregation": ["A_DIFFERENT_AGGREGATION"],
-        },
-        {
-            "permissions": {"get_result": False},
-            "spatial_aggregation": ["DUMMY_AGGREGATION"],
-        },
+        "get_result:{query_kind}",
+        "{query_kind}:aggregation_unit:DUMMY_AGGREGATION",
+        "get_result:{query_kind}:aggregation_unit:A_DIFFERENT_AGGREGATION",
+        "run:{query_kind}:aggregation_unit:DUMMY_AGGREGATION",
     ],
 )
 async def test_no_result_access_without_both_claims(
@@ -188,7 +184,7 @@ async def test_no_result_access_without_both_claims(
     Test that tokens grant granular access to query output.
 
     """
-    token = access_token_builder({"DUMMY_QUERY_KIND": claims})
+    token = access_token_builder([claims.format(query_kind="DUMMY_QUERY_KIND")])
     dummy_zmq_server.side_effect = (
         {
             "status": "success",
@@ -225,7 +221,7 @@ async def test_access_logs_gets(
     Test that access logs are written for attempted unauthorized access to 'poll' and get' routes.
 
     """
-    token = access_token_builder({query_kind: {"permissions": {}}})
+    token = access_token_builder([])
     dummy_zmq_server.side_effect = (
         {
             "status": "success",
@@ -263,9 +259,7 @@ async def test_access_logs_post(
     Test that access logs are written for attempted unauthorized access to 'run' route.
 
     """
-    token = access_token_builder(
-        {query_kind: {"permissions": {}, "spatial_aggregation": []}}
-    )
+    token = access_token_builder([])
     response = await app.client.post(
         f"/api/0/run",
         headers={"Authorization": f"Bearer {token}"},
@@ -281,105 +275,3 @@ async def test_access_logs_post(
     assert "test" == log_lines[1]["user"]
     assert "test" == log_lines[2]["user"]
     assert log_lines[0]["request_id"] == log_lines[1]["request_id"]
-
-
-@pytest.mark.parametrize(
-    "metric_claims, location_claims, expected_status_code",
-    [
-        (
-            {"permissions": {"get_result": True}, "spatial_aggregation": []},
-            {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            },
-            403,
-        ),
-        (
-            {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            },
-            {"permissions": {"get_result": True}, "spatial_aggregation": []},
-            403,
-        ),
-        (
-            {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            },
-            {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            },
-            200,
-        ),
-        (
-            {
-                "permissions": {"get_result": False},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            },
-            {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            },
-            403,
-        ),
-        (
-            {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            },
-            {
-                "permissions": {"get_result": False},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            },
-            403,
-        ),
-    ],
-)
-@pytest.mark.asyncio
-async def test_no_joined_aggregate_result_access_without_both_claims(
-    metric_claims,
-    location_claims,
-    expected_status_code,
-    app,
-    access_token_builder,
-    dummy_zmq_server,
-):
-    """
-    Test that permission on the metric, the locations, and the spatial aggregation
-    units of _both_ is required for joined_spatial_aggregate.
-    """
-
-    token = access_token_builder(
-        {
-            "DUMMY_METRIC_QUERY_KIND": metric_claims,
-            "DUMMY_LOCATION_QUERY_KIND": location_claims,
-        }
-    )
-    dummy_zmq_server.side_effect = (
-        {
-            "status": "success",
-            "msg": "",
-            "payload": {
-                "query_id": "DUMMY_QUERY_ID",
-                "query_params": {
-                    "query_kind": "joined_spatial_aggregate",
-                    "metric": {"query_kind": "DUMMY_METRIC_QUERY_KIND"},
-                    "locations": {
-                        "aggregation_unit": "DUMMY_AGGREGATION",
-                        "query_kind": "DUMMY_LOCATION_QUERY_KIND",
-                    },
-                },
-            },
-        },
-        {
-            "status": "success",
-            "msg": "",
-            "payload": {"query_id": "DUMMY_QUERY_ID", "sql": "SELECT 1;"},
-        },
-    )
-    response = await app.client.get(
-        f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
-    )
-    assert response.status_code == expected_status_code

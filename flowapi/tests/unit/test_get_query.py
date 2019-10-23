@@ -24,12 +24,7 @@ async def test_get_query(app, access_token_builder, dummy_zmq_server):
         {"json": "bits"},
     ]
     token = access_token_builder(
-        {
-            "modal_location": {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            }
-        }
+        ["get_result:modal_location:aggregation_unit:DUMMY_AGGREGATION"]
     )
 
     reply_1 = {
@@ -91,12 +86,7 @@ async def test_get_json_status_code(
     """
 
     token = access_token_builder(
-        {
-            "modal_location": {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            }
-        }
+        ["get_result:modal_location:aggregation_unit:DUMMY_AGGREGATION"]
     )
 
     # The replies below are in response to the following messages:
