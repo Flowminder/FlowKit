@@ -153,7 +153,7 @@ def group_server_rights(group_id, server_id):
 
     Notes
     -----
-    Return json of the form {<capability>:{"id":<capability_id>, "permissions":{<right>:<bool>}}
+    Return json of the form [<capability>,...]
     """
     group = Group.query.filter(Group.id == group_id).first_or_404()
     server = Server.query.filter(Server.id == server_id).first_or_404()
