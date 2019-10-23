@@ -148,10 +148,6 @@ def make_per_query_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
             yield ":".join(kind_path)
         except IndexError:
             continue
-    yield from (
-        ":".join(["geography", "aggregation_unit", unit])
-        for unit in sorted(units_superset)
-    )  # Special case for geography
 
 
 def make_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
