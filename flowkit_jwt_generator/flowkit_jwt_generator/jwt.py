@@ -3,25 +3,19 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import base64
 import datetime
-import os
+
 import uuid
 import binascii
-from itertools import chain
+from itertools import takewhile
 from json import JSONEncoder
-from typing import Dict, List, Union, Callable, Tuple, Optional
-from collections import ChainMap
-from datetime import timedelta
+from typing import List, Union, Tuple, Optional, Iterable
 import click
 import jwt
-import pytest
 import requests
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.backends.openssl.rsa import _RSAPrivateKey, _RSAPublicKey
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-
-permissions_types = {"run": True, "poll": True, "get_result": True}
-aggregation_types = ["admin0", "admin1", "admin2", "admin3", "admin4"]
 
 
 # Duplicated in FlowAuth (cannot use this implementation there because
@@ -107,6 +101,43 @@ def generate_keypair() -> Tuple[bytes, bytes]:
     return private_key_bytes, public_key_bytes
 
 
+def squashed_scopes(scopes: List[str]) -> Iterable[str]:
+    """
+
+    Parameters
+    ----------
+    scopes
+
+    Returns
+    -------
+
+    """
+    squashed_scopes = {}
+    for (
+        scope
+    ) in scopes:  # Map from scopes to list of their components without read/get result
+        rw, *scope = scope.split(":")
+        ll = squashed_scopes.setdefault(":".join(scope), [])
+        ll.append(rw)  # Accumulate variants
+    ss = (
+        ":".join(x for x in [",".join(v), k] if x) for k, v in squashed_scopes.items()
+    )
+    squashed_scopes = {}
+    for scope in ss:
+        scope = scope.split(":")
+        scopeit = iter(scope)
+        scope = takewhile(lambda x: x != "aggregation_unit", scopeit)
+        ll = squashed_scopes.setdefault(":".join(scope), [])
+        try:
+            unit = next(scopeit)
+            ll.append(":".join(["aggregation_unit", unit]))
+        except StopIteration:
+            pass  # No agg unit
+    yield from (
+        ":".join(x for x in [k, ",".join(v)] if x) for k, v in squashed_scopes.items()
+    )
+
+
 # Duplicated in FlowAuth (cannot use this implementation there because
 # this module is outside the docker build context for FlowAuth).
 def generate_token(
@@ -128,15 +159,14 @@ def generate_token(
         containing a PEM encoded key
     lifetime : datetime.timedelta
         Lifetime from now of the token
-    claims : dict
-        Dictionary of claims the token will grant
+    claims : list
+        List of claims this token will contain
     flowapi_identifier : str, optional
         Optionally provide a string to identify the audience of the token
 
     Examples
     --------
-    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key=rsa_private_key,lifetime=datetime.timedelta(5),claims={"daily_location":{"permissions": {"run":True},)
-            "spatial_aggregation": ["admin3"]}})
+    >>> generate_token(flowapi_identifier="TEST_SERVER",username="TEST_USER",private_key=rsa_private_key,lifetime=datetime.timedelta(5),claims=["run:spatial_aggregate:locations:daily_location:aggregation_unit:admin3"])
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTc0MDM1OTgsIm5iZiI6MTU1NzQwMzU5OCwianRpIjoiZjIwZmRlYzYtYTA4ZS00Y2VlLWJiODktYjc4OGJhNjcyMDFiIiwidXNlcl9jbGFpbXMiOnsiZGFpbHlfbG9jYXRpb24iOnsicGVybWlzc2lvbnMiOnsicnVuIjp0cnVlfSwic3BhdGlhbF9hZ2dyZWdhdGlvbiI6WyJhZG1pbjMiXX19LCJpZGVudGl0eSI6IlRFU1RfVVNFUiIsImV4cCI6MTU1NzgzNTU5OCwiYXVkIjoiVEVTVF9TRVJWRVIifQ.yxBFYZ2EFyVKdVT9Sc-vC6qUpwRNQHt4KcOdFrQ4YrI'
 
     Returns
@@ -151,7 +181,7 @@ def generate_token(
         iat=now,
         nbf=now,
         jti=str(uuid.uuid4()),
-        user_claims=claims,
+        user_claims=list(squashed_scopes(claims)),
         identity=username,
         exp=now + lifetime,
     )
