@@ -2,15 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from prefect import config
-from pathlib import Path
 from typing import List, Dict, Tuple, Any
 import yaml
 
 from .workflows import make_workflow
 
 
-def load_and_validate_workflows_yaml(filename: str) -> List[Dict[str, Any]]:
+def load_and_validate_workflows_yaml(
+    filename: str, inputs_dir: "pathlib.Path"
+) -> List[Dict[str, Any]]:
     """
     Load a yaml file that defines workflows, and validate its contents.
 
@@ -18,6 +18,8 @@ def load_and_validate_workflows_yaml(filename: str) -> List[Dict[str, Any]]:
     ----------
     filename : str
         Name of yaml input file
+    inputs_dir : Path
+        Directory in which input files should be found
 
     Returns
     -------
@@ -25,7 +27,8 @@ def load_and_validate_workflows_yaml(filename: str) -> List[Dict[str, Any]]:
         List of dictionaries defining workflows
     """
     # TODO: This would be neater and more robust as a marshmallow schema
-    with open(filename, "r") as f:
+
+    with open(inputs_dir / filename, "r") as f:
         workflows_spec = yaml.safe_load(f)
 
     if not isinstance(workflows_spec, list):
@@ -75,7 +78,7 @@ def load_and_validate_workflows_yaml(filename: str) -> List[Dict[str, Any]]:
                 raise ValueError(f"Duplicate notebook label: '{notebook['label']}'.")
             else:
                 notebook_labels.append(notebook["label"])
-            if not (Path(config.inputs.inputs_dir) / notebook["filename"]).exists():
+            if not (inputs_dir / notebook["filename"]).exists():
                 raise ValueError(f"Notebook file '{notebook['filename']}' not found.")
             if not isinstance(notebook["parameters"], dict):
                 raise TypeError(
@@ -87,7 +90,7 @@ def load_and_validate_workflows_yaml(filename: str) -> List[Dict[str, Any]]:
                     if "template" not in notebook["output"]:
                         notebook["output"]["template"] = None
                     if (notebook["output"]["template"] is not None) and not (
-                        Path(config.inputs.inputs_dir) / notebook["output"]["template"]
+                        inputs_dir / notebook["output"]["template"]
                     ).exists():
                         raise ValueError(
                             f"Template '{notebook['output']['template']}' not found."
@@ -118,7 +121,7 @@ def load_and_validate_workflows_yaml(filename: str) -> List[Dict[str, Any]]:
 
 
 def parse_workflows_yaml(
-    filename: str
+    filename: str, inputs_dir: "pathlib.Path"
 ) -> Tuple[List["prefect.Flow"], Dict[str, List[Dict[str, Any]]]]:
     """
     Construct workflows defined in an input file.
@@ -127,6 +130,8 @@ def parse_workflows_yaml(
     ----------
     filename : str
         Name of yaml input file
+    inputs_dir : Path
+        Directory in which input files should be found
     
     Returns
     -------
@@ -135,7 +140,7 @@ def parse_workflows_yaml(
     run_parameters : dict
         mapping from workflow names to a list of dicts of parameters for which the workflow should be run
     """
-    workflow_specs = load_and_validate_workflows_yaml(filename)
+    workflow_specs = load_and_validate_workflows_yaml(filename, inputs_dir)
 
     workflows = []
     run_parameters = {}

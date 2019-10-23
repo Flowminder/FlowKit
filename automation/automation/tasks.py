@@ -14,7 +14,7 @@ from sh import asciidoctor_pdf
 from pathlib import Path
 import pendulum
 import json
-from get_secret_or_env_var import environ, getenv
+from get_secret_or_env_var import environ
 
 import flowclient
 
@@ -230,7 +230,7 @@ def filter_dates_by_previous_runs(
     context.logger.info(
         "Filtering out dates for which this workflow has already run successfully."
     )
-    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
+    session = get_session(config.db_uri)
     filtered_dates = [
         date
         for date in dates
@@ -264,7 +264,7 @@ def record_workflow_in_process(
     else:
         message = "Recording workflow run 'in_process'."
     context.logger.debug(message)
-    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
+    session = get_session(config.db_uri)
     workflow_runs.set_state(
         workflow_name=context.flow_name,
         workflow_params=context.parameters,
@@ -291,7 +291,7 @@ def record_workflow_done(reference_date: Optional["datetime.date"] = None) -> No
     else:
         message = "Recording workflow run 'done'."
     context.logger.debug(message)
-    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
+    session = get_session(config.db_uri)
     workflow_runs.set_state(
         workflow_name=context.flow_name,
         workflow_params=context.parameters,
@@ -320,7 +320,7 @@ def record_workflow_failed(reference_date: Optional["datetime.date"] = None) -> 
     else:
         message = "Recording workflow run 'failed'."
     context.logger.debug(message)
-    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
+    session = get_session(config.db_uri)
     workflow_runs.set_state(
         workflow_name=context.flow_name,
         workflow_params=context.parameters,
@@ -349,7 +349,7 @@ def record_any_failed_workflows(reference_dates: List["datetime.date"]) -> None:
     # also fail to map and would therefore not run.
     context.logger.debug(f"Ensuring no workflow runs are left in 'in_process' state.")
     some_failed = False
-    session = get_session(config.db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
+    session = get_session(config.db_uri)
     for reference_date in reference_dates:
         if not workflow_runs.is_done(
             workflow_name=context.flow_name,

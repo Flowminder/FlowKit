@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Union, Dict, Any, List, Sequence, Set, Tuple, Optional
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from get_secret_or_env_var import getenv
 
 
 def get_output_filename(input_filename: str, tag: str = "") -> str:
@@ -245,7 +246,10 @@ def get_session(db_uri: str) -> "sqlalchemy.orm.session.Session":
     Session
         A sqlalchemy session
     """
-    engine = create_engine(db_uri)
+    # TODO: This seems like the wrong place to be reading a secret / env var,
+    # but we can't put a docker secret in the prefect config.
+    full_db_uri = db_uri.format(getenv("AUTOMATION_DB_PASSWORD", ""))
+    engine = create_engine(full_db_uri)
     return sessionmaker(bind=engine)()
 
 

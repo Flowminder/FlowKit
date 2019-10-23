@@ -287,7 +287,7 @@ def make_date_triggered_notebooks_workflow(
     with Flow(name=name, schedule=flow_schedule) as workflow:
         # Parameters
         parameter_tasks = {
-            pname: Parameter(pname, default=None, required=False)
+            pname: Parameter(pname, required=False)
             for pname in date_filter_parameter_names
         }
         parameter_tasks.update(
