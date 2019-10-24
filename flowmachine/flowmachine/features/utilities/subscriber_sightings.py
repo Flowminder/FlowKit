@@ -75,8 +75,8 @@ class SubscriberSightings(Query):
         self.columns = [
             "timestamp AS datetime",
             "cell_id AS location_id",
-            "subscriber_id",
-            f"{self.subscriber_identifier} AS subscriber",
+            "subscriber_id AS subscriber",
+            f"{self.subscriber_identifier} AS subscriber_identifier",
         ]
 
         super().__init__()
@@ -133,17 +133,10 @@ class SubscriberSightings(Query):
         # to substitute the fieldnames for referencing later according to self.column_names
         sqlalchemy_columns = [
             make_sqlalchemy_column_from_flowmachine_column_description(
-                self.sqlalchemy_mainTable, self.columns[0]
-            ),
-            make_sqlalchemy_column_from_flowmachine_column_description(
-                self.sqlalchemy_mainTable, self.columns[1]
-            ),
-            make_sqlalchemy_column_from_flowmachine_column_description(
-                self.sqlalchemy_mainTable, self.columns[2]
-            ),
-            make_sqlalchemy_column_from_flowmachine_column_description(
-                self.sqlalchemy_subTable, self.columns[3]
-            ),
+                (self.sqlalchemy_mainTable if i < 3 else self.sqlalchemy_subTable),
+                self.columns[i],
+            )
+            for i, c in enumerate(self.columns)
         ]
 
         # Finally produce the joined select
