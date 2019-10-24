@@ -1,4 +1,4 @@
-asciidoc_template_path = "$AUTOMATION_ASCIIDOC_TEMPLATE"
+asciidoc_template_path = "$AUTOMATION_CONFIG_DIR/asciidoc_extended.tpl"
 flowapi_url = "$FLOWAPI_URL"
 db_uri = "$AUTOMATION_DB_URI"
 

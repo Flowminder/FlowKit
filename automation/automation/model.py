@@ -229,8 +229,6 @@ def init_db(db_uri: str, force: bool = False) -> None:
     force : bool
         If set to true, wipes any existing database.
     """
-    # db_uri = getenv("AUTOMATION_DB_URI", "sqlite:////tmp/test.db")
-    # db_uri = db_uri.format(getenv("AUTOMATION_DB_PASSWORD", ""))
     engine = create_engine(db_uri)
     if force:
         Base.metadata.drop_all(engine)
