@@ -22,10 +22,38 @@ import {
 } from "./util/api";
 import RightsCascade from "./RightsCascade";
 
+function scopeStringListToGraph(array) {
+  const nested = {};
+  array.forEach(scope => {
+    let obj = nested;
+    scope.split(":").forEach(k => {
+      if (!(k in obj)) {
+        obj[k] = {};
+      }
+      obj = obj[k];
+    });
+  });
+  return nested;
+}
+
+function jsonify(tree, labels) {
+  const list = Object.keys(tree).map(k => {
+    const ll = labels.concat([k]);
+    const v = tree[k];
+    if (Object.keys(v).length === 0) {
+      return { label: k, value: ll.join(":") };
+    } else {
+      return { label: k, value: ll.join(":"), children: jsonify(v, ll) };
+    }
+  });
+  return list;
+}
+
 class ServerAdminDetails extends React.Component {
   state = {
     name: "",
-    rights: {},
+    rights: [],
+    enabledRights: [],
     max_life: 1440,
     latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
     edit_mode: false,
@@ -43,6 +71,7 @@ class ServerAdminDetails extends React.Component {
       latest_expiry,
       max_life,
       rights,
+      enabledRights,
       name_helper_text,
       key_helper_text,
       maxlife_helper_text
@@ -72,7 +101,7 @@ class ServerAdminDetails extends React.Component {
       }
       task
         .then(json => {
-          return editServerCapabilities(json.id, rights);
+          return editServerCapabilities(json.id, enabledRights);
         })
         .then(json => {
           onClick();
@@ -97,6 +126,10 @@ class ServerAdminDetails extends React.Component {
 
   handleDateChange = date => {
     this.setState({ latest_expiry: date });
+  };
+
+  handleRightsChange = value => {
+    this.setState({ enabledRights: value });
   };
 
   handleTextChange = name => event => {
@@ -159,9 +192,11 @@ class ServerAdminDetails extends React.Component {
           return getTimeLimits(item_id);
         })
         .then(json => {
+          console.log(jsonify(scopeStringListToGraph(Object.keys(rights)), []));
           this.setState({
             name: name,
-            rights: rights,
+            rights: jsonify(scopeStringListToGraph(Object.keys(rights)), []),
+            enabledRights: Object.keys(rights).filter(k => rights[k]),
             latest_expiry: json.latest_token_expiry,
             max_life: json.longest_token_life,
             edit_mode: true
@@ -190,7 +225,7 @@ class ServerAdminDetails extends React.Component {
     if (this.state.hasError && this.state.error.code === 401)
       throw this.state.error;
 
-    const { rights, latest_expiry, name, permitted, max_life } = this.state;
+    const { rights, latest_expiry, name, enabledRights, max_life } = this.state;
     const { classes, onClick } = this.props;
 
     return (
@@ -249,7 +284,11 @@ class ServerAdminDetails extends React.Component {
           />
         </Grid>
         <Grid item xs={12}>
-          <RightsCascade srcData={rights} />
+          <RightsCascade
+            options={rights}
+            value={enabledRights}
+            onChange={this.handleRightsChange}
+          />
         </Grid>
         <ErrorDialog
           open={this.state.pageError}
