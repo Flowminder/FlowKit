@@ -48,7 +48,7 @@ def test_colums_are_set_in_sql(identifier):
         "2016-01-01", "2016-01-02", subscriber_identifier=identifier
     )
 
-    assert f"{identifier} AS subscriber" in ss.columns
+    assert f"{identifier} AS subscriber_identifier" in ss.columns
 
 
 def test_error_on_start_is_stop():
