@@ -135,7 +135,7 @@ class SubscriberLocations(Query):
 
         sql = f"""
                 SELECT
-                    subscriber, datetime as time, {location_cols}
+                    subscriber_identifier AS subscriber, datetime as time, {location_cols}
                 FROM
                     ({self.sightings.get_query()}) AS foo
                 {where_clause}
