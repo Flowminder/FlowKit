@@ -8,7 +8,6 @@ import Grid from "@material-ui/core/Grid";
 import { createGroup } from "./util/api";
 import Typography from "@material-ui/core/Typography";
 import GroupMembersPicker from "./GroupMembersPicker";
-import GroupServerPermissions from "./GroupServerPermissions";
 import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
 import {
@@ -144,12 +143,7 @@ class GroupDetails extends React.Component {
             updateMembers={this.updateMembers}
           />
         </Grid>
-        <GroupServerPermissions
-          group_id={item_id}
-          updateServers={this.updateServers}
-          servers={servers}
-          classes={classes}
-        />
+
         <ErrorDialog
           open={this.state.pageError}
           message={this.state.errors.message}

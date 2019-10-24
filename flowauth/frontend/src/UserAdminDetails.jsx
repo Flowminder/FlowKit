@@ -12,7 +12,6 @@ import UserGroupsPicker from "./UserGroupsPicker";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import GroupServerPermissions from "./GroupServerPermissions";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import LockIcon from "@material-ui/icons/Lock";
@@ -304,12 +303,7 @@ class UserAdminDetails extends React.Component {
             updateGroups={this.updateGroups}
           />
         </Grid>
-        <GroupServerPermissions
-          group_id={group_id}
-          updateServers={this.updateServers}
-          servers={servers}
-          classes={classes}
-        />
+
         <ErrorDialog
           open={this.state.pageError}
           message={this.state.errors.message}

@@ -3,10 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
-import ServerCapability from "./ServerCapability";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker } from "material-ui-pickers";
 import MuiPickersUtilsProvider from "material-ui-pickers/utils/MuiPickersUtilsProvider";
