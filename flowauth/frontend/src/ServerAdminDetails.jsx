@@ -12,7 +12,6 @@ import TextField from "@material-ui/core/TextField";
 import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
 import {
-  getAllAggregationUnits,
   getAllCapabilities,
   getCapabilities,
   getTimeLimits,
@@ -21,7 +20,7 @@ import {
   editServerCapabilities,
   editServer
 } from "./util/api";
-import PermissionDetails from "./PermissionDetails";
+import RightsCascade from "./RightsCascade";
 
 class ServerAdminDetails extends React.Component {
   state = {
@@ -250,11 +249,7 @@ class ServerAdminDetails extends React.Component {
           />
         </Grid>
         <Grid item xs={12}>
-          <PermissionDetails
-            rights={rights}
-            permitted={permitted}
-            updateRights={rights => this.setState({ rights: rights })}
-          />
+          <RightsCascade srcData={rights} />
         </Grid>
         <ErrorDialog
           open={this.state.pageError}

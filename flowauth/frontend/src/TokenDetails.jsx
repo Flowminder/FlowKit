@@ -5,7 +5,6 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
-import TokenPermission from "./TokenPermission";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -14,7 +13,6 @@ import { getMyRightsForServer, createToken } from "./util/api";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import SubmitButtons from "./SubmitButtons";
-import PermissionDetails from "./PermissionDetails";
 import WarningDialog from "./WarningDialog";
 
 const styles = theme => ({
@@ -179,13 +177,7 @@ class TokenDetails extends React.Component {
             />
           </MuiPickersUtilsProvider>
         </Grid>
-        <Grid item xs={12}>
-          <PermissionDetails
-            rights={rights}
-            permitted={permitted}
-            updateRights={rights => this.setState({ rights: rights })}
-          />
-        </Grid>
+        <Grid item xs={12}></Grid>
         <WarningDialog
           open={this.state.pageError}
           message={this.state.errors.message}
