@@ -145,3 +145,22 @@ PUBLIC_JWT_SIGNING_KEY=LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JSUNJakFOQmdrcWhra
 # Worked examples
 WORKED_EXAMPLES_PORT=8888
 
+## Automation settings
+# Directory containing automation config files
+AUTOMATION_CONFIG_DIR=./automation/config
+# Directory containing automation input files
+AUTOMATION_INPUTS_DIR=./automation/examples/inputs
+# Directory to store automation output files
+AUTOMATION_OUTPUTS_DIR=./automation/examples/outputs
+# Error and debugging log level
+AUTOMATION_LOG_LEVEL=DEBUG
+# Path to prefect config file
+PREFECT__USER_CONFIG_PATH=./automation/config/config.toml
+# FlowAPI URL
+FLOWAPI_URL=http://localhost:9090
+# URI of database for storing workflow run metadata
+AUTOMATION_DB_URI=sqlite:///
+# Password for automation database
+#AUTOMATION_DB_PASSWORD
+# FlowAPI token
+#FLOWAPI_TOKEN
