@@ -1,0 +1,2 @@
+include versioneer.py
+include automation/_version.py
