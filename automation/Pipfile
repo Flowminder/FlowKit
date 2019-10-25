@@ -17,7 +17,7 @@ nteract-scrapbook = "*"
 sh = "*"
 pendulum = "*"
 get-secret-or-env-var = "*"
-psycopg2 = "*"
+psycopg2-binary = "*"
 sqlalchemy = "*"
 
 [dev-packages]

@@ -1,0 +1,47 @@
+#
+# Example docker stack file for Automation
+# Note: The automation container would need to be connected to a network on which the FlowAPI URL is accessible.
+#
+
+version: '3.7'
+
+secrets:
+  AUTOMATION_DB_PASSWORD: # Password for automation's database
+    external: true
+  FLOWAPI_TOKEN: # Token for automation to connect to FlowAPI
+    external: true
+
+networks:
+  database:
+
+services:
+
+  automation:
+    image: flowminder/automation:${CONTAINER_TAG:-latest}
+    environment:
+      AUTOMATION_INPUTS_DIR: /mounts/inputs
+      AUTOMATION_OUTPUTS_DIR: /mounts/outputs
+      AUTOMATION_LOG_LEVEL: ${AUTOMATION_LOG_LEVEL:-ERROR}
+      AUTOMATION_DB_URI: postgresql://automation:{}@automation_postgres:5432/automation
+      FLOWAPI_URL: ${FLOWAPI_URL:?Must set FLOWAPI_URL env var}
+    secrets:
+      - AUTOMATION_DB_PASSWORD
+      - FLOWAPI_TOKEN
+    volumes:
+      - ${AUTOMATION_INPUTS_DIR:?Must set AUTOMATION_INPUTS_DIR env var}:/mounts/inputs:ro
+      - ${AUTOMATION_OUTPUTS_DIR:?Must set AUTOMATION_OUTPUTS_DIR env var}:/mounts/outputs:rw
+    networks:
+      - database
+  
+  automation_postgres:
+    image: postgres
+    tty: true
+    stdin_open: true
+    environment:
+      POSTGRES_USER: automation
+      POSTGRES_PASSWORD_FILE: /run/secrets/AUTOMATION_DB_PASSWORD
+      POSTGRES_DB: automation
+    secrets:
+      - AUTOMATION_DB_PASSWORD
+    networks:
+      - database
