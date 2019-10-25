@@ -1,6 +1,6 @@
 - name: flows-above-normal
   kind: date_triggered_notebooks
-  schedule: "0 0 * * *"
+  schedule: "* * * * *"
   notebooks:
     - label: run_flows
       filename: run_flows.ipynb

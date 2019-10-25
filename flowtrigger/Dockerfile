@@ -3,11 +3,11 @@ FROM python:3.7-slim
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-COPY . /${SOURCE_TREE}/automation/
+COPY . /${SOURCE_TREE}/flowtrigger/
 
-ENV AUTOMATION_DB_URI="sqlite:////tmp/test.db"
-ENV AUTOMATION_CONFIG_DIR=/${SOURCE_TREE}/automation/config
-ENV PREFECT__USER_CONFIG_PATH=${AUTOMATION_CONFIG_DIR}/config.toml
+ENV FLOWTRIGGER_DB_URI="sqlite:////tmp/test.db"
+ENV FLOWTRIGGER_CONFIG_DIR=/${SOURCE_TREE}/flowtrigger/config
+ENV PREFECT__USER_CONFIG_PATH=${FLOWTRIGGER_CONFIG_DIR}/config.toml
 
 RUN apt-get update -yqq \
     && apt-get upgrade -yqq \
@@ -24,7 +24,7 @@ RUN apt-get update -yqq \
     /usr/share/doc \
     /usr/share/doc-base
 
-WORKDIR /${SOURCE_TREE}/automation
+WORKDIR /${SOURCE_TREE}/flowtrigger
 RUN pip install -U pip && pip install .[postgres,examples]
 
-CMD ["python", "-m", "automation"]
+CMD ["python", "-m", "flowtrigger"]

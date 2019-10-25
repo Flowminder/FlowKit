@@ -45,7 +45,6 @@ class workflow_runs(Base):
     """
 
     __tablename__ = "workflow_runs"
-    # __table_args__ = {"schema": "automation"}
 
     id = Column(Integer, primary_key=True)
     workflow_name = Column(String)

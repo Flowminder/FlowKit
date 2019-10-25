@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Main script, that will be executed when running `python -m automation`.
+Main script, that will be executed when running `python -m flowtrigger`.
 Creates output directories, initialises the database, parses a workflows definition file to define workflows, and runs the workflows.
 """
 
@@ -21,7 +21,7 @@ from .workflows import run_workflows
 def main():
     # Initialise logger
     # TODO: Use structlog (not sure whether it will be possible for the prefect logger)
-    log_level = os.environ["AUTOMATION_LOG_LEVEL"]
+    log_level = os.environ["FLOWTRIGGER_LOG_LEVEL"]
     logger = logging.getLogger(__name__)
     handler = logging.StreamHandler()
     formatter = logging.Formatter(
@@ -34,7 +34,7 @@ def main():
     logger.info(f"Log level for logger '{__name__}' set to '{log_level}'.")
 
     # Make output directories
-    outputs_path = Path(os.environ["AUTOMATION_OUTPUTS_DIR"])
+    outputs_path = Path(os.environ["FLOWTRIGGER_OUTPUTS_DIR"])
     logger.info(
         f"Creating output directories '{outputs_path/'notebooks'}' and '{outputs_path/'reports'}'."
     )
@@ -42,14 +42,14 @@ def main():
     (outputs_path / "reports").mkdir(exist_ok=True)
 
     # Init DB
-    # Note: AUTOMATION_DB_URI must be an env var so that it can be used in prefect.config, so we read it using os.environ.
-    # AUTOMATION_DB_PASSWORD can (and should) be a docker secret, so we read it using get_secret_or_env_var.
-    db_uri = os.environ["AUTOMATION_DB_URI"]
+    # Note: FLOWTRIGGER_DB_URI must be an env var so that it can be used in prefect.config, so we read it using os.environ.
+    # FLOWTRIGGER_DB_PASSWORD can (and should) be a docker secret, so we read it using get_secret_or_env_var.
+    db_uri = os.environ["FLOWTRIGGER_DB_URI"]
     logger.info(f"Initialising database '{db_uri}'.")
-    init_db(db_uri.format(getenv("AUTOMATION_DB_PASSWORD", "")))
+    init_db(db_uri.format(getenv("FLOWTRIGGER_DB_PASSWORD", "")))
 
     # Create workflows according to workflow definition file
-    inputs_dir = Path(os.environ["AUTOMATION_INPUTS_DIR"])
+    inputs_dir = Path(os.environ["FLOWTRIGGER_INPUTS_DIR"])
     logger.info(f"Creating workflows defined in '{inputs_dir/'workflows.yml'}'.")
     workflows, parameters = parse_workflows_yaml("workflows.yml", inputs_dir)
 

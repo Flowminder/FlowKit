@@ -9,7 +9,7 @@
 #
 # Now un-exclude only those folders and files that are needed for building the image:
 #
-!automation/
+!flowtrigger/
 !config/
 !MANIFEST.in
 !setup.cfg

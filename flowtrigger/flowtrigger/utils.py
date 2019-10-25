@@ -252,7 +252,7 @@ def get_session(db_uri: str) -> "sqlalchemy.orm.session.Session":
     """
     # TODO: This seems like the wrong place to be reading a secret / env var,
     # but we can't put a docker secret in the prefect config.
-    full_db_uri = db_uri.format(getenv("AUTOMATION_DB_PASSWORD", ""))
+    full_db_uri = db_uri.format(getenv("FLOWTRIGGER_DB_PASSWORD", ""))
     engine = create_engine(full_db_uri)
     return sessionmaker(bind=engine)()
 

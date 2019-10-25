@@ -189,17 +189,17 @@ services:
     networks:
       - flowetl_db
 
-  automation:
-    container_name: automation
-    image: flowminder/automation:${CONTAINER_TAG:-latest}
+  flowtrigger:
+    container_name: flowtrigger
+    image: flowminder/flowtrigger:${CONTAINER_TAG:-latest}
     restart: always
     volumes:
-      - ${AUTOMATION_INPUTS_DIR:?Must set AUTOMATION_INPUTS_DIR env var}:/mounts/inputs:ro
-      - ${AUTOMATION_OUTPUTS_DIR:?Must set AUTOMATION_OUTPUTS_DIR env var}:/mounts/outputs:rw
+      - ${FLOWTRIGGER_INPUTS_DIR:?Must set FLOWTRIGGER_INPUTS_DIR env var}:/mounts/inputs:ro
+      - ${FLOWTRIGGER_OUTPUTS_DIR:?Must set FLOWTRIGGER_OUTPUTS_DIR env var}:/mounts/outputs:rw
     environment:
-      AUTOMATION_INPUTS_DIR: /mounts/inputs
-      AUTOMATION_OUTPUTS_DIR: /mounts/outputs
-      AUTOMATION_LOG_LEVEL: ${AUTOMATION_LOG_LEVEL:?Must set AUTOMATION_LOG_LEVEL env var}
+      FLOWTRIGGER_INPUTS_DIR: /mounts/inputs
+      FLOWTRIGGER_OUTPUTS_DIR: /mounts/outputs
+      FLOWTRIGGER_LOG_LEVEL: ${FLOWTRIGGER_LOG_LEVEL:?Must set FLOWTRIGGER_LOG_LEVEL env var}
       FLOWAPI_URL: http://flowapi:${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}
       FLOWAPI_TOKEN: $FLOWAPI_TOKEN
     networks:
