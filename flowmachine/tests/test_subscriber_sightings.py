@@ -62,19 +62,28 @@ def test_singleday_property():
 
 def test_start_stop_integer_conversion():
     """Test that setting a start/stop will get date integers."""
-
     ss = SubscriberSightings("2016-01-01", "2016-01-02")
+
     assert ss.start == 1
     assert ss.stop == 2
 
 
+def test_start_stop_hours_are_addded_correctly():
+    """Test start stop hours are added correctly."""
+    ss = SubscriberSightings("2016-01-01 11:23:00", "2016-01-02 14:41:00")
+
+    assert ss.start == 1
+    assert ss.stop == 2
+    assert ss.start_hour == 12
+    assert ss.stop_hour == 15
+
+
 def test_start_stop_non_exist_will_result_in_min_max():
     """Test that setting non existing dates will result in min/max."""
-
     ss = SubscriberSightings("2012-01-01", "2012-01-02")
+
     assert ss.start == 1
     assert ss.stop == 5
-
 
 def test_set_date_none():
     """Test that setting a start/stop to None will use min/max dates."""
