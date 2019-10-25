@@ -51,10 +51,13 @@ def test_colums_are_set_in_sql(identifier):
     assert f"{identifier} AS subscriber_identifier" in ss.columns
 
 
-def test_error_on_start_is_stop():
-    """Test that a value error is raised when start == stop"""
-    with pytest.raises(ValueError):
-        SubscriberSightings("2016-01-01", "2016-01-01")
+def test_singleday_property():
+    """Test that dates correctly resolve the singleday property"""
+    ss = SubscriberSightings("2016-01-01", "2016-01-01")
+    assert ss.singleday == True
+
+    ss = SubscriberSightings("2016-01-01", "2016-01-02")
+    assert ss.singleday == False
 
 
 def test_start_stop_integer_conversion():

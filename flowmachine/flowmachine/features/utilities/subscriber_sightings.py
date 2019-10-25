@@ -88,6 +88,10 @@ class SubscriberSightings(Query):
     def column_names(self) -> List[str]:
         return [c.split(" AS ")[-1] for c in self.columns]
 
+    @property
+    def singleday(self) -> bool:
+        return self.start == self.stop
+
     def _check_dates(self):
         table = get_sqlalchemy_table_definition(
             "interactions.date_dim", engine=Query.connection.engine
@@ -123,10 +127,6 @@ class SubscriberSightings(Query):
             )
             row = query.first()
             self.stop = row["date_sk"] if row is not None else None
-
-        # Check if the dates are the same
-        if self.start == self.stop:
-            raise ValueError("Start and stop are the same.")
 
     def _make_query_with_sqlalchemy(self):
         # As we are adding from multiple tables, we need to add one by one - here we need
