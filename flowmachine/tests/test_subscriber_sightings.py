@@ -117,10 +117,19 @@ def test_that_subscriber_subset_is_added(get_dataframe):
             ["subscriber"],
         )
     )
-
-    ss = SubscriberSightings("2016-01-01", "2016-01-02", subscriber_subset=subsetter)
+    start = "2016-01-01"
+    end = "2016-01-02"
+    ss = SubscriberSightings(start, end, subscriber_subset=subsetter)
     query = ss.get_query()
 
     assert "FROM interactions.calls" in query
     assert "WHERE call_duration < 400" in query
     assert "tbl.subscriber = subset_query.subscriber" in query
+
+    df = get_dataframe(ss)
+
+    min_date = df["datetime"].min().to_pydatetime().strftime("%Y-%m-%d")
+    max_date = df["datetime"].max().to_pydatetime().strftime("%Y-%m-%d")
+
+    assert min_date == start
+    assert min_date == max_date
