@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""
+Contains functions for constructing and running Prefect workflows.
+"""
+
 from prefect import Flow, Parameter, unmapped
 from prefect.schedules import CronSchedule
 from typing import List, Set, Dict, Tuple, Any, NoReturn

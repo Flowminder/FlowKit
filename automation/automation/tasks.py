@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""
+Prefect tasks used in workflows.
+"""
+
 from prefect import task, config, context
 from prefect.triggers import all_successful, any_failed, all_finished
 from prefect.engine import signals

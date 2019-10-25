@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""
+Defines the 'workflow_runs' class, which represents a database model for storing the state of worflow runs.
+"""
+
 import os
 import enum
 import pendulum
@@ -37,7 +41,7 @@ class RunState(enum.Enum):
 
 class workflow_runs(Base):
     """
-    DB Model for storing the state of flow runs.
+    DB Model for storing the state of workflow runs.
     """
 
     __tablename__ = "workflow_runs"

@@ -2,6 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""
+Main script, that will be executed when running `python -m automation`.
+Creates output directories, initialises the database, parses a workflows definition file to define workflows, and runs the workflows.
+"""
+
 import logging
 import os
 import time
