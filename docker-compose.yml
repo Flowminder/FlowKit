@@ -201,6 +201,6 @@ services:
       AUTOMATION_OUTPUTS_DIR: /mounts/outputs
       AUTOMATION_LOG_LEVEL: ${AUTOMATION_LOG_LEVEL:?Must set AUTOMATION_LOG_LEVEL env var}
       FLOWAPI_URL: http://flowapi:${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}
-      FLOWAPI_TOKEN: ${FLOWAPI_TOKEN:?Must set FLOWAPI_TOKEN env var}
+      FLOWAPI_TOKEN: $FLOWAPI_TOKEN
     networks:
       - api
