@@ -17,6 +17,6 @@
         previous_notebook: run_flows
       output: true
   parameters:
-    - earliest_date: 2016-01-03
+    - earliest_date: 2016-01-04
       date_stencil: [[2016-01-01, 2016-01-02], -1, 0]
       aggregation_unit: admin2

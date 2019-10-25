@@ -28,6 +28,7 @@ setup(
     install_requires=[
         "flowclient",
         "pyyaml",
+        "ipykernel",
         "papermill >= 1.2.1",
         "prefect",
         "nteract-scrapbook",

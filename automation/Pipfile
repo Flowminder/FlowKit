@@ -10,6 +10,7 @@ descartes = "*"
 flowclient = {editable = true,path = "./../flowclient"}
 pyyaml = "*"
 matplotlib = "*"
+ipykernel = "*"
 papermill = ">=1.2.1"
 prefect = "*"
 nteract-scrapbook = "*"
@@ -21,6 +22,7 @@ sqlalchemy = "*"
 
 [dev-packages]
 pytest = "*"
+prefect = {extras = ["viz"]}
 ipywidgets = "*"
 jupyterlab = "*"
 black = "==19.3b0"

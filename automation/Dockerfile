@@ -27,4 +27,4 @@ RUN apt-get update -yqq \
 WORKDIR /${SOURCE_TREE}/automation
 RUN pip install -U pip && pip install .[postgres,examples]
 
-ENTRYPOINT ["python", "-m", "automation"]
+CMD ["python", "-m", "automation"]
