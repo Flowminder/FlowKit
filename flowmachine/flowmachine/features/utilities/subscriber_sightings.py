@@ -151,11 +151,15 @@ class SubscriberSightings(Query):
         # Add the start date - this will need hours added to it at some point.
         if self.start is not None:
             select_stmt = select_stmt.where(
-                self.sqlalchemy_mainTable.c.date_sk >= self.start
+                (
+                    self.sqlalchemy_mainTable.c.date_sk == self.start
+                    if self.singleday == True
+                    else self.sqlalchemy_mainTable.c.date_sk >= self.start
+                )
             )
 
         # Add the stop date - this will need hours added to it at some point.
-        if self.stop is not None:
+        if self.stop is not None and self.singleday == False:
             select_stmt = select_stmt.where(
                 self.sqlalchemy_mainTable.c.date_sk < self.stop
             )

@@ -110,7 +110,7 @@ def test_dates_select_correct_data():
 
 
 def test_that_subscriber_subset_is_added(get_dataframe):
-    """Test that subscriber_subset is added to the output SQL."""
+    """Test that subscriber_subset is added to the output SQL, and returns correct day data."""
     subsetter = SubscriberSubsetterForFlowmachineQuery(
         CustomQuery(
             "SELECT subscriber_id AS subscriber FROM interactions.calls c WHERE call_duration < 400",
@@ -133,3 +133,19 @@ def test_that_subscriber_subset_is_added(get_dataframe):
 
     assert min_date == start
     assert min_date == max_date
+
+
+def test_selecting_single_day(get_dataframe):
+    """Test it's possible to select a single day of data on the last day."""
+    max = CustomQuery(
+        """SELECT * FROM interactions.date_dim 
+        WHERE interactions.date_dim.date = (SELECT max(interactions.date_dim.date) FROM interactions.date_dim)""",
+        ["date", "date_sk"],
+    )
+    date = get_dataframe(max).iloc[0]["date"]
+    date_sk = get_dataframe(max).iloc[0]["date_sk"]
+    ss = SubscriberSightings(date, None)
+
+    assert ss.singleday == True
+    assert ss.start == date_sk
+    assert ss.stop == date_sk
