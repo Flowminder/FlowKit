@@ -741,11 +741,11 @@
         },
         "pre-commit": {
             "hashes": [
-                "sha256:1d3c0587bda7c4e537a46c27f2c84aa006acc18facf9970bf947df596ce91f3f",
-                "sha256:fa78ff96e8e9ac94c748388597693f18b041a181c94a4f039ad20f45287ba44a"
+                "sha256:2080b7a375e54e4fdc41bd0606193d0bad06b4d4f23526ffb73f0b512b537353",
+                "sha256:8dbdad6e79fa438b9ae4dafc91c85baf93a5ff29aeff5d6899396d5aebe2d338"
             ],
             "index": "pypi",
-            "version": "==1.18.3"
+            "version": "==1.19.0"
         },
         "prompt-toolkit": {
             "hashes": [
