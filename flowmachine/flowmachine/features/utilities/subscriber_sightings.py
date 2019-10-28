@@ -109,12 +109,10 @@ class SubscriberSightings(Query):
                 # Date dimension
                 date = self._resolveDateOrTime(date=val)
                 setattr(self, param, (date if date is not None else None))
-                
+
                 # time_dimension
                 time = self._resolveDateOrTime(time=val)
-                setattr(
-                    self, f"{param}_hour", (time if time is not None else None)
-                )
+                setattr(self, f"{param}_hour", (time if time is not None else None))
 
         # If we still have None, then we should get min/max dates from interactions.date_dim
         # Process start
@@ -155,10 +153,22 @@ class SubscriberSightings(Query):
         sel = "date_sk" if date is not None else "time_sk"
         comp = ts.strftime("%Y-%m-%d") if date != None else ts.hour
 
+        # Test if we can get a value
+        query = self.connection.engine.execute(
+            select([table.c[sel]]).where(table.c[field] == comp)
+        )
+        row = query.first()
+        if row is not None:
+            return row[sel]
+
+        # Return None if we're not being asked for a min or max
+        if min == False and max == False:
+            return None
+
         # Find min/max if this is a required outcome
-        if min == True:
+        if min == True and date is not None:
             comp = select([func.min(table.c[field])])
-        if max == True:
+        if max == True and date is not None:
             comp = select([func.max(table.c[field])])
 
         query = self.connection.engine.execute(
