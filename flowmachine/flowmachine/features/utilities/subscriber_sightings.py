@@ -137,8 +137,8 @@ class SubscriberSightings(Query):
             row = query.first()
             self.stop = row["date_sk"] if row is not None else None
 
-    def _resolveDateOrTime(self, date=None, time=None):
-        if date == None and time == None:
+    def _resolveDateOrTime(self, date=None, time=None, min=False, max=False):
+        if date == None and time == None or (min == True and max == True):
             return None
 
         table = get_sqlalchemy_table_definition(
@@ -147,13 +147,19 @@ class SubscriberSightings(Query):
         )
 
         try:
-            ts = pd.Timestamp((date if date != None else time))
+            ts = pd.Timestamp((date if date is not None else time))
         except ValueError:
             raise ValueError("Please use a valid date or time string")
 
-        field = "date" if date != None else "hour"
-        sel = "date_sk" if date != None else "time_sk"
+        field = "date" if date is not None else "hour"
+        sel = "date_sk" if date is not None else "time_sk"
         comp = ts.strftime("%Y-%m-%d") if date != None else ts.hour
+
+        # Find min/max if this is a required outcome
+        if min == True:
+            comp = select([func.min(table.c[field])])
+        if max == True:
+            comp = select([func.max(table.c[field])])
 
         query = self.connection.engine.execute(
             select([table.c[sel]]).where(table.c[field] == comp)
