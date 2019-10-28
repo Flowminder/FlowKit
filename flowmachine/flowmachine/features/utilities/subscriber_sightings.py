@@ -95,48 +95,20 @@ class SubscriberSightings(Query):
         return self.start == self.stop
 
     def _check_dates(self):
-        date_dim = get_sqlalchemy_table_definition(
-            "interactions.date_dim", engine=Query.connection.engine
-        )
-        time_dimension = get_sqlalchemy_table_definition(
-            "interactions.time_dimension", engine=Query.connection.engine
-        )
-
-        # First, if there are dates, then we should convert them to integers
-        for param in ("start", "stop"):
-            val = getattr(self, param)
-            if val is not None:
-                # Date dimension
-                date = self._resolveDateOrTime(date=val)
-                setattr(self, param, (date if date is not None else None))
-
-                # time_dimension
-                time = self._resolveDateOrTime(time=val)
-                setattr(self, f"{param}_hour", (time if time is not None else None))
-
-        # If we still have None, then we should get min/max dates from interactions.date_dim
-        # Process start
-        if self.start is None:
-            query = self.connection.engine.execute(
-                select([date_dim.c.date_sk]).where(
-                    date_dim.c.date == select([func.min(date_dim.c.date)])
-                )
-            )
-            row = query.first()
-            self.start = row["date_sk"] if row is not None else None
-
-        # Then stop
-        if self.stop is None:
-            query = self.connection.engine.execute(
-                select([date_dim.c.date_sk]).where(
-                    date_dim.c.date == select([func.max(date_dim.c.date)])
-                )
-            )
-            row = query.first()
-            self.stop = row["date_sk"] if row is not None else None
+        if self.start is not None:
+            self.start_hour = self._resolveDateOrTime(time=self.start, min=True)
+            self.start = self._resolveDateOrTime(date=self.start, min=True)
+        
+        # TODO - ensure that we can pass in None for the stop, but get the max - this currently
+        # doesn't work for the single day on the last date of the data set.
+        self.stop_hour = self._resolveDateOrTime(time=self.stop, max=True)
+        self.stop = self._resolveDateOrTime(date=self.stop, max=True)
+        
+        if self.start is None and self.stop is None:
+            raise ValueError("Please set valid dates that exist within the data set")
 
     def _resolveDateOrTime(self, date=None, time=None, min=False, max=False):
-        if date == None and time == None or (min == True and max == True):
+        if (date == None and time == None and min == False and max == False) or (min == True and max == True):
             return None
 
         table = get_sqlalchemy_table_definition(

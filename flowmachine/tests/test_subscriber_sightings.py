@@ -80,7 +80,7 @@ def test_time_dimension_is_added_correctly():
 
 def test_resolve_date_and_time(get_dataframe):
     """Test resolve date and time"""
-    ss = SubscriberSightings(start=None, stop=None)
+    ss = SubscriberSightings(start="2012-01-01", stop=None)
 
     assert ss._resolveDateOrTime() == None
     assert ss._resolveDateOrTime(date="2012-01-01") == None
