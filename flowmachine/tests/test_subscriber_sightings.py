@@ -88,13 +88,16 @@ def test_resolve_date_and_time(get_dataframe):
     assert ss._resolveDateOrTime(date="2016-01-01") == 1
     assert ss._resolveDateOrTime(time="11:23:00") == 12
     assert ss._resolveDateOrTime(date="2012-01-01", min=True) == 1
-    
+
     max = CustomQuery(
         """SELECT * FROM interactions.date_dim 
         WHERE interactions.date_dim.date = (SELECT max(interactions.date_dim.date) FROM interactions.date_dim)""",
         ["date_sk"],
     )
-    assert ss._resolveDateOrTime(date="2012-01-01", max=True) == get_dataframe(max).iloc[0]["date_sk"]
+    assert (
+        ss._resolveDateOrTime(date="2012-01-01", max=True)
+        == get_dataframe(max).iloc[0]["date_sk"]
+    )
 
     with pytest.raises(ValueError):
         ss._resolveDateOrTime(time="astring")
@@ -103,12 +106,19 @@ def test_resolve_date_and_time(get_dataframe):
         ss._resolveDateOrTime(date="1123:00")
 
 
-def test_start_stop_non_exist_will_result_in_min_max():
+def test_start_stop_non_exist_will_result_in_min_max(get_dataframe):
     """Test that setting non existing dates will result in min/max."""
     ss = SubscriberSightings("2012-01-01", "2012-01-02")
 
+    max = CustomQuery(
+        """SELECT * FROM interactions.date_dim 
+        WHERE interactions.date_dim.date = (SELECT max(interactions.date_dim.date) FROM interactions.date_dim)""",
+        ["date_sk"],
+    )
+    date_sk = get_dataframe(max).iloc[0]["date_sk"]
+
     assert ss.start == 1
-    assert ss.stop == 5
+    assert ss.stop == date_sk
 
 
 def test_set_date_none():
