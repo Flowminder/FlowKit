@@ -106,24 +106,14 @@ class SubscriberSightings(Query):
         for param in ("start", "stop"):
             val = getattr(self, param)
             if val is not None:
-                ts = pd.Timestamp(val)
-                # date_dim
-                query = self.connection.engine.execute(
-                    select([date_dim.c.date_sk]).where(
-                        date_dim.c.date == ts.strftime("%Y-%m-%d")
-                    )
-                )
-                row = query.first()
-                setattr(self, param, (row["date_sk"] if row is not None else None))
+                # Date dimension
+                date = self._resolveDateOrTime(date=val)
+                setattr(self, param, (date if date is not None else None))
+                
                 # time_dimension
-                query = self.connection.engine.execute(
-                    select([time_dimension.c.time_sk]).where(
-                        time_dimension.c.hour == ts.hour
-                    )
-                )
-                row = query.first()
+                time = self._resolveDateOrTime(time=val)
                 setattr(
-                    self, f"{param}_hour", (row["time_sk"] if row is not None else None)
+                    self, f"{param}_hour", (time if time is not None else None)
                 )
 
         # If we still have None, then we should get min/max dates from interactions.date_dim
