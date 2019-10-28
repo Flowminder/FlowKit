@@ -22,9 +22,9 @@ import {
 } from "./util/api";
 import RightsCascade from "./RightsCascade";
 
-function scopeStringListToGraph(array) {
+function scopesGraph(array) {
   const nested = {};
-  array.forEach(scope => {
+  Object.keys(array).forEach(scope => {
     let obj = nested;
     scope.split(":").forEach(k => {
       if (!(k in obj)) {
@@ -36,16 +36,34 @@ function scopeStringListToGraph(array) {
   return nested;
 }
 
-function jsonify(tree, labels) {
+function jsonify(tree, labels, enabled, enabledKeys) {
   const list = Object.keys(tree).map(k => {
     const ll = labels.concat([k]);
     const v = tree[k];
     if (Object.keys(v).length === 0) {
-      return { label: k, value: ll.join(":") };
+      return {
+        label: k,
+        value: ll.join(":"),
+        enabled: enabled.includes(ll.join(":"))
+      };
     } else {
-      return { label: k, value: ll.join(":"), children: jsonify(v, ll) };
+      const children = jsonify(v, ll, enabled, enabledKeys);
+      const allEnabled = children.every(child => child.enabled);
+      if (!allEnabled) {
+        children
+          .filter(child => child.enabled)
+          .forEach(child => enabledKeys.push(child.value));
+      }
+      return {
+        label: k,
+        value: ll.join(":"),
+        children: children,
+        enabled: allEnabled
+      };
     }
   });
+
+  list.filter(obj => obj.enabled).forEach(obj => enabledKeys.push(obj.value));
   return list;
 }
 
@@ -192,11 +210,20 @@ class ServerAdminDetails extends React.Component {
           return getTimeLimits(item_id);
         })
         .then(json => {
-          console.log(jsonify(scopeStringListToGraph(Object.keys(rights)), []));
+          const scopeGraph = scopesGraph(rights);
+          const enabledKeys = [];
+          const scopes = jsonify(
+            scopeGraph,
+            [],
+            Object.keys(rights).filter(k => rights[k]),
+            enabledKeys
+          );
+
           this.setState({
             name: name,
-            rights: jsonify(scopeStringListToGraph(Object.keys(rights)), []),
-            enabledRights: Object.keys(rights).filter(k => rights[k]),
+            rights: scopes,
+            fullRights: Object.keys(rights),
+            enabledRights: enabledKeys,
             latest_expiry: json.latest_token_expiry,
             max_life: json.longest_token_life,
             edit_mode: true
