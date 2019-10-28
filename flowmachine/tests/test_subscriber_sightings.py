@@ -68,8 +68,8 @@ def test_start_stop_integer_conversion():
     assert ss.stop == 2
 
 
-def test_start_stop_hours_are_addded_correctly():
-    """Test start stop hours are added correctly."""
+def test_time_dimension_is_added_correctly():
+    """Test time dimension is added correctly."""
     ss = SubscriberSightings("2016-01-01 11:23:00", "2016-01-02 14:41:00")
 
     assert ss.start == 1
@@ -78,12 +78,29 @@ def test_start_stop_hours_are_addded_correctly():
     assert ss.stop_hour == 15
 
 
+def test_resolve_date_and_time():
+    """Test resolve date and time"""
+    ss = SubscriberSightings(start=None, stop=None)
+
+    assert ss._resolveDateOrTime() == None
+    assert ss._resolveDateOrTime(date="2012-01-01") == None
+    assert ss._resolveDateOrTime(date="2016-01-01") == 1
+    assert ss._resolveDateOrTime(time="11:23:00") == 12
+
+    with pytest.raises(ValueError):
+        ss._resolveDateOrTime(time="astring")
+
+    with pytest.raises(ValueError):
+        ss._resolveDateOrTime(date="1123:00")
+
+
 def test_start_stop_non_exist_will_result_in_min_max():
     """Test that setting non existing dates will result in min/max."""
     ss = SubscriberSightings("2012-01-01", "2012-01-02")
 
     assert ss.start == 1
     assert ss.stop == 5
+
 
 def test_set_date_none():
     """Test that setting a start/stop to None will use min/max dates."""

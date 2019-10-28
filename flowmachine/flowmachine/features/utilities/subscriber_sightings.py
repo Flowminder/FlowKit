@@ -95,8 +95,12 @@ class SubscriberSightings(Query):
         return self.start == self.stop
 
     def _check_dates(self):
-        date_dim = get_sqlalchemy_table_definition("interactions.date_dim", engine=Query.connection.engine)
-        time_dimension = get_sqlalchemy_table_definition("interactions.time_dimension", engine=Query.connection.engine)
+        date_dim = get_sqlalchemy_table_definition(
+            "interactions.date_dim", engine=Query.connection.engine
+        )
+        time_dimension = get_sqlalchemy_table_definition(
+            "interactions.time_dimension", engine=Query.connection.engine
+        )
 
         # First, if there are dates, then we should convert them to integers
         for param in ("start", "stop"):
@@ -105,16 +109,22 @@ class SubscriberSightings(Query):
                 ts = pd.Timestamp(val)
                 # date_dim
                 query = self.connection.engine.execute(
-                    select([date_dim.c.date_sk]).where(date_dim.c.date == ts.strftime("%Y-%m-%d"))
+                    select([date_dim.c.date_sk]).where(
+                        date_dim.c.date == ts.strftime("%Y-%m-%d")
+                    )
                 )
                 row = query.first()
                 setattr(self, param, (row["date_sk"] if row is not None else None))
                 # time_dimension
                 query = self.connection.engine.execute(
-                    select([time_dimension.c.time_sk]).where(time_dimension.c.hour == ts.hour)
+                    select([time_dimension.c.time_sk]).where(
+                        time_dimension.c.hour == ts.hour
+                    )
                 )
                 row = query.first()
-                setattr(self, f"{param}_hour", (row["time_sk"] if row is not None else None))
+                setattr(
+                    self, f"{param}_hour", (row["time_sk"] if row is not None else None)
+                )
 
         # If we still have None, then we should get min/max dates from interactions.date_dim
         # Process start
@@ -137,6 +147,30 @@ class SubscriberSightings(Query):
             row = query.first()
             self.stop = row["date_sk"] if row is not None else None
 
+    def _resolveDateOrTime(self, date=None, time=None):
+        if date == None and time == None:
+            return None
+
+        table = get_sqlalchemy_table_definition(
+            "interactions." + ("date_dim" if date != None else "time_dimension"),
+            engine=Query.connection.engine,
+        )
+
+        try:
+            ts = pd.Timestamp((date if date != None else time))
+        except ValueError:
+            raise ValueError("Please use a valid date or time string")
+
+        field = "date" if date != None else "hour"
+        sel = "date_sk" if date != None else "time_sk"
+        comp = ts.strftime("%Y-%m-%d") if date != None else ts.hour
+
+        query = self.connection.engine.execute(
+            select([table.c[sel]]).where(table.c[field] == comp)
+        )
+        row = query.first()
+
+        return row[sel] if row is not None else None
 
     def _make_query_with_sqlalchemy(self):
         # As we are adding from multiple tables, we need to add one by one - here we need
