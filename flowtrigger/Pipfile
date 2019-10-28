@@ -19,6 +19,7 @@ pendulum = "*"
 get-secret-or-env-var = "*"
 psycopg2-binary = "*"
 sqlalchemy = "*"
+networkx = "*"
 
 [dev-packages]
 pytest = "*"

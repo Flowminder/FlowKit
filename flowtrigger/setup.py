@@ -36,6 +36,7 @@ setup(
         "pendulum",
         "get-secret-or-env-var",
         "sqlalchemy",
+        "networkx",
     ],
     extras_require={
         "test": ["pytest", "coverage", "flowkit-jwt-generator"],

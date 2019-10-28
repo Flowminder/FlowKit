@@ -59,13 +59,12 @@ def load_and_validate_workflows_yaml(
             raise ValueError(f"Duplicate workflow name: '{workflow_spec['name']}'.")
         else:
             workflow_names.append(workflow_spec["name"])
-        if not isinstance(workflow_spec["notebooks"], list):
+        if not isinstance(workflow_spec["notebooks"], dict):
             raise TypeError(
-                "Invalid workflow specification: 'notebooks' is not a sequence of notebook task specifications."
+                "Invalid workflow specification: 'notebooks' is not a mapping from labels to notebook task specifications."
             )
-        notebook_labels = []
-        for notebook in workflow_spec["notebooks"]:
-            required_keys = {"label", "filename", "parameters"}
+        for notebook in workflow_spec["notebooks"].values():
+            required_keys = {"filename", "parameters"}
             missing_keys = required_keys.difference(notebook.keys())
             if missing_keys:
                 raise KeyError(
@@ -78,10 +77,6 @@ def load_and_validate_workflows_yaml(
                 raise KeyError(
                     f"Notebook task specification contains unexpected keys {unexpected_keys}."
                 )
-            if notebook["label"] in notebook_labels:
-                raise ValueError(f"Duplicate notebook label: '{notebook['label']}'.")
-            else:
-                notebook_labels.append(notebook["label"])
             if not (inputs_dir / notebook["filename"]).exists():
                 raise ValueError(f"Notebook file '{notebook['filename']}' not found.")
             if not isinstance(notebook["parameters"], dict):

@@ -9,6 +9,7 @@ Utility functions.
 import json
 import datetime
 import pendulum
+import networkx as nx
 from hashlib import md5
 from pathlib import Path
 from typing import Union, Dict, Any, List, Sequence, Set, Tuple, Optional
@@ -200,7 +201,8 @@ def dates_are_available(
     available_dates: Sequence[datetime.date],
 ) -> bool:
     """
-    Check whether all dates represented by a stencil for a particular date are available.
+    Check whether all dates represented by a stencil for a particular date are
+    included in a list of available dates.
 
     Parameters
     ----------
@@ -275,31 +277,30 @@ def make_json_serialisable(obj: Any) -> Union[dict, list, str, int, float, bool,
     return json.loads(json.dumps(obj, default=str))
 
 
-def get_parameter_names(
-    notebooks: List[Dict[str, Any]], reserved_parameter_names: Optional[Set[str]] = None
-) -> Tuple[Set[str], Set[str]]:
+def get_additional_parameter_names_for_notebooks(
+    notebooks: Dict[str, Dict[str, Any]],
+    reserved_parameter_names: Optional[Set[str]] = None,
+) -> Set[str]:
     """
     Extract parameter names from a list of notebook task specifications.
 
     Parameters
     ----------
-    notebooks : list of dict
-        List of dictionaries describing notebook tasks.
+    notebooks : dict
+        Dictionary of dictionaries describing notebook tasks.
     reserved_parameter_names : set of str, optional
         Names of parameters used within workflow, which cannot be used as notebook labels.
     
     Returns
     -------
-    notebook_labels : set of str
-        Notebook labels, which can be used as parameter names in other notebook tasks
-    additional_parameter_names_for_notebooks : set of str
+    set of str
         Names of parameters used by notebooks which are not either reserved parameter names or notebook labels
     """
     if reserved_parameter_names is None:
         reserved_parameter_names = set()
-    # Labels for notebook tasks
-    notebook_labels = set(notebook["label"] for notebook in notebooks)
-    forbidden_labels = notebook_labels.intersection(reserved_parameter_names)
+    # Check that notebook task labels do not include reserved parameter names
+    # TODO: This should be checked elsewhere
+    forbidden_labels = reserved_parameter_names.intersection(notebooks.keys())
     if forbidden_labels:
         raise ValueError(
             f"Notebook labels {forbidden_labels} are forbidden for this workflow. "
@@ -307,10 +308,43 @@ def get_parameter_names(
         )
     # Parameters requested in notebooks
     notebook_parameter_names = set.union(
-        *[set(notebook["parameters"].values()) for notebook in notebooks]
+        *[set(notebook["parameters"].values()) for notebook in notebooks.values()]
     )
     # Additional parameters required for notebooks
     additional_parameter_names_for_notebooks = notebook_parameter_names.difference(
         reserved_parameter_names
-    ).difference(notebook_labels)
-    return notebook_labels, additional_parameter_names_for_notebooks
+    ).difference(notebooks.keys())
+    return additional_parameter_names_for_notebooks
+
+
+def sort_notebook_labels(notebooks: Dict[str, Dict[str, Any]]) -> List[str]:
+    """
+    Perform a topological sort on a dictionary of notebook task specifications.
+
+    Parameters
+    ----------
+    notebooks : dict
+        Dictionary of dictionaries describing notebook tasks.
+    
+    Returns
+    -------
+    list of str
+        List of notebook labels, sorted so that no notebook depends on another
+        notebook that precedes it in the list.
+    """
+    notebooks_graph = nx.DiGraph(
+        {
+            key: [
+                value
+                for value in notebooks[key]["parameters"].values()
+                if value in notebooks
+            ]
+            for key in notebooks
+        }
+    ).reverse()
+    try:
+        sorted_notebook_labels = list(nx.topological_sort(notebooks_graph))
+    except nx.NetworkXUnfeasible:
+        raise ValueError("Notebook specifications contain cyclic dependencies.")
+
+    return sorted_notebook_labels

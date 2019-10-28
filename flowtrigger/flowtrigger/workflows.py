@@ -11,7 +11,7 @@ from prefect.schedules import CronSchedule
 from typing import List, Set, Dict, Tuple, Any, NoReturn
 
 from . import tasks
-from .utils import get_parameter_names
+from .utils import get_additional_parameter_names_for_notebooks, sort_notebook_labels
 
 
 def new_dates_subflow(
@@ -54,7 +54,7 @@ def new_dates_subflow(
 
 
 def add_notebooks_tasks(
-    notebooks: List[Dict[str, Any]],
+    notebooks: Dict[str, Dict[str, Any]],
     tag: "prefect.Task",
     parameter_tasks: Dict[str, "prefect.Task"],
 ) -> Tuple[List["prefect.Task"], List["prefect.Task"]]:
@@ -63,9 +63,9 @@ def add_notebooks_tasks(
 
     Parameters
     ----------
-    notebooks : list of dict
-        List of dictionaries describing notebook tasks.
-        Each should have keys 'label', 'filename', 'parameters', and optionally 'output'.
+    notebooks : dict
+        Dictionary of dictionaries describing notebook tasks.
+        Each should have keys 'filename' and 'parameters', and optionally 'output'.
     tag : Task
         Tag to append to output filenames.
     parameter_tasks : dict
@@ -86,22 +86,25 @@ def add_notebooks_tasks(
     """
     notebook_tasks = []
     output_tasks = []
-    for notebook in notebooks:
-        parameter_tasks[notebook["label"]] = tasks.papermill_execute_notebook(
-            input_filename=notebook["filename"],
+
+    sorted_notebook_labels = sort_notebook_labels(notebooks)
+
+    for label in sorted_notebook_labels:
+        parameter_tasks[label] = tasks.papermill_execute_notebook(
+            input_filename=notebooks[label]["filename"],
             output_tag=tag,
             parameters={
                 key: (parameter_tasks[value])
-                for key, value in notebook["parameters"].items()
+                for key, value in notebooks[label]["parameters"].items()
             },
         )
-        notebook_tasks.append(parameter_tasks[notebook["label"]])
-        if "output" in notebook:
+        notebook_tasks.append(parameter_tasks[label])
+        if "output" in notebooks[label]:
             # Create PDF report from notebook
             output_tasks.append(
                 tasks.convert_notebook_to_pdf(
-                    notebook_path=parameter_tasks[notebook["label"]],
-                    asciidoc_template=notebook["output"]["template"],
+                    notebook_path=parameter_tasks[label],
+                    asciidoc_template=notebooks[label]["output"]["template"],
                 )
             )
 
@@ -109,7 +112,7 @@ def add_notebooks_tasks(
 
 
 def add_mapped_notebooks_tasks(
-    notebooks: List[Dict[str, Any]],
+    notebooks: Dict[str, Dict[str, Any]],
     tag: "prefect.Task",
     parameter_tasks: Dict[str, "prefect.Task"],
     mappable_parameter_names: Set[str],
@@ -120,9 +123,9 @@ def add_mapped_notebooks_tasks(
 
     Parameters
     ----------
-    notebooks : list of dict
-        List of dictionaries describing notebook tasks.
-        Each should have keys 'label', 'filename', 'parameters', and optionally 'output'.
+    notebooks : dict
+        Dictionary of dictionaries describing notebook tasks.
+        Each should have keys 'filename' and 'parameters', and optionally 'output'.
     tag : Task
         Tag to append to output filenames. The output of this task will be mapped over.
     parameter_tasks : dict
@@ -145,9 +148,12 @@ def add_mapped_notebooks_tasks(
     """
     notebook_tasks = []
     output_tasks = []
-    for notebook in notebooks:
-        parameter_tasks[notebook["label"]] = tasks.papermill_execute_notebook.map(
-            input_filename=unmapped(notebook["filename"]),
+
+    sorted_notebook_labels = sort_notebook_labels(notebooks)
+
+    for label in sorted_notebook_labels:
+        parameter_tasks[label] = tasks.papermill_execute_notebook.map(
+            input_filename=unmapped(notebooks[label]["filename"]),
             output_tag=tag,
             parameters=tasks.mappable_dict.map(
                 **{
@@ -156,17 +162,17 @@ def add_mapped_notebooks_tasks(
                         if value in mappable_parameter_names
                         else unmapped(parameter_tasks[value])
                     )
-                    for key, value in notebook["parameters"].items()
+                    for key, value in notebooks[label]["parameters"].items()
                 }
             ),
         )
-        notebook_tasks.append(parameter_tasks[notebook["label"]])
-        if "output" in notebook:
+        notebook_tasks.append(parameter_tasks[label])
+        if "output" in notebooks[label]:
             # Create PDF report from notebook
             output_tasks.append(
                 tasks.convert_notebook_to_pdf.map(
-                    notebook_path=parameter_tasks[notebook["label"]],
-                    asciidoc_template=unmapped(notebook["output"]["template"]),
+                    notebook_path=parameter_tasks[label],
+                    asciidoc_template=unmapped(notebooks[label]["output"]["template"]),
                 )
             )
 
@@ -174,7 +180,7 @@ def add_mapped_notebooks_tasks(
 
 
 def make_scheduled_notebooks_workflow(
-    name: str, schedule: str, notebooks: List[Dict[str, Any]]
+    name: str, schedule: str, notebooks: Dict[str, Dict[str, Any]]
 ) -> Flow:
     """
     Build a prefect workflow that runs a set of Jupyter notebooks on a schedule.
@@ -186,9 +192,9 @@ def make_scheduled_notebooks_workflow(
         Name for the workflow
     schedule : str
         Cron string describing the schedule on which the workflow will run the notebooks.
-    notebooks : list of dict
-        List of dictionaries describing notebook tasks.
-        Each should have keys 'label', 'filename', 'parameters', and optionally 'output'.
+    notebooks : dict
+        Dictionary of dictionaries describing notebook tasks.
+        Each should have keys 'filename' and 'parameters', and optionally 'output'.
     
     Returns
     -------
@@ -199,7 +205,7 @@ def make_scheduled_notebooks_workflow(
     flow_schedule = CronSchedule(schedule)
 
     # Get parameter names
-    notebook_labels, additional_parameter_names_for_notebooks = get_parameter_names(
+    additional_parameter_names_for_notebooks = get_additional_parameter_names_for_notebooks(
         notebooks=notebooks, reserved_parameter_names={"flowapi_url"}
     )
 
@@ -238,7 +244,7 @@ def make_scheduled_notebooks_workflow(
 
 
 def make_date_triggered_notebooks_workflow(
-    name: str, schedule: str, notebooks: List[Dict[str, Any]]
+    name: str, schedule: str, notebooks: Dict[str, Dict[str, Any]]
 ) -> Flow:
     """
     Build a prefect workflow that runs a set of Jupyter notebooks for each new date
@@ -262,9 +268,9 @@ def make_date_triggered_notebooks_workflow(
         Name for the workflow
     schedule : str
         Cron string describing the schedule on which the workflow will check for new data.
-    notebooks : list of dict
-        List of dictionaries describing notebook tasks.
-        Each should have keys 'label', 'filename', 'parameters', and optionally 'output'.
+    notebooks : dict
+        Dictionary of dictionaries describing notebook tasks.
+        Each should have keys 'filename' and 'parameters', and optionally 'output'.
     
     Returns
     -------
@@ -278,14 +284,14 @@ def make_date_triggered_notebooks_workflow(
     # Parameters required for date filter (will all have default None)
     date_filter_parameter_names = {"cdr_types", "earliest_date", "date_stencil"}
     # Parameters used in notebooks
-    notebook_labels, additional_parameter_names_for_notebooks = get_parameter_names(
+    additional_parameter_names_for_notebooks = get_additional_parameter_names_for_notebooks(
         notebooks=notebooks,
         reserved_parameter_names=date_filter_parameter_names.union(
             {"flowapi_url", "reference_date", "date_ranges"}
         ),
     )
     # Parameters that should be mapped over in workflow
-    mappable_parameter_names = notebook_labels.union({"reference_date", "date_ranges"})
+    mappable_parameter_names = {"reference_date", "date_ranges"}.union(notebooks.keys())
 
     # Define workflow
     with Flow(name=name, schedule=flow_schedule) as workflow:
