@@ -56,9 +56,12 @@ def test_param_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
     monkeypatch.setenv("REDIS_PORT", "7777")
     monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
-    core_set_log_level_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
-        mocked_connections
-    )
+    (
+        core_set_log_level_mock,
+        core_init_Connection_mock,
+        core_init_StrictRedis_mock,
+        core_init_start_threadpool_mock,
+    ) = mocked_connections
     connect(
         log_level="dummy_log_level",
         flowdb_port=1234,
@@ -102,9 +105,12 @@ def test_env_priority(mocked_connections, monkeypatch):
     monkeypatch.setenv("REDIS_HOST", "DUMMY_ENV_REDIS_HOST")
     monkeypatch.setenv("REDIS_PORT", "5050")
     monkeypatch.setenv("REDIS_PASSWORD", "DUMMY_ENV_REDIS_PASSWORD")
-    core_set_log_level_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
-        mocked_connections
-    )
+    (
+        core_set_log_level_mock,
+        core_init_Connection_mock,
+        core_init_StrictRedis_mock,
+        core_init_start_threadpool_mock,
+    ) = mocked_connections
     connect()
     core_set_log_level_mock.assert_called_with(
         "flowmachine.debug", "DUMMY_ENV_LOG_LEVEL"
@@ -129,9 +135,12 @@ def test_env_priority(mocked_connections, monkeypatch):
 @pytest.mark.usefixtures("clean_env")
 def test_connect_defaults(mocked_connections, monkeypatch):
     """Test connect defaults are used with no params and no env vars"""
-    core_set_log_level_mock, core_init_Connection_mock, core_init_StrictRedis_mock, core_init_start_threadpool_mock = (
-        mocked_connections
-    )
+    (
+        core_set_log_level_mock,
+        core_init_Connection_mock,
+        core_init_StrictRedis_mock,
+        core_init_start_threadpool_mock,
+    ) = mocked_connections
     connect(flowdb_password="foo", redis_password="fm_redis")
     core_set_log_level_mock.assert_called_with("flowmachine.debug", "error")
     core_init_Connection_mock.assert_called_with(

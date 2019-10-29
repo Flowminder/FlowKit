@@ -20,7 +20,7 @@ from etl.dummy_task_callables import (
 
 
 def test_dummy__callable_succeeds_with_no_TASK_TO_FAIL_env_var_set(
-    create_fake_task_instance
+    create_fake_task_instance,
 ):
     """
     Test that when no TASK_TO_FAIL env var set the dummy callable
@@ -34,7 +34,7 @@ def test_dummy__callable_succeeds_with_no_TASK_TO_FAIL_env_var_set(
 
 
 def test_dummy__callable_succeeds_when_TASK_TO_FAIL_env_var_is_not_same_as_task_id(
-    create_fake_task_instance
+    create_fake_task_instance,
 ):
     """
     Test that when TASK_TO_FAIL env var is different from the task id the dummy
@@ -50,7 +50,7 @@ def test_dummy__callable_succeeds_when_TASK_TO_FAIL_env_var_is_not_same_as_task_
 
 
 def test_dummy__callable_fails_when_TASK_TO_FAIL_env_var_is_same_as_task_id(
-    create_fake_task_instance
+    create_fake_task_instance,
 ):
     """
     Test that if TASK_TO_FAIL is same as task id the dummy_callable raises

@@ -162,7 +162,7 @@ def generate_token(
 
 
 def get_all_claims_from_flowapi(
-    flowapi_url: str
+    flowapi_url: str,
 ) -> Dict[str, Dict[str, Dict[str, Union[Dict[str, bool], List[str]]]]]:
     """
     Retrieve all the query types available on an instance of flowapi and

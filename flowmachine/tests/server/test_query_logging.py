@@ -24,8 +24,8 @@ def test_query_run_logged(json_log, server_config):
         "flowmachine.debug", "ERROR"
     )  # Logging of query runs should be independent of other logs
     Query.redis.get.return_value = (
-        b"known"
-    )  # Mock enough redis to get to the log messages
+        b"known"  # Mock enough redis to get to the log messages
+    )
     reply = get_reply_for_message(
         msg_str=json.dumps(msg_contents), config=server_config
     )
