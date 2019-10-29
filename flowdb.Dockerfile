@@ -60,14 +60,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends locales locales
 #
 # Install Google's differential privacy extension
 #
-RUN echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list && \
+RUN apt update && apt install curl && \
+    echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list && \
     curl https://bazel.build/bazel-release.pub.gpg | apt-key add - && \
     apt update && \
     apt install -y bazel git bison postgresql-server-dev-$PG_VERSION libreadline-dev flex && \
     git clone https://github.com/greenape/differential-privacy.git && \
     cd differential-privacy && \
     differential-privacy/postgres/install_extension.sh && \
-    apt remove -y bazel git bison postgresql-server-dev-$PG_VERSION libreadline-dev flex && \
+    apt remove -y bazel git bison postgresql-server-dev-$PG_VERSION libreadline-dev flex curl && \
     apt purge -y --auto-remove && \
     rm /etc/apt/sources.list.d/bazel.list && \
     cd / && rm -rf /differential-privacy
