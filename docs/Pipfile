@@ -16,7 +16,7 @@ mkdocs-material = "*"
 ipykernel = "*"
 geopandas = "*"
 numpydoc = "*"
-black = "==19.3b0"
+black = "==19.10b0"
 click = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 descartes = "*"

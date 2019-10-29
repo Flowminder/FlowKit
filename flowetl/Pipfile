@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-black = "==19.3b0"
+black = "==19.10b0"
 apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.4"}
 pylint = "*"
 pytest = "*"

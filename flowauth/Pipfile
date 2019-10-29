@@ -23,6 +23,7 @@ itsdangerous = "*"
 [dev-packages]
 pytest = "*"
 pytest-cov = "*"
+black = "==19.10b0"
 flowauth = {editable = true,path = "./backend"}
 flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 
