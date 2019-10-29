@@ -375,7 +375,7 @@ def get_cached_query_objects_ordered_by_score(
     connection : Connection
     protected_period : int, default None
         Optionally specify a number of seconds within which cache entries are excluded. If None,
-        the value stored in cache.cache_config will be used. Set to -1 to ignore cache protection
+        the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
         completely.
 
     Returns
@@ -415,7 +415,7 @@ def shrink_one(
         Set to true to just report the object that would be removed and not remove it
      protected_period : int, default None
         Optionally specify a number of seconds within which cache entries are excluded. If None,
-        the value stored in cache.cache_config will be used. Set to -1 to ignore cache protection
+        the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
         completely.
 
     Returns
@@ -457,7 +457,7 @@ def shrink_below_size(
         Set to true to just report the objects that would be removed and not remove them
     protected_period : int, default None
         Optionally specify a number of seconds within which cache entries are excluded. If None,
-        the value stored in cache.cache_config will be used. Set to -1 to ignore cache protection
+        the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
         completely.
 
     Returns
@@ -781,7 +781,7 @@ async def watch_and_shrink_cache(
         Set to true to just report the objects that would be removed and not remove them
     protected_period : int, default None
         Optionally specify a number of seconds within which cache entries are excluded. If None,
-        the value stored in cache.cache_config will be used. Set to -1 to ignore cache protection
+        the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
         completely.
 
     Returns
