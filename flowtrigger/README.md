@@ -12,7 +12,7 @@ FlowTrigger uses:
 
 ### Build
 
-To build the Docker container, run
+To build the Docker image, run
 
 ```
 docker build -t flowminder/flowtrigger .
