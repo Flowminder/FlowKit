@@ -59,6 +59,9 @@ def test_singleday_property():
     ss = SubscriberSightings("2016-01-01", "2016-01-02")
     assert ss.singleday == False
 
+    ss = SubscriberSightings("2016-01-01", None)
+    assert ss.singleday == True
+
 
 def test_start_stop_integer_conversion():
     """Test that setting a start/stop will get date integers."""
@@ -66,6 +69,8 @@ def test_start_stop_integer_conversion():
 
     assert ss.start == 1
     assert ss.stop == 2
+    assert ss.start_hour == 1
+    assert ss.stop_hour == 1
 
 
 def test_time_dimension_is_added_correctly():

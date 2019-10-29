@@ -104,7 +104,7 @@ class SubscriberSightings(Query):
             self.stop_hour = self._resolveDateOrTime(time=self.stop, max=True)
             self.stop = self._resolveDateOrTime(date=self.stop, max=True)
         else:
-            self.stop = self._resolveDateOrTime(date=0, max=True)
+            self.stop = self.start
 
         if self.start is None and self.stop is None:
             raise ValueError("Please set valid dates that exist within the data set")
