@@ -4,7 +4,28 @@
 
 import pytest
 
-from flowmachine.core.server.server_config import get_server_config
+from flowmachine.core.server.server_config import get_server_config, get_env_as_bool
+
+
+@pytest.mark.parametrize(
+    "env_value, expected",
+    [
+        ("True", True),
+        ("TRUE", True),
+        ("true", True),
+        ("", False),
+        (1, False),
+        ("False", False),
+        (True, True),
+        (False, False),
+    ],
+)
+def test_bool_env(env_value, expected, monkeypatch):
+    """
+    Test getting env vars as bools.
+    """
+    monkeypatch.setenv("DUMMY_ENV_VAR", env_value)
+    assert get_env_as_bool("DUMMY_ENV_VAR") == expected
 
 
 def test_get_server_config(monkeypatch):
@@ -14,11 +35,15 @@ def test_get_server_config(monkeypatch):
     monkeypatch.setenv("FLOWMACHINE_PORT", 5678)
     monkeypatch.setenv("FLOWMACHINE_SERVER_DEBUG_MODE", "true")
     monkeypatch.setenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", "true")
+    monkeypatch.setenv("FLOWMACHINE_CACHE_PRUNING_FREQUENCY", 1)
+    monkeypatch.setenv("FLOWMACHINE_CACHE_PRUNING_TIMEOUT", 2)
     config = get_server_config()
-    assert len(config) == 3
+    assert len(config) == 5
     assert config.port == 5678
-    assert config.debug_mode == True
-    assert config.store_dependencies == False
+    assert config.debug_mode
+    assert not config.store_dependencies
+    assert config.cache_pruning_timeout == 2
+    assert config.cache_pruning_frequency == 1
 
 
 def test_get_server_config_defaults(monkeypatch):
@@ -28,8 +53,12 @@ def test_get_server_config_defaults(monkeypatch):
     monkeypatch.delenv("FLOWMACHINE_PORT", raising=False)
     monkeypatch.delenv("FLOWMACHINE_SERVER_DEBUG_MODE", raising=False)
     monkeypatch.delenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", raising=False)
+    monkeypatch.delenv("FLOWMACHINE_CACHE_PRUNING_FREQUENCY", raising=False)
+    monkeypatch.delenv("FLOWMACHINE_CACHE_PRUNING_TIMEOUT", raising=False)
     config = get_server_config()
-    assert len(config) == 3
+    assert len(config) == 5
     assert config.port == 5555
-    assert config.debug_mode == False
-    assert config.store_dependencies == True
+    assert not config.debug_mode
+    assert config.store_dependencies
+    assert config.cache_pruning_timeout == 600
+    assert config.cache_pruning_frequency == 86400

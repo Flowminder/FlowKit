@@ -15,31 +15,6 @@ from flowmachine.core.server.server_config import FlowmachineServerConfig
 
 
 @pytest.fixture
-def json_log(capsys):
-    def parse_json():
-        log_output = capsys.readouterr()
-        stdout = []
-        stderr = []
-        for l in log_output.out.split("\n"):
-            if l == "":
-                continue
-            try:
-                stdout.append(json.loads(l))
-            except JSONDecodeError:
-                stdout.append(l)
-        for l in log_output.err.split("\n"):
-            if l == "":
-                continue
-            try:
-                stderr.append(json.loads(l))
-            except JSONDecodeError:
-                stderr.append(l)
-        return CaptureResult(stdout, stderr)
-
-    return parse_json
-
-
-@pytest.fixture
 def dummy_zmq_server(monkeypatch):
     """
     A fixture which provides a dummy zero mq
@@ -81,4 +56,10 @@ def server_config():
     """
     Returns a FlowmachineServerConfig object, required as a parameter for server functions and action handlers.
     """
-    return FlowmachineServerConfig(port=5555, debug_mode=False, store_dependencies=True)
+    return FlowmachineServerConfig(
+        port=5555,
+        debug_mode=False,
+        store_dependencies=True,
+        cache_pruning_frequency=86400,
+        cache_pruning_timeout=600,
+    )

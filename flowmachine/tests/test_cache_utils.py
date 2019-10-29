@@ -31,6 +31,9 @@ from flowmachine.core.cache import (
     reset_cache,
     write_cache_metadata,
     write_query_to_cache,
+    get_cache_protected_period,
+    set_cache_protected_period,
+    watch_and_shrink_cache,
 )
 from flowmachine.core.query_state import QueryState, QueryStateMachine
 from flowmachine.features import daily_location
@@ -159,11 +162,34 @@ def test_get_cached_query_objects_ordered_by_score(flowmachine_connect):
     table = dl.get_table()
 
     # Should prefer the larger, but slower to calculate and more used dl over the aggregation
-    cached_queries = get_cached_query_objects_ordered_by_score(flowmachine_connect)
+    cached_queries = get_cached_query_objects_ordered_by_score(
+        flowmachine_connect, protected_period=-1
+    )
     assert 2 == len(cached_queries)
     assert dl_agg.query_id == cached_queries[0][0].query_id
     assert dl.query_id == cached_queries[1][0].query_id
     assert 2 == len(cached_queries[0])
+
+
+def test_get_cached_query_objects_protected_period(flowmachine_connect):
+    """
+    Test that all records which are queries are returned in correct order, but queries within protected period are omitted.
+    """
+    dl = daily_location("2016-01-01").store().result()
+    dl_agg = dl.aggregate().store().result()
+    table = dl.get_table()
+
+    cached_queries = get_cached_query_objects_ordered_by_score(
+        flowmachine_connect, protected_period=-1
+    )
+    assert 2 == len(cached_queries)
+    assert dl_agg.query_id == cached_queries[0][0].query_id
+    assert dl.query_id == cached_queries[1][0].query_id
+    assert 2 == len(cached_queries[0])
+    cached_queries = get_cached_query_objects_ordered_by_score(
+        flowmachine_connect, protected_period=1
+    )
+    assert 0 == len(cached_queries)
 
 
 def test_shrink_one(flowmachine_connect):
@@ -178,7 +204,7 @@ def test_shrink_one(flowmachine_connect):
     flowmachine_connect.engine.execute(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
-    removed_query, table_size = shrink_one(flowmachine_connect)
+    removed_query, table_size = shrink_one(flowmachine_connect, protected_period=-1)
     assert dl.query_id == removed_query.query_id
     assert not dl.is_stored
     assert dl_aggregate.is_stored
@@ -190,7 +216,7 @@ def test_shrink_to_size_does_nothing_when_cache_ok(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     removed_queries = shrink_below_size(
-        flowmachine_connect, get_size_of_cache(flowmachine_connect)
+        flowmachine_connect, get_size_of_cache(flowmachine_connect), protected_period=-1
     )
     assert 0 == len(removed_queries)
     assert dl.is_stored
@@ -202,7 +228,9 @@ def test_shrink_to_size_removes_queries(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     removed_queries = shrink_below_size(
-        flowmachine_connect, get_size_of_cache(flowmachine_connect) - 1
+        flowmachine_connect,
+        get_size_of_cache(flowmachine_connect) - 1,
+        protected_period=-1,
     )
     assert 1 == len(removed_queries)
     assert not dl.is_stored
@@ -214,7 +242,9 @@ def test_shrink_to_size_respects_dry_run(flowmachine_connect):
     """
     dl = daily_location("2016-01-01").store().result()
     dl2 = daily_location("2016-01-02").store().result()
-    removed_queries = shrink_below_size(flowmachine_connect, 0, dry_run=True)
+    removed_queries = shrink_below_size(
+        flowmachine_connect, 0, dry_run=True, protected_period=-1
+    )
     assert 2 == len(removed_queries)
     assert dl.is_stored
     assert dl2.is_stored
@@ -225,12 +255,16 @@ def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
     Test that shrink_below_size dry run is an accurate report.
     """
     dl = daily_location("2016-01-01").store().result()
-    dl2 = daily_location("2016-01-02").store().result()
+    daily_location("2016-01-02").store().result()
+    daily_location("2016-01-03").store().result()
+
     shrink_to = get_size_of_table(flowmachine_connect, dl.table_name, "cache")
     queries_that_would_be_removed = shrink_below_size(
-        flowmachine_connect, shrink_to, dry_run=True
+        flowmachine_connect, shrink_to, dry_run=True, protected_period=-1
     )
-    removed_queries = shrink_below_size(flowmachine_connect, shrink_to, dry_run=False)
+    removed_queries = shrink_below_size(
+        flowmachine_connect, shrink_to, dry_run=False, protected_period=-1
+    )
     assert [q.query_id for q in removed_queries] == [
         q.query_id for q in queries_that_would_be_removed
     ]
@@ -249,7 +283,9 @@ def test_shrink_to_size_uses_score(flowmachine_connect):
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
     table_size = get_size_of_table(flowmachine_connect, dl.table_name, "cache")
-    removed_queries = shrink_below_size(flowmachine_connect, table_size)
+    removed_queries = shrink_below_size(
+        flowmachine_connect, table_size, protected_period=-1
+    )
     assert 1 == len(removed_queries)
     assert not dl.is_stored
     assert dl_aggregate.is_stored
@@ -267,7 +303,7 @@ def test_shrink_one(flowmachine_connect):
     flowmachine_connect.engine.execute(
         f"UPDATE cache.cached SET cache_score_multiplier = 0.5 WHERE query_id='{dl.query_id}'"
     )
-    removed_query, table_size = shrink_one(flowmachine_connect)
+    removed_query, table_size = shrink_one(flowmachine_connect, protected_period=-1)
     assert dl.query_id == removed_query.query_id
     assert not dl.is_stored
     assert dl_aggregate.is_stored
@@ -280,8 +316,8 @@ def test_size_of_cache(flowmachine_connect):
     dl = daily_location("2016-01-01").store().result()
     dl_aggregate = dl.aggregate().store().result()
     total_cache_size = get_size_of_cache(flowmachine_connect)
-    removed_query, table_size_a = shrink_one(flowmachine_connect)
-    removed_query, table_size_b = shrink_one(flowmachine_connect)
+    removed_query, table_size_a = shrink_one(flowmachine_connect, protected_period=-1)
+    removed_query, table_size_b = shrink_one(flowmachine_connect, protected_period=-1)
     assert total_cache_size == table_size_a + table_size_b
     assert 0 == get_size_of_cache(flowmachine_connect)
 
@@ -391,9 +427,11 @@ def flowmachine_connect_with_cache_settings_reset(flowmachine_connect):
     """
     max_cache_size = get_max_size_of_cache(flowmachine_connect)
     cache_half_life = get_cache_half_life(flowmachine_connect)
+    cache_protect_period = get_cache_protected_period(flowmachine_connect)
     yield flowmachine_connect
     set_max_size_of_cache(flowmachine_connect, max_cache_size)
     set_cache_half_life(flowmachine_connect, cache_half_life)
+    set_cache_protected_period(flowmachine_connect, cache_protect_period)
 
 
 def test_get_set_cache_size_limit(flowmachine_connect_with_cache_settings_reset):
@@ -534,3 +572,44 @@ def test_cache_ddl_op_error(dummy_redis):
             write_func=Mock(),
         )
     assert qsm.current_query_state == QueryState.ERRORED
+
+
+@pytest.mark.asyncio
+async def test_cache_watch_does_shrink(flowmachine_connect):
+    """
+    Test that the cache watcher will shrink cache tables.
+    """
+    dl = daily_location("2016-01-01").store().result()
+    assert dl.is_stored
+    assert get_size_of_cache(flowmachine_connect) > 0
+    await watch_and_shrink_cache(
+        flowdb_connection=flowmachine_connect,
+        pool=Query.thread_pool_executor,
+        sleep_time=0,
+        loop=False,
+        protected_period=-1,
+        size_threshold=1,
+    )
+    assert not dl.is_stored
+    assert get_size_of_cache(flowmachine_connect) == 0
+
+
+@pytest.mark.asyncio
+async def test_cache_watch_does_timeout(flowmachine_connect, json_log):
+    """
+    Test that the cache watcher will timeout and log that it has.
+    """
+    await watch_and_shrink_cache(
+        flowdb_connection=flowmachine_connect,
+        pool=Query.thread_pool_executor,
+        sleep_time=0,
+        loop=False,
+        protected_period=-1,
+        size_threshold=1,
+        timeout=0,
+    )
+    log_lines = [x for x in json_log().err if x["level"] == "error"]
+    assert (
+        log_lines[0]["event"]
+        == "Failed to complete cache shrink within 0s. Trying again in 0s."
+    )
