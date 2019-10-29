@@ -67,7 +67,7 @@ RUN apt update && apt install -y curl && \
     apt install -y bazel git bison postgresql-server-dev-$PG_MAJOR libreadline-dev flex && \
     git clone https://github.com/greenape/differential-privacy.git && \
     cd differential-privacy && \
-    differential-privacy/postgres/install_extension.sh && \
+    differential_privacy/postgres/install_extension.sh && \
     apt remove -y bazel git bison postgresql-server-dev-$PG_MAJOR libreadline-dev flex curl && \
     apt purge -y --auto-remove && \
     rm /etc/apt/sources.list.d/bazel.list && \
