@@ -255,7 +255,9 @@ def test_shrink_to_size_dry_run_reflects_wet_run(flowmachine_connect):
     Test that shrink_below_size dry run is an accurate report.
     """
     dl = daily_location("2016-01-01").store().result()
-    dl2 = daily_location("2016-01-02").store().result()
+    daily_location("2016-01-02").store().result()
+    daily_location("2016-01-03").store().result()
+
     shrink_to = get_size_of_table(flowmachine_connect, dl.table_name, "cache")
     queries_that_would_be_removed = shrink_below_size(
         flowmachine_connect, shrink_to, dry_run=True, protected_period=-1
