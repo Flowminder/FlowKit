@@ -98,21 +98,25 @@ class SubscriberSightings(Query):
         if self.start is not None:
             self.start_hour = self._resolveDateOrTime(time=self.start, min=True)
             self.start = self._resolveDateOrTime(date=self.start, min=True)
-        
-        # TODO - ensure that we can pass in None for the stop, but get the max - this currently
-        # doesn't work for the single day on the last date of the data set.
-        self.stop_hour = self._resolveDateOrTime(time=self.stop, max=True)
-        self.stop = self._resolveDateOrTime(date=self.stop, max=True)
-        
+
+        # We need to only process the stop value for time/date if it's set
+        if self.stop is not None:
+            self.stop_hour = self._resolveDateOrTime(time=self.stop, max=True)
+            self.stop = self._resolveDateOrTime(date=self.stop, max=True)
+        else:
+            self.stop = self._resolveDateOrTime(date=0, max=True)
+
         if self.start is None and self.stop is None:
             raise ValueError("Please set valid dates that exist within the data set")
 
     def _resolveDateOrTime(self, date=None, time=None, min=False, max=False):
-        if (date == None and time == None and min == False and max == False) or (min == True and max == True):
+        if (date == None and time == None and min == False and max == False) or (
+            min == True and max == True
+        ):
             return None
 
         table = get_sqlalchemy_table_definition(
-            "interactions." + ("date_dim" if date != None else "time_dimension"),
+            "interactions." + ("date_dim" if date is not None else "time_dimension"),
             engine=Query.connection.engine,
         )
 
@@ -123,7 +127,7 @@ class SubscriberSightings(Query):
 
         field = "date" if date is not None else "hour"
         sel = "date_sk" if date is not None else "time_sk"
-        comp = ts.strftime("%Y-%m-%d") if date != None else ts.hour
+        comp = ts.strftime("%Y-%m-%d") if date is not None else ts.hour
 
         # Test if we can get a value
         query = self.connection.engine.execute(
