@@ -5,7 +5,7 @@ FlowTrigger is a tool that automates the event-driven execution of workflows con
 FlowTrigger uses:
 - [Prefect](https://github.com/prefecthq/prefect) to define and run workflows,
 - [Papermill](https://github.com/nteract/papermill) to parameterise and execute Jupyter notebooks,
-- [Scrapbook](https://github.com/nteract/scrapbook) to enable data-sharing between notebooks.
+- [Scrapbook](https://github.com/nteract/scrapbook) to enable data-sharing between notebooks,
 - [nbconvert](https://github.com/jupyter/nbconvert) and [asciidoctor-pdf](https://github.com/asciidoctor/asciidoctor-pdf) to convert notebooks to PDF, via asciidoc.
 
 ## Docker container
@@ -147,7 +147,7 @@ The example notebooks in `./examples/inputs` contain examples of parameterisatio
 
 To run FlowTrigger outside of a Docker container, run
 
-```python
+```bash
 pipenv install
 pipenv run python -m flowtrigger
 ```
