@@ -4,7 +4,28 @@
 
 import pytest
 
-from flowmachine.core.server.server_config import get_server_config
+from flowmachine.core.server.server_config import get_server_config, get_env_as_bool
+
+
+@pytest.mark.parametrize(
+    "env_value, expected",
+    [
+        ("True", True),
+        ("TRUE", True),
+        ("true", True),
+        ("", False),
+        (1, False),
+        ("False", False),
+        (True, True),
+        (False, False),
+    ],
+)
+def test_bool_env(env_value, expected, monkeypatch):
+    """
+    Test getting env vars as bools.
+    """
+    monkeypatch.setenv("DUMMY_ENV_VAR", env_value)
+    assert get_env_as_bool("DUMMY_ENV_VAR") == expected
 
 
 def test_get_server_config(monkeypatch):

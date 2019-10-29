@@ -6,6 +6,27 @@ import os
 from typing import NamedTuple
 
 
+def get_env_as_bool(env_var: str) -> bool:
+    """
+    Return a boolean true if the named env var is set to 'true' with any casing, and
+    return False if it is set to anything else or not set at all.
+
+    Parameters
+    ----------
+    env_var : str
+        Name of the environment variable
+
+    Returns
+    -------
+    bool
+
+    """
+    try:
+        return "true" == os.environ[env_var].lower()
+    except (KeyError, AttributeError):
+        return False
+
+
 class FlowmachineServerConfig(NamedTuple):
     """
     A namedtuple for passing server config options within the Flowmachine server.
@@ -41,10 +62,9 @@ def get_server_config() -> FlowmachineServerConfig:
         A namedtuple containing the config options
     """
     port = int(os.getenv("FLOWMACHINE_PORT", 5555))
-    debug_mode = "true" == os.getenv("FLOWMACHINE_SERVER_DEBUG_MODE", "false").lower()
-    store_dependencies = not (
-        "true"
-        == os.getenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", "false").lower()
+    debug_mode = get_env_as_bool("FLOWMACHINE_SERVER_DEBUG_MODE")
+    store_dependencies = not get_env_as_bool(
+        "FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING"
     )
     cache_pruning_frequency = int(
         os.getenv("FLOWMACHINE_CACHE_PRUNING_FREQUENCY", 86400)
