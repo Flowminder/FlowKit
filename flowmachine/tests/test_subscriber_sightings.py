@@ -88,16 +88,15 @@ def test_resolve_date_and_time(get_dataframe):
     assert ss._resolveDateOrTime(date="2016-01-01") == 1
     assert ss._resolveDateOrTime(time="11:23:00") == 12
     assert ss._resolveDateOrTime(date="2012-01-01", min=True) == 1
-
+    assert ss._resolveDateOrTime(date=0, min=True) == 1
     max = CustomQuery(
         """SELECT * FROM interactions.date_dim 
         WHERE interactions.date_dim.date = (SELECT max(interactions.date_dim.date) FROM interactions.date_dim)""",
         ["date_sk"],
     )
-    assert (
-        ss._resolveDateOrTime(date="2012-01-01", max=True)
-        == get_dataframe(max).iloc[0]["date_sk"]
-    )
+    date_sk = get_dataframe(max).iloc[0]["date_sk"]
+    assert ss._resolveDateOrTime(date="2012-01-01", max=True) == date_sk
+    assert ss._resolveDateOrTime(date=0, max=True) == date_sk
 
     with pytest.raises(ValueError):
         ss._resolveDateOrTime(time="astring")
