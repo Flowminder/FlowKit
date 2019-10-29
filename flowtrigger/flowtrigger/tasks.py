@@ -31,7 +31,7 @@ from .utils import (
     stencil_to_date_pairs,
     make_json_serialisable,
 )
-from .model import workflow_runs
+from .model import WorkflowRuns
 
 
 @task
@@ -238,7 +238,7 @@ def filter_dates_by_previous_runs(
     filtered_dates = [
         date
         for date in dates
-        if workflow_runs.can_process(
+        if WorkflowRuns.can_process(
             workflow_name=context.flow_name,
             workflow_params=context.parameters,
             reference_date=date,
@@ -269,7 +269,7 @@ def record_workflow_in_process(
         message = "Recording workflow run 'in_process'."
     context.logger.debug(message)
     session = get_session(config.db_uri)
-    workflow_runs.set_state(
+    WorkflowRuns.set_state(
         workflow_name=context.flow_name,
         workflow_params=context.parameters,
         reference_date=reference_date,
@@ -296,7 +296,7 @@ def record_workflow_done(reference_date: Optional["datetime.date"] = None) -> No
         message = "Recording workflow run 'done'."
     context.logger.debug(message)
     session = get_session(config.db_uri)
-    workflow_runs.set_state(
+    WorkflowRuns.set_state(
         workflow_name=context.flow_name,
         workflow_params=context.parameters,
         reference_date=reference_date,
@@ -325,7 +325,7 @@ def record_workflow_failed(reference_date: Optional["datetime.date"] = None) -> 
         message = "Recording workflow run 'failed'."
     context.logger.debug(message)
     session = get_session(config.db_uri)
-    workflow_runs.set_state(
+    WorkflowRuns.set_state(
         workflow_name=context.flow_name,
         workflow_params=context.parameters,
         reference_date=reference_date,
@@ -355,7 +355,7 @@ def record_any_failed_workflows(reference_dates: List["datetime.date"]) -> None:
     some_failed = False
     session = get_session(config.db_uri)
     for reference_date in reference_dates:
-        if not workflow_runs.is_done(
+        if not WorkflowRuns.is_done(
             workflow_name=context.flow_name,
             workflow_params=context.parameters,
             reference_date=reference_date,
@@ -365,7 +365,7 @@ def record_any_failed_workflows(reference_dates: List["datetime.date"]) -> None:
             context.logger.debug(
                 f"Recording workflow run 'failed' for reference date {reference_date}."
             )
-            workflow_runs.set_state(
+            WorkflowRuns.set_state(
                 workflow_name=context.flow_name,
                 workflow_params=context.parameters,
                 reference_date=reference_date,

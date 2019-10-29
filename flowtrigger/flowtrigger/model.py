@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 """
-Defines the 'workflow_runs' class, which represents a database model for storing the state of worflow runs.
+Defines the 'WorkflowRuns' class, which represents  the 'workflow_runs' database table for storing the state of workflow runs.
 """
 
 import os
@@ -39,7 +39,7 @@ class RunState(enum.Enum):
     failed = 3
 
 
-class workflow_runs(Base):
+class WorkflowRuns(Base):
     """
     DB Model for storing the state of workflow runs.
     """

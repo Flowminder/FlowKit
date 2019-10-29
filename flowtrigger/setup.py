@@ -39,7 +39,13 @@ setup(
         "networkx",
     ],
     extras_require={
-        "test": ["pytest", "coverage", "flowkit-jwt-generator"],
+        "test": [
+            "pytest",
+            "coverage",
+            "flowkit-jwt-generator",
+            "testing-postgresql",
+            "sqlalchemy-utils",
+        ],
         "postgres": ["psycopg2-binary"],
         "examples": ["pandas", "geopandas", "descartes", "matplotlib"],
     },

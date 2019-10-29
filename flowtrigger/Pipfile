@@ -23,6 +23,8 @@ networkx = "*"
 
 [dev-packages]
 pytest = "*"
+testing-postgresql = "*"
+sqlalchemy-utils = "*"
 prefect = {extras = ["viz"]}
 ipywidgets = "*"
 jupyterlab = "*"
