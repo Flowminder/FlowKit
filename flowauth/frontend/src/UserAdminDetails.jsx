@@ -138,24 +138,28 @@ class UserAdminDetails extends React.Component {
     ) {
 
       try {
-        var user;
-        if (edit_mode) {
-          user = await editUser(
-            item_id,
-            name,
-            password.length > 0 ? password : undefined,
-            is_admin,
-            require_two_factor,
-            has_two_factor
-          );
-        } else {
-          user = await createUser(name, password, is_admin, require_two_factor);
-        }
+
+        const user = edit_mode
+          ? await editUser(
+              item_id,
+              name,
+              password.length > 0 ? password : undefined,
+              is_admin,
+              require_two_factor,
+              has_two_factor
+            )
+          : await createUser(name, password, is_admin, require_two_factor);
+
+
         await editGroupServers(user.group_id, servers);
         await editGroupMemberships(user.id, groups);
         onClick();
       } catch (err) {
-        this.setState({ pageError: true, errors: err });
+        if (err.code === 400) {
+          this.setState({ pageError: true, errors: err });
+        } else {
+          this.setState({ hasError: true, error: err });
+        }
       }
     }
   };
