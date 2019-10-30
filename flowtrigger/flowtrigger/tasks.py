@@ -52,7 +52,7 @@ def get_tag(reference_date: Optional["datetime.date"] = None) -> str:
     """
     params_hash = get_params_hash(context.parameters)
     ref_date_string = f"_{reference_date}" if reference_date is not None else ""
-    return f"__{context.flow_name}_{params_hash}{ref_date_string}"
+    return f"{context.flow_name}_{params_hash}{ref_date_string}"
 
 
 @task

@@ -21,7 +21,7 @@ from get_secret_or_env_var import getenv
 def get_output_filename(input_filename: str, tag: str = "") -> str:
     """
     Given an input filename, construct an output filename with the same extension,
-    with a timestamp (and optionally a label) added to the stem.
+    with a timestamp (and optionally a tag) added to the stem.
 
     Parameters
     ----------
@@ -37,13 +37,14 @@ def get_output_filename(input_filename: str, tag: str = "") -> str:
     """
     input_filename = Path(input_filename)
     now_string = pendulum.now("utc").format("YYYYMMDDTHHmmss[Z]")
+    tag = f"__{tag}" if tag != "" else tag
     return f"{input_filename.stem}{tag}__{now_string}{input_filename.suffix}"
 
 
 def get_params_hash(parameters: Dict[str, Any]) -> str:
     """
     Generate a md5 hash string from a dictionary of parameters.
-    The dictionary os dumped to a json string before hashing.
+    The dictionary is dumped to a json string before hashing.
 
     Parameters
     ----------
@@ -106,7 +107,7 @@ def offset_to_date(
         ).add(days=offset)
     else:
         raise TypeError(
-            f"Invalid type for offset: expected 'date' or 'int', not '{type(offset)}'"
+            f"Invalid type for offset: expected 'date' or 'int', not '{type(offset).__name__}'"
         )
     return date_from_offset
 
