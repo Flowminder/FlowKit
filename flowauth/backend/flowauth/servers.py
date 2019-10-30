@@ -61,19 +61,26 @@ def edit_server_capabilities(server_id):
 
     Notes
     -----
-    Expects json of the form {<capability_name>: {"id":<capability_id>, "permissions":{<right>:<bool>}}}
+    Expects json of the form {<capability_name>: bool}
 
     Any capabilities not included are removed.
     """
     server_obj = Server.query.filter(Server.id == server_id).first_or_404()
     json = request.get_json()
 
-    for cap in server_obj.capabilities:
-        if cap.capability in json:
-            cap.enabled = True
-        else:
-            cap.enabled = False
+    to_remove = (x for x in server_obj.capabilities if x.capability not in json)
+
+    for cap, enabled in json.items():
+        cap = ServerCapability.query.filter(
+            ServerCapability.server == server_obj, ServerCapability.capability == cap
+        ).first()
+        if cap is None:
+            cap = ServerCapability(server=server_obj, capability=cap)
+        cap.enabled = enabled
         db.session.add(cap)
+
+    for cap in to_remove:
+        db.session.delete(cap)
 
     db.session.commit()
     return jsonify({"poll": "OK"})
