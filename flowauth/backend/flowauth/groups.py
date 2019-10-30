@@ -182,7 +182,7 @@ def edit_group_servers(group_id):
     """
     servers = request.get_json()["servers"]
     group = Group.query.filter(Group.id == group_id).first_or_404()
-    print(servers)
+    current_app.logger.debug(servers)
     existing_limits = group.server_token_limits
     revised_limits = []
     db.session.add(group)
@@ -219,22 +219,29 @@ def edit_group_servers(group_id):
         # Create permissions
         to_remove = [
             gsp
-            for gsp in GroupServerPermission.query.filter(Group.id == group.id)
+            for gsp in GroupServerPermission.query.filter(
+                GroupServerPermission.group_id == group.id
+            )
             if gsp.server_capability.capability not in server["rights"]
         ]
         for right in server["rights"]:
+            cap = ServerCapability.query.filter(
+                ServerCapability.capability == right,
+                ServerCapability.server_id == server_obj.id,
+            ).first()
+            if cap is None or not cap.enabled:
+                raise InvalidUsage(f"{right} not enabled for this server.")
+
             existing = GroupServerPermission.query.filter(
-                ServerCapability.capability == right, Group.id == group.id
+                GroupServerPermission.server_capability_id == cap.id,
+                GroupServerPermission.group_id == group.id,
             ).first()
             if existing is None:
-                cap = ServerCapability.query.filter(
-                    ServerCapability.capability == right, Server.id == server_obj.id
-                ).first()
-                if cap is None or not cap.enabled:
-                    raise InvalidUsage(f"{right} not enabled for this server.")
+
                 gsp = GroupServerPermission(
-                    server=server_obj, group=group, server_capability=cap
+                    group_id=group.id, server_capability_id=cap.id,
                 )
+                current_app.logger.debug(f"Added {gsp}")
                 db.session.add(gsp)
 
     # clean up
