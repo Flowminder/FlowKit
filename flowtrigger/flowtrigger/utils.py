@@ -263,7 +263,7 @@ def get_session(db_uri: str) -> "sqlalchemy.orm.session.Session":
 def make_json_serialisable(obj: Any) -> Union[dict, list, str, int, float, bool, None]:
     """
     Helper function to convert an object's type so that it can be serialised using
-    the default json serialiser. non-serialisable types are converted to strings.
+    the default json serialiser. Non-serialisable types are converted to strings.
 
     Parameters
     ----------
@@ -331,7 +331,7 @@ def sort_notebook_labels(notebooks: Dict[str, Dict[str, Any]]) -> List[str]:
     -------
     list of str
         List of notebook labels, sorted so that no notebook depends on another
-        notebook that precedes it in the list.
+        notebook that comes after it in the list.
     """
     notebooks_graph = nx.DiGraph(
         {

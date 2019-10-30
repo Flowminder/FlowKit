@@ -5,7 +5,8 @@
 import pytest
 import datetime
 import pendulum
-from unittest.mock import patch
+import json
+from unittest.mock import Mock, patch
 
 from flowtrigger.utils import *
 
@@ -156,3 +157,145 @@ def test_dates_are_available(reference_date, available):
     stencil = [[pendulum.date(2016, 1, 2), -4], [-3, -1]]
     available_dates = [pendulum.date(2016, 1, d) for d in range(1, 6)]
     assert available == dates_are_available(stencil, reference_date, available_dates)
+
+
+def test_get_session(monkeypatch):
+    """
+    Test that get_session returns a session that connects to the correct database.
+    """
+    db_name = "DUMMY_NAME"
+    host = "DUMMY_HOST"
+    password = "DUMMY_PASSWORD"
+    port = 6666
+    user = "DUMMY_USER"
+
+    monkeypatch.setenv("FLOWTRIGGER_DB_PASSWORD", password)
+    mock_psycopg2_connect = Mock()
+    monkeypatch.setattr("psycopg2.connect", mock_psycopg2_connect)
+
+    s = get_session(f"postgres://{user}:{{}}@{host}:{port}/{db_name}")
+
+    try:
+        s.connection()
+    except TypeError:
+        # we get an exception because not a real
+        # connection catching and ignoring
+        pass
+
+    mock_psycopg2_connect.assert_called_once_with(
+        database=db_name, host=host, password=password, port=port, user=user
+    )
+
+
+def test_get_session_without_password(monkeypatch):
+    """
+    Test that get_session works for a passwordless database.
+    """
+    db_name = "DUMMY_NAME"
+    host = "DUMMY_HOST"
+    port = 6666
+    user = "DUMMY_USER"
+
+    mock_psycopg2_connect = Mock()
+    monkeypatch.setattr("psycopg2.connect", mock_psycopg2_connect)
+
+    s = get_session(f"postgres://{user}@{host}:{port}/{db_name}")
+
+    try:
+        s.connection()
+    except TypeError:
+        # we get an exception because not a real
+        # connection catching and ignoring
+        pass
+
+    mock_psycopg2_connect.assert_called_once_with(
+        database=db_name, host=host, port=port, user=user
+    )
+
+
+@pytest.mark.parametrize(
+    "before,expected",
+    [
+        (
+            {"key": [1, 2.7, "string", True, None]},
+            '{"key": [1, 2.7, "string", true, null]}',
+        ),
+        (pendulum.parse("2016-01-01", exact=True), '"2016-01-01"'),
+        ((False, 1, "2", 3.0), '[false, 1, "2", 3.0]'),
+    ],
+)
+def test_make_json_serialisable(before, expected):
+    """
+    Test that make_json_serialisable returns objects that can be serialised
+    using the default json.dumps().
+    """
+    after = make_json_serialisable(before)
+    assert json.dumps(after) == expected
+
+
+def test_get_additional_parameter_names_for_notebooks():
+    """
+    Test that get_additional_parameter_names_for_notebooks returns the set of
+    notebook parameters, excluding notebook labels.
+    """
+    notebooks = {
+        "notebook1": {"parameters": {"p1": "DUMMY_PARAM_1"}},
+        "notebook2": {
+            "parameters": {
+                "p1": "notebook1",
+                "p2": "DUMMY_PARAM_1",
+                "p3": "DUMMY_PARAM_2",
+            }
+        },
+    }
+    additional_params = get_additional_parameter_names_for_notebooks(notebooks)
+    assert additional_params == {"DUMMY_PARAM_1", "DUMMY_PARAM_2"}
+
+
+def test_get_additional_parameter_names_for_notebooks_with_reserved_parameter_names():
+    """
+    Test that get_additional_parameter_names_for_notebooks excludes reserved parameter names from the returned set.
+    """
+    notebooks = {
+        "notebook": {"parameters": {"p1": "DUMMY_PARAM", "p2": "RESERVED_PARAM"}}
+    }
+    reserved_parameter_names = {"RESERVED_PARAM"}
+    additional_params = get_additional_parameter_names_for_notebooks(
+        notebooks, reserved_parameter_names
+    )
+    assert additional_params == {"DUMMY_PARAM"}
+
+
+def test_get_additional_parameter_names_for_notebooks_raises_error():
+    """
+    Test that get_additional_parameter_names_for_notebooks raises an error if reserved parameter names are used as notebook labels.
+    """
+    notebooks = {"RESERVED_PARAM": {"parameters": {"p1": "DUMMY_PARAM"}}}
+    reserved_parameter_names = {"RESERVED_PARAM"}
+    with pytest.raises(ValueError):
+        additional_params = get_additional_parameter_names_for_notebooks(
+            notebooks, reserved_parameter_names
+        )
+
+
+def test_sort_notebook_labels():
+    """
+    """
+    notebooks = {
+        "notebook1": {"parameters": {"p1": "notebook2"}},
+        "notebook2": {"parameters": {}},
+        "notebook3": {"parameters": {"p1": "notebook1", "p2": "notebook2"}},
+    }
+    sorted_notebook_labels = sort_notebook_labels(notebooks)
+    assert sorted_notebook_labels == ["notebook2", "notebook1", "notebook3"]
+
+
+def test_sort_notebook_labels_circular_dependency():
+    notebooks = {
+        "notebook1": {"parameters": {"p1": "notebook2"}},
+        "notebook2": {"parameters": {"p1": "notebook1"}},
+    }
+    with pytest.raises(
+        ValueError, match="Notebook specifications contain cyclic dependencies."
+    ):
+        sorted_notebook_labels = sort_notebook_labels(notebooks)
