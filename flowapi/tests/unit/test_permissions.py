@@ -151,10 +151,7 @@ def test_enum_paths(tree, expected):
                     "aggregation_unit": {"enum": ["DUMMY_UNIT"]},
                 }
             },
-            [
-                "dummy:aggregation_unit:DUMMY_UNIT",
-                "geography:aggregation_unit:DUMMY_UNIT",
-            ],
+            ["dummy:aggregation_unit:DUMMY_UNIT",],
         ),
     ],
 )
@@ -181,9 +178,7 @@ def test_make_per_query_scopes(tree, all_queries, expected):
             },
             [
                 "get_result:dummy:aggregation_unit:DUMMY_UNIT",
-                "get_result:geography:aggregation_unit:DUMMY_UNIT",
                 "run:dummy:aggregation_unit:DUMMY_UNIT",
-                "run:geography:aggregation_unit:DUMMY_UNIT",
                 "get_result:available_dates",
             ],
         ),
@@ -243,9 +238,7 @@ def test_make_scopes(tree, all_queries, expected):
             },
             [
                 "get_result:dummy:dummy_param:nested_dummy:aggregation_unit:DUMMY_UNIT",
-                "get_result:geography:aggregation_unit:DUMMY_UNIT",
                 "run:dummy:dummy_param:nested_dummy:aggregation_unit:DUMMY_UNIT",
-                "run:geography:aggregation_unit:DUMMY_UNIT",
                 "get_result:available_dates",
             ],
         ),
@@ -280,14 +273,10 @@ def test_make_scopes(tree, all_queries, expected):
                 "get_result:dummy:dummy_param:nested_dummy:dummy_param_2:nested_dummy_2:aggregation_unit:DUMMY_UNIT_2",
                 "get_result:dummy:dummy_param:nested_dummy_2:dummy_param_2:nested_dummy:aggregation_unit:DUMMY_UNIT",
                 "get_result:dummy:dummy_param:nested_dummy_2:dummy_param_2:nested_dummy_2:aggregation_unit:DUMMY_UNIT_2",
-                "get_result:geography:aggregation_unit:DUMMY_UNIT",
-                "get_result:geography:aggregation_unit:DUMMY_UNIT_2",
                 "run:dummy:dummy_param:nested_dummy:dummy_param_2:nested_dummy:aggregation_unit:DUMMY_UNIT",
                 "run:dummy:dummy_param:nested_dummy:dummy_param_2:nested_dummy_2:aggregation_unit:DUMMY_UNIT_2",
                 "run:dummy:dummy_param:nested_dummy_2:dummy_param_2:nested_dummy:aggregation_unit:DUMMY_UNIT",
                 "run:dummy:dummy_param:nested_dummy_2:dummy_param_2:nested_dummy_2:aggregation_unit:DUMMY_UNIT_2",
-                "run:geography:aggregation_unit:DUMMY_UNIT",
-                "run:geography:aggregation_unit:DUMMY_UNIT_2",
                 "get_result:available_dates",
             ],
         ),
