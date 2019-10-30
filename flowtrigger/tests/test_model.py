@@ -236,6 +236,7 @@ def test_init_db_doesnt_wipe(postgres_test_db):
     # Table should still contain data
     session = Session()
     assert len(session.query(WorkflowRuns).all()) > 0
+    session.close()
 
 
 def test_init_db_force(postgres_test_db):
@@ -260,3 +261,4 @@ def test_init_db_force(postgres_test_db):
     # Table should not contain data
     session = Session()
     assert len(session.query(WorkflowRuns).all()) == 0
+    session.close()

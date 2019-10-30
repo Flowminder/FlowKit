@@ -23,6 +23,7 @@ networkx = "*"
 
 [dev-packages]
 pytest = "*"
+pytest-cov = "*"
 testing-postgresql = "*"
 sqlalchemy-utils = "*"
 prefect = {extras = ["viz"]}

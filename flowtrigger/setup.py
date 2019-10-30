@@ -41,7 +41,7 @@ setup(
     extras_require={
         "test": [
             "pytest",
-            "coverage",
+            "pytest-cov",
             "flowkit-jwt-generator",
             "testing-postgresql",
             "sqlalchemy-utils",
