@@ -182,12 +182,19 @@ class SubscriberSightings(Query):
                     if self.singleday == True
                     else self.sqlalchemy_mainTable.c.date_sk >= self.start
                 )
-            )
+            ).where(self.sqlalchemy_mainTable.c.time_sk >= self.start_hour)
 
         # Add the stop date - this will need hours added to it at some point.
         if self.stop is not None and self.singleday == False:
             select_stmt = select_stmt.where(
                 self.sqlalchemy_mainTable.c.date_sk < self.stop
+            )
+
+        # Only add the stop hour if different from the start hour, i.e. the selection of the 
+        # time dimension is varying.
+        if self.stop_hour != self.start_hour and self.stop_hour is not None:
+            select_stmt = select_stmt.where(
+                self.sqlalchemy_mainTable.c.time_sk < self.stop_hour
             )
 
         # Added the subscriber_subsetter

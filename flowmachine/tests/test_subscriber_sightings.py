@@ -127,7 +127,7 @@ def test_start_stop_non_exist_will_result_in_min_max(get_dataframe):
 
 def test_set_date_none():
     """Test that setting a start/stop to None will use min/max dates."""
-    ss = SubscriberSightings(None, "2016-01-04")
+    ss = SubscriberSightings(None, "2016-01-04 15:36")
     df = ss.head()
 
     min = df["datetime"].min().to_pydatetime()
@@ -135,7 +135,7 @@ def test_set_date_none():
 
     assert min.timestamp() > min_comparison.timestamp()
 
-    ss = SubscriberSightings("2016-01-01", None)
+    ss = SubscriberSightings("2016-01-01 12:22", None)
     df = ss.head()
 
     max = df["datetime"].max().to_pydatetime()
