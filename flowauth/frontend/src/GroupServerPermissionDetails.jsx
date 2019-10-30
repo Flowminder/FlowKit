@@ -26,7 +26,7 @@ class GroupServerPermissionDetails extends React.Component {
 
   handleDateChange = date => {
     const { server, updateServer } = this.props;
-    this.setState(Object.assign(this.state, { latest_expiry: date }));
+    this.setState({ latest_expiry: date });
     server["latest_expiry"] = new Date(date).toISOString();
     updateServer(server);
   };
@@ -46,7 +46,6 @@ class GroupServerPermissionDetails extends React.Component {
   handleRightsChange = rights => {
     const { server, updateServer } = this.props;
     server["rights"] = rights;
-    updateServer(server);
     updateServer(server);
   };
 

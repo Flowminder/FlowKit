@@ -12,6 +12,7 @@ import UserGroupsPicker from "./UserGroupsPicker";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import GroupServerPermissions from "./GroupServerPermissions";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import LockIcon from "@material-ui/icons/Lock";
@@ -118,7 +119,7 @@ class UserAdminDetails extends React.Component {
   updateServers = servers => {
     this.setState({ servers: servers });
   };
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const { item_id, onClick } = this.props;
     const {
       edit_mode,
@@ -136,45 +137,34 @@ class UserAdminDetails extends React.Component {
       username_helper_text === "" &&
       (password.length === 0 || password_strength > 3)
     ) {
-      var task;
-      var uid;
-      if (edit_mode) {
-        task = editUser(
-          item_id,
-          name,
-          password.length > 0 ? password : undefined,
-          is_admin,
-          require_two_factor,
-          has_two_factor
-        );
-      } else {
-        task = createUser(name, password, is_admin, require_two_factor);
+
+      try {
+        var user;
+        if (edit_mode) {
+          user = await editUser(
+            item_id,
+            name,
+            password.length > 0 ? password : undefined,
+            is_admin,
+            require_two_factor,
+            has_two_factor
+          );
+        } else {
+          user = await createUser(name, password, is_admin, require_two_factor);
+        }
+        await editGroupServers(user.group_id, servers);
+        await editGroupMemberships(user.id, groups);
+        onClick();
+      } catch (err) {
+        this.setState({ pageError: true, errors: err });
       }
-      task
-        .then(json => {
-          uid = json.id;
-          return editGroupServers(json.group_id, servers);
-        })
-        .then(json => {
-          return editGroupMemberships(uid, groups);
-        })
-        .then(json => {
-          onClick();
-        })
-        .catch(err => {
-          if (err.code === 400) {
-            this.setState({ pageError: true, errors: err });
-          } else {
-            this.setState({ hasError: true, error: err });
-          }
-        });
     }
   };
 
   render() {
     if (this.state.hasError) throw this.state.error;
 
-    const { classes, onClick, item_id } = this.props;
+    const { classes, item_id } = this.props;
     const {
       name,
       password,
@@ -303,7 +293,12 @@ class UserAdminDetails extends React.Component {
             updateGroups={this.updateGroups}
           />
         </Grid>
-
+        <GroupServerPermissions
+          group_id={group_id}
+          updateServers={this.updateServers}
+          servers={servers}
+          classes={classes}
+        />
         <ErrorDialog
           open={this.state.pageError}
           message={this.state.errors.message}
