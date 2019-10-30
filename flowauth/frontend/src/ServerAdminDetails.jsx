@@ -30,6 +30,7 @@ class ServerAdminDetails extends React.Component {
       name: "",
       rights: [],
       enabledRights: [],
+      fullRights: [],
       max_life: 1440,
       latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       edit_mode: false,
@@ -64,7 +65,7 @@ class ServerAdminDetails extends React.Component {
     };
   }
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const {
       edit_mode,
       name,
@@ -93,35 +94,24 @@ class ServerAdminDetails extends React.Component {
       max_life &&
       maxlife_helper_text === ""
     ) {
-      var task;
-      if (edit_mode) {
-        task = editServer(
-          item_id,
-          name,
-          new Date(latest_expiry).toISOString(),
-          max_life
-        );
-      } else {
-        task = createServer(
-          name,
-          new Date(latest_expiry).toISOString(),
-          max_life
-        );
+      const server = edit_mode
+        ? editServer(
+            item_id,
+            name,
+            new Date(latest_expiry).toISOString(),
+            max_life
+          )
+        : createServer(name, new Date(latest_expiry).toISOString(), max_life);
+      try {
+        await editServerCapabilities((await server).id, rightsObjs);
+        onClick();
+      } catch (err) {
+        if (err.code === 400) {
+          this.setState({ pageError: true, errors: err });
+        } else {
+          this.setState({ hasError: true, error: err });
+        }
       }
-      task
-        .then(json => {
-          return editServerCapabilities(json.id, rightsObjs);
-        })
-        .then(json => {
-          onClick();
-        })
-        .catch(err => {
-          if (err.code === 400) {
-            this.setState({ pageError: true, errors: err });
-          } else {
-            this.setState({ hasError: true, error: err });
-          }
-        });
     }
   };
 
@@ -146,27 +136,27 @@ class ServerAdminDetails extends React.Component {
       pageError: false,
       errors: ""
     });
-    var state = {
+    this.setState({
       [name]: event.target.value
-    };
+    });
     if (name === "name") {
       var letters = /^[A-Za-z0-9_]+$/;
       let servername = event.target.value;
       if (servername.match(letters) && servername.length <= 120) {
-        state = Object.assign(state, {
+        this.setState({
           name_helper_text: ""
         });
       } else if (servername.length === 0) {
-        state = Object.assign(state, {
+        this.setState({
           name_helper_text: "Server name can not be blank."
         });
       } else if (!servername.match(letters)) {
-        state = Object.assign(state, {
+        this.setState({
           name_helper_text:
             "Server name may only contain letters, numbers and underscores."
         });
       } else {
-        state = Object.assign(state, {
+        this.setState({
           name_helper_text: "Server name must be 120 characters or less."
         });
       }
@@ -175,16 +165,15 @@ class ServerAdminDetails extends React.Component {
     if (name === "max_life") {
       let maxlife = event.target.value;
       if (maxlife.length === 0) {
-        state = Object.assign(state, {
+        this.setState({
           maxlife_helper_text: "Maximum lifetime minutes can not be blank."
         });
       } else {
-        state = Object.assign(state, {
+        this.setState({
           maxlife_helper_text: ""
         });
       }
     }
-    this.setState(state);
   };
 
   async componentDidMount() {

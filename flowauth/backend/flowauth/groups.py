@@ -186,6 +186,7 @@ def edit_group_servers(group_id):
     existing_limits = group.server_token_limits
     revised_limits = []
     db.session.add(group)
+
     for server in servers:
         server_obj = Server.query.filter(Server.id == server["id"]).first_or_404()
         # Create limits
@@ -244,12 +245,12 @@ def edit_group_servers(group_id):
                 current_app.logger.debug(f"Added {gsp}")
                 db.session.add(gsp)
 
-    # clean up
-    for limit in existing_limits:
-        if limit not in revised_limits:
-            db.session.delete(limit)
-    for gsp in to_remove:
-        db.session.delete(gsp)
+        # clean up
+        for limit in existing_limits:
+            if limit not in revised_limits:
+                db.session.delete(limit)
+        for gsp in to_remove:
+            db.session.delete(gsp)
     db.session.commit()
     return jsonify({"id": group.id, "name": group.name})
 
