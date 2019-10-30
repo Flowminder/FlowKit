@@ -592,7 +592,21 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/project/
-      - run: pipenv install --deploy --dev
+      - restore_cache:
+          keys:
+            - flowtrigger-deps-1-{{ checksum "Pipfile.lock" }}
+      - run:
+          name: Install postgresql
+          command: |
+            sudo apt-get update && sudo apt-get install -y postgresql
+      - run:
+          name: Install python dependencies
+          command: |
+            pipenv install --deploy --dev
+      - save_cache:
+          key: flowtrigger-deps-1-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
       - run:
           name: Run flowtrigger unit tests
           command: |
