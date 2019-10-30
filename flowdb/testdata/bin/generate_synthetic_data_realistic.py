@@ -317,9 +317,7 @@ if __name__ == "__main__":
         # Main generation process
         with connection.begin() as trans:
             # Setup stage: Tidy up subscriber_sightings generated on previous runs
-            with log_duration(
-                job=f"Tidy up subscriber_sightings and date_dim tables"
-            ):
+            with log_duration(job=f"Tidy up subscriber_sightings and date_dim tables"):
                 connection.execute("TRUNCATE TABLE interactions.date_dim CASCADE;")
                 connection.execute(
                     "ALTER SEQUENCE interactions.subscriber_sightings_sighting_id_seq RESTART WITH 1 INCREMENT BY 1;"
@@ -606,10 +604,10 @@ if __name__ == "__main__":
                             (i + 1),
                             with_sql
                             + """
-                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
+                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, "timestamp") 
                                 (
                                     SELECT
-                                        id AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 1,
+                                        id AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk,
                                         CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ
                                     FROM (
                                         SELECT id1 AS id, caller_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
@@ -631,10 +629,10 @@ if __name__ == "__main__":
                             (i + 1),
                             with_sql
                             + """
-                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
+                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, "timestamp") 
                                 (
                                     SELECT
-                                        id AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 2,
+                                        id AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk,
                                         CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ
                                     FROM (
                                         SELECT id1 AS id, caller_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
@@ -665,10 +663,10 @@ if __name__ == "__main__":
                                     
                                     WHERE s.id = 1
                                 )
-                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") (
+                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, "timestamp") (
                                     SELECT 
                                         c.id AS subscriber_id, 
-                                        (SELECT cell_id FROM interactions.locations where ST_Equals("position",(c.loc->>s.point::INTEGER)::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 3,
+                                        (SELECT cell_id FROM interactions.locations where ST_Equals("position",(c.loc->>s.point::INTEGER)::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk,
                                         CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(NEXTVAL('minutes')::TEXT, 2, '0'), ':', LPAD(NEXTVAL('seconds')::TEXT, 2, '0'))::TIMESTAMPTZ
                                     FROM
                                         callers c,
