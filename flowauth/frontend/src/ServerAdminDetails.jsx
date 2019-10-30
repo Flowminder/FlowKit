@@ -192,7 +192,6 @@ class ServerAdminDetails extends React.Component {
     const { item_id } = this.props;
     if (item_id !== -1) {
       try {
-        const servAwait = getServer(item_id);
         const capAwait = getCapabilities(item_id);
         const limitsAwait = getTimeLimits(item_id);
         const scopeGraph = scopesGraph(await capAwait);
@@ -205,7 +204,7 @@ class ServerAdminDetails extends React.Component {
           enabledKeys
         );
         this.setState({
-          name: (await servAwait).name,
+          name: (await getServer(item_id)).name,
           rights: scopes,
           fullRights: Object.keys(rights),
           enabledRights: enabledKeys,
@@ -288,7 +287,7 @@ class ServerAdminDetails extends React.Component {
         </Grid>
         <Grid item xs={12}>
           <input
-            accept=".json,.yml,.txt"
+            accept=".json,.yml"
             className={classes.input}
             id="spec-upload-button"
             type="file"

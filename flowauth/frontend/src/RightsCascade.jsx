@@ -18,6 +18,20 @@ class RightsCascade extends React.Component {
           onChange={onChange}
           preventOverflow
           menuWidth={400}
+          renderValue={(value, selectedItems, selectedElement) => {
+            console.log(value, selectedItems, selectedElement);
+            return (
+              <span>
+                {selectedItems
+                  .map(
+                    item =>
+                      item.value +
+                      (item.hasOwnProperty("children") ? " (All)" : "")
+                  )
+                  .join(", ")}
+              </span>
+            );
+          }}
         />
       );
     }
