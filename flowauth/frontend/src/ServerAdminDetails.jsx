@@ -6,81 +6,64 @@ import React from "react";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import TextField from "@material-ui/core/TextField";
 import SubmitButtons from "./SubmitButtons";
 import ErrorDialog from "./ErrorDialog";
 import {
+  createServer,
+  editServer,
+  editServerCapabilities,
   getAllCapabilities,
   getCapabilities,
-  getTimeLimits,
-  createServer,
   getServer,
-  editServerCapabilities,
-  editServer
+  getTimeLimits
 } from "./util/api";
 import RightsCascade from "./RightsCascade";
-
-function scopesGraph(array) {
-  const nested = {};
-  Object.keys(array).forEach(scope => {
-    let obj = nested;
-    scope.split(":").forEach(k => {
-      if (!(k in obj)) {
-        obj[k] = {};
-      }
-      obj = obj[k];
-    });
-  });
-  return nested;
-}
-
-function jsonify(tree, labels, enabled, enabledKeys) {
-  const list = Object.keys(tree).map(k => {
-    const ll = labels.concat([k]);
-    const v = tree[k];
-    if (Object.keys(v).length === 0) {
-      return {
-        label: k,
-        value: ll.join(":"),
-        enabled: enabled.includes(ll.join(":"))
-      };
-    } else {
-      const children = jsonify(v, ll, enabled, enabledKeys);
-      const allEnabled = children.every(child => child.enabled);
-      if (!allEnabled) {
-        children
-          .filter(child => child.enabled)
-          .forEach(child => enabledKeys.push(child.value));
-      }
-      return {
-        label: k,
-        value: ll.join(":"),
-        children: children,
-        enabled: allEnabled
-      };
-    }
-  });
-
-  list.filter(obj => obj.enabled).forEach(obj => enabledKeys.push(obj.value));
-  return list;
-}
+import { jsonify, scopesGraph } from "./util/util";
 
 class ServerAdminDetails extends React.Component {
-  state = {
-    name: "",
-    rights: [],
-    enabledRights: [],
-    max_life: 1440,
-    latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-    edit_mode: false,
-    name_helper_text: "",
-    key_helper_text: "",
-    maxlife_helper_text: "",
-    pageError: false,
-    errors: { message: "" }
-  };
+  constructor() {
+    super();
+    this.state = {
+      name: "",
+      rights: [],
+      enabledRights: [],
+      max_life: 1440,
+      latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+      edit_mode: false,
+      name_helper_text: "",
+      key_helper_text: "",
+      maxlife_helper_text: "",
+      pageError: false,
+      errors: { message: "" }
+    };
+
+    this.fileReader = new FileReader();
+
+    this.fileReader.onload = event => {
+      const parsedSpec = JSON.parse(event.target.result);
+      const specScopes = parsedSpec["components"]["securitySchemes"]["token"][
+        "x-security-scopes"
+      ].reduce((obj, cur) => ({ ...obj, [cur]: true }), {});
+      const scopeGraph = scopesGraph(specScopes);
+      const enabledKeys = [];
+      const scopes = jsonify(
+        scopeGraph,
+        [],
+        Object.keys(specScopes),
+        enabledKeys
+      );
+
+      this.setState({
+        rights: scopes,
+        fullRights: Object.keys(specScopes),
+        enabledRights: enabledKeys
+      });
+    };
+  }
 
   handleSubmit = () => {
     const {
@@ -88,13 +71,22 @@ class ServerAdminDetails extends React.Component {
       name,
       latest_expiry,
       max_life,
-      rights,
+      fullRights,
       enabledRights,
       name_helper_text,
       key_helper_text,
       maxlife_helper_text
     } = this.state;
     const { item_id, onClick } = this.props;
+
+    const rightsObjs = fullRights.reduce(
+      (obj, cur) => ({
+        ...obj,
+        [cur]: enabledRights.some(r => cur.startsWith(r))
+      }),
+      {}
+    );
+
     if (
       name &&
       name_helper_text === "" &&
@@ -119,7 +111,7 @@ class ServerAdminDetails extends React.Component {
       }
       task
         .then(json => {
-          return editServerCapabilities(json.id, enabledRights);
+          return editServerCapabilities(json.id, rightsObjs);
         })
         .then(json => {
           onClick();
@@ -198,35 +190,32 @@ class ServerAdminDetails extends React.Component {
 
   async componentDidMount() {
     const { item_id } = this.props;
-    var name, rights;
-    try {
-      const all_capabilities = getAllCapabilities();
-      if (item_id !== -1) {
-        const server = getServer(item_id);
-        const capabilities = getCapabilities(item_id);
-        const time_limits = getTimeLimits(item_id);
-        const scopeGraph = scopesGraph(await capabilities);
-          const enabledKeys = [];
-          const scopes = jsonify(
-            scopeGraph,
-            [],
-            Object.keys(capabilities).filter(k => capabilities[k]),
-            enabledKeys
-          );
+    if (item_id !== -1) {
+      try {
+        const servAwait = getServer(item_id);
+        const capAwait = getCapabilities(item_id);
+        const limitsAwait = getTimeLimits(item_id);
+        const scopeGraph = scopesGraph(await capAwait);
+        const enabledKeys = [];
+        const rights = await capAwait;
+        const scopes = jsonify(
+          scopeGraph,
+          [],
+          Object.keys(rights).filter(k => rights[k]),
+          enabledKeys
+        );
         this.setState({
-          name: (await server).name,
+          name: (await servAwait).name,
           rights: scopes,
-            fullRights: Object.keys(capabilities),
-            enabledRights: enabledKeys,
-          latest_expiry: (await time_limits).latest_token_expiry,
-          max_life: (await time_limits).longest_token_life,
+          fullRights: Object.keys(rights),
+          enabledRights: enabledKeys,
+          latest_expiry: (await limitsAwait).latest_token_expiry,
+          max_life: (await limitsAwait).longest_token_life,
           edit_mode: true
-
         });
+      } catch (err) {
+        this.setState({ hasError: true, error: err });
       }
-      this.setState({ permitted: await all_capabilities });
-    } catch (err) {
-      this.setState({ hasError: true, error: err });
     }
   }
 
@@ -291,6 +280,37 @@ class ServerAdminDetails extends React.Component {
             error={this.state.maxlife_helper_text}
             helperText={this.state.maxlife_helper_text}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h5" component="h1">
+            Upload API Spec
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <input
+            accept=".json,.yml,.txt"
+            className={classes.input}
+            id="spec-upload-button"
+            type="file"
+            style={{ display: "none" }}
+            onChange={event => {
+              this.fileReader.readAsText(event.target.files[0]);
+            }}
+          />
+          <label htmlFor="spec-upload-button">
+            <Button
+              variant="contained"
+              component="span"
+              className={classes.button}
+            >
+              Upload
+            </Button>
+          </label>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h5" component="h1">
+            Available API scopes
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <RightsCascade
