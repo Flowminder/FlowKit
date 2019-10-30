@@ -1067,6 +1067,7 @@ workflows:
             - build_flowclient_wheel
             - run_flowmachine_tests
             - run_flowtrigger_tests
+            - build_flowtrigger
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build

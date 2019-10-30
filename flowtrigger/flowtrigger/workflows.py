@@ -387,8 +387,10 @@ def make_workflow(kind: str, **kwargs):
 
 
 def run_workflows(
-    workflows: List[Flow], parameters: Dict[str, List[Dict[str, Any]]]
-) -> NoReturn:
+    workflows: List[Flow],
+    parameters: Dict[str, List[Dict[str, Any]]],
+    run_on_schedule: bool = True,
+) -> None:
     """
     Run workflows with the provided sets of parameters.
 
@@ -398,6 +400,8 @@ def run_workflows(
         List of workflows to run
     parameters : dict
         Mapping from each workflow name to a list of parameter sets for which the workflow should run.
+    run_on_schedule : bool, default True
+        Set to False to ignore schedules and run each workflow only once.
     
     Notes
     -----
@@ -410,4 +414,4 @@ def run_workflows(
     # There should be a way around this using the lower-level FlowRunner class.
     for workflow in workflows:
         for params in parameters[workflow.name]:
-            workflow.run(parameters=params)
+            workflow.run(parameters=params, run_on_schedule=run_on_schedule)
