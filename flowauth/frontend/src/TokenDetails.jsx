@@ -86,7 +86,7 @@ class TokenDetails extends React.Component {
       this.setState({
         name_helper_text: ""
       });
-    } else if (name.length == 0) {
+    } else if (name.length === 0) {
       this.setState({
         name_helper_text: "Token name cannot be blank."
       });

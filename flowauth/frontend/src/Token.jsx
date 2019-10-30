@@ -45,7 +45,7 @@ class Token extends React.Component {
     element.click();
   };
   render() {
-    const { name, expiry, editAction, token, id, classes } = this.props;
+    const { name, expiry, token, classes } = this.props;
     const { isOpen, copySuccess } = this.state;
     return (
       <React.Fragment>

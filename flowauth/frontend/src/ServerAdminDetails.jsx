@@ -156,7 +156,7 @@ class ServerAdminDetails extends React.Component {
         state = Object.assign(state, {
           name_helper_text: ""
         });
-      } else if (servername.length == 0) {
+      } else if (servername.length === 0) {
         state = Object.assign(state, {
           name_helper_text: "Server name can not be blank."
         });
@@ -174,7 +174,7 @@ class ServerAdminDetails extends React.Component {
 
     if (name === "max_life") {
       let maxlife = event.target.value;
-      if (maxlife.length == 0) {
+      if (maxlife.length === 0) {
         state = Object.assign(state, {
           maxlife_helper_text: "Maximum lifetime minutes can not be blank."
         });

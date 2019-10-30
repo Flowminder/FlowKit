@@ -38,7 +38,7 @@ class GenerateBackupCodes extends React.Component {
   };
 
   render() {
-    const { classes, cancel } = this.props;
+    const { cancel } = this.props;
     if (this.state.hasError) throw this.state.error;
 
     const { backup_codes } = this.state;

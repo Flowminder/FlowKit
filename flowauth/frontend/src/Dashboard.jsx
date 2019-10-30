@@ -162,7 +162,7 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    const { classes, setLoggedOut, is_admin } = this.props;
+    const { classes, is_admin } = this.props;
     const { activePage } = this.state;
 
     return (

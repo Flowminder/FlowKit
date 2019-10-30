@@ -4,7 +4,6 @@
 
 import React from "react";
 import Grid from "@material-ui/core/Grid";
-import { getTwoFactorBackups } from "./util/api";
 import Button from "@material-ui/core/Button";
 import ErrorDialog from "./ErrorDialog";
 import PropTypes from "prop-types";

@@ -29,16 +29,15 @@ class GroupDetails extends React.Component {
     errors: { message: "" }
   };
 
-  componentDidMount() {
-    this._asyncRequest = getGroup(this.props.item_id)
-      .then(json => {
-        this.setState(Object.assign(json || {}, json && { edit_mode: true }));
-      })
-      .catch(err => {
-        if (err.code !== 404) {
-          this.setState({ hasError: true, error: err });
-        }
-      });
+  async componentDidMount() {
+    try {
+      const group = await getGroup(this.props.item_id);
+      this.setState({ ...group, edit_mode: true });
+    } catch (err) {
+      if (err.code !== 404) {
+        this.setState({ hasError: true, error: err });
+      }
+    }
   }
 
   handleChange = name => event => {
@@ -46,28 +45,22 @@ class GroupDetails extends React.Component {
       pageError: false,
       errors: ""
     });
-    var state = {
+    this.setState({
       [name]: event.target.value
-    };
+    });
     if (name === "name") {
       var letters = /^[A-Za-z0-9_]+$/;
       let groupname = event.target.value;
       if (groupname.match(letters)) {
-        state = Object.assign(state, {
-          name_helper_text: ""
-        });
-      } else if (groupname.length == 0) {
-        state = Object.assign(state, {
-          name_helper_text: "Group name can not be blank."
-        });
+        this.setState({ name_helper_text: "" });
+      } else if (groupname.length === 0) {
+        this.setState({ name_helper_text: "Group name can not be blank." });
       } else {
-        state = Object.assign(state, {
+        this.setState({
           name_helper_text:
             "Group name may only contain letters, numbers and underscores."
         });
       }
-      // console.log(event.target.value);
-      this.setState(state);
     }
   };
   updateMembers = members => {
@@ -76,34 +69,25 @@ class GroupDetails extends React.Component {
   updateServers = servers => {
     this.setState({ servers: servers });
   };
-  handleSubmit = () => {
-    const { name_helper_text } = this.state;
-    var task;
-    if (name_helper_text === "") {
-      if (this.state.edit_mode) {
-        task = renameGroup(this.props.item_id, this.state.name);
-      } else {
-        task = createGroup(this.state.name, []);
-      }
+  handleSubmit = async () => {
+    const { name_helper_text, members, servers, edit_mode, name } = this.state;
+    const { item_id, onClick } = this.props;
 
-      task
-        .then(json => {
-          console.log(json);
-          return editMembers(json.id, this.state.members);
-        })
-        .then(json => {
-          return editGroupServers(json.id, this.state.servers);
-        })
-        .then(json => {
-          this.props.onClick();
-        })
-        .catch(err => {
-          if (err.code === 400) {
-            this.setState({ pageError: true, errors: err });
-          } else {
-            this.setState({ hasError: true, error: err });
-          }
-        });
+    if (name_helper_text === "") {
+      const group = edit_mode
+        ? renameGroup(item_id, name)
+        : createGroup(name, []);
+      try {
+        await editMembers((await group).id, members);
+        await editGroupServers((await group).id, servers);
+        onClick();
+      } catch (err) {
+        if (err.code === 400) {
+          this.setState({ pageError: true, errors: err });
+        } else {
+          this.setState({ hasError: true, error: err });
+        }
+      }
     }
   };
   render() {
