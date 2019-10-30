@@ -316,16 +316,16 @@ if __name__ == "__main__":
 
         # Main generation process
         with connection.begin() as trans:
-            # Setup stage: Tidy up subscriber_sightings_fact generated on previous runs
+            # Setup stage: Tidy up subscriber_sightings generated on previous runs
             with log_duration(
-                job=f"Tidy up subscriber_sightings_fact and date_dim tables"
+                job=f"Tidy up subscriber_sightings and date_dim tables"
             ):
                 connection.execute("TRUNCATE TABLE interactions.date_dim CASCADE;")
                 connection.execute(
-                    "ALTER SEQUENCE interactions.subscriber_sightings_fact_sighting_id_seq RESTART WITH 1 INCREMENT BY 1;"
+                    "ALTER SEQUENCE interactions.subscriber_sightings_sighting_id_seq RESTART WITH 1 INCREMENT BY 1;"
                 )
                 tables = connection.execute(
-                    "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ 'subscriber_sightings_fact_[0-9]+'"
+                    "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ 'subscriber_sightings_[0-9]+'"
                 ).fetchall()
 
                 for t in tables:
@@ -587,11 +587,11 @@ if __name__ == "__main__":
                       """
                 )
 
-                # 4.2 Create the subscriber_sightings_fact partition
+                # 4.2 Create the subscriber_sightings partition
                 connection.execute(
                     f"""
-                    CREATE TABLE interactions.subscriber_sightings_fact_{str(i + 1).rjust(5, '0')} 
-                    PARTITION OF interactions.subscriber_sightings_fact FOR VALUES IN ({i + 1});
+                    CREATE TABLE interactions.subscriber_sightings_{str(i + 1).rjust(5, '0')} 
+                    PARTITION OF interactions.subscriber_sightings FOR VALUES IN ({i + 1});
                 """
                 )
 
@@ -606,7 +606,7 @@ if __name__ == "__main__":
                             (i + 1),
                             with_sql
                             + """
-                                INSERT INTO interactions.subscriber_sightings_fact (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
+                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
                                 (
                                     SELECT
                                         id AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 1,
@@ -631,7 +631,7 @@ if __name__ == "__main__":
                             (i + 1),
                             with_sql
                             + """
-                                INSERT INTO interactions.subscriber_sightings_fact (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
+                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") 
                                 (
                                     SELECT
                                         id AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 2,
@@ -665,7 +665,7 @@ if __name__ == "__main__":
                                     
                                     WHERE s.id = 1
                                 )
-                                INSERT INTO interactions.subscriber_sightings_fact (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") (
+                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp") (
                                     SELECT 
                                         c.id AS subscriber_id, 
                                         (SELECT cell_id FROM interactions.locations where ST_Equals("position",(c.loc->>s.point::INTEGER)::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk, 3,
@@ -682,8 +682,8 @@ if __name__ == "__main__":
         # Add all the ANALYZE calls for the events tables.
         deferred_sql.append(
             (
-                "Analyzing the subscriber_sightings_fact table",
-                ["ANALYZE interactions.subscriber_sightings_fact;"],
+                "Analyzing the subscriber_sightings table",
+                ["ANALYZE interactions.subscriber_sightings;"],
             )
         )
 
