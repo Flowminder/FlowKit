@@ -12,6 +12,7 @@ class RightsCascade extends React.Component {
     if (options) {
       return (
         <MultiCascader
+          data-cy={"rights_cascade"}
           block
           data={options}
           value={value}
