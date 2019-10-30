@@ -16,7 +16,6 @@ import {
   createServer,
   editServer,
   editServerCapabilities,
-  getAllCapabilities,
   getCapabilities,
   getServer,
   getTimeLimits
