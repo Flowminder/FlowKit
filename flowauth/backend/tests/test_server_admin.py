@@ -202,7 +202,10 @@ def test_edit_server_capabilities(client, auth):
     response = client.patch(
         "/admin/servers/1/capabilities",
         headers={"X-CSRF-Token": csrf_cookie},
-        json=["run:DUMMY_ROUTE_B:aggregation_unit:admin3"],
+        json={
+            "run:DUMMY_ROUTE_B:aggregation_unit:admin3": True,
+            "run:DUMMY_ROUTE_B:aggregation_unit:admin2": False,
+        },
     )
     assert 200 == response.status_code
     response = client.get(
