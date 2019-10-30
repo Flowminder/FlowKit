@@ -14,6 +14,7 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import SubmitButtons from "./SubmitButtons";
 import WarningDialog from "./WarningDialog";
+import TokenPermission from "./TokenPermission";
 
 const styles = theme => ({
   root: {
@@ -33,7 +34,8 @@ class TokenDetails extends React.Component {
   }
   state = {
     nickName: {},
-    rights: {},
+    rights: [],
+    permitted: [],
     expiry: new Date(),
     latest_expiry: new Date(),
     name_helper_text: "",
@@ -41,24 +43,19 @@ class TokenDetails extends React.Component {
     pageError: false,
     errors: { message: "" }
   };
-  completeToken = () => {
+  completeToken = async () => {
     const { name, expiry, rights } = this.state;
     const { serverID, cancel } = this.props;
-    createToken(name, serverID, new Date(expiry).toISOString(), rights).then(
-      json => {
-        cancel();
-      }
-    );
+    await createToken(name, serverID, new Date(expiry).toISOString(), rights);
+    cancel();
   };
   handleSubmit = async () => {
-    const { name, name_helper_text, uiReady } = this.state;
+    const { name, name_helper_text, uiReady, rights } = this.state;
     await uiReady;
-    const checkedCheckboxes = document.querySelectorAll(
-      'input[type="checkbox"]:checked'
-    );
-    if (name && name_helper_text === "" && checkedCheckboxes.length != 0) {
+    const checkedCheckboxes = rights.length > 0;
+    if (name && name_helper_text === "" && checkedCheckboxes) {
       this.completeToken();
-    } else if (checkedCheckboxes.length == 0) {
+    } else if (!checkedCheckboxes) {
       this.setState({
         pageError: true,
         errors: {
@@ -74,8 +71,10 @@ class TokenDetails extends React.Component {
     }
   };
 
+  handleRightsChange = rights => this.setState({ rights: rights });
+
   handleDateChange = date => {
-    this.setState(Object.assign(this.state, { expiry: date }));
+    this.setState({ expiry: date });
   };
 
   scrollToRef = ref => ref.current.scrollIntoView();
@@ -84,43 +83,38 @@ class TokenDetails extends React.Component {
     var letters = /^[A-Za-z0-9_]+$/;
     let name = event.target.value;
     if (name.match(letters)) {
-      this.setState(
-        Object.assign(this.state, {
-          name_helper_text: ""
-        })
-      );
+      this.setState({
+        name_helper_text: ""
+      });
     } else if (name.length == 0) {
-      this.setState(
-        Object.assign(this.state, {
-          name_helper_text: "Token name cannot be blank."
-        })
-      );
+      this.setState({
+        name_helper_text: "Token name cannot be blank."
+      });
     } else {
-      this.setState(
-        Object.assign(this.state, {
-          name_helper_text:
-            "Token name may only contain letters, numbers and underscores."
-        })
-      );
+      this.setState({
+        name_helper_text:
+          "Token name may only contain letters, numbers and underscores."
+      });
     }
     this.setState({ name: event.target.value });
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    const rights = getMyRightsForServer(this.props.serverID);
     this.setState({
-      uiReady: getMyRightsForServer(this.props.serverID)
-        .then(json => {
-          this.setState({
-            rights: JSON.parse(JSON.stringify(json.allowed_claims || {})),
-            permitted: json.allowed_claims || {},
-            expiry: json.latest_expiry,
-            latest_expiry: json.latest_expiry
-          });
-        })
-        .catch(err => {
-          this.setState({ hasError: true, error: err });
-        })
+      uiReady: rights
     });
+    try {
+      console.log(await rights);
+      this.setState({
+        rights: (await rights).allowed_claims,
+        permitted: (await rights).allowed_claims,
+        expiry: (await rights).latest_expiry,
+        latest_expiry: (await rights).latest_expiry
+      });
+    } catch (err) {
+      this.setState({ hasError: true, error: err });
+    }
   }
 
   render() {
@@ -177,7 +171,12 @@ class TokenDetails extends React.Component {
             />
           </MuiPickersUtilsProvider>
         </Grid>
-        <Grid item xs={12}></Grid>
+        <TokenPermission
+          key={permitted}
+          enabledRights={rights}
+          rights={permitted}
+          parentUpdate={this.handleRightsChange}
+        />
         <WarningDialog
           open={this.state.pageError}
           message={this.state.errors.message}
