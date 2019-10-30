@@ -20,7 +20,7 @@ class WarningDialog extends React.Component {
   };
 
   render() {
-    const { message, open, handleClick } = this.props;
+    const { message, handleClick } = this.props;
 
     return (
       <Dialog

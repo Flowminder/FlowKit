@@ -6,7 +6,7 @@ import React from "react";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import ErrorDialog from "./ErrorDialog";
-import { getGroupCapabilities, getCapabilities, getServers } from "./util/api";
+import { getGroupCapabilities, getCapabilities } from "./util/api";
 import RightsCascade from "./RightsCascade";
 import { jsonify, scopesGraph } from "./util/util";
 
@@ -57,7 +57,6 @@ class GroupServerAccessRights extends React.Component {
       throw this.state.error;
 
     const { rights, enabledRights } = this.state;
-    const { classes } = this.props;
 
     return (
       <React.Fragment>

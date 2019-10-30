@@ -20,7 +20,7 @@ class ErrorDialog extends React.Component {
   };
 
   render() {
-    const { message, open } = this.props;
+    const { message } = this.props;
 
     return (
       <Dialog

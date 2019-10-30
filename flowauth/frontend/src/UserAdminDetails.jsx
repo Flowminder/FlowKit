@@ -82,22 +82,22 @@ class UserAdminDetails extends React.Component {
       pageError: false,
       errors: ""
     });
-    var state = {
+    this.setState({
       [name]: event.target.value
-    };
+    });
     if (name === "name") {
       var letters = /^[A-Za-z0-9_]+$/;
       let username = event.target.value;
       if (username.match(letters)) {
-        state = Object.assign(state, {
+        this.setState({
           username_helper_text: ""
         });
-      } else if (username.length == 0) {
-        state = Object.assign(state, {
+      } else if (username.length === 0) {
+        this.setState({
           username_helper_text: "Username can not be blank."
         });
       } else {
-        state = Object.assign(state, {
+        this.setState({
           username_helper_text:
             "Username may only contain letters, numbers and underscores."
         });
@@ -106,12 +106,11 @@ class UserAdminDetails extends React.Component {
     if (name === "password") {
       var passStrength = zxcvbn(event.target.value);
       console.log(passStrength.feedback.warning);
-      state = Object.assign(state, {
+      this.setState({
         password_strength: passStrength.score,
         password_helper_text: passStrength.feedback.suggestions
       });
     }
-    this.setState(state);
   };
   updateGroups = groups => {
     this.setState({ groups: groups });
