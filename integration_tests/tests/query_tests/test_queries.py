@@ -8,8 +8,6 @@ from flowclient.client import get_result
 
 import flowclient
 
-from flowkit_jwt_generator import permissions_types, aggregation_types
-
 
 @pytest.mark.parametrize(
     "query_kind, params",
@@ -656,15 +654,7 @@ def test_get_geography(access_token_builder, flowapi_url):
     Test that queries can be run, and return a GeoJSON dict.
     """
     con = flowclient.Connection(
-        url=flowapi_url,
-        token=access_token_builder(
-            {
-                "geography": {
-                    "permissions": permissions_types,
-                    "spatial_aggregation": aggregation_types,
-                }
-            }
-        ),
+        url=flowapi_url, token=access_token_builder(["get_result:geography:admin3"]),
     )
     result_geojson = flowclient.get_geography(connection=con, aggregation_unit="admin3")
     assert "FeatureCollection" == result_geojson["type"]
