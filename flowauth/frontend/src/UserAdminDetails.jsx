@@ -105,7 +105,6 @@ class UserAdminDetails extends React.Component {
     }
     if (name === "password") {
       var passStrength = zxcvbn(event.target.value);
-      console.log(passStrength.feedback.warning);
       this.setState({
         password_strength: passStrength.score,
         password_helper_text: passStrength.feedback.suggestions

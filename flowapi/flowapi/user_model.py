@@ -3,7 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from typing import Tuple, Set, FrozenSet
+from flask_jwt_extended.exceptions import UserClaimsVerificationError
+from typing import List, Set, FrozenSet
 
 from quart_jwt_extended import get_jwt_claims, get_jwt_identity
 from quart import current_app, request

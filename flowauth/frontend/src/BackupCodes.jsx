@@ -59,7 +59,7 @@ class BackupCodes extends React.Component {
     return (
       <Grid
         container
-        spacing={16}
+        spacing={2}
         direction="column"
         justify="center"
         alignItems="center"

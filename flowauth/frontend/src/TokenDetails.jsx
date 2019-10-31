@@ -105,7 +105,6 @@ class TokenDetails extends React.Component {
       uiReady: rights
     });
     try {
-      console.log(await rights);
       this.setState({
         rights: (await rights).allowed_claims,
         permitted: (await rights).allowed_claims,

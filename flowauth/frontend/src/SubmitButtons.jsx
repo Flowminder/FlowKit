@@ -9,7 +9,7 @@ import Grid from "@material-ui/core/Grid";
 function SubmitButtons(props) {
   const { handleSubmit, onClick } = props;
   return (
-    <Grid item xs={12} container direction="row-reverse" spacing={16}>
+    <Grid item xs={12} container direction="row-reverse" spacing={2}>
       <Grid item>
         <Button
           type="submit"
