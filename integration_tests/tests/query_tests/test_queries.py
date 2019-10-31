@@ -736,10 +736,7 @@ def test_get_available_dates(
     Test that queries can be run, and return the expected JSON result.
     """
     con = flowclient.Connection(
-        url=flowapi_url,
-        token=access_token_builder(
-            {"available_dates": {"permissions": {"get_result": True}}}
-        ),
+        url=flowapi_url, token=access_token_builder(["get_result:available_dates"]),
     )
     result = flowclient.get_available_dates(connection=con, event_types=event_types)
     assert expected_result == result
