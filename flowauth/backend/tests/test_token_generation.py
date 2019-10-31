@@ -58,7 +58,7 @@ def test_token_generation(client, auth, app, test_user, public_key):
         algorithms=["RS256"],
         audience="DUMMY_SERVER_A",
     )
-    assert ["run,get_result:DUMMY_ROUTE_A:aggregation_unit:admin0"] == decoded_token[
+    assert ["get_result,run:DUMMY_ROUTE_A:aggregation_unit:admin0"] == decoded_token[
         "user_claims"
     ]
     assert "TEST_USER" == decoded_token["identity"]

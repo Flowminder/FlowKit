@@ -204,20 +204,15 @@ def scope_to_sets(scope: str) -> Iterable[FrozenSet]:
     -------
 
     """
-    actions, query_kind, *scope = scope.split(":")
-    scopeit = iter(scope)
-    scope = takewhile(lambda x: x != "aggregation_unit", scopeit)
-    scope_set_it = [list(scope)]
-    try:
-        agg_units = next(scopeit)
-        scope_set_it = [
-            [*scope_set_it[0], "aggregation_unit", unit]
-            for unit in agg_units.split(",")
-        ]
-    except StopIteration:  # No aggregation units for this scope
-        pass
-    for action, scope in product(actions.split(","), scope_set_it):
-        yield frozenset([action, query_kind, *zip(scope[::2], scope[1::2])])
+    parts = scope.split(":")
+    ps = [x.split(",") for x in parts]
+    for scope in product(*ps):
+        scopeit = iter(scope)
+        action, query_kind, *rest = scopeit
+        if len(rest) > 0:
+            yield frozenset([action, query_kind, *zip(rest[::2], rest[1::2])])
+        else:
+            yield frozenset([action, query_kind])
 
 
 def scopes_to_sets(scopes: List[str]) -> Set:
