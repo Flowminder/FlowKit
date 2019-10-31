@@ -654,7 +654,8 @@ def test_get_geography(access_token_builder, flowapi_url):
     Test that queries can be run, and return a GeoJSON dict.
     """
     con = flowclient.Connection(
-        url=flowapi_url, token=access_token_builder(["get_result:geography:admin3"]),
+        url=flowapi_url,
+        token=access_token_builder(["get_result:geography:aggregation_unit:admin3"]),
     )
     result_geojson = flowclient.get_geography(connection=con, aggregation_unit="admin3")
     assert "FeatureCollection" == result_geojson["type"]
