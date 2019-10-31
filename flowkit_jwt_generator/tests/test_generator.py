@@ -16,6 +16,23 @@ from flowkit_jwt_generator.jwt import generate_token, squashed_scopes
         (["SCOPE"], ["SCOPE"]),
         (["get_result:SCOPE", "run:SCOPE"], ["get_result,run:SCOPE"]),
         (["get_result:SCOPE:foo", "run:SCOPE"], ["get_result:SCOPE:foo", "run:SCOPE"]),
+        (
+            [
+                "get_result:SCOPE:aggregation_unit:foo",
+                "get_result:SCOPE:aggregation_unit:bar",
+                "run:SCOPE:aggregation_unit:bar",
+                "run:SCOPE:aggregation_unit:foo",
+            ],
+            ["get_result,run:SCOPE:aggregation_unit:bar,foo"],
+        ),
+        (
+            [
+                "run:SCOPE:aggregation_unit:bar",
+                "run:SCOPE:aggregation_unit:foo",
+                "run:SCOPE:aggregation_unit:baz",
+            ],
+            ["run:SCOPE:aggregation_unit:bar,baz,foo"],
+        ),
     ],
 )
 def test_scope_squashing(scopes, expected):

@@ -190,6 +190,49 @@ def add_token(server):
 # this module is outside the docker build context for FlowAuth).
 # Duplicated in FlowAuth (cannot use this implementation there because
 # this module is outside the docker build context for FlowAuth).
+def squash(xs):
+    sq = {}
+    for x in xs:
+        h, *s = x.split(":")
+        ll = sq.setdefault(h, list())
+        if len(s) > 0:
+            ll.append(":".join(s))
+
+    sq2 = {}
+
+    while len(sq) > 0:
+        sqit = iter(sq.keys())
+        k = next(sqit)
+        v = sq.pop(k)
+        ks = [
+            k2
+            for k2, v2 in sq.items()
+            if isinstance(v2, list) and k2 != k and sorted(v2) == sorted(v)
+        ]
+        if len(ks) > 0:
+            sq2[",".join(sorted([k, *ks]))] = v
+        else:
+            sq2[k] = v
+        for k in ks:
+            sq.pop(k)
+
+    for k, v in sq2.items():
+        if isinstance(v, list) and len(v) > 1:
+            sq2[k] = squash(v)
+
+    return sq2
+
+
+def compose_scope(p):
+    for k, v in p.items():
+        if isinstance(v, dict) and len(v) > 0:
+            yield f"{k}:{':'.join(compose_scope(v))}"
+        elif isinstance(v, list) and len(v) > 0:
+            yield f"{k}:{v[0]}"
+        else:
+            yield k
+
+
 def squashed_scopes(scopes: List[str]) -> Iterable[str]:
     """
 
@@ -201,30 +244,7 @@ def squashed_scopes(scopes: List[str]) -> Iterable[str]:
     -------
 
     """
-    squashed_scopes = {}
-    for (
-        scope
-    ) in scopes:  # Map from scopes to list of their components without read/get result
-        rw, *scope = scope.split(":")
-        ll = squashed_scopes.setdefault(":".join(scope), [])
-        ll.append(rw)  # Accumulate variants
-    ss = (
-        ":".join(x for x in [",".join(v), k] if x) for k, v in squashed_scopes.items()
-    )
-    squashed_scopes = {}
-    for scope in ss:
-        scope = scope.split(":")
-        scopeit = iter(scope)
-        scope = takewhile(lambda x: x != "aggregation_unit", scopeit)
-        ll = squashed_scopes.setdefault(":".join(scope), [])
-        try:
-            unit = next(scopeit)
-            ll.append(":".join(["aggregation_unit", unit]))
-        except StopIteration:
-            pass  # No agg unit
-    yield from (
-        ":".join(x for x in [k, ",".join(v)] if x) for k, v in squashed_scopes.items()
-    )
+    yield from compose_scope(squash(scopes))
 
 
 def generate_token(
