@@ -611,7 +611,7 @@ if __name__ == "__main__":
                                 , event_supertable as (
                                     INSERT INTO interactions.event_supertable (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp")
                                         SELECT id1 AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", caller_loc::geometry)) AS cell_id, 
-                                        {date_sk} AS date_sk, time_sk, 1 as event_type, "timestamp" from callers
+                                        {date_sk} AS date_sk, time_sk, 1 AS event_type, "timestamp" FROM callers
                                         RETURNING *
                                 )
                                 INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_super_table_id, "timestamp") 
@@ -638,21 +638,18 @@ if __name__ == "__main__":
                             + """
                                 , event_supertable as (
                                     INSERT INTO interactions.event_supertable (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp")
-                                        SELECT id1 AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", (caller_loc->>nextval('pointcount')::INTEGER)::geometry)) AS cell_id,
-                                        {date_sk} AS date_sk, time_sk, 2 as event_type, CONCAT('2016-01-01 ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ from callers
-                                        returning *
+                                        SELECT id1 AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", caller_loc::geometry)) AS cell_id, 
+                                        {date_sk} AS date_sk, time_sk, 2 AS event_type, "timestamp" FROM callers
+                                        RETURNING *
                                 )
-                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, "timestamp") 
-                                (
-                                    SELECT
-                                        id AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk,
-                                        CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ
-                                    FROM (
-                                        SELECT id1 AS id, caller_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
+                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_super_table_id, "timestamp") 
+                                    SELECT _.subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, 
+                                    {date_sk} as date_sk, _.time_sk, event_id, "timestamp" from event_supertable e
+                                    JOIN (
+                                        SELECT id1 as subscriber_id, caller_loc AS loc, time_sk, "timestamp" FROM callers
                                         UNION ALL
-                                        SELECT id2 AS id, callee_loc->>nextval('pointcount')::INTEGER AS loc, time_sk, minutes, seconds from callers
-                                    ) _
-                                )
+                                        SELECT id2 as subscriber_id, callee_loc AS loc, time_sk, "timestamp" FROM callers
+                                    ) _ USING("timestamp")
                             """,
                         )
 
