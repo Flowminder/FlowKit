@@ -604,6 +604,12 @@ if __name__ == "__main__":
                             (i + 1),
                             with_sql
                             + """
+                                , event_supertable as (
+                                    INSERT INTO interactions.event_supertable (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp")
+                                        SELECT id1 AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", (caller_loc->>nextval('pointcount')::INTEGER)::geometry)) AS cell_id,
+                                        {date_sk} AS date_sk, time_sk, 1 as event_type, CONCAT('2016-01-01 ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ from callers
+                                        returning *
+                                )
                                 INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, "timestamp") 
                                 (
                                     SELECT
@@ -629,6 +635,12 @@ if __name__ == "__main__":
                             (i + 1),
                             with_sql
                             + """
+                                , event_supertable as (
+                                    INSERT INTO interactions.event_supertable (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp")
+                                        SELECT id1 AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", (caller_loc->>nextval('pointcount')::INTEGER)::geometry)) AS cell_id,
+                                        {date_sk} AS date_sk, time_sk, 2 as event_type, CONCAT('2016-01-01 ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(minutes::TEXT, 2, '0'), ':', LPAD(seconds::TEXT, 2, '0'))::TIMESTAMPTZ from callers
+                                        returning *
+                                )
                                 INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, "timestamp") 
                                 (
                                     SELECT
