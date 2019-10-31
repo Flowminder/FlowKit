@@ -102,6 +102,28 @@ def generate_keypair() -> Tuple[bytes, bytes]:
 
 
 def squash(xs, ix=0):
+    """
+    Squashes a list of scope strings by combining them where possible.
+
+    Given two strings of the form <action>:<query_kind>:<arg_name>:<arg_val> that differ only
+    in <action>, will yield <action_a>,<action_b>:<query_kind>:<arg_name>:<arg_val>.
+
+    Repeatedly squashes, then if ix < the greatest number of : separated elements in the result, squashes again
+    using the next : separated element.
+
+    Parameters
+    ----------
+    xs : list of str
+        List of scope strings of the form <action>:<query_kind>:<arg_name>:<arg_val>
+    ix : int, default 0
+
+
+    Yields
+    ------
+    str
+        Merged scope string
+
+    """
     sq = {}
     can_squash = False
     for x in xs:
@@ -134,13 +156,20 @@ def squash(xs, ix=0):
 
 def squashed_scopes(scopes: List[str]) -> Iterable[str]:
     """
+    Squashes a list of scope strings by combining them where possible.
+
+    Given two strings of the form <action>:<query_kind>:<arg_name>:<arg_val> that differ only
+    in <action>, will yield <action_a>,<action_b>:<query_kind>:<arg_name>:<arg_val>.
 
     Parameters
     ----------
-    scopes
+    scopes : list of str
+        List of scope strings of the form <action>:<query_kind>:<arg_name>:<arg_val>
 
-    Returns
-    -------
+    Yields
+    ------
+    str
+        Merged scope string
 
     """
     yield from squash(scopes)
