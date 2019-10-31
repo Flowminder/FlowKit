@@ -78,7 +78,7 @@ class PublicKey extends React.Component {
         <div className={classes.gridRoot}>
           <Grid
             container
-            spacing={16}
+            spacing={2}
             direction="row"
             justify="flex-start"
             alignItems="flex-start"

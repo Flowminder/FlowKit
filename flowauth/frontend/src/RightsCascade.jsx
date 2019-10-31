@@ -20,7 +20,6 @@ class RightsCascade extends React.Component {
           preventOverflow
           menuWidth={400}
           renderValue={(value, selectedItems, selectedElement) => {
-            console.log(value, selectedItems, selectedElement);
             return (
               <span>
                 {selectedItems

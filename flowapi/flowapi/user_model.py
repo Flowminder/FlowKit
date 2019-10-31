@@ -4,7 +4,7 @@
 
 
 from flask_jwt_extended.exceptions import UserClaimsVerificationError
-from typing import List, Tuple, Set, FrozenSet
+from typing import List, Set, FrozenSet
 
 from flask_jwt_extended import get_jwt_claims, get_jwt_identity
 from quart import current_app, request

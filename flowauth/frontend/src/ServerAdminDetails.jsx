@@ -4,7 +4,6 @@
 
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -22,6 +21,14 @@ import {
 } from "./util/api";
 import RightsCascade from "./RightsCascade";
 import { jsonify, scopesGraph } from "./util/util";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core";
+
+const styles = theme => ({
+  button: {
+    margin: theme.spacing.unit
+  }
+});
 
 class ServerAdminDetails extends React.Component {
   constructor() {
@@ -140,7 +147,7 @@ class ServerAdminDetails extends React.Component {
       [name]: event.target.value
     });
     if (name === "name") {
-      var letters = /^[A-Za-z0-9_]+$/;
+      const letters = /^[A-Za-z0-9_]+$/;
       let servername = event.target.value;
       if (servername.match(letters) && servername.length <= 120) {
         this.setState({
@@ -236,7 +243,6 @@ class ServerAdminDetails extends React.Component {
           />
         </Grid>
         <Grid item xs={6} />
-        <Divider />
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">
             Token Lifetime Limits
@@ -315,5 +321,7 @@ class ServerAdminDetails extends React.Component {
     );
   }
 }
-
-export default ServerAdminDetails;
+ServerAdminDetails.propTypes = {
+  classes: PropTypes.object.isRequired
+};
+export default withStyles(styles)(ServerAdminDetails);

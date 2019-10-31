@@ -26,7 +26,6 @@ class TokenPermission extends React.Component {
 
   async componentDidMount() {
     const { rights } = this.props;
-    console.log(rights);
     const scopesObj = rights.reduce((obj, cur) => ({ ...obj, [cur]: {} }), {});
 
     const scopeGraph = scopesGraph(scopesObj);

@@ -45,7 +45,7 @@ function Lister(DetailComponent, kind, get_fn, delete_fn) {
       const { classes } = this.props;
       return (
         <Paper className={classes.root}>
-          <Grid container spacing={16} alignItems="center">
+          <Grid container spacing={2} alignItems="center">
             {this.getBody()}
           </Grid>
         </Paper>

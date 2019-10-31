@@ -123,7 +123,7 @@ class UserDetails extends React.Component {
     if (!two_factor_setup && !new_backups) {
       return (
         <Paper className={classes.root}>
-          <Grid container spacing={16} alignItems="center">
+          <Grid container spacing={2} alignItems="center">
             <Grid item xs={12}>
               <Typography variant="h5" component="h1">
                 Reset password
