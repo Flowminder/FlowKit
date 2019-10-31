@@ -6,7 +6,8 @@
 Prefect tasks used in workflows.
 """
 
-from prefect import task, config, context
+import prefect
+from prefect import task
 from prefect.triggers import all_successful, any_failed, all_finished
 from prefect.engine import signals
 import papermill as pm
@@ -18,6 +19,7 @@ from sh import asciidoctor_pdf
 from pathlib import Path
 import pendulum
 import json
+import warnings
 from get_secret_or_env_var import environ
 
 import flowclient
@@ -50,9 +52,9 @@ def get_tag(reference_date: Optional["datetime.date"] = None) -> str:
     str
         Tag for output filenames
     """
-    params_hash = get_params_hash(context.parameters)
+    params_hash = get_params_hash(prefect.context.parameters)
     ref_date_string = f"_{reference_date}" if reference_date is not None else ""
-    return f"{context.flow_name}_{params_hash}{ref_date_string}"
+    return f"{prefect.context.flow_name}_{params_hash}{ref_date_string}"
 
 
 @task
@@ -97,7 +99,7 @@ def get_flowapi_url() -> str:
     """
     # This task is defined so that the flowapi url can be passed as a parameter
     # to other tasks in a workflow.
-    return config.flowapi_url
+    return prefect.config.flowapi_url
 
 
 @task
@@ -118,22 +120,30 @@ def get_available_dates(
     list of pendulum.Date
         List of available dates, in chronological order
     """
-    context.logger.info(
-        f"Getting available dates from FlowAPI at '{config.flowapi_url}'."
+    prefect.context.logger.info(
+        f"Getting available dates from FlowAPI at '{prefect.config.flowapi_url}'."
     )
-    conn = flowclient.connect(url=config.flowapi_url, token=environ["FLOWAPI_TOKEN"])
+    conn = flowclient.connect(
+        url=prefect.config.flowapi_url, token=environ["FLOWAPI_TOKEN"]
+    )
     dates = flowclient.get_available_dates(connection=conn)
     if cdr_types is None:
-        context.logger.debug(
+        prefect.context.logger.debug(
             "No CDR types provided. Will return available dates for all CDR types."
         )
         cdr_types = dates.keys()
     else:
-        context.logger.debug(f"Returning available dates for CDR types {cdr_types}.")
-    dates_union = set().union(
+        prefect.context.logger.debug(
+            f"Returning available dates for CDR types {cdr_types}."
+        )
+        unknown_cdr_types = set(cdr_types).difference(dates.keys())
+        if unknown_cdr_types:
+            warnings.warn(f"No data available for CDR types {unknown_cdr_types}.")
+    dates_union = set.union(
         *[
             set(pendulum.parse(date, exact=True) for date in dates[cdr_type])
             for cdr_type in cdr_types
+            if cdr_type in dates.keys()
         ]
     )
     return sorted(list(dates_union))
@@ -159,9 +169,9 @@ def filter_dates_by_earliest_date(
     list of date
         Filtered list of dates
     """
-    context.logger.info(f"Filtering out dates earlier than {earliest_date}.")
+    prefect.context.logger.info(f"Filtering out dates earlier than {earliest_date}.")
     if earliest_date is None:
-        context.logger.debug(
+        prefect.context.logger.debug(
             "No earliest date provided. Returning unfiltered list of dates."
         )
         return dates
@@ -199,12 +209,14 @@ def filter_dates_by_stencil(
     list of date
         Filtered list of dates
     """
-    context.logger.info("Filtering dates by stencil.")
+    prefect.context.logger.info("Filtering dates by stencil.")
     if date_stencil is None:
-        context.logger.debug("No stencil provided. Returning unfiltered list of dates.")
+        prefect.context.logger.debug(
+            "No stencil provided. Returning unfiltered list of dates."
+        )
         return dates
     else:
-        context.logger.debug(
+        prefect.context.logger.debug(
             f"Returning reference dates for which all dates in stencil {date_stencil} are available."
         )
         return [
@@ -231,16 +243,16 @@ def filter_dates_by_previous_runs(
     list of date
         Filtered list of dates
     """
-    context.logger.info(
+    prefect.context.logger.info(
         "Filtering out dates for which this workflow has already run successfully."
     )
-    session = get_session(config.db_uri)
+    session = get_session(prefect.config.db_uri)
     filtered_dates = [
         date
         for date in dates
         if WorkflowRuns.can_process(
-            workflow_name=context.flow_name,
-            workflow_params=context.parameters,
+            workflow_name=prefect.context.flow_name,
+            workflow_params=prefect.context.parameters,
             reference_date=date,
             session=session,
         )
@@ -267,13 +279,13 @@ def record_workflow_in_process(
         )
     else:
         message = "Recording workflow run 'in_process'."
-    context.logger.debug(message)
-    session = get_session(config.db_uri)
+    prefect.context.logger.debug(message)
+    session = get_session(prefect.config.db_uri)
     WorkflowRuns.set_state(
-        workflow_name=context.flow_name,
-        workflow_params=context.parameters,
+        workflow_name=prefect.context.flow_name,
+        workflow_params=prefect.context.parameters,
         reference_date=reference_date,
-        scheduled_start_time=context.scheduled_start_time,
+        scheduled_start_time=prefect.context.scheduled_start_time,
         state="in_process",
         session=session,
     )
@@ -294,13 +306,13 @@ def record_workflow_done(reference_date: Optional["datetime.date"] = None) -> No
         message = f"Recording workflow run 'done' for reference date {reference_date}."
     else:
         message = "Recording workflow run 'done'."
-    context.logger.debug(message)
-    session = get_session(config.db_uri)
+    prefect.context.logger.debug(message)
+    session = get_session(prefect.config.db_uri)
     WorkflowRuns.set_state(
-        workflow_name=context.flow_name,
-        workflow_params=context.parameters,
+        workflow_name=prefect.context.flow_name,
+        workflow_params=prefect.context.parameters,
         reference_date=reference_date,
-        scheduled_start_time=context.scheduled_start_time,
+        scheduled_start_time=prefect.context.scheduled_start_time,
         state="done",
         session=session,
     )
@@ -323,13 +335,13 @@ def record_workflow_failed(reference_date: Optional["datetime.date"] = None) -> 
         )
     else:
         message = "Recording workflow run 'failed'."
-    context.logger.debug(message)
-    session = get_session(config.db_uri)
+    prefect.context.logger.debug(message)
+    session = get_session(prefect.config.db_uri)
     WorkflowRuns.set_state(
-        workflow_name=context.flow_name,
-        workflow_params=context.parameters,
+        workflow_name=prefect.context.flow_name,
+        workflow_params=prefect.context.parameters,
         reference_date=reference_date,
-        scheduled_start_time=context.scheduled_start_time,
+        scheduled_start_time=prefect.context.scheduled_start_time,
         state="failed",
         session=session,
     )
@@ -351,25 +363,27 @@ def record_any_failed_workflows(reference_dates: List["datetime.date"]) -> None:
     # not a single date. This is because if this task was mapped, and a mistake when
     # defining the workflow meant that a previous task failed to map, this task would
     # also fail to map and would therefore not run.
-    context.logger.debug(f"Ensuring no workflow runs are left in 'in_process' state.")
+    prefect.context.logger.debug(
+        f"Ensuring no workflow runs are left in 'in_process' state."
+    )
     some_failed = False
-    session = get_session(config.db_uri)
+    session = get_session(prefect.config.db_uri)
     for reference_date in reference_dates:
         if not WorkflowRuns.is_done(
-            workflow_name=context.flow_name,
-            workflow_params=context.parameters,
+            workflow_name=prefect.context.flow_name,
+            workflow_params=prefect.context.parameters,
             reference_date=reference_date,
             session=session,
         ):
             some_failed = True
-            context.logger.debug(
+            prefect.context.logger.debug(
                 f"Recording workflow run 'failed' for reference date {reference_date}."
             )
             WorkflowRuns.set_state(
-                workflow_name=context.flow_name,
-                workflow_params=context.parameters,
+                workflow_name=prefect.context.flow_name,
+                workflow_params=prefect.context.parameters,
                 reference_date=reference_date,
-                scheduled_start_time=context.scheduled_start_time,
+                scheduled_start_time=prefect.context.scheduled_start_time,
                 state="failed",
                 session=session,
             )
@@ -421,19 +435,19 @@ def papermill_execute_notebook(
     # lists, where we would otherwise have to register a custom papermill translator
     # for tuples.
     safe_params = make_json_serialisable(parameters)
-    context.logger.info(
+    prefect.context.logger.info(
         f"Executing notebook '{input_filename}' with parameters {safe_params}."
     )
 
     output_filename = get_output_filename(input_filename, output_tag)
-    input_path = str(Path(config.inputs.inputs_dir) / input_filename)
-    output_path = str(Path(config.outputs.notebooks_dir) / output_filename)
+    input_path = str(Path(prefect.config.inputs.inputs_dir) / input_filename)
+    output_path = str(Path(prefect.config.outputs.notebooks_dir) / output_filename)
 
-    context.logger.debug(f"Output notebook will be '{output_path}'.")
+    prefect.context.logger.debug(f"Output notebook will be '{output_path}'.")
 
     pm.execute_notebook(input_path, output_path, parameters=safe_params, **kwargs)
 
-    context.logger.info(f"Finished executing notebook.")
+    prefect.context.logger.info(f"Finished executing notebook.")
 
     return output_path
 
@@ -463,27 +477,29 @@ def convert_notebook_to_pdf(
     str
         Path to output PDF file
     """
-    context.logger.info(f"Converting notebook '{notebook_path}' to PDF.")
+    prefect.context.logger.info(f"Converting notebook '{notebook_path}' to PDF.")
     if output_filename is None:
         output_filename = f"{Path(notebook_path).stem}.pdf"
-    output_path = str(Path(config.outputs.reports_dir) / output_filename)
+    output_path = str(Path(prefect.config.outputs.reports_dir) / output_filename)
 
     with open(notebook_path) as nb_file:
         nb_read = nbformat.read(nb_file, as_version=4)
 
     if asciidoc_template is None:
-        asciidoc_template_path = config.asciidoc_template_path
+        asciidoc_template_path = prefect.config.asciidoc_template_path
     else:
-        asciidoc_template_path = str(Path(config.inputs.inputs_dir) / asciidoc_template)
-    context.logger.debug(
+        asciidoc_template_path = str(
+            Path(prefect.config.inputs.inputs_dir) / asciidoc_template
+        )
+    prefect.context.logger.debug(
         f"Using template '{asciidoc_template_path}' to convert notebook to asciidoc."
     )
 
     exporter = ASCIIDocExporter(template_file=asciidoc_template_path)
     body, resources = exporter.from_notebook_node(nb_read)
 
-    context.logger.debug("Converted notebook to asciidoc.")
-    context.logger.debug("Converting asciidoc to PDF...")
+    prefect.context.logger.debug("Converted notebook to asciidoc.")
+    prefect.context.logger.debug("Converting asciidoc to PDF...")
 
     with TemporaryDirectory() as tmpdir:
         with open(f"{tmpdir}/tmp.asciidoc", "w") as f_tmp:
@@ -493,6 +509,6 @@ def convert_notebook_to_pdf(
                 fout.write(content)
         asciidoctor_pdf(f"{tmpdir}/tmp.asciidoc", o=output_path)
 
-    context.logger.info(f"Created report '{output_filename}'.")
+    prefect.context.logger.info(f"Created report '{output_filename}'.")
 
     return output_path
