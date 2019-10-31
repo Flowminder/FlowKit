@@ -9,7 +9,6 @@ import pytest
 import jwt
 from flowauth.token_management import generate_token as flowauth_generate_token
 from flowkit_jwt_generator import generate_token as jwt_generator_generate_token
-from flowkit_jwt_generator import load_public_key
 
 from pytest import approx
 

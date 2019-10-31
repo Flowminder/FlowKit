@@ -101,47 +101,35 @@ def generate_keypair() -> Tuple[bytes, bytes]:
     return private_key_bytes, public_key_bytes
 
 
-def squash(xs):
+def squash(xs, ix=0):
     sq = {}
+    can_squash = False
     for x in xs:
-        h, *s = x.split(":")
-        ll = sq.setdefault(h, list())
-        if len(s) > 0:
-            ll.append(":".join(s))
+        s = x.split(":")[ix + 1 :]
+        hs = x.split(":")[:ix]
+        dd = sq.setdefault((":".join(hs), ":".join(s)), dict())
+        ll = dd.setdefault("h", set())
+        try:
+            h = x.split(":")[ix]
+            ll.add(h)
+            can_squash = True
+        except IndexError:
+            pass
 
-    sq2 = {}
-
-    while len(sq) > 0:
-        sqit = iter(sq.keys())
-        k = next(sqit)
-        v = sq.pop(k)
-        ks = [
-            k2
-            for k2, v2 in sq.items()
-            if isinstance(v2, list) and k2 != k and sorted(v2) == sorted(v)
-        ]
-        if len(ks) > 0:
-            sq2[",".join(sorted([k, *ks]))] = v
-        else:
-            sq2[k] = v
-        for k in ks:
-            sq.pop(k)
-
-    for k, v in sq2.items():
-        if isinstance(v, list) and len(v) > 1:
-            sq2[k] = squash(v)
-
-    return sq2
-
-
-def compose_scope(p):
-    for k, v in p.items():
-        if isinstance(v, dict) and len(v) > 0:
-            yield f"{k}:{':'.join(compose_scope(v))}"
-        elif isinstance(v, list) and len(v) > 0:
-            yield f"{k}:{v[0]}"
-        else:
-            yield k
+    ll = set()
+    for k, v in sq.items():
+        parts = []
+        if len(k[0]) > 0:
+            parts.append(k[0])
+        if len(v["h"]) > 0:
+            parts.append(",".join(sorted(v["h"])))
+        if len(k[1]) > 0:
+            parts.append(k[1])
+        ll.add(":".join(parts))
+    res = list(sorted(ll))
+    if can_squash:
+        return squash(res, ix + 1)
+    return res
 
 
 def squashed_scopes(scopes: List[str]) -> Iterable[str]:
@@ -155,7 +143,7 @@ def squashed_scopes(scopes: List[str]) -> Iterable[str]:
     -------
 
     """
-    yield from compose_scope(squash(scopes))
+    yield from squash(scopes)
 
 
 # Duplicated in FlowAuth (cannot use this implementation there because
