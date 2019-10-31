@@ -9,13 +9,17 @@ from flowapi.flowapi_errors import MissingQueryKindError, BadQueryError
 
 def get_nested_objects(schema: dict) -> Iterable[Tuple[str, dict]]:
     """
+    Yields tuples of nested objects as the name of the object and a list
+    of the objects it references without the ref prefix.
 
     Parameters
     ----------
-    schema
+    schema : dict
+        Schema to parse
 
-    Returns
-    -------
+    Yields
+    ------
+    tuple of str, dict
 
     """
     for q, qbod in schema.items():
@@ -27,19 +31,35 @@ def get_nested_objects(schema: dict) -> Iterable[Tuple[str, dict]]:
 
 
 def get_nested_dict(schema: dict) -> dict:
+    """
+    Gets a dict containing nested objects with the name (sans ref)
+    of the object they reference.
+
+    Parameters
+    ----------
+    schema : dict
+        Schema to parse
+
+    Returns
+    -------
+    dict
+
+    """
     return dict(get_nested_objects(schema))
 
 
 def get_queries(schema: dict) -> dict:
     """
+    Gets just query objects from a schema.
 
     Parameters
     ----------
-    schema
+    schema : dict
 
     Returns
     -------
-
+    dict
+        Dictionary of query objects
     """
     return {
         q: qbod["properties"]
@@ -50,14 +70,18 @@ def get_queries(schema: dict) -> dict:
 
 def get_reffed_params(qs: dict, nested: dict) -> dict:
     """
+    Resolve references in query params.
 
     Parameters
     ----------
-    qs
-    nested
-
+    qs : dict
+        All mainline queries
+    nested : dict
+        All nested queries
     Returns
     -------
+    dict
+        Queries with any refs to another query substituted for that query
 
     """
     q_treed = {}
@@ -72,14 +96,27 @@ def get_reffed_params(qs: dict, nested: dict) -> dict:
 
 def build_tree(roots: List[str], q_treed: dict) -> dict:
     """
+    Given a list of roots, and a tree of queries with any references resolved, constructs n new trees
+    with each combination of nested parameters as a branch, ensuring that the most branching occurs
+    immediately under the root node.
 
     Parameters
     ----------
-    roots
-    q_treed
+    roots : list of str
+        List of query names to use as the roots of the tree
+    q_treed : dict
+        Tree of queries with any references resolved
+
 
     Returns
     -------
+    dict
+        The new tree
+
+    Examples
+    --------
+    >>>build_tree(["DUMMY_ROOT"],{"DUMMY_ROOT": {"long_param": [1, 2, 3], "short_param": [1, 2]}})
+    {"DUMMY_ROOT": {"long_param": {1: {"short_param": {1: {}, 2: {}}},2: {"short_param": {1: {}, 2: {}}},3: {"short_param": {1: {}, 2: {}}},}}}
 
     """
     tree = {}
@@ -101,17 +138,20 @@ def build_tree(roots: List[str], q_treed: dict) -> dict:
     return tree
 
 
-def enum_paths(parents: List[str], tree: dict):
+def enum_paths(parents: List[str], tree: dict) -> Tuple[List[str], dict]:
     """
+    Yield the paths to the leaves of a tree and the associated leaf node.
 
     Parameters
     ----------
-    parents
-    tree
+    parents : list of str
+        Parents of this path
+    tree : dict
+        Tree of queries
 
-    Returns
-    -------
-
+    Yields
+    ------
+    Tuple of list, dict
     """
     if len(tree) == 0:
         yield parents, tree
@@ -122,17 +162,33 @@ def enum_paths(parents: List[str], tree: dict):
 
 def make_per_query_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
     """
+    Constructs and yields query scopes of the form:
+    <query_kind>:<arg_name>:<arg_val>
+    where arg_val may be a query kind, or the name of an aggregation unit if applicable.
+
+    One scope is yielded for each viable query structure, so for queries which contain two child queries
+    two scopes are yielded. If that query has 3 possible aggregation units, then 6 scopes are yielded altogether.
 
     Parameters
     ----------
-    tree
-    all_queries
+    tree : dict
+        Dict of nested queries
+    all_queries : dict
+        All queries
 
-    Returns
-    -------
+    Yields
+    ------
+    str
+        Query scope of the form <query_kind>:<arg_name>:<arg_val>
+
+    Examples
+    --------
+    >>>list(make_per_query_scopes({"DUMMY": {}}, {"DUMMY": {"query_kind": {"enum": ["dummy"]}}}))
+    ["dummy"]
+    >>>list(make_per_query_scopes({"DUMMY": {}},{"DUMMY": {"query_kind": {"enum": ["dummy"]},"aggregation_unit": {"enum": ["DUMMY_UNIT"]},}}))
+    ["dummy:aggregation_unit:DUMMY_UNIT",]
 
     """
-    units_superset = set()
     for path, _ in list(enum_paths([], tree)):
         kind_path = [
             all_queries.get(p, {}).get("query_kind", {}).get("enum", [p])[0]
@@ -140,7 +196,6 @@ def make_per_query_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
         ]  # Want the snake-cased variant
         try:
             units = all_queries[path[-1]]["aggregation_unit"]["enum"]
-            units_superset.update(units)
             yield from (
                 ":".join(kind_path + ["aggregation_unit", unit]) for unit in units
             )
@@ -152,14 +207,32 @@ def make_per_query_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
 
 def make_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
     """
+    Constructs and yields query scopes of the form:
+    <action>:<query_kind>:<arg_name>:<arg_val>
+    where arg_val may be a query kind, or the name of an aggregation unit if applicable, and <action> is run or get_result.
+    Additionally yields the "get_result:available_dates" scope.
+
+    One scope is yielded for each viable query structure, so for queries which contain two child queries
+    five scopes are yielded. If that query has 3 possible aggregation units, then 13 scopes are yielded altogether.
 
     Parameters
     ----------
-    tree
-    all_queries
+    tree : dict
+        Dict of nested queries
+    all_queries : dict
+        All queries
 
-    Returns
-    -------
+    Yields
+    ------
+    str
+        Query scope of the form <query_kind>:<arg_name>:<arg_val>
+
+    Examples
+    --------
+    >>>list(make_scopes({"DUMMY": {}}, {"DUMMY": {"query_kind": {"enum": ["dummy"]}}}))
+    ["get_result:dummy", "run:dummy", "get_result:available_dates"]
+    >>>list(make_scopes({"DUMMY": {}},{"DUMMY": {"query_kind": {"enum": ["dummy"]},"aggregation_unit": {"enum": ["DUMMY_UNIT"]},}}))
+    ["run:dummy:aggregation_unit:DUMMY_UNIT","get_result:dummy:aggregation_unit:DUMMY_UNIT", "get_result:available_dates"]
 
     """
     yield from (
@@ -172,14 +245,28 @@ def make_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
 
 def schema_to_scopes(flowmachine_query_schemas: dict) -> Iterable[str]:
     """
+    Constructs and yields query scopes of the form:
+    <action>:<query_kind>:<arg_name>:<arg_val>
+    where arg_val may be a query kind, or the name of an aggregation unit if applicable, and <action> is run or get_result.
+    Additionally yields the "get_result:available_dates" scope.
+
+    One scope is yielded for each viable query structure, so for queries which contain two child queries
+    five scopes are yielded. If that query has 3 possible aggregation units, then 13 scopes are yielded altogether.
 
     Parameters
     ----------
-    flowmachine_query_schemas
+    flowmachine_query_schemas : dict
+        Schema dict to turn into scopes list
 
-    Returns
-    -------
+    Yields
+    ------
+    str
+        Scope strings
 
+    Examples
+    --------
+    >>>list(schema_to_scopes({"FlowmachineQuerySchema": {"oneOf": [{"$ref": "DUMMY"}]},"DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},},))
+    ["get_result:dummy", "run:dummy", "get_result:available_dates"],
     """
     yield from make_scopes(
         build_tree(
@@ -195,13 +282,16 @@ def schema_to_scopes(flowmachine_query_schemas: dict) -> Iterable[str]:
 
 def scope_to_sets(scope: str) -> Iterable[FrozenSet]:
     """
+    Translates a scope string into a set of the form {<action>, <query_kind>, (<arg_name>, <arg_value>)}
 
     Parameters
     ----------
-    scope
+    scope : str
+        Scope string of the form <action>:<query_kind>:<arg_name>:<arg_value>
 
-    Returns
-    -------
+    Yields
+    ------
+    frozenset
 
     """
     parts = scope.split(":")
@@ -217,13 +307,15 @@ def scope_to_sets(scope: str) -> Iterable[FrozenSet]:
 
 def scopes_to_sets(scopes: List[str]) -> Set:
     """
+    Translates a list of scope strings into sets of the form {<action>, <query_kind>, (<arg_name>, <arg_value>)}
 
     Parameters
     ----------
-    scopes
-
-    Returns
-    -------
+    scopes : list of str
+        Scope strings of the form <action>:<query_kind>:<arg_name>:<arg_value>
+    Yields
+    ------
+    frozenset
 
     """
     return set(chain.from_iterable(scope_to_sets(scope) for scope in scopes))
@@ -231,20 +323,26 @@ def scopes_to_sets(scopes: List[str]) -> Set:
 
 def query_to_scope_set(*, action: str, query: dict) -> Set:
     """
+    Translates a query request into a set of the form {<action>, <query_kind>, (<arg_name>, <arg_value>)}.
 
     Parameters
     ----------
-    query
+    action : {"run", "get_result"}
+        Action being done with this query.
+    query : dict
+        The query parameters.
 
     Returns
     -------
+    set
+       Set of the form {<action>, <query_kind>, (<arg_name>, <arg_value>)}
 
     """
     try:
         ss = set([action, query["query_kind"]])
-    except KeyError as exc:
+    except KeyError:
         raise MissingQueryKindError
-    except (AttributeError, TypeError) as exc:
+    except (AttributeError, TypeError):
         raise BadQueryError
 
     if "aggregation_unit" in query:
