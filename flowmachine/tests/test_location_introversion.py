@@ -51,9 +51,10 @@ def test_lon_lat_introversion(get_dataframe):
     )
     assert pytest.approx(0.0681818181818182) == df.introversion.max()
     assert 1.0 == df.extroversion.max()
-    assert [83.7762949093138, 28.2715052907426] == df.sort_values("extroversion").iloc[
-        -1
-    ][["lon", "lat"]].tolist()
+    assert (
+        pytest.approx([83.7762949093138, 28.2715052907426])
+        == df.sort_values("extroversion").iloc[-1][["lon", "lat"]].tolist()
+    )
 
 
 def test_no_result_is_greater_than_one(get_dataframe):

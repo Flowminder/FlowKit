@@ -39,7 +39,7 @@ def test_handset_stats(get_dataframe, characteristic, statistic, msisdn, want):
         subscriber_handsets=SubscriberHandsets("2016-01-01", "2016-01-07"),
     )
     df = get_dataframe(query).set_index("subscriber")
-    assert df.value[msisdn] == want
+    assert df.value[msisdn] == pytest.approx(want)
 
 
 @pytest.mark.parametrize("kwarg", ["characteristic", "statistic"])
