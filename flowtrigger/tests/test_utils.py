@@ -173,7 +173,7 @@ def test_get_session(monkeypatch):
     mock_psycopg2_connect = Mock()
     monkeypatch.setattr("psycopg2.connect", mock_psycopg2_connect)
 
-    s = get_session(f"postgres://{user}:{{}}@{host}:{port}/{db_name}")
+    s = get_session(f"postgresql://{user}:{{}}@{host}:{port}/{db_name}")
 
     try:
         s.connection()
@@ -199,7 +199,7 @@ def test_get_session_without_password(monkeypatch):
     mock_psycopg2_connect = Mock()
     monkeypatch.setattr("psycopg2.connect", mock_psycopg2_connect)
 
-    s = get_session(f"postgres://{user}@{host}:{port}/{db_name}")
+    s = get_session(f"postgresql://{user}@{host}:{port}/{db_name}")
 
     try:
         s.connection()
@@ -280,6 +280,7 @@ def test_get_additional_parameter_names_for_notebooks_raises_error():
 
 def test_sort_notebook_labels():
     """
+    Test that sort_notebook_labels sorts notebook labels into a correct order.
     """
     notebooks = {
         "notebook1": {"parameters": {"p1": "notebook2"}},
@@ -291,6 +292,9 @@ def test_sort_notebook_labels():
 
 
 def test_sort_notebook_labels_circular_dependency():
+    """
+    Test that sort_notebooks_labels raises an error if notebooks have circular dependencies.
+    """
     notebooks = {
         "notebook1": {"parameters": {"p1": "notebook2"}},
         "notebook2": {"parameters": {"p1": "notebook1"}},
