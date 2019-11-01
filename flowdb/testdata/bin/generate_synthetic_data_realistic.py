@@ -233,7 +233,7 @@ def generatedDistributedTypes(trans, dist, date, date_sk, query):
             caller_id += 1
 
 
-# Add post event SQL
+# Add post event SQL - TODO - update this for the interactions.schema
 def addEventSQL(type, table):
     sql = [
         f"CREATE INDEX ON events.{type}_{table} (msisdn);",
@@ -601,8 +601,8 @@ if __name__ == "__main__":
                       """
                 )
 
-                # 4.2 Create the subscriber_sightings partition
-                for t in ["subscriber_sightings", "event_supertable", "calls", "sms"]:
+                # 4.2 Create the event partitions
+                for t in ["subscriber_sightings", "event_supertable", "calls", "sms", "mds"]:
                     connection.execute(
                         f"""
                         CREATE TABLE interactions.{t}_{str(i + 1).rjust(5, '0')} 
@@ -662,14 +662,14 @@ if __name__ == "__main__":
                                     SELECT id1 as subscriber_id, caller_loc AS loc, time_sk, "timestamp" from callers
                                     UNION ALL
                                     SELECT id2 as subscriber_id, callee_loc AS loc, time_sk, "timestamp" from callers
-                                ), calls AS (
+                                ), sms AS (
                                     INSERT INTO interactions.sms (super_table_id, subscriber_id, calling_party_cell_id, date_sk,time_sk, calling_party_msisdn, receiving_parties_msisdns, "timestamp")
                                         select event_id, subscriber_id, cell_id, e.date_sk, e.time_sk, calling_party_msisdn, ARRAY[called_party_msisdn], e."timestamp" from event_supertable e
                                         JOIN callers _ USING("timestamp")
                                         RETURNING *
                                 )
                                 INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_super_table_id, "timestamp") 
-                                    select _.subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, c.date_sk, _.time_sk, super_table_id, "timestamp" from calls c
+                                    SELECT _.subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, c.date_sk, _.time_sk, super_table_id, "timestamp" FROM sms c
                                     JOIN UNIONS _ using("timestamp")
                             """,
                         )
@@ -685,24 +685,34 @@ if __name__ == "__main__":
                             (i + 1),
                             """
                                 WITH callers AS (
-                                    SELECT s.id, v.value as loc, NEXTVAL('time_dimension') AS time_sk
+                                    SELECT s.id, v.value->>nextval('pointcount')::INTEGER as loc, NEXTVAL('time_dimension') AS time_sk,
+                                    CONCAT('{date} ', LPAD((currval('time_dimension') - 1)::TEXT, 2, '0'), ':', LPAD(NEXTVAL('minutes')::TEXT, 2, '0'), ':', LPAD(NEXTVAL('seconds')::TEXT, 2, '0'))::TIMESTAMPTZ AS "timestamp",
+                                    FLOOR(CAST(nextval('duration') as FLOAT) / 10 * 2600) AS duration,
+                                    ROUND(0.5 * 100000) AS volume
                                     FROM subs s
-                                        
-                                        LEFT JOIN variations v
-                                        ON v.type  = s.variant
-                                        AND v.row = (select nextval('rowcount'))
-                                    
+                                    LEFT JOIN subs s2 
+                                    -- Series generator to provide the call count for each caller
+                                    ON s2.id in (SELECT * FROM generate_series({from_count}, {to_count}, 2))
+                                    AND s2.id != s.id
+
+                                    LEFT JOIN variations v
+                                    ON v.type  = s.variant
+                                    AND v.row = (select nextval('rowcount'))
+
                                     WHERE s.id = 1
+                                ), event_supertable AS (
+                                    INSERT INTO interactions.event_supertable (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp")
+                                        SELECT id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", loc::geometry)) AS cell_id, 
+                                        {date_sk} AS date_sk, time_sk, 3 as event_type, "timestamp" from callers
+                                        RETURNING *
+                                ), mds AS (
+                                    INSERT INTO interactions.mds (super_table_id, subscriber_id, cell_id, date_sk, time_sk, data_volume_total, data_volume_up, data_volume_down, duration, "timestamp")
+                                    SELECT event_id, subscriber_id, e.cell_id, e.date_sk,  e.time_sk, volume * 2, volume, volume, duration, e."timestamp" FROM event_supertable e
+                                    JOIN callers _ USING("timestamp")
+                                    RETURNING *
                                 )
-                                INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, "timestamp") (
-                                    SELECT 
-                                        c.id AS subscriber_id, 
-                                        (SELECT cell_id FROM interactions.locations where ST_Equals("position",(c.loc->>s.point::INTEGER)::geometry)) AS cell_id, {date_sk} AS date_sk, time_sk,
-                                        CONCAT('{date} ', LPAD((time_sk - 1)::TEXT, 2, '0'), ':', LPAD(NEXTVAL('minutes')::TEXT, 2, '0'), ':', LPAD(NEXTVAL('seconds')::TEXT, 2, '0'))::TIMESTAMPTZ
-                                    FROM
-                                        callers c,
-                                        (SELECT row_number() over() AS id, nextval('pointcount') AS point FROM generate_series({from_count}, {to_count}, 2)) s
-                                )
+                                    INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_super_table_id, "timestamp") 
+                                        SELECT subscriber_id, cell_id, date_sk, time_sk, super_table_id, "timestamp" FROM mds
                             """,
                         )
 
