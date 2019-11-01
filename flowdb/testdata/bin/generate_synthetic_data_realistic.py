@@ -554,7 +554,8 @@ if __name__ == "__main__":
                     CONCAT('{date} ', LPAD((currval('time_dimension') - 1)::TEXT, 2, '0'), 
                         ':', LPAD(NEXTVAL('minutes')::TEXT, 2, '0'), 
                         ':', LPAD(NEXTVAL('seconds')::TEXT, 2, '0')
-                    )::TIMESTAMPTZ as "timestamp"
+                    )::TIMESTAMPTZ as "timestamp",
+                    s1.msisdn AS calling_party_msisdn, s2.msisdn AS called_party_msisdn
                 FROM subs s1
                     LEFT JOIN subs s2 
                     -- Series generator to provide the call count for each caller
@@ -630,8 +631,8 @@ if __name__ == "__main__":
                                     UNION ALL
                                     SELECT id2 as subscriber_id, callee_loc AS loc, time_sk, "timestamp" from callers
                                 ), calls AS (
-                                    INSERT INTO interactions.calls (super_table_id, subscriber_id, called_subscriber_id, calling_party_cell_id, called_party_cell_id, date_sk, time_sk, "timestamp")
-                                    select event_id, subscriber_id, id2, cell_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", callee_loc::geometry)), e.date_sk, e.time_sk, e."timestamp"   from event_supertable e
+                                    INSERT INTO interactions.calls (super_table_id, subscriber_id, called_subscriber_id, calling_party_cell_id, called_party_cell_id, date_sk, time_sk, calling_party_msisdn, called_party_msisdn, "timestamp")
+                                    select event_id, subscriber_id, id2, cell_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", callee_loc::geometry)), e.date_sk, e.time_sk, calling_party_msisdn, called_party_msisdn, e."timestamp" from event_supertable e
                                     JOIN callers _ USING("timestamp")
                                     RETURNING *
                                 )
