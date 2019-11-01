@@ -596,9 +596,11 @@ jobs:
           keys:
             - flowtrigger-deps-1-{{ checksum "Pipfile.lock" }}
       - run:
-          name: Install postgresql
+          name: Install non-python dependencies
           command: |
-            sudo apt-get update && sudo apt-get install -y postgresql
+            sudo apt-get update && sudo apt-get install -y postgresql pandoc ruby
+            gem install asciidoctor
+            gem install asciidoctor-pdf --pre
       - run:
           name: Install python dependencies
           command: |
