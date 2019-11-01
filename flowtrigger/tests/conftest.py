@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+import logging
+import time
 import testing.postgresql
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -58,3 +60,20 @@ def sqlite_session():
     yield returned_session
     returned_session.close()
     Base.metadata.drop_all(bind=engine, tables=[WorkflowRuns.__table__])
+
+
+@pytest.fixture(scope="session")
+def test_logger():
+    """
+    Logger to use when testing prefect tasks.
+    """
+    logger = logging.getLogger("flowtrigger_tests")
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        "[%(asctime)s] %(levelname)s - %(name)s | %(message)s"
+    )
+    formatter.converter = time.gmtime
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    return logger

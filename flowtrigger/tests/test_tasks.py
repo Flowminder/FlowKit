@@ -69,7 +69,7 @@ def test_get_flowapi_url():
     assert flowapi_url == "DUMMY_URL"
 
 
-def test_get_available_dates(monkeypatch):
+def test_get_available_dates(monkeypatch, test_logger):
     """
     Test that get_available_dates gets available dates using FlowClient and returns as date objects in a sorted list.
     """
@@ -84,7 +84,7 @@ def test_get_available_dates(monkeypatch):
     )
     monkeypatch.setenv("FLOWAPI_TOKEN", "DUMMY_TOKEN")
     with set_temporary_config({"flowapi_url": "DUMMY_URL"}), prefect.context(
-        logger=Mock()
+        logger=test_logger
     ):
         dates = get_available_dates.run()
     assert connect_mock.called_once_with(url="DUMMY_URL", token="DUMMY_TOKEN")
@@ -95,7 +95,7 @@ def test_get_available_dates(monkeypatch):
     ]
 
 
-def test_get_available_dates_cdr_types(monkeypatch):
+def test_get_available_dates_cdr_types(monkeypatch, test_logger):
     """
     Test that get_available_dates can get available dates for a subset of CDR types.
     """
@@ -110,7 +110,7 @@ def test_get_available_dates_cdr_types(monkeypatch):
     )
     monkeypatch.setenv("FLOWAPI_TOKEN", "DUMMY_TOKEN")
     with set_temporary_config({"flowapi_url": "DUMMY_URL"}), prefect.context(
-        logger=Mock()
+        logger=test_logger
     ):
         dates = get_available_dates.run(cdr_types=["cdr_type_1", "cdr_type_2"])
     assert dates == [
@@ -120,7 +120,7 @@ def test_get_available_dates_cdr_types(monkeypatch):
     ]
 
 
-def test_get_available_dates_warns(monkeypatch):
+def test_get_available_dates_warns(monkeypatch, test_logger):
     """
     Test that get_available_dates warns if no dates are available for a specified CDR type,
     but still returns the available dates for other specified CDR types.
@@ -135,9 +135,97 @@ def test_get_available_dates_warns(monkeypatch):
     )
     monkeypatch.setenv("FLOWAPI_TOKEN", "DUMMY_TOKEN")
     with set_temporary_config({"flowapi_url": "DUMMY_URL"}), prefect.context(
-        logger=Mock()
+        logger=test_logger
     ), pytest.warns(
         UserWarning, match="No data available for CDR types {'cdr_type_3'}."
     ):
         dates = get_available_dates.run(cdr_types=["cdr_type_1", "cdr_type_3"])
     assert dates == [pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 3)]
+
+
+def test_filter_dates_by_earliest_date(test_logger):
+    """
+    Test that the filter_dates_by_earliest_date task removes dates before earliest_date.
+    """
+    dates = list(
+        pendulum.period(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 7)).range(
+            "days"
+        )
+    )
+    earliest_date = pendulum.date(2016, 1, 4)
+    with prefect.context(logger=test_logger):
+        filtered_dates = filter_dates_by_earliest_date.run(
+            dates, earliest_date=earliest_date
+        )
+    assert filtered_dates == list(
+        pendulum.period(pendulum.date(2016, 1, 4), pendulum.date(2016, 1, 7)).range(
+            "days"
+        )
+    )
+
+
+def test_filter_dates_by_earliest_date_default(test_logger):
+    """
+    Test that the filter_dates_by_earliest_date task does not filter dates if no earliest_date is provided.
+    """
+    dates = list(
+        pendulum.period(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 7)).range(
+            "days"
+        )
+    )
+    with prefect.context(logger=test_logger):
+        filtered_dates = filter_dates_by_earliest_date.run(dates)
+    assert filtered_dates == dates
+
+
+def test_filter_dates_by_stencil(test_logger):
+    """
+    Test that filter_dates_by_stencil removes dates for which stencil is not available.
+    """
+    dates = [pendulum.date(2016, 1, d) for d in [3, 4, 5]]
+    available_dates = [pendulum.date(2016, 1, d) for d in [1, 3, 4, 5, 6]]
+    date_stencil = [-2, 0]
+    with prefect.context(logger=test_logger):
+        filtered_dates = filter_dates_by_stencil.run(
+            dates=dates, available_dates=available_dates, date_stencil=date_stencil
+        )
+    assert filtered_dates == [pendulum.date(2016, 1, 3), pendulum.date(2016, 1, 5)]
+
+
+def test_filter_dates_by_stencil_default(test_logger):
+    """
+    Test that filter_dates_by_stencil does not filter dates if no stencil is provided.
+    """
+    dates = [pendulum.date(2016, 1, d) for d in [3, 4, 5]]
+    with prefect.context(logger=test_logger):
+        filtered_dates = filter_dates_by_stencil.run(dates=dates, available_dates=[])
+    assert filtered_dates == dates
+
+
+def test_filter_dates_by_previous_runs(monkeypatch, test_logger):
+    """
+    Test that the filter_dates_by_previous_runs removes dates for which WorkFlowRuns.can_process returns False.
+    """
+    dates = [pendulum.date(2016, 1, d) for d in [1, 2, 3]]
+
+    def dummy_can_process(workflow_name, workflow_params, reference_date, session):
+        assert workflow_name == "DUMMY_WORFLOW_NAME"
+        assert workflow_params == {"DUMMY_PARAM": "DUMMY_VALUE"}
+        if reference_date in [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)]:
+            return True
+        else:
+            return False
+
+    session_mock = Mock()
+    get_session_mock = Mock(return_value=session_mock)
+    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.can_process", dummy_can_process)
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        logger=test_logger,
+    ):
+        filtered_dates = filter_dates_by_previous_runs.run(dates)
+    assert get_session_mock.called_once_with("DUMMY_DB_URI")
+    assert session_mock.close.called_once()
+    assert filtered_dates == [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)]
