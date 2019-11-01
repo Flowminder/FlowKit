@@ -555,7 +555,9 @@ if __name__ == "__main__":
                         ':', LPAD(NEXTVAL('minutes')::TEXT, 2, '0'), 
                         ':', LPAD(NEXTVAL('seconds')::TEXT, 2, '0')
                     )::TIMESTAMPTZ as "timestamp",
-                    s1.msisdn AS calling_party_msisdn, s2.msisdn AS called_party_msisdn
+                    s1.msisdn AS calling_party_msisdn, 
+                    s2.msisdn AS called_party_msisdn,
+                    FLOOR(CAST(nextval('duration') as FLOAT) / 10 * 2600)  AS duration
                 FROM subs s1
                     LEFT JOIN subs s2 
                     -- Series generator to provide the call count for each caller
@@ -581,6 +583,7 @@ if __name__ == "__main__":
                 CREATE TEMPORARY SEQUENCE time_dimension MINVALUE 1 maxvalue 24 CYCLE;
                 CREATE TEMPORARY SEQUENCE minutes MINVALUE 0 maxvalue 59 CYCLE;
                 CREATE TEMPORARY SEQUENCE seconds MINVALUE 0 maxvalue 59 cycle increment -1;
+                CREATE TEMPORARY SEQUENCE duration MINVALUE 1 maxvalue 10 cycle;
             """
         )
         # Loop over the days and generate all the types required
@@ -631,13 +634,13 @@ if __name__ == "__main__":
                                     UNION ALL
                                     SELECT id2 as subscriber_id, callee_loc AS loc, time_sk, "timestamp" from callers
                                 ), calls AS (
-                                    INSERT INTO interactions.calls (super_table_id, subscriber_id, called_subscriber_id, calling_party_cell_id, called_party_cell_id, date_sk, time_sk, calling_party_msisdn, called_party_msisdn, "timestamp")
-                                    select event_id, subscriber_id, id2, cell_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", callee_loc::geometry)), e.date_sk, e.time_sk, calling_party_msisdn, called_party_msisdn, e."timestamp" from event_supertable e
-                                    JOIN callers _ USING("timestamp")
-                                    RETURNING *
+                                    INSERT INTO interactions.calls (super_table_id, subscriber_id, called_subscriber_id, calling_party_cell_id, called_party_cell_id, date_sk, time_sk, calling_party_msisdn, called_party_msisdn, call_duration, "timestamp")
+                                        select event_id, subscriber_id, id2, cell_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", callee_loc::geometry)), e.date_sk, e.time_sk, calling_party_msisdn, called_party_msisdn, duration, e."timestamp" from event_supertable e
+                                        JOIN callers _ USING("timestamp")
+                                        RETURNING *
                                 )
                                 INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_super_table_id, "timestamp") 
-                                    select _.subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} as date_sk, _.time_sk, super_table_id, "timestamp" from calls
+                                    select _.subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, c.date_sk, _.time_sk, super_table_id, "timestamp" from calls c
                                     JOIN UNIONS _ using("timestamp")
                             """,
                         )
