@@ -602,16 +602,13 @@ if __name__ == "__main__":
                 )
 
                 # 4.2 Create the subscriber_sightings partition
-                connection.execute(
-                    f"""
-                    CREATE TABLE interactions.subscriber_sightings_{str(i + 1).rjust(5, '0')} 
-                        PARTITION OF interactions.subscriber_sightings FOR VALUES IN ({i + 1});
-                    CREATE TABLE interactions.event_supertable_{str(i + 1).rjust(5, '0')} 
-                        PARTITION OF interactions.event_supertable FOR VALUES IN ({i + 1});
-                    CREATE TABLE interactions.calls_{str(i + 1).rjust(5, '0')} 
-                        PARTITION OF interactions.calls FOR VALUES IN ({i + 1});
-                """
-                )
+                for t in ["subscriber_sightings", "event_supertable", "calls", "sms"]:
+                    connection.execute(
+                        f"""
+                        CREATE TABLE interactions.{t}_{str(i + 1).rjust(5, '0')} 
+                            PARTITION OF interactions.{t} FOR VALUES IN ({i + 1});
+                    """
+                    )
 
                 # 4.2 Calls
                 if num_calls > 0:
