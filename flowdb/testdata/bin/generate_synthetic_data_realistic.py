@@ -604,6 +604,8 @@ if __name__ == "__main__":
                         PARTITION OF interactions.subscriber_sightings FOR VALUES IN ({i + 1});
                     CREATE TABLE interactions.event_supertable_{str(i + 1).rjust(5, '0')} 
                         PARTITION OF interactions.event_supertable FOR VALUES IN ({i + 1});
+                    CREATE TABLE interactions.calls_{str(i + 1).rjust(5, '0')} 
+                        PARTITION OF interactions.calls FOR VALUES IN ({i + 1});
                 """
                 )
 
@@ -618,20 +620,24 @@ if __name__ == "__main__":
                             (i + 1),
                             with_sql
                             + """
-                                , event_supertable as (
+                                , event_supertable AS (
                                     INSERT INTO interactions.event_supertable (subscriber_id, cell_id, date_sk, time_sk, event_type, "timestamp")
                                         SELECT id1 AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", caller_loc::geometry)) AS cell_id, 
                                         {date_sk} AS date_sk, time_sk, 1 AS event_type, "timestamp" FROM callers
                                         RETURNING *
+                                ), unions AS (
+                                    SELECT id1 as subscriber_id, caller_loc AS loc, time_sk, "timestamp" from callers
+                                    UNION ALL
+                                    SELECT id2 as subscriber_id, callee_loc AS loc, time_sk, "timestamp" from callers
+                                ), calls AS (
+                                    INSERT INTO interactions.calls (super_table_id, subscriber_id, called_subscriber_id, calling_party_cell_id, called_party_cell_id, date_sk, time_sk, "timestamp")
+                                    select event_id, subscriber_id, id2, cell_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", callee_loc::geometry)), e.date_sk, e.time_sk, e."timestamp"   from event_supertable e
+                                    JOIN callers _ USING("timestamp")
+                                    RETURNING *
                                 )
                                 INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_super_table_id, "timestamp") 
-                                    SELECT _.subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, 
-                                    {date_sk} as date_sk, _.time_sk, event_id, "timestamp" from event_supertable e
-                                    JOIN (
-                                        SELECT id1 as subscriber_id, caller_loc AS loc, time_sk, "timestamp" FROM callers
-                                        UNION ALL
-                                        SELECT id2 as subscriber_id, callee_loc AS loc, time_sk, "timestamp" FROM callers
-                                    ) _ USING("timestamp")
+                                    select _.subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, {date_sk} as date_sk, _.time_sk, super_table_id, "timestamp" from calls
+                                    JOIN UNIONS _ using("timestamp")
                             """,
                         )
 
