@@ -658,15 +658,19 @@ if __name__ == "__main__":
                                         SELECT id1 AS subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position", caller_loc::geometry)) AS cell_id, 
                                         {date_sk} AS date_sk, time_sk, 2 AS event_type, "timestamp" FROM callers
                                         RETURNING *
+                                ), unions AS (
+                                    SELECT id1 as subscriber_id, caller_loc AS loc, time_sk, "timestamp" from callers
+                                    UNION ALL
+                                    SELECT id2 as subscriber_id, callee_loc AS loc, time_sk, "timestamp" from callers
+                                ), calls AS (
+                                    INSERT INTO interactions.sms (super_table_id, subscriber_id, calling_party_cell_id, date_sk,time_sk, calling_party_msisdn, receiving_parties_msisdns, "timestamp")
+                                        select event_id, subscriber_id, cell_id, e.date_sk, e.time_sk, calling_party_msisdn, ARRAY[called_party_msisdn], e."timestamp" from event_supertable e
+                                        JOIN callers _ USING("timestamp")
+                                        RETURNING *
                                 )
                                 INSERT INTO interactions.subscriber_sightings (subscriber_id, cell_id, date_sk, time_sk, event_super_table_id, "timestamp") 
-                                    SELECT _.subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, 
-                                    {date_sk} as date_sk, _.time_sk, event_id, "timestamp" from event_supertable e
-                                    JOIN (
-                                        SELECT id1 as subscriber_id, caller_loc AS loc, time_sk, "timestamp" FROM callers
-                                        UNION ALL
-                                        SELECT id2 as subscriber_id, callee_loc AS loc, time_sk, "timestamp" FROM callers
-                                    ) _ USING("timestamp")
+                                    select _.subscriber_id, (SELECT cell_id FROM interactions.locations where ST_Equals("position",loc::geometry)) AS cell_id, c.date_sk, _.time_sk, super_table_id, "timestamp" from calls c
+                                    JOIN UNIONS _ using("timestamp")
                             """,
                         )
 
