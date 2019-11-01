@@ -317,13 +317,21 @@ if __name__ == "__main__":
         # Main generation process
         with connection.begin() as trans:
             # Setup stage: Tidy up subscriber_sightings generated on previous runs
-            with log_duration(job=f"Tidy up subscriber_sightings and date_dim tables"):
-                connection.execute("TRUNCATE TABLE interactions.date_dim CASCADE;")
+            with log_duration(
+                job=f"Tidy up subscriber_sightings, event_supertable etc and date_dim tables"
+            ):
                 connection.execute(
-                    "ALTER SEQUENCE interactions.subscriber_sightings_sighting_id_seq RESTART WITH 1 INCREMENT BY 1;"
+                    """
+                    TRUNCATE TABLE interactions.date_dim RESTART IDENTITY CASCADE;
+                    TRUNCATE TABLE interactions.subscriber_sightings RESTART IDENTITY CASCADE;
+                    TRUNCATE TABLE interactions.event_supertable RESTART IDENTITY CASCADE;
+                    TRUNCATE TABLE interactions.calls RESTART IDENTITY CASCADE;
+                    TRUNCATE TABLE interactions.sms RESTART IDENTITY CASCADE;
+                    TRUNCATE TABLE interactions.mds RESTART IDENTITY CASCADE;
+                """
                 )
                 tables = connection.execute(
-                    "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ 'subscriber_sightings_[0-9]+'"
+                    "SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ~ '(subscriber_sightings|event_supertable|calls|sms|mds)_[0-9]+'"
                 ).fetchall()
 
                 for t in tables:
@@ -593,7 +601,9 @@ if __name__ == "__main__":
                 connection.execute(
                     f"""
                     CREATE TABLE interactions.subscriber_sightings_{str(i + 1).rjust(5, '0')} 
-                    PARTITION OF interactions.subscriber_sightings FOR VALUES IN ({i + 1});
+                        PARTITION OF interactions.subscriber_sightings FOR VALUES IN ({i + 1});
+                    CREATE TABLE interactions.event_supertable_{str(i + 1).rjust(5, '0')} 
+                        PARTITION OF interactions.event_supertable FOR VALUES IN ({i + 1});
                 """
                 )
 
