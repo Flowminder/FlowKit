@@ -190,7 +190,7 @@ class SubscriberSightings(Query):
                 self.sqlalchemy_mainTable.c.date_sk < self.stop
             )
 
-        # Only add the stop hour if different from the start hour, i.e. the selection of the 
+        # Only add the stop hour if different from the start hour, i.e. the selection of the
         # time dimension is varying.
         if self.stop_hour != self.start_hour and self.stop_hour is not None:
             select_stmt = select_stmt.where(
