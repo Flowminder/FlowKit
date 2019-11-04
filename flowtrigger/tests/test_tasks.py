@@ -5,8 +5,12 @@
 import pytest
 import prefect
 import pendulum
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 from prefect.utilities.configuration import set_temporary_config
+from prefect import Task
+from prefect.core import Edge
+from prefect.engine import TaskRunner
+from prefect.engine.state import Success, Failed, TriggerFailed
 
 from flowtrigger.tasks import *
 from flowtrigger.utils import get_params_hash
@@ -46,7 +50,7 @@ def test_get_date_ranges(monkeypatch):
         reference_date=reference_date, date_stencil=date_stencil
     )
     assert date_ranges == "DUMMY_DATE_PAIRS"
-    assert stencil_to_date_pairs_mock.called_once_with(
+    stencil_to_date_pairs_mock.assert_called_once_with(
         stencil=date_stencil, reference_date=reference_date
     )
 
@@ -87,7 +91,7 @@ def test_get_available_dates(monkeypatch, test_logger):
         logger=test_logger
     ):
         dates = get_available_dates.run()
-    assert connect_mock.called_once_with(url="DUMMY_URL", token="DUMMY_TOKEN")
+    connect_mock.assert_called_once_with(url="DUMMY_URL", token="DUMMY_TOKEN")
     assert dates == [
         pendulum.date(2016, 1, 1),
         pendulum.date(2016, 1, 2),
@@ -226,6 +230,352 @@ def test_filter_dates_by_previous_runs(monkeypatch, test_logger):
         logger=test_logger,
     ):
         filtered_dates = filter_dates_by_previous_runs.run(dates)
-    assert get_session_mock.called_once_with("DUMMY_DB_URI")
-    assert session_mock.close.called_once()
+    get_session_mock.assert_called_once_with("DUMMY_DB_URI")
+    session_mock.close.assert_called_once()
     assert filtered_dates == [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)]
+
+
+@pytest.mark.parametrize(
+    "record_task,state",
+    [
+        (record_workflow_in_process, "in_process"),
+        (record_workflow_done, "done"),
+        (record_workflow_failed, "failed"),
+    ],
+)
+def test_record_workflow_state_tasks(monkeypatch, test_logger, record_task, state):
+    """
+    Test that the record_workflow_* tasks call WorkflowRuns.set_state with the correct state.
+    """
+    reference_date = pendulum.date(2016, 1, 1)
+    scheduled_start_time = pendulum.datetime(2016, 1, 1)
+    session_mock = Mock()
+    get_session_mock = Mock(return_value=session_mock)
+    set_state_mock = Mock()
+    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        scheduled_start_time=scheduled_start_time,
+        logger=test_logger,
+    ):
+        record_task.run(reference_date)
+    get_session_mock.assert_called_once_with("DUMMY_DB_URI")
+    session_mock.close.assert_called_once()
+    set_state_mock.assert_called_once_with(
+        workflow_name="DUMMY_WORFLOW_NAME",
+        workflow_params={"DUMMY_PARAM": "DUMMY_VALUE"},
+        reference_date=reference_date,
+        scheduled_start_time=scheduled_start_time,
+        state=state,
+        session=session_mock,
+    )
+
+
+@pytest.mark.parametrize(
+    "record_task,state",
+    [
+        (record_workflow_in_process, "in_process"),
+        (record_workflow_done, "done"),
+        (record_workflow_failed, "failed"),
+    ],
+)
+def test_record_workflow_state_tasks_no_reference_date(
+    monkeypatch, test_logger, record_task, state
+):
+    """
+    Test that the record_workflow_* tasks can be called without a reference date.
+    """
+    scheduled_start_time = pendulum.datetime(2016, 1, 1)
+    session_mock = Mock()
+    get_session_mock = Mock(return_value=session_mock)
+    set_state_mock = Mock()
+    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        scheduled_start_time=scheduled_start_time,
+        logger=test_logger,
+    ):
+        record_task.run()
+    get_session_mock.assert_called_once_with("DUMMY_DB_URI")
+    session_mock.close.assert_called_once()
+    set_state_mock.assert_called_once_with(
+        workflow_name="DUMMY_WORFLOW_NAME",
+        workflow_params={"DUMMY_PARAM": "DUMMY_VALUE"},
+        reference_date=None,
+        scheduled_start_time=scheduled_start_time,
+        state=state,
+        session=session_mock,
+    )
+
+
+def test_record_workflow_done_upstream_success(monkeypatch, test_logger):
+    """
+    Test that the record_workflow_done task runs if all of its upstream tasks are successful.
+    """
+    runner = TaskRunner(task=record_workflow_done)
+    edge1 = Edge(Task(), record_workflow_done)
+    edge2 = Edge(Task(), record_workflow_done)
+    set_state_mock = Mock()
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
+    context = dict(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        scheduled_start_time=pendulum.datetime(2016, 1, 1),
+        logger=test_logger,
+    )
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
+        final_state = runner.run(
+            upstream_states={edge1: Success(), edge2: Success()}, context=context
+        )
+    assert final_state.is_successful()
+    set_state_mock.assert_called_once()
+
+
+def test_record_workflow_done_upstream_failed(monkeypatch, test_logger):
+    """
+    Test that the record_workflow_done task does not run if any of its upstream tasks fail.
+    """
+    runner = TaskRunner(task=record_workflow_done)
+    edge1 = Edge(Task(), record_workflow_done)
+    edge2 = Edge(Task(), record_workflow_done)
+    set_state_mock = Mock()
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
+    context = dict(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        scheduled_start_time=pendulum.datetime(2016, 1, 1),
+        logger=test_logger,
+    )
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
+        final_state = runner.run(
+            upstream_states={edge1: Success(), edge2: Failed()}, context=context
+        )
+    assert isinstance(final_state, TriggerFailed)
+    set_state_mock.assert_not_called()
+
+
+def test_record_workflow_failed_upstream_success(monkeypatch, test_logger):
+    """
+    Test that the record_workflow_failed task does not run if all of its upstream tasks are successful.
+    """
+    runner = TaskRunner(task=record_workflow_failed)
+    edge1 = Edge(Task(), record_workflow_failed)
+    edge2 = Edge(Task(), record_workflow_failed)
+    set_state_mock = Mock()
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
+    context = dict(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        scheduled_start_time=pendulum.datetime(2016, 1, 1),
+        logger=test_logger,
+    )
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
+        final_state = runner.run(
+            upstream_states={edge1: Success(), edge2: Success()}, context=context
+        )
+    assert isinstance(final_state, TriggerFailed)
+    set_state_mock.assert_not_called()
+
+
+def test_record_workflow_failed_upstream_failed(monkeypatch, test_logger):
+    """
+    Test that the record_workflow_failed task runs if any of its upstream tasks fail.
+    """
+    runner = TaskRunner(task=record_workflow_failed)
+    edge1 = Edge(Task(), record_workflow_failed)
+    edge2 = Edge(Task(), record_workflow_failed)
+    set_state_mock = Mock()
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
+    context = dict(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        scheduled_start_time=pendulum.datetime(2016, 1, 1),
+        logger=test_logger,
+    )
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
+        final_state = runner.run(
+            upstream_states={edge1: Success(), edge2: Failed()}, context=context
+        )
+    assert final_state.is_successful()
+    set_state_mock.assert_called_once()
+
+
+def test_record_any_failed_workflows(monkeypatch, test_logger):
+    """
+    Test that the record_any_failed_workflows task sets state "failed" for any reference dates
+    for which WorkflowRuns.is_done returns False.
+    """
+    runner = TaskRunner(task=record_any_failed_workflows)
+    reference_dates = list(
+        pendulum.period(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 5)).range(
+            "days"
+        )
+    )
+    dates_edge = Edge(Task(), record_any_failed_workflows, key="reference_dates")
+
+    session_mock = Mock()
+    get_session_mock = Mock(return_value=session_mock)
+    set_state_mock = Mock()
+    is_done_mock = Mock(side_effect=[True, True, False, False, True])
+    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.is_done", is_done_mock)
+
+    scheduled_start_time = pendulum.datetime(2016, 2, 1)
+    context = dict(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        scheduled_start_time=scheduled_start_time,
+        logger=test_logger,
+    )
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
+        final_state = runner.run(
+            upstream_states={dates_edge: Success(result=reference_dates)},
+            context=context,
+        )
+
+    is_done_mock.assert_has_calls(
+        [
+            call(
+                workflow_name="DUMMY_WORFLOW_NAME",
+                workflow_params={"DUMMY_PARAM": "DUMMY_VALUE"},
+                reference_date=date,
+                session=session_mock,
+            )
+            for date in reference_dates
+        ]
+    )
+    get_session_mock.assert_called_once_with("DUMMY_DB_URI")
+    session_mock.close.assert_called_once()
+    assert set_state_mock.call_count == 2
+    set_state_mock.assert_has_calls(
+        [
+            call(
+                workflow_name="DUMMY_WORFLOW_NAME",
+                workflow_params={"DUMMY_PARAM": "DUMMY_VALUE"},
+                reference_date=date,
+                scheduled_start_time=scheduled_start_time,
+                state="failed",
+                session=session_mock,
+            )
+            for date in [pendulum.date(2016, 1, 3), pendulum.date(2016, 1, 4)]
+        ]
+    )
+    assert final_state.is_failed()
+
+
+def test_record_any_failed_workflows_succeeds_if_nothing_failed(
+    monkeypatch, test_logger
+):
+    """
+    Test that the record_any_workflows_failed task does not call WorkflowRuns.set_state
+    if all workflow runs are in "done" state.
+    """
+    runner = TaskRunner(task=record_any_failed_workflows)
+    reference_dates = list(
+        pendulum.period(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 5)).range(
+            "days"
+        )
+    )
+    dates_edge = Edge(Task(), record_any_failed_workflows, key="reference_dates")
+
+    session_mock = Mock()
+    get_session_mock = Mock(return_value=session_mock)
+    set_state_mock = Mock()
+    is_done_mock = Mock(return_value=True)
+    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.is_done", is_done_mock)
+
+    context = dict(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        scheduled_start_time=pendulum.datetime(2016, 1, 1),
+        logger=test_logger,
+    )
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
+        final_state = runner.run(
+            upstream_states={dates_edge: Success(result=reference_dates)},
+            context=context,
+        )
+
+    get_session_mock.assert_called_once_with("DUMMY_DB_URI")
+    session_mock.close.assert_called_once()
+    set_state_mock.assert_not_called()
+    assert final_state.is_successful()
+
+
+@pytest.mark.parametrize("upstream_state", [Success(), Failed()])
+def test_record_any_failed_workflows_always_runs(
+    monkeypatch, test_logger, upstream_state
+):
+    """
+    """
+    runner = TaskRunner(task=record_any_failed_workflows)
+    reference_dates = list(
+        pendulum.period(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 5)).range(
+            "days"
+        )
+    )
+    dates_edge = Edge(Task(), record_any_failed_workflows, key="reference_dates")
+    upstream_task_edge = Edge(Task(), record_any_failed_workflows)
+
+    is_done_mock = Mock(return_value=True)
+    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", Mock())
+    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.is_done", is_done_mock)
+
+    context = dict(
+        flow_name="DUMMY_WORFLOW_NAME",
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        scheduled_start_time=pendulum.datetime(2016, 1, 1),
+        logger=test_logger,
+    )
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
+        final_state = runner.run(
+            upstream_states={
+                dates_edge: Success(result=reference_dates),
+                upstream_task_edge: upstream_state,
+            },
+            context=context,
+        )
+
+    is_done_mock.assert_called()
+    assert not isinstance(final_state, TriggerFailed)
+
+
+def test_mappable_dict_returns_dict():
+    """
+    Test that the result of running the mappable_dict task is a dict of its keyword argunments.
+    """
+    kwargs = dict(a=1, b=2, c=3)
+    task_result = mappable_dict.run(**kwargs)
+    assert isinstance(task_result, dict)
+    assert task_result == kwargs
+
+
+def test_mappable_dict_can_be_mapped():
+    """
+    Test that the mappable_dict task can be mapped over inputs.
+    """
+    runner = TaskRunner(task=mappable_dict)
+    mapped_edge = Edge(Task(), mappable_dict, key="mapped_arg", mapped=True)
+    unmapped_edge = Edge(Task(), mappable_dict, key="unmapped_arg", mapped=False)
+    final_state = runner.run(
+        upstream_states={
+            mapped_edge: Success(result=[1, 2]),
+            unmapped_edge: Success(result=[3, 4]),
+        }
+    )
+    assert final_state.is_successful()
+    assert final_state.is_mapped()
+    assert final_state.map_states[0].result == {"mapped_arg": 1, "unmapped_arg": [3, 4]}
+    assert final_state.map_states[1].result == {"mapped_arg": 2, "unmapped_arg": [3, 4]}
