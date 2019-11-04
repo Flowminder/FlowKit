@@ -602,7 +602,13 @@ if __name__ == "__main__":
                 )
 
                 # 4.2 Create the event partitions
-                for t in ["subscriber_sightings", "event_supertable", "calls", "sms", "mds"]:
+                for t in [
+                    "subscriber_sightings",
+                    "event_supertable",
+                    "calls",
+                    "sms",
+                    "mds",
+                ]:
                     connection.execute(
                         f"""
                         CREATE TABLE interactions.{t}_{str(i + 1).rjust(5, '0')} 
