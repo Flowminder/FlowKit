@@ -280,7 +280,7 @@ if __name__ == "__main__":
         sd_sms = args.n_sd_sms
         mean_mds = args.n_mean_mds
         sd_mds = args.n_sd_mds
-        start_date = datetime.date.fromisoformat(args.n_startdate)
+        start_date = args.n_startdate
 
         # Generate all the event distributions
         dist_calls, num_calls = generateNormalDistribution(
