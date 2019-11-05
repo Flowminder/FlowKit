@@ -12,10 +12,6 @@ from prefect.triggers import all_successful, any_failed, all_finished
 from prefect.engine import signals
 import papermill
 from typing import Optional, Dict, Sequence, List, Tuple, Any
-import nbformat
-from nbconvert import ASCIIDocExporter
-from tempfile import TemporaryDirectory
-from sh import asciidoctor_pdf
 from pathlib import Path
 import pendulum
 import json
@@ -32,6 +28,8 @@ from .utils import (
     get_session,
     stencil_to_date_pairs,
     make_json_serialisable,
+    notebook_to_asciidoc,
+    asciidoc_to_pdf,
 )
 from .model import WorkflowRuns
 
@@ -439,7 +437,7 @@ def papermill_execute_notebook(
         f"Executing notebook '{input_filename}' with parameters {safe_params}."
     )
 
-    output_filename = get_output_filename(input_filename, output_tag)
+    output_filename = get_output_filename(input_filename=input_filename, tag=output_tag)
     input_path = str(Path(prefect.config.inputs.inputs_dir) / input_filename)
     output_path = str(Path(prefect.config.outputs.notebooks_dir) / output_filename)
 
@@ -484,11 +482,13 @@ def convert_notebook_to_pdf(
         output_filename = f"{Path(notebook_path).stem}.pdf"
     output_path = str(Path(prefect.config.outputs.reports_dir) / output_filename)
 
-    with open(notebook_path) as nb_file:
-        nb_read = nbformat.read(nb_file, as_version=4)
-
     if asciidoc_template is None:
-        asciidoc_template_path = prefect.config.asciidoc_template_path
+        try:
+            asciidoc_template_path = prefect.config.asciidoc_template_path
+        except AttributeError:
+            # If no template is provided, and no default template is set in the config,
+            # run nbconvert without specifying a template (i.e. use the default nbconvert asciidoc template).
+            asciidoc_template_path = None
     else:
         asciidoc_template_path = str(
             Path(prefect.config.inputs.inputs_dir) / asciidoc_template
@@ -497,19 +497,12 @@ def convert_notebook_to_pdf(
         f"Using template '{asciidoc_template_path}' to convert notebook to asciidoc."
     )
 
-    exporter = ASCIIDocExporter(template_file=asciidoc_template_path)
-    body, resources = exporter.from_notebook_node(nb_read)
+    body, resources = notebook_to_asciidoc(notebook_path, asciidoc_template_path)
 
     prefect.context.logger.debug("Converted notebook to asciidoc.")
     prefect.context.logger.debug("Converting asciidoc to PDF...")
 
-    with TemporaryDirectory() as tmpdir:
-        with open(f"{tmpdir}/tmp.asciidoc", "w") as f_tmp:
-            f_tmp.write(body)
-        for fname, content in resources["outputs"].items():
-            with open(f"{tmpdir}/{fname}", "wb") as fout:
-                fout.write(content)
-        asciidoctor_pdf(f"{tmpdir}/tmp.asciidoc", o=output_path)
+    asciidoc_to_pdf(body, resources, output_path)
 
     prefect.context.logger.info(f"Created report '{output_filename}'.")
 

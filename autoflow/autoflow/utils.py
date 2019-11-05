@@ -16,6 +16,10 @@ from typing import Union, Dict, Any, List, Sequence, Set, Tuple, Optional
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from get_secret_or_env_var import getenv
+import nbformat
+from nbconvert import ASCIIDocExporter
+from tempfile import TemporaryDirectory
+from sh import asciidoctor_pdf
 
 
 def get_output_filename(input_filename: str, tag: str = "") -> str:
@@ -349,3 +353,58 @@ def sort_notebook_labels(notebooks: Dict[str, Dict[str, Any]]) -> List[str]:
         raise ValueError("Notebook specifications contain cyclic dependencies.")
 
     return sorted_notebook_labels
+
+
+def notebook_to_asciidoc(
+    notebook_path: str, asciidoc_template_path: Optional[str] = None
+) -> Tuple[str, "nbconvert.exporters.exporter.ResourcesDict"]:
+    """
+    Convert a Jupyter notebook to ASCIIDoc, using nbconvert.
+
+    Parameters
+    ----------
+    notebook_path : str
+        Path to notebook
+    asciidoc_template_path : str, optional
+        Path to a template file to use for the conversion.
+        If not provided, the default nbconvert asciidoc template will be used.
+
+    Returns
+    -------
+    str
+        The resulting converted notebook.
+    ResourcesDict
+        Dictionary of resources used prior to and during the conversion process.
+    """
+    with open(notebook_path) as nb_file:
+        nb_read = nbformat.read(nb_file, as_version=4)
+
+    if template is None:
+        exporter = ASCIIDocExporter()
+    else:
+        exporter = ASCIIDocExporter(template_file=asciidoc_template_path)
+    body, resources = exporter.from_notebook_node(nb_read)
+
+    return body, resources
+
+
+def asciidoc_to_pdf(
+    body: str, resources: "nbconvert.exporters.exporter.ResourcesDict", output_path: str
+) -> None:
+    """
+    Convert an ASCIIDoc document to PDF, using asciidoctor-pdf.
+
+    Parameters
+    ----------
+    body : str
+        Content of the ASCIIDoc document
+    resources : ResourcesDict
+        Dictionary of resources, as returned from nbconvert exporter
+    """
+    with TemporaryDirectory() as tmpdir:
+        with open(f"{tmpdir}/tmp.asciidoc", "w") as f_tmp:
+            f_tmp.write(body)
+        for fname, content in resources["outputs"].items():
+            with open(f"{tmpdir}/{fname}", "wb") as fout:
+                fout.write(content)
+        asciidoctor_pdf(f"{tmpdir}/tmp.asciidoc", o=output_path)
