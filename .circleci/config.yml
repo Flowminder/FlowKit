@@ -1016,8 +1016,8 @@ workflows:
           <<: *run_always_org_context
       - run_autoflow_tests:
           <<: *run_always_org_context
-      - run_flowdbsynthrealistic_tests:
-          name: run_flowdbsynth_tests
+      - run_flowdbsynth_tests:
+          name: synth_data_realistic_generator_tests
           synthetic_data_generator: realistic
           test_glob: "test_synthetic_data_realistic.py"
           requires:
