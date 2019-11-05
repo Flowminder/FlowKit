@@ -2,12 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from itertools import takewhile, product, chain
-from typing import List, Iterable, Set, FrozenSet, Tuple
+from typing import List, Iterable, Set, FrozenSet, Tuple, Dict, Any
 
 from flowapi.flowapi_errors import MissingQueryKindError, BadQueryError
 
 
-def get_nested_objects(schema: dict) -> Iterable[Tuple[str, dict]]:
+def get_nested_objects(schema: dict) -> Iterable[Tuple[str, List[str]]]:
     """
     Yields tuples of nested objects as the name of the object and a list
     of the objects it references without the ref prefix.
@@ -19,7 +19,7 @@ def get_nested_objects(schema: dict) -> Iterable[Tuple[str, dict]]:
 
     Yields
     ------
-    tuple of str, dict
+    tuple of str, list of str
 
     """
     for q, qbod in schema.items():
@@ -30,7 +30,7 @@ def get_nested_objects(schema: dict) -> Iterable[Tuple[str, dict]]:
             pass  # Not a oneOf, or a malformed one
 
 
-def get_nested_dict(schema: dict) -> dict:
+def get_nested_dict(schema: dict) -> Dict[str, List[str]]:
     """
     Gets a dict containing nested objects with the name (sans ref)
     of the object they reference.
@@ -48,7 +48,7 @@ def get_nested_dict(schema: dict) -> dict:
     return dict(get_nested_objects(schema))
 
 
-def get_queries(schema: dict) -> dict:
+def get_queries(schema: dict) -> Dict[str, Dict[str, Any]]:
     """
     Gets just query objects from a schema.
 
