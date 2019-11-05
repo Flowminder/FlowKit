@@ -145,22 +145,22 @@ PUBLIC_JWT_SIGNING_KEY=LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JSUNJakFOQmdrcWhra
 # Worked examples
 WORKED_EXAMPLES_PORT=8888
 
-## FlowTrigger settings
-# Directory containing FlowTrigger config files
-FLOWTRIGGER_CONFIG_DIR=./flowtrigger/config
-# Directory containing FlowTrigger input files
-FLOWTRIGGER_INPUTS_DIR=./flowtrigger/examples/inputs
-# Directory to store FlowTrigger output files
-FLOWTRIGGER_OUTPUTS_DIR=./flowtrigger/examples/outputs
+## AutoFlow settings
+# Directory containing AutoFlow config files
+AUTOFLOW_CONFIG_DIR=./autoflow/config
+# Directory containing AutoFlow input files
+AUTOFLOW_INPUTS_DIR=./autoflow/examples/inputs
+# Directory to store AutoFlow output files
+AUTOFLOW_OUTPUTS_DIR=./autoflow/examples/outputs
 # Error and debugging log level
-FLOWTRIGGER_LOG_LEVEL=DEBUG
+AUTOFLOW_LOG_LEVEL=DEBUG
 # Path to prefect config file
-PREFECT__USER_CONFIG_PATH=./flowtrigger/config/config.toml
+PREFECT__USER_CONFIG_PATH=./autoflow/config/config.toml
 # FlowAPI URL
 FLOWAPI_URL=http://localhost:9090
 # URI of database for storing workflow run metadata
-FLOWTRIGGER_DB_URI=sqlite:///
-# Password for FlowTrigger database
-#FLOWTRIGGER_DB_PASSWORD
+AUTOFLOW_DB_URI=sqlite:///
+# Password for AutoFlow database
+#AUTOFLOW_DB_PASSWORD
 # FlowAPI token
 #FLOWAPI_TOKEN

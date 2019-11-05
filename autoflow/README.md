@@ -1,8 +1,8 @@
-# FlowTrigger
+# AutoFlow
 
-FlowTrigger is a tool that automates the event-driven execution of workflows consisting of Jupyter notebooks that interact with FlowKit via FlowAPI. Workflows can consist of multiple inter-dependent notebooks, and can be scheduled to run at certain times or triggered by events (currently-supported trigger event is when a new date of CDR data is available in FlowDB). After execution, notebooks can optionally be converted to PDF reports.
+AutoFlow is a tool that automates the event-driven execution of workflows consisting of Jupyter notebooks that interact with FlowKit via FlowAPI. Workflows can consist of multiple inter-dependent notebooks, and can be scheduled to run at certain times or triggered by events (currently-supported trigger event is when a new date of CDR data is available in FlowDB). After execution, notebooks can optionally be converted to PDF reports.
 
-FlowTrigger uses:
+AutoFlow uses:
 - [Prefect](https://github.com/prefecthq/prefect) to define and run workflows,
 - [Papermill](https://github.com/nteract/papermill) to parameterise and execute Jupyter notebooks,
 - [Scrapbook](https://github.com/nteract/scrapbook) to enable data-sharing between notebooks,
@@ -15,29 +15,29 @@ FlowTrigger uses:
 To build the Docker image, run
 
 ```
-docker build -t flowminder/flowtrigger .
+docker build -t flowminder/autoflow .
 ```
 
 ### Run
 
 When running the container, the following environment variables should be set:
-- `FLOWTRIGGER_INPUTS_DIR`: Path to a directory containing Jupyter notebooks and a workflow definition file `workflows.yml`. This directory will be mounted as a read-only bind mount inside the container. See [Inputs](#Inputs) for details of what this directory should contain, and see `./examples/inputs/` for an example.
-- `FLOWTRIGGER_OUTPUTS_DIR`: Path to a directory in which executed notebooks and PDF reports should be stored. This directory will be bind-mounted inside the container, and subdirectories `notebooks/` and `reports/` will be created if they do not already exist.
-- `FLOWTRIGGER_LOG_LEVEL`: Logging level (e.g. 'DEBUG' or 'ERROR'). Must be upper-case.
-- `FLOWTRIGGER_DB_URI`: URI of a SQL database in which FlowTrigger will store metadata for workflow runs. The password can be replaced by `'{}'`, e.g. `postgresql://user:{}@localhost:5432/flowtrigger`. If database URI is not provided, an in-memory SQLite database will be used.
-- `FLOWTRIGGER_DB_PASSWORD`: Password for the database.
+- `AUTOFLOW_INPUTS_DIR`: Path to a directory containing Jupyter notebooks and a workflow definition file `workflows.yml`. This directory will be mounted as a read-only bind mount inside the container. See [Inputs](#Inputs) for details of what this directory should contain, and see `./examples/inputs/` for an example.
+- `AUTOFLOW_OUTPUTS_DIR`: Path to a directory in which executed notebooks and PDF reports should be stored. This directory will be bind-mounted inside the container, and subdirectories `notebooks/` and `reports/` will be created if they do not already exist.
+- `AUTOFLOW_LOG_LEVEL`: Logging level (e.g. 'DEBUG' or 'ERROR'). Must be upper-case.
+- `AUTOFLOW_DB_URI`: URI of a SQL database in which AutoFlow will store metadata for workflow runs. The password can be replaced by `'{}'`, e.g. `postgresql://user:{}@localhost:5432/autoflow`. If database URI is not provided, an in-memory SQLite database will be used.
+- `AUTOFLOW_DB_PASSWORD`: Password for the database.
 - `FLOWAPI_URL`: FlowAPI URL.
 - `FLOWAPI_TOKEN`: FlowAPI access token. This should allow access to `available_dates`, along with any query kinds used in the notebooks to be executed.
 
-Alternatively, `FLOWTRIGGER_DB_PASSWORD` and `FLOWAPI_TOKEN` can be set as docker secrets instead of environment variables.
+Alternatively, `AUTOFLOW_DB_PASSWORD` and `FLOWAPI_TOKEN` can be set as docker secrets instead of environment variables.
 
-When the container runs, it will parse `workflows.yml` and construct all of the workflows defined, and run the workflows on their defined schedules with the provided parameters. All executed notebooks will be available in `${FLOWTRIGGER_OUTPUTS_DIR}/notebooks/`, and PDF reports will be in `${FLOWTRIGGER_OUTPUTS_DIR}/reports/`.
+When the container runs, it will parse `workflows.yml` and construct all of the workflows defined, and run the workflows on their defined schedules with the provided parameters. All executed notebooks will be available in `${AUTOFLOW_OUTPUTS_DIR}/notebooks/`, and PDF reports will be in `${AUTOFLOW_OUTPUTS_DIR}/reports/`.
 
 ## Inputs
 
 ### Defining workflows
 
-Workflows should be defined in a yaml file `${FLOWTRIGGER_INPUTS_DIR}/workflows.yml`. This file should contain a sequence of workflow specifications. Each workflow specification has the following keys:
+Workflows should be defined in a yaml file `${AUTOFLOW_INPUTS_DIR}/workflows.yml`. This file should contain a sequence of workflow specifications. Each workflow specification has the following keys:
 - `name`: A unique name for this workflow.
 - `kind`: The type of workflow to be defined. Currently-supported kinds are:
     - `'scheduled_notebooks'`: Execute a set of notebooks on a regular schedule.
@@ -54,15 +54,15 @@ An example workflows definition file can be found in `./examples/inputs/workflow
 
 #### Defining notebook tasks
 
-Jupyter notebooks in `$FLOWTRIGGER_INPUTS_DIR` can be executed as tasks within a workflow. The value of the `notebooks` parameter within a workflow specification in `workflows.yml` should be a mapping from notebook task labels (which notebook tasks can use to refer to each other) to notebook task specifications. Each notebook task specification has the following keys:
-- `filename`: Filename of the jupyter notebook to be executed. This should refer to a file in `$FLOWTRIGGER_INPUTS_DIR`.
+Jupyter notebooks in `$AUTOFLOW_INPUTS_DIR` can be executed as tasks within a workflow. The value of the `notebooks` parameter within a workflow specification in `workflows.yml` should be a mapping from notebook task labels (which notebook tasks can use to refer to each other) to notebook task specifications. Each notebook task specification has the following keys:
+- `filename`: Filename of the jupyter notebook to be executed. This should refer to a file in `$AUTOFLOW_INPUTS_DIR`.
 - `parameters`: A mapping that defines parameters for this notebook. Keys are the names of these parameters inside the notebook, and each value refers to one of:
     - The name of one of the parameters of this workflow.
     - The label of another notebook task in this workflow (i.e. the key corresponding to a notebook task specification). Dependencies between notebook tasks can be defined in this way, and these dependencies will be respected by the order in which notebooks are executed. The value of this parameter within the notebook will be the filename of the other notebook after execution.
     - The name of an 'internal' workflow parameter (i.e. a parameter that is neither a notebook label, nor one of the defined workflow parameters). For a `scheduled_notebooks` workflow, the only internal parameter is `flowapi_url`, whose value is the FlowAPI URL set within the container. For a `date_triggered_notebooks` workflow there are two other 'internal' parameters:
         - `reference_date`: The date of available CDR data for which the workflow is running (as an iso-format date string).
         - `date_ranges`: A list of pairs of iso-format date strings, describing the date ranges defined by the `date_stencil` workflow parameter (see the section on [date stencils](#date-stencils) below) for `reference_date`.
-- `output` (optional): Set `output: true` to convert this notebook to PDF after execution. Omit the `output` key or set `output: false` to skip converting this notebook to PDF. Optionally, a custom template can be used when converting the notebook to asciidoc by setting `output: {template: custom_asciidoc_template.tpl}` (where `custom_asciidoc_template.tpl` should be a file in `$FLOWTRIGGER_INPUTS_DIR`).
+- `output` (optional): Set `output: true` to convert this notebook to PDF after execution. Omit the `output` key or set `output: false` to skip converting this notebook to PDF. Optionally, a custom template can be used when converting the notebook to asciidoc by setting `output: {template: custom_asciidoc_template.tpl}` (where `custom_asciidoc_template.tpl` should be a file in `$AUTOFLOW_INPUTS_DIR`).
 
 #### Date stencils
 
@@ -145,21 +145,21 @@ The example notebooks in `./examples/inputs` contain examples of parameterisatio
 
 ## Running outside a container
 
-To run FlowTrigger outside of a Docker container, run
+To run AutoFlow outside of a Docker container, run
 
 ```bash
 pipenv install
-pipenv run python -m flowtrigger
+pipenv run python -m autoflow
 ```
 
 In addition to the environment variables above, the following must be set:
-- `FLOWTRIGGER_CONFIG_DIR=./config`
+- `AUTOFLOW_CONFIG_DIR=./config`
 - `PREFECT__USER_CONFIG_PATH=./config/config.toml`
 
 
 ## Contents
 
-- `flowtrigger/` - Python package for running notebooks workflows. Contains the following modules:
+- `autoflow/` - Python package for running notebooks workflows. Contains the following modules:
     - `__main__.py` - Main script that initialises the database, parses the input file and runs workflows.
     - `model.py` - Defines a database model for storing workflow run metadata.
     - `parser.py` - Functions for parsing workflow definition files.
@@ -169,13 +169,13 @@ In addition to the environment variables above, the following must be set:
 - `config/` - Directory containing the following configuration files:
     - `config.toml` - Prefect user configuration file. Defines config values available to prefect tasks during execution.
     - `asciidoc_extended.tpl` - Extends the default `nbconvert` asciidoc template. This template will be used when converting notebooks to PDF, unless the user provides a different template.
-- `examples/` - Contains inputs for an example date-triggered workflow that produces a PDF report of flows above normal for each day of CDR data. Running `make automation-up` in the FlowKit root directory will start a FlowTrigger container that runs this example workflow.
-    - `inputs/` - The `FLOWTRIGGER_INPUTS_DIR` should point to this directory when running the example. It contains:
+- `examples/` - Contains inputs for an example date-triggered workflow that produces a PDF report of flows above normal for each day of CDR data. Running `make automation-up` in the FlowKit root directory will start a AutoFlow container that runs this example workflow.
+    - `inputs/` - The `AUTOFLOW_INPUTS_DIR` should point to this directory when running the example. It contains:
         - `run_flows.ipynb` - Notebook that runs two `flows` queries, so that they are stored in cache. The query IDs for the `flows` queries are glued in this notebook.
         - `flows_Report.ipynb` - Notebook that reads the query IDs from `run_flows.ipynb`, gets the query results using FlowClient and combines them with geography data, and displays the flows above normal in plots and tables. This notebook is designed to be converted to a PDF report after execution.
         - `workflows.yml` -  Yaml file that defines a date-triggered workflow that runs `run_flows.ipynb` followed by `flows_report.ipynb` and creates a PDF report from `flows_report.ipynb`.
-    - `outputs/` - The `FLOWTRIGGER_OUTPUTS_DIR` should point to this directory when running the example. Executed notebooks and PDF reports will be saved to subdirectories `notebooks/` and `reports/`, respectively.
+    - `outputs/` - The `AUTOFLOW_OUTPUTS_DIR` should point to this directory when running the example. Executed notebooks and PDF reports will be saved to subdirectories `notebooks/` and `reports/`, respectively.
 - `tests/` - Tests
-- `Dockerfile` - Dockerfile for building the `flowminder/flowtrigger` image.
-- `docker-stack.yml` - Example docker stack file that could be used to start FlowTrigger using docker secrets. Note that for real usage this docker stack would also need to be connected to a network on which a FlowAPI is accessible.
-- `Pipfile` - Pipfile that can be used to create a pipenv environment for running FlowTrigger locally (i.e. outside a container). The Pipfile is not used when building the docker image.
+- `Dockerfile` - Dockerfile for building the `flowminder/autoflow` image.
+- `docker-stack.yml` - Example docker stack file that could be used to start AutoFlow using docker secrets. Note that for real usage this docker stack would also need to be connected to a network on which a FlowAPI is accessible.
+- `Pipfile` - Pipfile that can be used to create a pipenv environment for running AutoFlow locally (i.e. outside a container). The Pipfile is not used when building the docker image.

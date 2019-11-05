@@ -8,7 +8,7 @@ import pendulum
 import json
 from unittest.mock import Mock, patch
 
-from flowtrigger.utils import *
+from autoflow.utils import *
 
 
 def test_get_output_filename():
@@ -169,7 +169,7 @@ def test_get_session(monkeypatch):
     port = 6666
     user = "DUMMY_USER"
 
-    monkeypatch.setenv("FLOWTRIGGER_DB_PASSWORD", password)
+    monkeypatch.setenv("AUTOFLOW_DB_PASSWORD", password)
     mock_psycopg2_connect = Mock()
     monkeypatch.setattr("psycopg2.connect", mock_psycopg2_connect)
 

@@ -9,7 +9,7 @@ import testing.postgresql
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from flowtrigger.model import Base, WorkflowRuns
+from autoflow.model import Base, WorkflowRuns
 
 
 @pytest.fixture(scope="session")
@@ -67,7 +67,7 @@ def test_logger():
     """
     Logger to use when testing prefect tasks.
     """
-    logger = logging.getLogger("flowtrigger_tests")
+    logger = logging.getLogger("autoflow_tests")
     handler = logging.StreamHandler()
     formatter = logging.Formatter(
         "[%(asctime)s] %(levelname)s - %(name)s | %(message)s"

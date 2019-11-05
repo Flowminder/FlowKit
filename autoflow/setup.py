@@ -13,14 +13,14 @@ with io.open("README.md", "rt", encoding="utf8") as f:
     readme = f.read()
 
 setup(
-    name="flowtrigger",
+    name="autoflow",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     url="http://github.com/Flowminder/FlowKit",
     license="MPLv2",
     maintainer="Flowminder",
     maintainer_email="flowkit@flowminder.org",
-    description="FlowTrigger automates event-driven Jupyter-notebook-based workflows that interact with FlowAPI.",
+    description="AutoFlow automates event-driven Jupyter-notebook-based workflows that interact with FlowAPI.",
     long_description=readme,
     packages=find_packages(),
     include_package_data=True,

@@ -146,6 +146,13 @@ def add_mapped_notebooks_tasks(
 
     This function must be called within a prefect Flow context.
     """
+    # TODO: This function is almost identical to 'add_notebooks_tasks', except
+    # that here all tasks are mapped. It may make more sense to restructure the
+    # date_triggered_notebooks workflow into a date_trigger workflow that
+    # triggers individual notebooks workflows. Each individual notebooks
+    # workflow could then be created using the same logic as
+    # 'make_scheduled_notebooks_workflow', and no mapping would be required
+    # outside of the date_trigger workflow.
     notebook_tasks = []
     output_tasks = []
 

@@ -10,7 +10,7 @@ import prefect
 from prefect import task
 from prefect.triggers import all_successful, any_failed, all_finished
 from prefect.engine import signals
-import papermill as pm
+import papermill
 from typing import Optional, Dict, Sequence, List, Tuple, Any
 import nbformat
 from nbconvert import ASCIIDocExporter
@@ -428,7 +428,7 @@ def papermill_execute_notebook(
     str
         Path to executed notebook
     """
-    # Papermill injects all parameters into the notebook metadata, which then gets
+    # Papermill injects all parameters into the notebook metadata, which gets
     # json-serialised, so all parameters must be json serialisable
     # (see https://github.com/nteract/papermill/issues/412).
     # 'make_json_serialisable()' has the convenient side-effect of converting tuples to
@@ -445,7 +445,9 @@ def papermill_execute_notebook(
 
     prefect.context.logger.debug(f"Output notebook will be '{output_path}'.")
 
-    pm.execute_notebook(input_path, output_path, parameters=safe_params, **kwargs)
+    papermill.execute_notebook(
+        input_path, output_path, parameters=safe_params, **kwargs
+    )
 
     prefect.context.logger.info(f"Finished executing notebook.")
 

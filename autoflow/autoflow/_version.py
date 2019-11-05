@@ -42,7 +42,7 @@ def get_config():
     cfg.style = "pep440"
     cfg.tag_prefix = ""
     cfg.parentdir_prefix = "FlowKit-"
-    cfg.versionfile_source = "flowtrigger/_version.py"
+    cfg.versionfile_source = "autoflow/_version.py"
     cfg.verbose = False
     return cfg
 

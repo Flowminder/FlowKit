@@ -12,8 +12,8 @@ from prefect.core import Edge
 from prefect.engine import TaskRunner
 from prefect.engine.state import Success, Failed, TriggerFailed
 
-from flowtrigger.tasks import *
-from flowtrigger.utils import get_params_hash
+from autoflow.tasks import *
+from autoflow.utils import get_params_hash
 
 
 def test_get_tag():
@@ -42,7 +42,7 @@ def test_get_date_ranges(monkeypatch):
     """
     stencil_to_date_pairs_mock = Mock(return_value="DUMMY_DATE_PAIRS")
     monkeypatch.setattr(
-        "flowtrigger.tasks.stencil_to_date_pairs", stencil_to_date_pairs_mock
+        "autoflow.tasks.stencil_to_date_pairs", stencil_to_date_pairs_mock
     )
     reference_date = pendulum.date(2016, 1, 1)
     date_stencil = [-1, 0]
@@ -222,8 +222,8 @@ def test_filter_dates_by_previous_runs(monkeypatch, test_logger):
 
     session_mock = Mock()
     get_session_mock = Mock(return_value=session_mock)
-    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.can_process", dummy_can_process)
+    monkeypatch.setattr("autoflow.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.can_process", dummy_can_process)
     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
         flow_name="DUMMY_WORFLOW_NAME",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
@@ -252,8 +252,8 @@ def test_record_workflow_state_tasks(monkeypatch, test_logger, record_task, stat
     session_mock = Mock()
     get_session_mock = Mock(return_value=session_mock)
     set_state_mock = Mock()
-    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("autoflow.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
         flow_name="DUMMY_WORFLOW_NAME",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
@@ -291,8 +291,8 @@ def test_record_workflow_state_tasks_no_reference_date(
     session_mock = Mock()
     get_session_mock = Mock(return_value=session_mock)
     set_state_mock = Mock()
-    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("autoflow.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
         flow_name="DUMMY_WORFLOW_NAME",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
@@ -320,8 +320,8 @@ def test_record_workflow_done_upstream_success(monkeypatch, test_logger):
     edge1 = Edge(Task(), record_workflow_done)
     edge2 = Edge(Task(), record_workflow_done)
     set_state_mock = Mock()
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
-    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("autoflow.tasks.get_session", Mock())
     context = dict(
         flow_name="DUMMY_WORFLOW_NAME",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
@@ -344,8 +344,8 @@ def test_record_workflow_done_upstream_failed(monkeypatch, test_logger):
     edge1 = Edge(Task(), record_workflow_done)
     edge2 = Edge(Task(), record_workflow_done)
     set_state_mock = Mock()
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
-    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("autoflow.tasks.get_session", Mock())
     context = dict(
         flow_name="DUMMY_WORFLOW_NAME",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
@@ -368,8 +368,8 @@ def test_record_workflow_failed_upstream_success(monkeypatch, test_logger):
     edge1 = Edge(Task(), record_workflow_failed)
     edge2 = Edge(Task(), record_workflow_failed)
     set_state_mock = Mock()
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
-    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("autoflow.tasks.get_session", Mock())
     context = dict(
         flow_name="DUMMY_WORFLOW_NAME",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
@@ -392,8 +392,8 @@ def test_record_workflow_failed_upstream_failed(monkeypatch, test_logger):
     edge1 = Edge(Task(), record_workflow_failed)
     edge2 = Edge(Task(), record_workflow_failed)
     set_state_mock = Mock()
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
-    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("autoflow.tasks.get_session", Mock())
     context = dict(
         flow_name="DUMMY_WORFLOW_NAME",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
@@ -425,9 +425,9 @@ def test_record_any_failed_workflows(monkeypatch, test_logger):
     get_session_mock = Mock(return_value=session_mock)
     set_state_mock = Mock()
     is_done_mock = Mock(side_effect=[True, True, False, False, True])
-    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.is_done", is_done_mock)
+    monkeypatch.setattr("autoflow.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.is_done", is_done_mock)
 
     scheduled_start_time = pendulum.datetime(2016, 2, 1)
     context = dict(
@@ -491,9 +491,9 @@ def test_record_any_failed_workflows_succeeds_if_nothing_failed(
     get_session_mock = Mock(return_value=session_mock)
     set_state_mock = Mock()
     is_done_mock = Mock(return_value=True)
-    monkeypatch.setattr("flowtrigger.tasks.get_session", get_session_mock)
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", set_state_mock)
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.is_done", is_done_mock)
+    monkeypatch.setattr("autoflow.tasks.get_session", get_session_mock)
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.is_done", is_done_mock)
 
     context = dict(
         flow_name="DUMMY_WORFLOW_NAME",
@@ -518,6 +518,7 @@ def test_record_any_failed_workflows_always_runs(
     monkeypatch, test_logger, upstream_state
 ):
     """
+    Test that the record_any_workflows_failed task always runs, whether its upstream tasks succeed or fail.
     """
     runner = TaskRunner(task=record_any_failed_workflows)
     reference_dates = list(
@@ -529,9 +530,9 @@ def test_record_any_failed_workflows_always_runs(
     upstream_task_edge = Edge(Task(), record_any_failed_workflows)
 
     is_done_mock = Mock(return_value=True)
-    monkeypatch.setattr("flowtrigger.tasks.get_session", Mock())
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.set_state", Mock())
-    monkeypatch.setattr("flowtrigger.tasks.WorkflowRuns.is_done", is_done_mock)
+    monkeypatch.setattr("autoflow.tasks.get_session", Mock())
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", Mock())
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.is_done", is_done_mock)
 
     context = dict(
         flow_name="DUMMY_WORFLOW_NAME",
@@ -579,3 +580,11 @@ def test_mappable_dict_can_be_mapped():
     assert final_state.is_mapped()
     assert final_state.map_states[0].result == {"mapped_arg": 1, "unmapped_arg": [3, 4]}
     assert final_state.map_states[1].result == {"mapped_arg": 2, "unmapped_arg": [3, 4]}
+
+
+# def test_papermill_execute_notebook(monkeypatch, test_logger):
+#     """
+#     """
+#     execute_notebook_mock = Mock()
+#     monkeypatch.setattr("papermill.execute_notebook", execute_notebook_mock)
+#     with prefect.context(logger=test_logger):

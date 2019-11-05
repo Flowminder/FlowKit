@@ -9,8 +9,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import DataError
 from sqlalchemy.orm import sessionmaker
 
-from flowtrigger.model import Base, WorkflowRuns, init_db
-from flowtrigger.utils import get_params_hash
+from autoflow.model import Base, WorkflowRuns, init_db
+from autoflow.utils import get_params_hash
 
 
 def test_set_state(session):
