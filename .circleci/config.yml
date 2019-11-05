@@ -243,7 +243,8 @@ jobs:
           command: |
             cd flowdb
             pipenv run pytest --junit-xml=test_results/pytest/results.xml \
-            --ignore=tests/test_synthetic_data.py --ignore=tests/test_oracle_fdw.py
+            --ignore=tests/test_synthetic_data.py --ignore=tests/test_synthetic_data_realistic.py \
+             --ignore=tests/test_oracle_fdw.py
       - store_test_results:
           path: flowdb/test_results
       - run:
@@ -456,30 +457,9 @@ jobs:
         type: enum
         enum: ["python", "sql", "realistic"]
         default: "python"
-    executor:
-      name: python_with_flowdb
-      flowdb_image: "synthetic-data"
-      synthetic_data_generator: <<parameters.synthetic_data_generator>>
-    working_directory: /home/circleci/project/flowdb
-    steps:
-      - checkout:
-          path: /home/circleci/project/
-      - run:
-          name: install deps
-          command: pipenv install --dev --deploy
-      - run: *wait_for_flowdb
-      - run:
-          name: Run tests
-          command: pipenv run pytest --junit-xml=test_results/pytest/results.xml tests/test_synthetic_data.py
-      - store_test_results:
-          path: test_results
-  
-  run_flowdbsynthrealistic_tests:
-    parameters:
-      synthetic_data_generator:
-        type: enum
-        enum: ["python", "sql", "realistic"]
-        default: "realistic"
+      test_glob:
+        type: string
+        default: "test_synthetic_data.py"
       num_days:
         type: integer
         default: 1
@@ -500,7 +480,7 @@ jobs:
       - run: *wait_for_flowdb
       - run:
           name: Run tests
-          command: pipenv run pytest --junit-xml=test_results/pytest/results.xml tests/test_synthetic_data_realistic.py
+          command: pipenv run pytest --junit-xml=test_results/pytest/results.xml tests/<<parameters.test_glob>>
       - store_test_results:
           path: test_results
 
@@ -1037,7 +1017,9 @@ workflows:
       - run_autoflow_tests:
           <<: *run_always_org_context
       - run_flowdbsynthrealistic_tests:
-          name: synth_data_realistic_generator_tests
+          name: run_flowdbsynth_tests
+          synthetic_data_generator: realistic
+          test_glob: "test_synthetic_data_realistic.py"
           requires:
             - build_flowdb_synthdata
           <<: *run_always_org_context
