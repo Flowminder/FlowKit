@@ -109,7 +109,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--n-startdate",
-    type=datetime.date.fromisoforma,
+    type=datetime.date.fromisoformat,
     default="2016-01-01",
     help="Date of the day to start call data.",
 )
