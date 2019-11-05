@@ -812,7 +812,7 @@ jobs:
       sd_sms: 5
       mean_mds: 50
       sd_mds: 5
-      startdate: 1451606400
+      startdate: "2016-01-01"
       disaster_start_date: 2016-02-11
       disaster_end_date: 2016-03-01
     working_directory: /home/circleci/project/docs
