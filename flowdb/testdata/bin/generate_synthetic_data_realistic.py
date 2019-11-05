@@ -109,9 +109,9 @@ parser.add_argument(
 )
 parser.add_argument(
     "--n-startdate",
-    type=int,
-    default=1451606400,
-    help="Timestamp of the day to start call data.",
+    type=datetime.date.fromisoforma,
+    default="2016-01-01",
+    help="Date of the day to start call data.",
 )
 parser.add_argument(
     "--dryrun",
@@ -280,7 +280,7 @@ if __name__ == "__main__":
         sd_sms = args.n_sd_sms
         mean_mds = args.n_mean_mds
         sd_mds = args.n_sd_mds
-        start_date = datetime.date.fromtimestamp(args.n_startdate)
+        start_date = datetime.date.fromisoformat(args.n_startdate)
 
         # Generate all the event distributions
         dist_calls, num_calls = generateNormalDistribution(

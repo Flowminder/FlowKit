@@ -102,8 +102,8 @@ executors:
         type: integer
         default: 5
       startdate:
-        type: integer
-        default: 1451606400
+        type: string
+        default: "2016-01-01"
     environment:
       POSTGRES_PASSWORD: flowflow
       MPLBACKEND: "agg"
