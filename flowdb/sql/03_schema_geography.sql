@@ -22,7 +22,6 @@ CREATE SCHEMA IF NOT EXISTS geography;
 
         cell_id BIGINT,
         geo_id NUMERIC,
-        outgoing BOOLEAN,
         valid_from DATE,
         valid_to DATE,
         linkage_method TEXT,

@@ -176,19 +176,82 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         party_msisdn            TEXT
 
         );
+
+
+    CREATE SEQUENCE interactions.event_id START 1;
     
     CREATE TABLE IF NOT EXISTS interactions.event_supertable (
-
-        event_id                BIGSERIAL,
+        event_id                BIGINT NOT NULL PRIMARY KEY,
         subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
         time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
         date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
-        event_type              INTEGER,
-        timestamp               TIMESTAMPTZ NOT NULL,
-        PRIMARY KEY (event_id, date_sk)
+        event_type              VARCHAR(5) NOT NULL,
+        timestamp               TIMESTAMPTZ NOT NULL
+    );
 
-    ) PARTITION BY LIST (date_sk);
+CREATE TABLE IF NOT EXISTS interactions.calls(
+        event_id                BIGINT NOT NULL DEFAULT nextval('interactions.event_id'),
+        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
+        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
+        date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
+        event_type              VARCHAR(5) NOT NULL DEFAULT 'calls',
+        timestamp               TIMESTAMPTZ NOT NULL,
+        called_subscriber_id    BIGINT REFERENCES interactions.subscriber(id),
+        called_party_cell_id    BIGINT REFERENCES interactions.locations(cell_id),
+        calling_party_msisdn    TEXT,
+        called_party_msisdn     TEXT,
+        call_duration           NUMERIC
+        CHECK ( event_type = 'calls' ), PRIMARY KEY (event_id, date_sk)
+    ) PARTITION BY RANGE (date_sk);
+
+    CREATE TABLE IF NOT EXISTS interactions.sms(
+        event_id                      BIGINT NOT NULL DEFAULT nextval('interactions.event_id'),
+        subscriber_id                 BIGINT REFERENCES interactions.subscriber(id),
+        cell_id                       BIGINT REFERENCES interactions.locations(cell_id),
+        time_sk                       BIGINT REFERENCES public.d_time(time_dim_id),
+        date_sk                       BIGINT REFERENCES public.d_date(date_dim_id),
+        event_type                    VARCHAR(5) NOT NULL DEFAULT 'sms',
+        timestamp                     TIMESTAMPTZ NOT NULL,
+        calling_party_cell_id         BIGINT REFERENCES interactions.locations(cell_id),
+        parties_key                   BIGINT REFERENCES interactions.receiving_parties(parties_key),
+        calling_party_msisdn          TEXT,
+        receiving_parties_msisdns     TEXT
+        CHECK ( event_type = 'sms' ), PRIMARY KEY (event_id, date_sk)
+    ) PARTITION BY RANGE (date_sk);
+
+    CREATE TABLE IF NOT EXISTS interactions.mds(
+        event_id                BIGINT NOT NULL DEFAULT nextval('interactions.event_id'),
+        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
+        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
+        date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
+        event_type              VARCHAR(5) NOT NULL DEFAULT 'mds',
+        timestamp               TIMESTAMPTZ NOT NULL,
+        data_volume_total       NUMERIC,
+        data_volume_up          NUMERIC,
+        data_volume_down        NUMERIC,
+        duration                NUMERIC
+        CHECK ( event_type = 'mds' ), PRIMARY KEY (event_id, date_sk)
+    ) PARTITION BY RANGE (date_sk);
+
+    CREATE TABLE IF NOT EXISTS interactions.topup(
+        event_id                BIGINT NOT NULL DEFAULT nextval('interactions.event_id'),
+        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
+        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
+        date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
+        event_type              VARCHAR(5) NOT NULL DEFAULT 'topup',
+        timestamp               TIMESTAMPTZ NOT NULL,
+        type                    INTEGER,
+        recharge_amount         NUMERIC,
+        airtime_fee             NUMERIC,
+        tax_and_fee             NUMERIC,
+        pre_event_balance       NUMERIC,
+        post_event_balance      NUMERIC
+        CHECK ( event_type = 'topup' ), PRIMARY KEY (event_id, date_sk)
+    ) PARTITION BY RANGE (date_sk);
 
     CREATE TABLE IF NOT EXISTS interactions.subscriber_sightings(
 
@@ -197,77 +260,13 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
         time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
         date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
-        event_super_table_id    BIGINT, /* REFERENCES interactions.event_supertable(event_id), - this can be added in PG12 */ 
+        event_id                BIGINT, /* REFERENCES interactions.event_supertable(event_id), - this can be added in PG12 */
         timestamp               TIMESTAMPTZ NOT NULL,
         PRIMARY KEY (sighting_id, date_sk)
 
-    ) PARTITION BY LIST (date_sk);
+    ) PARTITION BY RANGE (date_sk);
     
     /* We need to an the CONSTRAINT for geography.geo_bridge here */
     ALTER TABLE geography.geo_bridge ADD CONSTRAINT locations_fkey FOREIGN KEY (cell_id) REFERENCES interactions.locations(cell_id);
 
-    CREATE TABLE IF NOT EXISTS interactions.calls(
 
-        super_table_id          BIGSERIAL,
-        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
-        called_subscriber_id    BIGINT REFERENCES interactions.subscriber(id),
-        calling_party_cell_id   BIGINT REFERENCES interactions.locations(cell_id),
-        called_party_cell_id    BIGINT REFERENCES interactions.locations(cell_id),
-        time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
-        date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
-        calling_party_msisdn    TEXT,
-        called_party_msisdn     TEXT,
-        call_duration           NUMERIC,
-        timestamp               TIMESTAMPTZ NOT NULL,
-        PRIMARY KEY (super_table_id, date_sk)
-
-    ) PARTITION BY LIST (date_sk);
-    
-    CREATE TABLE IF NOT EXISTS interactions.sms(
-
-        super_table_id                BIGSERIAL,
-        subscriber_id                 BIGINT REFERENCES interactions.subscriber(id),
-        calling_party_cell_id         BIGINT REFERENCES interactions.locations(cell_id),
-        parties_key                   BIGINT REFERENCES interactions.receiving_parties(parties_key),
-        time_sk                       BIGINT REFERENCES public.d_time(time_dim_id),
-        date_sk                       BIGINT REFERENCES public.d_date(date_dim_id),
-        calling_party_msisdn          TEXT,
-        receiving_parties_msisdns     TEXT,
-        timestamp                     TIMESTAMPTZ NOT NULL,
-        PRIMARY KEY (super_table_id, date_sk)
-
-    ) PARTITION BY LIST (date_sk);
-    
-    CREATE TABLE IF NOT EXISTS interactions.mds(
-
-        super_table_id          BIGSERIAL,
-        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
-        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
-        time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
-        date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
-        data_volume_total       NUMERIC,
-        data_volume_up          NUMERIC,
-        data_volume_down        NUMERIC,
-        duration                NUMERIC,
-        timestamp               TIMESTAMPTZ NOT NULL,
-        PRIMARY KEY (super_table_id, date_sk)
-
-    ) PARTITION BY LIST (date_sk);
-
-    CREATE TABLE IF NOT EXISTS interactions.topup(
-
-        super_table_id          BIGSERIAL,
-        subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
-        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
-        time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
-        date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
-        type                    INTEGER,
-        recharge_amount         NUMERIC,
-        airtime_fee             NUMERIC,
-        tax_and_fee             NUMERIC,
-        pre_event_balance       NUMERIC,
-        post_event_balance      NUMERIC,
-        timestamp               TIMESTAMPTZ NOT NULL,
-        PRIMARY KEY (super_table_id, date_sk)
-
-    ) PARTITION BY LIST (date_sk);
