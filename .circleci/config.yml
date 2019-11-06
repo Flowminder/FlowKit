@@ -462,13 +462,15 @@ jobs:
         default: "test_synthetic_data.py"
       num_days:
         type: integer
-        default: 1
+        default: 3
       num_subscribers:
         type: integer
-        default: 320
+        default: 400
     executor:
       name: python_with_flowdb
       flowdb_image: "synthetic-data"
+      num_days: <<parameters.num_days>>
+      num_subscribers: <<parameters.num_subscribers>>
       synthetic_data_generator: <<parameters.synthetic_data_generator>>
     working_directory: /home/circleci/project/flowdb
     steps:
@@ -1020,6 +1022,8 @@ workflows:
           name: synth_data_realistic_generator_tests
           synthetic_data_generator: realistic
           test_glob: "test_synthetic_data_realistic.py"
+          num_days: 1
+          num_subscribers: 320
           requires:
             - build_flowdb_synthdata
           <<: *run_always_org_context
