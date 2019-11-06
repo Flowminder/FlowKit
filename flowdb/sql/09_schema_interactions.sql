@@ -78,7 +78,6 @@ CREATE SCHEMA IF NOT EXISTS interactions;
       is_std_weekend           BOOLEAN NOT NULL
     );
 
-    ALTER TABLE public.d_date ADD CONSTRAINT d_date_date_dim_id_pk PRIMARY KEY (date_dim_id);
 
     INSERT INTO d_date
     SELECT TO_CHAR(datum,'yyyymmdd')::INT AS date_dim_id,
