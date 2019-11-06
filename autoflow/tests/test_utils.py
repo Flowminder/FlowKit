@@ -316,7 +316,7 @@ def test_notebook_to_asciidoc(monkeypatch):
     ExporterMock = Mock()
     ExporterMock.return_value.from_notebook_node.return_value = (
         "DUMMY_BODY",
-        dict(outputs={"DUMMY_OUTPUT_NAME": "DUMMY_OUTPUT_CONTENT"}),
+        "DUMMY_RESOURCES",
     )
     monkeypatch.setattr("builtins.open", open_mock)
     monkeypatch.setattr("nbformat.read", nbformat_read_mock)
@@ -327,10 +327,8 @@ def test_notebook_to_asciidoc(monkeypatch):
         asciidoc_template_path="DUMMY_TEMPLATE_PATH",
     )
 
-    assert (
-        body,
-        resources,
-    ) == ExporterMock.return_value.from_notebook_node.return_value
+    assert body == "DUMMY_BODY"
+    assert resources == "DUMMY_RESOURCES"
     open_mock.assert_called_once_with("DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb")
     nbformat_read_mock.assert_called_once_with(open_mock(), as_version=4)
     assert open_mock().__exit__.called_once() or open_mock().close.called_once()
@@ -346,7 +344,7 @@ def test_notebook_to_asciidoc_no_template(monkeypatch):
     ExporterMock = Mock()
     ExporterMock.return_value.from_notebook_node.return_value = (
         "DUMMY_BODY",
-        dict(outputs={"DUMMY_OUTPUT_NAME": "DUMMY_OUTPUT_CONTENT"}),
+        "DUMMY_RESOURCES",
     )
     monkeypatch.setattr("builtins.open", mock_open())
     monkeypatch.setattr("nbformat.read", Mock())

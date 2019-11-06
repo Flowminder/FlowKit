@@ -483,9 +483,9 @@ def convert_notebook_to_pdf(
     output_path = str(Path(prefect.config.outputs.reports_dir) / output_filename)
 
     if asciidoc_template is None:
-        try:
+        if "asciidoc_template_path" in prefect.config:
             asciidoc_template_path = prefect.config.asciidoc_template_path
-        except AttributeError:
+        else:
             # If no template is provided, and no default template is set in the config,
             # run nbconvert without specifying a template (i.e. use the default nbconvert asciidoc template).
             asciidoc_template_path = None

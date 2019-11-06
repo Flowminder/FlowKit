@@ -152,9 +152,7 @@ pipenv install
 pipenv run python -m autoflow
 ```
 
-In addition to the environment variables above, the following must be set:
-- `AUTOFLOW_CONFIG_DIR=./config`
-- `PREFECT__USER_CONFIG_PATH=./config/config.toml`
+In addition to the environment variables above, `PREFECT__USER_CONFIG_PATH=./config/config.toml` must be set. To use the extended asciidoc template (as used when running in the Docker container), `PREFECT__ASCIIDOC_TEMPLATE_PATH=./config/asciidoc_extended.tpl` should also be set.
 
 
 ## Contents

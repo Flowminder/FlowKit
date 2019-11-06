@@ -1,4 +1,3 @@
-asciidoc_template_path = "$AUTOFLOW_CONFIG_DIR/asciidoc_extended.tpl"
 flowapi_url = "$FLOWAPI_URL"
 db_uri = "$AUTOFLOW_DB_URI"
 
