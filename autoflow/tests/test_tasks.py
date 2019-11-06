@@ -213,8 +213,6 @@ def test_filter_dates_by_previous_runs(monkeypatch, test_logger):
     dates = [pendulum.date(2016, 1, d) for d in [1, 2, 3]]
 
     def dummy_can_process(workflow_name, workflow_params, reference_date, session):
-        assert workflow_name == "DUMMY_WORFLOW_NAME"
-        assert workflow_params == {"DUMMY_PARAM": "DUMMY_VALUE"}
         if reference_date in [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)]:
             return True
         else:
@@ -222,15 +220,29 @@ def test_filter_dates_by_previous_runs(monkeypatch, test_logger):
 
     session_mock = Mock()
     get_session_mock = Mock(return_value=session_mock)
+    can_process_mock = Mock(side_effect=dummy_can_process)
     monkeypatch.setattr("autoflow.tasks.get_session", get_session_mock)
-    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.can_process", dummy_can_process)
+    monkeypatch.setattr("autoflow.tasks.WorkflowRuns.can_process", can_process_mock)
+
     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
         flow_name="DUMMY_WORFLOW_NAME",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
         logger=test_logger,
     ):
         filtered_dates = filter_dates_by_previous_runs.run(dates)
+
     get_session_mock.assert_called_once_with("DUMMY_DB_URI")
+    can_process_mock.assert_has_calls(
+        [
+            call(
+                workflow_name="DUMMY_WORFLOW_NAME",
+                workflow_params={"DUMMY_PARAM": "DUMMY_VALUE"},
+                reference_date=d,
+                session=session_mock,
+            )
+            for d in dates
+        ]
+    )
     session_mock.close.assert_called_once()
     assert filtered_dates == [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)]
 
@@ -582,9 +594,152 @@ def test_mappable_dict_can_be_mapped():
     assert final_state.map_states[1].result == {"mapped_arg": 2, "unmapped_arg": [3, 4]}
 
 
-# def test_papermill_execute_notebook(monkeypatch, test_logger):
-#     """
-#     """
-#     execute_notebook_mock = Mock()
-#     monkeypatch.setattr("papermill.execute_notebook", execute_notebook_mock)
-#     with prefect.context(logger=test_logger):
+def test_papermill_execute_notebook(monkeypatch, test_logger):
+    """
+    Test that the papermill_execute_notebook task calls papermill.execute_notebook
+    with the correct arguments, and returns the output filename.
+    """
+    execute_notebook_mock = Mock()
+    get_output_filename_mock = Mock(return_value="DUMMY_OUTPUT_FILENAME")
+    monkeypatch.setattr(
+        "autoflow.tasks.make_json_serialisable",
+        lambda x: {k: f"SAFE_{v}" for k, v in x.items()},
+    )
+    monkeypatch.setattr("autoflow.tasks.get_output_filename", get_output_filename_mock)
+    monkeypatch.setattr("papermill.execute_notebook", execute_notebook_mock)
+
+    with set_temporary_config(
+        {
+            "inputs.inputs_dir": "DUMMY_INPUTS_DIR",
+            "outputs.notebooks_dir": "DUMMY_NOTEBOOKS_DIR",
+        }
+    ), prefect.context(logger=test_logger):
+        output_path = papermill_execute_notebook.run(
+            input_filename="DUMMY_INPUT_FILENAME",
+            output_tag="DUMMY_TAG",
+            parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+            dummy_kwarg="DUMMY_KWARG_VALUE",
+        )
+
+    assert output_path == "DUMMY_NOTEBOOKS_DIR/DUMMY_OUTPUT_FILENAME"
+    get_output_filename_mock.assert_called_once_with(
+        input_filename="DUMMY_INPUT_FILENAME", tag="DUMMY_TAG"
+    )
+    execute_notebook_mock.assert_called_once_with(
+        "DUMMY_INPUTS_DIR/DUMMY_INPUT_FILENAME",
+        "DUMMY_NOTEBOOKS_DIR/DUMMY_OUTPUT_FILENAME",
+        parameters={"DUMMY_PARAM": "SAFE_DUMMY_VALUE"},
+        dummy_kwarg="DUMMY_KWARG_VALUE",
+    )
+
+
+def test_convert_notebook_to_pdf(monkeypatch, test_logger):
+    """
+    Test that the convert_notebook_to_pdf task calls notebook_to_asciidoc
+    followed by asciidoc_to_pdf, with the correct arguments.
+    """
+    notebook_to_asciidoc_mock = Mock(return_value=("DUMMY_BODY", "DUMMY_RESOURCES"))
+    asciidoc_to_pdf_mock = Mock()
+    monkeypatch.setattr(
+        "autoflow.tasks.notebook_to_asciidoc", notebook_to_asciidoc_mock
+    )
+    monkeypatch.setattr("autoflow.tasks.asciidoc_to_pdf", asciidoc_to_pdf_mock)
+
+    with set_temporary_config(
+        {
+            "asciidoc_template_path": "DUMMY_TEMPLATE_PATH",
+            "outputs.reports_dir": "DUMMY_REPORTS_DIR",
+        }
+    ), prefect.context(logger=test_logger):
+        output_path = convert_notebook_to_pdf.run(
+            notebook_path="DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb",
+            output_filename="DUMMY_OUTPUT_FILENAME",
+        )
+
+    assert output_path == "DUMMY_REPORTS_DIR/DUMMY_OUTPUT_FILENAME"
+    notebook_to_asciidoc_mock.assert_called_once_with(
+        "DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb", "DUMMY_TEMPLATE_PATH"
+    )
+    asciidoc_to_pdf_mock.assert_called_once_with(
+        "DUMMY_BODY", "DUMMY_RESOURCES", "DUMMY_REPORTS_DIR/DUMMY_OUTPUT_FILENAME"
+    )
+
+
+def test_convert_notebook_to_pdf_default_output_filename(monkeypatch, test_logger):
+    """
+    Test that if the output filename is not specified, the convert_notebook_to_pdf
+    task will use the stem from the input filename, with extension changed to '.pdf'.
+    """
+    asciidoc_to_pdf_mock = Mock()
+    monkeypatch.setattr(
+        "autoflow.tasks.notebook_to_asciidoc",
+        Mock(return_value=("DUMMY_BODY", "DUMMY_RESOURCES")),
+    )
+    monkeypatch.setattr("autoflow.tasks.asciidoc_to_pdf", asciidoc_to_pdf_mock)
+
+    with set_temporary_config(
+        {
+            "asciidoc_template_path": "DUMMY_TEMPLATE_PATH",
+            "outputs.reports_dir": "DUMMY_REPORTS_DIR",
+        }
+    ), prefect.context(logger=test_logger):
+        output_path = convert_notebook_to_pdf.run(
+            notebook_path="DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb"
+        )
+
+    assert output_path == "DUMMY_REPORTS_DIR/DUMMY_FILENAME.pdf"
+    asciidoc_to_pdf_mock.assert_called_once_with(
+        "DUMMY_BODY", "DUMMY_RESOURCES", "DUMMY_REPORTS_DIR/DUMMY_FILENAME.pdf"
+    )
+
+
+def test_convert_notebook_to_pdf_custom_template(monkeypatch, test_logger):
+    """
+    Test that if a custom asciidoc template filename is passed to the convert_notebook_to_pdf
+    task, that template will be used instead of the default.
+    """
+    notebook_to_asciidoc_mock = Mock(return_value=("DUMMY_BODY", "DUMMY_RESOURCES"))
+    monkeypatch.setattr(
+        "autoflow.tasks.notebook_to_asciidoc", notebook_to_asciidoc_mock
+    )
+    monkeypatch.setattr("autoflow.tasks.asciidoc_to_pdf", Mock())
+
+    with set_temporary_config(
+        {
+            "asciidoc_template_path": "DEFAULT_TEMPLATE_PATH",
+            "inputs.inputs_dir": "DUMMY_INPUTS_DIR",
+            "outputs.reports_dir": "DUMMY_REPORTS_DIR",
+        }
+    ), prefect.context(logger=test_logger):
+        output_path = convert_notebook_to_pdf.run(
+            notebook_path="DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb",
+            asciidoc_template="CUSTOM_TEMPLATE_FILENAME",
+        )
+
+    notebook_to_asciidoc_mock.assert_called_once_with(
+        "DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb",
+        "DUMMY_INPUTS_DIR/CUSTOM_TEMPLATE_FILENAME",
+    )
+
+
+def test_convert_notebook_to_pdf_no_template(monkeypatch, test_logger):
+    """
+    Test that if no asciidoc template filename is passed to the convert_notebook_to_pdf
+    task, and no default template is set in the config, no template will be passed to notebook_to_asciidoc.
+    """
+    notebook_to_asciidoc_mock = Mock(return_value=("DUMMY_BODY", "DUMMY_RESOURCES"))
+    monkeypatch.setattr(
+        "autoflow.tasks.notebook_to_asciidoc", notebook_to_asciidoc_mock
+    )
+    monkeypatch.setattr("autoflow.tasks.asciidoc_to_pdf", Mock())
+
+    with set_temporary_config(
+        {"outputs.reports_dir": "DUMMY_REPORTS_DIR"}
+    ), prefect.context(logger=test_logger):
+        output_path = convert_notebook_to_pdf.run(
+            notebook_path="DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb"
+        )
+
+    notebook_to_asciidoc_mock.assert_called_once_with(
+        "DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb", None
+    )
