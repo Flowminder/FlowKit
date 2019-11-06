@@ -16,8 +16,7 @@ subscribers.
                                 moves
   - receiving_parties:
   - event_supertable:           contains a row per call/mds/sms event. The
-                                event_type field can be an integer for 
-                                each type 1. calls, 2. sms, 3. mds and
+                                event_type field may be any of 1. calls, 2. sms, 3. mds and
                                 fianlly 4. topup
   - subscriber_sightings:       contains a row per subscriber sighting event
   - calls:                      stores the additional call type data
