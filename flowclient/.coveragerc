@@ -1,10 +1,10 @@
 [run]
 branch = True
-source = autoflow
-include = *
+source = .
+include = autoflow/*
 
 [report]
-include = *
+include = autoflow/*
 
 omit =
     */python?.?/*
