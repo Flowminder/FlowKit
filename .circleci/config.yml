@@ -612,7 +612,7 @@ jobs:
       - run:
           name: Run autoflow unit tests
           command: |
-            pipenv run python -m pytest --junitxml=test_results/pytest/results.xml --cov=autoflow/ \
+            pipenv run python -m pytest --junitxml=test_results/pytest/results.xml --cov=./ \
              --cov-report term --cov-report xml --durations=10
       - store_test_results:
           path: test_results
