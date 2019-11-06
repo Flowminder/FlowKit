@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowDB now includes Paul Ramsey's [OGR foreign data wrapper](https://github.com/pramsey/pgsql-ogr-fdw), for easy loading of GIS data. [#1512](https://github.com/Flowminder/FlowKit/issues/1512)
 - FlowETL now allows all configuration options to be set using docker secrets. [#1515](https://github.com/Flowminder/FlowKit/issues/1515)
 - Added a new component, AutoFlow, to automate running Jupyter notebooks when new data is added to FlowDB. [#1570](https://github.com/Flowminder/FlowKit/issues/1570)
+- A new data generator which produces normally distributed calling patterns has been added to the FlowDB synthetic data container.
+  
+  To use the new generator, set the `SYNTHETIC_DATA_GENERATOR` environment variable to `realistic`.  
 
 ### Changed
 - FlowDB is now built on PostgreSQL 12 [#1396](https://github.com/Flowminder/FlowKit/issues/1313) and PostGIS 3.
