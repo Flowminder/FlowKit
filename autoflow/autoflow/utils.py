@@ -17,7 +17,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from get_secret_or_env_var import getenv
 import nbformat
-from nbconvert import ASCIIDocExporter
+import nbconvert
 from tempfile import TemporaryDirectory
 from sh import asciidoctor_pdf
 
@@ -379,10 +379,10 @@ def notebook_to_asciidoc(
     with open(notebook_path) as nb_file:
         nb_read = nbformat.read(nb_file, as_version=4)
 
-    if template is None:
-        exporter = ASCIIDocExporter()
+    if asciidoc_template_path is None:
+        exporter = nbconvert.ASCIIDocExporter()
     else:
-        exporter = ASCIIDocExporter(template_file=asciidoc_template_path)
+        exporter = nbconvert.ASCIIDocExporter(template_file=asciidoc_template_path)
     body, resources = exporter.from_notebook_node(nb_read)
 
     return body, resources

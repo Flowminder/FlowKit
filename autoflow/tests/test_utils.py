@@ -6,7 +6,8 @@ import pytest
 import datetime
 import pendulum
 import json
-from unittest.mock import Mock, patch
+from pathlib import Path
+from unittest.mock import Mock, patch, mock_open
 
 from autoflow.utils import *
 
@@ -303,3 +304,87 @@ def test_sort_notebook_labels_circular_dependency():
         ValueError, match="Notebook specifications contain cyclic dependencies."
     ):
         sorted_notebook_labels = sort_notebook_labels(notebooks)
+
+
+def test_notebook_to_asciidoc(monkeypatch):
+    """
+    Test that notebook_to_asciidoc uses a nbconvert.ASCIIDocExporter with the
+    specified template to convert the notebook.
+    """
+    open_mock = mock_open()
+    nbformat_read_mock = Mock(return_value="DUMMY_NB")
+    ExporterMock = Mock()
+    ExporterMock.return_value.from_notebook_node.return_value = (
+        "DUMMY_BODY",
+        dict(outputs={"DUMMY_OUTPUT_NAME": "DUMMY_OUTPUT_CONTENT"}),
+    )
+    monkeypatch.setattr("builtins.open", open_mock)
+    monkeypatch.setattr("nbformat.read", nbformat_read_mock)
+    monkeypatch.setattr("nbconvert.ASCIIDocExporter", ExporterMock)
+
+    body, resources = notebook_to_asciidoc(
+        notebook_path="DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb",
+        asciidoc_template_path="DUMMY_TEMPLATE_PATH",
+    )
+
+    assert (
+        body,
+        resources,
+    ) == ExporterMock.return_value.from_notebook_node.return_value
+    open_mock.assert_called_once_with("DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb")
+    nbformat_read_mock.assert_called_once_with(open_mock(), as_version=4)
+    assert open_mock().__exit__.called_once() or open_mock().close.called_once()
+    ExporterMock.assert_called_once_with(template_file="DUMMY_TEMPLATE_PATH")
+    ExporterMock.return_value.from_notebook_node.assert_called_once_with("DUMMY_NB")
+
+
+def test_notebook_to_asciidoc_no_template(monkeypatch):
+    """
+    Test that notebook_to_asciidoc can be called without specifying a template
+    file, and that the nbconvert default template will be used in this case.
+    """
+    ExporterMock = Mock()
+    ExporterMock.return_value.from_notebook_node.return_value = (
+        "DUMMY_BODY",
+        dict(outputs={"DUMMY_OUTPUT_NAME": "DUMMY_OUTPUT_CONTENT"}),
+    )
+    monkeypatch.setattr("builtins.open", mock_open())
+    monkeypatch.setattr("nbformat.read", Mock())
+    monkeypatch.setattr("nbconvert.ASCIIDocExporter", ExporterMock)
+
+    body, resources = notebook_to_asciidoc(
+        notebook_path="DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb"
+    )
+
+    ExporterMock.assert_called_once_with()
+
+
+def test_asciidoc_to_pdf(monkeypatch):
+    """
+    Test that asciidoc_to_pdf writes asciidoc file contents to temporary files,
+    and runs asciidoctor_pdf on those files.
+    """
+
+    def asciidoctor_pdf_mock_side_effect(filename, o):
+        filepath = Path(filename)
+        assert filepath.exists()
+        resource_path = filepath.parent / "DUMMY_RESOURCE_NAME"
+        assert resource_path.exists()
+        with open(filepath, "r") as f_body:
+            assert "DUMMY_BODY" == f_body.read()
+        with open(resource_path, "rb") as f_res:
+            assert b"DUMMY_RESOURCE_CONTENT" == f_res.read()
+
+    asciidoctor_pdf_mock = Mock(side_effect=asciidoctor_pdf_mock_side_effect)
+    monkeypatch.setattr("autoflow.utils.asciidoctor_pdf", asciidoctor_pdf_mock)
+
+    asciidoc_to_pdf(
+        body="DUMMY_BODY",
+        resources=dict(outputs={"DUMMY_RESOURCE_NAME": b"DUMMY_RESOURCE_CONTENT"}),
+        output_path="DUMMY_OUTPUT_PATH",
+    )
+
+    asciidoctor_pdf_mock.assert_called_once()
+    args, kwargs = asciidoctor_pdf_mock.call_args
+    assert not Path(args[0]).exists()
+    assert kwargs["o"] == "DUMMY_OUTPUT_PATH"
