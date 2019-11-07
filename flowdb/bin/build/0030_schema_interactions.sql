@@ -44,8 +44,8 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.locations(
 
         cell_id                 BIGSERIAL PRIMARY KEY,
-        site_id                 TEXT,
-        mno_cell_code           TEXT
+        site_id                 BIGINT REFERENCES infrastructure.sites(site_id),
+        cell_id                 BIGINT REFERENCES infrastructure.cells(cell_id)
 
         );
 
