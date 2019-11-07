@@ -124,30 +124,24 @@ CREATE TABLE IF NOT EXISTS public.files(
 
     CREATE TABLE IF NOT EXISTS d_time(
         time_dim_id             INT PRIMARY KEY,
-        time_of_day             VARCHAR(5),
+        time_of_day             TIME,
         hour_of_day             INT,
-        minute_of_day           INT,
-        meridean_indicator      VARCHAR(2),
-        minute_of_hour          INT
+        meridian_indicator      CHAR(2)
         );
 
     INSERT INTO d_time
     SELECT
         -- Primary key
-        to_char(MINUTE,'hh24mi')::INT AS time_dim_id,
+        to_char(hour,'hh24')::INT AS time_dim_id,
         -- Time of day
-        to_char(MINUTE, 'hh24:mi') AS time_of_day,
+        hour AS time_of_day,
         -- Hour of the day (0 - 23)
-        EXTRACT(HOUR FROM MINUTE) AS hour_of_day,
-        -- Minute of the day (0 - 1439)
-        EXTRACT(HOUR FROM MINUTE)*60 + EXTRACT(MINUTE FROM MINUTE) AS minute_of_day,
+        EXTRACT(HOUR FROM hour) AS hour_of_day,
         -- AM/PM
-        to_char(MINUTE, 'am') AS meridean_indicator,
-        -- Minute of the hour
-        EXTRACT(MINUTE FROM MINUTE) AS minute_of_hour
+        to_char(hour, 'am') AS meridian_indicator
 
-    FROM (SELECT '0:00'::TIME + (SEQUENCE.MINUTE || ' minutes')::INTERVAL AS MINUTE
-        FROM generate_series(0,1439) AS SEQUENCE(MINUTE)
-        GROUP BY SEQUENCE.MINUTE
+    FROM (SELECT '0:00'::TIME + (SEQUENCE.HOUR || ' hours')::INTERVAL AS hour
+        FROM generate_series(0,23) AS SEQUENCE(HOUR)
+        GROUP BY SEQUENCE.HOUR
          ) DQ
     ORDER BY 1;
