@@ -43,7 +43,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
 
     CREATE TABLE IF NOT EXISTS interactions.locations(
 
-        cell_id                 BIGSERIAL PRIMARY KEY,
+        id                      BIGSERIAL PRIMARY KEY,
         site_id                 BIGINT REFERENCES infrastructure.sites(site_id),
         cell_id                 BIGINT REFERENCES infrastructure.cells(cell_id)
 
@@ -58,7 +58,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.receiving_parties(
 
         parties_key             BIGSERIAL PRIMARY KEY,
-        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        cell_id                 BIGINT REFERENCES interactions.locations(id),
         party_msisdn            TEXT
 
         );
@@ -69,7 +69,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
     CREATE TABLE IF NOT EXISTS interactions.event_supertable (
         event_id                BIGINT NOT NULL PRIMARY KEY,
         subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
-        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        cell_id                 BIGINT REFERENCES interactions.locations(id),
         time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
         date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
         event_type              VARCHAR(5) NOT NULL,
@@ -79,13 +79,13 @@ CREATE SCHEMA IF NOT EXISTS interactions;
 CREATE TABLE IF NOT EXISTS interactions.calls(
         event_id                BIGINT NOT NULL DEFAULT nextval('interactions.event_id'),
         subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
-        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        cell_id                 BIGINT REFERENCES interactions.locations(id),
         time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
         date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
         event_type              VARCHAR(5) NOT NULL DEFAULT 'calls',
         timestamp               TIMESTAMPTZ NOT NULL,
         called_subscriber_id    BIGINT REFERENCES interactions.subscriber(id),
-        called_party_cell_id    BIGINT REFERENCES interactions.locations(cell_id),
+        called_party_cell_id    BIGINT REFERENCES interactions.locations(id),
         calling_party_msisdn    TEXT,
         called_party_msisdn     TEXT,
         call_duration           NUMERIC
@@ -95,12 +95,12 @@ CREATE TABLE IF NOT EXISTS interactions.calls(
     CREATE TABLE IF NOT EXISTS interactions.sms(
         event_id                      BIGINT NOT NULL DEFAULT nextval('interactions.event_id'),
         subscriber_id                 BIGINT REFERENCES interactions.subscriber(id),
-        cell_id                       BIGINT REFERENCES interactions.locations(cell_id),
+        cell_id                       BIGINT REFERENCES interactions.locations(id),
         time_sk                       BIGINT REFERENCES public.d_time(time_dim_id),
         date_sk                       BIGINT REFERENCES public.d_date(date_dim_id),
         event_type                    VARCHAR(5) NOT NULL DEFAULT 'sms',
         timestamp                     TIMESTAMPTZ NOT NULL,
-        calling_party_cell_id         BIGINT REFERENCES interactions.locations(cell_id),
+        calling_party_cell_id         BIGINT REFERENCES interactions.locations(id),
         parties_key                   BIGINT REFERENCES interactions.receiving_parties(parties_key),
         calling_party_msisdn          TEXT,
         receiving_parties_msisdns     TEXT
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS interactions.calls(
     CREATE TABLE IF NOT EXISTS interactions.mds(
         event_id                BIGINT NOT NULL DEFAULT nextval('interactions.event_id'),
         subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
-        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        cell_id                 BIGINT REFERENCES interactions.locations(id),
         time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
         date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
         event_type              VARCHAR(5) NOT NULL DEFAULT 'mds',
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS interactions.calls(
     CREATE TABLE IF NOT EXISTS interactions.topup(
         event_id                BIGINT NOT NULL DEFAULT nextval('interactions.event_id'),
         subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
-        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        cell_id                 BIGINT REFERENCES interactions.locations(id),
         time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
         date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
         event_type              VARCHAR(5) NOT NULL DEFAULT 'topup',
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS interactions.calls(
 
         sighting_id             BIGSERIAL,
         subscriber_id           BIGINT REFERENCES interactions.subscriber(id),
-        cell_id                 BIGINT REFERENCES interactions.locations(cell_id),
+        cell_id                 BIGINT REFERENCES interactions.locations(id),
         time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
         date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
         event_id                BIGINT, /* REFERENCES interactions.event_supertable(event_id), - this can be added in PG12 */
@@ -153,6 +153,6 @@ CREATE TABLE IF NOT EXISTS interactions.calls(
     ) PARTITION BY RANGE (date_sk);
     
     /* We need to an the CONSTRAINT for geography.geo_bridge here */
-    ALTER TABLE geography.geo_bridge ADD CONSTRAINT locations_fkey FOREIGN KEY (cell_id) REFERENCES interactions.locations(cell_id);
+    ALTER TABLE geography.geo_bridge ADD CONSTRAINT locations_fkey FOREIGN KEY (cell_id) REFERENCES interactions.locations(id);
 
 
