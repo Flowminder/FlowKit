@@ -29,7 +29,7 @@ Available tables are:
 CREATE SCHEMA IF NOT EXISTS infrastructure;
 
     CREATE TABLE IF NOT EXISTS infrastructure.sites(
-
+        site_id BIGSERIAL PRIMARY KEY,
         id TEXT,
         version INTEGER,
 
@@ -44,7 +44,7 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
         date_of_first_service DATE,
         date_of_last_service DATE,
 
-        PRIMARY KEY (id, version)
+        UNIQUE (id, version)
 
         );
     
@@ -76,7 +76,7 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
     CREATE INDEX ON infrastructure.sites (id);
 
     CREATE TABLE IF NOT EXISTS infrastructure.cells(
-
+        cell_id BIGSERIAL PRIMARY KEY,
         id TEXT,
         version INTEGER,
         site_id TEXT,
@@ -101,9 +101,7 @@ CREATE SCHEMA IF NOT EXISTS infrastructure;
 
         date_of_first_service DATE,
         date_of_last_service DATE,
-
-        PRIMARY KEY(id, version)
-
+        UNIQUE (id, version)
         );
 
     SELECT AddGeometryColumn('infrastructure', 'cells', 'geom_point', 4326, 'POINT', 2);
