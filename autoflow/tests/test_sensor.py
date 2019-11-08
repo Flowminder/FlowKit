@@ -7,36 +7,24 @@ import prefect
 import pendulum
 from unittest.mock import Mock
 
-from autoflow.sensor import filter_dates, get_available_dates, WorkflowConfig
+from autoflow.sensor import (
+    filter_dates,
+    get_available_dates,
+    record_workflow_run_state,
+    WorkflowConfig,
+)
 
-# TODO: Test WorkflowConfig defaults
 
-# TODO: Incorporate these tests into tests for add_dates_to_parameters
-# def test_get_date_ranges(monkeypatch):
-#     """
-#     Test that the get_date_ranges task returns the result of stencil_to_date_pairs.
-#     """
-#     stencil_to_date_pairs_mock = Mock(return_value="DUMMY_DATE_PAIRS")
-#     monkeypatch.setattr(
-#         "autoflow.tasks.stencil_to_date_pairs", stencil_to_date_pairs_mock
-#     )
-#     reference_date = pendulum.date(2016, 1, 1)
-#     date_stencil = [-1, 0]
-#     date_ranges = get_date_ranges.run(
-#         reference_date=reference_date, date_stencil=date_stencil
-#     )
-#     assert date_ranges == "DUMMY_DATE_PAIRS"
-#     stencil_to_date_pairs_mock.assert_called_once_with(
-#         stencil=date_stencil, reference_date=reference_date
-#     )
-#
-# def test_get_date_ranges_default():
-#     """
-#     Test that if no stencil is provided, the get_date_ranges task returns a single date range containing only the reference date.
-#     """
-#     reference_date = pendulum.date(2016, 1, 1)
-#     date_ranges = get_date_ranges.run(reference_date=reference_date)
-#     assert date_ranges == [(reference_date, reference_date)]
+def test_workflow_config_defaults():
+    """
+    Test that WorkflowConfig attributes earliest_date and date_stencil default to None.
+    """
+    workflow_config = WorkflowConfig(
+        workflow=prefect.Flow(name="DUMMY_FLOW"),
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+    )
+    assert workflow_config.earliest_date is None
+    assert workflow_config.date_stencil is None
 
 
 def test_get_available_dates(monkeypatch, test_logger):
@@ -123,7 +111,10 @@ def test_filter_dates_no_filter(test_logger):
         )
     )
     workflow_config = WorkflowConfig(
-        prefect.Flow(name="DUMMY_FLOW"), {"DUMMY_PARAM": "DUMMY_VALUE"}, None, None
+        workflow=prefect.Flow(name="DUMMY_FLOW"),
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        earliest_date=None,
+        date_stencil=None,
     )
     with prefect.context(logger=test_logger):
         filtered_dates = filter_dates.run(
@@ -143,10 +134,10 @@ def test_filter_dates_by_earliest_date(test_logger):
         )
     )
     workflow_config = WorkflowConfig(
-        prefect.Flow(name="DUMMY_FLOW"),
-        {"DUMMY_PARAM": "DUMMY_VALUE"},
-        pendulum.date(2016, 1, 4),
-        None,
+        workflow=prefect.Flow(name="DUMMY_FLOW"),
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        earliest_date=pendulum.date(2016, 1, 4),
+        date_stencil=None,
     )
     with prefect.context(logger=test_logger):
         filtered_dates = filter_dates.run(
@@ -165,7 +156,10 @@ def test_filter_dates_by_stencil(test_logger):
     """
     dates = [pendulum.date(2016, 1, d) for d in [1, 3, 4, 5, 6]]
     workflow_config = WorkflowConfig(
-        prefect.Flow(name="DUMMY_FLOW"), {"DUMMY_PARAM": "DUMMY_VALUE"}, None, [-2, 0]
+        workflow=prefect.Flow(name="DUMMY_FLOW"),
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        earliest_date=None,
+        date_stencil=[-2, 0],
     )
     with prefect.context(logger=test_logger):
         filtered_dates = filter_dates.run(
@@ -180,10 +174,10 @@ def test_filter_dates_by_earliest_and_stencil(test_logger):
     """
     dates = [pendulum.date(2016, 1, d) for d in [1, 3, 4, 5, 6]]
     workflow_config = WorkflowConfig(
-        prefect.Flow(name="DUMMY_FLOW"),
-        {"DUMMY_PARAM": "DUMMY_VALUE"},
-        pendulum.date(2016, 1, 4),
-        [-2, 0],
+        workflow=prefect.Flow(name="DUMMY_FLOW"),
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        earliest_date=pendulum.date(2016, 1, 4),
+        date_stencil=[-2, 0],
     )
     with prefect.context(logger=test_logger):
         filtered_dates = filter_dates_by_stencil.run(
@@ -233,84 +227,69 @@ def test_filter_dates_by_earliest_and_stencil(test_logger):
 #     session_mock.close.assert_called_once()
 #     assert filtered_dates == [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)]
 
-# TODO: Add tests for add_dates_to_parameters
 
-# TODO: Update these tests to test record_workflow_run_state (and possibly available_dates_sensor)
-# @pytest.mark.parametrize(
-#     "record_task,state",
-#     [
-#         (record_workflow_in_process, "in_process"),
-#         (record_workflow_done, "done"),
-#         (record_workflow_failed, "failed"),
-#     ],
-# )
-# def test_record_workflow_state_tasks(monkeypatch, test_logger, record_task, state):
+# TODO: Incorporate these tests into tests for add_dates_to_parameters
+# def test_get_date_ranges(monkeypatch):
 #     """
-#     Test that the record_workflow_* tasks call WorkflowRuns.set_state with the correct state.
+#     Test that the get_date_ranges task returns the result of stencil_to_date_pairs.
+#     """
+#     stencil_to_date_pairs_mock = Mock(return_value="DUMMY_DATE_PAIRS")
+#     monkeypatch.setattr(
+#         "autoflow.tasks.stencil_to_date_pairs", stencil_to_date_pairs_mock
+#     )
+#     reference_date = pendulum.date(2016, 1, 1)
+#     date_stencil = [-1, 0]
+#     date_ranges = get_date_ranges.run(
+#         reference_date=reference_date, date_stencil=date_stencil
+#     )
+#     assert date_ranges == "DUMMY_DATE_PAIRS"
+#     stencil_to_date_pairs_mock.assert_called_once_with(
+#         stencil=date_stencil, reference_date=reference_date
+#     )
+#
+# def test_get_date_ranges_default():
+#     """
+#     Test that if no stencil is provided, the get_date_ranges task returns a single date range containing only the reference date.
 #     """
 #     reference_date = pendulum.date(2016, 1, 1)
-#     scheduled_start_time = pendulum.datetime(2016, 1, 1)
-#     session_mock = Mock()
-#     get_session_mock = Mock(return_value=session_mock)
-#     set_state_mock = Mock()
-#     monkeypatch.setattr("autoflow.tasks.get_session", get_session_mock)
-#     monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
-#     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
-#         flow_name="DUMMY_WORFLOW_NAME",
-#         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
-#         scheduled_start_time=scheduled_start_time,
-#         logger=test_logger,
-#     ):
-#         record_task.run(reference_date)
-#     get_session_mock.assert_called_once_with("DUMMY_DB_URI")
-#     session_mock.close.assert_called_once()
-#     set_state_mock.assert_called_once_with(
-#         workflow_name="DUMMY_WORFLOW_NAME",
-#         workflow_params={"DUMMY_PARAM": "DUMMY_VALUE"},
-#         reference_date=reference_date,
-#         scheduled_start_time=scheduled_start_time,
-#         state=state,
-#         session=session_mock,
-#     )
-#
-# @pytest.mark.parametrize(
-#     "record_task,state",
-#     [
-#         (record_workflow_in_process, "in_process"),
-#         (record_workflow_done, "done"),
-#         (record_workflow_failed, "failed"),
-#     ],
-# )
-# def test_record_workflow_state_tasks_no_reference_date(
-#     monkeypatch, test_logger, record_task, state
-# ):
-#     """
-#     Test that the record_workflow_* tasks can be called without a reference date.
-#     """
-#     scheduled_start_time = pendulum.datetime(2016, 1, 1)
-#     session_mock = Mock()
-#     get_session_mock = Mock(return_value=session_mock)
-#     set_state_mock = Mock()
-#     monkeypatch.setattr("autoflow.tasks.get_session", get_session_mock)
-#     monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
-#     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
-#         flow_name="DUMMY_WORFLOW_NAME",
-#         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
-#         scheduled_start_time=scheduled_start_time,
-#         logger=test_logger,
-#     ):
-#         record_task.run()
-#     get_session_mock.assert_called_once_with("DUMMY_DB_URI")
-#     session_mock.close.assert_called_once()
-#     set_state_mock.assert_called_once_with(
-#         workflow_name="DUMMY_WORFLOW_NAME",
-#         workflow_params={"DUMMY_PARAM": "DUMMY_VALUE"},
-#         reference_date=None,
-#         scheduled_start_time=scheduled_start_time,
-#         state=state,
-#         session=session_mock,
-#     )
-#
+#     date_ranges = get_date_ranges.run(reference_date=reference_date)
+#     assert date_ranges == [(reference_date, reference_date)]
+
+# TODO: Add tests for add_dates_to_parameters
+
+
+def test_record_workflow_run_state(monkeypatch, test_logger, record_task, state):
+    """
+    Test that the record_workflow_run_state task calls WorkflowRuns.set_state with the correct arguments.
+    """
+    session_mock = Mock()
+    get_session_mock = Mock(return_value=session_mock)
+    set_state_mock = Mock()
+    monkeypatch.setattr("autoflow.sensor.get_session", get_session_mock)
+    monkeypatch.setattr("autoflow.sensor.WorkflowRuns.set_state", set_state_mock)
+    dummy_parameterised_workflow = (
+        prefect.Flow(name="DUMMY_FLOW"),
+        {"DUMMY_PARAM": "DUMMY_VALUE"},
+    )
+    with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
+        logger=test_logger
+    ):
+        record_task.run(
+            parameterised_workflow=dummy_parameterised_workflow, state="DUMMY_STATE"
+        )
+    get_session_mock.assert_called_once_with("DUMMY_DB_URI")
+    session_mock.close.assert_called_once()
+    set_state_mock.assert_called_once_with(
+        workflow_name="DUMMY_FLOW",
+        workflow_params={"DUMMY_PARAM": "DUMMY_VALUE"},
+        state="DUMMY_STATE",
+        session=session_mock,
+    )
+
+
+# TODO: Add tests for run_workflow, available_dates_sensor, and run_available_dates_sensor
+
+# TODO: Maybe use bits of these tests when testing available_dates_sensor
 # def test_record_workflow_done_upstream_success(monkeypatch, test_logger):
 #     """
 #     Test that the record_workflow_done task runs if all of its upstream tasks are successful.
@@ -402,5 +381,3 @@ def test_filter_dates_by_earliest_and_stencil(test_logger):
 #         )
 #     assert final_state.is_successful()
 #     set_state_mock.assert_called_once()
-
-# TODO: Add tests for run_workflow, available_dates_sensor, and run_available_dates_sensor
