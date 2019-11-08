@@ -31,12 +31,15 @@ Base = declarative_base()
 
 class RunState(enum.Enum):
     """
-    possible states a flow run can be in.
+    possible states a workflow run can be in.
     """
 
-    in_process = 1
-    done = 2
+    running = 1
+    success = 2
     failed = 3
+
+
+# TODO: Add a table for looking up workflow parameters from the parameters hash
 
 
 class WorkflowRuns(Base):
@@ -48,28 +51,15 @@ class WorkflowRuns(Base):
 
     id = Column(Integer, primary_key=True)
     workflow_name = Column(String)
-    workflow_params_hash = Column(String)
-    reference_date = Column(Date)
-    scheduled_start_time = Column(DateTime(timezone=True))
+    parameters_hash = Column(String)
     state = Column(Enum(RunState))
     timestamp = Column(DateTime(timezone=True))
 
-    def __init__(
-        self,
-        workflow_name: str,
-        workflow_params_hash: str,
-        reference_date: Union["datetime.date", None],
-        scheduled_start_time: "datetime.datetime",
-        state: str,
-    ):
+    def __init__(self, workflow_name: str, parameters_hash: str, state: RunState):
         self.workflow_name = workflow_name
-        self.workflow_params_hash = (
-            workflow_params_hash
+        self.parameters_hash = (
+            parameters_hash
         )  # Hash generated from workflow parameters dict
-        self.reference_date = reference_date
-        self.scheduled_start_time = (
-            scheduled_start_time
-        )  # Time at which the workflow run started
         self.state = state  # Flow run state
         self.timestamp = pendulum.now("utc")
 
@@ -77,10 +67,8 @@ class WorkflowRuns(Base):
     def set_state(
         cls,
         workflow_name: str,
-        workflow_params: Dict[str, Any],
-        reference_date: Union["datetime.date", None],
-        scheduled_start_time: "datetime.datetime",
-        state: str,
+        parameters: Dict[str, Any],
+        state: RunState,
         session: "sqlalchemy.orm.session.Session",
     ) -> None:
         """
@@ -92,23 +80,13 @@ class WorkflowRuns(Base):
             Name of the workflow
         workflow_params : dict
             Parameters passed when running the workflow
-        reference_date : date or None
-            The date with which the workflow run is associated
-        scheduled_start_time : datetime
-            Scheduled start time of the workflow run
-        state : str
-            The state of the workflow run ("in_process", "done" or "failed")
+        state : RunState
+            The state of the workflow run
         session : Session
             A sqlalchemy session for a DB in which this model exists.
         """
-        workflow_params_hash = get_params_hash(workflow_params)
-        row = cls(
-            workflow_name,
-            workflow_params_hash,
-            reference_date,
-            scheduled_start_time,
-            state,
-        )
+        parameters_hash = get_params_hash(parameters)
+        row = cls(workflow_name, parameters_hash, state)
         session.add(row)
         session.commit()
 
@@ -116,8 +94,7 @@ class WorkflowRuns(Base):
     def get_most_recent_state(
         cls,
         workflow_name: str,
-        workflow_params: Dict[str, Any],
-        reference_date: "datetime.date",
+        parameters: Dict[str, Any],
         session: "sqlalchemy.orm.session.Session",
     ) -> Optional[RunState]:
         """
@@ -127,7 +104,7 @@ class WorkflowRuns(Base):
         ----------
         workflow_name : str
             Name of the workflow
-        workflow_params : dict
+        parameters : dict
             Parameters passed when running the workflow
         reference_date : date
             The date with which the workflow run is associated
@@ -139,12 +116,12 @@ class WorkflowRuns(Base):
         RunState or None
             Most recent state, or None if no state has been set.
         """
-        workflow_params_hash = get_params_hash(workflow_params)
+        parameters_hash = get_params_hash(parameters)
         most_recent_row = (
             session.query(cls)
             .filter(
                 cls.workflow_name == workflow_name,
-                cls.workflow_params_hash == workflow_params_hash,
+                cls.parameters_hash == parameters_hash,
                 cls.reference_date == reference_date,
             )
             .order_by(cls.timestamp.desc())
@@ -154,71 +131,6 @@ class WorkflowRuns(Base):
             return most_recent_row.state
         else:
             return None
-
-    @classmethod
-    def can_process(
-        cls,
-        workflow_name: str,
-        workflow_params: Dict[str, Any],
-        reference_date: "datetime.date",
-        session: "sqlalchemy.orm.session.Session",
-    ) -> bool:
-        """
-        Determine if a given (workflow_name, workflow_params, reference_date) combination is OK to process.
-        Should process if we have never seen this combination or if its current state is 'failed'.
-
-        Parameters
-        ----------
-        workflow_name : str
-            Name of the workflow
-        workflow_params : dict
-            Parameters passed when running the workflow
-        reference_date : date
-            The date with which the workflow run is associated
-        session : Session
-            A sqlalchemy session for a DB in which this model exists.
-
-        Returns
-        -------
-        bool
-            OK to process?
-        """
-        most_recent = cls.get_most_recent_state(
-            workflow_name, workflow_params, reference_date, session
-        )
-        return (most_recent is None) or (most_recent == RunState.failed)
-
-    @classmethod
-    def is_done(
-        cls,
-        workflow_name: str,
-        workflow_params: Dict[str, Any],
-        reference_date: "datetime.date",
-        session: "sqlalchemy.orm.session.Session",
-    ) -> bool:
-        """
-        Determine if a given (workflow_name, workflow_params, reference_date) combination is in 'done' state.
-
-        Parameters
-        ----------
-        workflow_name : str
-            Name of the workflow
-        workflow_params : dict
-            Parameters passed when running the workflow
-        reference_date : date
-            The date with which the workflow run is associated
-        session : Session
-            A sqlalchemy session for a DB in which this model exists.
-
-        Returns
-        -------
-        bool
-            Done?
-        """
-        most_recent = cls.get_most_recent_state(
-            workflow_name, workflow_params, reference_date, session
-        )
-        return most_recent == RunState.done
 
 
 def init_db(db_uri: str, force: bool = False) -> None:

@@ -116,6 +116,10 @@ def offset_to_date(
     return date_from_offset
 
 
+# TODO: There are several helper functions for date stencils here.
+# Might be better to make them methods of a DateStencil class.
+
+
 def stencil_to_date_pairs(
     stencil: stencil_type_alias, reference_date: datetime.date
 ) -> List[Tuple[pendulum.Date, pendulum.Date]]:
@@ -257,6 +261,7 @@ def get_session(db_uri: str) -> "sqlalchemy.orm.session.Session":
     Session
         A sqlalchemy session
     """
+    # TODO: Make this a context manager
     # TODO: This seems like the wrong place to be reading a secret / env var,
     # but we can't put a docker secret in the prefect config.
     full_db_uri = db_uri.format(getenv("AUTOFLOW_DB_PASSWORD", ""))
