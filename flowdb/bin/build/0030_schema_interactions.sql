@@ -26,6 +26,11 @@ subscribers.
 */
 CREATE SCHEMA IF NOT EXISTS interactions;
 
+    CREATE TABLE IF NOT EXISTS interactions.d_event_type(
+        event_type_id BIGSERIAL PRIMARY KEY,
+        name VARCHAR NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS interactions.subscriber(
 
         id                      BIGSERIAL PRIMARY KEY,
@@ -60,6 +65,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         cell_id                 BIGINT REFERENCES interactions.locations(id),
         time_sk                 BIGINT REFERENCES public.d_time(time_dim_id),
         date_sk                 BIGINT REFERENCES public.d_date(date_dim_id),
+        event_type              INT REFERENCES interactions.d_event_type(event_type_id),
         timestamp               TIMESTAMPTZ NOT NULL,
         PRIMARY KEY (event_id, date_sk)
     ) PARTITION BY RANGE (date_sk);
