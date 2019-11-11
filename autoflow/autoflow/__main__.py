@@ -56,6 +56,15 @@ def main():
     # Run workflows
     logger.info("Running workflows.")
     run_workflows(workflows, parameters)
+    # TODO: run the available dates sensor, instead of running the workflows directly
+    # schedule : str
+    #     Cron string describing the schedule on which the sensor will check for new data.
+    # workflow_configs : list of WorkflowConfig
+    #     List of workflows that the dates sensor should trigger.
+    # cdr_types: list of str, optional
+    #     A list of CDR types for which available dates will be checked (default is all available CDR types).
+    # available_dates_sensor.schedule = CronSchedule(schedule)
+    # available_dates_sensor.run(workflow_configs=workflow_configs, cdr_types=cdr_types)
 
 
 if __name__ == "__main__":

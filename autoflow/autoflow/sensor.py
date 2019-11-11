@@ -181,6 +181,9 @@ def add_dates_to_parameters(
     # Note: This is a 'reduce' task (i.e. it is not mapped over workflow configs).
     # This is because otherwise, tasks downstream of this one would need to be double-mapped
     # (once over workflow configs, and then over dates), and this is not possible with Prefect.
+    prefect.context.logger.info(
+        "Adding parameters 'reference_date' and 'date_ranges' to workflow parameters."
+    )
     return [
         (
             workflow_config.workflow,
@@ -198,14 +201,14 @@ def add_dates_to_parameters(
 
 
 @task
-def skip_if_already_run(parameterised_workflow: Tuple[Flow, Dict[str, Any]]) -> None:
+def skip_if_already_run(parametrised_workflow: Tuple[Flow, Dict[str, Any]]) -> None:
     """
     Task to raise a SKIP signal if a workflow is already running or has previously run successfully
     with the given parameters.
 
     Parameters
     ----------
-    parameterised_workflow : tuple (prefect.Flow, dict)
+    parametrised_workflow : tuple (prefect.Flow, dict)
         Workflow, and associated parameters, for which previous runs should be checked
 
     Raises
@@ -213,7 +216,7 @@ def skip_if_already_run(parameterised_workflow: Tuple[Flow, Dict[str, Any]]) -> 
     prefect.engine.signals.SKIP
         if this workflow with these parameters has already run successfully
     """
-    workflow, parameters = parameterised_workflow
+    workflow, parameters = parametrised_workflow
     prefect.context.logger.info(
         f"Checking whether workflow '{workflow.name}' has already run successfully with parameters {parameters}."
     )
@@ -246,21 +249,21 @@ def skip_if_already_run(parameterised_workflow: Tuple[Flow, Dict[str, Any]]) -> 
 
 @task
 def record_workflow_run_state(
-    parameterised_workflow: Tuple[Flow, Dict[str, Any]], state: RunState
+    parametrised_workflow: Tuple[Flow, Dict[str, Any]], state: RunState
 ) -> None:
     """
     Add a row to the database to record the state of a workflow run.
 
     Parameters
     ----------
-    parameterised_workflow : tuple (prefect.Flow, dict)
+    parametrised_workflow : tuple (prefect.Flow, dict)
         Workflow, and associated parameters, for which to record state.
     state : RunState
         Workflow run state.
     """
-    workflow, parameters = parameterised_workflow
+    workflow, parameters = parametrised_workflow
     prefect.context.logger.debug(
-        f"Recording workflow '{workflow.name}' with parameters {parameters} as '{state}'."
+        f"Recording workflow '{workflow.name}' with parameters {parameters} as '{state.name}'."
     )
     session = get_session(prefect.config.db_uri)
     WorkflowRuns.set_state(
@@ -270,13 +273,13 @@ def record_workflow_run_state(
 
 
 @task
-def run_workflow(parameterised_workflow: Tuple[Flow, Dict[str, Any]]) -> None:
+def run_workflow(parametrised_workflow: Tuple[Flow, Dict[str, Any]]) -> None:
     """
     Run a workflow.
 
     Parameters
     ----------
-    parameterised_workflow : tuple (prefect.Flow, dict)
+    parametrised_workflow : tuple (prefect.Flow, dict)
         Workflow to run, and parameters to run it with.
     
     Notes
@@ -285,9 +288,16 @@ def run_workflow(parameterised_workflow: Tuple[Flow, Dict[str, Any]]) -> None:
     The workflow will run once, starting immediately. If the workflow has a
     schedule, the schedule will be ignored.
     """
-    workflow, parameters = parameterised_workflow
+    workflow, parameters = parametrised_workflow
+    prefect.context.logger.info(
+        f"Running workflow '{workflow.name}' with parameters {parameters}."
+    )
     state = workflow.run(parameters=parameters, run_on_schedule=False)
-    if not state.is_successful():
+    if state.is_successful():
+        prefect.context.logger.info(
+            f"Workflow '{workflow.name}' ran successfully with parameters {parameters}."
+        )
+    else:
         raise signals.FAIL(
             f"Workflow '{workflow.name}' failed when run with parameters {parameters}."
         )
@@ -305,52 +315,31 @@ with Flow(name="Available dates sensor") as available_dates_sensor:
     filtered_dates = filter_dates.map(
         available_dates=unmapped(available_dates), workflow_config=workflow_configs
     )
-    parameterised_workflows = add_dates_to_parameters(
+    parametrised_workflows = add_dates_to_parameters(
         workflow_configs=workflow_configs, lists_of_dates=filtered_dates
     )
 
     running = record_workflow_run_state.map(
-        parameterised_workflow=parameterised_workflows,
+        parametrised_workflow=parametrised_workflows,
         state=unmapped(RunState.running),
         upstream_tasks=[
-            skip_if_already_run.map(parameterised_workflow=parameterised_workflows)
+            skip_if_already_run.map(parametrised_workflow=parametrised_workflows)
         ],
     )
     workflow_runs = run_workflow.map(
-        parameterised_workflow=parameterised_workflows, upstream_tasks=[running]
+        parametrised_workflow=parametrised_workflows, upstream_tasks=[running]
     )
     success = record_workflow_run_state.map(
-        parameterised_workflow=parameterised_workflows,
+        parametrised_workflow=parametrised_workflows,
         state=unmapped(RunState.success),
         upstream_tasks=[workflow_runs],
         task_args=dict(trigger=all_successful),
     )
     failed = record_workflow_run_state.map(
-        parameterised_workflow=parameterised_workflows,
+        parametrised_workflow=parametrised_workflows,
         state=unmapped(RunState.failed),
         upstream_tasks=[workflow_runs],
         task_args=dict(trigger=any_failed),
     )
 
 available_dates_sensor.set_reference_tasks([success])
-
-
-def run_available_dates_sensor(
-    schedule: str,
-    workflow_configs: List[WorkflowConfig],
-    cdr_types: Optional[Sequence[str]] = None,
-) -> NoReturn:
-    """
-    Run the available dates sensor on a schedule.
-
-    Parameters
-    ----------
-    schedule : str
-        Cron string describing the schedule on which the sensor will check for new data.
-    workflow_configs : list of WorkflowConfig
-        List of workflows that the dates sensor should trigger.
-    cdr_types: list of str, optional
-        A list of CDR types for which available dates will be checked (default is all available CDR types).
-    """
-    available_dates_sensor.schedule = CronSchedule(schedule)
-    available_dates_sensor.run(workflow_configs=workflow_configs)
