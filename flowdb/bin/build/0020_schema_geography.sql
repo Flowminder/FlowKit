@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS geography.geoms (
     short_name VARCHAR, /* e.g. admin3pcod */
     long_name TEXT, /* e.g. admin3name */
     kind VARCHAR DEFAULT 'admin_unit', /* The type of the geom - admin unit, coverage polygon etc. */
-    spatial_resolution INT /* Admin level, grid spatial resolution */
+    spatial_resolution INT, /* Admin level, grid spatial resolution */
+    additional_metadata JSON /* Catch all field for additional metadata */
 );
 SELECT AddGeometryColumn('geography','geoms','geom','4326','MULTIPOLYGON',2);
 CREATE INDEX "geography_geom_gist" ON "geography"."geoms" USING GIST ("geom");
