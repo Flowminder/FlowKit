@@ -33,11 +33,11 @@ SELECT AddGeometryColumn('geography','geoms','geom','4326','MULTIPOLYGON',2);
 CREATE INDEX "geography_geom_gist" ON "geography"."geoms" USING GIST ("geom");
 
 CREATE TABLE IF NOT EXISTS geography.geo_bridge (
-    cell_id BIGINT, /* FK to interactions.locations, constraint added when creating that table */
-    geo_id BIGINT REFERENCES  geography.geoms(gid),
+    location_id BIGINT, /* FK to interactions.locations, constraint added when creating that table */
+    gid BIGINT REFERENCES  geography.geoms(gid),
     valid_from DATE,
     valid_to DATE,
     weight DOUBLE PRECISION DEFAULT 1, /* Where a cell links to multiple geoms, this may be less than 1 */
     linkage_method TEXT, /* Indicator for how the geometry is linked */
-    PRIMARY KEY (cell_id, geo_id, linkage_method)
+    PRIMARY KEY (location_id, gid, linkage_method)
     );
