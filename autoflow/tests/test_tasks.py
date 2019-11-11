@@ -3,14 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-import prefect
 import pendulum
-from unittest.mock import Mock, call
-from prefect.utilities.configuration import set_temporary_config
+import prefect
 from prefect import Task
 from prefect.core import Edge
 from prefect.engine import TaskRunner
 from prefect.engine.state import Success, Failed, TriggerFailed
+from prefect.utilities.configuration import set_temporary_config
+from unittest.mock import Mock, call
 
 from autoflow.tasks import *
 from autoflow.utils import get_params_hash
@@ -34,34 +34,6 @@ def test_get_tag_with_date():
     with prefect.context(parameters=dummy_params, flow_name="DUMMY-FLOW-NAME"):
         tag = get_tag.run(reference_date=pendulum.date(2016, 1, 1))
     assert tag == f"DUMMY-FLOW-NAME_{get_params_hash(dummy_params)}_2016-01-01"
-
-
-def test_get_date_ranges(monkeypatch):
-    """
-    Test that the get_date_ranges task returns the result of stencil_to_date_pairs.
-    """
-    stencil_to_date_pairs_mock = Mock(return_value="DUMMY_DATE_PAIRS")
-    monkeypatch.setattr(
-        "autoflow.tasks.stencil_to_date_pairs", stencil_to_date_pairs_mock
-    )
-    reference_date = pendulum.date(2016, 1, 1)
-    date_stencil = [-1, 0]
-    date_ranges = get_date_ranges.run(
-        reference_date=reference_date, date_stencil=date_stencil
-    )
-    assert date_ranges == "DUMMY_DATE_PAIRS"
-    stencil_to_date_pairs_mock.assert_called_once_with(
-        stencil=date_stencil, reference_date=reference_date
-    )
-
-
-def test_get_date_ranges_default():
-    """
-    Test that if no stencil is provided, the get_date_ranges task returns a single date range containing only the reference date.
-    """
-    reference_date = pendulum.date(2016, 1, 1)
-    date_ranges = get_date_ranges.run(reference_date=reference_date)
-    assert date_ranges == [(reference_date, reference_date)]
 
 
 def test_get_flowapi_url():
