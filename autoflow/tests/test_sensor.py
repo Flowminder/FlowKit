@@ -318,7 +318,7 @@ def test_record_workflow_run_state(monkeypatch, test_logger):
     session_mock.close.assert_called_once()
     set_state_mock.assert_called_once_with(
         workflow_name="DUMMY_FLOW",
-        workflow_params={"DUMMY_PARAM": "DUMMY_VALUE"},
+        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
         state="DUMMY_STATE",
         session=session_mock,
     )
