@@ -92,6 +92,24 @@ def test_get_most_recent_state(session):
     assert state == RunState.failed
 
 
+def test_get_most_recent_state_returns_None(session):
+    """
+    Test that get_most_recent_state returns None if a workflow run has no previous state.
+    """
+    workflow_run_data = dict(
+        workflow_name="DUMMY_WORKFLOW_NAME",
+        parameters={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
+    )
+
+    state = WorkflowRuns.get_most_recent_state(
+        workflow_name="DUMMY_WORKFLOW_NAME",
+        parameters={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
+        session=session,
+    )
+
+    assert state is None
+
+
 def test_init_db_doesnt_wipe(postgres_test_db):
     """
     DB shouldn't get reinitialised if already built.
