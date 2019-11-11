@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import DataError
 from sqlalchemy.orm import sessionmaker
 
-from autoflow.model import Base, WorkflowRuns, init_db
+from autoflow.model import Base, WorkflowRuns, RunState, init_db
 from autoflow.utils import get_params_hash
 
 
@@ -20,10 +20,8 @@ def test_set_state(session):
     """
     workflow_run_data = dict(
         workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
-        scheduled_start_time=pendulum.parse("2016-01-02T13:00:00Z"),
-        state="in_process",
+        parameters={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
+        state=RunState.running,
     )
 
     now = pendulum.parse("2016-01-02T13:00:01Z")
@@ -35,15 +33,8 @@ def test_set_state(session):
 
     row = rows[0]
     assert row.workflow_name == workflow_run_data["workflow_name"]
-    assert row.workflow_params_hash == get_params_hash(
-        workflow_run_data["workflow_params"]
-    )
-    assert row.reference_date == workflow_run_data["reference_date"]
-    assert (
-        pendulum.instance(row.scheduled_start_time)
-        == workflow_run_data["scheduled_start_time"]
-    )
-    assert row.state.name == workflow_run_data["state"]
+    assert row.parameters_hash == get_params_hash(workflow_run_data["parameters"])
+    assert row.state == workflow_run_data["state"]
     assert pendulum.instance(row.timestamp) == now
 
 
@@ -53,10 +44,8 @@ def test_set_state_with_sqlite(sqlite_session):
     """
     workflow_run_data = dict(
         workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
-        scheduled_start_time=pendulum.parse("2016-01-02T13:00:00"),
-        state="in_process",
+        parameters={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
+        state=RunState.running,
     )
 
     now = pendulum.parse("2016-01-02T13:00:01Z")
@@ -68,34 +57,9 @@ def test_set_state_with_sqlite(sqlite_session):
 
     row = rows[0]
     assert row.workflow_name == workflow_run_data["workflow_name"]
-    assert row.workflow_params_hash == get_params_hash(
-        workflow_run_data["workflow_params"]
-    )
-    assert row.reference_date == workflow_run_data["reference_date"]
-    assert (
-        pendulum.instance(row.scheduled_start_time)
-        == workflow_run_data["scheduled_start_time"]
-    )
-    assert row.state.name == workflow_run_data["state"]
+    assert row.parameters_hash == get_params_hash(workflow_run_data["parameters"])
+    assert row.state == workflow_run_data["state"]
     assert pendulum.instance(row.timestamp) == now
-
-
-def test_set_state_with_null_reference_date(session):
-    """
-    Test that we can add a row to the DB with reference_date=None.
-    """
-    workflow_run_data = dict(
-        workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=None,
-        scheduled_start_time=pendulum.parse("2016-01-02T13:00:00Z"),
-        state="in_process",
-    )
-
-    WorkflowRuns.set_state(**workflow_run_data, session=session)
-
-    row = session.query(WorkflowRuns).first()
-    assert row.reference_date is None
 
 
 def test_exception_raised_with_invalid_state(session):
@@ -105,9 +69,7 @@ def test_exception_raised_with_invalid_state(session):
     """
     workflow_run_data = dict(
         workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
-        scheduled_start_time=pendulum.parse("2016-01-02T13:00:00Z"),
+        parameters={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
         state="INVALID_STATE",
     )
     with pytest.raises(DataError):
@@ -120,98 +82,14 @@ def test_get_most_recent_state(session):
     """
     workflow_run_data = dict(
         workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
+        parameters={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
     )
-    scheduled_start_time = pendulum.parse("2016-01-02T13:00:00Z")
-    WorkflowRuns.set_state(
-        **workflow_run_data,
-        scheduled_start_time=scheduled_start_time,
-        state="in_process",
-        session=session,
-    )
-    WorkflowRuns.set_state(
-        **workflow_run_data,
-        scheduled_start_time=scheduled_start_time,
-        state="failed",
-        session=session,
-    )
+    WorkflowRuns.set_state(**workflow_run_data, state=RunState.running, session=session)
+    WorkflowRuns.set_state(**workflow_run_data, state=RunState.failed, session=session)
 
     state = WorkflowRuns.get_most_recent_state(**workflow_run_data, session=session)
 
-    assert state.name == "failed"
-
-
-@pytest.mark.parametrize(
-    "state,expected", [("in_process", False), ("done", False), ("failed", True)]
-)
-def test_can_process(session, state, expected):
-    """
-    Test that can_process returns True for 'failed' runs, False for 'in_process' or 'done' runs.
-    """
-    workflow_run_data = dict(
-        workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
-    )
-    WorkflowRuns.set_state(
-        **workflow_run_data,
-        scheduled_start_time=pendulum.parse("2016-01-02T13:00:00Z"),
-        state=state,
-        session=session,
-    )
-
-    res = WorkflowRuns.can_process(**workflow_run_data, session=session)
-    assert res == expected
-
-
-def test_can_process_new(session):
-    """
-    Test that 'can_process' returns True for a new workflow run.
-    """
-    workflow_run_data = dict(
-        workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
-    )
-    res = WorkflowRuns.can_process(**workflow_run_data, session=session)
-    assert res
-
-
-@pytest.mark.parametrize(
-    "state,expected", [("in_process", False), ("done", True), ("failed", False)]
-)
-def test_is_done(session, state, expected):
-    """
-    Test that is_done returns True for 'done' runs, False otherwise.
-    """
-    workflow_run_data = dict(
-        workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
-    )
-    WorkflowRuns.set_state(
-        **workflow_run_data,
-        scheduled_start_time=pendulum.parse("2016-01-02T13:00:00Z"),
-        state=state,
-        session=session,
-    )
-
-    res = WorkflowRuns.is_done(**workflow_run_data, session=session)
-    assert res == expected
-
-
-def test_new_workflow_run_is_not_done(session):
-    """
-    Test that 'is_done' returns False for a new workflow run that isn't yet in the DB.
-    """
-    workflow_run_data = dict(
-        workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
-    )
-    res = WorkflowRuns.is_done(**workflow_run_data, session=session)
-    assert not res
+    assert state == RunState.failed
 
 
 def test_init_db_doesnt_wipe(postgres_test_db):
@@ -224,10 +102,8 @@ def test_init_db_doesnt_wipe(postgres_test_db):
     session = Session()
     WorkflowRuns.set_state(
         workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
-        scheduled_start_time=pendulum.parse("2016-01-02T13:00:00Z"),
-        state="in_process",
+        parameters={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
+        state=RunState.running,
         session=session,
     )
     session.close()
@@ -249,10 +125,8 @@ def test_init_db_force(postgres_test_db):
     session = Session()
     WorkflowRuns.set_state(
         workflow_name="DUMMY_WORKFLOW_NAME",
-        workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
-        reference_date=pendulum.parse("2016-01-01", exact=True),
-        scheduled_start_time=pendulum.parse("2016-01-02T13:00:00Z"),
-        state="in_process",
+        parameters={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
+        state=RunState.running,
         session=session,
     )
     session.close()

@@ -5,6 +5,7 @@
 import pytest
 import prefect
 import pendulum
+from prefect.utilities.configuration import set_temporary_config
 from unittest.mock import Mock
 
 from autoflow.sensor import (
@@ -180,38 +181,38 @@ def test_filter_dates_by_earliest_and_stencil(test_logger):
         date_stencil=[-2, 0],
     )
     with prefect.context(logger=test_logger):
-        filtered_dates = filter_dates_by_stencil.run(
+        filtered_dates = filter_dates.run(
             available_dates=dates, workflow_config=workflow_config
         )
     assert filtered_dates == [pendulum.date(2016, 1, d) for d in [5, 6]]
 
 
-# TODO: Adapt this test for skip_if_already_run
+# TODO: Adapt these tests for skip_if_already_run
 # def test_filter_dates_by_previous_runs(monkeypatch, test_logger):
 #     """
 #     Test that the filter_dates_by_previous_runs removes dates for which WorkFlowRuns.can_process returns False.
 #     """
 #     dates = [pendulum.date(2016, 1, d) for d in [1, 2, 3]]
-
+#
 #     def dummy_can_process(workflow_name, workflow_params, reference_date, session):
 #         if reference_date in [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)]:
 #             return True
 #         else:
 #             return False
-
+#
 #     session_mock = Mock()
 #     get_session_mock = Mock(return_value=session_mock)
 #     can_process_mock = Mock(side_effect=dummy_can_process)
 #     monkeypatch.setattr("autoflow.tasks.get_session", get_session_mock)
 #     monkeypatch.setattr("autoflow.tasks.WorkflowRuns.can_process", can_process_mock)
-
+#
 #     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
 #         flow_name="DUMMY_WORFLOW_NAME",
 #         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
 #         logger=test_logger,
 #     ):
 #         filtered_dates = filter_dates_by_previous_runs.run(dates)
-
+#
 #     get_session_mock.assert_called_once_with("DUMMY_DB_URI")
 #     can_process_mock.assert_has_calls(
 #         [
@@ -226,6 +227,42 @@ def test_filter_dates_by_earliest_and_stencil(test_logger):
 #     )
 #     session_mock.close.assert_called_once()
 #     assert filtered_dates == [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)]
+#
+#
+# @pytest.mark.parametrize(
+#     "state,expected", [("in_process", False), ("done", False), ("failed", True)]
+# )
+# def test_can_process(session, state, expected):
+#     """
+#     Test that can_process returns True for 'failed' runs, False for 'in_process' or 'done' runs.
+#     """
+#     workflow_run_data = dict(
+#         workflow_name="DUMMY_WORKFLOW_NAME",
+#         workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
+#         reference_date=pendulum.parse("2016-01-01", exact=True),
+#     )
+#     WorkflowRuns.set_state(
+#         **workflow_run_data,
+#         scheduled_start_time=pendulum.parse("2016-01-02T13:00:00Z"),
+#         state=state,
+#         session=session,
+#     )
+#
+#     res = WorkflowRuns.can_process(**workflow_run_data, session=session)
+#     assert res == expected
+#
+#
+# def test_can_process_new(session):
+#     """
+#     Test that 'can_process' returns True for a new workflow run.
+#     """
+#     workflow_run_data = dict(
+#         workflow_name="DUMMY_WORKFLOW_NAME",
+#         workflow_params={"DUMMY_PARAM_NAME": "DUMMY_PARAM_VALUE"},
+#         reference_date=pendulum.parse("2016-01-01", exact=True),
+#     )
+#     res = WorkflowRuns.can_process(**workflow_run_data, session=session)
+#     assert res
 
 
 # TODO: Incorporate these tests into tests for add_dates_to_parameters
