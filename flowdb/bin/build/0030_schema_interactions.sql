@@ -31,6 +31,8 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         name VARCHAR NOT NULL
     );
 
+    INSERT INTO interactions.d_event_type (name) VALUES ('calls'), ('sms'),  ('mds'), ('topup');
+
     CREATE TABLE IF NOT EXISTS interactions.subscriber(
 
         id                      BIGSERIAL PRIMARY KEY,
