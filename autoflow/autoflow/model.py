@@ -78,7 +78,7 @@ class WorkflowRuns(Base):
         ----------
         workflow_name : str
             Name of the workflow
-        workflow_params : dict
+        parameters : dict
             Parameters passed when running the workflow
         state : RunState
             The state of the workflow run
@@ -98,7 +98,7 @@ class WorkflowRuns(Base):
         session: "sqlalchemy.orm.session.Session",
     ) -> Optional[RunState]:
         """
-        Get the most recent state for a given (workflow_name, workflow_params, reference_date) combination.
+        Get the most recent state for a given (workflow_name, parameters) combination.
 
         Parameters
         ----------
@@ -106,8 +106,6 @@ class WorkflowRuns(Base):
             Name of the workflow
         parameters : dict
             Parameters passed when running the workflow
-        reference_date : date
-            The date with which the workflow run is associated
         session : Session
             A sqlalchemy session for a DB in which this model exists.
 
@@ -122,7 +120,6 @@ class WorkflowRuns(Base):
             .filter(
                 cls.workflow_name == workflow_name,
                 cls.parameters_hash == parameters_hash,
-                cls.reference_date == reference_date,
             )
             .order_by(cls.timestamp.desc())
             .first()

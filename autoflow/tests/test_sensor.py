@@ -295,7 +295,7 @@ def test_filter_dates_by_earliest_and_stencil(test_logger):
 # TODO: Add tests for add_dates_to_parameters
 
 
-def test_record_workflow_run_state(monkeypatch, test_logger, record_task, state):
+def test_record_workflow_run_state(monkeypatch, test_logger):
     """
     Test that the record_workflow_run_state task calls WorkflowRuns.set_state with the correct arguments.
     """
@@ -311,7 +311,7 @@ def test_record_workflow_run_state(monkeypatch, test_logger, record_task, state)
     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}), prefect.context(
         logger=test_logger
     ):
-        record_task.run(
+        record_workflow_run_state.run(
             parameterised_workflow=dummy_parameterised_workflow, state="DUMMY_STATE"
         )
     get_session_mock.assert_called_once_with("DUMMY_DB_URI")
