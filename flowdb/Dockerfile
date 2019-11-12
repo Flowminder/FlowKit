@@ -26,6 +26,7 @@ ARG PROJ_VERSION=5.2.0-1
 ARG GDAL_VERSION=2.4.0+dfsg-1+b1
 ARG PGROUTING_VERSION=3.0.0~beta-1~exp2.pgdg100+1
 ARG PG_MEDIAN_UTILS_VERSION=0.0.7
+ARG OGR_FDW_VERSION=1.0.8-2~exp1.pgdg100+1
 ENV POSTGIS_VERSION=$POSTGIS_VERSION
 ENV POSTGRES_DB=flowdb
 ARG POSTGRES_USER=flowdb
@@ -40,6 +41,7 @@ RUN apt-get update \
         postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR  \
         postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
         postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
+        postgresql-$PG_MAJOR-ogr-fdw=$OGR_FDW_VERSION \
         && rm -rf /var/lib/apt/lists/* \
         && apt-get purge -y --auto-remove
 
