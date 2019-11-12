@@ -180,7 +180,7 @@ def add_dates_to_parameters(
     """
     # Note: This is a 'reduce' task (i.e. it is not mapped over workflow configs).
     # This is because otherwise, tasks downstream of this one would need to be double-mapped
-    # (once over workflow configs, and then over dates), and this is not possible with Prefect.
+    # (once over workflow configs, and then over dates), and Prefect doesn't currently support nested mapping.
     prefect.context.logger.info(
         "Adding parameters 'reference_date' and 'date_ranges' to workflow parameters."
     )
