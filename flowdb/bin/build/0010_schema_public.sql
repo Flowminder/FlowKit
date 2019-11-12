@@ -114,8 +114,7 @@ CREATE TABLE IF NOT EXISTS public.files(
              WHEN EXTRACT(isodow FROM datum) IN (6,7) THEN TRUE
              ELSE FALSE
            END AS is_std_weekend
-    FROM (SELECT date '1979-01-01' + DAY AS datum
-          FROM generate_series(0,29219) AS SEQUENCE (DAY)) DQ
+    FROM (SELECT generate_series('1979-01-01'::timestamptz, '2049-01-01'::timestamptz, '1 day')::date as datum) DQ
     ORDER BY 1;
 
     CREATE INDEX d_date_date_actual_idx
