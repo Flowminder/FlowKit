@@ -124,7 +124,7 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         time_dim_id             BIGINT REFERENCES public.d_time(time_dim_id),
         date_dim_id             BIGINT REFERENCES public.d_date(date_dim_id),
         event_id                BIGINT,
-        timestamp               TIMESTAMPTZ NOT NULL,
+        sighting_timestamp      TIMESTAMPTZ NOT NULL,
         PRIMARY KEY (sighting_id, date_dim_id),
         FOREIGN KEY (event_id, date_dim_id) REFERENCES interactions.event_supertable (event_id, date_dim_id)
 
