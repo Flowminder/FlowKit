@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS public.files(
     (
       date_dim_id              INT PRIMARY KEY,
       date_actual              DATE NOT NULL,
-      epoch                    BIGINT NOT NULL,
+      day_epoch                BIGINT NOT NULL,
       day_suffix               VARCHAR(4) NOT NULL,
       day_name                 VARCHAR(9) NOT NULL,
       day_of_week              INT NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS public.files(
     INSERT INTO d_date
     SELECT TO_CHAR(datum,'yyyymmdd')::INT AS date_dim_id,
            datum AS date_actual,
-           EXTRACT(epoch FROM datum) AS epoch,
+           EXTRACT(epoch FROM datum) AS day_epoch,
            TO_CHAR(datum,'fmDDth') AS day_suffix,
            TO_CHAR(datum,'Day') AS day_name,
            EXTRACT(isodow FROM datum) AS day_of_week,
