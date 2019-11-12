@@ -114,9 +114,8 @@ CREATE TABLE IF NOT EXISTS public.files(
              WHEN EXTRACT(isodow FROM datum) IN (6,7) THEN TRUE
              ELSE FALSE
            END AS is_std_weekend
-    FROM (SELECT '1979-01-01'::DATE+ SEQUENCE.DAY AS datum
-          FROM GENERATE_SERIES (0,29219) AS SEQUENCE (DAY)
-          GROUP BY SEQUENCE.DAY) DQ
+    FROM (SELECT date '1979-01-01' + DAY AS datum
+          FROM generate_series(0,29219) AS SEQUENCE (DAY)) DQ
     ORDER BY 1;
 
     CREATE INDEX d_date_date_actual_idx
@@ -140,8 +139,7 @@ CREATE TABLE IF NOT EXISTS public.files(
         -- AM/PM
         to_char(hour, 'am') AS meridian_indicator
 
-    FROM (SELECT '0:00'::TIME + (SEQUENCE.HOUR || ' hours')::INTERVAL AS hour
+    FROM (SELECT time '0:00' + SEQUENCE.HOUR * interval '1 hour' AS hour
         FROM generate_series(0,23) AS SEQUENCE(HOUR)
-        GROUP BY SEQUENCE.HOUR
          ) DQ
     ORDER BY 1;
