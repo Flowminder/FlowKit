@@ -21,6 +21,7 @@ import pytest
         "pgrouting",
         "pldbgapi",
         "pg_median_utils",
+        "ogr_fdw",
     ],
 )
 def test_extension_available(pg_available_extensions, extension):
