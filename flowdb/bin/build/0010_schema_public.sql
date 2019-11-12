@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS public.files(
 
     );
 
-    CREATE TABLE d_date
+    CREATE TABLE IF NOT EXISTS d_date
     (
       date_dim_id              INT PRIMARY KEY,
       date_actual              DATE NOT NULL,
