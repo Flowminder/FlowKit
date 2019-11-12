@@ -24,4 +24,16 @@ if ! getent passwd "$(id -u)" &> /dev/null && [ -e /usr/lib/libnss_wrapper.so ];
 		echo "airflow:x:$(id -g):" > "$NSS_WRAPPER_GROUP"
 fi
 
+# Load all secrets
+
+shopt -s nullglob
+FILES=/run/secrets/*
+
+# Export the secrets as environment variables for the main entrypoint
+for f in $FILES;
+do
+  echo "Loading secret $f."
+  export $(basename "$f")=$(cat "$f")
+done
+
 exec /defaultentrypoint.sh "$@"
