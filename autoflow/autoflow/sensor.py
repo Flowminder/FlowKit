@@ -21,7 +21,7 @@ import flowclient
 from .model import RunState, WorkflowRuns
 from .utils import (
     dates_are_available,
-    get_session,
+    session_scope,
     stencil_to_date_pairs,
     stencil_type_alias,
 )
@@ -220,11 +220,10 @@ def skip_if_already_run(parametrised_workflow: Tuple[Flow, Dict[str, Any]]) -> N
     prefect.context.logger.info(
         f"Checking whether workflow '{workflow.name}' has already run successfully with parameters {parameters}."
     )
-    session = get_session(prefect.config.db_uri)
-    state = WorkflowRuns.get_most_recent_state(
-        workflow_name=workflow.name, parameters=parameters, session=session
-    )
-    session.close()
+    with session_scope(prefect.config.db_uri) as session:
+        state = WorkflowRuns.get_most_recent_state(
+            workflow_name=workflow.name, parameters=parameters, session=session
+        )
 
     if state is None:
         prefect.context.logger.debug(
@@ -244,7 +243,7 @@ def skip_if_already_run(parametrised_workflow: Tuple[Flow, Dict[str, Any]]) -> N
         )
     else:
         # This should never happen
-        raise ValueError(f"Unrecognised workflow state: '{state}'")
+        raise ValueError(f"Unrecognised workflow state: '{state}'.")
 
 
 @task
@@ -265,11 +264,13 @@ def record_workflow_run_state(
     prefect.context.logger.debug(
         f"Recording workflow '{workflow.name}' with parameters {parameters} as '{state.name}'."
     )
-    session = get_session(prefect.config.db_uri)
-    WorkflowRuns.set_state(
-        workflow_name=workflow.name, parameters=parameters, state=state, session=session
-    )
-    session.close()
+    with session_scope(prefect.config.db_uri) as session:
+        WorkflowRuns.set_state(
+            workflow_name=workflow.name,
+            parameters=parameters,
+            state=state,
+            session=session,
+        )
 
 
 @task

@@ -212,10 +212,9 @@ def test_skip_if_already_run(monkeypatch, test_logger, state, is_skipped):
     state is 'running' or 'success', and does not skip if the state is
     None (i.e. not run before) or 'failed'.
     """
-    session_mock = Mock()
-    get_session_mock = Mock(return_value=session_mock)
+    get_session_mock = Mock()
     get_most_recent_state_mock = Mock(return_value=state)
-    monkeypatch.setattr("autoflow.sensor.get_session", get_session_mock)
+    monkeypatch.setattr("autoflow.utils.get_session", get_session_mock)
     monkeypatch.setattr(
         "autoflow.sensor.WorkflowRuns.get_most_recent_state", get_most_recent_state_mock
     )
@@ -241,9 +240,8 @@ def test_skip_if_already_run(monkeypatch, test_logger, state, is_skipped):
     get_most_recent_state_mock.assert_called_once_with(
         workflow_name="DUMMY_WORFLOW_NAME",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
-        session=session_mock,
+        session=get_session_mock.return_value,
     )
-    session_mock.close.assert_called_once()
     assert task_state.is_successful()
     assert is_skipped == task_state.is_skipped()
 
@@ -253,7 +251,7 @@ def test_skip_if_already_run_unrecognised_state(monkeypatch, test_logger):
     Test that skip_if_already_run raises a ValueError if get_most_recent_state
     returns an unrecognised state.
     """
-    monkeypatch.setattr("autoflow.sensor.get_session", Mock())
+    monkeypatch.setattr("autoflow.utils.get_session", Mock())
     monkeypatch.setattr(
         "autoflow.sensor.WorkflowRuns.get_most_recent_state",
         Mock(return_value="BAD_STATE"),
@@ -329,10 +327,9 @@ def test_record_workflow_run_state(monkeypatch, test_logger):
     """
     Test that the record_workflow_run_state task calls WorkflowRuns.set_state with the correct arguments.
     """
-    session_mock = Mock()
-    get_session_mock = Mock(return_value=session_mock)
+    get_session_mock = Mock()
     set_state_mock = Mock()
-    monkeypatch.setattr("autoflow.sensor.get_session", get_session_mock)
+    monkeypatch.setattr("autoflow.utils.get_session", get_session_mock)
     monkeypatch.setattr("autoflow.sensor.WorkflowRuns.set_state", set_state_mock)
     dummy_parametrised_workflow = (
         prefect.Flow(name="DUMMY_FLOW"),
@@ -345,12 +342,11 @@ def test_record_workflow_run_state(monkeypatch, test_logger):
             parametrised_workflow=dummy_parametrised_workflow, state=RunState.success
         )
     get_session_mock.assert_called_once_with("DUMMY_DB_URI")
-    session_mock.close.assert_called_once()
     set_state_mock.assert_called_once_with(
         workflow_name="DUMMY_FLOW",
         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
         state=RunState.success,
-        session=session_mock,
+        session=get_session_mock.return_value,
     )
 
 

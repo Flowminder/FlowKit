@@ -214,6 +214,34 @@ def test_get_session_without_password(monkeypatch):
     )
 
 
+def test_session_scope(monkeypatch):
+    """
+    Test that session_scope closes the session.
+    """
+    mock_session = Mock()
+    monkeypatch.setattr("autoflow.utils.get_session", Mock(return_value=mock_session))
+    with session_scope("sqlite:///") as session:
+        pass
+    assert session is mock_session
+    mock_session.commit.assert_called_once()
+    mock_session.close.assert_called_once()
+
+
+def test_session_scope_raises(monkeypatch):
+    """
+    Test that session_scope rolls back the session if an exception is raised, and re-raises the exception.
+    """
+    mock_session = Mock()
+    monkeypatch.setattr("autoflow.utils.get_session", Mock(return_value=mock_session))
+    with pytest.raises(Exception, match="Dummy exception"), session_scope(
+        "sqlite:///"
+    ) as session:
+        raise Exception("Dummy exception")
+    mock_session.commit.assert_not_called()
+    mock_session.rollback.assert_called_once()
+    mock_session.close.assert_called_once()
+
+
 @pytest.mark.parametrize(
     "before,expected",
     [

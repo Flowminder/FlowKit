@@ -6,20 +6,21 @@
 Utility functions.
 """
 
-import json
 import datetime
-import pendulum
+import json
+import nbconvert
+import nbformat
 import networkx as nx
+import pendulum
+from contextlib import contextmanager
+from get_secret_or_env_var import getenv
 from hashlib import md5
 from pathlib import Path
-from typing import Union, Dict, Any, List, Sequence, Set, Tuple, Optional
+from sh import asciidoctor_pdf
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from get_secret_or_env_var import getenv
-import nbformat
-import nbconvert
 from tempfile import TemporaryDirectory
-from sh import asciidoctor_pdf
+from typing import Any, Dict, Iterator, List, Optional, Sequence, Set, Tuple, Union
 
 
 def get_output_filename(input_filename: str, tag: str = "") -> str:
@@ -255,18 +256,43 @@ def get_session(db_uri: str) -> "sqlalchemy.orm.session.Session":
     ----------
     db_uri : str
         Database URI
-
+    
     Returns
     -------
     Session
         A sqlalchemy session
     """
-    # TODO: Make this a context manager
     # TODO: This seems like the wrong place to be reading a secret / env var,
     # but we can't put a docker secret in the prefect config.
     full_db_uri = db_uri.format(getenv("AUTOFLOW_DB_PASSWORD", ""))
     engine = create_engine(full_db_uri)
     return sessionmaker(bind=engine)()
+
+
+@contextmanager
+def session_scope(db_uri: str) -> Iterator["sqlalchemy.orm.session.Session"]:
+    """
+    Provide a scoped sqlalchemy session for interacting with the database.
+
+    Parameters
+    ----------
+    db_uri : str
+        Database URI
+    
+    Yields
+    ------
+    Session
+        A sqlalchemy session
+    """
+    session = get_session(db_uri)
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
 def make_json_serialisable(obj: Any) -> Union[dict, list, str, int, float, bool, None]:
