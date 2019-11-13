@@ -33,7 +33,15 @@ FILES=/run/secrets/*
 for f in $FILES;
 do
   echo "Loading secret $f."
-  export $(basename "$f")=$(cat "$f")
+  SECRET_NAME=$(basename "$f")
+  if [[ $f == *_FILE ]]
+  then
+    echo "$f is a file secret. Setting ${SECRET_NAME%?????}=$f"
+    export ${SECRET_NAME%?????}="$f"
+  else
+    echo "Setting $SECRET_NAME=$(cat "$f")"
+    export $SECRET_NAME=$(cat "$f")
+  fi
 done
 
 exec /defaultentrypoint.sh "$@"
