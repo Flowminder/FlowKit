@@ -123,14 +123,6 @@ class ServerAdminDetails extends React.Component {
     }
   };
 
-  fieldHasError = field => {
-    if (this.state.hasError && this.state.error.code === 400) {
-      return this.state.error.bad_field === field;
-    } else {
-      return false;
-    }
-  };
-
   handleDateChange = date => {
     this.setState({ latest_expiry: date });
   };
@@ -206,6 +198,32 @@ class ServerAdminDetails extends React.Component {
             {(this.state.edit_mode && "Edit ") || "New "} Server
           </Typography>
         </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h5" component="h1">
+            Upload API Spec
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <input
+            accept=".json,.yml"
+            className={classes.input}
+            id="spec-upload-button"
+            type="file"
+            style={{ display: "none" }}
+            onChange={event => {
+              this.fileReader.readAsText(event.target.files[0]);
+            }}
+          />
+          <label htmlFor="spec-upload-button">
+            <Button
+              variant="contained"
+              component="span"
+              className={classes.button}
+            >
+              Upload
+            </Button>
+          </label>
+        </Grid>
         <Grid item xs={6}>
           <TextField
             // error={this.fieldHasError("name")}
@@ -214,7 +232,6 @@ class ServerAdminDetails extends React.Component {
             className={classes.textField}
             value={name}
             margin="normal"
-            required={true}
             disabled={true}
           />
         </Grid>
@@ -250,32 +267,7 @@ class ServerAdminDetails extends React.Component {
             helperText={this.state.maxlife_helper_text}
           />
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h5" component="h1">
-            Upload API Spec
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <input
-            accept=".json,.yml"
-            className={classes.input}
-            id="spec-upload-button"
-            type="file"
-            style={{ display: "none" }}
-            onChange={event => {
-              this.fileReader.readAsText(event.target.files[0]);
-            }}
-          />
-          <label htmlFor="spec-upload-button">
-            <Button
-              variant="contained"
-              component="span"
-              className={classes.button}
-            >
-              Upload
-            </Button>
-          </label>
-        </Grid>
+
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">
             Available API scopes
