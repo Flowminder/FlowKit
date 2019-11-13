@@ -1615,6 +1615,7 @@
         "bearerFormat": "JWT",
         "scheme": "bearer",
         "type": "http",
+        "x-audience": "TEST_SERVER",
         "x-security-scopes": [
           "get_result:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin0",
           "get_result:aggregate_network_objects:total_network_objects:total_network_objects:aggregation_unit:admin1",

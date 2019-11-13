@@ -60,6 +60,7 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
             "scheme": "bearer",
             "bearerFormat": "JWT",
             "x-security-scopes": list(schema_to_scopes(flowmachine_query_schemas)),
+            "x-audience": current_app.config["JWT_DECODE_AUDIENCE"],
         },
     )
     # Loop over all the registered views and try to parse a yaml
