@@ -24,6 +24,7 @@ if ! getent passwd "$(id -u)" &> /dev/null && [ -e /usr/lib/libnss_wrapper.so ];
 		echo "airflow:x:$(id -g):" > "$NSS_WRAPPER_GROUP"
 fi
 
+
 # Load all secrets
 
 shopt -s nullglob
@@ -43,5 +44,10 @@ do
     export $SECRET_NAME=$(cat "$f")
   fi
 done
+
+
+sleep 10 # Wait for db init
+airflow create_user -r Admin -u "${FLOWETL_AIRFLOW_ADMIN_USERNAME:?Need to set FLOWETL_AIRFLOW_ADMIN_USERNAME non-empty}" -e ${FLOWETL_AIRFLOW_ADMIN_EMAIL:-admin@example.com} -f ${FLOWETL_AIRFLOW_ADMIN_FIRSTNAME:-admin} -l ${FLOWETL_AIRFLOW_ADMIN_LASTNAME:-user} -p "${FLOWETL_AIRFLOW_ADMIN_PASSWORD:?Need to set FLOWETL_AIRFLOW_ADMIN_PASSWORD non-empty}"
+
 
 exec /defaultentrypoint.sh "$@"
