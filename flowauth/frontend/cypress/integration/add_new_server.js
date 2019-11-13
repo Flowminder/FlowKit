@@ -12,63 +12,6 @@ describe("Server management", function() {
       .get("#server_list")
       .click();
   });
-  it("Add server name with space", function() {
-    cy.get("#new").click();
-    // adding username with space
-    cy.get("#name").type("Server ", {
-      force: true
-    });
-    cy.get("#name").type("Server ", { force: true });
-    //checking validation text
-    cy.get("#name-helper-text").should(
-      "have.text",
-      "Server name may only contain letters, numbers and underscores."
-    );
-    cy.get("#name")
-      .type(" ", {
-        force: true
-      })
-      .clear({
-        force: true
-      });
-    cy.get("#name")
-      .type("SERVER_TEST01", {
-        force: true
-      })
-      .type(" ", { force: true })
-      .clear({ force: true });
-    cy.get("#name").type("SERVER_TEST01", { force: true });
-    cy.contains("#name-helper-text").should("not.exist");
-  });
-  it("Add blank server name", function() {
-    cy.get("#new").click();
-    //adding blank username
-    cy.get("#name")
-      .type(" ", { force: true })
-      .clear({ force: true });
-    //checking validation text
-    cy.get("#name-helper-text").should(
-      "have.text",
-      "Server name can not be blank."
-    );
-    cy.get("#name").type("SERVER_TEST01", { force: true });
-    cy.contains("#name-helper-text").should("not.exist");
-  });
-  it("Add server name more than 120 characters", function() {
-    cy.get("#new").click();
-    //adding username
-    cy.get("#name").type("a".repeat(121), { force: true });
-    //checking validation text
-    cy.get("#name-helper-text").should(
-      "have.text",
-      "Server name must be 120 characters or less."
-    );
-    cy.get("#name")
-      .type(" ", { force: true })
-      .clear({ force: true });
-    cy.get("#name").type("SERVER_TEST01", { force: true });
-    cy.contains("#name-helper-text").should("not.exist");
-  });
 
   it("Add blank maximum lifetime minutes", function() {
     cy.get("#new").click();
