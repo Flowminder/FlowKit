@@ -72,7 +72,8 @@ services:
       POSTGRES_HOST: flowetl_airflow_db
       POSTGRES_DB: flowetl
       FLOWETL_RUNTIME_CONFIG: ${FLOWETL_RUNTIME_CONFIG:?Must set FLOWETL_RUNTIME_CONFIG env var}
-
+      FLOWETL_AIRFLOW_ADMIN_USERNAME: ${FLOWETL_AIRFLOW_ADMIN_USERNAME:?}
+      FLOWETL_AIRFLOW_ADMIN_PASSWORD: ${FLOWETL_AIRFLOW_ADMIN_PASSWORD:?}
     networks:
       - flowdb
       - flowetl_airflow_db

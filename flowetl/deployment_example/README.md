@@ -285,6 +285,7 @@ At this point you have the following:
 Let's start the ingestion DAGs via the Airflow web interface.
 
 - Navigate to http://localhost:8080, which should present you with the Airflow web interface.
+- Log in using the username and password specified by `FLOWETL_AIRFLOW_ADMIN_USERNAME` and `FLOWETL_AIRFLOW_ADMIN_PASSWORD`. (The default stackfile sets these to `admin` and `password`.)
 - Activate the `etl_sensor`, `etl_calls` and `etl_sms` DAGs (by clicking on the "Off" buttons next to them so that they show "On" instead).
 - Click on the "Trigger Dag" button for the `etl_sensor` DAG. (This is the leftmost arrow button in the "Links" column.)
    - Airflow will present you with a dialog, asking "Are you sure you want to run 'etl_sensor' now?".
