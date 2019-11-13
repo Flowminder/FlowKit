@@ -67,7 +67,8 @@ class ServerAdminDetails extends React.Component {
       this.setState({
         rights: scopes,
         fullRights: Object.keys(specScopes),
-        enabledRights: enabledKeys
+        enabledRights: enabledKeys,
+        name: parsedSpec["components"]["securitySchemes"]["token"]["x-audience"]
       });
     };
   }
@@ -146,28 +147,6 @@ class ServerAdminDetails extends React.Component {
     this.setState({
       [name]: event.target.value
     });
-    if (name === "name") {
-      const letters = /^[A-Za-z0-9_]+$/;
-      let servername = event.target.value;
-      if (servername.match(letters) && servername.length <= 120) {
-        this.setState({
-          name_helper_text: ""
-        });
-      } else if (servername.length === 0) {
-        this.setState({
-          name_helper_text: "Server name can not be blank."
-        });
-      } else if (!servername.match(letters)) {
-        this.setState({
-          name_helper_text:
-            "Server name may only contain letters, numbers and underscores."
-        });
-      } else {
-        this.setState({
-          name_helper_text: "Server name must be 120 characters or less."
-        });
-      }
-    }
 
     if (name === "max_life") {
       let maxlife = event.target.value;
@@ -230,16 +209,13 @@ class ServerAdminDetails extends React.Component {
         <Grid item xs={6}>
           <TextField
             // error={this.fieldHasError("name")}
-            placeholder="Maximum 120 characters"
             id="name"
             label="Name"
             className={classes.textField}
             value={name}
-            onChange={this.handleTextChange("name")}
             margin="normal"
             required={true}
-            error={this.state.name_helper_text}
-            helperText={this.state.name_helper_text}
+            disabled={true}
           />
         </Grid>
         <Grid item xs={6} />

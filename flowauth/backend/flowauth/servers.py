@@ -4,6 +4,7 @@
 from flask import jsonify, Blueprint, request
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
+from sqlalchemy.orm.exc import NoResultFound
 
 from .models import *
 from .invalid_usage import InvalidUsage
@@ -65,16 +66,20 @@ def edit_server_capabilities(server_id):
 
     Any capabilities not included are removed.
     """
-    server_obj = Server.query.filter(Server.id == server_id).first_or_404()
+    server_obj = Server.query.filter_by(id=server_id).first_or_404()
     json = request.get_json()
 
     to_remove = (x for x in server_obj.capabilities if x.capability not in json)
-
+    current_app.logger.debug(
+        f"Editing capabilities for server {server_obj}. New capabilities: {json}"
+    )
     for cap, enabled in json.items():
-        cap = ServerCapability.query.filter(
-            ServerCapability.server == server_obj, ServerCapability.capability == cap
-        ).first()
-        if cap is None:
+        current_app.logger.debug(f"Adding capability: {cap}, enabled: {enabled}")
+        try:
+            cap = ServerCapability.query.filter_by(
+                server_id=server_id, capability=cap
+            ).one()
+        except NoResultFound:
             cap = ServerCapability(server=server_obj, capability=cap)
         cap.enabled = enabled
         db.session.add(cap)
@@ -167,7 +172,9 @@ def edit_server(server_id):
 @admin_permission.require(http_exception=401)
 def rm_server(server_id):
     """Remove a server."""
-    server = Server.query.filter(Server.id == server_id).first_or_404()
+    server = Server.query.filter_by(id=server_id).first_or_404()
+    for cap in server.capabilities:
+        db.session.delete(cap)
     db.session.delete(server)
     db.session.commit()
     return jsonify({"poll": "OK"})
