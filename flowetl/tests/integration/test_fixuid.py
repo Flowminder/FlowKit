@@ -8,7 +8,7 @@ Tests that fixuid works as expected
 """
 
 
-def test_uid(docker_client, container_tag):
+def test_uid(docker_client, container_tag, container_env):
     """
     test that we can run the flowetl container with a specific user.
     Check UID is correct.
@@ -16,12 +16,15 @@ def test_uid(docker_client, container_tag):
 
     user = "1002:1003"
     out = docker_client.containers.run(
-        f"flowminder/flowetl:{container_tag}", "bash -c 'id -u'", user=user
+        f"flowminder/flowetl:{container_tag}",
+        "bash -c 'id -u'",
+        user=user,
+        environment=container_env["flowetl"],
     )
     assert out.decode("utf-8").strip() == "1002"
 
 
-def test_gid(docker_client, container_tag):
+def test_gid(docker_client, container_tag, container_env):
     """
     test that we can run the flowetl container with a specific user.
     Check GID is correct.
@@ -29,18 +32,24 @@ def test_gid(docker_client, container_tag):
 
     user = "1002:1003"
     out = docker_client.containers.run(
-        f"flowminder/flowetl:{container_tag}", "bash -c 'id -g'", user=user
+        f"flowminder/flowetl:{container_tag}",
+        "bash -c 'id -g'",
+        user=user,
+        environment=container_env["flowetl"],
     )
     assert out.decode("utf-8").strip() == "1003"
 
 
-def test_uid_is_airflow(docker_client, container_tag):
+def test_uid_is_airflow(docker_client, container_tag, container_env):
     """
     Test that the user we run the container with is the airflow user.
     """
 
     user = "1002:1003"
     out = docker_client.containers.run(
-        f"flowminder/flowetl:{container_tag}", "bash -c 'id -u | id -nu'", user=user
+        f"flowminder/flowetl:{container_tag}",
+        "bash -c 'id -u | id -nu'",
+        user=user,
+        environment=container_env["flowetl"],
     )
     assert out.decode("utf-8").strip() == "airflow"
