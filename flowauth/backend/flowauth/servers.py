@@ -74,7 +74,6 @@ def edit_server_capabilities(server_id):
         f"Editing capabilities for server {server_obj}. New capabilities: {json}"
     )
     for cap, enabled in json.items():
-        current_app.logger.debug(f"Adding capability: {cap}, enabled: {enabled}")
         try:
             cap = ServerCapability.query.filter_by(
                 server_id=server_id, capability=cap
