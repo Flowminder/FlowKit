@@ -175,13 +175,24 @@ class ServerAdminDetails extends React.Component {
           Object.keys(rights).filter(k => rights[k]),
           enabledKeys
         );
-        this.setState({
-          name: (await getServer(item_id)).name,
-          rights: scopes,
-          fullRights: Object.keys(rights),
-          enabledRights: enabledKeys,
-          latest_expiry: (await limitsAwait).latest_token_expiry,
-          max_life: (await limitsAwait).longest_token_life
+        const serverName = (await getServer(item_id)).name;
+        const latestExpiry = (await limitsAwait).latest_token_expiry;
+        const maxLife = (await limitsAwait).longest_token_life;
+        this.setState((state, props) => {
+          return {
+            name: serverName,
+            rights: state.rights.length == 0 ? scopes : state.rights,
+            fullRights:
+              state.fullRights.length == 0
+                ? Object.keys(rights)
+                : state.fullRights,
+            enabledRights:
+              state.enabledRights.length == 0
+                ? enabledKeys
+                : state.enabledRights,
+            latest_expiry: latestExpiry,
+            max_life: maxLife
+          };
         });
       } catch (err) {
         this.setState({ hasError: true, error: err });
