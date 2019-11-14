@@ -4,7 +4,9 @@
 
 """
 Main script, that will be executed when running `python -m autoflow`.
-Creates output directories, initialises the database, parses a workflows definition file to define workflows, and runs the workflows.
+Creates output directories, initialises the database, parses a workflows
+definition file to define workflows and configure the available dates sensor,
+and runs the available dates sensor.
 """
 
 import logging
@@ -15,7 +17,7 @@ from get_secret_or_env_var import getenv
 
 from .model import init_db
 from .parser import parse_workflows_yaml
-from .workflows import run_workflows
+from .sensor import available_dates_sensor
 
 
 def main():
@@ -49,22 +51,18 @@ def main():
     init_db(db_uri.format(getenv("AUTOFLOW_DB_PASSWORD", "")))
 
     # Create workflows according to workflow definition file
-    inputs_dir = Path(os.environ["AUTOFLOW_INPUTS_DIR"])
-    logger.info(f"Creating workflows defined in '{inputs_dir/'workflows.yml'}'.")
-    workflows, parameters = parse_workflows_yaml("workflows.yml", inputs_dir)
+    inputs_dir = os.environ["AUTOFLOW_INPUTS_DIR"]
+    logger.info(f"Creating workflows defined in '{Path(inputs_dir)/'workflows.yml'}'.")
+    workflow_storage, sensor_config = parse_workflows_yaml("workflows.yml", inputs_dir)
 
-    # Run workflows
-    logger.info("Running workflows.")
-    run_workflows(workflows, parameters)
-    # TODO: run the available dates sensor, instead of running the workflows directly
-    # schedule : str
-    #     Cron string describing the schedule on which the sensor will check for new data.
-    # workflow_configs : list of WorkflowConfig
-    #     List of workflows that the dates sensor should trigger.
-    # cdr_types: list of str, optional
-    #     A list of CDR types for which available dates will be checked (default is all available CDR types).
-    # available_dates_sensor.schedule = CronSchedule(schedule)
-    # available_dates_sensor.run(workflow_configs=workflow_configs, workflow_storage=workflow_storage, cdr_types=cdr_types)
+    # Run available dates sensor
+    logger.info("Running available dates sensor.")
+    available_dates_sensor.schedule = sensor_config["schedule"]
+    available_dates_sensor.run(
+        workflow_configs=sensor_config["workflows"],
+        cdr_types=sensor_config["cdr_types"],
+        workflow_storage=workflow_storage,
+    )
 
 
 if __name__ == "__main__":
