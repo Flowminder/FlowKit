@@ -100,7 +100,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.spatial_unit.location_id_columns + ["unique_subscriber_counts"]
+        return self.spatial_unit.location_id_columns + ["value"]
 
     def _make_query(self):
         """
@@ -110,7 +110,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
 
         relevant_columns = ",".join(self.spatial_unit.location_id_columns)
         sql = """
-        SELECT {rc}, COUNT(unique_subscribers) AS unique_subscriber_counts FROM 
+        SELECT {rc}, COUNT(unique_subscribers) AS value FROM 
         (SELECT 
             DISTINCT
             {rc},

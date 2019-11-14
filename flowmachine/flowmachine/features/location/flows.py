@@ -80,7 +80,7 @@ class FlowLike(GeoDataMixin, GraphMixin):
                 (
                     SELECT
                         {loc_cols_from_aliased_string},
-                        json_object_agg({loc_cols[0]}_to, count) AS outflows
+                        json_object_agg({loc_cols[0]}_to, value) AS outflows
                     FROM flows
                     GROUP BY {loc_cols_from_string}
                 ) x
@@ -88,7 +88,7 @@ class FlowLike(GeoDataMixin, GraphMixin):
                 (
                     SELECT
                         {loc_cols_to_aliased_string},
-                        json_object_agg({loc_cols[0]}_from, count) AS inflows
+                        json_object_agg({loc_cols[0]}_from, value) AS inflows
                     FROM flows
                     GROUP BY {loc_cols_to_string}
                 ) y
@@ -149,7 +149,7 @@ class Flows(FlowLike, Query):
     def column_names(self) -> List[str]:
         cols = self.spatial_unit.location_id_columns
         return (
-            [f"{col}_from" for col in cols] + [f"{col}_to" for col in cols] + ["count"]
+            [f"{col}_from" for col in cols] + [f"{col}_to" for col in cols] + ["value"]
         )
 
     def _make_query(self):
@@ -158,7 +158,7 @@ class Flows(FlowLike, Query):
         grouped = f"""
         SELECT
             {group_cols},
-            count(*)
+            count(*) as value
         FROM 
             ({self.joined.get_query()}) AS joined
         GROUP BY
@@ -191,7 +191,7 @@ class BaseInOutFlow(GeoDataMixin, Query, metaclass=ABCMeta):
     def _groupby_col(self, sql_in, col):
 
         sql_out = """
-                  SELECT {c}, sum(count) AS total
+                  SELECT {c}, sum(value) AS value
                   FROM ({flow}) AS flow
                   GROUP BY {c} ORDER BY {c} DESC
                   """.format(
@@ -220,7 +220,7 @@ class OutFlow(BaseInOutFlow):
     @property
     def column_names(self) -> List[str]:
         cols = self.spatial_unit.location_id_columns
-        return [f"{col}_from" for col in cols] + ["total"]
+        return [f"{col}_from" for col in cols] + ["value"]
 
 
 class InFlow(BaseInOutFlow):
@@ -242,4 +242,4 @@ class InFlow(BaseInOutFlow):
     @property
     def column_names(self) -> List[str]:
         cols = self.spatial_unit.location_id_columns
-        return [f"{col}_to" for col in cols] + ["total"]
+        return [f"{col}_to" for col in cols] + ["value"]

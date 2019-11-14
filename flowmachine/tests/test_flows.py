@@ -60,19 +60,19 @@ def test_calculates_flows(get_dataframe):
     df = get_dataframe(flow)
     assert (
         df[(df.pcod_from == "524 3 09 50") & (df.pcod_to == "524 5 14 73")][
-            "count"
+            "value"
         ].values[0]
         == 2
     )
     assert (
         df[(df.pcod_from == "524 4 10 53") & (df.pcod_to == "524 2 05 24")][
-            "count"
+            "value"
         ].values[0]
         == 2
     )
     assert (
         df[(df.pcod_from == "524 1 02 09") & (df.pcod_to == "524 3 08 44")][
-            "count"
+            "value"
         ].values[0]
         == 4
     )

@@ -38,7 +38,7 @@ class RedactedFlows(FlowLike, Query):
             {self.column_names_as_string_list}
         FROM
             ({self.flows.get_query()}) AS agged
-        WHERE agged.count > 15
+        WHERE agged.value > 15
         """
 
         return sql

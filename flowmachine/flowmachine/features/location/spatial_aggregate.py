@@ -29,7 +29,7 @@ class SpatialAggregate(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.spatial_unit.location_id_columns + ["total"]
+        return self.spatial_unit.location_id_columns + ["value"]
 
     def _make_query(self):
 
@@ -38,7 +38,7 @@ class SpatialAggregate(GeoDataMixin, Query):
         sql = f"""
         SELECT
             {aggregate_cols},
-            count(*) AS total
+            count(*) AS value
         FROM
             ({self.locations.get_query()}) AS to_agg
         GROUP BY
