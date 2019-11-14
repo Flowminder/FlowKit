@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 from typing import List
 
 from flowmachine.core import Query
@@ -27,7 +31,7 @@ class RedactedSpatialAggregate(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.spatial_unit.location_id_columns + ["total"]
+        return self.spatial_aggregate.column_names
 
     def _make_query(self):
 
