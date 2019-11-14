@@ -51,7 +51,7 @@ class _PopulationBuffer(Query):
 
     Parameters
     ----------
-    population_object : flowmachine.features.utilities.spatial_aggregates.SpatialAggregate
+    population_object : flowmachine.features.utilities.spatial_aggregate.SpatialAggregate
         An aggregated subscriber locating object
     distance_matrix : flowmachine.features.spatial.distance_matrix.DistanceMatrix
         A distance matrix

@@ -27,7 +27,9 @@ from flowmachine.core.server.query_schemas.topup_balance import TopUpBalanceSche
 from flowmachine.core.server.query_schemas.spatial_aggregate import (
     InputToSpatialAggregate,
 )
-from flowmachine.features.utilities.spatial_aggregates import JoinedSpatialAggregate
+from flowmachine.features.location.joined_spatial_aggregate import (
+    JoinedSpatialAggregate,
+)
 from .base_exposed_query import BaseExposedQuery
 
 

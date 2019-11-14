@@ -8,7 +8,9 @@ from flowmachine.features import (
     daily_location,
     SubscriberHandsetCharacteristic,
 )
-from flowmachine.features.utilities.spatial_aggregates import JoinedSpatialAggregate
+from flowmachine.features.location.joined_spatial_aggregate import (
+    JoinedSpatialAggregate,
+)
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 from flowmachine.utils import list_of_dates
 
