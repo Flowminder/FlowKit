@@ -75,6 +75,28 @@ describe("Server management", function() {
     cy.get("[data-action=edit][data-item-name=" + server_name + "]").click();
     cy.get(".rs-picker-toggle-value").should("have.text", "run (All)");
     cy.contains("Save").click({ force: true });
+    /* Supply an updated spec */
+    cy.get("#spec-upload-button").then(subject => {
+      cy.fixture("api_spec.json").then(content => {
+        const el = subject[0];
+        content["components"]["securitySchemes"]["token"][
+          "x-audience"
+        ] = server_name;
+        content["components"]["securitySchemes"]["token"][
+          "x-security-scopes"
+        ] = ["test_scope"];
+        const testFile = new File([JSON.stringify(content)], "api_spec.json");
+        const dataTransfer = new DataTransfer();
+
+        dataTransfer.items.add(testFile);
+        el.files = dataTransfer.files;
+        cy.wrap(subject).trigger("change", { force: true });
+      });
+    });
+    cy.get(".rs-picker-toggle-value").should("have.text", "test_scope");
+    cy.contains("Save").click({ force: true });
+    cy.get("[data-action=edit][data-item-name=" + server_name + "]").click();
+    cy.get(".rs-picker-toggle-value").should("have.text", "test_scope");
     /* Delete it again */
     cy.get("[data-action=rm][data-item-name=" + server_name + "]").click();
     cy.get("[data-action=rm][data-item-name=" + server_name + "]").should(
