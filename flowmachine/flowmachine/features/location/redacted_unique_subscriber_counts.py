@@ -36,11 +36,9 @@ class RedactedUniqueSubscriberCounts(GeoDataMixin, Query):
 
     def _make_query(self):
 
-        aggregate_cols = ",".join(self.unique_subscriber_counts.columns)
-
         sql = f"""
         SELECT
-            {aggregate_cols}
+            {self.column_names_as_string_list}
         FROM
             ({self.unique_subscriber_counts.get_query()}) AS agged
         WHERE agged.total > 15

@@ -35,11 +35,9 @@ class RedactedSpatialAggregate(GeoDataMixin, Query):
 
     def _make_query(self):
 
-        aggregate_cols = ",".join(self.spatial_aggregate.columns)
-
         sql = f"""
         SELECT
-            {aggregate_cols}
+            {self.spatial_aggregate.column_names_as_string_list}
         FROM
             ({self.spatial_aggregate.get_query()}) AS agged
         WHERE agged.total > 15

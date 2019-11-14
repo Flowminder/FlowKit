@@ -33,11 +33,9 @@ class RedactedFlows(FlowLike, Query):
 
     def _make_query(self):
 
-        aggregate_cols = ",".join(self.flows.columns)
-
         sql = f"""
         SELECT
-            {aggregate_cols}
+            {self.column_names_as_string_list}
         FROM
             ({self.flows.get_query()}) AS agged
         WHERE agged.count > 15
