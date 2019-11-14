@@ -246,9 +246,15 @@ FlowAPI requires additional secrets:
 | cert-flowkit.pem | SSL Certificate used to serve FlowAPI over https | Optional, but _strongly_ recommended. If you are using a self-signed certificate, you will need to make the file available to FlowClient users. |
 | key-flowkit.pem | Private key for the SSL Certificate | Optional, but _strongly_ recommended. This part of the certificate does _not_ need to be made available to FlowClient users. |
 | PUBLIC_JWT_SIGNING_KEY | Public key to verify api tokens | The public key corresponding to the `PRIVATE_JWT_SIGNING_KEY` used by FlowAuth
-| FLOWAPI_IDENTIFIER | Secret used in combination with secret key for decoding JWTs | Should be unique per FlowAPI server |
+| FLOWAPI_IDENTIFIER | Secret used in combination with secret key for decoding JWTs | Should be unique per FlowAPI server; this will also be the _name_ of the server in the FlowAuth user interface |
 
-FlowAPI also makes use of the `FLOWAPI_FLOWDB_USER` and `FLOWAPI_FLOWDB_PASSWORD` secrets provided to FlowDB. 
+FlowAPI also makes use of the `FLOWAPI_FLOWDB_USER` and `FLOWAPI_FLOWDB_PASSWORD` secrets provided to FlowDB.
+
+##### Adding the new server to FlowAuth
+
+Once FlowAPI has started, it can be added to FlowAuth so that users can generate tokens for it. You should be able to download the API specification from `https://<flowapi_host>:<flowapi_port>/api/0/spec/openapi.json`. You can then use the spec file to add the server to FlowAuth by navigating to Servers, and clicking the new server button.
+
+After uploading the specification, you can configure the maximum token lifetime settings, and use the dropdown box to enable or disable access to the available FlowAPI scopes. If you have updated either the FlowAPI or FlowMachine servers, you should upload the newly generated specification to ensure that the correct API actions are available when assigning users and generating tokens. 
 
 ##### Sample stack files
 
