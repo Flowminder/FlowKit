@@ -70,7 +70,7 @@ class RedactedJoinedSpatialAggregate(GeoDataMixin, Query):
         return f"""
         SELECT jsa.* FROM
         ({self.joined_spatial_aggregate.get_query()}) as jsa
-        INNER NATURAL JOIN
+        NATURAL JOIN
         ({self.redacted_spatial_agg.get_query()}) as redact
         """
 
