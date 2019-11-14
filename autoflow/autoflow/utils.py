@@ -6,7 +6,7 @@
 Utility functions.
 """
 
-import datetime
+import collections
 import json
 import nbconvert
 import nbformat
@@ -20,7 +20,7 @@ from sh import asciidoctor_pdf
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from tempfile import TemporaryDirectory
-from typing import Any, Dict, Iterator, List, Optional, Sequence, Set, Tuple, Union
+from typing import Any, Dict, Iterator, Optional, OrderedDict, Set, Tuple, Union
 
 
 def get_output_filename(input_filename: str, tag: str = "") -> str:
@@ -64,188 +64,6 @@ def get_params_hash(parameters: Dict[str, Any]) -> str:
     return md5(
         json.dumps(dict(parameters), sort_keys=True, default=str).encode()
     ).hexdigest()
-
-
-date_or_offset = Union[int, datetime.date]  # Type alias for elements of date stencils
-stencil_type_alias = List[
-    Union[date_or_offset, List[date_or_offset]]
-]  # Type alias for date stencils
-
-
-class InvalidDatePairError(ValueError):
-    """
-    Custom error to raise if populating a date stencil results in a date pair with start_date > end_date.
-    """
-
-    pass
-
-
-def offset_to_date(
-    offset: date_or_offset, reference_date: datetime.date
-) -> pendulum.Date:
-    """
-    Return a date corresponding to the offset from a reference date.
-
-    Parameters
-    ----------
-    offset : int or datetime.date
-        Either an integer number of days offset from reference date, or a date object.
-        If a date object, this date will be returned.
-    reference_date : datetime.date
-        Date to calculate the offset relative to.
-
-    Returns
-    -------
-    pendulum.Date
-        reference_date + offset (if offset is an integer), or offset (if offset is a date).
-    
-    Raises
-    ------
-    TypeError
-        If type(offset) is not either int or datetime.date
-    """
-    if isinstance(offset, datetime.date):
-        date_from_offset = pendulum.date(offset.year, offset.month, offset.day)
-    elif isinstance(offset, int):
-        date_from_offset = pendulum.date(
-            reference_date.year, reference_date.month, reference_date.day
-        ).add(days=offset)
-    else:
-        raise TypeError(
-            f"Invalid type for offset: expected 'date' or 'int', not '{type(offset).__name__}'"
-        )
-    return date_from_offset
-
-
-# TODO: There are several helper functions for date stencils here.
-# Might be better to make them methods of a DateStencil class.
-
-
-def stencil_to_date_pairs(
-    stencil: stencil_type_alias, reference_date: datetime.date
-) -> List[Tuple[pendulum.Date, pendulum.Date]]:
-    """
-    Given a stencil of dates, date offsets and/or date intervals, and a reference
-    date to calculate the offsets relative to, return a list of date pairs representing
-    date intervals (inclusive of both limits).
-
-    Parameters
-    ----------
-    stencil : list of datetime.date, int and/or pairs of date/int
-        List of elements defining dates or date intervals.
-        Each element can be:
-            - a date object corresponding to an absolute date,
-            - an int corresponding to an offset (in days) relative to reference_date,
-            - a length-2 list [start, end] of dates or offsets, corresponding to a
-              date interval (inclusive of both limits).
-    reference_date : datetime.date
-        Date to calculate offsets relative to.
-    
-    Returns
-    -------
-    list of tuple (pendulum.Date, pendulum.Date)
-        List of pairs of date objects, each representing a date interval.
-    
-    Raises
-    ------
-    TypeError
-        If elements of stencil have the wrong type
-    ValueError
-        If list elements of stencil do not have length 2
-    InvalidDatePairError
-        If the stencil results in a date pair with start_date > end_date
-    """
-    date_pairs = []
-    for element in stencil:
-        if isinstance(element, list):
-            if len(element) != 2:
-                raise ValueError(
-                    "Expected date interval to be a list of length 2 (in format [start, end]), "
-                    "but got list of length {len(element)}."
-                )
-            start_date = offset_to_date(element[0], reference_date)
-            end_date = offset_to_date(element[1], reference_date)
-            if start_date > end_date:
-                raise InvalidDatePairError(
-                    f"Stencil contains invalid date pair ({start_date}, {end_date}) for reference date {reference_date}."
-                )
-            date_pairs.append((start_date, end_date))
-        else:
-            date = offset_to_date(element, reference_date)
-            date_pairs.append((date, date))
-    return date_pairs
-
-
-def stencil_to_set_of_dates(
-    stencil: stencil_type_alias, reference_date: datetime.date
-) -> Set[pendulum.Date]:
-    """
-    Given a stencil of dates, date offsets and/or date intervals, and a reference
-    date to calculate the offsets relative to, return the corresponding set of dates.
-
-    Parameters
-    ----------
-    stencil : list of datetime.date, int and/or pairs of date/int
-        List of elements defining dates or date intervals.
-        Each element can be:
-            - a date object corresponding to an absolute date,
-            - an int corresponding to an offset (in days) relative to reference_date,
-            - a length-2 list [start, end] of dates or offsets, corresponding to a
-              date interval (inclusive of both limits).
-    reference_date : datetime.date
-        Date to calculate offsets relative to.
-
-    Returns
-    -------
-    set of pendulum.Date
-        Set of dates represented by the stencil
-    """
-    date_pairs = stencil_to_date_pairs(stencil, reference_date)
-    dates = set().union(*[pendulum.period(pair[0], pair[1]) for pair in date_pairs])
-    return dates
-
-
-def dates_are_available(
-    stencil: stencil_type_alias,
-    reference_date: datetime.date,
-    available_dates: Sequence[datetime.date],
-) -> bool:
-    """
-    Check whether all dates represented by a stencil for a particular date are
-    included in a list of available dates.
-
-    Parameters
-    ----------
-    stencil : list of datetime.date, int and/or pairs of date/int
-        List of elements defining dates or date intervals.
-        Each element can be:
-            - a date object corresponding to an absolute date,
-            - an int corresponding to an offset (in days) relative to reference_date,
-            - a length-2 list [start, end] of dates or offsets, corresponding to a
-              date interval (inclusive of both limits).
-    reference_date : datetime.date
-        Date to calculate offsets relative to.
-    available_dates : list of datetime.date
-        List of available dates
-    
-    Returns
-    -------
-    bool
-        True if all dates are available, False otherwise.
-    
-    Notes
-    -----
-
-    If the stencil is not valid for the given reference date (i.e. contains invalid
-    date pairs), this function will return False.
-    """
-    try:
-        dates_from_stencil = stencil_to_set_of_dates(
-            stencil, reference_date=reference_date
-        )
-    except InvalidDatePairError:
-        return False
-    return dates_from_stencil.issubset(set(available_dates))
 
 
 def get_session(db_uri: str) -> "sqlalchemy.orm.session.Session":
@@ -325,35 +143,31 @@ def get_additional_parameter_names_for_notebooks(
     notebooks : dict
         Dictionary of dictionaries describing notebook tasks.
     reserved_parameter_names : set of str, optional
-        Names of parameters used within workflow, which cannot be used as notebook labels.
+        Names of parameters used within workflow.
     
     Returns
     -------
     set of str
-        Names of parameters used by notebooks which are not either reserved parameter names or notebook labels
+        Names of parameters used by notebooks which must be passed to a workflow.
     """
-    if reserved_parameter_names is None:
-        reserved_parameter_names = set()
-    # Check that notebook task labels do not include reserved parameter names
-    # TODO: This should be checked elsewhere
-    forbidden_labels = reserved_parameter_names.intersection(notebooks.keys())
-    if forbidden_labels:
-        raise ValueError(
-            f"Notebook labels {forbidden_labels} are forbidden for this workflow. "
-            f"Reserved parameter names are {reserved_parameter_names}."
-        )
     # Parameters requested in notebooks
     notebook_parameter_names = set.union(
         *[set(notebook["parameters"].values()) for notebook in notebooks.values()]
     )
+    # Parameters available to notebooks, which are not passed externally as flow parameters
+    internal_parameter_names = (reserved_parameter_names or set()).union(
+        notebooks.keys()
+    )
     # Additional parameters required for notebooks
     additional_parameter_names_for_notebooks = notebook_parameter_names.difference(
-        reserved_parameter_names
-    ).difference(notebooks.keys())
+        internal_parameter_names
+    )
     return additional_parameter_names_for_notebooks
 
 
-def sort_notebook_labels(notebooks: Dict[str, Dict[str, Any]]) -> List[str]:
+def sort_notebooks(
+    notebooks: Dict[str, Dict[str, Any]]
+) -> OrderedDict[str, Dict[str, Any]]:
     """
     Perform a topological sort on a dictionary of notebook task specifications.
 
@@ -364,9 +178,14 @@ def sort_notebook_labels(notebooks: Dict[str, Dict[str, Any]]) -> List[str]:
     
     Returns
     -------
-    list of str
-        List of notebook labels, sorted so that no notebook depends on another
-        notebook that comes after it in the list.
+    OrderedDict
+        Ordered dict of notebook task dicts, ordered so that no notebook depends on another
+        notebook that comes after it.
+    
+    Raises
+    ------
+    ValueError
+        If the notebook specifications contain circular dependencies.
     """
     notebooks_graph = nx.DiGraph(
         {
@@ -379,11 +198,13 @@ def sort_notebook_labels(notebooks: Dict[str, Dict[str, Any]]) -> List[str]:
         }
     ).reverse()
     try:
-        sorted_notebook_labels = list(nx.topological_sort(notebooks_graph))
+        sorted_notebook_keys = list(nx.topological_sort(notebooks_graph))
     except nx.NetworkXUnfeasible:
-        raise ValueError("Notebook specifications contain cyclic dependencies.")
+        raise ValueError("Notebook specifications contain circular dependencies.")
 
-    return sorted_notebook_labels
+    return collections.OrderedDict(
+        (key, notebooks[key]) for key in sorted_notebook_keys
+    )
 
 
 def notebook_to_asciidoc(

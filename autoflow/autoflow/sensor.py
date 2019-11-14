@@ -18,13 +18,9 @@ from typing import Any, Dict, List, NamedTuple, NoReturn, Optional, Sequence, Tu
 
 import flowclient
 
+from .date_stencil import DateStencil
 from .model import RunState, WorkflowRuns
-from .utils import (
-    dates_are_available,
-    session_scope,
-    stencil_to_date_pairs,
-    stencil_type_alias,
-)
+from .utils import session_scope
 
 
 class WorkflowConfig(NamedTuple):
@@ -39,19 +35,15 @@ class WorkflowConfig(NamedTuple):
         Dict of parameters with which the workflow should be run.
     earliest_date : date
         Earliest date for which the workflow should run.
-    date_stencil : list of datetime.date, int and/or pairs of date/int; optional
-        List of elements defining dates or date intervals required by the workflow.
-        Each element can be:
-            - a date object corresponding to an absolute date,
-            - an int corresponding to an offset (in days) relative to a reference date,
-            - a length-2 list [start, end] of dates or offsets, corresponding to a
-              date interval (inclusive of both limits).
+    date_stencil : DateStencil
+        Date stencil defining date intervals required by the workflow.
+        The default is DateStencil([0]) (i.e. a stencil that contains only the reference date).
     """
 
     workflow: Flow
     parameters: Dict[str, Any]
     earliest_date: Optional["datetime.date"] = None
-    date_stencil: Optional[stencil_type_alias] = None
+    date_stencil: DateStencil = DateStencil([0])
 
 
 # Tasks -----------------------------------------------------------------------
@@ -114,8 +106,6 @@ def filter_dates(
     workflow_config.date_stencil are available.
     If workflow_config.earliest_date is None, date stencil availability will be
     checked for all available dates.
-    If no workflow_config.date_stencil is None, dates will not be filtered by
-    date stencil (this is equivalent to 'date_stencil=[0]').
     
     Parameters
     ----------
@@ -146,12 +136,12 @@ def filter_dates(
         prefect.context.logger.debug("No date stencil provided.")
     else:
         prefect.context.logger.debug(
-            f"Returning reference dates for which all dates in stencil {workflow_config.date_stencil} are available."
+            f"Returning reference dates for which all dates in stencil are available."
         )
         filtered_dates = [
             date
             for date in filtered_dates
-            if dates_are_available(workflow_config.date_stencil, date, available_dates)
+            if workflow_config.date_stencil.dates_are_available(date, available_dates)
         ]
 
     return filtered_dates
@@ -190,8 +180,8 @@ def add_dates_to_parameters(
             dict(
                 workflow_config.parameters,
                 reference_date=date,
-                date_ranges=stencil_to_date_pairs(
-                    stencil=workflow_config.date_stencil or [0], reference_date=date
+                date_ranges=workflow_config.date_stencil.as_date_pairs(
+                    reference_date=date
                 ),
             ),
         )

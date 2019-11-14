@@ -10,7 +10,7 @@ import papermill
 import prefect
 from pathlib import Path
 from prefect import Flow, Parameter, task
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, OrderedDict
 
 from .utils import (
     asciidoc_to_pdf,
@@ -19,7 +19,6 @@ from .utils import (
     get_params_hash,
     make_json_serialisable,
     notebook_to_asciidoc,
-    sort_notebook_labels,
 )
 
 
@@ -174,7 +173,9 @@ def convert_notebook_to_pdf(
 # Flows -----------------------------------------------------------------------
 
 
-def make_notebooks_workflow(name: str, notebooks: Dict[str, Dict[str, Any]]) -> Flow:
+def make_notebooks_workflow(
+    name: str, notebooks: OrderedDict[str, Dict[str, Any]]
+) -> Flow:
     """
     Build a prefect flow that runs a set of interdependent Jupyter notebooks.
     The FlowAPI URL will be available to the notebooks as parameter 'flowapi_url'.
@@ -183,8 +184,8 @@ def make_notebooks_workflow(name: str, notebooks: Dict[str, Dict[str, Any]]) -> 
     ----------
     name : str
         Name for the workflow
-    notebooks : dict
-        Dictionary of dictionaries describing notebook tasks.
+    notebooks : OrderedDict
+        Ordered dictionary of dictionaries describing notebook tasks.
         Each should have keys 'filename' and 'parameters', and optionally 'output'.
     
     Returns
@@ -196,9 +197,6 @@ def make_notebooks_workflow(name: str, notebooks: Dict[str, Dict[str, Any]]) -> 
     parameter_names = get_additional_parameter_names_for_notebooks(
         notebooks=notebooks, reserved_parameter_names={"flowapi_url"}
     )
-    # Perform a topological sort on the notebooks dict
-    # TODO: we should sort the notebooks while parsing, before passing to this function
-    sorted_notebook_labels = sort_notebook_labels(notebooks)
 
     # Define workflow
     with Flow(name=name, schedule=flow_schedule) as workflow:
@@ -220,20 +218,19 @@ def make_notebooks_workflow(name: str, notebooks: Dict[str, Dict[str, Any]]) -> 
         tag = get_tag(reference_date=parameter_tasks["reference_date"])
 
         # Execute notebooks
-        for label in sorted_notebook_labels:
-            parameter_tasks[label] = papermill_execute_notebook(
-                input_filename=notebooks[label]["filename"],
+        for key, notebook in notebooks.items():
+            parameter_tasks[key] = papermill_execute_notebook(
+                input_filename=notebook["filename"],
                 output_tag=tag,
                 parameters={
-                    key: parameter_tasks[value]
-                    for key, value in notebooks[label]["parameters"].items()
+                    k: parameter_tasks[v] for k, v in notebook["parameters"].items()
                 },
             )
-            if "output" in notebooks[label]:
+            if "output" in notebook:
                 # Create PDF report from notebook
                 convert_notebook_to_pdf(
-                    notebook_path=parameter_tasks[label],
-                    asciidoc_template=notebooks[label]["output"]["template"],
+                    notebook_path=parameter_tasks[key],
+                    asciidoc_template=notebook["output"]["template"],
                 )
 
     return workflow

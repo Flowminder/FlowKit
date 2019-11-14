@@ -6,6 +6,7 @@ import pytest
 import datetime
 import pendulum
 import json
+from collections import OrderedDict
 from pathlib import Path
 from unittest.mock import Mock, patch, mock_open
 
@@ -58,106 +59,6 @@ def test_get_params_hash_can_handle_dates():
     hash1 = get_params_hash({"DUMMY_PARAM": pendulum.date(2016, 1, 1)})
     hash2 = get_params_hash({"DUMMY_PARAM": pendulum.date(2016, 1, 2)})
     assert hash1 != hash2
-
-
-@pytest.mark.parametrize(
-    "offset,reference_date,expected",
-    [
-        (
-            datetime.date(2016, 1, 2),
-            pendulum.date(2016, 1, 1),
-            pendulum.date(2016, 1, 2),
-        ),
-        (-1, pendulum.date(2016, 1, 1), pendulum.date(2015, 12, 31)),
-        (1, datetime.date(2016, 1, 1), pendulum.date(2016, 1, 2)),
-    ],
-)
-def test_offset_to_date(offset, reference_date, expected):
-    """
-    Test that offset_to_date returns the expected Date object.
-    """
-    offset_date = offset_to_date(offset, reference_date)
-    assert isinstance(offset_date, pendulum.Date)
-    assert offset_date == expected
-
-
-def test_offset_to_date_raises_type_error():
-    """
-    Test that offset_to_date raises a TypeError if offset has an invalid type.
-    """
-    with pytest.raises(
-        TypeError, match="Invalid type for offset: expected 'date' or 'int', not 'str'"
-    ):
-        offset_date = offset_to_date("NOT_AN_OFFSET_OR_DATE", pendulum.date(2016, 1, 1))
-
-
-def test_stencil_to_date_pairs():
-    """
-    Test that stencil_to_date_pairs returns expected date pairs.
-    """
-    stencil = [
-        pendulum.date(2016, 1, 1),
-        -4,
-        [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)],
-        [-3, -1],
-        [pendulum.date(2016, 1, 1), -1],
-        [0, 0],
-    ]
-    reference_date = pendulum.date(2016, 1, 7)
-    expected_date_pairs = [
-        (pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 1)),
-        (pendulum.date(2016, 1, 3), pendulum.date(2016, 1, 3)),
-        (pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)),
-        (pendulum.date(2016, 1, 4), pendulum.date(2016, 1, 6)),
-        (pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 6)),
-        (pendulum.date(2016, 1, 7), pendulum.date(2016, 1, 7)),
-    ]
-    date_pairs = stencil_to_date_pairs(stencil, reference_date)
-    assert date_pairs == expected_date_pairs
-
-
-@pytest.mark.parametrize(
-    "stencil,error",
-    [
-        (["BAD_ELEMENT"], TypeError),
-        ([[-1, "BAD_ELEMENT"]], TypeError),
-        (-1, TypeError),
-        ([[-3, -2, -1]], ValueError),
-        ([[-1, -2]], InvalidDatePairError),
-    ],
-)
-def test_stencil_to_date_pairs_errors(stencil, error):
-    """
-    Test that stencil_to_date_pairs raises the correct errors for invalid stencils.
-    """
-    reference_date = pendulum.date(2016, 1, 1)
-    with pytest.raises(error):
-        date_pairs = stencil_to_date_pairs(stencil, reference_date)
-
-
-def test_stencil_to_set_of_dates():
-    """
-    Test that stencil_to_set_of_dates returns expected set of dates.
-    """
-    reference_date = pendulum.date(2016, 1, 7)
-    stencil = [[pendulum.date(2016, 1, 1), -3], -1, 0]
-    expected_set = set(pendulum.date(2016, 1, d) for d in [1, 2, 3, 4, 6, 7])
-    set_of_dates = stencil_to_set_of_dates(stencil, reference_date)
-    assert set_of_dates == expected_set
-
-
-@pytest.mark.parametrize(
-    "reference_date,available",
-    [
-        (pendulum.date(2016, 1, 5), False),
-        (pendulum.date(2016, 1, 6), True),
-        (pendulum.date(2016, 1, 7), False),
-    ],
-)
-def test_dates_are_available(reference_date, available):
-    stencil = [[pendulum.date(2016, 1, 2), -4], [-3, -1]]
-    available_dates = [pendulum.date(2016, 1, d) for d in range(1, 6)]
-    assert available == dates_are_available(stencil, reference_date, available_dates)
 
 
 def test_get_session(monkeypatch):
@@ -265,7 +166,7 @@ def test_make_json_serialisable(before, expected):
 def test_get_additional_parameter_names_for_notebooks():
     """
     Test that get_additional_parameter_names_for_notebooks returns the set of
-    notebook parameters, excluding notebook labels.
+    notebook parameters, excluding notebook keys.
     """
     notebooks = {
         "notebook1": {"parameters": {"p1": "DUMMY_PARAM_1"}},
@@ -295,43 +196,34 @@ def test_get_additional_parameter_names_for_notebooks_with_reserved_parameter_na
     assert additional_params == {"DUMMY_PARAM"}
 
 
-def test_get_additional_parameter_names_for_notebooks_raises_error():
+def test_sort_notebooks():
     """
-    Test that get_additional_parameter_names_for_notebooks raises an error if reserved parameter names are used as notebook labels.
-    """
-    notebooks = {"RESERVED_PARAM": {"parameters": {"p1": "DUMMY_PARAM"}}}
-    reserved_parameter_names = {"RESERVED_PARAM"}
-    with pytest.raises(ValueError):
-        additional_params = get_additional_parameter_names_for_notebooks(
-            notebooks, reserved_parameter_names
-        )
-
-
-def test_sort_notebook_labels():
-    """
-    Test that sort_notebook_labels sorts notebook labels into a correct order.
+    Test that sort_notebooks sorts notebooks into a correct order.
     """
     notebooks = {
         "notebook1": {"parameters": {"p1": "notebook2"}},
         "notebook2": {"parameters": {}},
         "notebook3": {"parameters": {"p1": "notebook1", "p2": "notebook2"}},
     }
-    sorted_notebook_labels = sort_notebook_labels(notebooks)
-    assert sorted_notebook_labels == ["notebook2", "notebook1", "notebook3"]
+    sorted_notebooks = sort_notebooks(notebooks)
+    assert isinstance(sorted_notebooks, OrderedDict)
+    assert sorted_notebooks == OrderedDict(
+        (key, notebooks[key]) for key in ["notebook2", "notebook1", "notebook3"]
+    )
 
 
-def test_sort_notebook_labels_circular_dependency():
+def test_sort_notebooks_circular_dependency():
     """
-    Test that sort_notebooks_labels raises an error if notebooks have circular dependencies.
+    Test that sort_notebooks raises an error if notebooks have circular dependencies.
     """
     notebooks = {
         "notebook1": {"parameters": {"p1": "notebook2"}},
         "notebook2": {"parameters": {"p1": "notebook1"}},
     }
     with pytest.raises(
-        ValueError, match="Notebook specifications contain cyclic dependencies."
+        ValueError, match="Notebook specifications contain circular dependencies."
     ):
-        sorted_notebook_labels = sort_notebook_labels(notebooks)
+        sorted_notebooks = sort_notebooks(notebooks)
 
 
 def test_notebook_to_asciidoc(monkeypatch):
