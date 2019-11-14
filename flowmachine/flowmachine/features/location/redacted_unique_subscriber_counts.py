@@ -6,10 +6,11 @@ from typing import List
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
+from flowmachine.features import UniqueSubscriberCounts
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 
 
-class RedactedSpatialAggregate(GeoDataMixin, Query):
+class RedactedUniqueSubscriberCounts(GeoDataMixin, Query):
     """
     Class representing the result of spatially aggregating
     a locations object, redacted so that results are not returned if counts are 15 or less..
@@ -22,26 +23,26 @@ class RedactedSpatialAggregate(GeoDataMixin, Query):
     locations : subscriber location query
     """
 
-    def __init__(self, *, spatial_aggregate: SpatialAggregate):
+    def __init__(self, *, unique_subscriber_counts: UniqueSubscriberCounts):
 
-        self.spatial_aggregate = spatial_aggregate
+        self.unique_subscriber_counts = unique_subscriber_counts
         # self.spatial_unit is used in self._geo_augmented_query
-        self.spatial_unit = spatial_aggregate.spatial_unit
+        self.spatial_unit = unique_subscriber_counts.spatial_unit
         super().__init__()
 
     @property
     def column_names(self) -> List[str]:
-        return self.spatial_aggregate.column_names
+        return self.unique_subscriber_counts.column_names
 
     def _make_query(self):
 
-        aggregate_cols = ",".join(self.spatial_aggregate.columns)
+        aggregate_cols = ",".join(self.unique_subscriber_counts.columns)
 
         sql = f"""
         SELECT
             {aggregate_cols}
         FROM
-            ({self.spatial_aggregate.get_query()}) AS agged
+            ({self.unique_subscriber_counts.get_query()}) AS agged
         WHERE agged.total > 15
         """
 
