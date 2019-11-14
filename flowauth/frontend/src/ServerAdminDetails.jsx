@@ -73,6 +73,10 @@ class ServerAdminDetails extends React.Component {
     };
   }
 
+  submitAndExit = () => {
+    this.handleSubmit().then();
+  };
+
   handleSubmit = async () => {
     const {
       edit_mode,
@@ -285,7 +289,7 @@ class ServerAdminDetails extends React.Component {
           open={this.state.pageError}
           message={this.state.errors.message}
         />
-        <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
+        <SubmitButtons handleSubmit={this.submitAndExit} onClick={onClick} />
       </React.Fragment>
     );
   }
