@@ -63,18 +63,31 @@ describe("Server management", function() {
     cy.get("#max-life").type("1234", {
       force: true
     });
-    cy.contains("Save").click();
+    cy.contains("Save")
+      .click()
+      .wait(1);
     /* Edit the server */
     cy.get("[data-action=edit][data-item-name=" + server_name + "]").click();
-    cy.get(".rs-picker-toggle-value").click();
+    cy.get(".rs-picker-toggle-value")
+      .click()
+      .wait(1);
     cy.get(
       ":nth-child(1) > .rs-checkbox > .rs-checkbox-checker > label > .rs-checkbox-wrapper"
     ).click({ force: true });
-    cy.contains("Save").click({ force: true });
+    cy.contains("Save")
+      .click({ force: true })
+      .wait(1);
     /* Check the edit happened */
-    cy.get("[data-action=edit][data-item-name=" + server_name + "]").click();
+    cy.get("[data-action=edit][data-item-name=" + server_name + "]")
+      .click()
+      .wait(1);
     cy.get(".rs-picker-toggle-value").should("have.text", "run (All)");
-    cy.contains("Save").click({ force: true });
+    cy.contains("Save")
+      .click({ force: true })
+      .wait(1);
+    cy.get("[data-action=edit][data-item-name=" + server_name + "]")
+      .click()
+      .wait(1);
     /* Supply an updated spec */
     cy.get("#spec-upload-button").then(subject => {
       cy.fixture("api_spec.json").then(content => {
@@ -94,9 +107,16 @@ describe("Server management", function() {
       });
     });
     cy.get(".rs-picker-toggle-value").should("have.text", "test_scope");
-    cy.contains("Save").click({ force: true });
-    cy.get("[data-action=edit][data-item-name=" + server_name + "]").click();
+    cy.contains("Save")
+      .click({ force: true })
+      .wait(1);
+    cy.get("[data-action=edit][data-item-name=" + server_name + "]")
+      .click()
+      .wait(1);
     cy.get(".rs-picker-toggle-value").should("have.text", "test_scope");
+    cy.contains("Save")
+      .click({ force: true })
+      .wait(1);
     /* Delete it again */
     cy.get("[data-action=rm][data-item-name=" + server_name + "]").click();
     cy.get("[data-action=rm][data-item-name=" + server_name + "]").should(
