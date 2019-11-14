@@ -89,23 +89,25 @@ describe("Server management", function() {
       .click()
       .wait(1);
     /* Supply an updated spec */
-    cy.get("#spec-upload-button").then(subject => {
-      cy.fixture("api_spec.json").then(content => {
-        const el = subject[0];
-        content["components"]["securitySchemes"]["token"][
-          "x-audience"
-        ] = server_name;
-        content["components"]["securitySchemes"]["token"][
-          "x-security-scopes"
-        ] = ["test_scope"];
-        const testFile = new File([JSON.stringify(content)], "api_spec.json");
-        const dataTransfer = new DataTransfer();
+    cy.get("#spec-upload-button")
+      .then(subject => {
+        cy.fixture("api_spec.json").then(content => {
+          const el = subject[0];
+          content["components"]["securitySchemes"]["token"][
+            "x-audience"
+          ] = server_name;
+          content["components"]["securitySchemes"]["token"][
+            "x-security-scopes"
+          ] = ["test_scope"];
+          const testFile = new File([JSON.stringify(content)], "api_spec.json");
+          const dataTransfer = new DataTransfer();
 
-        dataTransfer.items.add(testFile);
-        el.files = dataTransfer.files;
-        cy.wrap(subject).trigger("change", { force: true });
-      });
-    });
+          dataTransfer.items.add(testFile);
+          el.files = dataTransfer.files;
+          cy.wrap(subject).trigger("change", { force: true });
+        });
+      })
+      .wait(1);
     cy.get(".rs-picker-toggle-value").should("have.text", "test_scope");
     cy.contains("Save")
       .click({ force: true })
