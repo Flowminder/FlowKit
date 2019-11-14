@@ -40,7 +40,6 @@ class ServerAdminDetails extends React.Component {
       fullRights: [],
       max_life: 1440,
       latest_expiry: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-      edit_mode: false,
       name_helper_text: "",
       key_helper_text: "",
       maxlife_helper_text: "",
@@ -79,7 +78,6 @@ class ServerAdminDetails extends React.Component {
 
   handleSubmit = async () => {
     const {
-      edit_mode,
       name,
       latest_expiry,
       max_life,
@@ -106,7 +104,7 @@ class ServerAdminDetails extends React.Component {
       max_life &&
       maxlife_helper_text === ""
     ) {
-      const server = edit_mode
+      const server = this.editMode()
         ? editServer(
             item_id,
             name,
@@ -158,6 +156,10 @@ class ServerAdminDetails extends React.Component {
     }
   };
 
+  editMode = () => {
+    return this.props.item_id !== -1;
+  };
+
   async componentDidMount() {
     const { item_id } = this.props;
     if (item_id !== -1) {
@@ -179,8 +181,7 @@ class ServerAdminDetails extends React.Component {
           fullRights: Object.keys(rights),
           enabledRights: enabledKeys,
           latest_expiry: (await limitsAwait).latest_token_expiry,
-          max_life: (await limitsAwait).longest_token_life,
-          edit_mode: true
+          max_life: (await limitsAwait).longest_token_life
         });
       } catch (err) {
         this.setState({ hasError: true, error: err });
@@ -199,7 +200,7 @@ class ServerAdminDetails extends React.Component {
       <React.Fragment>
         <Grid item xs={12}>
           <Typography variant="h5" component="h1">
-            {(this.state.edit_mode && "Edit ") || "New "} Server
+            {(this.editMode() && "Edit ") || "New "} Server
           </Typography>
         </Grid>
         <Grid item xs={12}>
