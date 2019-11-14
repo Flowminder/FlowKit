@@ -8,6 +8,7 @@ import prefect
 from prefect.core import Edge
 from prefect.engine import TaskRunner
 from prefect.engine.state import Success
+from prefect.environments.storage import Memory
 from prefect.schedules import CronSchedule
 from prefect.tasks.core.function import FunctionTask
 from prefect.utilities.configuration import set_temporary_config
@@ -16,10 +17,10 @@ from unittest.mock import Mock, create_autospec
 from autoflow.date_stencil import DateStencil
 from autoflow.model import RunState
 from autoflow.sensor import (
-    add_dates_to_parameters,
     available_dates_sensor,
     filter_dates,
     get_available_dates,
+    get_parametrised_workflows,
     record_workflow_run_state,
     run_workflow,
     skip_if_already_run,
@@ -29,11 +30,10 @@ from autoflow.sensor import (
 
 def test_workflow_config_defaults():
     """
-    Test that WorkflowConfig attributes earliest_date and date_stencil have the correct defaults.
+    Test that WorkflowConfig attributes 'parameters', 'earliest_date' and 'date_stencil' have the correct defaults.
     """
-    workflow_config = WorkflowConfig(
-        workflow_name="DUMMY_FLOW", parameters={"DUMMY_PARAM": "DUMMY_VALUE"}
-    )
+    workflow_config = WorkflowConfig(workflow_name="DUMMY_FLOW")
+    assert workflow_config.parameters is None
     assert workflow_config.earliest_date is None
     assert workflow_config.date_stencil._intervals == ((0, 0),)
 
@@ -121,10 +121,7 @@ def test_filter_dates_no_filter(test_logger):
             "days"
         )
     )
-    workflow_config = WorkflowConfig(
-        workflow=prefect.Flow(name="DUMMY_FLOW"),
-        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
-    )
+    workflow_config = WorkflowConfig(workflow_name="DUMMY_FLOW")
     with prefect.context(logger=test_logger):
         filtered_dates = filter_dates.run(
             available_dates=dates, workflow_config=workflow_config
@@ -143,9 +140,7 @@ def test_filter_dates_by_earliest_date(test_logger):
         )
     )
     workflow_config = WorkflowConfig(
-        workflow=prefect.Flow(name="DUMMY_FLOW"),
-        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
-        earliest_date=pendulum.date(2016, 1, 4),
+        workflow_name="DUMMY_FLOW", earliest_date=pendulum.date(2016, 1, 4)
     )
     with prefect.context(logger=test_logger):
         filtered_dates = filter_dates.run(
@@ -164,8 +159,7 @@ def test_filter_dates_by_stencil(test_logger):
     """
     dates = [pendulum.date(2016, 1, d) for d in [1, 3, 4, 5, 6]]
     workflow_config = WorkflowConfig(
-        workflow=prefect.Flow(name="DUMMY_FLOW"),
-        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        workflow_name="DUMMY_FLOW",
         earliest_date=None,
         date_stencil=DateStencil([-2, 0]),
     )
@@ -182,8 +176,7 @@ def test_filter_dates_by_earliest_and_stencil(test_logger):
     """
     dates = [pendulum.date(2016, 1, d) for d in [1, 3, 4, 5, 6]]
     workflow_config = WorkflowConfig(
-        workflow=prefect.Flow(name="DUMMY_FLOW"),
-        parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+        workflow_name="DUMMY_FLOW",
         earliest_date=pendulum.date(2016, 1, 4),
         date_stencil=DateStencil([-2, 0]),
     )
@@ -192,6 +185,57 @@ def test_filter_dates_by_earliest_and_stencil(test_logger):
             available_dates=dates, workflow_config=workflow_config
         )
     assert filtered_dates == [pendulum.date(2016, 1, d) for d in [5, 6]]
+
+
+def test_get_parametrised_workflows(test_logger):
+    """
+    Test that get_parametrised_workflows correctly combines workflow parameters with dates.
+    """
+    workflow_storage = Memory()
+    workflow_storage.add_flow(prefect.Flow(name="WORKFLOW_1"))
+    workflow_storage.add_flow(prefect.Flow(name="WORKFLOW_2"))
+
+    workflow_configs = [
+        WorkflowConfig(workflow_name="WORKFLOW_1"),
+        WorkflowConfig(
+            workflow_name="WORKFLOW_2",
+            parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
+            date_stencil=DateStencil([-1, 0]),
+        ),
+    ]
+    lists_of_dates = [
+        [
+            pendulum.date(2016, 1, 1),
+            pendulum.date(2016, 1, 2),
+            pendulum.date(2016, 1, 3),
+        ],
+        [pendulum.date(2016, 1, 4), pendulum.date(2016, 1, 5)],
+    ]
+
+    with prefect.context(logger=test_logger):
+        parametrised_workflows = get_parametrised_workflows.run(
+            workflow_configs=workflow_configs,
+            lists_of_dates=lists_of_dates,
+            workflow_storage=workflow_storage,
+        )
+
+    assert len(parametrised_workflows) == 5
+    for i, refdate in enumerate(lists_of_dates[0]):
+        assert parametrised_workflows[i][0].name == "WORKFLOW_1"
+        assert parametrised_workflows[i][1] == {
+            "reference_date": refdate,
+            "date_ranges": [(refdate, refdate)],
+        }
+    for i in [3, 4]:
+        assert parametrised_workflows[i][0].name == "WORKFLOW_2"
+        assert parametrised_workflows[i][1] == {
+            "DUMMY_PARAM": "DUMMY_VALUE",
+            "reference_date": pendulum.date(2016, 1, i + 1),
+            "date_ranges": [
+                (pendulum.date(2016, 1, i), pendulum.date(2016, 1, i)),
+                (pendulum.date(2016, 1, i + 1), pendulum.date(2016, 1, i + 1)),
+            ],
+        }
 
 
 @pytest.mark.parametrize(
@@ -260,64 +304,6 @@ def test_skip_if_already_run_unrecognised_state(monkeypatch, test_logger):
         skip_if_already_run.run(
             (prefect.Flow(name="DUMMY_WORFLOW_NAME"), {"DUMMY_PARAM": "DUMMY_VALUE"})
         )
-
-
-def test_add_dates_to_parameters(test_logger):
-    """
-    Test that add_dates_to_parameters correctly combines workflow parameters with dates,
-    and uses the default date stencil [0] if none is provided.
-    """
-    workflow_configs = [
-        WorkflowConfig(
-            workflow=prefect.Flow(name="WORKFLOW_1"), parameters={"DUMMY_PARAM": 1}
-        ),
-        WorkflowConfig(
-            workflow=prefect.Flow(name="WORKFLOW_2"),
-            parameters={"DUMMY_PARAM": 2},
-            date_stencil=DateStencil([-1, 0]),
-        ),
-    ]
-    lists_of_dates = [
-        [
-            pendulum.date(2016, 1, 1),
-            pendulum.date(2016, 1, 2),
-            pendulum.date(2016, 1, 3),
-        ],
-        [pendulum.date(2016, 1, 4), pendulum.date(2016, 1, 5)],
-    ]
-
-    with prefect.context(logger=test_logger):
-        parametrised_workflows = add_dates_to_parameters.run(
-            workflow_configs=workflow_configs, lists_of_dates=lists_of_dates
-        )
-
-    assert len(parametrised_workflows) == 5
-    assert (
-        parametrised_workflows[0][0]
-        == parametrised_workflows[1][0]
-        == parametrised_workflows[2][0]
-        == workflow_configs[0].workflow
-    )
-    assert (
-        parametrised_workflows[3][0]
-        == parametrised_workflows[4][0]
-        == workflow_configs[1].workflow
-    )
-    for i, refdate in enumerate(lists_of_dates[0]):
-        assert parametrised_workflows[i][1] == {
-            "DUMMY_PARAM": 1,
-            "reference_date": refdate,
-            "date_ranges": [(refdate, refdate)],
-        }
-    for i in [3, 4]:
-        assert parametrised_workflows[i][1] == {
-            "DUMMY_PARAM": 2,
-            "reference_date": pendulum.date(2016, 1, i + 1),
-            "date_ranges": [
-                (pendulum.date(2016, 1, i), pendulum.date(2016, 1, i)),
-                (pendulum.date(2016, 1, i + 1), pendulum.date(2016, 1, i + 1)),
-            ],
-        }
 
 
 def test_record_workflow_run_state(monkeypatch, test_logger):

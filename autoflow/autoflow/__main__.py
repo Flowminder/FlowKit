@@ -64,7 +64,7 @@ def main():
     # cdr_types: list of str, optional
     #     A list of CDR types for which available dates will be checked (default is all available CDR types).
     # available_dates_sensor.schedule = CronSchedule(schedule)
-    # available_dates_sensor.run(workflow_configs=workflow_configs, cdr_types=cdr_types)
+    # available_dates_sensor.run(workflow_configs=workflow_configs, workflow_storage=workflow_storage, cdr_types=cdr_types)
 
 
 if __name__ == "__main__":

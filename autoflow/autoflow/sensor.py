@@ -29,8 +29,8 @@ class WorkflowConfig(NamedTuple):
 
     Attributes
     ----------
-    workflow : prefect.Flow
-        Prefect flow.
+    workflow_name : str
+        Name of a prefect flow.
     parameters : dict
         Dict of parameters with which the workflow should be run.
     earliest_date : date
@@ -40,8 +40,8 @@ class WorkflowConfig(NamedTuple):
         The default is DateStencil([0]) (i.e. a stencil that contains only the reference date).
     """
 
-    workflow: Flow
-    parameters: Dict[str, Any]
+    workflow_name: str
+    parameters: Optional[Dict[str, Any]] = None
     earliest_date: Optional["datetime.date"] = None
     date_stencil: DateStencil = DateStencil([0])
 
@@ -132,24 +132,23 @@ def filter_dates(
             date for date in filtered_dates if date >= workflow_config.earliest_date
         ]
 
-    if workflow_config.date_stencil is None:
-        prefect.context.logger.debug("No date stencil provided.")
-    else:
-        prefect.context.logger.debug(
-            f"Returning reference dates for which all dates in stencil are available."
-        )
-        filtered_dates = [
-            date
-            for date in filtered_dates
-            if workflow_config.date_stencil.dates_are_available(date, available_dates)
-        ]
+    prefect.context.logger.debug(
+        f"Returning reference dates for which all dates in stencil are available."
+    )
+    filtered_dates = [
+        date
+        for date in filtered_dates
+        if workflow_config.date_stencil.dates_are_available(date, available_dates)
+    ]
 
     return filtered_dates
 
 
 @task
-def add_dates_to_parameters(
-    workflow_configs: List[WorkflowConfig], lists_of_dates: List[List["datetime.date"]]
+def get_parametrised_workflows(
+    workflow_configs: List[WorkflowConfig],
+    lists_of_dates: List[List["datetime.date"]],
+    workflow_storage: "prefect.environments.storage.Storage",
 ) -> List[Tuple[Flow, Dict[str, Any]]]:
     """
     For each workflow in a list of workflow configs, for each date in the
@@ -159,9 +158,11 @@ def add_dates_to_parameters(
     Parameters
     ----------
     workflow_configs : list of WorkflowConfig
-        List of workflow configs
+        List of workflow configs.
     lists_of_dates : list of list of date
-        List containing a list of dates for each workflow in workflow_configs
+        List containing a list of dates for each workflow in workflow_configs.
+    workflow_storage : prefect.environments.storage.Storage
+        Prefect Storage object containing the workflows named in workflow_configs.
 
     Returns
     -------
@@ -176,9 +177,9 @@ def add_dates_to_parameters(
     )
     return [
         (
-            workflow_config.workflow,
+            workflow_storage.get_flow(workflow_config.workflow_name),
             dict(
-                workflow_config.parameters,
+                workflow_config.parameters or {},
                 reference_date=date,
                 date_ranges=workflow_config.date_stencil.as_date_pairs(
                     reference_date=date
@@ -306,8 +307,10 @@ with Flow(name="Available dates sensor") as available_dates_sensor:
     filtered_dates = filter_dates.map(
         available_dates=unmapped(available_dates), workflow_config=workflow_configs
     )
-    parametrised_workflows = add_dates_to_parameters(
-        workflow_configs=workflow_configs, lists_of_dates=filtered_dates
+    parametrised_workflows = get_parametrised_workflows(
+        workflow_configs=workflow_configs,
+        lists_of_dates=filtered_dates,
+        workflow_storage=Parameter("workflow_storage"),
     )
 
     running = record_workflow_run_state.map(
