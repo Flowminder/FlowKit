@@ -63,6 +63,7 @@ class RedactedJoinedSpatialAggregate(GeoDataMixin, Query):
                 locations=self.joined_spatial_aggregate.locations
             )
         )
+        self.spatial_unit = self.joined_spatial_aggregate.locations.spatial_unit
         super().__init__()
 
     def _make_query(self):

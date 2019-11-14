@@ -8,6 +8,7 @@ from marshmallow_oneofschema import OneOfSchema
 
 
 from flowmachine.features import Flows
+from flowmachine.features.location.redacted_flows import RedactedFlows
 from .base_exposed_query import BaseExposedQuery
 from .daily_location import DailyLocationSchema, DailyLocationExposed
 from .modal_location import ModalLocationSchema, ModalLocationExposed
@@ -56,4 +57,4 @@ class FlowsExposed(BaseExposedQuery):
         """
         loc1 = self.from_location._flowmachine_query_obj
         loc2 = self.to_location._flowmachine_query_obj
-        return Flows(loc1, loc2)
+        return RedactedFlows(flows=Flows(loc1, loc2))
