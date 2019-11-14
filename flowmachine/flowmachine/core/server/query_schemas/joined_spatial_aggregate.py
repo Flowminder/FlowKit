@@ -30,6 +30,9 @@ from flowmachine.core.server.query_schemas.spatial_aggregate import (
 from flowmachine.features.location.joined_spatial_aggregate import (
     JoinedSpatialAggregate,
 )
+from flowmachine.features.location.redacted_joined_spatial_aggregate import (
+    RedactedJoinedSpatialAggregate,
+)
 from .base_exposed_query import BaseExposedQuery
 
 
@@ -110,6 +113,8 @@ class JoinedSpatialAggregateExposed(BaseExposedQuery):
         """
         locations = self.locations._flowmachine_query_obj
         metric = self.metric._flowmachine_query_obj
-        return JoinedSpatialAggregate(
-            locations=locations, metric=metric, method=self.method
+        return RedactedJoinedSpatialAggregate(
+            joined_spatial_aggregate=JoinedSpatialAggregate(
+                locations=locations, metric=metric, method=self.method
+            )
         )

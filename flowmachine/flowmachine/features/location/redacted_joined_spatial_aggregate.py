@@ -10,7 +10,9 @@ from flowmachine.core.mixins import GeoDataMixin
 from flowmachine.features.location.joined_spatial_aggregate import (
     JoinedSpatialAggregate,
 )
-from flowmachine.features.location.redacted_spatial_aggregate import RedactedSpatialAggregate
+from flowmachine.features.location.redacted_spatial_aggregate import (
+    RedactedSpatialAggregate,
+)
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from flowmachine.utils import parse_datestring
 
@@ -56,7 +58,11 @@ class RedactedJoinedSpatialAggregate(GeoDataMixin, Query):
 
     def __init__(self, *, joined_spatial_aggregate: JoinedSpatialAggregate):
         self.joined_spatial_aggregate = joined_spatial_aggregate
-        self.redacted_spatial_agg = RedactedSpatialAggregate(SpatialAggregate(locations=self.joined_spatial_aggregate.locations)))
+        self.redacted_spatial_agg = RedactedSpatialAggregate(
+            spatial_aggregate=SpatialAggregate(
+                locations=self.joined_spatial_aggregate.locations
+            )
+        )
         super().__init__()
 
     def _make_query(self):
@@ -66,7 +72,6 @@ class RedactedJoinedSpatialAggregate(GeoDataMixin, Query):
         INNER NATURAL JOIN
         ({self.redacted_spatial_agg.get_query()}) as redact
         """
-
 
     @property
     def column_names(self) -> List[str]:
