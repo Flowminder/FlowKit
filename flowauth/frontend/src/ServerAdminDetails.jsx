@@ -219,6 +219,7 @@ class ServerAdminDetails extends React.Component {
               variant="contained"
               component="span"
               className={classes.button}
+              id="spec-upload-button-target"
             >
               Upload
             </Button>
