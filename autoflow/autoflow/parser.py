@@ -16,6 +16,7 @@ from marshmallow import (
 from pathlib import Path
 from prefect.environments import storage
 from prefect.schedules import CronSchedule
+from typing import Dict, List, Tuple, Union
 
 from .date_stencil import DateStencil, InvalidDateIntervalError
 from .sensor import WorkflowConfig
@@ -88,11 +89,13 @@ class DateStencilField(fields.Field):
 
 
 class NotebookOutputSchema(Schema):
-    format = fields.String(validate=OneOf["pdf"], required=True)
+    format = fields.String(validate=validate.OneOf(["pdf"]), required=True)
     template = fields.String(missing=None)
 
     @validates("template")
     def validate_template(self, value):
+        if value is None:
+            return
         try:
             inputs_dir = Path(self.context["inputs_dir"])
         except KeyError:
@@ -233,14 +236,18 @@ class WorkflowConfigSchema(Schema):
 class AvailableDatesSensorSchema(Schema):
     schedule = ScheduleField(required=True, allow_none=True)
     cdr_types = fields.List(
-        fields.String(validate=OneOf(["calls", "sms", "mds", "topups"])), missing=None
+        fields.String(validate=validate.OneOf(["calls", "sms", "mds", "topups"])),
+        missing=None,
     )
     workflows = fields.List(fields.Nested(WorkflowConfigSchema), required=True)
 
 
 def parse_workflows_yaml(
     filename: str, inputs_dir: str
-) -> Tuple[List["prefect.Flow"], Dict[str, List[Dict[str, Any]]]]:
+) -> Tuple[
+    "prefect.environments.storage.Storage",
+    Dict[str, Union["prefect.schedules.Schedule", List[str], List[WorkflowConfig]]],
+]:
     """
     Construct workflows defined in an input file.
 

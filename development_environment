@@ -159,7 +159,7 @@ PREFECT__ASCIIDOC_TEMPLATE_PATH=./autoflow/config/asciidoc_extended.tpl
 # FlowAPI URL
 FLOWAPI_URL=http://localhost:9090
 # URI of database for storing workflow run metadata
-AUTOFLOW_DB_URI=sqlite:///
+AUTOFLOW_DB_URI=sqlite:////tmp/test.db
 # Password for AutoFlow database
 #AUTOFLOW_DB_PASSWORD
 # FlowAPI token

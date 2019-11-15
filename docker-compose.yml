@@ -200,6 +200,8 @@ services:
       AUTOFLOW_INPUTS_DIR: /mounts/inputs
       AUTOFLOW_OUTPUTS_DIR: /mounts/outputs
       AUTOFLOW_LOG_LEVEL: ${AUTOFLOW_LOG_LEVEL:?Must set AUTOFLOW_LOG_LEVEL env var}
+      AUTOFLOW_DB_URI: ${AUTOFLOW_DB_URI:?Must set AUTOFLOW_DB_URI env var}
+      AUTOFLOW_DB_PASSWORD: ${AUTOFLOW_DB_PASSWORD}
       FLOWAPI_URL: http://flowapi:${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}
       FLOWAPI_TOKEN: $FLOWAPI_TOKEN
     networks:
