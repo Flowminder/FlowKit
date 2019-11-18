@@ -6,7 +6,7 @@ import json
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
-from flowmachine.features.location.spatial_aggregates import SpatialAggregate
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from flowmachine.features.dfs.total_amount_for_metric import DFSTotalMetricAmount
 from flowmachine.features import daily_location, ModalLocation
 from flowmachine.utils import sort_recursively
