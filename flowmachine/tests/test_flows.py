@@ -150,4 +150,4 @@ def test_flows_geojson(get_dataframe):
             df.admin2name_from == feature["properties"]["admin2name"]
         ].set_index("admin2name_to")
         for dest, tot in outflows.items():
-            assert tot == df_src.loc[dest]["count"]
+            assert tot == df_src.loc[dest]["value"]
