@@ -44,7 +44,3 @@ class RedactedSpatialAggregate(GeoDataMixin, Query):
         """
 
         return sql
-
-    @property
-    def fully_qualified_table_name(self):
-        raise NotImplementedError

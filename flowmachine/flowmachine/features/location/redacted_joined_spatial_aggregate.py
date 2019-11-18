@@ -77,7 +77,3 @@ class RedactedJoinedSpatialAggregate(GeoDataMixin, Query):
     @property
     def column_names(self) -> List[str]:
         return self.joined_spatial_aggregate.column_names
-
-    @property
-    def fully_qualified_table_name(self):
-        raise NotImplementedError
