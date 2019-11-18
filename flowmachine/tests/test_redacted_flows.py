@@ -14,6 +14,6 @@ def test_all_above_threshold(get_dataframe):
             RedactedFlows(
                 flows=Flows(daily_location("2016-01-01"), daily_location("2016-01-01"))
             )
-        ).count
+        ).value
         > 15
     )

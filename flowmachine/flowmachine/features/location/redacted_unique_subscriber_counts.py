@@ -41,7 +41,7 @@ class RedactedUniqueSubscriberCounts(GeoDataMixin, Query):
             {self.column_names_as_string_list}
         FROM
             ({self.unique_subscriber_counts.get_query()}) AS agged
-        WHERE agged.total > 15
+        WHERE agged.value > 15
         """
 
         return sql

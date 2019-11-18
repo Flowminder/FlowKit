@@ -40,7 +40,7 @@ class RedactedSpatialAggregate(GeoDataMixin, Query):
             {self.spatial_aggregate.column_names_as_string_list}
         FROM
             ({self.spatial_aggregate.get_query()}) AS agged
-        WHERE agged.total > 15
+        WHERE agged.value > 15
         """
 
         return sql
