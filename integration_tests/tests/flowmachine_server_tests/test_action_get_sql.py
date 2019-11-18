@@ -2,7 +2,7 @@ import pytest
 
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from flowmachine.core import make_spatial_unit
-from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features.location.spatial_aggregates import SpatialAggregate
 from flowmachine.features import daily_location
 from .helpers import poll_until_done
 
