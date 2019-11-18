@@ -27,7 +27,7 @@ def test_can_be_aggregated_admin3(get_dataframe):
     )
     agg = mfl.aggregate()
     df = get_dataframe(agg)
-    assert ["pcod", "total"] == list(df.columns)
+    assert ["pcod", "value"] == list(df.columns)
 
 
 def test_can_be_aggregated_lon_lat(get_dataframe):
@@ -42,7 +42,7 @@ def test_can_be_aggregated_lon_lat(get_dataframe):
     )
     agg = hl.aggregate()
     df = get_dataframe(agg)
-    assert ["lon", "lat", "total"] == list(df.columns)
+    assert ["lon", "lat", "value"] == list(df.columns)
 
 
 def test_can_be_aggregated_admin3_distribution(get_dataframe):
