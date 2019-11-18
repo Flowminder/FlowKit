@@ -591,7 +591,7 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
 
     result_dataframe = get_result(connection=con, query=query_spec)
-    assert len(result_dataframe) > 0
+    assert len(result_dataframe.columns) > 0
 
 
 @pytest.mark.parametrize(
