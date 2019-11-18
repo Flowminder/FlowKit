@@ -1,5 +1,5 @@
 {
-  "e4babc523792bb7942e23573656dbdbd": {
+  "22aa443470c5ba7e6f767a18a520b9f0": {
     "query_kind": "spatial_aggregate",
     "locations": {
       "query_kind": "daily_location",
@@ -16,7 +16,7 @@
       }
     }
   },
-  "b6e172a4d83fc10be1e2cfbbb2f4a587": {
+  "36689ffe963d9a2fd244bacae1291d85": {
     "query_kind": "spatial_aggregate",
     "locations": {
       "query_kind": "daily_location",
@@ -37,7 +37,7 @@
     "event_types": null,
     "subscriber_subset": null
   },
-  "d32b47b7f88ba4ad0b92a6b2dabce216": {
+  "42e26bdcf826ce0b19c798be7416368e": {
     "query_kind": "spatial_aggregate",
     "locations": {
       "query_kind": "modal_location",
