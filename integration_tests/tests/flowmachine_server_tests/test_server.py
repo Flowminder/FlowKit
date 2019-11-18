@@ -7,6 +7,9 @@ import json
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
+from flowmachine.features.location.redacted_spatial_aggregate import (
+    RedactedSpatialAggregate,
+)
 from flowmachine.features.dfs.total_amount_for_metric import DFSTotalMetricAmount
 from flowmachine.features import daily_location, ModalLocation
 from flowmachine.utils import sort_recursively
@@ -107,12 +110,14 @@ def test_run_daily_location_query(zmq_host, zmq_port):
     }
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
 
-    q = SpatialAggregate(
-        locations=daily_location(
-            date="2016-01-01",
-            method="most-common",
-            spatial_unit=make_spatial_unit("admin", level=3),
-            subscriber_subset=None,
+    q = RedactedSpatialAggregate(
+        spatial_aggregate=SpatialAggregate(
+            locations=daily_location(
+                date="2016-01-01",
+                method="most-common",
+                spatial_unit=make_spatial_unit("admin", level=3),
+                subscriber_subset=None,
+            )
         )
     )
     expected_query_id = q.query_id
@@ -162,20 +167,22 @@ def test_run_modal_location_query(zmq_host, zmq_port):
     }
     reply = send_zmq_message_and_receive_reply(msg, port=zmq_port, host=zmq_host)
 
-    q = SpatialAggregate(
-        locations=ModalLocation(
-            daily_location(
-                date="2016-01-01",
-                method="most-common",
-                spatial_unit=make_spatial_unit("admin", level=3),
-                subscriber_subset=None,
-            ),
-            daily_location(
-                date="2016-01-02",
-                method="most-common",
-                spatial_unit=make_spatial_unit("admin", level=3),
-                subscriber_subset=None,
-            ),
+    q = RedactedSpatialAggregate(
+        spatial_aggregate=SpatialAggregate(
+            locations=ModalLocation(
+                daily_location(
+                    date="2016-01-01",
+                    method="most-common",
+                    spatial_unit=make_spatial_unit("admin", level=3),
+                    subscriber_subset=None,
+                ),
+                daily_location(
+                    date="2016-01-02",
+                    method="most-common",
+                    spatial_unit=make_spatial_unit("admin", level=3),
+                    subscriber_subset=None,
+                ),
+            )
         )
     )
     expected_query_id = q.query_id
