@@ -25,6 +25,6 @@ def test_all_above_threshold(get_dataframe):
     under_15 = get_dataframe(
         daily_location("2016-01-01")
         .aggregate()
-        .numeric_subset(col="total", low=0, high=15)
+        .numeric_subset(col="value", low=0, high=15)
     ).pcod
     assert set(under_15).isdisjoint(in_agg)
