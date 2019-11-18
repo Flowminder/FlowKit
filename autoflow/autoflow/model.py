@@ -88,7 +88,7 @@ class WorkflowRuns(Base):
         parameters_hash = get_params_hash(parameters)
         row = cls(workflow_name, parameters_hash, state)
         session.add(row)
-        session.commit()
+        session.flush()
 
     @classmethod
     def get_most_recent_state(

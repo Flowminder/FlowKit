@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+"""
+Defines the DateStencil class, to represent a pattern of dates relative to a reference date.
+"""
+
 import datetime
 import pendulum
 from typing import Iterable, List, Optional, Sequence, Set, Tuple, Union
