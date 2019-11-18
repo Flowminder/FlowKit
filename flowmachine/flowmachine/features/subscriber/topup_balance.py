@@ -221,7 +221,7 @@ class TopUpBalance(SubscriberFeature):
             sql = f"""
             SELECT subscriber, {statistic_clause} AS value
             FROM ({weight_extraction_query}) U
-            GROUP BY subscriber
+            GROUP BY subscriber 
             """
             return sql
 
@@ -235,7 +235,7 @@ class TopUpBalance(SubscriberFeature):
                 ORDER BY subscriber, DESC total_weight
             ) U
             """
-            return sql
+            return sql # The new bit
 
         sql = f"""
         WITH W AS ({weight_extraction_query})
