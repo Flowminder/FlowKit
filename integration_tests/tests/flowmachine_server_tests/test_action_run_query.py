@@ -6,7 +6,7 @@ from flowmachine.core.cache import reset_cache
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.dependency_graph import unstored_dependencies_graph
-from flowmachine.features.location.spatial_aggregates import SpatialAggregate
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from flowmachine.features import daily_location
 from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
