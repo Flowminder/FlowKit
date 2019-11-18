@@ -86,3 +86,7 @@ async def get_api_spec():
 async def get_yaml_api_spec():
     spec = await get_spec(request.socket, request.request_id)
     return current_app.response_class(spec.to_yaml(), content_type="application/x-yaml")
+
+@blueprint.route("/redoc")
+async def redoc_api_spec():
+    return await render_template("spec.html", api_version=__version__)
