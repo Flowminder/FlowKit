@@ -30,12 +30,56 @@ class RedactedTotalEvents(Query):
         return self.total_events.column_names
 
     def _make_query(self):
+        # Set a filter clause based on the direction of the event
+        if self.total_events.direction == "both":
+            filter_clause = ""
+        elif self.total_events.direction == "in":
+            filter_clause = "WHERE NOT outgoing"
+        elif self.total_events.direction == "out":
+            filter_clause = "WHERE outgoing"
+        else:
+            raise ValueError(
+                "Unrecognised direction: {}".format(self.total_events.direction)
+            )
 
-        # running same sql as original query by with added having on the groupby
+        # list of columns that we want to group by, these are all the time
+        # columns, plus the location columns
+        groups = [
+            x.split(" AS ")[0] for x in self.total_events.time_cols
+        ] + self.total_events.spatial_unit.location_id_columns
+
+        returning_columns = ", ".join(
+            [
+                x.split(" AS ")[-1]
+                for x in self.total_events.spatial_unit.location_id_columns
+            ]
+        )
+
+        returning_time_columns = ", ".join(
+            [x.split(" AS ")[-1] for x in self.total_events.time_cols]
+        )
+        # We now need to group this table by the relevant columns in order to
+        # get a count per region
         sql = f"""
-            {self.total_events._make_query()}
-            HAVING
-                count(distinct subscriber) > 15
+            WITH tne AS (SELECT
+                {', '.join(self.total_events.spatial_unit.location_id_columns)},
+                {', '.join(self.total_events.time_cols)},
+                count(*) AS value,
+                count(distinct subscriber) > 15 AS safe_agg
+            FROM
+                ({self.total_events.unioned.get_query()}) unioned
+            {filter_clause}
+            GROUP BY
+                {', '.join(groups)})
+                
+            SELECT {returning_columns}, 
+                {returning_time_columns},
+                value
+            FROM tne NATURAL JOIN
+            (SELECT {returning_columns} FROM tne 
+            GROUP BY {returning_columns}
+            HAVING every(safe_agg)
+            ) _
         """
 
         return sql
