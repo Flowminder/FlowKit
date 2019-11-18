@@ -43,7 +43,7 @@ def test_events_at_cell_level(get_dataframe):
     val = list(
         df[
             (df.date == "2016-01-03") & (df.location_id == "1Gc6RSfZ") & (df.hour == 17)
-        ].total
+        ].value
     )[0]
     assert val == 4
 
@@ -63,7 +63,7 @@ def test_ignore_texts(get_dataframe):
     # Test one of the values
     df.date = df.date.astype(str)
     val = list(
-        df[(df.date == "2016-01-01") & (df.site_id == "0xqNDj") & (df.hour == 3)].total
+        df[(df.date == "2016-01-01") & (df.site_id == "0xqNDj") & (df.hour == 3)].value
     )[0]
     assert val == 3
 
@@ -82,7 +82,7 @@ def test_only_incoming(get_dataframe):
     # Test one of the values
     df.date = df.date.astype(str)
     val = list(
-        df[(df.date == "2016-01-01") & (df.site_id == "6qpN0p") & (df.hour == 0)].total
+        df[(df.date == "2016-01-01") & (df.site_id == "6qpN0p") & (df.hour == 0)].value
     )[0]
     assert val == 2
 
@@ -101,7 +101,7 @@ def test_events_daily(get_dataframe):
 
     # Test one of the values
     df.date = df.date.astype(str)
-    val = list(df[(df.date == "2016-01-03") & (df.site_id == "B8OaG5")].total)[0]
+    val = list(df[(df.date == "2016-01-03") & (df.site_id == "B8OaG5")].value)[0]
     assert val == 95
 
 
@@ -125,7 +125,7 @@ def test_events_min(get_dataframe):
             & (df.site_id == "zdNQx2")
             & (df.hour == 15)
             & (df["min"] == 20)
-        ].total
+        ].value
     )[0]
     assert val == 1
 

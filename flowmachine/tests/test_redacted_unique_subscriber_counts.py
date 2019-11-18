@@ -11,13 +11,9 @@ def test_all_above_threshold(get_dataframe):
     """
     Test that all values in the redacted query are above the redaction threshold.
     """
-    assert all(
-        get_dataframe(
-            RedactedUniqueSubscriberCounts(
-                unique_subscriber_counts=UniqueSubscriberCounts(
-                    "2016-01-01", "2016-01-02"
-                )
-            )
-        ).value
-        > 15
-    )
+    us = UniqueSubscriberCounts("2016-01-01", "2016-01-02", table=["events.calls"])
+    rus_df = get_dataframe(RedactedUniqueSubscriberCounts(unique_subscriber_counts=us))
+    us_df = get_dataframe(us)
+    assert all(rus_df.value > 15)
+    assert set(us_df.location_id).issuperset(set(rus_df.location_id))
+    assert set(us_df.location_id) != set(rus_df.location_id)
