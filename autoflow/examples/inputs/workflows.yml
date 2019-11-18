@@ -28,3 +28,7 @@ available_dates_sensor:
         aggregation_unit: admin2
       earliest_date: 2016-01-04
       date_stencil: [[2016-01-01, 2016-01-02], -1, 0]
+    - workflow_name: flows_above_normal
+      parameters:
+        aggregation_unit: admin1
+      date_stencil: [-2, -1, 0]
