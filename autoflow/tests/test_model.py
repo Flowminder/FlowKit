@@ -124,6 +124,7 @@ def test_init_db_doesnt_wipe(postgres_test_db):
         state=RunState.running,
         session=session,
     )
+    session.commit()
     session.close()
     # Init DB
     init_db(postgres_test_db.url())
@@ -147,6 +148,7 @@ def test_init_db_force(postgres_test_db):
         state=RunState.running,
         session=session,
     )
+    session.commit()
     session.close()
     # Init DB
     init_db(postgres_test_db.url(), force=True)

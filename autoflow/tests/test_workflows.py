@@ -190,6 +190,7 @@ def test_convert_notebook_to_pdf_no_template(monkeypatch, test_logger):
     with set_temporary_config(
         {"outputs.reports_dir": "DUMMY_REPORTS_DIR"}
     ), prefect.context(logger=test_logger):
+        prefect.config.pop("asciidoc_template_path", None)
         output_path = convert_notebook_to_pdf.run(
             notebook_path="DUMMY_NOTEBOOKS_DIR/DUMMY_FILENAME.ipynb"
         )
