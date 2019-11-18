@@ -7,12 +7,12 @@ import pendulum
 import prefect
 from prefect.core import Edge
 from prefect.engine import TaskRunner
-from prefect.engine.state import Success
+from prefect.engine.state import Failed, Success
 from prefect.environments.storage import Memory
 from prefect.schedules import CronSchedule
 from prefect.tasks.core.function import FunctionTask
 from prefect.utilities.configuration import set_temporary_config
-from unittest.mock import Mock, create_autospec
+from unittest.mock import call, create_autospec, Mock
 
 from autoflow.date_stencil import DateStencil
 from autoflow.model import RunState
@@ -402,95 +402,226 @@ def test_run_workflow_ignores_schedule(test_logger):
     function_mock.assert_called_once_with(dummy_param="DUMMY_VALUE")
 
 
-# TODO: Add tests for available_dates_sensor. Maybe use bits of these tests:
-# def test_record_workflow_done_upstream_success(monkeypatch, test_logger):
-#     """
-#     Test that the record_workflow_done task runs if all of its upstream tasks are successful.
-#     """
-#     runner = TaskRunner(task=record_workflow_done)
-#     edge1 = Edge(Task(), record_workflow_done)
-#     edge2 = Edge(Task(), record_workflow_done)
-#     set_state_mock = Mock()
-#     monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
-#     monkeypatch.setattr("autoflow.tasks.get_session", Mock())
-#     context = dict(
-#         flow_name="DUMMY_WORFLOW_NAME",
-#         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
-#         scheduled_start_time=pendulum.datetime(2016, 1, 1),
-#         logger=test_logger,
-#     )
-#     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
-#         final_state = runner.run(
-#             upstream_states={edge1: Success(), edge2: Success()}, context=context
-#         )
-#     assert final_state.is_successful()
-#     set_state_mock.assert_called_once()
-#
-# def test_record_workflow_done_upstream_failed(monkeypatch, test_logger):
-#     """
-#     Test that the record_workflow_done task does not run if any of its upstream tasks fail.
-#     """
-#     runner = TaskRunner(task=record_workflow_done)
-#     edge1 = Edge(Task(), record_workflow_done)
-#     edge2 = Edge(Task(), record_workflow_done)
-#     set_state_mock = Mock()
-#     monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
-#     monkeypatch.setattr("autoflow.tasks.get_session", Mock())
-#     context = dict(
-#         flow_name="DUMMY_WORFLOW_NAME",
-#         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
-#         scheduled_start_time=pendulum.datetime(2016, 1, 1),
-#         logger=test_logger,
-#     )
-#     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
-#         final_state = runner.run(
-#             upstream_states={edge1: Success(), edge2: Failed()}, context=context
-#         )
-#     assert isinstance(final_state, TriggerFailed)
-#     set_state_mock.assert_not_called()
-#
-# def test_record_workflow_failed_upstream_success(monkeypatch, test_logger):
-#     """
-#     Test that the record_workflow_failed task does not run if all of its upstream tasks are successful.
-#     """
-#     runner = TaskRunner(task=record_workflow_failed)
-#     edge1 = Edge(Task(), record_workflow_failed)
-#     edge2 = Edge(Task(), record_workflow_failed)
-#     set_state_mock = Mock()
-#     monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
-#     monkeypatch.setattr("autoflow.tasks.get_session", Mock())
-#     context = dict(
-#         flow_name="DUMMY_WORFLOW_NAME",
-#         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
-#         scheduled_start_time=pendulum.datetime(2016, 1, 1),
-#         logger=test_logger,
-#     )
-#     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
-#         final_state = runner.run(
-#             upstream_states={edge1: Success(), edge2: Success()}, context=context
-#         )
-#     assert isinstance(final_state, TriggerFailed)
-#     set_state_mock.assert_not_called()
-#
-# def test_record_workflow_failed_upstream_failed(monkeypatch, test_logger):
-#     """
-#     Test that the record_workflow_failed task runs if any of its upstream tasks fail.
-#     """
-#     runner = TaskRunner(task=record_workflow_failed)
-#     edge1 = Edge(Task(), record_workflow_failed)
-#     edge2 = Edge(Task(), record_workflow_failed)
-#     set_state_mock = Mock()
-#     monkeypatch.setattr("autoflow.tasks.WorkflowRuns.set_state", set_state_mock)
-#     monkeypatch.setattr("autoflow.tasks.get_session", Mock())
-#     context = dict(
-#         flow_name="DUMMY_WORFLOW_NAME",
-#         parameters={"DUMMY_PARAM": "DUMMY_VALUE"},
-#         scheduled_start_time=pendulum.datetime(2016, 1, 1),
-#         logger=test_logger,
-#     )
-#     with set_temporary_config({"db_uri": "DUMMY_DB_URI"}):
-#         final_state = runner.run(
-#             upstream_states={edge1: Success(), edge2: Failed()}, context=context
-#         )
-#     assert final_state.is_successful()
-#     set_state_mock.assert_called_once()
+def test_available_dates_sensor(monkeypatch, postgres_test_db):
+    """
+    Test that the available_dates_sensor flow runs the specified workflows with
+    the correct parameters, and does not run successful workflow runs more than
+    once for the same date.
+    """
+    # Mock flowclient
+    flowclient_available_dates = {
+        "cdr_type_1": ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04"],
+        "cdr_type_2": ["2016-01-04", "2016-01-05", "2016-01-06", "2016-01-07"],
+        "cdr_type_3": ["2016-01-08"],
+    }
+    monkeypatch.setattr(
+        "flowclient.get_available_dates", lambda connection: flowclient_available_dates
+    )
+    monkeypatch.setattr("flowclient.connect", Mock())
+    monkeypatch.setenv("FLOWAPI_TOKEN", "DUMMY_TOKEN")
+
+    # Mock workflows
+    workflow_1 = Mock()
+    workflow_1.name = "WORKFLOW_1"
+    workflow_1.run.return_value = Success()
+    workflow_2 = Mock()
+    workflow_2.name = "WORKFLOW_2"
+    workflow_2.run.return_value = Success()
+    workflow_storage = Memory()
+    workflow_storage.add_flow(workflow_1)
+    workflow_storage.add_flow(workflow_2)
+
+    workflow_configs = [
+        WorkflowConfig(
+            workflow_name="WORKFLOW_1",
+            parameters={"DUMMY_PARAM_1": "DUMMY_VALUE_1"},
+            earliest_date=pendulum.date(2016, 1, 4),
+        ),
+        WorkflowConfig(
+            workflow_name="WORKFLOW_2",
+            parameters={"DUMMY_PARAM_2": "DUMMY_VALUE_2"},
+            date_stencil=DateStencil([[pendulum.date(2016, 1, 3), -2], -1, 0]),
+        ),
+    ]
+
+    # Run available dates sensor
+    with set_temporary_config(
+        {"flowapi_url": "DUMMY_URL", "db_uri": postgres_test_db.url()}
+    ):
+        flow_state = available_dates_sensor.run(
+            cdr_types=["cdr_type_1", "cdr_type_2"],
+            workflow_configs=workflow_configs,
+            workflow_storage=workflow_storage,
+        )
+
+    # Check that run was successful and workflows were run with the correct parameters
+    assert flow_state.is_successful
+    workflow_1.run.assert_has_calls(
+        [
+            call(
+                parameters=dict(
+                    reference_date=d,
+                    date_ranges=[(d, d)],
+                    DUMMY_PARAM_1="DUMMY_VALUE_1",
+                ),
+                run_on_schedule=False,
+            )
+            for d in pendulum.period(
+                pendulum.date(2016, 1, 4), pendulum.date(2016, 1, 7)
+            )
+        ]
+    )
+    workflow_2.run.assert_has_calls(
+        [
+            call(
+                parameters=dict(
+                    reference_date=d,
+                    date_ranges=[
+                        (pendulum.date(2016, 1, 3), d.subtract(days=2)),
+                        (d.subtract(days=1), d.subtract(days=1)),
+                        (d, d),
+                    ],
+                    DUMMY_PARAM_2="DUMMY_VALUE_2",
+                ),
+                run_on_schedule=False,
+            )
+            for d in pendulum.period(
+                pendulum.date(2016, 1, 5), pendulum.date(2016, 1, 7)
+            )
+        ]
+    )
+
+    # Reset workflow mocks
+    workflow_1.reset_mock()
+    workflow_2.reset_mock()
+
+    # Add more available dates
+    flowclient_available_dates = {
+        "cdr_type_1": ["2016-01-01", "2016-01-02", "2016-01-03", "2016-01-04"],
+        "cdr_type_2": [
+            "2016-01-04",
+            "2016-01-05",
+            "2016-01-06",
+            "2016-01-07",
+            "2016-01-08",
+        ],
+        "cdr_type_3": ["2016-01-08"],
+    }
+    monkeypatch.setattr(
+        "flowclient.get_available_dates", lambda connection: flowclient_available_dates
+    )
+
+    # Run available dates sensor again
+    with set_temporary_config(
+        {"flowapi_url": "DUMMY_URL", "db_uri": postgres_test_db.url()}
+    ):
+        flow_state = available_dates_sensor.run(
+            cdr_types=["cdr_type_1", "cdr_type_2"],
+            workflow_configs=workflow_configs,
+            workflow_storage=workflow_storage,
+        )
+
+    # Check that workflows only ran for the new date
+    workflow_1.run.assert_called_once_with(
+        parameters=dict(
+            reference_date=pendulum.date(2016, 1, 8),
+            date_ranges=[(pendulum.date(2016, 1, 8), pendulum.date(2016, 1, 8))],
+            DUMMY_PARAM_1="DUMMY_VALUE_1",
+        ),
+        run_on_schedule=False,
+    )
+    workflow_2.run.assert_called_once_with(
+        parameters=dict(
+            reference_date=pendulum.date(2016, 1, 8),
+            date_ranges=[
+                (pendulum.date(2016, 1, 3), pendulum.date(2016, 1, 6)),
+                (pendulum.date(2016, 1, 7), pendulum.date(2016, 1, 7)),
+                (pendulum.date(2016, 1, 8), pendulum.date(2016, 1, 8)),
+            ],
+            DUMMY_PARAM_2="DUMMY_VALUE_2",
+        ),
+        run_on_schedule=False,
+    )
+
+
+def test_available_dates_sensor_retries(monkeypatch, postgres_test_db):
+    """
+    """
+    # Mock flowclient
+    flowclient_available_dates = {
+        "dummy_cdr_type": ["2016-01-01", "2016-01-02", "2016-01-03"]
+    }
+    monkeypatch.setattr(
+        "flowclient.get_available_dates", lambda connection: flowclient_available_dates
+    )
+    monkeypatch.setattr("flowclient.connect", Mock())
+    monkeypatch.setenv("FLOWAPI_TOKEN", "DUMMY_TOKEN")
+
+    # Mock workflows
+    dummy_workflow = Mock()
+    dummy_workflow.name = "DUMMY_WORKFLOW"
+    dummy_workflow.run.side_effect = [Failed(), Success(), Success()]
+    workflow_storage = Memory()
+    workflow_storage.add_flow(dummy_workflow)
+
+    workflow_configs = [WorkflowConfig(workflow_name="DUMMY_WORKFLOW")]
+
+    # Run available dates sensor
+    with set_temporary_config(
+        {"flowapi_url": "DUMMY_URL", "db_uri": postgres_test_db.url()}
+    ):
+        flow_state = available_dates_sensor.run(
+            workflow_configs=workflow_configs, workflow_storage=workflow_storage
+        )
+
+    # Check that sensor flow ended in a 'failed' state, and dummy_workflow.run() was called 3 times
+    assert flow_state.is_failed
+    dummy_workflow.run.assert_has_calls(
+        [
+            call(
+                parameters=dict(reference_date=d, date_ranges=[(d, d)]),
+                run_on_schedule=False,
+            )
+            for d in pendulum.period(
+                pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 3)
+            )
+        ]
+    )
+
+    # Reset workflow mock
+    dummy_workflow.reset_mock()
+    dummy_workflow.run.side_effect = None
+    dummy_workflow.run.return_value = Success()
+
+    # Run available dates sensor again
+    with set_temporary_config(
+        {"flowapi_url": "DUMMY_URL", "db_uri": postgres_test_db.url()}
+    ):
+        flow_state = available_dates_sensor.run(
+            workflow_configs=workflow_configs, workflow_storage=workflow_storage
+        )
+
+    # Check that sensor flow was successful, and dummy_workflow only re-ran for the date for which it previously failed
+    assert flow_state.is_successful
+    dummy_workflow.run.assert_called_once_with(
+        parameters=dict(
+            reference_date=pendulum.date(2016, 1, 1),
+            date_ranges=[(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 1))],
+        ),
+        run_on_schedule=False,
+    )
+
+    # Reset workflow mock again
+    dummy_workflow.reset_mock()
+
+    # Run available dates sensor once more
+    with set_temporary_config(
+        {"flowapi_url": "DUMMY_URL", "db_uri": postgres_test_db.url()}
+    ):
+        flow_state = available_dates_sensor.run(
+            workflow_configs=workflow_configs, workflow_storage=workflow_storage
+        )
+
+    # Check that dummy_workflow did not run again, now that it has run successfully
+    assert flow_state.is_successful
+    dummy_workflow.run.assert_not_called()
