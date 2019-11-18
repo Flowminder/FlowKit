@@ -235,6 +235,7 @@ class TopUpBalance(SubscriberFeature):
                 ORDER BY subscriber, DESC total_weight
             ) U
             """
+            return sql
 
         sql = f"""
         WITH W AS ({weight_extraction_query})
