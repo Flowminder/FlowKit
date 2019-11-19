@@ -4,7 +4,8 @@
 
 import pytest
 
-from unittest.mock import Mock
+from collections import OrderedDict
+from unittest.mock import call, Mock
 
 import pendulum
 import prefect
@@ -14,6 +15,7 @@ from autoflow.workflows import (
     convert_notebook_to_pdf,
     get_flowapi_url,
     get_tag,
+    make_notebooks_workflow,
     papermill_execute_notebook,
 )
 from autoflow.utils import get_params_hash
@@ -202,4 +204,133 @@ def test_convert_notebook_to_pdf_no_template(monkeypatch, test_logger):
     )
 
 
-# TODO: Add tests for make_notebooks_workflow
+def test_make_notebooks_workflow(monkeypatch):
+    """
+    Test that make_notebooks_workflow returns a workflow with the correct name
+    and parameters, and the workflow can run successfully and executes the
+    correct tasks.
+    """
+    # Patch tasks
+    monkeypatch.setattr(
+        "autoflow.workflows.get_tag.run", Mock(return_value="DUMMY_TAG")
+    )
+    execute_notebook_mock = Mock(
+        side_effect=["DUMMY_OUTPUT_1.ipynb", "DUMMY_OUTPUT_2.ipynb"]
+    )
+    monkeypatch.setattr(
+        "autoflow.workflows.papermill_execute_notebook.run", execute_notebook_mock
+    )
+    convert_to_pdf_mock = Mock(return_value="DUMMY_REPORT.pdf")
+    monkeypatch.setattr(
+        "autoflow.workflows.convert_notebook_to_pdf.run", convert_to_pdf_mock
+    )
+
+    # Create workflow
+    notebooks = OrderedDict(
+        [
+            (
+                "notebook1",
+                dict(
+                    filename="DUMMY_NOTEBOOK1.ipynb",
+                    parameters={
+                        "param1": "reference_date",
+                        "param2": "flowapi_url",
+                        "param3": "DUMMY_PARAM",
+                    },
+                ),
+            ),
+            (
+                "notebook2",
+                dict(
+                    filename="DUMMY_NOTEBOOK2.ipynb",
+                    parameters={"param1": "date_ranges", "param2": "notebook1"},
+                    output={"format": "pdf", "template": None},
+                ),
+            ),
+        ]
+    )
+    dummy_workflow = make_notebooks_workflow(name="DUMMY_WORKFLOW", notebooks=notebooks)
+
+    # Check workflow has correct name and parameters
+    assert dummy_workflow.name == "DUMMY_WORKFLOW"
+    workflow_parameter_names = {p.name for p in dummy_workflow.parameters()}
+    assert workflow_parameter_names == {"reference_date", "date_ranges", "DUMMY_PARAM"}
+
+    # Run workflow
+    with set_temporary_config({"flowapi_url": "DUMMY_URL"}):
+        flow_state = dummy_workflow.run(
+            reference_date=pendulum.date(2016, 1, 1),
+            date_ranges=[(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 1))],
+            DUMMY_PARAM="DUMMY_VALUE",
+        )
+
+    # Check workflow succeeded and ran the correct tasks
+    assert flow_state.is_successful
+    execute_notebook_mock.assert_has_calls(
+        [
+            call(
+                input_filename="DUMMY_NOTEBOOK1.ipynb",
+                output_tag="DUMMY_TAG",
+                parameters={
+                    "param1": pendulum.date(2016, 1, 1),
+                    "param2": "DUMMY_URL",
+                    "param3": "DUMMY_VALUE",
+                },
+            ),
+            call(
+                input_filename="DUMMY_NOTEBOOK2.ipynb",
+                output_tag="DUMMY_TAG",
+                parameters={
+                    "param1": [(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 1))],
+                    "param2": "DUMMY_OUTPUT_1.ipynb",
+                },
+            ),
+        ]
+    )
+    convert_to_pdf_mock.assert_called_once_with(
+        notebook_path="DUMMY_OUTPUT_2.ipynb", asciidoc_template=None
+    )
+
+
+def test_make_notebooks_workflow_default_parameters():
+    """
+    Test that a workflow returned by make_notebooks_workflow has parameters
+    'reference_date' and 'date_ranges', even if these parameters are not used
+    by the notebooks.
+    """
+    notebooks = OrderedDict([("notebook1", dict(filename="DUMMY_NOTEBOOK1.ipynb"))])
+    dummy_workflow = make_notebooks_workflow(name="DUMMY_WORKFLOW", notebooks=notebooks)
+    workflow_parameter_names = {p.name for p in dummy_workflow.parameters()}
+    assert workflow_parameter_names == {"reference_date", "date_ranges"}
+
+
+def test_notebooks_workflow_fails(monkeypatch):
+    """
+    Test that a workflow returned by make_notebooks_workflow ends in a failed state
+    if an exception is raised while executing a notebook.
+    """
+    # Patch tasks
+    monkeypatch.setattr(
+        "autoflow.workflows.get_tag.run", Mock(return_value="DUMMY_TAG")
+    )
+    execute_notebook_mock = Mock(side_effect=Exception("This task failed"))
+    monkeypatch.setattr(
+        "autoflow.workflows.papermill_execute_notebook.run", execute_notebook_mock
+    )
+
+    # Create workflow
+    notebooks = OrderedDict([("notebook1", dict(filename="DUMMY_NOTEBOOK1.ipynb"))])
+    dummy_workflow = make_notebooks_workflow(name="DUMMY_WORKFLOW", notebooks=notebooks)
+
+    # Run workflow
+    with set_temporary_config({"flowapi_url": "DUMMY_URL"}):
+        flow_state = dummy_workflow.run(
+            reference_date=pendulum.date(2016, 1, 1),
+            date_ranges=[(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 1))],
+        )
+
+    # Check workflow ran teh notebook execution task, and ended in a failed state
+    assert flow_state.is_failed
+    execute_notebook_mock.assert_called_once_with(
+        input_filename="DUMMY_NOTEBOOK1.ipynb", output_tag="DUMMY_TAG", parameters={}
+    )
