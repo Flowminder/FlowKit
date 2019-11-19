@@ -335,14 +335,6 @@
             ],
             "version": "==1.4.3"
         },
-        "appnope": {
-            "hashes": [
-                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
-                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
-            ],
-            "markers": "platform_system == 'Darwin'",
-            "version": "==0.1.0"
-        },
         "approvaltests": {
             "hashes": [
                 "sha256:77bcfa60f975a48a378c96f61749d7943ecc27d486394896aa8536d93105d556"
@@ -879,11 +871,10 @@
         },
         "pytest-testmon": {
             "hashes": [
-                "sha256:f542d168103d14748be7afd45071df2f1b1dda218e33dedd300a87885bffc2f4",
-                "sha256:f622fd9d0f5a0df253f0e6773713c3df61306b64abdfb202d39a85dcba1d1f59"
+                "sha256:4cbf98642388b2020b3ea5ede2124a2573399e9bc864ffcb74505266d6aad389"
             ],
             "index": "pypi",
-            "version": "==0.9.19"
+            "version": "==1.0.0"
         },
         "python-dateutil": {
             "hashes": [
