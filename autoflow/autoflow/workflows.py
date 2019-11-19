@@ -193,7 +193,7 @@ def make_notebooks_workflow(
     prefect.Flow
         Workflow that runs the notebooks.
     """
-    # Get parameter names
+    # Get parameter names from notebooks dict
     parameter_names = get_additional_parameter_names_for_notebooks(
         notebooks=notebooks, reserved_parameter_names={"flowapi_url"}
     )
@@ -203,7 +203,7 @@ def make_notebooks_workflow(
         # Parameters
         parameter_tasks = {
             pname: prefect.Parameter(pname)
-            for pname in parameter_names.union("reference_date", "date_ranges")
+            for pname in parameter_names.union({"reference_date", "date_ranges"})
         }
         # Instantiating a Parameter doesn't add it to the flow. The available dates sensor
         # will always pass the "date_ranges" parameter, so we need to explicitly add this
@@ -223,7 +223,8 @@ def make_notebooks_workflow(
                 input_filename=notebook["filename"],
                 output_tag=tag,
                 parameters={
-                    k: parameter_tasks[v] for k, v in notebook["parameters"].items()
+                    k: parameter_tasks[v]
+                    for k, v in notebook.get("parameters", {}).items()
                 },
             )
             if "output" in notebook:

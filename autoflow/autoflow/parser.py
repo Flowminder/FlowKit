@@ -155,13 +155,14 @@ class NotebookSchema(Schema):
     parameters : dict, optional
         Dictionary mapping parameter names (as they will be accessible within
         the notebook) to the names of task outputs within the surrounding workflow.
-        If not provided, deserialises to None.
     output : Nested(NotebookOutputSchema), optional
         Configuration parameters for the output generation task.
     """
 
     filename = fields.String(required=True)
-    parameters = fields.Dict(keys=fields.String(), values=fields.String(), missing=None)
+    parameters = fields.Dict(
+        keys=fields.String(), values=fields.String(), required=False
+    )
     output = fields.Nested(NotebookOutputSchema, required=False)
 
     @validates("filename")
@@ -289,7 +290,6 @@ class WorkflowConfigSchema(Schema):
         Name of the workflow to run.
     parameters : dict, optional
         Parameters with which the workflow will run.
-        If not provided, deserialises to None.
     earliest_date : date, optional
         Earliest date of CDR data for which the workflow should run.
     date_stencil : list of int, date and/or pairs of int/date, optional
@@ -303,7 +303,7 @@ class WorkflowConfigSchema(Schema):
     workflow_name = fields.String(required=True)
     parameters = fields.Dict(
         keys=fields.String(validate=validate.NoneOf(_automatic_parameters)),
-        missing=None,
+        required=False,
     )
     earliest_date = DateField(required=False)
     date_stencil = DateStencilField(required=False)
@@ -352,9 +352,9 @@ class WorkflowConfigSchema(Schema):
         parameter_names = {p.name for p in workflow_parameters}
         required_parameter_names = {p.name for p in workflow_parameters if p.required}
         # Parameters workflow will receive
-        provided_parameter_names = (
-            set() if data["parameters"] is None else set(data["parameters"].keys())
-        ).union(self._automatic_parameters)
+        provided_parameter_names = set(data.get("parameters", {}).keys()).union(
+            self._automatic_parameters
+        )
         # Required parameters that are not provided
         missing_parameters = required_parameter_names.difference(
             provided_parameter_names

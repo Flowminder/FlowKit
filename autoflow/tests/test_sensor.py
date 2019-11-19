@@ -548,6 +548,8 @@ def test_available_dates_sensor(monkeypatch, postgres_test_db):
 
 def test_available_dates_sensor_retries(monkeypatch, postgres_test_db):
     """
+    Test that the available_dates_sensor flow re-runs workflows that failed on
+    the previous attempt, and does not re-run them again once they have succeeded.
     """
     # Mock flowclient
     flowclient_available_dates = {

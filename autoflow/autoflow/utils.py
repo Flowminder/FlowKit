@@ -153,7 +153,10 @@ def get_additional_parameter_names_for_notebooks(
     """
     # Parameters requested in notebooks
     notebook_parameter_names = set.union(
-        *[set(notebook["parameters"].values()) for notebook in notebooks.values()]
+        *[
+            set(notebook.get("parameters", {}).values())
+            for notebook in notebooks.values()
+        ]
     )
     # Parameters available to notebooks, which are not passed externally as flow parameters
     internal_parameter_names = (reserved_parameter_names or set()).union(
@@ -192,7 +195,7 @@ def sort_notebooks(
         {
             key: [
                 value
-                for value in notebooks[key]["parameters"].values()
+                for value in notebooks[key].get("parameters", {}).values()
                 if value in notebooks
             ]
             for key in notebooks

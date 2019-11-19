@@ -186,7 +186,8 @@ def test_get_additional_parameter_names_for_notebooks():
 
 def test_get_additional_parameter_names_for_notebooks_with_reserved_parameter_names():
     """
-    Test that get_additional_parameter_names_for_notebooks excludes reserved parameter names from the returned set.
+    Test that get_additional_parameter_names_for_notebooks excludes reserved
+    parameter names from the returned set.
     """
     notebooks = {
         "notebook": {"parameters": {"p1": "DUMMY_PARAM", "p2": "RESERVED_PARAM"}}
@@ -196,6 +197,16 @@ def test_get_additional_parameter_names_for_notebooks_with_reserved_parameter_na
         notebooks, reserved_parameter_names
     )
     assert additional_params == {"DUMMY_PARAM"}
+
+
+def test_get_additional_parameter_names_for_notebooks_with_no_parameters():
+    """
+    Test that get_additional_parameter_names_for_notebooks works if a notebook
+    specification has no 'parameters' field.
+    """
+    notebooks = {"notebook": {"filename": "DUMMY_FILENAME"}}
+    additional_params = get_additional_parameter_names_for_notebooks(notebooks)
+    assert additional_params == set()
 
 
 def test_sort_notebooks():
@@ -226,6 +237,16 @@ def test_sort_notebooks_circular_dependency():
         ValueError, match="Notebook specifications contain circular dependencies."
     ):
         sorted_notebooks = sort_notebooks(notebooks)
+
+
+def test_sort_notebooks_with_no_parameters():
+    """
+    Test that sort_notebooks works if a notebook specification has no 'parameters' field.
+    """
+    notebooks = {"notebook1": {"filename": "DUMMY_FILENAME"}}
+    sorted_notebooks = sort_notebooks(notebooks)
+    assert isinstance(sorted_notebooks, OrderedDict)
+    assert sorted_notebooks == OrderedDict(notebooks)
 
 
 def test_notebook_to_asciidoc(monkeypatch):

@@ -13,6 +13,7 @@ secrets:
 
 networks:
   database:
+  api:
 
 services:
 
@@ -32,6 +33,7 @@ services:
       - ${AUTOFLOW_OUTPUTS_DIR:?Must set AUTOFLOW_OUTPUTS_DIR env var}:/mounts/outputs:rw
     networks:
       - database
+      - api
   
   autoflow_postgres:
     image: postgres
