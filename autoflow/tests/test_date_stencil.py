@@ -3,7 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+
 import datetime
+
 import pendulum
 
 from autoflow.date_stencil import DateStencil, InvalidDateIntervalError

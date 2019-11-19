@@ -6,21 +6,22 @@
 Defines 'available_dates_sensor' prefect flow.
 """
 
+import warnings
+from typing import Any, Dict, List, NamedTuple, NoReturn, Optional, Sequence, Tuple
+
 import pendulum
 import prefect
-import warnings
 from get_secret_or_env_var import environ
 from prefect import Flow, Parameter, task, unmapped
 from prefect.engine import signals
 from prefect.schedules import CronSchedule
 from prefect.triggers import all_successful, any_failed
-from typing import Any, Dict, List, NamedTuple, NoReturn, Optional, Sequence, Tuple
 
 import flowclient
 
-from .date_stencil import DateStencil
-from .model import RunState, WorkflowRuns
-from .utils import session_scope
+from autoflow.date_stencil import DateStencil
+from autoflow.model import RunState, WorkflowRuns
+from autoflow.utils import session_scope
 
 
 class WorkflowConfig(NamedTuple):

@@ -8,19 +8,20 @@ Utility functions.
 
 import collections
 import json
+from contextlib import contextmanager
+from hashlib import md5
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import Any, Dict, Iterator, Optional, OrderedDict, Set, Tuple, Union
+
 import nbconvert
 import nbformat
 import networkx as nx
 import pendulum
-from contextlib import contextmanager
 from get_secret_or_env_var import getenv
-from hashlib import md5
-from pathlib import Path
 from sh import asciidoctor_pdf
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from tempfile import TemporaryDirectory
-from typing import Any, Dict, Iterator, Optional, OrderedDict, Set, Tuple, Union
 
 
 def get_output_filename(input_filename: str, tag: str = "") -> str:

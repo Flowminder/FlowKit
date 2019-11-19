@@ -3,12 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+
 import datetime
-import pendulum
 import json
 from collections import OrderedDict
 from pathlib import Path
 from unittest.mock import Mock, patch, mock_open
+
+import pendulum
 
 from autoflow.utils import *
 

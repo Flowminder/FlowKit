@@ -3,8 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+
 import logging
 import time
+
 import testing.postgresql
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

@@ -3,6 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+
+from unittest.mock import call, create_autospec, Mock
+
 import pendulum
 import prefect
 from prefect.core import Edge
@@ -12,7 +15,6 @@ from prefect.environments.storage import Memory
 from prefect.schedules import CronSchedule
 from prefect.tasks.core.function import FunctionTask
 from prefect.utilities.configuration import set_temporary_config
-from unittest.mock import call, create_autospec, Mock
 
 from autoflow.date_stencil import DateStencil
 from autoflow.model import RunState

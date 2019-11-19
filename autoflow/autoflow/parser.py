@@ -8,6 +8,9 @@ a 'workflows.yml' file to define workflows and configure the available dates sen
 """
 
 import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, OrderedDict, Tuple, Union
+
 import yaml
 from marshmallow import (
     fields,
@@ -18,15 +21,13 @@ from marshmallow import (
     validates_schema,
     ValidationError,
 )
-from pathlib import Path
 from prefect.environments import storage
 from prefect.schedules import CronSchedule
-from typing import Any, Dict, List, Optional, OrderedDict, Tuple, Union
 
-from .date_stencil import DateStencil, InvalidDateIntervalError
-from .sensor import WorkflowConfig
-from .utils import sort_notebooks
-from .workflows import make_notebooks_workflow
+from autoflow.date_stencil import DateStencil, InvalidDateIntervalError
+from autoflow.sensor import WorkflowConfig
+from autoflow.utils import sort_notebooks
+from autoflow.workflows import make_notebooks_workflow
 
 
 class ScheduleField(fields.String):

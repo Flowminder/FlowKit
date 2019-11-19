@@ -7,8 +7,9 @@ Defines the DateStencil class, to represent a pattern of dates relative to a ref
 """
 
 import datetime
-import pendulum
 from typing import Iterable, List, Optional, Sequence, Set, Tuple, Union
+
+import pendulum
 
 
 class InvalidDateIntervalError(ValueError):

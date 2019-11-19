@@ -3,8 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-import pendulum
+
 from unittest.mock import patch
+
+import pendulum
 from sqlalchemy import create_engine
 from sqlalchemy.exc import DataError
 from sqlalchemy.orm import sessionmaker

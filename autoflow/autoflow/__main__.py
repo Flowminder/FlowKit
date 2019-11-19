@@ -13,11 +13,12 @@ import logging
 import os
 import time
 from pathlib import Path
+
 from get_secret_or_env_var import getenv
 
-from .model import init_db
-from .parser import parse_workflows_yaml
-from .sensor import available_dates_sensor
+from autoflow.model import init_db
+from autoflow.parser import parse_workflows_yaml
+from autoflow.sensor import available_dates_sensor
 
 
 def main():

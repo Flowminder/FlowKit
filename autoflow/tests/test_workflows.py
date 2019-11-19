@@ -3,10 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
+
+from unittest.mock import Mock
+
 import pendulum
 import prefect
 from prefect.utilities.configuration import set_temporary_config
-from unittest.mock import Mock
 
 from autoflow.workflows import (
     convert_notebook_to_pdf,

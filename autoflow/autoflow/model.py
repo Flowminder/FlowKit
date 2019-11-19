@@ -8,10 +8,10 @@ Defines the 'WorkflowRuns' class, which represents  the 'workflow_runs' database
 
 import os
 import enum
-import pendulum
 import json
 from typing import Dict, Any, Optional, Union
 
+import pendulum
 from sqlalchemy import (
     Column,
     String,
@@ -24,7 +24,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 
-from .utils import get_params_hash
+from autoflow.utils import get_params_hash
 
 Base = declarative_base()
 

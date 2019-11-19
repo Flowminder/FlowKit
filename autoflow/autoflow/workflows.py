@@ -6,13 +6,13 @@
 Contains tasks and functions for constructing Prefect workflows.
 """
 
-import papermill
-import prefect
 from pathlib import Path
-from prefect import Flow, Parameter, task
 from typing import Any, Dict, Optional, OrderedDict
 
-from .utils import (
+import papermill
+import prefect
+
+from autoflow.utils import (
     asciidoc_to_pdf,
     get_additional_parameter_names_for_notebooks,
     get_output_filename,
@@ -25,7 +25,7 @@ from .utils import (
 # Tasks -----------------------------------------------------------------------
 
 
-@task
+@prefect.task
 def get_flowapi_url() -> str:
     """
     Task to return FlowAPI URL.
@@ -40,7 +40,7 @@ def get_flowapi_url() -> str:
     return prefect.config.flowapi_url
 
 
-@task
+@prefect.task
 def get_tag(reference_date: Optional["datetime.date"] = None) -> str:
     """
     Task to get a string to append to output filenames from this workflow run.
@@ -61,7 +61,7 @@ def get_tag(reference_date: Optional["datetime.date"] = None) -> str:
     return f"{prefect.context.flow_name}{ref_date_string}_{params_hash}"
 
 
-@task
+@prefect.task
 def papermill_execute_notebook(
     input_filename: str,
     output_tag: str,
@@ -113,7 +113,7 @@ def papermill_execute_notebook(
     return output_path
 
 
-@task
+@prefect.task
 def convert_notebook_to_pdf(
     notebook_path: str,
     output_filename: Optional[str] = None,
@@ -175,7 +175,7 @@ def convert_notebook_to_pdf(
 
 def make_notebooks_workflow(
     name: str, notebooks: OrderedDict[str, Dict[str, Any]]
-) -> Flow:
+) -> prefect.Flow:
     """
     Build a prefect flow that runs a set of interdependent Jupyter notebooks.
     The FlowAPI URL will be available to the notebooks as parameter 'flowapi_url'.
@@ -190,7 +190,7 @@ def make_notebooks_workflow(
     
     Returns
     -------
-    Flow
+    prefect.Flow
         Workflow that runs the notebooks.
     """
     # Get parameter names
@@ -199,10 +199,10 @@ def make_notebooks_workflow(
     )
 
     # Define workflow
-    with Flow(name=name) as workflow:
+    with prefect.Flow(name=name) as workflow:
         # Parameters
         parameter_tasks = {
-            pname: Parameter(pname)
+            pname: prefect.Parameter(pname)
             for pname in parameter_names.union("reference_date", "date_ranges")
         }
         # Instantiating a Parameter doesn't add it to the flow. The available dates sensor
