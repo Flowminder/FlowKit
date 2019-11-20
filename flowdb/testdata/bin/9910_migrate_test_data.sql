@@ -375,14 +375,14 @@ CREATE TABLE interactions.subscriber_sightings_20160106 PARTITION OF interaction
 CREATE TABLE interactions.subscriber_sightings_20160107 PARTITION OF interactions.subscriber_sightings
     FOR VALUES FROM (20160107) TO (20160108);
 
-INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, timestamp)
+INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
     SELECT event_id, subscriber_id, location_id, time_dim_id, date_dim_id, event_timestamp FROM interactions.event_supertable;
 
-INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, timestamp)
+INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
     SELECT event_id, called_subscriber_id as subscriber_id, called_party_location_id as location_id, time_dim_id, date_dim_id, event_timestamp
         FROM interactions.event_supertable NATURAL JOIN interactions.calls;
 
-INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, timestamp)
+INSERT INTO interactions.subscriber_sightings (event_id, subscriber_id, location_id, time_dim_id, date_dim_id, sighting_timestamp)
     SELECT event_id, called_subscriber_id as subscriber_id, called_party_location_id as location_id, time_dim_id, date_dim_id, event_timestamp
         FROM interactions.event_supertable NATURAL JOIN interactions.sms;
 
