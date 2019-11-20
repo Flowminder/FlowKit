@@ -35,15 +35,16 @@ class ScheduleField(fields.String):
     Custom field to deserialise a cron string as a prefect CronSchedule.
     """
 
-    def _deserialize(self, value, attr, data, **kwargs) -> Optional[CronSchedule]:
+    def _deserialize(
+        self, value, attr, data, **kwargs
+    ) -> "prefect.schedules.schedules.Schedule":
         """
         Deserialise a cron string as a cron schedule.
 
         Returns
         -------
-        CronSchedule or None
-            If input value is None, returns None (i.e. no schedule), otherwise
-            returns a prefect Schedule to run a flow according to the schedule
+        Schedule
+            Prefect CronSchedule to run a flow according to the schedule
             defined by the input string.
         
         Raises
@@ -51,15 +52,12 @@ class ScheduleField(fields.String):
         ValidationError
             if the input value is not a valid cron string or None
         """
-        if value is None:
-            return value
-        else:
-            cron_string = super()._deserialize(value, attr, data, **kwargs)
-            try:
-                schedule = CronSchedule(cron_string)
-            except ValueError:
-                raise ValidationError(f"Invalid cron string: '{cron_string}'.")
-            return schedule
+        cron_string = super()._deserialize(value, attr, data, **kwargs)
+        try:
+            schedule = CronSchedule(cron_string)
+        except ValueError:
+            raise ValidationError(f"Invalid cron string: '{cron_string}'.")
+        return schedule
 
 
 class DateField(fields.Date):
@@ -190,12 +188,12 @@ class NotebooksField(fields.Dict):
     and return them in a topologically-sorted order.
     """
 
-    def __init__(self, keys=None, values=None, **kwargs):
+    def __init__(self, **kwargs):
         # Ensure that the 'keys' and 'values' arguments cannot be specified.
         if "keys" in kwargs:
             raise TypeError("The Notebooks field does not accept a 'keys' argument.")
         if "values" in kwargs:
-            raise ValueError("The Notebooks field does not accept a 'values' argument.")
+            raise TypeError("The Notebooks field does not accept a 'values' argument.")
         super().__init__(
             keys=fields.String(
                 validate=validate.NoneOf(
@@ -251,17 +249,18 @@ class WorkflowSchema(Schema):
     @validates_schema(pass_many=True)
     def check_for_duplicate_names(self, data, many, **kwargs):
         """
-        If this schema is used with 'many=True', raise a VlidationError if any workflow names are duplicated.
+        If this schema is used with 'many=True', raise a ValidationError if any workflow names are duplicated.
         """
         if many:
+            errors = {}
             names = set()
-            for workflow in data:
+            for i, workflow in enumerate(data):
                 if workflow["name"] in names:
-                    raise ValidationError(
-                        f"Duplicate workflow name: {workflow['name']}."
-                    )
+                    errors[i] = {"name": [f"Duplicate workflow name."]}
                 else:
                     names.add(workflow["name"])
+            if errors:
+                raise ValidationError(errors)
         else:
             pass
 
@@ -317,9 +316,7 @@ class WorkflowConfigSchema(Schema):
         # Check that workflow exists
         try:
             if value not in self.context["workflow_storage"]:
-                raise ValidationError(
-                    f"Workflow '{value}' does not exist in this storage."
-                )
+                raise ValidationError("Workflow does not exist in this storage.")
         except KeyError:
             raise ValidationError(
                 "'workflow_storage' was not provided in the context. Cannot check for workflow existence."
@@ -334,7 +331,7 @@ class WorkflowConfigSchema(Schema):
         )
         if missing_automatic_parameters:
             raise ValidationError(
-                f"Workflow '{value}' does not accept parameters {missing_automatic_parameters}."
+                f"Workflow does not accept parameters {missing_automatic_parameters}."
             )
 
     @validates_schema
@@ -343,6 +340,7 @@ class WorkflowConfigSchema(Schema):
         Raise a ValidationError if any required workflow parameters are not
         provided, or if any unexpected parameters are provided.
         """
+        errors = {}
         # Parameters workflow expects
         workflow_parameters = (
             self.context["workflow_storage"]
@@ -360,24 +358,22 @@ class WorkflowConfigSchema(Schema):
             provided_parameter_names
         )
         if missing_parameters:
-            raise ValidationError(
-                {
-                    "parameters": f"Missing required parameters {missing_parameters} for workflow '{data['workflow_name']}'."
-                }
-            )
+            errors["parameters"] = errors.get("parameters", []) + [
+                f"Missing required parameters {missing_parameters} for workflow '{data['workflow_name']}'."
+            ]
         # Extra parameters that the workflow is not expecting
         unexpected_parameters = provided_parameter_names.difference(parameter_names)
         if unexpected_parameters:
-            raise ValidationError(
-                {
-                    "parameters": f"Unexpected parameters provided for workflow '{data['workflow_name']}': {unexpected_parameters}."
-                }
-            )
+            errors["parameters"] = errors.get("parameters", []) + [
+                f"Unexpected parameters provided for workflow '{data['workflow_name']}': {unexpected_parameters}."
+            ]
+        if errors:
+            raise ValidationError(errors)
 
     @post_load
     def make_workflow_config(self, data, **kwargs) -> WorkflowConfig:
         """
-        Return the provided workflow config parameters in a WorkflowConfig named tuple.
+        Return the provided workflow config parameters in a WorkflowConfig namedtuple.
         """
         return WorkflowConfig(**data)
 

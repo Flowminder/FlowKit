@@ -110,6 +110,11 @@ class DateStencil:
             )
         return date_from_offset
 
+    def __eq__(self, other):
+        if not isinstance(other, DateStencil):
+            return NotImplemented
+        return self._intervals == other._intervals
+
     def as_date_pairs(
         self, reference_date: datetime.date
     ) -> List[Tuple[pendulum.Date, pendulum.Date]]:

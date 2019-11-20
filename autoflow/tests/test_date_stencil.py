@@ -151,3 +151,15 @@ def test_dates_are_available(reference_date, available):
     assert available == date_stencil.dates_are_available(
         reference_date, available_dates
     )
+
+
+def test_date_stencil_eq():
+    """
+    Test that a DateStencil is equal to another DateStencil created using the same raw stencil,
+    is not equal to a DateStencil created using a different raw stencil,
+    and is not equal to an object that isn't a DateStencil.
+    """
+    date_stencil = DateStencil([-1, 0])
+    assert date_stencil == DateStencil([-1, 0])
+    assert date_stencil != DateStencil([-2, 0])
+    assert date_stencil != "NOT_A_DATE_STENCIL"
