@@ -12,6 +12,7 @@
 #
 !./bin/9900_ingest_test_data.sh
 !./bin/9900_run_synthetic_dfs_data_generation_script.sh
+!./bin/9910_migrate_test_data.sql
 !./test_data/Pipfile
 !./test_data/Pipfile.lock
 !./test_data/sql/
