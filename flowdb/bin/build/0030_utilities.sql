@@ -285,7 +285,7 @@ $$
           cache_score_multiplier+POWER(1 + ln(2) / cache_half_life(), nextval('cache.cache_touches') - 2)
         END
         WHERE query_id=cached_query_id
-        RETURNING cache_score(cache_score_multiplier, compute_time, max(table_size(tablename, schema), 0.00001)) INTO score;
+        RETURNING cache_score(cache_score_multiplier, compute_time, greatest(table_size(tablename, schema), 0.00001)) INTO score;
         IF NOT FOUND THEN RAISE EXCEPTION 'Cache record % not found', cached_query_id;
         END IF;
   RETURN score;
