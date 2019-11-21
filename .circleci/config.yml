@@ -710,7 +710,7 @@ jobs:
           name: Run integration tests
           command: |
             PIPENV_DONT_LOAD_ENV=1 FLOWAPI_PORT=9090 pipenv run run-tests -sv --junitxml=test_results/pytest/results.xml --durations=10 \
-            --cov=../flowmachine --cov=../flowclient --cov=../flowapi \
+            --cov=../flowmachine --cov=../flowclient --cov=../flowapi --cov=../autoflow \
             --cov-report xml \
             --cov-report term
       - store_test_results:

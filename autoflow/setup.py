@@ -40,13 +40,7 @@ setup(
         "sqlalchemy",
     ],
     extras_require={
-        "test": [
-            "flowkit-jwt-generator",
-            "pytest",
-            "pytest-cov",
-            "sqlalchemy-utils",
-            "testing-postgresql",
-        ],
+        "test": ["pytest", "pytest-cov", "sqlalchemy-utils", "testing-postgresql"],
         "postgres": ["psycopg2-binary"],
         "examples": ["descartes", "geopandas", "matplotlib", "pandas"],
     },

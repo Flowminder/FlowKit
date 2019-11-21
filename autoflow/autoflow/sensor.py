@@ -75,6 +75,7 @@ def get_available_dates(
         url=prefect.config.flowapi_url, token=environ["FLOWAPI_TOKEN"]
     )
     dates = flowclient.get_available_dates(connection=conn)
+    prefect.context.logger.debug(f"Available dates: {dates}")
     if cdr_types is None:
         prefect.context.logger.debug(
             "No CDR types provided. Will return available dates for all CDR types."
@@ -176,6 +177,8 @@ def get_parametrised_workflows(
     prefect.context.logger.info(
         "Adding parameters 'reference_date' and 'date_ranges' to workflow parameters."
     )
+    prefect.context.logger.debug(f"Workflow configs: {workflow_configs}")
+    prefect.context.logger.debug(f"Dates: {lists_of_dates}")
     return [
         (
             workflow_storage.get_flow(workflow_config.workflow_name),

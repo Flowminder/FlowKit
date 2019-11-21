@@ -9,6 +9,7 @@ pytest-asyncio = "*"
 flowmachine = {editable = true,path = "./../flowmachine"}
 flowclient = {editable = true,path = "./../flowclient"}
 flowapi = {editable = true,path = "./../flowapi"}
+autoflow = {editable = true,path = "./../autoflow",extras = ["examples"]}
 approvaltests = "*"
 pytest-cov = "*"
 tavern = {extras = ["pytest"],version = "*"}
