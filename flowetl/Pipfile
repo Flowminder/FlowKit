@@ -5,7 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 black = "==19.10b0"
-apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.4"}
+apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.6"}
 pylint = "*"
 pytest = "*"
 docker = "*"
