@@ -62,6 +62,7 @@ setup(
     },
     description="Digestion program for Call Detail Record (CDR) data.",
     long_description=readme,
+    python_requires=">=3.7",
     py_module=["flowmachine"],
     author=__author__,
     author_email=__email__,
@@ -99,6 +100,7 @@ setup(
     classifiers=[
         "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
         "Development Status :: 4 - Beta",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.7",
         "Natural Language :: English",
         "Operating System :: MacOS :: MacOS X",

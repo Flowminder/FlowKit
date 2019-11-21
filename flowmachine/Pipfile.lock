@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4d0e35890ffdbecb3610d2af3a23a420d795465dbb2c3f78276fb65a73769556"
+            "sha256": "1f6b7a3c8ef29d120eb54247c6dfd47c58bc5f7a94ba2fc15561d400d3393dcf"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.7"
+            "python_version": "3.8"
         },
         "sources": [
             {
@@ -334,6 +334,14 @@
                 "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"
             ],
             "version": "==1.4.3"
+        },
+        "appnope": {
+            "hashes": [
+                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
+                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
+            ],
+            "markers": "sys_platform == 'darwin'",
+            "version": "==0.1.0"
         },
         "approvaltests": {
             "hashes": [
