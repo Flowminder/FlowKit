@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS geography.geo_kinds (
     geo_kind_id SERIAL PRIMARY KEY,
     name TEXT
 );
-INSERT INTO geography.geo_kinds (kind_name) VALUES ('admin_unit');
+INSERT INTO geography.geo_kinds (name) VALUES ('admin_unit');
 
 CREATE TABLE IF NOT EXISTS geography.linkage_methods (
     linkage_method_id SERIAL PRIMARY KEY,
