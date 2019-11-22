@@ -7,12 +7,11 @@ import pytest
 import shutil
 
 from sqlalchemy import create_engine
-from sqlalchemy.engine import reflection
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 
 
-def test_autoflow_example(universal_access_token, flowapi_url, tmp_path, monkeypatch):
+def test_autoflow_example(monkeypatch, tmp_path, flowapi_url, universal_access_token):
     """
     Test that the AutoFlow example runs correctly and produces the expected output.
     """
@@ -57,12 +56,10 @@ def test_autoflow_example(universal_access_token, flowapi_url, tmp_path, monkeyp
             len(list(outputs_dir.glob(file_pattern.format(d)))) for d in range(1, 8)
         ] == expected_file_counts
     # Check the content of the database
-    engine = create_engine(db_uri)
-    insp = reflection.Inspector.from_engine(engine)
-    assert insp.get_table_names() == ["workflow_runs"]
     Base = automap_base()
+    engine = create_engine(db_uri)
     Base.prepare(engine, reflect=True)
-    assert hasattr(Base, "workflow_runs")
+    assert "workflow_runs" in Base.metadata.tables
     session = Session(engine)
     assert (
         len(session.query(Base.classes.workflow_runs).filter_by(state="running").all())
