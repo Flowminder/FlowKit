@@ -159,7 +159,8 @@ In addition to the environment variables above, `PREFECT__USER_CONFIG_PATH=./con
 ## Contents
 
 - `autoflow/` - Python package for running notebooks workflows. Contains the following modules:
-    - `__main__.py` - Main script that initialises the database, parses the input file and runs workflows.
+    - `__main__.py` - Main script that runs `app.main()`. Run using `python -m autoflow`.
+    - `app.py` - Defines the `main` function, that initialises the database, parses the input file and runs workflows.
     - `date_stencil.py` - Defines a `DateStencil` class to represent date stencils.
     - `model.py` - Defines a database model for storing workflow run metadata.
     - `parser.py` - Functions for parsing workflow definition files.
