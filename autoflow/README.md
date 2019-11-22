@@ -1,6 +1,6 @@
 # AutoFlow
 
-AutoFlow is a tool that automates the event-driven execution of workflows consisting of Jupyter notebooks that interact with FlowKit via FlowAPI. Workflows can consist of multiple inter-dependent notebooks, and can run automatically for each new date of CDR data available in FlowDB). After execution, notebooks can optionally be converted to PDF reports.
+AutoFlow is a tool that automates the event-driven execution of workflows consisting of Jupyter notebooks that interact with FlowKit via FlowAPI. Workflows can consist of multiple inter-dependent notebooks, and can run automatically for each new date of CDR data available in FlowDB. After execution, notebooks can optionally be converted to PDF reports.
 
 AutoFlow uses:
 - [Prefect](https://github.com/prefecthq/prefect) to define and run workflows,
@@ -37,7 +37,7 @@ When the container runs, it will parse `workflows.yml` and construct all of the 
 
 ### Defining workflows
 
-Workflows should be defined in a yaml file `${AUTOFLOW_INPUTS_DIR}/workflows.yml`. This file should have thoe following structure:
+Workflows should be defined in a yaml file `${AUTOFLOW_INPUTS_DIR}/workflows.yml`. This file should have the following structure:
 - `workflows`: A sequence of workflow specifications. Each workflow specification has the following keys:
     - `name`: A unique name for this workflow.
     - `notebooks`: Specifications for one or more notebook execution tasks, defined as a mapping from labels to notebook task specifications. See the section on [defining notebook tasks](#defining-notebook-tasks) for more details.
@@ -59,10 +59,10 @@ Jupyter notebooks in `$AUTOFLOW_INPUTS_DIR` can be executed as tasks within a wo
 - `parameters`: A mapping that defines parameters for this notebook. Keys are the names of these parameters inside the notebook, and each value refers to one of:
     - The name of one of the parameters of this workflow.
     - The key of another notebook task in this workflow (i.e. the key corresponding to a notebook task specification). Dependencies between notebook tasks can be defined in this way, and these dependencies will be respected by the order in which notebooks are executed. The value of this parameter within the notebook will be the filename of the other notebook after execution.
-    - The name of an 'automatic' workflow parameter (i.e. a parameter that will automatically be passed by the available dates sensor). There are two other 'automatic' parameters:
+    - The name of an 'automatic' workflow parameter (i.e. a parameter that will automatically be passed by the available dates sensor). There are two 'automatic' parameters:
         - `reference_date`: The date of available CDR data for which the workflow is running (as an iso-format date string).
         - `date_ranges`: A list of pairs of iso-format date strings, describing the date ranges defined by the `date_stencil` (see the section on [date stencils](#date-stencils) below) for `reference_date`.
-    - `flowapi_url`: The URL at which FlowAPI caln be accessed. The value of this parameter will be the URL set as the environment variable `FLOWAPI_URL` inside the container.
+    - `flowapi_url`: The URL at which FlowAPI can be accessed. The value of this parameter will be the URL set as the environment variable `FLOWAPI_URL` inside the container.
 - `output` (optional): Set `output: {format: pdf}` to convert this notebook to PDF after execution. Omit the `output` key to skip converting this notebook to PDF. Optionally, a custom template can be used when converting the notebook to asciidoc by setting `output: {format: pdf, template: custom_asciidoc_template.tpl}` (where `custom_asciidoc_template.tpl` should be a file in `$AUTOFLOW_INPUTS_DIR`).
 
 #### Date stencils
@@ -70,8 +70,8 @@ Jupyter notebooks in `$AUTOFLOW_INPUTS_DIR` can be executed as tasks within a wo
 The default behaviour is to run a workflow for every date of available CDR data. If the notebooks refer to date periods other than the reference date for which the workflow is running, further filtering is required to ensure that all required dates are available. This can be done by providing a date stencil.
 
 Each element of the list of workflows defined in the `available_dates_sensor` block in `workflows.yml` accepts a `date_stencil` parameter, which defines a pattern of dates relative to each available CDR date. The workflow will only run for a particular date if all dates contained in the date stencil for that date are available. The date stencil is a list of elements, each of which is one of:
-- an absolute date (e.g.`2016-01-01`)
-- an integer representing an offset (in days) from a reference date. For example, `-1` would refer to the day before a reference date, so a workflow containing `-1` would only run for date `2016-01-03` if date `2016-01-02` was available
+- an absolute date (e.g.`2016-01-01`);
+- an integer representing an offset (in days) from a reference date. For example, `-1` would refer to the day before a reference date, so a workflow containing `-1` would only run for date `2016-01-03` if date `2016-01-02` was available;
 - a pair of dates/offsets representing a date interval (inclusive of both limits) for which all dates must be available. Absolute dates and offsets can be mixed (e.g. `[2016-01-01, -3]`).
 
 If the `date_stencil` parameter is not provided, the default value is `[0]` (i.e. only the reference date itself needs to be available).
@@ -164,19 +164,19 @@ In addition to the environment variables above, `PREFECT__USER_CONFIG_PATH=./con
     - `date_stencil.py` - Defines a `DateStencil` class to represent date stencils.
     - `model.py` - Defines a database model for storing workflow run metadata.
     - `parser.py` - Functions for parsing workflow definition files.
-    - `sensor.py` - Defines the `available_dates_sensor` prefect flow, which can be configured to run other workflows whenever new days of data become available.
+    - `sensor.py` - Defines the `available_dates_sensor` prefect flow, which can be configured to run other workflows when new days of data become available.
     - `utils.py` - Various utility functions.
     - `workflows.py` - Prefect tasks used in workflows, and a `make_notebooks_workflow` function to create a prefect flow that parametrises and executes notebooks.
 - `config/` - Directory containing the following configuration files:
     - `config.toml` - Prefect user configuration file. Defines config values available to prefect tasks during execution.
     - `asciidoc_extended.tpl` - Extends the default `nbconvert` asciidoc template. This template will be used when converting notebooks to PDF, unless the user provides a different template.
 - `examples/` - Contains inputs for an example date-triggered workflow that produces a PDF report of flows above normal for each day of CDR data. Running `make automation-up` in the FlowKit root directory will start a AutoFlow container that runs this example workflow.
-    - `inputs/` - The `AUTOFLOW_INPUTS_DIR` should point to this directory when running the example. It contains:
+    - `inputs/` - The `AUTOFLOW_INPUTS_DIR` environment variable should point to this directory when running the example. It contains:
         - `run_flows.ipynb` - Notebook that runs two `flows` queries, so that they are stored in cache. The query IDs for the `flows` queries are glued in this notebook.
-        - `flows_Report.ipynb` - Notebook that reads the query IDs from `run_flows.ipynb`, gets the query results using FlowClient and combines them with geography data, and displays the flows above normal in plots and tables. This notebook is designed to be converted to a PDF report after execution.
+        - `flows_report.ipynb` - Notebook that reads the query IDs from `run_flows.ipynb`, gets the query results using FlowClient and combines them with geography data, and displays the flows above normal in plots and tables. This notebook is designed to be converted to a PDF report after execution.
         - `workflows.yml` -  Yaml file that defines a workflow that runs `run_flows.ipynb` followed by `flows_report.ipynb` and creates a PDF report from `flows_report.ipynb`, and configures the available dates sensor to run this workflow.
-    - `outputs/` - The `AUTOFLOW_OUTPUTS_DIR` should point to this directory when running the example. Executed notebooks and PDF reports will be saved to subdirectories `notebooks/` and `reports/`, respectively.
-- `tests/` - Tests
+    - `outputs/` - The `AUTOFLOW_OUTPUTS_DIR` environment variable should point to this directory when running the example. Executed notebooks and PDF reports will be saved to subdirectories `notebooks/` and `reports/`, respectively.
+- `tests/` - Unit tests.
 - `Dockerfile` - Dockerfile for building the `flowminder/autoflow` image.
 - `docker-stack.yml` - Example docker stack file that could be used to start AutoFlow using docker secrets. Note that for real usage this docker stack would also need to be connected to a network on which a FlowAPI is accessible.
 - `Pipfile` - Pipfile that can be used to create a pipenv environment for running AutoFlow locally (i.e. outside a container). The Pipfile is not used when building the docker image.
