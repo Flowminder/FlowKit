@@ -11,16 +11,22 @@
 #  PostgreSQL image, which is based
 #  on the official Debian Stretch (9) image.
 #
-ARG POSTGRES_RELEASE=11.5
-ARG POSTGRES_DIGEST=f766d03bb49c7dd16fe32c1eb2645d13cb315adc029557cd1e4a0a9c094933d5
+ARG POSTGRES_RELEASE=12
+ARG POSTGRES_DIGEST=d91076cb1baeec8eab40c621446e921ac562d4eaf58301144cd96cd9b559daf0
 
 FROM postgres:$POSTGRES_RELEASE@sha256:$POSTGRES_DIGEST
 
 ARG POSTGRES_RELEASE
 ENV POSTGRES_RELEASE=$POSTGRES_RELEASE
-ARG POSTGIS_MAJOR=2.5
+ARG POSTGIS_MAJOR=3
 ENV POSTGIS_MAJOR=$POSTGIS_MAJOR
-ARG POSTGIS_VERSION=2.5.3
+ARG POSTGIS_VERSION=3.0.0
+ARG GEOS_VERSION=3.7.1-1
+ARG PROJ_VERSION=5.2.0-1
+ARG GDAL_VERSION=2.4.0+dfsg-1+b1
+ARG PGROUTING_VERSION=3.0.0~beta-1~exp2.pgdg100+1
+ARG PG_MEDIAN_UTILS_VERSION=0.0.7
+ARG OGR_FDW_VERSION=1.0.8-2~exp1.pgdg100+1
 ENV POSTGIS_VERSION=$POSTGIS_VERSION
 ENV POSTGRES_DB=flowdb
 ARG POSTGRES_USER=flowdb
@@ -28,9 +34,14 @@ ENV POSTGRES_USER=$POSTGRES_USER
 ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
 
+
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR postgis postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts gdal-bin postgresql-$PG_MAJOR-pgrouting \
+        && apt-get install -y --no-install-recommends \
+        libgeos-c1v5=$GEOS_VERSION libproj13=$PROJ_VERSION libgdal20=$GDAL_VERSION \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR  \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
+        postgresql-$PG_MAJOR-pgrouting=$PGROUTING_VERSION \
+        postgresql-$PG_MAJOR-ogr-fdw=$OGR_FDW_VERSION \
         && rm -rf /var/lib/apt/lists/* \
         && apt-get purge -y --auto-remove
 
@@ -55,8 +66,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends locales locales
 #
 RUN apt-get update \
         && apt-get install -y --no-install-recommends \
-        unzip curl make postgresql-plpython-$PG_MAJOR \
-        postgresql-$PG_MAJOR-cron \
+        unzip curl make postgresql-plpython3-$PG_MAJOR \
         libaio1  \
         parallel nano vim python3-pip wget python3-setuptools\
         && apt purge -y --auto-remove \
@@ -104,10 +114,13 @@ RUN mkdir -p /docker-entrypoint-initdb.d
 #  together with the appropriate headers, otherwise
 #  psutil fails to install.
 #
+# We'll also install useful postgres extensions distributed via PGXN.
+#
 COPY ./Pipfile* /tmp/
 RUN apt-get update \
-        && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev \
+        && apt-get install -y --no-install-recommends python3-dev gcc m4 libxml2-dev libaio-dev postgresql-server-dev-$PG_MAJOR \
         && pip3 install pgxnclient \
+        && pgxnclient install "pg_median_utils=$PG_MEDIAN_UTILS_VERSION" \
         && pip3 install pipenv \
         && PIPENV_PIPFILE=/tmp/Pipfile pipenv install --system --deploy --three \
         && apt-get remove -y python3-dev gcc m4 libxml2-dev libaio-dev \

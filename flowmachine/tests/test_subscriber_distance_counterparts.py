@@ -60,7 +60,7 @@ def distance_counterparts_wanted(get_dataframe, distance_matrix):
             right_on=("location_id_from", "location_id_to"),
         )
 
-        return events.loc[:, ["subscriber", "distance"]].groupby("subscriber")
+        return events.loc[:, ["subscriber", "value"]].groupby("subscriber")
 
     return _distance_counterparts_wanted
 
@@ -73,19 +73,19 @@ def test_distance_counterparts(get_dataframe, distance_counterparts_wanted):
     df = get_dataframe(query).set_index("subscriber")
     got = df.head(n=5)
     want = distance_counterparts_wanted("2016-01-01", "2016-01-07", "both", got).mean()
-    assert got.distance_avg.to_dict() == pytest.approx(want.distance.to_dict())
+    assert got.value.to_dict() == pytest.approx(want.value.to_dict())
 
     query = DistanceCounterparts("2016-01-01", "2016-01-07", direction="out")
     df = get_dataframe(query).set_index("subscriber")
     got = df.head(n=5)
     want = distance_counterparts_wanted("2016-01-01", "2016-01-07", "out", got).mean()
-    assert got.distance_avg.to_dict() == pytest.approx(want.distance.to_dict())
+    assert got.value.to_dict() == pytest.approx(want.value.to_dict())
 
     query = DistanceCounterparts("2016-01-03", "2016-01-05", direction="in")
     df = get_dataframe(query).set_index("subscriber")
     got = df.head(n=5)
     want = distance_counterparts_wanted("2016-01-03", "2016-01-05", "in", got).mean()
-    assert got.distance_avg.to_dict() == pytest.approx(want.distance.to_dict())
+    assert got.value.to_dict() == pytest.approx(want.value.to_dict())
 
     query = DistanceCounterparts(
         "2016-01-03", "2016-01-05", direction="in", subscriber_subset=got.index.values
@@ -93,10 +93,10 @@ def test_distance_counterparts(get_dataframe, distance_counterparts_wanted):
     df = get_dataframe(query).set_index("subscriber")
     got = df.head(n=5)
     want = distance_counterparts_wanted("2016-01-03", "2016-01-05", "in", got).mean()
-    assert got.distance_avg.to_dict() == pytest.approx(want.distance.to_dict())
+    assert got.value.to_dict() == pytest.approx(want.value.to_dict())
 
     query = DistanceCounterparts("2016-01-01", "2016-01-05", statistic="stddev")
     df = get_dataframe(query).set_index("subscriber")
     got = df.head(n=5)
     want = distance_counterparts_wanted("2016-01-01", "2016-01-05", "both", got).std()
-    assert got.distance_stddev.to_dict() == pytest.approx(want.distance.to_dict())
+    assert got.value.to_dict() == pytest.approx(want.value.to_dict())

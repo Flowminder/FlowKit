@@ -6,13 +6,17 @@
 """
 Commonly used testing fixtures for flowmachine.
 """
-
+import json
 import os
+from json import JSONDecodeError
+
 import pandas as pd
 import pytest
 import re
 import logging
 from unittest.mock import Mock
+
+from _pytest.capture import CaptureResult
 from approvaltests.reporters.generic_diff_reporter_factory import (
     GenericDiffReporterFactory,
 )
@@ -26,6 +30,23 @@ logger = logging.getLogger()
 
 here = os.path.dirname(os.path.abspath(__file__))
 flowkit_toplevel_dir = os.path.join(here, "..", "..")
+
+
+@pytest.fixture
+def json_log(caplog):
+    def parse_json():
+        loggers = dict(debug=[], query_run_log=[])
+        for logger, level, msg in caplog.record_tuples:
+            if msg == "":
+                continue
+            try:
+                parsed = json.loads(msg)
+                loggers[parsed["logger"].split(".")[1]].append(parsed)
+            except JSONDecodeError:
+                loggers["debug"].append(msg)
+        return CaptureResult(err=loggers["debug"], out=loggers["query_run_log"])
+
+    return parse_json
 
 
 @pytest.fixture(

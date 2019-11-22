@@ -95,6 +95,50 @@ ingestion_db=# SELECT * FROM events.cdr LIMIT 3;
 (3 rows)
 ``` 
 
+### Create a view to determine available dates in IngestionDB
+
+FlowETL needs to be able to determine which dates are available for ingestion.
+A convenient way to do this is to create a view in the ingestion database which lists all available dates.
+Since our ingestion database is based on [TimescaleDB](https://docs.timescale.com/latest/main) and the table `events.cdr`
+is a [hypertable](https://docs.timescale.com/latest/using-timescaledb/hypertables) with chunk size of 1 day, we can
+extract this information from the chunk ranges. Further down we will
+
+Connect to the ingestion database (`make connect-ingestion_db`) and then run the following SQL snippet
+to create the `available_dates view.
+```
+CREATE VIEW available_dates AS (
+    WITH chunk_ranges_as_strings AS (
+        SELECT unnest(ranges) as ranges
+        FROM chunk_relation_size_pretty('events.cdr')
+    ),
+    chunk_ranges AS (
+        SELECT
+            substring(ranges, 2, 24)::TIMESTAMPTZ as chunk_start,
+            substring(ranges, 25, 24)::TIMESTAMPTZ as chunk_end
+        FROM chunk_ranges_as_strings
+    )
+    SELECT
+        chunk_start::DATE as cdr_date
+    FROM chunk_ranges
+    ORDER BY cdr_date
+);
+```
+
+Let's confirm that it works as expected.
+```
+ingestion_db=# SELECT * FROM available_dates;
+  cdr_date
+------------
+ 2019-09-02
+ 2019-09-03
+ 2019-09-04
+ 2019-09-05
+ 2019-09-06
+ 2019-09-07
+ 2019-09-08
+(7 rows)
+```
+
 ### Set up a docker stack with FlowDB and FlowETL
 
 Set relevant environment variables for FlowDB and FlowETL.
@@ -166,7 +210,7 @@ This is useful if you make changes to the source code, in which case you need to
 for these changes to be picked up.
 
 
-### Create a foreign data wrapper to connect FlowDB to IngestionDB
+### Create foreign data wrappers to connect FlowDB to IngestionDB
 
 Run the following from within `flowdb` (you can connect to flowdb by running `make connect-flowdb`).
 ```
@@ -187,6 +231,12 @@ CREATE USER MAPPING IF NOT EXISTS FOR flowdb
         password 'etletl'
     );
 
+CREATE FOREIGN TABLE sample_data_available_dates_fdw (
+        cdr_date DATE
+    )
+    SERVER ingestion_db_server
+    OPTIONS (table_name 'available_dates');
+
 CREATE FOREIGN TABLE sample_data_fdw (
         event_time TIMESTAMPTZ,
         msisdn TEXT,
@@ -196,8 +246,24 @@ CREATE FOREIGN TABLE sample_data_fdw (
     OPTIONS (schema_name 'events', table_name 'cdr');
 ```
 
-Let's verify that the foreign data wrapper was set up correctly, so that `flowdb` can now read data remotely from `ingestion_db`:
+This creates two foreign data wrappers within `flowdb`. The first one (`sample_data_available_dates_fdw`) allows
+to determine the dates for which CDR data is available, so that FlowETL can schedule ingestion for any unprocessed dates.
+The second one (`sample_data_fdw`) wraps the actual data itself and acts as the "source" in the ETL pipeline.
+
+Let's verify that these were set up correctly, so that `flowdb` can now read data remotely from `ingestion_db`:
 ```
+flowdb=# SELECT * FROM sample_data_available_dates_fdw;
+  cdr_date
+------------
+ 2019-09-02
+ 2019-09-03
+ 2019-09-04
+ 2019-09-05
+ 2019-09-06
+ 2019-09-07
+ 2019-09-08
+(7 rows)
+
 flowdb=# SELECT * FROM sample_data_fdw LIMIT 3;
           event_time           |                              msisdn                              | cell_id
 -------------------------------+------------------------------------------------------------------+---------

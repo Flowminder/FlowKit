@@ -19,6 +19,7 @@ flowkit-jwt-generator = {editable = true,path = "./../flowkit_jwt_generator"}
 python_version = "3.7"
 
 [dev-packages]
+black = "==19.10b0"
 
 [scripts]
 run-tests = "bash run_tests.sh"

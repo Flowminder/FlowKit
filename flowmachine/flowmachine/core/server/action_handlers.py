@@ -49,7 +49,7 @@ def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
 
 
 def action_handler__get_available_queries(
-    config: "FlowmachineServerConfig"
+    config: "FlowmachineServerConfig",
 ) -> ZMQReply:
     """
     Handler for 'get_available_queries' action.

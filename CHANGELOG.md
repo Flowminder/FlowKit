@@ -7,6 +7,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- FlowMachine now periodically prunes the cache to below the permitted cache size. [#1307](https://github.com/Flowminder/FlowKit/issues/1307)
+  
+  The frequency of this pruning is configurable using the `FLOWMACHINE_CACHE_PRUNING_FREQUENCY` environment variable to Flowmachine, and queries are excluded from being removed by the automatic shrinker based on the `cache_protected_period` config key within FlowDB.
+- FlowDB now includes Paul Ramsey's [OGR foreign data wrapper](https://github.com/pramsey/pgsql-ogr-fdw), for easy loading of GIS data. [#1512](https://github.com/Flowminder/FlowKit/issues/1512)
+- FlowETL now allows all configuration options to be set using docker secrets. [#1515](https://github.com/Flowminder/FlowKit/issues/1515)
+
+### Changed
+- FlowDB is now built on PostgreSQL 12 [#1396](https://github.com/Flowminder/FlowKit/issues/1313) and PostGIS 3.
+- FlowETL is now built on Airflow [10.1.6](https://airflow.apache.org/changelog.html#airflow-1-10-6-2019-10-28).
+
+### Fixed
+- Quickstart should no longer fail on systems which do not include the `netstat` tool. [#1472](https://github.com/Flowminder/FlowKit/issues/1472)
+
+### Removed
+- Removed pg_cron.
+
+
+## [0.9.1]
+
+### Added
+- Added new `DistanceSeries` query to Flowmachine, which produces per-subscriber time series of distance from a reference point. [#1313](https://github.com/Flowminder/FlowKit/issues/1313)
+- Added new `ImputedDistanceSeries` query to Flowmachine, which produces contiguous per-subscriber time series of distance from a reference point by filling in gaps using the rolling median. [#1337](https://github.com/Flowminder/FlowKit/issues/1337)
+
+### Changed
+
+### Fixed
+
+- The FlowETL config file is now always validated, avoiding runtime errors if a config setting is wrong or missing. [#1375](https://github.com/Flowminder/FlowKit/issues/1375)
+- FlowETL now only creates DAGs for CDR types which are present in the config, leading to a better user experience in the Airflow UI. [#1376](https://github.com/Flowminder/FlowKit/issues/1376)
+- The `concurrency` settings in the FlowETL config are no longer ignored. [#1378](https://github.com/Flowminder/FlowKit/issues/1378)
+- The FlowETL deployment example has been updated so that it no longer fails due to a missing foreign data wrapper for the available CDR dates. [#1379](https://github.com/Flowminder/FlowKit/issues/1379)
+- Fixed error when editing a user in FlowAuth who did not have two factor enabled. [#1374](https://github.com/Flowminder/FlowKit/issues/1374)
+- Fixed not being able to enable a newly added api route on existing servers in FlowAuth. [#1373](https://github.com/Flowminder/FlowKit/issues/1373)
+
+### Removed
+
+- The `default_args` section in the FlowETL config file has been removed. [#1377](https://github.com/Flowminder/FlowKit/issues/1377)
+
+
+## [0.9.0]
+
+### Added
 - FlowAuth now makes version information available at `/version` and displays it in the web ui. [#835](https://github.com/Flowminder/FlowKit/issues/835)
 - FlowETL now comes with a deployment example (in `flowetl/deployment_example/`). [#1126](https://github.com/Flowminder/FlowKit/issues/1126)
 - FlowETL now allows to run supplementary post-ETL queries. [#989](https://github.com/Flowminder/FlowKit/issues/989)
@@ -25,15 +67,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Attempting to store a query that does not have a standard table name (e.g. `EventTableSubset` or unseeded random sample) will now raise an `UnstorableQueryError` instead of `ValueError`.
 - In the FlowETL deployment example, the external ingestion database is now set up separately from the FlowKit components and connected to FlowDB via a docker overlay network. [#1276](https://github.com/Flowminder/FlowKit/issues/1276)
 - The `md5` attribute of the `Query` class has been renamed to `query_id` [#1288](https://github.com/Flowminder/FlowKit/issues/1288).
-
+- `DistanceMatrix` no longer returns duplicate rows for the lon-lat spatial unit.
+- Previously, `Displacement` defaulted to returning `NaN` for subscribers who have a location in the reference location but were not seen in the time period for the displacement query. These subscribers are no longer returned unless the `return_subscribers_not_seen` argument is set to `True`.
+- `PopulationWeightedOpportunities` is now available under `flowmachine.features.location`, instead of `flowmachine.models`
+- `PopulationWeightedOpportunities` no longer supports erroring with incomplete per-location departure rate vectors and will instead omit any locations not included from the results
+- `PopulationWeightedOpportunities` no longer requires use of the `run()` method
 
 ### Fixed
 - Quickstart will no longer fail if it has been run previously with a different FlowDB data size and not explicitly shut down. [#900](https://github.com/Flowminder/FlowKit/issues/900)
 
-
 ### Removed
 - Flowmachine's `subscriber_locations_cluster` function has been removed - use `HartiganCluster` or `MeaningfulLocations` directly.
 - FlowAPI no longer supports the non-reproducible random sampling method `system_rows`. [#1263](https://github.com/Flowminder/FlowKit/issues/1263)
+
 
 ## [0.8.0]
 
@@ -485,7 +531,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Added Python 3.6 support for FlowClient
 
-[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.8.0...master
+[unreleased]: https://github.com/Flowminder/FlowKit/compare/0.9.1...master
+[0.9.1]: https://github.com/Flowminder/FlowKit/compare/0.9.0...0.9.1
+[0.9.0]: https://github.com/Flowminder/FlowKit/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/Flowminder/FlowKit/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/Flowminder/FlowKit/compare/0.6.4...0.7.0
 [0.6.4]: https://github.com/Flowminder/FlowKit/compare/0.6.3...0.6.4

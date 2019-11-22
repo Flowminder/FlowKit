@@ -21,6 +21,7 @@ from zmq.asyncio import Context
 
 import flowmachine
 from flowmachine.core import Query, Connection
+from flowmachine.core.cache import watch_and_shrink_cache
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply
@@ -286,6 +287,14 @@ async def recv(
     main_loop.create_task(
         update_available_dates(
             flowdb_connection=flowdb_connection, pool=Query.thread_pool_executor
+        )
+    )
+    main_loop.create_task(
+        watch_and_shrink_cache(
+            flowdb_connection=flowdb_connection,
+            pool=Query.thread_pool_executor,
+            sleep_time=config.cache_pruning_frequency,
+            timeout=config.cache_pruning_timeout,
         )
     )
     try:

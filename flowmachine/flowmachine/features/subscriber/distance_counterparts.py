@@ -121,7 +121,7 @@ class DistanceCounterparts(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", f"distance_{self.statistic}"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
@@ -137,7 +137,7 @@ class DistanceCounterparts(SubscriberFeature):
         sql = f"""
         SELECT
             U.subscriber AS subscriber,
-            {self.statistic}(D.distance) AS distance_{self.statistic}
+            {self.statistic}(D.value) AS value
         FROM
             (
                 SELECT A.subscriber, A.location_id AS location_id_from, B.location_id AS location_id_to FROM
@@ -147,7 +147,7 @@ class DistanceCounterparts(SubscriberFeature):
             ) U
         JOIN
             ({self.distance_matrix.get_query()}) D
-        ON U.location_id_from = D.location_id_from AND U.location_id_to = D.location_id_to
+        USING (location_id_from, location_id_to)
         GROUP BY U.subscriber
         """
 
