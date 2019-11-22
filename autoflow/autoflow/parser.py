@@ -66,8 +66,8 @@ class DateField(fields.Date):
     if it is already a date object.
     """
 
-    # yaml.safe_load converts iso-format date strings to date objects,
-    # so we need a field that can 'deserialise' dates that are already dates.
+    # yaml.safe_load converts iso-format dates to date objects, so we need a
+    # field that can 'deserialise' dates that are already dates.
     def _deserialize(self, value, attr, data, **kwargs) -> datetime.date:
         """
         If the input value is a date object, return it unchanged.
