@@ -705,6 +705,12 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
+      - run:
+          name: Install autoflow dependencies
+          command: |
+            sudo apt-get update && sudo apt-get install -y pandoc ruby
+            sudo gem install asciidoctor
+            sudo gem install asciidoctor-pdf --pre
       - run: *wait_for_flowdb
       - run:
           name: Run integration tests
