@@ -52,7 +52,7 @@ class WorkflowConfig(NamedTuple):
 
 @task
 def get_available_dates(
-    cdr_types: Optional[Sequence[str]] = None
+    cdr_types: Optional[Sequence[str]] = None,
 ) -> List[pendulum.Date]:
     """
     Task to return a union of the dates for which data is available in FlowDB for the specified set of CDR types.

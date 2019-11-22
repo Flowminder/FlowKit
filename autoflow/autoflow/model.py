@@ -58,8 +58,8 @@ class WorkflowRuns(Base):
     def __init__(self, workflow_name: str, parameters_hash: str, state: RunState):
         self.workflow_name = workflow_name
         self.parameters_hash = (
-            parameters_hash
-        )  # Hash generated from workflow parameters dict
+            parameters_hash  # Hash generated from workflow parameters dict
+        )
         self.state = state  # Flow run state
         self.timestamp = pendulum.now("utc")
 

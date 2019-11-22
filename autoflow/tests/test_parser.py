@@ -634,7 +634,7 @@ def test_workflow_config_schema_workflow_not_found():
 
 @pytest.mark.parametrize("missing_parameter", ["reference_date", "date_ranges"])
 def test_workflow_config_schema_workflow_does_not_accept_automatic_parameters(
-    missing_parameter
+    missing_parameter,
 ):
     """
     Test that WorkflowConfigSchema raises a ValidationError if the named
