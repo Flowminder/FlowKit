@@ -258,7 +258,7 @@ jobs:
             echo Building oracle_fdw version $FLOWDB_VERSION
             echo Tagging as oracle-$CIRCLE_SHA1
             docker build --build-arg ORACLE_BINARY_SOURCE=https://raw.githubusercontent.com/bumpx/oracle-instantclient/master \
-              -t flowminder/flowdb:oracle-$CIRCLE_SHA1 oracle_fdw
+              --build-arg CODE_VERSION=$CIRCLE_SHA1 -t flowminder/flowdb:oracle-$CIRCLE_SHA1 oracle_fdw
       - run:
           name: Launch flowdb
           command: |
@@ -585,12 +585,45 @@ jobs:
           path: test_results
       - run: bash <(curl -s https://codecov.io/bash) -F flowclient_unit_tests
 
+  run_autoflow_tests:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: /home/circleci/project/autoflow
+    steps:
+      - checkout:
+          path: /home/circleci/project/
+      - restore_cache:
+          keys:
+            - autoflow-deps-1-{{ checksum "Pipfile.lock" }}
+      - run:
+          name: Install non-python dependencies
+          command: |
+            sudo apt-get update && sudo apt-get install -y postgresql pandoc ruby
+            sudo gem install asciidoctor
+            sudo gem install asciidoctor-pdf --pre
+      - run:
+          name: Install python dependencies
+          command: |
+            pipenv install --deploy --dev
+      - save_cache:
+          key: autoflow-deps-1-{{ checksum "Pipfile.lock" }}
+          paths:
+            - /home/circleci/.local/share/virtualenvs/
+      - run:
+          name: Run autoflow unit tests
+          command: |
+            pipenv run python -m pytest --junitxml=test_results/pytest/results.xml --cov=./ \
+             --cov-report term --cov-report xml --durations=10
+      - store_test_results:
+          path: test_results
+      - run: bash <(curl -s https://codecov.io/bash) -F autoflow_unit_tests
+
   build_docker_image:
     parameters:
       component:
         type: enum
         enum:
-          ["flowmachine", "flowauth", "flowapi", "flowkit-examples", "flowetl"]
+          ["flowmachine", "flowauth", "flowapi", "flowkit-examples", "flowetl", "autoflow"]
       component_path:
         type: string
     docker:
@@ -672,12 +705,18 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
+      - run:
+          name: Install autoflow dependencies
+          command: |
+            sudo apt-get update && sudo apt-get install -y pandoc ruby
+            sudo gem install asciidoctor
+            sudo gem install asciidoctor-pdf --pre
       - run: *wait_for_flowdb
       - run:
           name: Run integration tests
           command: |
             PIPENV_DONT_LOAD_ENV=1 FLOWAPI_PORT=9090 pipenv run run-tests -sv --junitxml=test_results/pytest/results.xml --durations=10 \
-            --cov=../flowmachine --cov=../flowclient --cov=../flowapi \
+            --cov=../flowmachine --cov=../flowclient --cov=../flowapi --cov=../autoflow \
             --cov-report xml \
             --cov-report term
       - store_test_results:
@@ -876,7 +915,7 @@ jobs:
           command: |
             export DOCKER_USER=$DOCKER_CLOUD_USER
             export DOCKER_PASS=$DOCKER_CLOUD_PASSWORD
-            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl; do
+            for IMAGE in flowapi flowmachine flowdb flowdb-synthetic-data flowdb-testdata flowauth flowkit-examples flowetl autoflow; do
               docker-retag flowminder/$IMAGE:$CIRCLE_SHA1 ${<< parameters.tag >>:-latest}
             done
 
@@ -930,6 +969,8 @@ workflows:
           requires:
             - build_flowdb_synthdata
           <<: *run_always_org_context
+      - run_autoflow_tests:
+          <<: *run_always_org_context
       - build_docker_image:
           name: build_examples
           component: flowkit-examples
@@ -960,6 +1001,11 @@ workflows:
           name: build_flowapi
           component: flowapi
           component_path: flowapi
+          <<: *run_always_org_context
+      - build_docker_image:
+          name: build_autoflow
+          component: autoflow
+          component_path: autoflow
           <<: *run_always_org_context
       - run_flowauth_end_to_end_tests:
           requires:
@@ -1028,6 +1074,8 @@ workflows:
             - build_flowmachine_wheel
             - build_flowclient_wheel
             - run_flowmachine_tests
+            - run_autoflow_tests
+            - build_autoflow
           <<: *master_only_org_context
       - retag_images:
           name: retag_tagged_build
