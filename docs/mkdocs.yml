@@ -32,7 +32,9 @@ nav:
       - analyst/worked_examples/commuting-patterns.ipynb
       - analyst/worked_examples/cell-towers-per-region.ipynb
       - analyst/worked_examples/unique-subscriber-counts.ipynb
-      - analyst/worked_examples/mobile-data-usage.ipynb
+    - Advanced usage:
+        - Worked examples:
+            - analyst/advanced_usage/worked_examples/mobile-data-usage.ipynb
   - Developers:
       - developer/index.md
       - developer/dev_environment_setup.md
