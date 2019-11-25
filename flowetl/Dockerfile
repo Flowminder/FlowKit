@@ -11,6 +11,9 @@ FROM puckel/docker-airflow@sha256:62aadca83c05fb0e9caaeeaf5ced160570f74bee165d83
 ARG AIRFLOW_HOME=/usr/local/airflow
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES false
+# Turn off api access
+ENV AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.deny_all
+ENV AIRFLOW__WEBSERVER__RBAC=True
 USER root
 WORKDIR /usr/src/deps
 

@@ -684,7 +684,7 @@ jobs:
       - run:
           name: run flowetl integration tests
           command: |
-            pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml ./tests
+            pipenv run pytest --junit-xml=test_results/pytest/results_integration.xml --durations=10 ./tests
       - run:
           name: run etl module unit tests
           command: |
