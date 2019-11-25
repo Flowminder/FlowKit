@@ -67,7 +67,7 @@ bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick
 to get the examples with the larger dataset (the one used when producing this documentation).
 
 !!! info
-    The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the [Flows Above Normal](worked_examples/flows-above-normal.ipynb) example because this uses data for dates outside the range included in the small dataset.
+    The small dataset is sufficient for most of the worked examples, but the larger dataset is required for the [Flows Above Normal](analyst/worked_examples/flows-above-normal.ipynb) example because this uses data for dates outside the range included in the small dataset.
 
 !!! info
     The worked examples make use of [Mapbox GL](https://mapbox-mapboxgl-jupyter.readthedocs-hosted.com/en/latest/) for visualisation, which requires an API access token. If you would like to produce the maps in the worked examples notebooks, you will need to create a mapbox access token (following instructions [here](https://account.mapbox.com/)), and set this as the value of the `MAPBOX_ACCESS_TOKEN` environment variable before running the above commands.
@@ -84,7 +84,7 @@ In order to use the test system, now [install FlowClient](#flowclient), and gene
 
 Visit <a href="http://localhost:9091/" target="_blank">http://localhost:9091</a> and log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`. `TEST_USER` is already set up to generate tokens for the FlowAPI instance started by the quick start script.
 
-See the [administrator section](administrator.md#granting-user-permissions-in-flowauth) for details of how to add servers and users or modify user permissions, or the [analyst section](analyst.md#flowauth) for instructions to generate a token.
+See the [administrator section](administrator/index.md#granting-user-permissions-in-flowauth) for details of how to add servers and users or modify user permissions, or the [analyst section](analyst/index.md#flowauth) for instructions to generate a token.
 
 ### FlowClient <a name="flowclient"> </a>
 
@@ -94,7 +94,7 @@ The FlowClient Python client is used to perform CDR analysis using the JupyterLa
 pip install flowclient
 ```
 
-Quick install is continued with an example of FlowClient usage [here](analyst.md#flowclient).
+Quick install is continued with an example of FlowClient usage [here](analyst/index.md#flowclient).
 
 <a name="developers">
 
@@ -439,4 +439,4 @@ conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", s
 
 ### Demonstrating successful deployment
 
-Once FlowKit installation is complete, we suggest running the provided [worked examples](worked_examples/index.md) against the deployed FlowKit to check that everything is working correctly.
+Once FlowKit installation is complete, we suggest running the provided [worked examples](analyst/worked_examples/index.md) against the deployed FlowKit to check that everything is working correctly.
