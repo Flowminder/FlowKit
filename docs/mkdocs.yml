@@ -33,6 +33,7 @@ nav:
       - analyst/worked_examples/cell-towers-per-region.ipynb
       - analyst/worked_examples/unique-subscriber-counts.ipynb
     - Advanced usage:
+        - analyst/advanced_usage/index.md
         - Worked examples:
             - analyst/advanced_usage/worked_examples/mobile-data-usage.ipynb
   - Developers:
