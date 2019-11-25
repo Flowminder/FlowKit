@@ -200,7 +200,7 @@ FlowMachine is a Python toolkit for the analysis of CDR data. It is essentially 
 
 ### Documentation
 
-Documentation for FlowMachine can be found [here](../../flowmachine/flowmachine/). A worked example of using FlowMachine for analysis is provided [here](../../worked_examples/mobile-data-usage/).
+Documentation for FlowMachine can be found [here](../../flowmachine/flowmachine/). A worked example of using FlowMachine for analysis is provided [here](../../analyst/advanced_usage/worked_examples/mobile-data-usage/).
 
 
 <a name="flowdb">
@@ -211,14 +211,13 @@ FlowDB is database designed for storing, serving, and analysing mobile operator 
 
 -   Uses standard schema for most common mobile operator data
 -   Is built as a [Docker](http://docker.com/) container
--   Uses [PostgreSQL 11](https://www.postgresql.org/docs/11/static/release-11.html)
+-   Uses [PostgreSQL 12](https://www.postgresql.org/docs/11/static/release-12.html)
 -   Grants different permissions for users depending on need
 -   Is configured for high-performance operations
 -   Comes with
     -   [PostGIS](https://postgis.net) for geospatial data handling and analysis
     -   [pgRouting](http://pgrouting.org) for advanced spatial analysis
     -   Utilities for connecting with Oracle databases ([oracle_fdw](https://github.com/laurenz/oracle_fdw))
-    -   Scheduled tasks run in database ([pg_cron](https://github.com/citusdata/pg_cron))
 
 ### Synthetic Data
 
@@ -235,7 +234,7 @@ docker run --name flowdb_synth_data -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAP
  --publish 9000:5432 \
  -e N_CALLS=10000 -e N_SUBSCRIBERS=20000 -e N_CELLS=5000 -e N_DAYS=7 -e SYNTHETIC_DATA_GENERATOR=python \
  -e SUBSCRIBERS_SEED=11111 -e CALLS_SEED=22222 -e CELLS_SEED=33333 \
- --detach flowminder/flowdb-testdata:latest
+ --detach flowminder/flowdb-synthetic-data:latest
 ```
 
 Or to generate an equivalent data set which includes TACs, mobile data sessions and sms:
@@ -245,7 +244,7 @@ docker run --name flowdb_synth_data -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAP
  --publish 9000:5432 \
  -e N_CALLS=10000 -e N_SUBSCRIBERS=20000 -e N_CELLS=5000 -e N_SITES=5000 -e N_DAYS=7 -e SYNTHETIC_DATA_GENERATOR=sql \
  -e N_SMS=10000 -e N_MDS=10000 \
- --detach flowminder/flowdb-testdata:latest
+ --detach flowminder/flowdb-synthetic-data:latest
 ```
 
 !!! warning
