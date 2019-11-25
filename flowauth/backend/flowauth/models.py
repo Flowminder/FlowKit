@@ -767,6 +767,7 @@ def make_demodata():
     # Add some things that you can do
     caps = []
     for c in (
+        "available_dates",
         "daily_location",
         "flows",
         "modal_location",

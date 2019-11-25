@@ -45,3 +45,9 @@ services:
     build:
       context: ./flowetl
       dockerfile: Dockerfile
+
+  autoflow:
+    image: flowminder/autoflow:${CONTAINER_TAG:-latest}
+    build:
+      context: ./autoflow
+      dockerfile: Dockerfile
