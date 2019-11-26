@@ -2,7 +2,7 @@ Title: Worked examples
 
 # Worked examples
 
-We have five worked examples of using FlowKit for CDR analysis:
+We have four worked examples of using FlowKit for CDR analysis:
 
 - [Flows Above Normal](flows-above-normal.ipynb),
 - [Commuting Patterns](commuting-patterns.ipynb),
