@@ -12,7 +12,8 @@ RUN rm -rf /home/$NB_USER/work
 ARG SOURCE_VERSION=0+unknown
 ENV SOURCE_VERSION=${SOURCE_VERSION}
 ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
-COPY docs/source/worked_examples/*.ipynb /home/$NB_USER/
+COPY docs/source/analyst/worked_examples/*.ipynb /home/$NB_USER/
+COPY docs/source/analyst/advanced_usage/worked_examples/*.ipynb /home/$NB_USER/
 COPY flowmachine /${SOURCE_TREE}/flowmachine
 COPY flowclient /${SOURCE_TREE}/flowclient
 USER root

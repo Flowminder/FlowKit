@@ -69,101 +69,9 @@ If you plan to make a major contribution, please create a [pull request](https:/
 
 ## FlowAPI Guide
 
-
-This section describes the FlowAPI routes.
-
-FlowAPI is an HTTP API which provides access to the functionality of [FlowMachine](#flowmachine).
+FlowAPI is an HTTP API which provides access to the functionality of [FlowMachine](#flowmachine). A full overview of the available api routes is available as an [interactive api specification](api-spec.html).
 
 FlowAPI uses [ZeroMQ](http://zeromq.org/) for asynchronous communication with the FlowMachine server.
-
-### API Routes
-
-The API exposes four routes:
-
-- `/run`: set a query running in FlowMachine.
-
-- `/poll/<query_id>`: get the status of a query.
-
-- `/get/<query_id>`: return the result of a finished query.
-
-- `/geography/<aggregation_unit>`: return geography data for a given aggregation unit.
-
-- `/available_dates` : return the dates available to calculate metrics over
-
-At present, the following query types are accessible through FlowAPI:
-
-- `aggregate_network_objects`
-
-    Statistics about unique cells/sites aggregated to a period.
-
-- `daily_location`
-
-    A statistic representing where subscribers are on a given day. Must be used in combination with `modal_location`, `flows` or `spatial_aggregate`.
-
-- `modal_location`
-
-    The mode of a set of daily locations. Must be used in combination with `flows` or `spatial_aggregate`.
-
-- `spatial_aggregate`
-
-    A spatial aggregate of `modal_location` or `daily_location`, suitable for return via the API.
-
-- `joined_spatial_aggregate`
-
-    Spatial aggregate of a subscriber metric which does not have associated location information
-
-- `flows`
-
-    The difference in locations between two location queries.
-
-- `location_event_counts`
-
-    Count of total interactions in a time period, aggregated to a spatial unit.
-
-- `meaningful_locations_aggregate`
-
-    Count of "meaningful" locations for individual subscribers (for example, home and work)
-    based on a clustering of the cell towers they use and their usage patterns for those towers,
-    aggregated to a spatial unit.
-
-- `meaningful_locations_od_matrix`
-
-    OD matrix between two individual-level "meaningful" locations (see above), aggregated to a spatial unit.
-
-- `radius_of_gyration`
-
-    Return Radius of Gyration info for specified dates and (optionally, with default "all") for a specified set of subscribers
-
-- `total_network_objects`
-
-    Count of mobile phone cells per area active based on CDR traffic within a time period, broken down into time buckets.
-    
-- `topup_amount`
-
-    Aggregate of topup amount for individual subscribers.
-
-- `nocturnal_events`
-    
-    Represents the percentage of events that a subscriber make/receives which
-    began at night.
-
-- `topup_balance`
-
-    Return top-up balance statistics for specified dates and (optionally, with default "all") for a specified set of subscribers
-
-- `event_count`
-
-    Count of events (optionally of specific types) for individual subscribers in a time period.
-    
-- `displacement`
-
-    Return statistics of a subscribers displacement from
-    their reference location.
-- `pareto_interactions`
-
-    Returns two columns: `subscriber`, `pareto` - where the latter is the
-    proportion of that subscriber's contacts who account for the requested
-    proportion (0.8, by default) of their interactions in this time period.
 
 ### FlowAPI Access tokens
 
@@ -200,7 +108,7 @@ FlowMachine is a Python toolkit for the analysis of CDR data. It is essentially 
 
 ### Documentation
 
-Documentation for FlowMachine can be found [here](../../flowmachine/flowmachine/). A worked example of using FlowMachine for analysis is provided [here](../../worked_examples/mobile-data-usage/).
+Documentation for FlowMachine can be found [here](../../flowmachine/flowmachine/). A worked example of using FlowMachine for analysis is provided [here](../../analyst/advanced_usage/worked_examples/mobile-data-usage/).
 
 
 <a name="flowdb">
@@ -211,14 +119,13 @@ FlowDB is database designed for storing, serving, and analysing mobile operator 
 
 -   Uses standard schema for most common mobile operator data
 -   Is built as a [Docker](http://docker.com/) container
--   Uses [PostgreSQL 11](https://www.postgresql.org/docs/11/static/release-11.html)
+-   Uses [PostgreSQL 12](https://www.postgresql.org/docs/11/static/release-12.html)
 -   Grants different permissions for users depending on need
 -   Is configured for high-performance operations
 -   Comes with
     -   [PostGIS](https://postgis.net) for geospatial data handling and analysis
     -   [pgRouting](http://pgrouting.org) for advanced spatial analysis
     -   Utilities for connecting with Oracle databases ([oracle_fdw](https://github.com/laurenz/oracle_fdw))
-    -   Scheduled tasks run in database ([pg_cron](https://github.com/citusdata/pg_cron))
 
 ### Synthetic Data
 
@@ -235,7 +142,7 @@ docker run --name flowdb_synth_data -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAP
  --publish 9000:5432 \
  -e N_CALLS=10000 -e N_SUBSCRIBERS=20000 -e N_CELLS=5000 -e N_DAYS=7 -e SYNTHETIC_DATA_GENERATOR=python \
  -e SUBSCRIBERS_SEED=11111 -e CALLS_SEED=22222 -e CELLS_SEED=33333 \
- --detach flowminder/flowdb-testdata:latest
+ --detach flowminder/flowdb-synthetic-data:latest
 ```
 
 Or to generate an equivalent data set which includes TACs, mobile data sessions and sms:
@@ -245,7 +152,7 @@ docker run --name flowdb_synth_data -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAP
  --publish 9000:5432 \
  -e N_CALLS=10000 -e N_SUBSCRIBERS=20000 -e N_CELLS=5000 -e N_SITES=5000 -e N_DAYS=7 -e SYNTHETIC_DATA_GENERATOR=sql \
  -e N_SMS=10000 -e N_MDS=10000 \
- --detach flowminder/flowdb-testdata:latest
+ --detach flowminder/flowdb-synthetic-data:latest
 ```
 
 !!! warning
