@@ -21,32 +21,40 @@ plugins:
 nav:
   - index.md
   - install.md
-  - analyst.md
-  - Developer:
-      - developer/developer.md
-      - developer/dev_environment_setup.md
-      - Architectural Decision Records (ADR):
-          - developer/adr/README.md
-          - developer/adr/0001-pipenv-for-package-and-dependency-management.md
-          - developer/adr/0002-pytest-for-testing.md
-          - developer/adr/0003-http-api.md
-          - developer/adr/0004-http-framework.md
-          - developer/adr/0005-IPC-methods.md
-          - developer/adr/0006-JWTs.md
-          - developer/adr/0007-mapbox-for-worked-examples.md
-  - administrator.md
-  - Worked examples:
-      - worked_examples/index.md
-      - worked_examples/flows-above-normal.ipynb
-      - worked_examples/commuting-patterns.ipynb
-      - worked_examples/cell-towers-per-region.ipynb
-      - worked_examples/unique-subscriber-counts.ipynb
-      - worked_examples/mobile-data-usage.ipynb
-  - FlowAPI specification: api-spec.html
-  - api-docs-flowmachine
-  - FlowClient:
-      - flowclient/example_usage.ipynb
+  - Analysts:
+    - analyst/index.md
+    - FlowClient:
+      - analyst/flowclient/example_usage.ipynb
       - api-docs-flowclient
+    - Worked examples:
+      - analyst/worked_examples/index.md
+      - analyst/worked_examples/flows-above-normal.ipynb
+      - analyst/worked_examples/commuting-patterns.ipynb
+      - analyst/worked_examples/cell-towers-per-region.ipynb
+      - analyst/worked_examples/unique-subscriber-counts.ipynb
+    - Advanced usage:
+        - analyst/advanced_usage/index.md
+        - Worked examples:
+            - analyst/advanced_usage/worked_examples/mobile-data-usage.ipynb
+  - Developers:
+      - developer/index.md
+      - developer/dev_environment_setup.md
+      - api-docs-flowmachine
+      - FlowAPI specification: developer/api-spec.html
+      - Architectural Decision Records (ADR):
+        - developer/adr/README.md
+        - developer/adr/0001-pipenv-for-package-and-dependency-management.md
+        - developer/adr/0002-pytest-for-testing.md
+        - developer/adr/0003-http-api.md
+        - developer/adr/0004-http-framework.md
+        - developer/adr/0005-IPC-methods.md
+        - developer/adr/0006-JWTs.md
+        - developer/adr/0007-mapbox-for-worked-examples.md
+        - developer/adr/0008-jupyter-notebooks-for-autoflow.md
+        - developer/adr/0009-asciidoctor-pdf-for-notebook-conversion.md
+        - developer/adr/0010-prefect-for-autoflow.md
+  - System Administrators:
+    - administrator/index.md
   - license.md
 
 theme:
@@ -59,7 +67,7 @@ theme:
   language: en
   feature:
     # True to use tabs at the top, in addition to the side navbar
-    tabs: false
+    tabs: true
   palette:
     primary: "#095798"
     accent: "#2977B8"

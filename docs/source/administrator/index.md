@@ -31,7 +31,7 @@ FlowAuth is the tool which analysts will use to generate tokens which will allow
 
     - Add the user to the group.
 
-The user can then log into FlowAuth and generate a token (see the [analyst section](analyst.md#flowauth) for instructions).
+The user can then log into FlowAuth and generate a token (see the [analyst section](../analyst/index.md#flowauth) for instructions).
 
 ## Caching in FlowKit
 
