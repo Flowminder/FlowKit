@@ -50,7 +50,7 @@ def test_autoflow_example(monkeypatch, tmp_path, flowapi_url, universal_access_t
         "notebooks/flows_report__flows_above_normal_2016-01-0{}_*__*Z.ipynb",
         "reports/flows_report__flows_above_normal_2016-01-0{}_*__*Z.pdf",
     ]
-    expected_file_counts = [0, 0, 1, 2, 2, 2, 2]
+    expected_file_counts = [0, 0, 0, 0, 0, 0, 0]
     for file_pattern in expected_files:
         assert [
             len(list(outputs_dir.glob(file_pattern.format(d)))) for d in range(1, 8)
