@@ -6,11 +6,14 @@
 #  FLOWETL
 #  -----
 
-FROM puckel/docker-airflow@sha256:62f9f5392c31d03a1770ec3705a9de7cc3373930b78b8a4007ed3f31e955cc8f
+FROM puckel/docker-airflow@sha256:62aadca83c05fb0e9caaeeaf5ced160570f74bee165d83a87e18e3066400443f
 
 ARG AIRFLOW_HOME=/usr/local/airflow
 ENV AIRFLOW__CORE__DAGS_FOLDER ${AIRFLOW_HOME}/dags
 ENV AIRFLOW__CORE__LOAD_EXAMPLES false
+# Turn off api access
+ENV AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.deny_all
+ENV AIRFLOW__WEBSERVER__RBAC=True
 USER root
 WORKDIR /usr/src/deps
 

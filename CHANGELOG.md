@@ -12,9 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   The frequency of this pruning is configurable using the `FLOWMACHINE_CACHE_PRUNING_FREQUENCY` environment variable to Flowmachine, and queries are excluded from being removed by the automatic shrinker based on the `cache_protected_period` config key within FlowDB.
 - FlowDB now includes Paul Ramsey's [OGR foreign data wrapper](https://github.com/pramsey/pgsql-ogr-fdw), for easy loading of GIS data. [#1512](https://github.com/Flowminder/FlowKit/issues/1512)
 - FlowETL now allows all configuration options to be set using docker secrets. [#1515](https://github.com/Flowminder/FlowKit/issues/1515)
+- Added a new component, AutoFlow, to automate running Jupyter notebooks when new data is added to FlowDB. [#1570](https://github.com/Flowminder/FlowKit/issues/1570)
 
 ### Changed
 - FlowDB is now built on PostgreSQL 12 [#1396](https://github.com/Flowminder/FlowKit/issues/1313) and PostGIS 3.
+- FlowETL is now built on Airflow [10.1.6](https://airflow.apache.org/changelog.html#airflow-1-10-6-2019-10-28).
+- FlowETL now defaults to disabling Airflow's REST API, and enables RBAC for the webui. [#1516](https://github.com/Flowminder/FlowKit/issues/1516)
+- FlowETL now requires that the `FLOWETL_AIRFLOW_ADMIN_USERNAME` and `FLOWETL_AIRFLOW_ADMIN_PASSWORD` environment variables be set, which specify the default web ui account. [#1516](https://github.com/Flowminder/FlowKit/issues/1516)
 
 ### Fixed
 - Quickstart should no longer fail on systems which do not include the `netstat` tool. [#1472](https://github.com/Flowminder/FlowKit/issues/1472)

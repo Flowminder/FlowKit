@@ -1,0 +1,36 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+descartes = "*"
+flowclient = {editable = true,path = "./../flowclient"}
+geopandas = "*"
+get-secret-or-env-var = "*"
+ipykernel = "*"
+marshmallow = ">=3.0.0"
+matplotlib = "*"
+networkx = "*"
+nteract-scrapbook = "*"
+pandas = "*"
+papermill = ">=1.2.1"
+pendulum = "*"
+prefect = "*"
+psycopg2-binary = "*"
+pyyaml = "*"
+sh = "*"
+sqlalchemy = "*"
+
+[dev-packages]
+black = "==19.10b0"
+ipywidgets = "*"
+jupyterlab = "*"
+prefect = {extras = ["viz"]}
+pytest = "*"
+pytest-cov = "*"
+sqlalchemy-utils = "*"
+testing-postgresql = "*"
+
+[requires]
+python_version = "3.7"

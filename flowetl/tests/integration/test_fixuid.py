@@ -16,7 +16,13 @@ def test_uid(docker_client, container_tag):
 
     user = "1002:1003"
     out = docker_client.containers.run(
-        f"flowminder/flowetl:{container_tag}", "bash -c 'id -u'", user=user
+        f"flowminder/flowetl:{container_tag}",
+        "bash -c 'id -u'",
+        user=user,
+        environment={
+            "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
+            "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
+        },
     )
     assert out.decode("utf-8").strip() == "1002"
 
@@ -29,7 +35,13 @@ def test_gid(docker_client, container_tag):
 
     user = "1002:1003"
     out = docker_client.containers.run(
-        f"flowminder/flowetl:{container_tag}", "bash -c 'id -g'", user=user
+        f"flowminder/flowetl:{container_tag}",
+        "bash -c 'id -g'",
+        user=user,
+        environment={
+            "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
+            "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
+        },
     )
     assert out.decode("utf-8").strip() == "1003"
 
@@ -41,6 +53,12 @@ def test_uid_is_airflow(docker_client, container_tag):
 
     user = "1002:1003"
     out = docker_client.containers.run(
-        f"flowminder/flowetl:{container_tag}", "bash -c 'id -u | id -nu'", user=user
+        f"flowminder/flowetl:{container_tag}",
+        "bash -c 'id -u | id -nu'",
+        user=user,
+        environment={
+            "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
+            "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
+        },
     )
     assert out.decode("utf-8").strip() == "airflow"

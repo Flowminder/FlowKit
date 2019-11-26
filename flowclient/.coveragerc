@@ -2,6 +2,7 @@
 branch = True
 
 [report]
+
 omit =
     */python?.?/*
     */venv/*
