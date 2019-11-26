@@ -77,6 +77,5 @@ class MeaningfulLocationsOD(Query):
         ({agg_query}) to_q
         ON ST_Contains(to_q.geom::geometry, meaningful_locations.cluster_to::geometry)
         GROUP BY label_from, label_to, {location_cols}
-        HAVING sum(1./(n_clusters_from*n_clusters_to)) > 15
         ORDER BY label_from, label_to, {location_cols}
         """

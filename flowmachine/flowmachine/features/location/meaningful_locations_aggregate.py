@@ -51,6 +51,5 @@ class MeaningfulLocationsAggregate(Query):
         ({self.spatial_unit.get_geom_query()}) agg
         ON ST_Contains(agg.geom::geometry, meaningful_locations.cluster::geometry)
         GROUP BY label, {location_cols}
-        HAVING sum(1./n_clusters) > 15
         ORDER BY label, {location_cols}
         """
