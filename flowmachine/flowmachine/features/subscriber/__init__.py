@@ -56,11 +56,7 @@ from .subscriber_call_durations import (
     PairedPerLocationSubscriberCallDurations,
 )
 
-from .meaningful_locations import (
-    MeaningfulLocations,
-    MeaningfulLocationsAggregate,
-    MeaningfulLocationsOD,
-)
+from .meaningful_locations import MeaningfulLocations
 
 from .contact_reference_locations_stats import ContactReferenceLocationStats
 from .interevent_period import IntereventPeriod

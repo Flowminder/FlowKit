@@ -10,12 +10,10 @@ from flowmachine.features import (
     CallDays,
     SubscriberLocations,
     EventScore,
-)
-from flowmachine.features.subscriber.meaningful_locations import (
-    MeaningfulLocations,
     MeaningfulLocationsAggregate,
     MeaningfulLocationsOD,
 )
+from flowmachine.features.subscriber.meaningful_locations import MeaningfulLocations
 
 labels = {
     "evening": {
