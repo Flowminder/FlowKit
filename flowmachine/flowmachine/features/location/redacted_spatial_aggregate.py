@@ -6,10 +6,13 @@ from typing import List
 
 from flowmachine.core import Query
 from flowmachine.core.mixins import GeoDataMixin
+from flowmachine.features.location.redacted_location_metric import (
+    RedactedLocationMetric,
+)
 from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 
 
-class RedactedSpatialAggregate(GeoDataMixin, Query):
+class RedactedSpatialAggregate(RedactedLocationMetric, GeoDataMixin, Query):
     """
     Class representing the result of spatially aggregating
     a locations object, redacted so that results are not returned if counts are 15 or less..
@@ -24,23 +27,7 @@ class RedactedSpatialAggregate(GeoDataMixin, Query):
 
     def __init__(self, *, spatial_aggregate: SpatialAggregate):
 
-        self.spatial_aggregate = spatial_aggregate
+        self.redaction_target = spatial_aggregate
         # self.spatial_unit is used in self._geo_augmented_query
         self.spatial_unit = spatial_aggregate.spatial_unit
         super().__init__()
-
-    @property
-    def column_names(self) -> List[str]:
-        return self.spatial_aggregate.column_names
-
-    def _make_query(self):
-
-        sql = f"""
-        SELECT
-            {self.spatial_aggregate.column_names_as_string_list}
-        FROM
-            ({self.spatial_aggregate.get_query()}) AS agged
-        WHERE agged.value > 15
-        """
-
-        return sql
