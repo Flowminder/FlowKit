@@ -13,7 +13,8 @@
 #
 # Now un-exclude only those folders and files that are needed for building the image:
 #
-!docs/source/worked_examples/*.ipynb
+!docs/source/analyst/worked_examples/*.ipynb
+!docs/source/analyst/advanced_usage/worked_examples/*.ipynb
 
 !flowmachine/flowmachine
 !flowmachine/Pipfile*
