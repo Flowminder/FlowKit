@@ -41,8 +41,8 @@ RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy --three
 RUN mkdir -p \
     /docker-entrypoint-initdb.d/sql/testdata/ \
     /docker-entrypoint-initdb.d/py/testdata/
-COPY --chown=postgres ./bin/z_ingest_test_data.sh /docker-entrypoint-initdb.d/
-COPY --chown=postgres bin/zz_run_synthetic_dfs_data_generation_script.sh /docker-entrypoint-initdb.d/
+COPY --chown=postgres bin/9900_ingest_test_data.sh /docker-entrypoint-initdb.d/
+COPY --chown=postgres bin/9900_run_synthetic_dfs_data_generation_script.sh /docker-entrypoint-initdb.d/
 ADD --chown=postgres ./test_data/sql/* /docker-entrypoint-initdb.d/sql/testdata/
 ADD --chown=postgres ./test_data/py/* /docker-entrypoint-initdb.d/py/testdata/
 ADD --chown=postgres ./test_data/data/ /docker-entrypoint-initdb.d/data/

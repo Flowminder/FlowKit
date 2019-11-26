@@ -125,7 +125,7 @@ do
         "
 done
 
-declare -a schema_list_restricted=("events" "dfs" "infrastructure" "routing")
+declare -a schema_list_restricted=("events" "dfs" "infrastructure" "routing" "interactions")
 for schema in "${schema_list_restricted[@]}"
 do
     echo "Restricting permissions to $FLOWMACHINE_FLOWDB_USER on $schema."
