@@ -6,6 +6,9 @@ from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import UniqueSubscriberCounts
+from flowmachine.features.location.redacted_unique_subscriber_counts import (
+    RedactedUniqueSubscriberCounts,
+)
 from .base_exposed_query import BaseExposedQuery
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
@@ -41,8 +44,10 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
         -------
         Query
         """
-        return UniqueSubscriberCounts(
-            start=self.start_date,
-            stop=self.end_date,
-            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+        return RedactedUniqueSubscriberCounts(
+            unique_subscriber_counts=UniqueSubscriberCounts(
+                start=self.start_date,
+                stop=self.end_date,
+                spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+            )
         )
