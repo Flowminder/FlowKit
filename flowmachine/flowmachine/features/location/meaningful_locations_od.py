@@ -7,9 +7,10 @@ from typing import Optional, List
 from flowmachine.core import Query, make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
 from flowmachine.features import MeaningfulLocations
+from flowmachine.features.location.flows import FlowLike
 
 
-class MeaningfulLocationsOD(Query):
+class MeaningfulLocationsOD(FlowLike, Query):
     """
     Calculates an OD matrix aggregated to a spatial unit between two individual
     level meaningful locations. For subscribers with more than one cluster of either

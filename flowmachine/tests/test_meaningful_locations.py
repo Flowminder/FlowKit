@@ -246,7 +246,7 @@ def test_meaningful_locations_aggregation_results(
     mfl_agg_df = get_dataframe(mfl_agg)
 
     # Sum of aggregate should be less than the number of unique subscribers
-    assert mfl_agg_df.total.sum() < mfl_df.subscriber.nunique()
+    assert mfl_agg_df.value.sum() < mfl_df.subscriber.nunique()
 
 
 def test_meaningful_locations_od_raises_for_bad_spatial_unit(
@@ -337,5 +337,5 @@ def test_meaningful_locations_od_results(get_dataframe):
     # Smoke test one admin1 region gets the expected result
     assert mfl_od_df[
         (mfl_od_df.pcod_from == "524 1") & (mfl_od_df.pcod_to == "524 4")
-    ].total[0] == pytest.approx(16.490_807)
-    assert mfl_od_df.total.sum() == pytest.approx(350.806_012)
+    ].value[0] == pytest.approx(16.490_807)
+    assert mfl_od_df.value.sum() == pytest.approx(350.806_012)
