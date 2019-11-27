@@ -4,13 +4,14 @@
 
 
 from flowmachine.core import Query
+from flowmachine.features.location.flows import FlowLike
 from flowmachine.features.location.meaningful_locations_od import MeaningfulLocationsOD
 from flowmachine.features.location.redacted_location_metric import (
     RedactedLocationMetric,
 )
 
 
-class RedactedMeaningfulLocationsOD(RedactedLocationMetric, Query):
+class RedactedMeaningfulLocationsOD(RedactedLocationMetric, FlowLike, Query):
     """
     Calculates an OD matrix aggregated to a spatial unit between two individual
     level meaningful locations. For subscribers with more than one cluster of either
