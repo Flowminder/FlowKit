@@ -245,8 +245,8 @@ def test_meaningful_locations_aggregation_results(
     mfl_df = get_dataframe(mfl)
     mfl_agg_df = get_dataframe(mfl_agg)
 
-    # Sum of aggregate should be less than the number of unique subscribers
-    assert mfl_agg_df.value.sum() < mfl_df.subscriber.nunique()
+    # Sum of aggregate should equal to the number of unique subscribers
+    assert mfl_agg_df.value.sum() == pytest.approx(mfl_df.subscriber.nunique())
 
 
 def test_meaningful_locations_od_raises_for_bad_spatial_unit(
@@ -287,8 +287,6 @@ def test_meaningful_locations_od_results(get_dataframe):
     """
     Test that OD on MeaningfulLocations returns expected results and counts clusters per subscriber correctly.
     """
-    # FIXME: Because of the nature of the test data, we can't actually test much for most admin levels because
-    # the counts will always be below 15, and hence get redacted!
     mfl_a = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
