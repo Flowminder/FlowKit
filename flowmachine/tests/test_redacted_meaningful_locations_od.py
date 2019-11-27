@@ -80,4 +80,4 @@ def test_meaningful_locations_od_redaction(get_dataframe):
     )
     mfl_od_df = get_dataframe(mfl_od)
     # Aggregate should not include any counts below 15
-    assert all(mfl_od_df.total > 15)
+    assert all(mfl_od_df.value > 15)

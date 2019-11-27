@@ -61,4 +61,4 @@ def test_meaningful_locations_aggregation_results(
     )
     mfl_agg_df = get_dataframe(mfl_agg)
     # Aggregate should not include any counts below 15
-    assert all(mfl_agg_df.total > 15)
+    assert all(mfl_agg_df.value > 15)
