@@ -797,10 +797,10 @@
         },
         "pygments": {
             "hashes": [
-                "sha256:a1cfe41228f8eee128bc841f25e625e2ea8b7c5f2835be76b5b6e1f0f2e2730c",
-                "sha256:cdc7a45df8c489a965948fb4d26d8411927bae48771519c61ebca88d076a5aae"
+                "sha256:83ec6c6133ca6b529b7ff5aa826328fd14b5bb02a58c37f4f06384e96a0f94ab",
+                "sha256:b7949de3d396836085fea596998b135a22610bbcc4f2abfe9e448e44cbc58388"
             ],
-            "version": "==2.5.0"
+            "version": "==2.5.1"
         },
         "pyparsing": {
             "hashes": [
@@ -868,10 +868,11 @@
         },
         "pytest-testmon": {
             "hashes": [
-                "sha256:4cbf98642388b2020b3ea5ede2124a2573399e9bc864ffcb74505266d6aad389"
+                "sha256:8f048b90763bf16c957539c96bcf2d08492ea1b9d8056df1293da8fd73df2bf0",
+                "sha256:b823b03faf5778d1e15fb9f52e104df4da9c1021daeb313b339fccbbfb8dbd5f"
             ],
             "index": "pypi",
-            "version": "==1.0.0"
+            "version": "==1.0.1"
         },
         "python-dateutil": {
             "hashes": [
