@@ -16,7 +16,8 @@ class RedactedMeaningfulLocationsAggregate(RedactedLocationMetric, Query):
     """
     Aggregates an individual-level meaningful location to a spatial unit by assigning
     subscribers with clusters in that unit to it. For subscribers with more than one cluster,
-    assigns `1/n_clusters` to each spatial unit that the cluster lies in.
+    assigns `1/n_clusters` to each spatial unit that the cluster lies in. Returns results only
+    for regions with 16 or more subscribers.
 
     Parameters
     ----------

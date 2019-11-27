@@ -16,6 +16,8 @@ class RedactedMeaningfulLocationsOD(RedactedLocationMetric, Query):
     level meaningful locations. For subscribers with more than one cluster of either
     label, counts are weight to `1/(n_clusters_label_a*n_clusters_label_b)`.
 
+    Returns results only for region pairs with 16 or more subscribers.
+
     Parameters
     ----------
     meaningful_locations_od : MeaningfulLocationsOD
