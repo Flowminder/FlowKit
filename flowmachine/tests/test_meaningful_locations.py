@@ -10,9 +10,11 @@ from flowmachine.features import (
     CallDays,
     SubscriberLocations,
     EventScore,
-    MeaningfulLocationsAggregate,
-    MeaningfulLocationsOD,
 )
+from flowmachine.features.location.meaningful_locations_aggregate import (
+    MeaningfulLocationsAggregate,
+)
+from flowmachine.features.location.meaningful_locations_od import MeaningfulLocationsOD
 from flowmachine.features.subscriber.meaningful_locations import MeaningfulLocations
 
 labels = {
@@ -212,7 +214,7 @@ def test_meaningful_locations_aggregation_results(
     exemplar_spatial_unit_param, get_dataframe
 ):
     """
-    Test that aggregating MeaningfulLocations returns expected results and redacts values below 15.
+    Test that aggregating MeaningfulLocations returns expected results.
     """
     if not exemplar_spatial_unit_param.is_polygon:
         pytest.xfail(
@@ -242,8 +244,7 @@ def test_meaningful_locations_aggregation_results(
     )
     mfl_df = get_dataframe(mfl)
     mfl_agg_df = get_dataframe(mfl_agg)
-    # Aggregate should not include any counts below 15
-    assert all(mfl_agg_df.total > 15)
+
     # Sum of aggregate should be less than the number of unique subscribers
     assert mfl_agg_df.total.sum() < mfl_df.subscriber.nunique()
 
@@ -333,8 +334,6 @@ def test_meaningful_locations_od_results(get_dataframe):
         spatial_unit=make_spatial_unit("admin", level=1),
     )
     mfl_od_df = get_dataframe(mfl_od)
-    # Aggregate should not include any counts below 15
-    assert all(mfl_od_df.total > 15)
     # Smoke test one admin1 region gets the expected result
     assert mfl_od_df[
         (mfl_od_df.pcod_from == "524 1") & (mfl_od_df.pcod_to == "524 4")
