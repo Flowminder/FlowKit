@@ -31,7 +31,7 @@ class MeaningfulLocationsAggregate(Query):
     ) -> None:
         self.meaningful_locations = meaningful_locations
         if spatial_unit is None:
-            self.spatial_unit == make_spatial_unit("admin", level=3)
+            self.spatial_unit = make_spatial_unit("admin", level=3)
         else:
             self.spatial_unit = spatial_unit
         self.spatial_unit.verify_criterion("is_polygon")
