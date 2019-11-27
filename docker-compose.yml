@@ -167,6 +167,7 @@ services:
       POSTGRES_DB: ${FLOWETL_POSTGRES_DB:?Must set FLOWETL_POSTGRES_DB env var}
       FLOWETL_AIRFLOW_ADMIN_USERNAME: "admin"
       FLOWETL_AIRFLOW_ADMIN_PASSWORD: "password"
+      FLOWETL_AIRFLOW_PG_POOL_SLOT_COUNT: 4
 
     networks:
       - db
