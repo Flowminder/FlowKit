@@ -333,7 +333,8 @@ def test_meaningful_locations_od_results(get_dataframe):
     )
     mfl_od_df = get_dataframe(mfl_od)
     # Smoke test one admin1 region gets the expected result
-    assert mfl_od_df[
+    regional_flow = mfl_od_df[
         (mfl_od_df.pcod_from == "524 1") & (mfl_od_df.pcod_to == "524 4")
-    ].value[0] == pytest.approx(16.490_807)
-    assert mfl_od_df.value.sum() == pytest.approx(350.806_012)
+    ].value.tolist()[0]
+    assert regional_flow == pytest.approx(16.490_807)
+    assert mfl_od_df.value.sum() == pytest.approx(454.0)
