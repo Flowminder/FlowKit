@@ -33,6 +33,20 @@ flowkit_toplevel_dir = os.path.join(here, "..", "..")
 
 
 @pytest.fixture
+def meaningful_locations_labels():
+    return {
+        "evening": {
+            "type": "Polygon",
+            "coordinates": [[[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]],
+        },
+        "day": {
+            "type": "Polygon",
+            "coordinates": [[[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]],
+        },
+    }
+
+
+@pytest.fixture
 def json_log(caplog):
     def parse_json():
         loggers = dict(debug=[], query_run_log=[])

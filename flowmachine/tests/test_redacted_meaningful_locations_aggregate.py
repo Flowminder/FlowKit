@@ -17,20 +17,9 @@ from flowmachine.features.location.redacted_meaningful_locations_aggregate impor
     RedactedMeaningfulLocationsAggregate,
 )
 
-labels = {
-    "evening": {
-        "type": "Polygon",
-        "coordinates": [[[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]],
-    },
-    "day": {
-        "type": "Polygon",
-        "coordinates": [[[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]],
-    },
-}
-
 
 def test_meaningful_locations_aggregation_results(
-    exemplar_spatial_unit_param, get_dataframe
+    exemplar_spatial_unit_param, get_dataframe, meaningful_locations_labels
 ):
     """
     Test that aggregating MeaningfulLocations returns expected results and redacts values below 15.
@@ -51,7 +40,7 @@ def test_meaningful_locations_aggregation_results(
             stop="2016-01-02",
             spatial_unit=make_spatial_unit("versioned-site"),
         ),
-        labels=labels,
+        labels=meaningful_locations_labels,
         label="evening",
     )
     mfl_agg = RedactedMeaningfulLocationsAggregate(

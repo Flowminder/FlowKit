@@ -15,19 +15,8 @@ from flowmachine.features.location.redacted_meaningful_locations_od import (
     RedactedMeaningfulLocationsOD,
 )
 
-labels = {
-    "evening": {
-        "type": "Polygon",
-        "coordinates": [[[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]],
-    },
-    "day": {
-        "type": "Polygon",
-        "coordinates": [[[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]],
-    },
-}
 
-
-def test_meaningful_locations_od_redaction(get_dataframe):
+def test_meaningful_locations_od_redaction(get_dataframe, meaningful_locations_labels):
     """
     Test that OD on MeaningfulLocations is redacted to >15.
     """
@@ -48,7 +37,7 @@ def test_meaningful_locations_od_redaction(get_dataframe):
             stop="2016-01-02",
             spatial_unit=make_spatial_unit("versioned-site"),
         ),
-        labels=labels,
+        labels=meaningful_locations_labels,
         label="unknown",
     )
 
@@ -68,7 +57,7 @@ def test_meaningful_locations_od_redaction(get_dataframe):
             stop="2016-01-03",
             spatial_unit=make_spatial_unit("versioned-site"),
         ),
-        labels=labels,
+        labels=meaningful_locations_labels,
         label="unknown",
     )
     mfl_od = RedactedMeaningfulLocationsOD(
