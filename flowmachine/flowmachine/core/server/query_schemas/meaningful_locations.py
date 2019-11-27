@@ -9,13 +9,13 @@ from typing import Union, Dict, List
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
     MeaningfulLocations,
-    MeaningfulLocationsOD,
-    MeaningfulLocationsAggregate,
     HartiganCluster,
     CallDays,
     EventScore,
     SubscriberLocations,
 )
+from flowmachine.features.location.meaningful_locations_aggregate  import MeaningfulLocationsAggregate
+from flowmachine.features.location.meaningful_locations_od import MeaningfulLocationsOD
 from flowmachine.features.location.redacted_meaningful_locations_aggregate import RedactedMeaningfulLocationsAggregate
 from flowmachine.features.location.redacted_meaningful_locations_od import RedactedMeaningfulLocationsOD
 from .base_exposed_query import BaseExposedQuery
