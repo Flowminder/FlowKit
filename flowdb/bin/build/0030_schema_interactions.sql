@@ -39,7 +39,8 @@ CREATE SCHEMA IF NOT EXISTS interactions;
         msisdn                  TEXT,
         imei                    TEXT,
         imsi                    TEXT,
-        tac                     BIGINT REFERENCES infrastructure.tacs(id)
+        tac                     BIGINT REFERENCES infrastructure.tacs(id),
+        UNIQUE (msisdn, imei, imsi, tac)
         );
 
     CREATE INDEX ON interactions.subscriber (subscriber_id);
