@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import json
 from functools import partial
+from pathlib import Path
 
 from approvaltests import verify
 from approvaltests.reporters.generic_diff_reporter_factory import (
@@ -263,7 +264,7 @@ def get_dataframe(fm_conn):
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
     try:
-        with open("reporters.json") as fin:
+        with open(Path(__file__).parent / "reporters.json") as fin:
             for config in json.load(fin):
                 diff_reporter_factory.add_default_reporter_config(config)
     except FileNotFoundError:

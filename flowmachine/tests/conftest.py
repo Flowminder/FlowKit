@@ -10,6 +10,7 @@ import json
 import os
 from functools import partial
 from json import JSONDecodeError
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -246,7 +247,7 @@ def dummy_redis(monkeypatch):
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
     try:
-        with open("reporters.json") as fin:
+        with open(Path(__file__).parent / "reporters.json") as fin:
             for config in json.load(fin):
                 diff_reporter_factory.add_default_reporter_config(config)
     except FileNotFoundError:
