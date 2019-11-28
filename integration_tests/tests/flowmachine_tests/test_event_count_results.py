@@ -95,4 +95,4 @@ def test_event_count_5_df(get_dataframe, diff_reporter):
     """
     ec = EventCount(start="2016-01-03", stop="2016-01-06", hours=(22, 4))
     df = get_dataframe(ec)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())
