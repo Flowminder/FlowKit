@@ -9,6 +9,7 @@ Commonly used testing fixtures for flowmachine.
 import json
 import os
 from json import JSONDecodeError
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -29,7 +30,7 @@ from flowmachine.features import EventTableSubset
 logger = logging.getLogger()
 
 here = os.path.dirname(os.path.abspath(__file__))
-flowkit_toplevel_dir = os.path.join(here, "..", "..")
+flowkit_toplevel_dir = Path(__file__).parent.parent.parent
 
 
 @pytest.fixture
@@ -257,7 +258,7 @@ def dummy_redis(monkeypatch):
 @pytest.fixture(scope="session")
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
-    with open("reporters.json") as fin:
+    with open(flowkit_toplevel_dir / "approvaltests_diff_reporters.json") as fin:
         for config in json.load(fin):
             diff_reporter_factory.add_default_reporter_config(config)
     return diff_reporter_factory.get_first_working()
