@@ -92,7 +92,13 @@ class LocationIntroversion(GeoDataMixin, Query):
             EventsTablesUnion(
                 self.start,
                 self.stop,
-                columns=["id", "outgoing", "location_id", "datetime"],
+                columns=[
+                    "id",
+                    "outgoing",
+                    "location_id",
+                    "datetime",
+                    subscriber_identifier,
+                ],
                 tables=self.table,
                 hours=hours,
                 subscriber_subset=subscriber_subset,
@@ -106,7 +112,7 @@ class LocationIntroversion(GeoDataMixin, Query):
 
     @property
     def column_names(self) -> List[str]:
-        return self.spatial_unit.location_id_columns + ["introversion", "extroversion"]
+        return self.spatial_unit.location_id_columns + ["value"]
 
     def _make_query(self):
         location_columns = self.spatial_unit.location_id_columns
@@ -124,8 +130,7 @@ class LocationIntroversion(GeoDataMixin, Query):
 
         sql = f"""
         WITH unioned_table AS ({self.unioned_query.get_query()})
-        SELECT *, 1-introversion as extroversion FROM
-        (SELECT {', '.join(location_columns)}, sum(introverted::integer)/count(*)::float as introversion FROM (
+        SELECT {', '.join(location_columns)}, sum(introverted::integer)/count(*)::float as value FROM (
             SELECT
                {', '.join(f'A.{c} as {c}' for c in location_columns)},
                {' AND '.join(f'A.{c} = B.{c}' for c in location_columns)} as introverted
@@ -135,8 +140,8 @@ class LocationIntroversion(GeoDataMixin, Query):
                      AND A.outgoing != B.outgoing
                      {sql_direction}
         ) _
-        GROUP BY {', '.join(location_columns)}) _
-        ORDER BY introversion DESC
+        GROUP BY {', '.join(location_columns)}
+        ORDER BY {', '.join(location_columns)}
         """
 
         return sql

@@ -6,9 +6,12 @@ from typing import List
 
 from flowmachine.core import Query
 from flowmachine.features import TotalLocationEvents
+from flowmachine.features.location.redacted_location_metric import (
+    RedactedLocationMetric,
+)
 
 
-class RedactedTotalEvents(Query):
+class RedactedTotalEvents(RedactedLocationMetric, Query):
     """
     Calculates the total number of events on an hourly basis
     per location (such as a tower or admin region),
@@ -22,52 +25,48 @@ class RedactedTotalEvents(Query):
     """
 
     def __init__(self, total_events: TotalLocationEvents):
-        self.total_events = total_events
+        self.redaction_target = total_events
         super().__init__()
-
-    @property
-    def column_names(self) -> List[str]:
-        return self.total_events.column_names
 
     def _make_query(self):
         # Set a filter clause based on the direction of the event
-        if self.total_events.direction == "both":
+        if self.redaction_target.direction == "both":
             filter_clause = ""
-        elif self.total_events.direction == "in":
+        elif self.redaction_target.direction == "in":
             filter_clause = "WHERE NOT outgoing"
-        elif self.total_events.direction == "out":
+        elif self.redaction_target.direction == "out":
             filter_clause = "WHERE outgoing"
         else:
             raise ValueError(
-                "Unrecognised direction: {}".format(self.total_events.direction)
+                "Unrecognised direction: {}".format(self.redaction_target.direction)
             )
 
         # list of columns that we want to group by, these are all the time
         # columns, plus the location columns
         groups = [
-            x.split(" AS ")[0] for x in self.total_events.time_cols
-        ] + self.total_events.spatial_unit.location_id_columns
+            x.split(" AS ")[0] for x in self.redaction_target.time_cols
+        ] + self.redaction_target.spatial_unit.location_id_columns
 
         returning_columns = ", ".join(
             [
                 x.split(" AS ")[-1]
-                for x in self.total_events.spatial_unit.location_id_columns
+                for x in self.redaction_target.spatial_unit.location_id_columns
             ]
         )
 
         returning_time_columns = ", ".join(
-            [x.split(" AS ")[-1] for x in self.total_events.time_cols]
+            [x.split(" AS ")[-1] for x in self.redaction_target.time_cols]
         )
         # We now need to group this table by the relevant columns in order to
         # get a count per region
         sql = f"""
             WITH tne AS (SELECT
-                {', '.join(self.total_events.spatial_unit.location_id_columns)},
-                {', '.join(self.total_events.time_cols)},
+                {', '.join(self.redaction_target.spatial_unit.location_id_columns)},
+                {', '.join(self.redaction_target.time_cols)},
                 count(*) AS value,
                 count(distinct subscriber) > 15 AS safe_agg
             FROM
-                ({self.total_events.unioned.get_query()}) unioned
+                ({self.redaction_target.unioned.get_query()}) unioned
             {filter_clause}
             GROUP BY
                 {', '.join(groups)})

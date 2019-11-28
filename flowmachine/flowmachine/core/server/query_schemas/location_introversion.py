@@ -6,6 +6,9 @@ from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import LocationIntroversion
+from flowmachine.features.location.redacted_location_introversion import (
+    RedactedLocationIntroversion,
+)
 from .base_exposed_query import BaseExposedQuery
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
 
@@ -45,9 +48,11 @@ class LocationIntroversionExposed(BaseExposedQuery):
         -------
         Query
         """
-        return LocationIntroversion(
-            start=self.start_date,
-            stop=self.end_date,
-            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
-            direction=self.direction,
+        return RedactedLocationIntroversion(
+            location_introversion=LocationIntroversion(
+                start=self.start_date,
+                stop=self.end_date,
+                spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+                direction=self.direction,
+            )
         )
