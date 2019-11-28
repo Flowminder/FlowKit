@@ -257,7 +257,4 @@ def dummy_redis(monkeypatch):
 @pytest.fixture(scope="session")
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
-    diff_reporter_factory.load(
-        os.path.join(flowkit_toplevel_dir, "approvaltests_diff_reporters.json")
-    )
     return diff_reporter_factory.get_first_working()
