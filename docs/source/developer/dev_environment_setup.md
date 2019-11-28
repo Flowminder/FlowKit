@@ -60,7 +60,7 @@ relevant `*.approved.txt` file needs to be updated. ApprovalTests will do this a
 diff tool installed. (See here for some recommendations for diff tools on [Mac](`https://www.git-tower.com/blog/diff-tools-mac`)
 and [Windows](https://www.git-tower.com/blog/diff-tools-windows).) The reporters supported out of the box by ApprovalTests can be found [here](https://github.com/approvals/ApprovalTests.Python/blob/master/approvaltests/reporters/reporters.json).
 
-To use a specific diff reporter, you should create a file named `reporters.json` following the format shown in the ApprovalTests [README](https://github.com/approvals/ApprovalTests.Python).
+To use a specific diff reporter, you should create files named `reporters.json` in `flowmachine/tests` and `integration_tests` following the format shown in the ApprovalTests [README](https://github.com/approvals/ApprovalTests.Python).
 
 !!! warning
     The project root contains an env file (`development_environment`), in which are default values for _all_ of the environment variables used to control and configure the FlowDB, FlowAPI, FlowMachine and FlowAuth. You will need to source this file (`set -a && . ./development_environment && set +a`), or otherwise set the environment variables before running _any other command_.
