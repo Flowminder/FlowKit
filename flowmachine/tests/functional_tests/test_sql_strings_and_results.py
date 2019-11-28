@@ -4,7 +4,6 @@
 
 from flowmachine.utils import pretty_sql
 
-from approvaltests.approvals import verify
 from flowmachine.core import CustomQuery, make_spatial_unit
 from flowmachine.features import daily_location
 
@@ -15,7 +14,7 @@ def test_daily_location_1_sql(diff_reporter):
     """
     dl = daily_location("2016-01-01", "2016-01-02")
     sql = pretty_sql(dl.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_daily_location_1_df(get_dataframe, diff_reporter):
@@ -24,7 +23,7 @@ def test_daily_location_1_df(get_dataframe, diff_reporter):
     """
     dl = daily_location("2016-01-01", "2016-01-02")
     df = get_dataframe(dl)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())
 
 
 def test_daily_location_2_sql(diff_reporter):
@@ -48,7 +47,7 @@ def test_daily_location_2_sql(diff_reporter):
         ],
     )
     sql = pretty_sql(dl.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_daily_location_2_df(get_dataframe, diff_reporter):
@@ -70,7 +69,7 @@ def test_daily_location_2_df(get_dataframe, diff_reporter):
         ],
     )
     df = get_dataframe(dl)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())
 
 
 def test_daily_location_3_sql(diff_reporter):
@@ -91,7 +90,7 @@ def test_daily_location_3_sql(diff_reporter):
         subscriber_subset=subset_query,
     )
     sql = pretty_sql(dl.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_daily_location_3_df(get_dataframe, diff_reporter):
@@ -112,7 +111,7 @@ def test_daily_location_3_df(get_dataframe, diff_reporter):
         subscriber_subset=subset_query,
     )
     df = get_dataframe(dl)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())
 
 
 def test_daily_location_4_sql(diff_reporter):
@@ -130,7 +129,7 @@ def test_daily_location_4_sql(diff_reporter):
         subscriber_subset=subset_query,
     )
     sql = pretty_sql(dl.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_daily_location_4_df(get_dataframe, diff_reporter):
@@ -148,7 +147,7 @@ def test_daily_location_4_df(get_dataframe, diff_reporter):
         subscriber_subset=subset_query,
     )
     df = get_dataframe(dl)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())
 
 
 def test_daily_location_5_sql(diff_reporter):
@@ -169,7 +168,7 @@ def test_daily_location_5_sql(diff_reporter):
         subscriber_subset=subset_query,
     )
     sql = pretty_sql(dl.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_daily_location_5_df(get_dataframe, diff_reporter):
@@ -196,7 +195,7 @@ def test_daily_location_5_df(get_dataframe, diff_reporter):
         subscriber_subset=subset_query,
     )
     df = get_dataframe(dl)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())
 
 
 def test_daily_location_6_sql(diff_reporter):
@@ -215,7 +214,7 @@ def test_daily_location_6_sql(diff_reporter):
         "2016-01-03", table="events.calls", subscriber_subset=subset_query
     )
     sql = pretty_sql(dl.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_daily_location_6_df(get_dataframe, diff_reporter):
@@ -234,7 +233,7 @@ def test_daily_location_6_df(get_dataframe, diff_reporter):
         "2016-01-03", table="events.calls", subscriber_subset=subset_query
     )
     df = get_dataframe(dl)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())
 
 
 def test_versioned_site_sql(diff_reporter):
@@ -243,4 +242,4 @@ def test_versioned_site_sql(diff_reporter):
     """
     su = make_spatial_unit("versioned-site")
     sql = pretty_sql(su.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)

@@ -8,7 +8,9 @@ Commonly used testing fixtures for flowmachine.
 """
 import json
 import os
+from functools import partial
 from json import JSONDecodeError
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -17,6 +19,7 @@ import logging
 from unittest.mock import Mock
 
 from _pytest.capture import CaptureResult
+from approvaltests import verify
 from approvaltests.reporters.generic_diff_reporter_factory import (
     GenericDiffReporterFactory,
 )
@@ -243,7 +246,11 @@ def dummy_redis(monkeypatch):
 @pytest.fixture(scope="session")
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
-    diff_reporter_factory.load(
-        os.path.join(flowkit_toplevel_dir, "approvaltests_diff_reporters.json")
-    )
-    return diff_reporter_factory.get_first_working()
+    try:
+        with open(Path(__file__).parent / "reporters.json") as fin:
+            for config in json.load(fin):
+                diff_reporter_factory.add_default_reporter_config(config)
+    except FileNotFoundError:
+        pass
+    differ = diff_reporter_factory.get_first_working()
+    return partial(verify, reporter=differ)
