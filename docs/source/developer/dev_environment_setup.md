@@ -56,14 +56,11 @@ black...................................................Passed
 Some of the tests use [ApprovalTests](https://github.com/approvals/ApprovalTests.Python) to verify large output against
 a known "approved" version (stored in files called `*approved.txt`). For example, the API specification is
 verified in this way. If you make code changes that alter the results of these tests, the content of the
-relevant `*.approved.txt` file needs to be updated. ApprovalTests will do this automatically for you, but you need to have a
+relevant `*.approved.txt` file needs to be updated. ApprovalTests will do this automatically for you, but it may be useful to have a
 diff tool installed. (See here for some recommendations for diff tools on [Mac](`https://www.git-tower.com/blog/diff-tools-mac`)
-and [Windows](https://www.git-tower.com/blog/diff-tools-windows).)
+and [Windows](https://www.git-tower.com/blog/diff-tools-windows).) The reporters supported out of the box by ApprovalTests can be found [here](https://github.com/approvals/ApprovalTests.Python/blob/master/approvaltests/reporters/reporters.json).
 
-There is a toplevel config file called `approvaltests_diff_reporters.json` which lists the diff tools that ApprovalTests
-will try to find. Currently only `opendiff` is listed there (but we may add additional ones in the future). If you are using a different tool you should
-manually add it to this file. See the ApprovalTests [README](https://github.com/approvals/ApprovalTests.Python) for
-examples (illustrative particularly for file paths on Windows).
+To use a specific diff reporter, you should create a file named `reporters.json` following the format shown in the ApprovalTests [README](https://github.com/approvals/ApprovalTests.Python).
 
 !!! warning
     The project root contains an env file (`development_environment`), in which are default values for _all_ of the environment variables used to control and configure the FlowDB, FlowAPI, FlowMachine and FlowAuth. You will need to source this file (`set -a && . ./development_environment && set +a`), or otherwise set the environment variables before running _any other command_.
