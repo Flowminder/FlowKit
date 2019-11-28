@@ -1,7 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import json
+from functools import partial
 
+from approvaltests import verify
 from approvaltests.reporters.generic_diff_reporter_factory import (
     GenericDiffReporterFactory,
 )
@@ -11,7 +14,6 @@ from time import sleep
 import pytest
 import os
 import pandas as pd
-import zmq
 
 import flowmachine
 from flowmachine.core import Connection, Query
@@ -260,5 +262,11 @@ def get_dataframe(fm_conn):
 @pytest.fixture(scope="session")
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
-
-    return diff_reporter_factory.get_first_working()
+    try:
+        with open("reporters.json") as fin:
+            for config in json.load(fin):
+                diff_reporter_factory.add_default_reporter_config(config)
+    except FileNotFoundError:
+        pass
+    differ = diff_reporter_factory.get_first_working()
+    return partial(verify, reporter=differ)
