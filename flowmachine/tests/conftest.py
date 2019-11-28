@@ -257,4 +257,7 @@ def dummy_redis(monkeypatch):
 @pytest.fixture(scope="session")
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
+    with open("reporters.json") as fin:
+        for config in json.load(fin):
+            diff_reporter_factory.add_default_reporter_config(config)
     return diff_reporter_factory.get_first_working()
