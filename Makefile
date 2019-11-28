@@ -40,6 +40,7 @@ ifneq ($(NUM_SPECIFIED_FLOWDB_SERVICES),0)
   endif
 endif
 
+up : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_FILE_BUILD)
 
 ifeq ($(FLOWDB_SERVICE), flowdb_testdata)
  up up-no_build : DOCKER_COMPOSE += -f $(DOCKER_COMPOSE_TESTDATA_FILE)
@@ -51,14 +52,14 @@ ifeq ($(FLOWDB_SERVICE), flowdb_synthetic_data)
 endif
 
 # Only build flowdb if a flowdb service is requested
-ifeq ($(words, $FLOWDB_SERVICE), 1)
+ifeq ($(words $(FLOWDB_SERVICE)), 1)
     FLOWDB_BUILD = flowdb-build
 endif
 
 all:
 
 up: $(FLOWDB_BUILD)
-	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE_BUILD) up --build -d $(DOCKER_SERVICES_TO_START)
+	$(DOCKER_COMPOSE) up --build -d $(DOCKER_SERVICES_TO_START)
 
 up-no_build:
 	$(DOCKER_COMPOSE) up -d $(DOCKER_SERVICES_TO_START)
