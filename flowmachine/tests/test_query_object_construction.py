@@ -4,7 +4,6 @@
 
 import json
 import pytest
-from approvaltests.approvals import verify
 from marshmallow import ValidationError
 
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
@@ -277,7 +276,7 @@ def test_construct_query(diff_reporter):
         indent=2,
     )
 
-    verify(query_ids_and_specs_as_json_string, diff_reporter)
+    diff_reporter(query_ids_and_specs_as_json_string)
 
 
 # TODO: we should re-think how we want to test invalid values, now that these are validated using marshmallow
