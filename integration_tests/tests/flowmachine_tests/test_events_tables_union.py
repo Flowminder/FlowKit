@@ -4,7 +4,6 @@
 
 from flowmachine.utils import pretty_sql
 
-from approvaltests.approvals import verify
 from flowmachine.core import CustomQuery
 from flowmachine.features import EventsTablesUnion
 
@@ -29,7 +28,7 @@ def test_events_tables_union_1_sql(diff_reporter):
         ],
     )
     sql = pretty_sql(etu.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_events_tables_union_1_df(diff_reporter, get_dataframe):
@@ -52,7 +51,7 @@ def test_events_tables_union_1_df(diff_reporter, get_dataframe):
         ],
     )
     df = get_dataframe(etu)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())
 
 
 def test_events_tables_union_2_sql(diff_reporter):
@@ -76,7 +75,7 @@ def test_events_tables_union_2_sql(diff_reporter):
         ],
     )
     sql = pretty_sql(etu.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_events_tables_union_2_df(diff_reporter, get_dataframe):
@@ -100,7 +99,7 @@ def test_events_tables_union_2_df(diff_reporter, get_dataframe):
         ],
     )
     df = get_dataframe(etu)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())
 
 
 def test_events_tables_union_3_sql(diff_reporter):
@@ -124,7 +123,7 @@ def test_events_tables_union_3_sql(diff_reporter):
         ],
     )
     sql = pretty_sql(etu.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_events_tables_union_3_df(diff_reporter, get_dataframe):
@@ -148,4 +147,4 @@ def test_events_tables_union_3_df(diff_reporter, get_dataframe):
         ],
     )
     df = get_dataframe(etu)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())

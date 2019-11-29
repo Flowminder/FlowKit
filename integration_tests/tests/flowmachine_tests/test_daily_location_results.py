@@ -4,7 +4,6 @@
 
 from flowmachine.utils import pretty_sql
 
-from approvaltests.approvals import verify
 from flowmachine.core import CustomQuery, make_spatial_unit
 from flowmachine.features import daily_location
 
@@ -25,7 +24,7 @@ def test_daily_location_1_sql(diff_reporter):
         subscriber_subset=subset_query,
     )
     sql = pretty_sql(dl.get_query())
-    verify(sql, diff_reporter)
+    diff_reporter(sql)
 
 
 def test_daily_location_1_df(get_dataframe, diff_reporter):
@@ -46,4 +45,4 @@ def test_daily_location_1_df(get_dataframe, diff_reporter):
         subscriber_subset=subset_query,
     )
     df = get_dataframe(dl)
-    verify(df.to_csv(), diff_reporter)
+    diff_reporter(df.to_csv())

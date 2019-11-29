@@ -3,7 +3,6 @@ import flowapi
 import yaml
 from flowmachine.utils import sort_recursively
 import requests
-from approvaltests import verify
 
 
 def test_generated_openapi_json_spec(flowapi_url, diff_reporter):
@@ -14,7 +13,7 @@ def test_generated_openapi_json_spec(flowapi_url, diff_reporter):
     spec_version = spec["info"].pop("version")
     assert spec_version == flowapi.__version__
     spec_as_json_string = json.dumps(sort_recursively(spec), indent=2, sort_keys=True)
-    verify(spec_as_json_string, diff_reporter)
+    diff_reporter(spec_as_json_string)
 
 
 def test_generated_openapi_yaml_spec(flowapi_url, diff_reporter):
@@ -25,4 +24,4 @@ def test_generated_openapi_yaml_spec(flowapi_url, diff_reporter):
     spec_version = spec["info"].pop("version")
     assert spec_version == flowapi.__version__
     spec_as_json_string = json.dumps(sort_recursively(spec), indent=2, sort_keys=True)
-    verify(spec_as_json_string, diff_reporter)
+    diff_reporter(spec_as_json_string)
