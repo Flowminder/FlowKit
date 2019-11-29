@@ -6,7 +6,10 @@ from flowmachine.core.cache import reset_cache
 from flowmachine.core.server.utils import send_zmq_message_and_receive_reply
 from flowmachine.core import make_spatial_unit
 from flowmachine.core.dependency_graph import unstored_dependencies_graph
-from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
+from flowmachine.features.location.redacted_spatial_aggregate import (
+    RedactedSpatialAggregate,
+)
 from flowmachine.features import daily_location
 from .helpers import cache_schema_is_empty, get_cache_tables, poll_until_done
 
@@ -32,12 +35,14 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
         },
         "request_id": "DUMMY_ID",
     }
-    q = SpatialAggregate(
-        locations=daily_location(
-            date="2016-01-01",
-            method="last",
-            spatial_unit=make_spatial_unit("admin", level=3),
-            subscriber_subset=None,
+    q = RedactedSpatialAggregate(
+        spatial_aggregate=SpatialAggregate(
+            locations=daily_location(
+                date="2016-01-01",
+                method="last",
+                spatial_unit=make_spatial_unit("admin", level=3),
+                subscriber_subset=None,
+            )
         )
     )
     expected_query_id = q.query_id
@@ -75,16 +80,16 @@ async def test_run_query(zmq_port, zmq_host, fm_conn, redis):
     num_rows = fm_conn.engine.execute(
         f"SELECT COUNT(*) FROM cache.{output_cache_table}"
     ).fetchone()[0]
-    assert num_rows == 25
+    assert num_rows == 14
 
     #
     # In addition, check first few rows of the result are as expected.
     #
 
     first_few_rows_expected = [
-        ("524 1 01 04", 13),
         ("524 1 02 09", 26),
         ("524 1 03 13", 20),
+        ("524 3 08 43", 35),
     ]
     first_few_rows = fm_conn.engine.execute(
         f"SELECT * FROM cache.{output_cache_table} ORDER BY pcod LIMIT 3"
@@ -117,12 +122,14 @@ async def test_cache_content(
         },
         "request_id": "DUMMY_ID",
     }
-    q = SpatialAggregate(
-        locations=daily_location(
-            date="2016-01-01",
-            method="last",
-            spatial_unit=make_spatial_unit("admin", level=3),
-            subscriber_subset=None,
+    q = RedactedSpatialAggregate(
+        spatial_aggregate=SpatialAggregate(
+            locations=daily_location(
+                date="2016-01-01",
+                method="last",
+                spatial_unit=make_spatial_unit("admin", level=3),
+                subscriber_subset=None,
+            )
         )
     )
 

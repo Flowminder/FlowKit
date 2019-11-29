@@ -590,8 +590,9 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     query_spec = getattr(flowclient, query_kind)(**params)
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
 
-    result_dataframe = get_result(connection=con, query=query_spec)
-    assert len(result_dataframe) > 0
+    get_result(connection=con, query=query_spec)
+    # Ideally we'd check the contents, but several queries will be totally redacted and therefore empty
+    # so we can only check it runs without erroring
 
 
 @pytest.mark.parametrize(

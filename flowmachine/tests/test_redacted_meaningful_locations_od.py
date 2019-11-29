@@ -1,56 +1,27 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import pytest
 
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
+    MeaningfulLocations,
     HartiganCluster,
     CallDays,
     SubscriberLocations,
     EventScore,
 )
-from flowmachine.features.subscriber.meaningful_locations import MeaningfulLocations
-
-
-def test_column_names_meaningful_locations(
-    get_column_names_from_run, meaningful_locations_labels
-):
-    """ Test that column_names property matches head(0) for meaningfullocations"""
-    mfl = MeaningfulLocations(
-        clusters=HartiganCluster(
-            calldays=CallDays(
-                subscriber_locations=SubscriberLocations(
-                    start="2016-01-01",
-                    stop="2016-01-02",
-                    spatial_unit=make_spatial_unit("versioned-site"),
-                )
-            ),
-            radius=1,
-        ),
-        scores=EventScore(
-            start="2016-01-01",
-            stop="2016-01-02",
-            spatial_unit=make_spatial_unit("versioned-site"),
-        ),
-        labels=meaningful_locations_labels,
-        label="evening",
-    )
-
-    assert get_column_names_from_run(mfl) == mfl.column_names
-
-
-@pytest.mark.parametrize(
-    "label, expected_number_of_clusters",
-    [("evening", 702), ("day", 0), ("unknown", 1615)],
+from flowmachine.features.location.meaningful_locations_od import MeaningfulLocationsOD
+from flowmachine.features.location.redacted_meaningful_locations_od import (
+    RedactedMeaningfulLocationsOD,
 )
-def test_meaningful_locations_results(
-    label, expected_number_of_clusters, get_dataframe, meaningful_locations_labels
-):
+
+
+def test_meaningful_locations_od_redaction(get_dataframe, meaningful_locations_labels):
     """
-    Test that MeaningfulLocations returns expected results and counts clusters per subscriber correctly.
+    Test that OD on MeaningfulLocations is redacted to >15.
     """
-    mfl = MeaningfulLocations(
+
+    mfl_a = MeaningfulLocations(
         clusters=HartiganCluster(
             calldays=CallDays(
                 subscriber_locations=SubscriberLocations(
@@ -67,12 +38,35 @@ def test_meaningful_locations_results(
             spatial_unit=make_spatial_unit("versioned-site"),
         ),
         labels=meaningful_locations_labels,
-        label=label,
+        label="unknown",
     )
-    mfl_df = get_dataframe(mfl)
-    assert len(mfl_df) == expected_number_of_clusters
-    count_clusters = mfl_df.groupby(
-        ["subscriber", "label", "n_clusters"], as_index=False
-    ).count()
-    # Check that query has correctly counted the number of clusters per subscriber
-    assert all(count_clusters.n_clusters == count_clusters.cluster)
+
+    mfl_b = MeaningfulLocations(
+        clusters=HartiganCluster(
+            calldays=CallDays(
+                subscriber_locations=SubscriberLocations(
+                    start="2016-01-02",
+                    stop="2016-01-03",
+                    spatial_unit=make_spatial_unit("versioned-site"),
+                )
+            ),
+            radius=1,
+        ),
+        scores=EventScore(
+            start="2016-01-02",
+            stop="2016-01-03",
+            spatial_unit=make_spatial_unit("versioned-site"),
+        ),
+        labels=meaningful_locations_labels,
+        label="unknown",
+    )
+    mfl_od = RedactedMeaningfulLocationsOD(
+        meaningful_locations_od=MeaningfulLocationsOD(
+            meaningful_locations_a=mfl_a,
+            meaningful_locations_b=mfl_b,
+            spatial_unit=make_spatial_unit("admin", level=1),
+        )
+    )
+    mfl_od_df = get_dataframe(mfl_od)
+    # Aggregate should not include any counts below 15
+    assert all(mfl_od_df.value > 15)

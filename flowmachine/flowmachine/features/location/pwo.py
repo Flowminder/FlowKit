@@ -51,7 +51,7 @@ class _PopulationBuffer(Query):
 
     Parameters
     ----------
-    population_object : flowmachine.features.utilities.spatial_aggregates.SpatialAggregate
+    population_object : flowmachine.features.utilities.spatial_aggregate.SpatialAggregate
         An aggregated subscriber locating object
     distance_matrix : flowmachine.features.spatial.distance_matrix.DistanceMatrix
         A distance matrix
@@ -94,7 +94,7 @@ class _PopulationBuffer(Query):
          src_pop, sink_pop 
          FROM (
             (SELECT * FROM 
-            (SELECT {", ".join(f"hl_{direction}.{c} as {c}_{direction}" for c in cols for direction in ("to", "from"))}, hl_from.total as src_pop, hl_to.total as sink_pop
+            (SELECT {", ".join(f"hl_{direction}.{c} as {c}_{direction}" for c in cols for direction in ("to", "from"))}, hl_from.value as src_pop, hl_to.value as sink_pop
             FROM
             ({self.population_object.get_query()}) as hl_from
             LEFT JOIN 
@@ -270,7 +270,7 @@ class PopulationWeightedOpportunities(Query):
 
         return f"""
         WITH buffer AS ({self.population_buffer_object.get_query()}),
-        beta AS (SELECT 1.0/sum(total) as beta FROM ({self.population_object.get_query()}) pops),
+        beta AS (SELECT 1.0/sum(value) as beta FROM ({self.population_object.get_query()}) pops),
         sigma AS (
             SELECT
              {", ".join(f"{c}_from" for c in self.spatial_unit.location_id_columns)},

@@ -7,7 +7,10 @@ from flowmachine.core.server.utils import (
     FM_EXAMPLE_MESSAGE,
 )
 from flowmachine.core import make_spatial_unit
-from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
+from flowmachine.features.location.redacted_spatial_aggregate import (
+    RedactedSpatialAggregate,
+)
 from flowmachine.features import daily_location
 from .helpers import poll_until_done
 
@@ -34,12 +37,14 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
     }
     assert msg_expected == FM_EXAMPLE_MESSAGE
 
-    q = SpatialAggregate(
-        locations=daily_location(
-            date="2016-01-01",
-            method="last",
-            spatial_unit=make_spatial_unit("admin", level=3),
-            subscriber_subset=None,
+    q = RedactedSpatialAggregate(
+        spatial_aggregate=SpatialAggregate(
+            locations=daily_location(
+                date="2016-01-01",
+                method="last",
+                spatial_unit=make_spatial_unit("admin", level=3),
+                subscriber_subset=None,
+            )
         )
     )
     expected_query_id = q.query_id

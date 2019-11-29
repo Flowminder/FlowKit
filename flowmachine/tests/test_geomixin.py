@@ -110,7 +110,7 @@ def test_correct_geojson():
     found = False
     for feature in js["features"]:
         if (feature["properties"]["pcod"] == pcod) and (
-            feature["properties"]["total"] == count
+            feature["properties"]["value"] == count
         ):
             found = True
             break
@@ -136,7 +136,7 @@ def test_geojson_file_output(tmpdir):
     found = False
     for feature in js["features"]:
         if (feature["properties"]["pcod"] == pcod) and (
-            feature["properties"]["total"] == count
+            feature["properties"]["value"] == count
         ):
             found = True
             break
