@@ -538,11 +538,11 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:a82ca8c109e194d7d6aee3f7531b0470dd4dd6b36ec14fd55087142a96bd55a7",
-                "sha256:f4a7ba72e93bc97ff491b66d69063819ae2b75238bb653cd4c95e3f2847ce76e"
+                "sha256:b044f07694ef14a6683b097ba56bd081dbc7cdc7c7fe46011e499dfecc082f21",
+                "sha256:e6ac600a142cf2db707b1998382cc7fc3b02befb7273876e01b8ad10b9652742"
             ],
             "markers": "python_version < '3.8'",
-            "version": "==1.0.0"
+            "version": "==1.1.0"
         },
         "ipdb": {
             "hashes": [
@@ -561,11 +561,11 @@
         },
         "ipython": {
             "hashes": [
-                "sha256:060d19feef09453d3375ab23c7295ed36cb59e5a3904598ab903f93ec45f1f63",
-                "sha256:e468b8f03a0168a667982b50f0b4e0828cc32721bbea32b23934e55b7970eb7a"
+                "sha256:c66c7e27239855828a764b1e8fc72c24a6f4498a2637572094a78c5551fb9d51",
+                "sha256:f186b01b36609e0c5d0de27c7ef8e80c990c70478f8c880863004b3489a9030e"
             ],
             "index": "pypi",
-            "version": "==7.10.0"
+            "version": "==7.10.1"
         },
         "ipython-genutils": {
             "hashes": [
