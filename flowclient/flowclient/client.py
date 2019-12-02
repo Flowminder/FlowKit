@@ -1032,7 +1032,6 @@ def flows(
     *,
     from_location: Dict[str, Union[str, Dict[str, str]]],
     to_location: Dict[str, Union[str, Dict[str, str]]],
-    aggregation_unit: str,
 ) -> dict:
     """
     Return query spec for flows between two locations.
@@ -1043,8 +1042,6 @@ def flows(
         Query which maps individuals to single location for the "origin" period of interest.
     to_location: dict
         Query which maps individuals to single location for the "destination" period of interest.
-    aggregation_unit : str
-        Unit of aggregation, e.g. "admin3"
 
     Returns
     -------
@@ -1056,7 +1053,6 @@ def flows(
         "query_kind": "flows",
         "from_location": from_location,
         "to_location": to_location,
-        "aggregation_unit": aggregation_unit,
     }
 
 
