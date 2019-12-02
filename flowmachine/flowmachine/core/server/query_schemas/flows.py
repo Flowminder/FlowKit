@@ -30,8 +30,6 @@ class FlowsSchema(Schema):
     query_kind = fields.String(validate=OneOf(["flows"]))
     from_location = fields.Nested(InputToFlowsSchema, required=True)
     to_location = fields.Nested(InputToFlowsSchema, required=True)
-    # TODO: validate that the aggregation unit coincides with the ones in {from|to}_location
-    aggregation_unit = AggregationUnit(required=True)
 
     @post_load
     def make_query_object(self, params, **kwargs):
@@ -39,12 +37,11 @@ class FlowsSchema(Schema):
 
 
 class FlowsExposed(BaseExposedQuery):
-    def __init__(self, *, from_location, to_location, aggregation_unit):
+    def __init__(self, *, from_location, to_location):
         # Note: all input parameters need to be defined as attributes on `self`
         # so that marshmallow can serialise the object correctly.
         self.from_location = from_location
         self.to_location = to_location
-        self.aggregation_unit = aggregation_unit
 
     @property
     def _flowmachine_query_obj(self):
