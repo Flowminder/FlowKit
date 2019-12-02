@@ -39,7 +39,8 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
     # side without raising an error
     for schema, schema_dict in flowmachine_query_schemas.items():
         try:
-            schema_dict["required"].append("query_kind")
+            if "query_kind" in schema_dict["properties"]:
+                schema_dict["required"].append("query_kind")
         except KeyError:
             pass  # Doesn't have any properties
     spec = APISpec(
