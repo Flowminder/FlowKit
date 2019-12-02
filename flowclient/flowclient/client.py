@@ -952,9 +952,7 @@ def meaningful_locations_between_dates_od_matrix(
     }
 
 
-def modal_location(
-    *, locations: List[Dict[str, Union[str, Dict[str, str]]]], aggregation_unit: str
-) -> dict:
+def modal_location(*, locations: List[Dict[str, Union[str, Dict[str, str]]]]) -> dict:
     """
     Return query spec for a modal location query for a list of locations.
     Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
@@ -963,8 +961,7 @@ def modal_location(
     ----------
     locations : list of dicts
         List of location query specifications
-    aggregation_unit : str
-        Unit of aggregation, e.g. "admin3"
+
 
     Returns
     -------
@@ -974,7 +971,6 @@ def modal_location(
     """
     return {
         "query_kind": "modal_location",
-        "aggregation_unit": aggregation_unit,
         "locations": locations,
     }
 
