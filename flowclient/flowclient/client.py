@@ -218,6 +218,9 @@ def connect(
         JSON Web Token for this API server
     api_version : int, default 0
         Version of the API to connect to
+    ssl_certificate: str or None
+        Provide a path to an ssl certificate to use, or None to use
+        default root certificates.
 
     Returns
     -------
