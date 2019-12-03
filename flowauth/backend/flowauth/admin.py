@@ -636,11 +636,16 @@ def add_user():
     Returns the new user's id and group_id.
     """
     json = request.get_json()
-    if zxcvbn(json["password"])["score"] > 3:
-        user = User(**json)
+    if len(json["password"]) > 0:
+        if zxcvbn(json["password"])["score"] > 3:
+            user = User(**json)
+        else:
+            raise InvalidUsage(
+                "Password not complex enough.", payload={"bad_field": "password"}
+            )
     else:
         raise InvalidUsage(
-            "Password not complex enough.", payload={"bad_field": "password"}
+            "Password must be provided.", payload={"bad_field": "password"}
         )
     if User.query.filter(User.username == json["username"]).first() is not None:
         raise InvalidUsage(
