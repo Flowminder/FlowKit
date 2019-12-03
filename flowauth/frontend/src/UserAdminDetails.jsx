@@ -315,10 +315,7 @@ class UserAdminDetails extends React.Component {
           message={this.state.errors.message}
         />
         <Grid item xs={12} />
-        <SubmitButtons
-          handleSubmit={this.handleSubmit}
-          onClick={this.handleSubmit}
-        />
+        <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>
     );
   }
