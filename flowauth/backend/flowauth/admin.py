@@ -677,9 +677,11 @@ def rm_user(user_id):
 
     """
     user = User.query.filter(User.id == user_id).first_or_404()
+    user_group = [g for g in user.groups if g.user_group][0]
     if user.is_admin and len(User.query.filter(User.is_admin).all()) == 1:
         raise InvalidUsage("Removing this user would leave no admins.")
     db.session.delete(user)
+    db.session.delete(user_group)
     db.session.commit()
     return jsonify({"poll": "OK"})
 
