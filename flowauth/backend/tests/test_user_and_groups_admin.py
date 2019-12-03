@@ -275,10 +275,76 @@ def test_delete_user(client, auth, test_admin):
         "servers": [],
         "group_id": 2,
     } == response.get_json()
+    # Check user group members
+    response = client.get("/admin/groups/2/members", headers={"X-CSRF-Token": csrf_cookie})
+    assert [{"id": 2, "name": "TEST_USER"}] == response.get_json()
 
+    # Delete user
+    response = client.delete("/admin/users/2", headers={"X-CSRF-Token": csrf_cookie})
+    # Check user does not exist
+    response = client.get("/admin/users/2", headers={"X-CSRF-Token": csrf_cookie})
+    assert 404 == response.status_code
+    # Check user group does not exist
+    response = client.get("/admin/groups/2", headers={"X-CSRF-Token": csrf_cookie})
+    assert 404 == response.status_code
+
+
+def test_re_add_deleted_user(client, auth, test_admin):
+    """
+    Regression test for https://github.com/Flowminder/FlowKit/issues/1638
+    Ensure that a user can be added with the same name as a previously-deleted user.
+    """
+    uid, username, password = test_admin
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/users",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "username": "TEST_USER",
+            "password": "A_VERY_STRONG_DUMMY_PASSWORD_THAT_IS_VERY_LONG",
+        },
+    )  # Make a user first
+    assert 200 == response.status_code  # Should get an OK
+    response = client.get("/admin/users/2", headers={"X-CSRF-Token": csrf_cookie})
+
+    assert {
+        "id": 2,
+        "name": "TEST_USER",
+        "is_admin": False,
+        "has_two_factor": False,
+        "require_two_factor": False,
+        "groups": [{"id": 2, "name": "TEST_USER"}],
+        "servers": [],
+        "group_id": 2,
+    } == response.get_json()
+
+    # Delete the user
     response = client.delete("/admin/users/2", headers={"X-CSRF-Token": csrf_cookie})
     response = client.get("/admin/users/2", headers={"X-CSRF-Token": csrf_cookie})
     assert 404 == response.status_code
+
+    response = client.post(
+        "/admin/users",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={
+            "username": "TEST_USER",
+            "password": "A_VERY_STRONG_DUMMY_PASSWORD_THAT_IS_VERY_LONG",
+        },
+    )  # Make a new user with the same name
+    assert 200 == response.status_code  # Should get an OK
+    response = client.get("/admin/users/2", headers={"X-CSRF-Token": csrf_cookie})
+
+    assert {
+        "id": 2,
+        "name": "TEST_USER",
+        "is_admin": False,
+        "has_two_factor": False,
+        "require_two_factor": False,
+        "groups": [{"id": 2, "name": "TEST_USER"}],
+        "servers": [],
+        "group_id": 2,
+    } == response.get_json()
 
 
 def test_list_users(client, auth, test_admin):
