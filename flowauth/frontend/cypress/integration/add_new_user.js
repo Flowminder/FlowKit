@@ -91,6 +91,18 @@ describe("User management", function() {
     cy.contains("Save").click();
     cy.contains(user_name).should("be.visible");
   });
+  it("Cancel adding User", function() {
+    cy.get("#new").click();
+    //Add new user with password
+    const user_name = Math.random()
+      .toString(36)
+      .substring(2, 15);
+    cy.get("#username").type(user_name);
+    cy.get("#password").type("C>K,7|~44]44:ibK");
+    cy.contains("Cancel").click();
+    cy.get("[data-action=edit]").should("be.visible");
+    cy.contains(user_name).should("not.exist");
+  });
   it("Unauthorised access", function() {
     cy.get("#new").click();
     //Add new user with password
