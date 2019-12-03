@@ -76,7 +76,7 @@ def test_edit_user_requires_nonzero_length_username(client, auth, test_admin):
     } == response.get_json()
 
 
-def test_edit_user_requires_enforces_passwword_strength(client, auth, test_admin):
+def test_edit_user_enforces_password_strength(client, auth, test_admin):
     uid, username, password = test_admin
     # Log in first
     response, csrf_cookie = auth.login(username, password)
@@ -178,10 +178,35 @@ def test_create_user_fail_with_short_password(client, auth, test_admin):
         json={"username": "TEST_USER", "password": "A_"},
     )
     assert 400 == response.status_code  # Should get an OK
-    assert {"message": "bad_pass", "code": 400}
+    assert {
+        "code": 400,
+        "message": "Password not complex enough.",
+        "bad_field": "password",
+    } == response.get_json()
     response = client.get("/admin/users/2", headers={"X-CSRF-Token": csrf_cookie})
 
     assert 404 == response.status_code
+
+
+def test_create_user_fail_with_empty_password(client, auth, test_admin):
+    """
+    Test that an appropriate error response is sent if password is an empty string
+    when trying to create a user.
+    """
+    uid, username, password = test_admin
+    # Log in first
+    response, csrf_cookie = auth.login(username, password)
+    response = client.post(
+        "/admin/users",
+        headers={"X-CSRF-Token": csrf_cookie},
+        json={"username": "TEST_USER", "password": ""},
+    )
+    assert 400 == response.status_code  # Should get an OK
+    assert {
+        "code": 400,
+        "message": "Password must be provided.",
+        "bad_field": "password",
+    } == response.get_json()
 
 
 def test_create_user_fail_with_same_username(client, auth, test_admin):
