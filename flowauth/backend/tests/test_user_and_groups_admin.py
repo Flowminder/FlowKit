@@ -276,7 +276,9 @@ def test_delete_user(client, auth, test_admin):
         "group_id": 2,
     } == response.get_json()
     # Check user group members
-    response = client.get("/admin/groups/2/members", headers={"X-CSRF-Token": csrf_cookie})
+    response = client.get(
+        "/admin/groups/2/members", headers={"X-CSRF-Token": csrf_cookie}
+    )
     assert [{"id": 2, "name": "TEST_USER"}] == response.get_json()
 
     # Delete user
