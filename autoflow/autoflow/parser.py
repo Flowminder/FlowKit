@@ -170,7 +170,6 @@ class NotebookSchema(Schema):
         or if the inputs directory is not specified in the context.
         """
         if Path(value).suffix != ".ipynb":
-            # TODO: '.ipynb' does not a notebook make
             raise ValidationError(f"File '{value}' is not a Jupyter notebook.")
         try:
             inputs_dir = Path(self.context["inputs_dir"])
