@@ -1021,7 +1021,7 @@ def modal_location_from_dates(
         )
         for date in dates
     ]
-    return modal_location(locations=daily_locations, aggregation_unit=aggregation_unit)
+    return modal_location(locations=daily_locations)
 
 
 def flows(
