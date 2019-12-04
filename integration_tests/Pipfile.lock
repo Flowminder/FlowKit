@@ -802,6 +802,14 @@
             ],
             "version": "==1.18.1"
         },
+        "openapi-spec-validator": {
+            "hashes": [
+                "sha256:0caacd9829e9e3051e830165367bf58d436d9487b29a09220fa7edb9f47ff81b",
+                "sha256:d4da8aef72bf5be40cf0df444abd20009a41baf9048a8e03750c07a934f1bdd8",
+                "sha256:e489c7a273284bc78277ac22791482e8058d323b4a265015e9fcddf6a8045bcd"
+            ],
+            "version": "==0.2.8"
+        },
         "paho-mqtt": {
             "hashes": [
                 "sha256:31911f6031de306c27ed79dc77b690d7c55b0dcb0f0434ca34ec6361d0371122"
@@ -923,6 +931,16 @@
                 "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"
             ],
             "version": "==0.13.1"
+        },
+        "prance": {
+            "extras": [
+                "osv"
+            ],
+            "hashes": [
+                "sha256:2f6571f16692ce89bfc0eea6577b7ebff93fcfdeb7e002c0323c7b618795f0ec",
+                "sha256:3f6d6d76a3854d7c1191459e2a61c8ff3f2fb9cd7d1227986fe5ff41e30b3e84"
+            ],
+            "version": "==0.18.1"
         },
         "prefect": {
             "hashes": [
@@ -1322,6 +1340,13 @@
             ],
             "markers": "platform_python_implementation == 'CPython' and python_version < '3.9'",
             "version": "==0.2.0"
+        },
+        "semver": {
+            "hashes": [
+                "sha256:095c3cba6d5433f21451101463b22cf831fe6996fcc8a603407fd8bea54f116b",
+                "sha256:723be40c74b6468861e0e3dbb80a41fc3b171a2a45bf956c245304773dc06055"
+            ],
+            "version": "==2.9.1"
         },
         "sh": {
             "hashes": [
