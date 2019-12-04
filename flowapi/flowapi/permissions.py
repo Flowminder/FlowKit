@@ -80,6 +80,14 @@ def reparent(*, tree, bubble_down=None, depth=1):
         # At a leaf
         if len(bubble_down) > 0:
             materialise_now, *bubble_down = bubble_down
+            if len(tree) == 0:
+                return {
+                    materialise_now[0]: reparent(
+                        tree=materialise_now[1],
+                        bubble_down=bubble_down,
+                        depth=depth + 1,
+                    )
+                }
             return {
                 k: reparent(
                     tree=dict([materialise_now]),
