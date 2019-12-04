@@ -1,150 +1,27 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from itertools import takewhile, product, chain
-from typing import List, Iterable, Set, FrozenSet, Tuple, Dict, Any
+from itertools import product, chain, repeat
+from prance import ResolvingParser
+from rapidjson import dumps
+from typing import List, Iterable, Set, FrozenSet, Tuple, Optional
 
 from flowapi.flowapi_errors import MissingQueryKindError, BadQueryError
 
 
-def get_nested_objects(schema: dict) -> Iterable[Tuple[str, List[str]]]:
-    """
-    Yields tuples of nested objects as the name of the object and a list
-    of the objects it references without the ref prefix.
-
-    Parameters
-    ----------
-    schema : dict
-        Schema to parse
-
-    Yields
-    ------
-    tuple of str, list of str
-
-    """
-    for q, qbod in schema.items():
-        try:
-            refs = [qref["$ref"].split("/")[-1] for qref in qbod["oneOf"]]
-            yield q, refs
-        except (KeyError, TypeError):
-            pass  # Not a oneOf, or a malformed one
-
-
-def get_nested_dict(schema: dict) -> Dict[str, List[str]]:
-    """
-    Gets a dict containing nested objects with the name (sans ref)
-    of the object they reference.
-
-    Parameters
-    ----------
-    schema : dict
-        Schema to parse
-
-    Returns
-    -------
-    dict
-
-    """
-    return dict(get_nested_objects(schema))
-
-
-def get_queries(schema: dict) -> Dict[str, Dict[str, Any]]:
-    """
-    Gets just query objects from a schema.
-
-    Parameters
-    ----------
-    schema : dict
-
-    Returns
-    -------
-    dict
-        Dictionary of query objects
-    """
-    return {
-        q: qbod["properties"]
-        for q, qbod in schema.items()
-        if isinstance(qbod, dict) and "query_kind" in qbod.get("properties", {})
-    }
-
-
-def get_reffed_params(qs: dict, nested: dict) -> dict:
-    """
-    Resolve references in query params.
-
-    Parameters
-    ----------
-    qs : dict
-        All mainline queries
-    nested : dict
-        All nested queries
-    Returns
-    -------
-    dict
-        Queries with any refs to another query substituted for that query
-
-    """
-    q_treed = {}
-    for q, qbod in qs.items():
-        q_treed[q] = {}
-        for param, vals in qbod.items():
-            if "$ref" in vals:
-                ref = vals["$ref"].split("/")[-1]
-                q_treed[q][param] = nested.get(ref, ref)
-    return q_treed
-
-
-def build_tree(roots: List[str], q_treed: dict) -> dict:
-    """
-    Given a list of roots, and a tree of queries with any references resolved, constructs n new trees
-    with each combination of nested parameters as a branch, ensuring that the most branching occurs
-    immediately under the root node.
-
-    Parameters
-    ----------
-    roots : list of str
-        List of query names to use as the roots of the tree
-    q_treed : dict
-        Tree of queries with any references resolved
-
-
-    Returns
-    -------
-    dict
-        The new tree
-
-    Examples
-    --------
-    >>>build_tree(["DUMMY_ROOT"],{"DUMMY_ROOT": {"long_param": [1, 2, 3], "short_param": [1, 2]}})
-    {"DUMMY_ROOT": {"long_param": {1: {"short_param": {1: {}, 2: {}}},2: {"short_param": {1: {}, 2: {}}},3: {"short_param": {1: {}, 2: {}}},}}}
-
-    """
-    tree = {}
-    for root in roots:
-        params = q_treed[root]
-        tree[root] = {}
-        refs = tree[root]
-        sorted_params = sorted(params.items(), key=lambda x: (-len(x[1]), x[0]))
-        try:
-            longest_param, *others = sorted_params
-            param_name, param_spec = longest_param
-        except ValueError:
-            continue
-        tree[root][param_name] = {q_type: {} for q_type in param_spec}
-        refs = refs[param_name]
-        for param_name, param_spec in others:
-            for q_type, q_bod in refs.items():
-                refs[q_type][param_name] = {k: {} for k in param_spec}
-    return tree
-
-
-def enum_paths(parents: List[str], tree: dict) -> Tuple[List[str], dict]:
+def enum_paths(
+    *,
+    tree: dict,
+    paths: Optional[List[str]] = None,
+    argument_names_to_extract: List[str] = ["aggregation_unit"]
+) -> Tuple[List[str], dict]:
     """
     Yield the paths to the leaves of a tree and the associated leaf node.
 
     Parameters
     ----------
-    parents : list of str
+    *
+    paths : list of str
         Parents of this path
     tree : dict
         Tree of queries
@@ -153,14 +30,94 @@ def enum_paths(parents: List[str], tree: dict) -> Tuple[List[str], dict]:
     ------
     Tuple of list, dict
     """
+    if paths is None:
+        paths = []
+    new_path = list(paths)
+    if "properties" in tree and "query_kind" in tree["properties"]:
+        new_path = paths + tree["properties"]["query_kind"]["enum"]
+    if "oneOf" in tree.keys():  # Path divergence
+        for tr in tree["oneOf"]:
+            yield from enum_paths(paths=new_path, tree=tr)
+    elif (
+        "enum" in tree.keys()
+        and len(tree["enum"]) > 1
+        and new_path[-1] in argument_names_to_extract
+    ):
+        yield from zip(repeat(new_path), tree["enum"])
+    elif "items" in tree.keys():
+        yield from enum_paths(paths=new_path, tree=tree["items"])
+    else:
+        if "properties" in tree:
+            for k, v in tree["properties"].items():
+                if k == "query_kind":
+                    yield new_path,
+                else:
+                    yield from enum_paths(paths=new_path + [k], tree=v)
+
+
+def paths_to_nested_dict(
+    *, queries: dict, argument_names_to_extract: List[str] = ["aggregation_unit"]
+) -> dict:
+    d = {}
+    for x in list(
+        enum_paths(tree=queries, argument_names_to_extract=argument_names_to_extract)
+    ):
+        path, *key = x
+        the_d = d
+        for v in path[:-1]:
+            the_d = the_d.setdefault(v, dict())
+        if len(key) > 0:
+            the_d.setdefault(path[-1], list()).append(key[0])
+        else:
+            the_d.setdefault(path[-1], dict())
+    return d
+
+
+def reparent(*, tree, bubble_down=None, depth=1):
+    if bubble_down is None:
+        bubble_down = []
+    if isinstance(tree, list) or len(tree) == 0:
+        # At a leaf
+        if len(bubble_down) > 0:
+            materialise_now, *bubble_down = bubble_down
+            return {
+                k: reparent(
+                    tree=dict([materialise_now]),
+                    bubble_down=bubble_down,
+                    depth=depth + 1,
+                )
+                for k in tree
+            }
+        return {k: dict() for k in tree}
+    if depth % 2 == 0:
+        return {
+            k: reparent(tree=v, bubble_down=bubble_down, depth=depth + 1)
+            for k, v in tree.items()
+        }
+    else:
+        # Sort the arguments by their number of values
+        sorted_items = sorted(tree.items(), key=lambda x: (-len(x[1]), x[0]))
+        longest, *rest = sorted_items
+        # Put the other items under the longest
+        key, val = longest
+        return {
+            key: reparent(tree=val, bubble_down=rest + bubble_down, depth=depth + 1)
+        }
+
+
+def walk_tree(*, tree: dict, paths: Optional[List[str]] = None):
+    if paths is None:
+        paths = []
     if len(tree) == 0:
-        yield parents, tree
+        yield paths, tree
     else:
         for k, v in tree.items():
-            yield from enum_paths(parents + [k], v)
+            yield from walk_tree(paths=paths + [k], tree=v)
 
 
-def make_per_query_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
+def make_per_query_scopes(
+    *, queries: dict, argument_names_to_extract: List[str] = ["aggregation_unit"]
+) -> Iterable[str]:
     """
     Constructs and yields query scopes of the form:
     <query_kind>:<arg_name>:<arg_val>
@@ -171,6 +128,7 @@ def make_per_query_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
 
     Parameters
     ----------
+    *
     tree : dict
         Dict of nested queries
     all_queries : dict
@@ -183,29 +141,25 @@ def make_per_query_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
 
     Examples
     --------
-    >>>list(make_per_query_scopes({"DUMMY": {}}, {"DUMMY": {"query_kind": {"enum": ["dummy"]}}}))
+    >>>list(make_per_query_scopes(queries={"DUMMY": {}}))
     ["dummy"]
-    >>>list(make_per_query_scopes({"DUMMY": {}},{"DUMMY": {"query_kind": {"enum": ["dummy"]},"aggregation_unit": {"enum": ["DUMMY_UNIT"]},}}))
+    >>>list(make_per_query_scopes(queries={"DUMMY": {}}))
     ["dummy:aggregation_unit:DUMMY_UNIT",]
 
     """
-    for path, _ in list(enum_paths([], tree)):
-        kind_path = [
-            all_queries.get(p, {}).get("query_kind", {}).get("enum", [p])[0]
-            for p in path
-        ]  # Want the snake-cased variant
-        try:
-            units = all_queries[path[-1]]["aggregation_unit"]["enum"]
-            yield from (
-                ":".join(kind_path + ["aggregation_unit", unit]) for unit in units
-            )
-        except KeyError:
-            yield ":".join(kind_path)
-        except IndexError:
-            continue
+    nested_qs = paths_to_nested_dict(
+        queries=queries, argument_names_to_extract=argument_names_to_extract
+    )
+    yield from (
+        ":".join([q] + x)
+        for q, q_bod in nested_qs.items()
+        for x, y in walk_tree(tree=reparent(tree=q_bod))
+    )
 
 
-def make_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
+def make_scopes(
+    *, queries: dict, argument_names_to_extract: List[str] = ["aggregation_unit"]
+) -> Iterable[str]:
     """
     Constructs and yields query scopes of the form:
     <action>:<query_kind>:<arg_name>:<arg_val>
@@ -217,6 +171,7 @@ def make_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
 
     Parameters
     ----------
+    *
     tree : dict
         Dict of nested queries
     all_queries : dict
@@ -229,21 +184,26 @@ def make_scopes(tree: dict, all_queries: dict) -> Iterable[str]:
 
     Examples
     --------
-    >>>list(make_scopes({"DUMMY": {}}, {"DUMMY": {"query_kind": {"enum": ["dummy"]}}}))
+    >>>list(make_scopes(queries={"DUMMY": {}}))
     ["get_result:dummy", "run:dummy", "get_result:available_dates"]
-    >>>list(make_scopes({"DUMMY": {}},{"DUMMY": {"query_kind": {"enum": ["dummy"]},"aggregation_unit": {"enum": ["DUMMY_UNIT"]},}}))
+    >>>list(make_scopes(queries={"DUMMY": {}}))
     ["run:dummy:aggregation_unit:DUMMY_UNIT","get_result:dummy:aggregation_unit:DUMMY_UNIT", "get_result:available_dates"]
 
     """
-    yield from (
-        f"{action}:{scope}"
-        for action in ("get_result", "run")
-        for scope in make_per_query_scopes(tree, all_queries)
-    )
-    yield "get_result:available_dates"  # Special case for available dates
+    return [
+        ":".join(x)
+        for x in product(
+            ("get_result", "run"),
+            make_per_query_scopes(
+                queries=queries, argument_names_to_extract=argument_names_to_extract
+            ),
+        )
+    ] + [
+        "get_result:available_dates"
+    ]  # Special case for available dates
 
 
-def schema_to_scopes(flowmachine_query_schemas: dict) -> Iterable[str]:
+def schema_to_scopes(schema: dict) -> Iterable[str]:
     """
     Constructs and yields query scopes of the form:
     <action>:<query_kind>:<arg_name>:<arg_val>
@@ -268,15 +228,10 @@ def schema_to_scopes(flowmachine_query_schemas: dict) -> Iterable[str]:
     >>>list(schema_to_scopes({"FlowmachineQuerySchema": {"oneOf": [{"$ref": "DUMMY"}]},"DUMMY": {"properties": {"query_kind": {"enum": ["dummy"]}}},},))
     ["get_result:dummy", "run:dummy", "get_result:available_dates"],
     """
-    yield from make_scopes(
-        build_tree(
-            get_nested_dict(flowmachine_query_schemas)["FlowmachineQuerySchema"],
-            get_reffed_params(
-                get_queries(flowmachine_query_schemas),
-                get_nested_dict(flowmachine_query_schemas),
-            ),
-        ),
-        get_queries(flowmachine_query_schemas),
+    return make_scopes(
+        queries=ResolvingParser(spec_string=dumps(schema)).specification["components"][
+            "schemas"
+        ]["FlowmachineQuerySchema"]
     )
 
 
