@@ -39,16 +39,8 @@ async def test_granular_run_access(
     Test that tokens grant granular access to running queries.
 
     """
-    middle = (
-        ":to_location:daily_location:from_location:daily_location"
-        if query_kind == "flow"
-        else ""
-    )
-    token = access_token_builder(
-        [
-            f"run:{query_kind}{middle}:aggregation_unit:{exemplar_query_params[query_kind]['aggregation_unit']}"
-        ]
-    )
+
+    token = access_token_builder([f"run:{exemplar_query_params[query_kind]['token']}"])
     expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 202
     dummy_zmq_server.return_value = {
@@ -58,7 +50,7 @@ async def test_granular_run_access(
     }
     responses = {}
     for q_kind in query_kinds:
-        q_params = exemplar_query_params[q_kind]
+        q_params = exemplar_query_params[q_kind]["params"]
         response = await app.client.post(
             f"/api/0/run", headers={"Authorization": f"Bearer {token}"}, json=q_params
         )
@@ -76,14 +68,12 @@ async def test_granular_poll_access(
 
     """
     middle = (
-        ":to_location:daily_location:from_location:daily_location"
+        f":from_location:daily_location:aggregation_unit:admin3:to_location:daily_location:admin3"
         if query_kind == "flow"
         else ""
     )
     token = access_token_builder(
-        [
-            f"run,get_result:{query_kind}{middle}:{exemplar_query_params[query_kind]['aggregation_unit']}"
-        ]
+        [f"run,get_result:{exemplar_query_params[query_kind]['token']}"]
     )
 
     expected_responses = dict.fromkeys(query_kinds, 403)
@@ -97,7 +87,7 @@ async def test_granular_poll_access(
                 "msg": "",
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
-                    "query_params": exemplar_query_params[q_kind],
+                    "query_params": exemplar_query_params[q_kind]["params"],
                 },
             },
             {
@@ -128,15 +118,9 @@ async def test_granular_json_access(
     Test that tokens grant granular access to query output.
 
     """
-    middle = (
-        ":to_location:daily_location:aggregation_unit:admin3:from_location:daily_location"
-        if query_kind == "flow"
-        else ""
-    )
+
     token = access_token_builder(
-        [
-            f"get_result:{query_kind}{middle}:aggregation_unit:{exemplar_query_params[query_kind]['aggregation_unit']}"
-        ]
+        [f"get_result:{exemplar_query_params[query_kind]['token']}"]
     )
 
     expected_responses = dict.fromkeys(query_kinds, 403)
@@ -149,7 +133,7 @@ async def test_granular_json_access(
                 "msg": "",
                 "payload": {
                     "query_id": "DUMMY_QUERY_ID",
-                    "query_params": exemplar_query_params[q_kind],
+                    "query_params": exemplar_query_params[q_kind]["params"],
                 },
             },
             {

@@ -60,12 +60,7 @@ async def test_get_geography_status(
     """
 
     token = access_token_builder(
-        {
-            "geography": {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            }
-        }
+        ["get_result:geography:aggregation_unit:DUMMY_AGGREGATION"]
     )
     zmq_reply = ZMQReply(status="error", msg="Some error")
     dummy_zmq_server.side_effect = (zmq_reply,)
@@ -84,13 +79,9 @@ async def test_geography_errors(response, app, dummy_zmq_server, access_token_bu
     """
 
     token = access_token_builder(
-        {
-            "geography": {
-                "permissions": {"get_result": True},
-                "spatial_aggregation": ["DUMMY_AGGREGATION"],
-            }
-        }
+        ["get_result:geography:aggregation_unit:DUMMY_AGGREGATION"]
     )
+
     dummy_zmq_server.side_effect = (response,)
     response = await app.client.get(
         f"/api/0/geography/DUMMY_AGGREGATION",

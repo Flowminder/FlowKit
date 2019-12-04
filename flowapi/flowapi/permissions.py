@@ -290,9 +290,9 @@ def q_to_scope_atoms(
     """
     if paths is None:
         paths = []
-    for k, v in query.items():
-        if k == "query_kind":
-            paths = paths + [v]
+    if "query_kind" in query:
+        paths = paths + [query["query_kind"]]
+    for k, v in sorted(query.items()):
         if k in argument_names_to_extract:
             paths = paths + [k, v]
         if isinstance(v, dict):
