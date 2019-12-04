@@ -8,6 +8,7 @@ import datetime
 from textwrap import dedent
 
 from prefect.environments import storage
+from prefect.schedules import Schedule
 
 from autoflow.date_stencil import DateStencil
 from autoflow.parser import parse_workflows_yaml
