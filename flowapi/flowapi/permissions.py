@@ -243,7 +243,21 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     )
 
 
-def expand_scopes(*, scopes: List[str]):
+def expand_scopes(*, scopes: List[str]) -> str:
+    """
+    Expand up a list of compact scopes to full scopes
+
+    Parameters
+    ----------
+    scopes : list of str
+        Compressed scopes to expand
+
+    Yields
+    ------
+    str
+        A scope string
+
+    """
     for scope in scopes:
         parts = scope.split(":")
         ps = (x.split(",") for x in parts)
@@ -254,8 +268,26 @@ def q_to_scope_atoms(
     *,
     query: dict,
     argument_names_to_extract: List[str] = ["aggregation_unit"],
-    paths: List[Union[str, Tuple[str]]] = None,
-):
+    paths: Optional[List[str]] = None,
+) -> List[Union[str, List[str]]]:
+    """
+    Convert a query to scope 'atoms', each of which would be a contiguous
+    part of a scope string.
+
+    Parameters
+    ----------
+    query : dict
+        Query to atomise
+    argument_names_to_extract : list of str
+        Arguments to pull out
+    paths : list of str or None, default None
+        Optionally provide the prefix of the atom
+
+    Returns
+    -------
+    list of str
+       Nested list of atoms
+    """
     if paths is None:
         paths = []
     for k, v in query.items():
@@ -277,6 +309,22 @@ def q_to_scope_atoms(
 def q_to_subscopes(
     *, query: dict, argument_names_to_extract: List[str] = ["aggregation_unit"],
 ):
+    """
+    Translate a query into contiguous 'subscopes', which when combined in
+    the correct order form a complete scope.
+
+    Parameters
+    ----------
+    query : dict
+        Query to translate to subscopes
+     argument_names_to_extract : list of str
+        Arguments to pull out
+    Returns
+    -------
+    list of str
+        List of subscopes
+
+    """
     atoms = q_to_scope_atoms(
         query=query, argument_names_to_extract=argument_names_to_extract
     )
@@ -287,6 +335,21 @@ def q_to_subscopes(
 
 
 def flatten(container: Any, container_types: Tuple[type] = (list, tuple, set)) -> list:
+    """
+    String safe nested list flattener.
+
+    Parameters
+    ----------
+    container : any
+        Generally a nested list, will be flattened preserving any strings.
+    container_types : tuple of type, default (list, tuple, set)
+        Types to treat as containers
+
+    Yields
+    ------
+    list
+        Items from the flattened list or the original item if not a container
+    """
     if isinstance(container, container_types):
         for i in container:
             if isinstance(i, container_types):
