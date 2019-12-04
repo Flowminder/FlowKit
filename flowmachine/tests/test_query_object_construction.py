@@ -66,7 +66,6 @@ def test_construct_query(diff_reporter):
             "query_kind": "spatial_aggregate",
             "locations": {
                 "query_kind": "modal_location",
-                "aggregation_unit": "admin3",
                 "locations": (
                     {
                         "query_kind": "daily_location",
