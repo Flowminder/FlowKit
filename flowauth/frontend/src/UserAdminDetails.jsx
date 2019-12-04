@@ -143,7 +143,7 @@ class UserAdminDetails extends React.Component {
         task = editUser(
           item_id,
           name,
-          password ? password.length > 0 : undefined,
+          password.length > 0 ? password : undefined,
           is_admin,
           require_two_factor,
           has_two_factor
@@ -315,10 +315,7 @@ class UserAdminDetails extends React.Component {
           message={this.state.errors.message}
         />
         <Grid item xs={12} />
-        <SubmitButtons
-          handleSubmit={this.handleSubmit}
-          onClick={this.handleSubmit}
-        />
+        <SubmitButtons handleSubmit={this.handleSubmit} onClick={onClick} />
       </React.Fragment>
     );
   }
