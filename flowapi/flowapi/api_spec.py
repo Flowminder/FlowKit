@@ -60,7 +60,7 @@ async def get_spec(socket: Socket, request_id: str) -> APISpec:
             "type": "http",
             "scheme": "bearer",
             "bearerFormat": "JWT",
-            "x-security-scopes": list(schema_to_scopes(spec.to_dict())),
+            "x-security-scopes": sorted(schema_to_scopes(spec.to_dict())),
             "x-audience": current_app.config["JWT_DECODE_AUDIENCE"],
         },
     )
