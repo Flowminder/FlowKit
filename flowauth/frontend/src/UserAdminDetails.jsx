@@ -135,9 +135,7 @@ class UserAdminDetails extends React.Component {
       username_helper_text === "" &&
       (password.length === 0 || password_strength > 3)
     ) {
-
       try {
-
         const user = edit_mode
           ? await editUser(
               item_id,
@@ -148,7 +146,6 @@ class UserAdminDetails extends React.Component {
               has_two_factor
             )
           : await createUser(name, password, is_admin, require_two_factor);
-
 
         await editGroupServers(user.group_id, servers);
         await editGroupMemberships(user.id, groups);
@@ -166,7 +163,7 @@ class UserAdminDetails extends React.Component {
   render() {
     if (this.state.hasError) throw this.state.error;
 
-    const { classes, item_id } = this.props;
+    const { classes, item_id, onClick } = this.props;
     const {
       name,
       password,
