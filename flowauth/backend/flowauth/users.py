@@ -37,12 +37,18 @@ def add_user():
     Returns the new user's id and group_id.
     """
     json = request.get_json()
-    if zxcvbn(json["password"])["score"] > 3:
-        user = User(**json)
-    else:
+    try:
+        if zxcvbn(json["password"])["score"] > 3:
+            user = User(**json)
+        else:
+            raise InvalidUsage(
+                "Password not complex enough.", payload={"bad_field": "password"}
+            )
+    except (KeyError, IndexError):
         raise InvalidUsage(
-            "Password not complex enough.", payload={"bad_field": "password"}
+            "Password must be provided.", payload={"bad_field": "password"}
         )
+
     if User.query.filter(User.username == json["username"]).first() is not None:
         raise InvalidUsage(
             "Username already exists.", payload={"bad_field": "username"}
@@ -73,9 +79,11 @@ def rm_user(user_id):
 
     """
     user = User.query.filter(User.id == user_id).first_or_404()
+    user_group = [g for g in user.groups if g.user_group][0]
     if user.is_admin and len(User.query.filter(User.is_admin).all()) == 1:
         raise InvalidUsage("Removing this user would leave no admins.")
     db.session.delete(user)
+    db.session.delete(user_group)
     db.session.commit()
     return jsonify({"poll": "OK"})
 
