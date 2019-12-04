@@ -265,10 +265,7 @@ def expand_scopes(*, scopes: List[str]) -> str:
 
 
 def q_to_scope_atoms(
-    *,
-    query: dict,
-    argument_names_to_extract: List[str] = ["aggregation_unit"],
-    paths: Optional[List[str]] = None,
+    *, query: dict, argument_names_to_extract: List[str] = ["aggregation_unit"],
 ) -> List[Union[str, List[str]]]:
     """
     Convert a query to scope 'atoms', each of which would be a contiguous
@@ -280,29 +277,30 @@ def q_to_scope_atoms(
         Query to atomise
     argument_names_to_extract : list of str
         Arguments to pull out
-    paths : list of str or None, default None
-        Optionally provide the prefix of the atom
 
     Returns
     -------
     list of str
        Nested list of atoms
     """
-    if paths is None:
-        paths = []
+    paths = []
     if "query_kind" in query:
         paths = paths + [query["query_kind"]]
     for k, v in sorted(query.items()):
         if k in argument_names_to_extract:
             paths = paths + [k, v]
         if isinstance(v, dict):
-            paths = paths + [q_to_scope_atoms(query=v, paths=[k])]
+            atoms = q_to_scope_atoms(query=v)
+            if len(atoms) > 0:
+                paths = paths + [k] + atoms
         if isinstance(v, list):
             child_paths = set()
             for x in v:
-                child_paths.add(tuple(q_to_scope_atoms(query=x, paths=[k])))
+                if isinstance(x, dict):
+                    child_paths.add(tuple(q_to_scope_atoms(query=x)))
             for child in child_paths:
-                paths = paths + list(child)
+                if len(child) > 0:
+                    paths = paths + [k] + list(child)
     return paths
 
 
