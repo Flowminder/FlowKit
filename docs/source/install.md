@@ -112,7 +112,9 @@ During development, you will typically also want to run FlowMachine, FlowAPI and
 
 ### Setting up FlowKit for development
 
-After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `make up` in the root directory. This requires Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose.yml` file.
+After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `set -a && . development_environment && set +a` (this will set the required environment variables) followed by `make up` in the root directory. This requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the FlowKit docker containers using the `docker-compose.yml` file. The docker containers to start can be selected by running `make up DOCKER_SERVICES="<service 1> <service 2> ..."`, where the services can be any of `flowmachine`, `flowmachine_query_locker`, `flowapi`, `flowauth`, `flowdb`, `worked_examples`, `flowdb_testdata`, `flowdb_synthetic_data`, `flowetl`, `flowetl_db` or `autoflow` (at most one of the `flowdb` containers). The default is to start `flowdb`, `flowapi`, `flowmachine`, `flowauth`, `flowmachine_query_locker`, `flowetl`, `flowetl_db` and `worked_examples`. Alternatively, containers can be built, started or stopped individually by running `make <service>-build`, `make <service>-up` or `make <service>-down`, respectively.
+
+To run the `autoflow` service, a valid FlowAPI token must be set as the environment variable `FLOWAPI_TOKEN` (in addition to the environment variables set by running `set -a && . development_environment && set +a`).
 
 FlowKit uses [pipenv](https://pipenv.readthedocs.io/) to manage Python environments. To start a Python session in which you can use FlowClient:
 
@@ -123,7 +125,7 @@ pipenv run python
 >>> import flowclient
 ```
 
-To run the tests in the `flowapi`, `flowclient`, `flowdb`, `flowmachine` or `integration_tests` directory:
+To run the tests in the `flowapi`, `flowclient`, `flowdb`, `flowmachine`, `autoflow` or `integration_tests` directory:
 
 ```bash
 cd <directory>
