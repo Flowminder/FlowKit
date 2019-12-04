@@ -82,7 +82,7 @@ async def test_granular_poll_access(
     )
     token = access_token_builder(
         [
-            f"run,get_result:{query_kind}{middle}:aggregation_unit:{exemplar_query_params[query_kind]['aggregation_unit']}"
+            f"run,get_result:{query_kind}{middle}:{exemplar_query_params[query_kind]['aggregation_unit']}"
         ]
     )
 
@@ -129,7 +129,7 @@ async def test_granular_json_access(
 
     """
     middle = (
-        ":to_location:daily_location:from_location:daily_location"
+        ":to_location:daily_location:aggregation_unit:admin3:from_location:daily_location"
         if query_kind == "flow"
         else ""
     )

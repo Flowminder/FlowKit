@@ -1,15 +1,15 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
+from itertools import permutations
 
 from flask_jwt_extended.exceptions import UserClaimsVerificationError
-from typing import List, Set, FrozenSet
+from typing import List
 
 from quart_jwt_extended import get_jwt_claims, get_jwt_identity
 from quart import current_app, request
 
-from flowapi.permissions import query_to_scope_set, scopes_to_sets
+from flowapi.permissions import q_to_subscopes, expand_scopes
 from flowapi.utils import get_query_parameters_from_flowmachine
 
 
@@ -27,13 +27,22 @@ class UserObject:
         Dictionary giving a whitelist of the user's claims
     """
 
-    def __init__(self, username: str, scope_set: Set[FrozenSet]) -> None:
+    def __init__(self, username: str, scopes: List[str]) -> None:
         self.username = username
-        self.scope_set = scope_set
+        self.scopes = scopes
 
     def has_access(self, *, actions: List[str], query_json: dict) -> bool:
+        subscopes = q_to_subscopes(query=query_json)
+        start, *rest = subscopes
         for action in actions:
-            if query_to_scope_set(action=action, query=query_json) in self.scope_set:
+            if len(rest) > 0:
+                possible_scopes = [
+                    f"{action}:{start}:{':'.join(candidate)}"
+                    for candidate in permutations(rest)
+                ]
+            else:
+                possible_scopes = [f"{action}:{start}"]
+            if any(scope in self.scopes for scope in possible_scopes):
                 return True
         raise UserClaimsVerificationError
 
@@ -213,4 +222,4 @@ def user_loader_callback(identity):
     )
     current_app.access_logger.info("Loaded user", **log_dict)
 
-    return UserObject(username=identity, scope_set=scopes_to_sets(claims))
+    return UserObject(username=identity, scopes=list(expand_scopes(scopes=claims)))
