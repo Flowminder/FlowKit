@@ -36,6 +36,7 @@ setup(
         "pyyaml >= 5.1",
         "apispec[yaml]",
         "get-secret-or-env-var",
+        "prance[osv]",
     ],
     extras_require={"test": ["pytest", "coverage"]},
 )
