@@ -4,7 +4,7 @@
 from itertools import product, chain, repeat
 from prance import ResolvingParser
 from rapidjson import dumps
-from typing import List, Iterable, Set, FrozenSet, Tuple, Optional
+from typing import List, Iterable, Set, FrozenSet, Tuple, Optional, Union, Any
 
 from flowapi.flowapi_errors import MissingQueryKindError, BadQueryError
 
@@ -13,7 +13,7 @@ def enum_paths(
     *,
     tree: dict,
     paths: Optional[List[str]] = None,
-    argument_names_to_extract: List[str] = ["aggregation_unit"]
+    argument_names_to_extract: List[str] = ["aggregation_unit"],
 ) -> Tuple[List[str], dict]:
     """
     Yield the paths to the leaves of a tree and the associated leaf node.
@@ -243,77 +243,55 @@ def schema_to_scopes(schema: dict) -> Iterable[str]:
     )
 
 
-def scope_to_sets(scope: str) -> Iterable[FrozenSet]:
-    """
-    Translates a scope string into a set of the form {<action>, <query_kind>, (<arg_name>, <arg_value>)}
-
-    Parameters
-    ----------
-    scope : str
-        Scope string of the form <action>:<query_kind>:<arg_name>:<arg_value>
-
-    Yields
-    ------
-    frozenset
-
-    """
-    parts = scope.split(":")
-    ps = [x.split(",") for x in parts]
-    for scope in product(*ps):
-        scopeit = iter(scope)
-        action, query_kind, *rest = scopeit
-        if len(rest) > 0:
-            yield frozenset([action, query_kind, *zip(rest[::2], rest[1::2])])
-        else:
-            yield frozenset([action, query_kind])
+def expand_scopes(*, scopes: List[str]):
+    for scope in scopes:
+        parts = scope.split(":")
+        ps = (x.split(",") for x in parts)
+        yield from (":".join(x) for x in product(*ps))
 
 
-def scopes_to_sets(scopes: List[str]) -> Set:
-    """
-    Translates a list of scope strings into sets of the form {<action>, <query_kind>, (<arg_name>, <arg_value>)}
+def q_to_scope_atoms(
+    *,
+    query: dict,
+    argument_names_to_extract: List[str] = ["aggregation_unit"],
+    paths: List[Union[str, Tuple[str]]] = None,
+):
+    if paths is None:
+        paths = []
+    for k, v in query.items():
+        if k == "query_kind":
+            paths = paths + [v]
+        if k in argument_names_to_extract:
+            paths = paths + [k, v]
+        if isinstance(v, dict):
+            paths = paths + [q_to_scope_atoms(query=v, paths=[k])]
+        if isinstance(v, list):
+            child_paths = set()
+            for x in v:
+                child_paths.add(tuple(q_to_scope_atoms(query=x, paths=[k])))
+            for child in child_paths:
+                paths = paths + list(child)
+    return paths
 
-    Parameters
-    ----------
-    scopes : list of str
-        Scope strings of the form <action>:<query_kind>:<arg_name>:<arg_value>
-    Yields
-    ------
-    frozenset
 
-    """
-    return set(chain.from_iterable(scope_to_sets(scope) for scope in scopes))
+def q_to_subscopes(
+    *, query: dict, argument_names_to_extract: List[str] = ["aggregation_unit"],
+):
+    atoms = q_to_scope_atoms(
+        query=query, argument_names_to_extract=argument_names_to_extract
+    )
+    top_level = [x for x in atoms if isinstance(x, str)]
+    return [":".join(top_level)] + [
+        ":".join(flatten(x)) for x in atoms if isinstance(x, list)
+    ]
 
 
-def query_to_scope_set(*, action: str, query: dict) -> Set:
-    """
-    Translates a query request into a set of the form {<action>, <query_kind>, (<arg_name>, <arg_value>)}.
-
-    Parameters
-    ----------
-    action : {"run", "get_result"}
-        Action being done with this query.
-    query : dict
-        The query parameters.
-
-    Returns
-    -------
-    set
-       Set of the form {<action>, <query_kind>, (<arg_name>, <arg_value>)}
-
-    """
-    try:
-        ss = set([action, query["query_kind"]])
-    except KeyError:
-        raise MissingQueryKindError
-    except (AttributeError, TypeError):
-        raise BadQueryError
-
-    if "aggregation_unit" in query:
-        ss.add(("aggregation_unit", query["aggregation_unit"]))
-    child_queries = ((k, v) for k, v in query.items() if isinstance(v, dict))
-    for k, v in child_queries:
-        if "query_kind" in v:
-            ss.add((k, v["query_kind"]))
-        if "aggregation_unit" in v:
-            ss.add(("aggregation_unit", v["aggregation_unit"]))
-    return ss
+def flatten(container: Any, container_types: Tuple[type] = (list, tuple, set)) -> list:
+    if isinstance(container, container_types):
+        for i in container:
+            if isinstance(i, container_types):
+                yield from flatten(i)
+            else:
+                yield i
+    else:
+        yield container
