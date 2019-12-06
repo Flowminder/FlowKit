@@ -62,11 +62,11 @@
         },
         "marshmallow": {
             "hashes": [
-                "sha256:1a358beb89c2b4d5555272065a9533591a3eb02f1b854f3c4002d88d8f2a1ddb",
-                "sha256:eb97c42c5928b5720812c9268865fe863d4807bc1a8b48ddd7d5c9e1779a6af0"
+                "sha256:0ba81b6da4ae69eb229b74b3c741ff13fe04fb899824377b1aff5aaa1a9fd46e",
+                "sha256:3e53dd9e9358977a3929e45cdbe4a671f9eff53a7d6a23f33ed3eab8c1890d8f"
             ],
             "index": "pypi",
-            "version": "==3.2.2"
+            "version": "==3.3.0"
         },
         "marshmallow-oneofschema": {
             "hashes": [
@@ -345,14 +345,6 @@
             ],
             "version": "==1.4.3"
         },
-        "appnope": {
-            "hashes": [
-                "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
-                "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
-            ],
-            "markers": "platform_system == 'Darwin'",
-            "version": "==0.1.0"
-        },
         "approvaltests": {
             "hashes": [
                 "sha256:77bcfa60f975a48a378c96f61749d7943ecc27d486394896aa8536d93105d556"
@@ -502,17 +494,19 @@
         },
         "fiona": {
             "hashes": [
-                "sha256:1c9ff0f799d41570fd9e2d40bbad174bab8787e9149fed04364488349109b944",
-                "sha256:1e7ca9e051f5bffa1c43c70d573da9ca223fc076b84fa73380614fc02b9eb7f6",
-                "sha256:580aa20c52bbfbb758d3ff96369a5fce44c6d5cb01d2822a69b144f5322fc184",
-                "sha256:67036d762044b74db18a76343a264f2093b44c4ae028212c0e21b8d26822d79c",
-                "sha256:8a5fe4d20066e405b80eac65804d9c8cba0204ef263b95200018236744705022",
-                "sha256:8cdc5c0519f15d8705b16907a96e2edb279ded1c071f8776d5b328b9fc8b3e92",
-                "sha256:c2d6d30f706b743dd39b0f4b6978f3a76facd424b4f570060150b67daf1e9680",
-                "sha256:f55cc9d11289cdae8f38f177523ac66848ace942f0f86e84f8004c6e6383c2fb",
-                "sha256:fea708ac21801cf5db752cc29040bbe27af47768c915b5be2050792eaefe15c1"
+                "sha256:0742177422d20f72e69e499886f96e1cbf5ce0c9752f8320a05eddcb0f1c576a",
+                "sha256:3104311faeb10dc80e00c46734a92275d67efabe1fd6e835fec8a6f77c0920bf",
+                "sha256:5567efdba15eea935c581db94f3980ecbccecb4a7a5cd79651c8aed41c70a0fa",
+                "sha256:5ec34898c8b983a723fb4e949dd3e0ed7e691c303e51f6bfd61e52ac9ac813ae",
+                "sha256:5f39bdf39421d79c22ae0b4e0e1169820812941206446b2294e6ca40646708fc",
+                "sha256:621d2230663f3fb95d60249e27fc8e2a6e456dc85f96bbfa9882a6b0a4ce0d1f",
+                "sha256:83314cf2cbe50df24c290d241681964adf6fe9c0ba33a0a0f980a5f44008296b",
+                "sha256:9347c2b8950575014ec233f6191e52d03ef68a5bb759a53a621b095610650a50",
+                "sha256:976e91e056e818720510984970ec33f26b9744cdf52e586e08217bf34bfcb41e",
+                "sha256:b771a58e6b93357096934fa26d65d0cf308345340d694e4d346d3b39879e265c",
+                "sha256:f0adf55192ac715c1ac7a19ff1aacd667ffe251df0e09b9a6feeddce45849f17"
             ],
-            "version": "==1.8.11"
+            "version": "==1.8.13"
         },
         "geojson": {
             "hashes": [
@@ -539,18 +533,18 @@
         },
         "identify": {
             "hashes": [
-                "sha256:4f1fe9a59df4e80fcb0213086fcf502bc1765a01ea4fe8be48da3b65afd2a017",
-                "sha256:d8919589bd2a5f99c66302fec0ef9027b12ae150b0b0213999ad3f695fc7296e"
+                "sha256:7782115794ec28b011702815d9f5e532244560cd2bf0789c4f09381d43befd90",
+                "sha256:9e7521e9abeaede4d2d1092a106e418c65ddf6b3182b43930bcb3c8cfb974488"
             ],
-            "version": "==1.4.7"
+            "version": "==1.4.8"
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:b044f07694ef14a6683b097ba56bd081dbc7cdc7c7fe46011e499dfecc082f21",
-                "sha256:e6ac600a142cf2db707b1998382cc7fc3b02befb7273876e01b8ad10b9652742"
+                "sha256:3a8b2dfd0a2c6a3636e7c016a7e54ae04b997d30e69d5eacdca7a6c2221a1402",
+                "sha256:41e688146d000891f32b1669e8573c57e39e5060e7f5f647aa617cd9a9568278"
             ],
             "markers": "python_version < '3.8'",
-            "version": "==1.1.0"
+            "version": "==1.2.0"
         },
         "ipdb": {
             "hashes": [
