@@ -292,7 +292,7 @@ def q_to_scope_atoms(
         if isinstance(v, dict):
             atoms = q_to_scope_atoms(query=v)
             if len(atoms) > 0:
-                paths = paths + [k] + atoms
+                paths = paths + [[k, *atoms]]
         if isinstance(v, list):
             child_paths = set()
             for x in v:
