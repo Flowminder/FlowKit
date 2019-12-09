@@ -300,7 +300,7 @@ def q_to_scope_atoms(
                     child_paths.add(tuple(q_to_scope_atoms(query=x)))
             for child in child_paths:
                 if len(child) > 0:
-                    paths = paths + [k] + list(child)
+                    paths = paths + [[k, *child]]
     return paths
 
 
