@@ -104,11 +104,12 @@ Quick install is continued with an example of FlowClient usage [here](analyst/in
 
 Just as for a regular installation, you will need `docker` and `docker-compose` (see [Installation requirements](#installationrequirements) above).
 
-During development, you will typically also want to run FlowMachine, FlowAPI and FlowAuth outside docker containers. This requires additional prerequisites to be available.
+During development, you will typically also want to run FlowMachine, FlowAPI, FlowAuth and/or AutoFlow outside docker containers. This requires additional prerequisites to be available.
 
 - [Pipenv](https://pipenv.readthedocs.io/en/latest/) (to manage separate pipenv environment for each FlowKit component)
 - FlowMachine server: `Python >= 3.7`
 - FlowAuth: `npm` (we recommend installing it via [nvm](https://github.com/nvm-sh/nvm)); [Cypress](https://www.cypress.io/) for testing
+- AutoFlow: [pandoc](https://pandoc.org/installing.html), [ruby](https://www.ruby-lang.org/en/downloads/), and the [asciidoctor](https://asciidoctor.org/) and [asciidoctor-pdf](https://asciidoctor.org/docs/asciidoctor-pdf/#install-the-published-gem) ruby gems.
 
 ### Setting up FlowKit for development
 
@@ -438,6 +439,10 @@ conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", s
 ```
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
+
+### AutoFlow Production Deployment
+
+For a production deployment, you would typically want to deploy AutoFlow with a separate database, instead of the default SQLite database created within the AutoFlow container. It is also advisable to set `AUTOFLOW_DB_PASSWORD` and `FLOWAPI_TOKEN` as docker secrets. An example Docker stack file for deploying AutoFlow in this way is provided at https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/docker-stack.yml.
 
 ### Demonstrating successful deployment
 

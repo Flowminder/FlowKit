@@ -1,6 +1,6 @@
 # Information for Developers
 
-Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](../install.md).
+Because FlowKit deployment is primarily done using Docker, the installation for developers is slightly different, see the instructions [here](../install.md#developers).
 
 An outline roadmap is provided below together with details about [contributing to the project](#contrib).
 
@@ -158,14 +158,14 @@ docker run --name flowdb_synth_data -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAP
 !!! warning
     For generating large datasets, it is recommended that you use the SQL based generator.
 
-##### SQL Generator features
+#### SQL Generator features
 
 The SQL generator supports semi-plausible behaviour - each subscriber has a 'home' region, and will typically (by default, 95% of the time) call/sms/use data from cells in that region. Subscribers will occasionally (by default, 1% chance per day) relocate to a new home region.
 Subscribers also have a consistent phone model across time, and a consistent set of other subscribers who they interact with (by default, `5*N_SUBSCRIBERS` calling pairs are used).
 
 Mass relocation scenarios are also supported - a designated admin 2 region can be chosen to be 'off limits' to all subscribers for a period. Any subscribers ordinarily resident will relocate to another randomly chosen region, and no subscriber will call from a cell within the region or relocate there while the region is off limits.
 
-##### Parameters
+#### Parameters
 
 - `N_DAYS`: number of days of data to generate, defaults to 7
 - `N_SUBSCRIBERS`: number of simulated subscribers, defaults to 4,000
@@ -277,3 +277,31 @@ npm run cy:open
 ```
 
 - You can then click the button "Run all specs", or select an individual spec to run only a subset of the tests.
+
+## AutoFlow
+
+AutoFlow is a tool that automates the event-driven execution of workflows consisting of Jupyter notebooks that interact with FlowKit via FlowAPI. Workflows can consist of multiple inter-dependent notebooks, and can run automatically for each new date of CDR data available in FlowDB. After execution, notebooks can optionally be converted to PDF reports.
+
+AutoFlow uses:
+- [Prefect](https://github.com/prefecthq/prefect) to define and run workflows,
+- [Papermill](https://github.com/nteract/papermill) to parametrise and execute Jupyter notebooks,
+- [Scrapbook](https://github.com/nteract/scrapbook) to enable data-sharing between notebooks,
+- [nbconvert](https://github.com/jupyter/nbconvert) and [asciidoctor-pdf](https://github.com/asciidoctor/asciidoctor-pdf) to convert notebooks to PDF, via asciidoc.
+
+There are two categories of workflow used within AutoFlow:
+- Notebook-based workflow: A Prefect flow that executes one or more Jupyter notebooks using Papermill, and optionally converts the executed notebooks to PDF. These are created using the function `autoflow.workflows.make_notebooks_workflow`.
+- Sensor: A Prefect flow that runs on a schedule, checks for new events, and runs a set of notebook-based workflows for each event for which they haven't previously run successfully. One sensor is currently implemented - `autoflow.sensor.available_dates_sensor`, which uses the FlowAPI get_available_dates route to get a list of available dates of CDR data, and runs notebook-based workflows for each new date found.
+
+To run AutoFlow outside a container, change into the `autoflow/` directory and run
+```bash
+pipenv install
+pipenv run python -m autoflow
+```
+
+In addition to the environment variables described in the [AutoFlow documentation](../analyst/autoflow.md#running-autoflow), the following environment variables should be set to run AutoFlow outside a container:
+```
+AUTOFLOW_INPUTS_DIR=./examples/inputs
+AUTOFLOW_OUTPUTS_DIR=./examples/outputs
+PREFECT__USER_CONFIG_PATH=./config/config.toml
+PREFECT__ASCIIDOC_TEMPLATE_PATH=./config/asciidoc_extended.tpl
+```

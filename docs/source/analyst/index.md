@@ -4,8 +4,6 @@ Title: Analyst
 
 It is recommended to use the [FlowClient](#flowclient) provided with FlowKit. Advanced users may want to create their own client interfacing to [FlowAPI](#flowapi).
 
-<a name="flowclient">
-
 ## FlowClient
 
 FlowClient is a client to FlowAPI written in Python for use with the JupyterLabs Notebook Python Data Science Stack. It can be installed using pip:
@@ -17,8 +15,6 @@ pip install flowclient
 ### Example FlowClient usage
 
 Documentation for FlowClient can be found [here](../flowclient/flowclient/). Example usage of FlowClient to run daily location, modal location and flow queries is provided [here](flowclient/example_usage.ipynb), and worked examples are available [here](worked_examples/index.md).
-
-<a name="flowauth">
 
 ## FlowAuth
 
@@ -34,7 +30,9 @@ To connect FlowClient to FlowAPI, an access token must be generated using FlowAu
 
 5. Click "COPY" to copy the token string, "DOWNLOAD" to download the token as a text file, or "VIEW" to display the token string.
 
-<a name="flowapi">
+## AutoFlow
+
+AutoFlow is a tool to automate workflows consisting of Jupyter notebooks that interact with FlowKit. Use-cases include automatically producing a PDF report for each day of CDR data available in a FlowKit instance. Documentation for AutoFlow can be found [here](autoflow.md).
 
 ## FlowAPI
 

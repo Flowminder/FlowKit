@@ -6,6 +6,8 @@ ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
 COPY . /${SOURCE_TREE}/autoflow/
 
 ENV AUTOFLOW_DB_URI="sqlite:////tmp/test.db"
+ENV AUTOFLOW_INPUTS_DIR=/mounts/inputs
+ENV AUTOFLOW_OUTPUTS_DIR=/mounts/outputs
 ENV PREFECT__USER_CONFIG_PATH=/${SOURCE_TREE}/autoflow/config/config.toml
 ENV PREFECT__ASCIIDOC_TEMPLATE_PATH=/${SOURCE_TREE}/autoflow/config/asciidoc_extended.tpl
 
