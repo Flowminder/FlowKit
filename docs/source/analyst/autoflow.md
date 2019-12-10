@@ -162,8 +162,11 @@ wget https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/exampl
 5. Start AutoFlow:  
 ```bash
 docker run -d \
-    -v <your_inputs_directory>:/mounts/inputs:ro -v <your_outputs_directory>:/mounts/outputs:rw \
-    -e "AUTOFLOW_LOG_LEVEL=ERROR" -e "FLOWAPI_URL=http://localhost:9090" -e "FLOWAPI_TOKEN=<api_token>" \
+    -v <your_inputs_directory>:/mounts/inputs:ro \
+    -v <your_outputs_directory>:/mounts/outputs:rw \
+    -e "AUTOFLOW_LOG_LEVEL=ERROR" \
+    -e "FLOWAPI_URL=http://localhost:9090" \
+    -e "FLOWAPI_TOKEN=<api_token>" \
     flowminder/autoflow:latest
 ```
 (where `<your_inputs_directory>` and `<your_outputs_directory>` are the paths to the input and output directories you created, and `<api_token>` is the token you created in FlowAuth).
