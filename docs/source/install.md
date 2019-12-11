@@ -104,15 +104,18 @@ Quick install is continued with an example of FlowClient usage [here](analyst/in
 
 Just as for a regular installation, you will need `docker` and `docker-compose` (see [Installation requirements](#installationrequirements) above).
 
-During development, you will typically also want to run FlowMachine, FlowAPI and FlowAuth outside docker containers. This requires additional prerequisites to be available.
+During development, you will typically also want to run FlowMachine, FlowAPI, FlowAuth and/or AutoFlow outside docker containers. This requires additional prerequisites to be available.
 
 - [Pipenv](https://pipenv.readthedocs.io/en/latest/) (to manage separate pipenv environment for each FlowKit component)
 - FlowMachine server: `Python >= 3.7`
 - FlowAuth: `npm` (we recommend installing it via [nvm](https://github.com/nvm-sh/nvm)); [Cypress](https://www.cypress.io/) for testing
+- AutoFlow: [pandoc](https://pandoc.org/installing.html), [ruby](https://www.ruby-lang.org/en/downloads/), and the [asciidoctor](https://asciidoctor.org/) and [asciidoctor-pdf](https://asciidoctor.org/docs/asciidoctor-pdf/#install-the-published-gem) ruby gems.
 
 ### Setting up FlowKit for development
 
-After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `make up` in the root directory. This requires Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the flowapi, flowmachine, flowdb and redis docker containers using the `docker-compose.yml` file.
+After cloning the [GitHub repository](https://github.com/Flowminder/FlowKit), the FlowKit system can be started by running `set -a && . development_environment && set +a` (this will set the required environment variables) followed by `make up` in the root directory. This requires [Docker](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) to be installed, and starts the FlowKit docker containers using the `docker-compose.yml` file. The docker containers to start can be selected by running `make up DOCKER_SERVICES="<service 1> <service 2> ..."`, where the services can be any of `flowmachine`, `flowmachine_query_locker`, `flowapi`, `flowauth`, `flowdb`, `worked_examples`, `flowdb_testdata`, `flowdb_synthetic_data`, `flowetl`, `flowetl_db` or `autoflow` (at most one of the `flowdb` containers). The default is to start `flowdb`, `flowapi`, `flowmachine`, `flowauth`, `flowmachine_query_locker`, `flowetl`, `flowetl_db` and `worked_examples`. Alternatively, containers can be built, started or stopped individually by running `make <service>-build`, `make <service>-up` or `make <service>-down`, respectively.
+
+To run the `autoflow` service, a valid FlowAPI token must be set as the environment variable `FLOWAPI_TOKEN` (in addition to the environment variables set by running `set -a && . development_environment && set +a`).
 
 FlowKit uses [pipenv](https://pipenv.readthedocs.io/) to manage Python environments. To start a Python session in which you can use FlowClient:
 
@@ -123,7 +126,7 @@ pipenv run python
 >>> import flowclient
 ```
 
-To run the tests in the `flowapi`, `flowclient`, `flowdb`, `flowmachine` or `integration_tests` directory:
+To run the tests in the `flowapi`, `flowclient`, `flowdb`, `flowmachine`, `autoflow` or `integration_tests` directory:
 
 ```bash
 cd <directory>
@@ -436,6 +439,10 @@ conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", s
 ```
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
+
+### AutoFlow Production Deployment
+
+For a production deployment, you would typically want to deploy AutoFlow with a separate database, instead of the default SQLite database created within the AutoFlow container. It is also advisable to set `AUTOFLOW_DB_PASSWORD` and `FLOWAPI_TOKEN` as docker secrets. An example Docker stack file for deploying AutoFlow in this way is provided at https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/docker-stack.yml.
 
 ### Demonstrating successful deployment
 

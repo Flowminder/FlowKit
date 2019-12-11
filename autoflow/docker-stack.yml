@@ -20,8 +20,6 @@ services:
   autoflow:
     image: flowminder/autoflow:${CONTAINER_TAG:-latest}
     environment:
-      AUTOFLOW_INPUTS_DIR: /mounts/inputs
-      AUTOFLOW_OUTPUTS_DIR: /mounts/outputs
       AUTOFLOW_LOG_LEVEL: ${AUTOFLOW_LOG_LEVEL:-ERROR}
       AUTOFLOW_DB_URI: postgresql://autoflow:{}@autoflow_postgres:5432/autoflow
       FLOWAPI_URL: ${FLOWAPI_URL:?Must set FLOWAPI_URL env var}

@@ -595,8 +595,8 @@ jobs:
       - restore_cache:
           keys:
             - autoflow-deps-1-{{ checksum "Pipfile.lock" }}
-      - run:
-          name: Install non-python dependencies
+      - run: &install_autoflow_deps
+          name: Install non-python autoflow dependencies
           command: |
             sudo apt-get update && sudo apt-get install -y postgresql pandoc ruby
             sudo gem install asciidoctor
@@ -705,12 +705,7 @@ jobs:
           path: /home/circleci/project/
       - attach_workspace:
           at: /home/circleci
-      - run:
-          name: Install autoflow dependencies
-          command: |
-            sudo apt-get update && sudo apt-get install -y pandoc ruby
-            sudo gem install asciidoctor
-            sudo gem install asciidoctor-pdf --pre
+      - run: *install_autoflow_deps
       - run: *wait_for_flowdb
       - run:
           name: Run integration tests
