@@ -23,6 +23,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Quickstart should no longer fail on systems which do not include the `netstat` tool. [#1472](https://github.com/Flowminder/FlowKit/issues/1472)
+- Fixed an error that prevented FlowAuth admin users from resetting users' passwords using the FlowAuth UI. [#1635](https://github.com/Flowminder/FlowKit/issues/1635)
+- The 'Cancel' button on the FlowAuth 'New User' form no longer submits the form. [#1636](https://github.com/Flowminder/FlowKit/issues/1636)
+- FlowAuth backend now sends a meaningful 400 response when trying to create a user with an empty password. [#1637](https://github.com/Flowminder/FlowKit/issues/1637)
+- Usernames of deleted users can now be re-used as usernames for new users. [#1638](https://github.com/Flowminder/FlowKit/issues/1638)
 
 ### Removed
 - Removed pg_cron.
