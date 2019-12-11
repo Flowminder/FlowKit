@@ -18,7 +18,14 @@ from .spatial import *
 
 from .utilities import *
 
-loc = ["TotalLocationEvents", "Flows", "UniqueSubscriberCounts", "LocationIntroversion"]
+loc = [
+    "TotalLocationEvents",
+    "Flows",
+    "UniqueSubscriberCounts",
+    "LocationIntroversion",
+    "MeaningfulLocationsAggregate",
+    "MeaningfulLocationsOD",
+]
 nw = ["TotalNetworkObjects", "AggregateNetworkObjects"]
 subs = [
     "RadiusOfGyration",
@@ -57,8 +64,6 @@ subs = [
     "PerLocationEventStats",
     "PerContactEventStats",
     "MeaningfulLocations",
-    "MeaningfulLocationsAggregate",
-    "MeaningfulLocationsOD",
     "ProportionEventType",
     "PeriodicEntropy",
     "LocationEntropy",
