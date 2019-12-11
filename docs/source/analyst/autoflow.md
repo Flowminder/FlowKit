@@ -73,9 +73,10 @@ For each date for which the workflow runs, the corresponding date ranges describ
 
 As an example, if the date stencil is
 ```yaml
-- [2016-01-01, 2016-01-03]
-- -3
-- [-2, 0]
+date_stencil:
+  - [2016-01-01, 2016-01-03]
+  - -3
+  - [-2, 0]
 ```
 then the internal `date_ranges` parameter for reference date `2016-01-07` would have the value
 ```python
