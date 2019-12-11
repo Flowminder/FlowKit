@@ -21,7 +21,7 @@ When running the container, the following environment variables should be set:
 
 Alternatively, `AUTOFLOW_DB_PASSWORD` and `FLOWAPI_TOKEN` can be set as docker secrets instead of environment variables.
 
-When the container runs, it will parse `workflows.yml` and construct all of the workflows defined, and run a sensor that runs the workflows with the provided parameters each time new data is found in FlowDB. All executed notebooks will be available in `<bind-mounted outputs directory>/notebooks/`, and PDF reports will be in `<bind-mounted outputs directory>/reports/`.
+When the container runs, it will parse `workflows.yml` and construct all of the workflows defined, and run a sensor that runs the workflows with the provided parameters each time new data is found in FlowDB. All executed notebooks will be available in `<bind-mounted_outputs_directory>/notebooks/`, and PDF reports will be in `<bind-mounted_outputs_directory>/reports/`.
 
 ## Inputs
 
