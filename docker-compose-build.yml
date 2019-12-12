@@ -15,18 +15,6 @@ services:
       context: ./flowdb/
       dockerfile: Dockerfile
 
-  flowdb_testdata:
-    image: flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}
-    build:
-      context: ./flowdb/testdata/
-      dockerfile: Dockerfile
-
-  flowdb_synthetic_data:
-    image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
-    build:
-      context: ./flowdb/testdata/
-      dockerfile: Dockerfile.synthetic_data
-
   flowmachine:
     image: flowminder/flowmachine:${CONTAINER_TAG:-latest}
     build:
@@ -56,4 +44,10 @@ services:
     image: flowminder/flowetl:${CONTAINER_TAG:-latest}
     build:
       context: ./flowetl
+      dockerfile: Dockerfile
+
+  autoflow:
+    image: flowminder/autoflow:${CONTAINER_TAG:-latest}
+    build:
+      context: ./autoflow
       dockerfile: Dockerfile

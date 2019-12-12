@@ -34,23 +34,27 @@ class BaseExposedQuery(metaclass=ABCMeta):
         Query
         """
         raise NotImplementedError(
-            f"Class {self.__class__.__name__} does not have the fm_query_obj property set."
+            f"Class {self.__class__.__name__} does not have the _flowmachine_query_obj property set."
         )
 
-    def store_async(self):
+    def store_async(self, store_dependencies=True):
         """
         Store this query using a background thread.
 
+        Parameters
+        ----------
+        store_dependencies : bool, default True
+            If True, set the dependencies of this query running first.
+
         Returns
         -------
-        Future
-            Future object representing the calculation.
-
+        str
+            Query ID that can be used to check the query state.
         """
         q = self._flowmachine_query_obj
-        q.store()
 
-        query_id = q.md5
+        q.store(store_dependencies=store_dependencies)
+        query_id = q.query_id
 
         return query_id
 
@@ -61,6 +65,6 @@ class BaseExposedQuery(metaclass=ABCMeta):
         #    return md5(json.dumps(self.query_params, sort_keys=True).encode()).hexdigest()
         #
         # However, the resulting md5 hash is different from the one produced internally
-        # by flowmachine.core.Query.md5, and the latter is currently being used by
+        # by flowmachine.core.Query.query_id, and the latter is currently being used by
         # the QueryStateMachine, so we need to use it to check the query state.
-        return self._flowmachine_query_obj.md5
+        return self._flowmachine_query_obj.query_id

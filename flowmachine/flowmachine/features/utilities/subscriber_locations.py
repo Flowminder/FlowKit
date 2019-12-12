@@ -1,7 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from abc import ABCMeta
 
 from typing import List
 
@@ -14,7 +13,10 @@ later used for computing subscriber features.
 
 
 from .events_tables_union import EventsTablesUnion
-from .spatial_aggregates import SpatialAggregate, JoinedSpatialAggregate
+from flowmachine.features.location.joined_spatial_aggregate import (
+    JoinedSpatialAggregate,
+)
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 
 from ...core.query import Query
 from ...core import location_joined_query, make_spatial_unit

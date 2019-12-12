@@ -11,28 +11,6 @@ from flowapi import __version__
 blueprint = Blueprint("spec", __name__)
 
 
-def remove_discriminators(spec: dict) -> dict:
-    """
-    Remove any discriminator keys from an openapi spec dict, because
-    they are not supported properly by redoc.
-
-    Parameters
-    ----------
-    spec : dict
-        Dict version of an openapi spec
-
-    Returns
-    -------
-    dict
-        The same spec, but with all discriminator keys removed.
-    """
-    newdict = {}
-    for k, v in spec.items():
-        if k != "discriminator":
-            newdict[k] = remove_discriminators(v) if isinstance(v, dict) else v
-    return newdict
-
-
 async def get_spec(socket: Socket, request_id: str) -> APISpec:
     """
     Construct open api spec by interrogating FlowMachine.
@@ -108,12 +86,6 @@ async def get_api_spec():
 async def get_yaml_api_spec():
     spec = await get_spec(request.socket, request.request_id)
     return current_app.response_class(spec.to_yaml(), content_type="application/x-yaml")
-
-
-@blueprint.route("/openapi-redoc.json")
-async def get_redoc_api_spec():
-    spec = await get_spec(request.socket, request.request_id)
-    return jsonify(remove_discriminators(spec.to_dict()))
 
 
 @blueprint.route("/redoc")

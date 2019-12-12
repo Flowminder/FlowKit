@@ -7,15 +7,7 @@ Tests for flowmachine small helper functions
 """
 import pytest
 import pglast
-import re
-import textwrap
-import unittest.mock
-import IPython
-from io import StringIO
 
-from flowmachine.core import CustomQuery
-from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
-from flowmachine.features import daily_location, EventTableSubset
 from flowmachine.utils import *
 from flowmachine.utils import _makesafe
 
@@ -118,29 +110,6 @@ def test_datestring_parse_error():
         parse_datestring("DEFINITELY NOT A DATE")
 
 
-def test_get_secrets(monkeypatch):
-    """
-    Test getting a secret from the special /run/secrets directory.
-    """
-    the_secret = "Shhhh"
-    the_secret_name = "SECRET"
-    open_mock = unittest.mock.mock_open(read_data=the_secret)
-    monkeypatch.setattr("builtins.open", open_mock)
-    secret = getsecret(the_secret_name, "Not the secret")
-    assert the_secret == secret
-    open_mock.assert_called_once_with(Path("/run/secrets") / the_secret_name, "r")
-
-
-def test_get_secrets_default(monkeypatch):
-    """
-    Test getting a secret falls back to provided default with the file being there.
-    """
-    the_secret = "Shhhh"
-    the_secret_name = "SECRET"
-    secret = getsecret(the_secret_name, the_secret)
-    assert the_secret == secret
-
-
 @pytest.mark.parametrize(
     "column_name, name, alias",
     [
@@ -193,80 +162,3 @@ def test_sort_recursively():
     }
 
     assert d_sorted_expected == sort_recursively(d)
-
-
-def test_print_dependency_tree():
-    """
-    Test that the expected dependency tree is printed for a daily location query (with an explicit subset).
-    """
-    subscriber_subsetter = make_subscriber_subsetter(
-        CustomQuery(
-            "SELECT duration, msisdn as subscriber FROM events.calls WHERE duration < 10",
-            ["duration", "subscriber"],
-        )
-    )
-    q = daily_location(
-        date="2016-01-02", method="most-common", subscriber_subset=subscriber_subsetter
-    )
-
-    expected_output = textwrap.dedent(
-        """\
-        <Query of type: MostFrequentLocation, query_id: 'xxxxx'>
-          - <Query of type: SubscriberLocations, query_id: 'xxxxx'>
-             - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
-                - <Table: 'geography.admin3', query_id: 'xxxxx'>
-             - <Query of type: JoinToLocation, query_id: 'xxxxx'>
-                - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
-                   - <Table: 'geography.admin3', query_id: 'xxxxx'>
-                - <Query of type: EventsTablesUnion, query_id: 'xxxxx'>
-                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
-                      - <Query of type: CustomQuery, query_id: 'xxxxx'>
-                      - <Table: 'events.sms', query_id: 'xxxxx'>
-                         - <Table: 'events.sms', query_id: 'xxxxx'>
-                   - <Query of type: EventTableSubset, query_id: 'xxxxx'>
-                      - <Query of type: CustomQuery, query_id: 'xxxxx'>
-                      - <Table: 'events.calls', query_id: 'xxxxx'>
-                         - <Table: 'events.calls', query_id: 'xxxxx'>
-          - <Query of type: PolygonSpatialUnit, query_id: 'xxxxx'>
-             - <Table: 'geography.admin3', query_id: 'xxxxx'>
-        """
-    )
-
-    s = StringIO()
-    print_dependency_tree(q, stream=s)
-    output = s.getvalue()
-    output_with_query_ids_replaced = re.sub(r"\b[0-9a-f]+\b", "xxxxx", output)
-
-    assert expected_output == output_with_query_ids_replaced
-
-
-def test_calculate_dependency_graph():
-    """
-    Test that calculate_dependency_graph() runs and the returned graph has some correct entries.
-    """
-    query = daily_location("2016-01-01")
-    G = calculate_dependency_graph(query, analyse=True)
-    sd = EventTableSubset(
-        start="2016-01-01",
-        stop="2016-01-02",
-        columns=["msisdn", "datetime", "location_id"],
-    )
-    assert f"x{sd.md5}" in G.nodes()
-    assert G.nodes[f"x{sd.md5}"]["query_object"].md5 == sd.md5
-
-
-def test_plot_dependency_graph():
-    """
-    Test that plot_dependency_graph() runs and returns the expected IPython.display objects.
-    """
-    query = daily_location(date="2016-01-02")
-    output_svg = plot_dependency_graph(query, format="svg")
-    output_png = plot_dependency_graph(query, format="png", width=600, height=200)
-
-    assert isinstance(output_svg, IPython.display.SVG)
-    assert isinstance(output_png, IPython.display.Image)
-    assert output_png.width == 600
-    assert output_png.height == 200
-
-    with pytest.raises(ValueError, match="Unsupported output format: 'foobar'"):
-        plot_dependency_graph(query, format="foobar")

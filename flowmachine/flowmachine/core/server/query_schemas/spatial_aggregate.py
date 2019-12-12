@@ -6,8 +6,10 @@ from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf
 from marshmallow_oneofschema import OneOfSchema
 
-
-from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features.location.redacted_spatial_aggregate import (
+    RedactedSpatialAggregate,
+)
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
 from .base_exposed_query import BaseExposedQuery
 from .daily_location import DailyLocationSchema
 from .modal_location import ModalLocationSchema
@@ -53,4 +55,6 @@ class SpatialAggregateExposed(BaseExposedQuery):
         Query
         """
         locations = self.locations._flowmachine_query_obj
-        return SpatialAggregate(locations=locations)
+        return RedactedSpatialAggregate(
+            spatial_aggregate=SpatialAggregate(locations=locations)
+        )

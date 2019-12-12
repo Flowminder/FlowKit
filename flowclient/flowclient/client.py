@@ -218,6 +218,9 @@ def connect(
         JSON Web Token for this API server
     api_version : int, default 0
         Version of the API to connect to
+    ssl_certificate: str or None
+        Provide a path to an ssl certificate to use, or None to use
+        default root certificates.
 
     Returns
     -------
@@ -1100,7 +1103,7 @@ def location_introversion(
         Unit of aggregation, e.g. "admin3"
     direction : {"in", "out", "both"}, default "both"
         Optionally, include only ingoing or outbound calls/texts can be one of "in", "out" or "both"
->
+
     Returns
     -------
     dict
@@ -1131,6 +1134,7 @@ def total_network_objects(
         Unit of aggregation, e.g. "admin3"
     total_by : {"second", "minute", "hour", "day", "month", "year"}
         Time period to bucket by one of "second", "minute", "hour", "day", "month" or "year"
+    
     Returns
     -------
     dict
@@ -1207,8 +1211,8 @@ def joined_spatial_aggregate(
         Modal or daily location query to use to localise the metric
     metric: dict
         Metric to calculate and aggregate
-    method: {"avg", "max", "min", "median", "mode", "stddev", "variance"}, default "avg"
-        Method of aggregation one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
+    method: {"avg", "max", "min", "median", "mode", "stddev", "variance", "distr"}, default "avg".
+       Method of aggregation; one of "avg", "max", "min", "median", "mode", "stddev", "variance" or "distr". If the metric refers to a categorical variable (e.g. a subscriber handset type) it will only accept the "distr" method which yields the relative distribution of possible values. All of the other methods will be rejected. On the other hand, the "distr" method will be rejected for all continuous variables.
 
     Returns
     -------
@@ -1276,6 +1280,7 @@ def unique_location_counts(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1349,6 +1354,7 @@ def subscriber_degree(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1385,6 +1391,7 @@ def topup_amount(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1425,6 +1432,7 @@ def event_count(
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1440,11 +1448,89 @@ def event_count(
     }
 
 
+def displacement(
+    *,
+    start: str,
+    stop: str,
+    statistic: str,
+    reference_location: Dict[str, str],
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for displacement 
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the count, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the count, e.g. "2016-01-08"
+    statistic : {"avg", "max", "min", "median", "mode", "stddev", "variance"}
+        Statistic type one of "avg", "max", "min", "median", "mode", "stddev" or "variance".
+    reference_location:
+       
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "displacement",
+        "start": start,
+        "stop": stop,
+        "statistic": statistic,
+        "reference_location": reference_location,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def pareto_interactions(
+    *,
+    start: str,
+    stop: str,
+    proportion: float,
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for pareto interactions
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day of the time interval to be considered, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date of the time interval to be considered, e.g. "2016-01-08"
+    proportion : float
+        proportion to track below
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in result. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "pareto_interactions",
+        "start": start,
+        "stop": stop,
+        "proportion": proportion,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
 def nocturnal_events(
     *,
     start: str,
     stop: str,
-    hours: tuple((int, int)),
+    hours: Tuple[int, int],
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
@@ -1457,11 +1543,13 @@ def nocturnal_events(
     stop : str
         ISO format date of the day _after_ the final date for which to count nocturnal events, e.g. "2016-01-08"
     hours: tuple(int,int)
+        Tuple defining beginning and end of night
 
     subscriber_subset : dict or None, default None
         Subset of subscribers to include in event counts. Must be None
         (= all subscribers) or a dictionary with the specification of a
         subset query.
+    
     Returns
     -------
     dict
@@ -1472,6 +1560,107 @@ def nocturnal_events(
         "query_kind": "nocturnal_events",
         "start": start,
         "stop": stop,
-        "hours": hours,
+        "night_start_hour": hours[0],
+        "night_end_hour": hours[1],
         "subscriber_subset": subscriber_subset,
     }
+
+
+def handset(
+    *,
+    start_date: str,
+    end_date: str,
+    characteristic: str = "hnd_type",
+    method: str = "last",
+    subscriber_subset: Union[dict, None] = None,
+) -> dict:
+    """
+    Return query spec for handset
+
+    Parameters
+    ----------
+    start : str
+        ISO format date of the first day for which to count handsets, e.g. "2016-01-01"
+    stop : str
+        ISO format date of the day _after_ the final date for which to count handsets, e.g. "2016-01-08"
+    characteristic: {"hnd_type", "brand", "model", "software_os_name", "software_os_vendor"}, default "hnd_type"
+        The required handset characteristic.
+    method: {"last", "most-common"}, default "last"
+        Method for choosing a handset to associate with subscriber.
+    subscriber_subset : dict or None, default None
+        Subset of subscribers to include in event counts. Must be None
+        (= all subscribers) or a dictionary with the specification of a
+        subset query.
+    
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification
+    """
+    return {
+        "query_kind": "handset",
+        "start_date": start_date,
+        "end_date": end_date,
+        "characteristic": characteristic,
+        "method": method,
+        "subscriber_subset": subscriber_subset,
+    }
+
+
+def random_sample(
+    *,
+    query: Dict[str, Union[str, dict]],
+    seed: float,
+    sampling_method: str = "random_ids",
+    size: Union[int, None] = None,
+    fraction: Union[float, None] = None,
+    estimate_count: bool = True,
+) -> dict:
+    """
+    Return spec for a random sample from a query result.
+
+    Parameters
+    ----------
+    query : dict
+        Specification of the query to be sampled.
+    sampling_method : {'system', 'bernoulli', 'random_ids'}, default 'random_ids'
+        Specifies the method used to select the random sample.
+        'system': performs block-level sampling by randomly sampling each
+            physical storage page for the underlying relation. This
+            sampling method is not guaranteed to generate a sample of the
+            specified size, but an approximation. This method may not
+            produce a sample at all, so it might be worth running it again
+            if it returns an empty dataframe.
+        'bernoulli': samples directly on each row of the underlying
+            relation. This sampling method is slower and is not guaranteed to
+            generate a sample of the specified size, but an approximation
+        'random_ids': samples rows by randomly sampling the row number.
+    size : int, optional
+        The number of rows to draw.
+        Exactly one of the 'size' or 'fraction' arguments must be provided.
+    fraction : float, optional
+        Fraction of rows to draw.
+        Exactly one of the 'size' or 'fraction' arguments must be provided.
+    estimate_count : bool, default True
+        Whether to estimate the number of rows in the table using
+        information contained in the `pg_class` or whether to perform an
+        actual count in the number of rows.
+    seed : float
+        A seed for repeatable random samples.
+        If using random_ids method, seed must be between -/+1.
+
+    Returns
+    -------
+    dict
+        Dict which functions as the query specification.
+    """
+    sampled_query = dict(query)
+    sampling = dict(
+        seed=seed,
+        sampling_method=sampling_method,
+        size=size,
+        fraction=fraction,
+        estimate_count=estimate_count,
+    )
+    sampled_query["sampling"] = sampling
+    return sampled_query

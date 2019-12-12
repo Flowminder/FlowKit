@@ -32,15 +32,9 @@ def test_some_results(get_dataframe):
         )
     )
     set_df = df.set_index("pcod")
-    assert round(set_df.loc["524 4 12 62"]["introversion"], 6) == pytest.approx(
-        0.108517
-    )
-    assert round(set_df.loc["524 3 08 44"]["introversion"], 6) == pytest.approx(
-        0.097884
-    )
-    assert round(set_df.loc["524 2 04 21"]["extroversion"], 6) == pytest.approx(
-        0.936842
-    )
+    assert round(set_df.loc["524 4 12 62"]["value"], 6) == pytest.approx(0.108517)
+    assert round(set_df.loc["524 3 08 44"]["value"], 6) == pytest.approx(0.097884)
+    assert round(1 - set_df.loc["524 2 04 21"]["value"], 6) == pytest.approx(0.936842)
 
 
 def test_lon_lat_introversion(get_dataframe):
@@ -49,11 +43,11 @@ def test_lon_lat_introversion(get_dataframe):
             "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("lon-lat")
         )
     )
-    assert pytest.approx(0.0681818181818182) == df.introversion.max()
-    assert 1.0 == df.extroversion.max()
-    assert [83.7762949093138, 28.2715052907426] == df.sort_values("extroversion").iloc[
-        -1
-    ][["lon", "lat"]].tolist()
+    assert pytest.approx(0.0681818181818182) == df.value.max()
+    assert (
+        pytest.approx([83.7762949093138, 28.2715052907426])
+        == df.sort_values("value").iloc[0][["lon", "lat"]].tolist()
+    )
 
 
 def test_no_result_is_greater_than_one(get_dataframe):
@@ -65,18 +59,5 @@ def test_no_result_is_greater_than_one(get_dataframe):
             "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("admin", level=3)
         )
     )
-    results = df[df["introversion"] > 1]
+    results = df[df["value"] > 1]
     assert len(results) == 0
-
-
-def test_introversion_plus_extroversion_equals_one(get_dataframe):
-    """
-    LocationIntroversion()['introversion'] + ['extroversion'] equals 1.
-    """
-    df = get_dataframe(
-        LocationIntroversion(
-            "2016-01-01", "2016-01-07", spatial_unit=make_spatial_unit("versioned-site")
-        )
-    )
-    df["addition"] = df["introversion"] + df["extroversion"]
-    assert df["addition"].sum() == len(df)

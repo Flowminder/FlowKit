@@ -15,7 +15,7 @@ of postgres.
 from concurrent.futures import Future
 from time import sleep
 
-from typing import List, Union
+from typing import List, Union, Any, Optional, Dict
 
 import pandas as pd
 from sqlalchemy.engine import Engine
@@ -27,6 +27,7 @@ from flowmachine.core.errors.flowmachine_errors import (
 )
 from flowmachine.core.query_state import QueryStateMachine
 from flowmachine.core.query import Query
+from flowmachine.core.dependency_graph import store_all_unstored_dependencies
 
 import structlog
 
@@ -46,17 +47,18 @@ class ModelResult(Query):
         List of arguments passed in the Model.run() method
     run_kwargs : dict, optional
         List of named arguments passed in the Model.run() method
-    df : pandas.DataFrame, optional
-        Results of model.run()
     """
 
-    def __init__(self, parent, run_args=None, run_kwargs=None, df=None):
+    def __init__(
+        self,
+        parent: "Model",
+        run_args: Optional[List[Any]] = None,
+        run_kwargs: Optional[Dict[Any, Any]] = None,
+    ):
         self.model_dependencies, self.model_args = self._split_query_objects(parent)
         self.parent_class = parent.__class__.__name__
-        self.run_args = run_args
-        self.run_kwargs = run_kwargs
-        if df is not None:
-            self._df = df
+        self.run_args = run_args if run_args is not None else []
+        self.run_kwargs = run_kwargs if run_kwargs is not None else {}
 
         super().__init__()
 
@@ -103,14 +105,16 @@ class ModelResult(Query):
         if self.is_stored:
             return super().__iter__()
         else:
-            self._query_object = self._df.iterrows()
+            self._query_object = self._df.itertuples(
+                index=False
+            )  # No index because we're impersonating a rowproxy
         return self
 
     def __next__(self):
         if self.is_stored:
             return super().__next__()
         else:
-            return self._query_object.__next__()
+            return tuple(self._query_object.__next__())  # Pandas tuples aren't tuples
 
     def __len__(self):
         try:
@@ -123,9 +127,25 @@ class ModelResult(Query):
         try:
             return self._df.columns.tolist()
         except AttributeError:
-            return super().column_names
+            if self.is_stored:
+                return [
+                    x[0]
+                    for x in self.connection.fetch(
+                        f"""
+                SELECT column_name
+                  FROM information_schema.columns
+                 WHERE table_schema = 'cache'
+                   AND table_name   = '{self.table_name}'
+                """
+                    )
+                ]
 
-    def to_sql(self, name: str, schema: Union[str, None] = None) -> Future:
+    def to_sql(
+        self,
+        name: str,
+        schema: Union[str, None] = None,
+        store_dependencies: bool = False,
+    ) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -136,6 +156,8 @@ class ModelResult(Query):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
+        store_dependencies : bool, default False
+            If True, store the dependencies of this query.
 
         Returns
         -------
@@ -155,15 +177,17 @@ class ModelResult(Query):
                 raise ValueError("Not computed yet.")
 
         def write_model_result(query_ddl_ops: List[str], connection: Engine) -> float:
+            if store_dependencies:
+                store_all_unstored_dependencies(self)
             self._df.to_sql(name, connection, schema=schema, index=False)
-            QueryStateMachine(self.redis, self.md5).finish()
+            QueryStateMachine(self.redis, self.query_id).finish()
             return self._runtime
 
         current_state, changed_to_queue = QueryStateMachine(
-            self.redis, self.md5
+            self.redis, self.query_id
         ).enqueue()
         logger.debug(
-            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+            f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
         # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
         store_future = self.thread_pool_executor.submit(

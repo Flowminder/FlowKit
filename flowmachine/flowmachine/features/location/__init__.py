@@ -12,6 +12,9 @@ from .flows import Flows
 from .total_events import TotalLocationEvents
 from .location_introversion import LocationIntroversion
 from .unique_subscriber_counts import UniqueSubscriberCounts
+from .pwo import PopulationWeightedOpportunities
+from .meaningful_locations_aggregate import MeaningfulLocationsAggregate
+from .meaningful_locations_od import MeaningfulLocationsOD
 
 
 __all__ = [
@@ -19,4 +22,7 @@ __all__ = [
     "Flows",
     "UniqueSubscriberCounts",
     "LocationIntroversion",
+    "PopulationWeightedOpportunities",
+    "MeaningfulLocationsAggregate",
+    "MeaningfulLocationsOD",
 ]

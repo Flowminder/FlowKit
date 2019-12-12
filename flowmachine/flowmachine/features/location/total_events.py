@@ -82,7 +82,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         if self.interval == "min":
             self.time_cols.append("extract(minute FROM datetime) AS min")
 
-        events_tables_union_cols = ["location_id", "datetime"]
+        events_tables_union_cols = ["location_id", "datetime", subscriber_identifier]
         # if we need to filter on outgoing/incoming calls, we will also fetch this
         # column. Don't fetch it if it is not needed for both efficiency and the
         # possibility that we might want to do pass another data type which does not
@@ -112,7 +112,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
         return (
             self.spatial_unit.location_id_columns
             + [x.split(" AS ")[1] for x in self.time_cols]
-            + ["total"]
+            + ["value"]
         )
 
     def _make_query(self):
@@ -138,7 +138,7 @@ class TotalLocationEvents(GeoDataMixin, Query):
             SELECT
                 {', '.join(self.spatial_unit.location_id_columns)},
                 {', '.join(self.time_cols)},
-                count(*) AS total
+                count(*) AS value
             FROM
                 ({self.unioned.get_query()}) unioned
             {filter_clause}

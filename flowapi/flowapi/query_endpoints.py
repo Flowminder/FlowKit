@@ -151,6 +151,9 @@ async def poll_query(query_id):
         }
     )
     reply = await request.socket.recv_json()
+    current_app.flowapi_logger.debug(
+        f"Received reply {reply}", request_id=request.request_id
+    )
 
     if reply["status"] == "error":
         return jsonify({"status": "error", "msg": reply[""]}), 500
@@ -224,24 +227,30 @@ async def get_query_result(query_id):
     )
 
     if reply["status"] == "error":
-        # TODO: check that this path is fully tested!
-        query_state = reply["payload"]["query_state"]
-        if query_state in ("executing", "queued"):
-            return jsonify({}), 202
-        elif query_state == "errored":
-            return (
-                jsonify({"status": "Error", "msg": reply["msg"]}),
-                403,
-            )  # TODO: should this really be 403?
-        elif query_state in ("awol", "known"):
-            return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
-        else:
-            return (
-                jsonify(
-                    {"status": "Error", "msg": f"Unexpected query state: {query_state}"}
-                ),
-                500,
-            )
+        try:
+            # TODO: check that this path is fully tested!
+            query_state = reply["payload"]["query_state"]
+            if query_state in ("executing", "queued"):
+                return jsonify({}), 202
+            elif query_state == "errored":
+                return (
+                    jsonify({"status": "Error", "msg": reply["msg"]}),
+                    403,
+                )  # TODO: should this really be 403?
+            elif query_state in ("awol", "known"):
+                return (jsonify({"status": "Error", "msg": reply["msg"]}), 404)
+            else:
+                return (
+                    jsonify(
+                        {
+                            "status": "Error",
+                            "msg": f"Unexpected query state: {query_state}",
+                        }
+                    ),
+                    500,
+                )
+        except KeyError:
+            return jsonify({"status": "error", "msg": reply["msg"]}), 500
     else:
         sql = reply["payload"]["sql"]
         results_streamer = stream_with_context(stream_result_as_json)(
@@ -316,6 +325,9 @@ async def get_available_dates():
         {"request_id": request.request_id, "action": "get_available_dates"}
     )
     reply = await request.socket.recv_json()
+    current_app.flowapi_logger.debug(
+        f"Received reply {reply}", request_id=request.request_id
+    )
 
     if reply["status"] == "success":
         return jsonify({"available_dates": reply["payload"]}), 200

@@ -9,7 +9,6 @@ Contains utility functions for use in the ETL dag and it's callables
 import os
 import pendulum
 import re
-import sqlalchemy
 
 from typing import List, Callable
 from enum import Enum
@@ -23,7 +22,7 @@ from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import PythonOperator
 
 
-def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
+def construct_etl_sensor_dag(*, callable: Callable) -> DAG:
     """
     This function constructs the sensor single task DAG that triggers ETL
     DAGS with correct config based on filename.
@@ -33,16 +32,21 @@ def construct_etl_sensor_dag(*, callable: Callable, default_args: dict) -> DAG:
     callable : Callable
         The sense callable that deals with finding files and triggering
         ETL DAGs
-    default_args : dict
-        Default arguments for DAG
 
     Returns
     -------
     DAG
         Airflow DAG
     """
+    default_args = {"owner": "flowminder"}
+
+    # Note: the `start_date` parameter needs to be set to a date in the past,
+    # otherwise Airflow won't run the DAG when it is triggered.
     with DAG(
-        dag_id=f"etl_sensor", schedule_interval=None, default_args=default_args
+        dag_id=f"etl_sensor",
+        start_date=pendulum.parse("1900-01-01"),
+        schedule_interval=None,
+        default_args=default_args,
     ) as dag:
         sense = PythonOperator(
             task_id="sense", python_callable=callable, provide_context=True
@@ -57,13 +61,14 @@ def construct_etl_dag(
     extract: Callable,
     transform: Callable,
     load: Callable,
+    postload: Callable,
     success_branch: Callable,
     archive: Callable,
     quarantine: Callable,
     clean: Callable,
     fail: Callable,
-    default_args: dict,
     cdr_type: str,
+    max_active_runs_per_dag: int,
     config_path: str = "/mounts/config",
 ) -> DAG:
     """
@@ -81,6 +86,8 @@ def construct_etl_dag(
         The transform task callable.
     load : Callable
         The load task callable.
+    postload : Callable
+        The postload task callable.
     success_branch : Callable
         The success_branch task callable.
     archive : Callable
@@ -91,12 +98,10 @@ def construct_etl_dag(
         The clean task callable.
     fail : Callable
         The fail task callable.
-    default_args : dict
-        A set of default args to pass to all callables.
-        Must containt at least "owner" key and "start" key (which must be a
-        pendulum date object)
     cdr_type : str
         The type of CDR that this ETL DAG will process.
+    max_active_runs_per_dag : int
+        The maximum number of active DAG runs per DAG.
     config_path : str
         The config path used to look for the sql templates.
 
@@ -106,9 +111,15 @@ def construct_etl_dag(
         Specification of Airflow DAG for ETL
     """
 
+    default_args = {"owner": "flowminder"}
+
+    # Note: the `start_date` parameter needs to be set to a date in the past,
+    # otherwise Airflow won't run the DAG when it is triggered.
     with DAG(
         dag_id=f"etl_{cdr_type}",
+        start_date=pendulum.parse("1900-01-01"),
         schedule_interval=None,
+        max_active_runs=max_active_runs_per_dag,
         default_args=default_args,
         template_searchpath=config_path,  # template paths will be relative to this
         user_defined_macros={
@@ -123,19 +134,20 @@ def construct_etl_dag(
         extract = extract(task_id="extract", sql=f"etl/{cdr_type}/extract.sql")
         transform = transform(task_id="transform", sql=f"etl/{cdr_type}/transform.sql")
         load = load(task_id="load", sql="fixed_sql/load.sql")
+        postload = postload(task_id="postload")
         success_branch = success_branch(
             task_id="success_branch", trigger_rule="all_done"
         )
         archive = archive(task_id="archive")
         quarantine = quarantine(task_id="quarantine")
         clean = clean(
-            task_id="clean", sql="fixed_sql/clean.sql", trigger_rule="all_done"
+            task_id="clean", sql=f"etl/{cdr_type}/clean.sql", trigger_rule="all_done"
         )
         fail = fail(task_id="fail")
 
         # Define upstream/downstream relationships between airflow tasks
         init >> extract >> transform >> load >> success_branch  # pylint: disable=pointless-statement
-        success_branch >> archive >> clean  # pylint: disable=pointless-statement
+        success_branch >> archive >> postload >> clean  # pylint: disable=pointless-statement
         quarantine >> clean  # pylint: disable=pointless-statement
         success_branch >> quarantine >> fail  # pylint: disable=pointless-statement
 
@@ -262,28 +274,3 @@ def extract_date_from_filename(filename: str, filename_pattern: str) -> pendulum
         )
     date_str = m.group(1)
     return pendulum.parse(date_str).date()
-
-
-def find_distinct_dates_in_table(
-    session: sqlalchemy.orm.Session,
-    source_table: str,
-    event_time_col: str = "event_time",
-) -> List[pendulum.Date]:
-    """
-
-    Parameters
-    ----------
-    session : sqlalchemy.orm.Session
-        SQLAlchemy session to use.
-    source_table : str
-        Name of the table in which to look for dates.
-    event_time_col : str
-        The column in which to look for dates.
-    """
-    dates_found = [
-        pendulum.parse(row["date"].strftime("%Y-%m-%d"))
-        for row in session.execute(
-            f"SELECT DISTINCT date FROM (SELECT {event_time_col}::date as date FROM {source_table}) tmp"
-        ).fetchall()
-    ]
-    return dates_found

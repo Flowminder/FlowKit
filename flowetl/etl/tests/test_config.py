@@ -8,12 +8,17 @@ Tests for configuration parsing
 """
 import pendulum
 import pytest
+import textwrap
 import yaml
 
 from copy import deepcopy
 from pathlib import Path
 
-from etl.config_parser import validate_config, get_config_from_file
+from etl.config_parser import (
+    get_config_from_file,
+    validate_config,
+    fill_config_default_values,
+)
 from etl.etl_utils import (
     find_files,
     extract_date_from_filename,
@@ -25,7 +30,7 @@ def test_config_validation(sample_config_dict):
     """
     Check that with valid config dict we get no exception
     """
-    validate_config(global_config_dict=sample_config_dict)
+    validate_config(sample_config_dict)
 
 
 def test_config_validation_fails_no_etl_section(sample_config_dict):
@@ -38,23 +43,21 @@ def test_config_validation_fails_no_etl_section(sample_config_dict):
     bad_config.pop("etl")
 
     with pytest.raises(ValueError) as raised_exception:
-        validate_config(global_config_dict=bad_config)
-
-    assert len(raised_exception.value.args[0]) == 2
-
-
-def test_config_validation_fails_no_default_args_section(sample_config_dict):
-    """
-    Check that we get an exception raised if default args
-    subsection missing.
-    """
-    bad_config = deepcopy(sample_config_dict)
-    bad_config.pop("default_args")
-
-    with pytest.raises(ValueError) as raised_exception:
-        validate_config(global_config_dict=bad_config)
+        validate_config(bad_config)
 
     assert len(raised_exception.value.args[0]) == 1
+
+
+def test_config_validation_fails_for_invalid_etl_section(sample_config_dict):
+    bad_config = deepcopy(sample_config_dict)
+    bad_config["etl"]["foobar"] = {}
+
+    expected_error_msg = (
+        "Etl sections present in config.yml must be a subset of \['calls', 'sms', 'mds', 'topups'\]. "
+        "Unexpected keys: \['foobar'\]"
+    )
+    with pytest.raises(ValueError, match=expected_error_msg):
+        validate_config(bad_config)
 
 
 def test_config_validation_fails_bad_etl_subsection(sample_config_dict):
@@ -66,9 +69,52 @@ def test_config_validation_fails_bad_etl_subsection(sample_config_dict):
     bad_config["etl"]["calls"].pop("source")
 
     with pytest.raises(ValueError) as raised_exception:
-        validate_config(global_config_dict=bad_config)
+        validate_config(bad_config)
 
     assert len(raised_exception.value.args[0]) == 1
+
+
+def test_config_validation_fails_for_missing_source_type(sample_config_dict):
+    """
+    Check that we get an exception raised if a 'source' subsection
+    is missing the 'source_type' key.
+    """
+    bad_config = deepcopy(sample_config_dict)
+    bad_config["etl"]["calls"]["source"].pop("source_type")
+
+    expected_error_msg = (
+        "Subsection 'source' is is missing the 'source_type' key for cdr_type 'calls'."
+    )
+    with pytest.raises(ValueError, match=expected_error_msg):
+        validate_config(bad_config)
+
+
+def test_config_validation_fails_for_invalid_source_type(sample_config_dict):
+    """
+    Check that we get an exception raised if a 'source' subsection
+    contains an invalid value for the 'source_type' key.
+    """
+    bad_config = deepcopy(sample_config_dict)
+    bad_config["etl"]["calls"]["source"]["source_type"] = "foobar"
+
+    expected_error_msg = "Invalid source type: 'foobar'. Allowed values: 'csv', 'sql'"
+    with pytest.raises(ValueError, match=expected_error_msg):
+        validate_config(bad_config)
+
+
+def test_config_validation_fails_if_table_name_key_is_missing(sample_config_dict):
+    """
+    Check that we get an exception raised if the 'table_name' is missing for
+    an etl subsection with source_type 'sql'.
+    """
+    bad_config = deepcopy(sample_config_dict)
+    bad_config["etl"]["mds"]["source"].pop("table_name")
+
+    expected_error_msg = (
+        "Missing 'table_name' key in 'source' subsection of cdr type 'mds'"
+    )
+    with pytest.raises(ValueError, match=expected_error_msg):
+        validate_config(bad_config)
 
 
 def test_find_files_default_filter(tmpdir):
@@ -140,13 +186,37 @@ def test_get_config_from_file(tmpdir):
     """
     Test that we can load yaml to dict from file
     """
-    sample_dict = {"A": 23, "B": [1, 2, 34], "C": {"A": "bob"}}
+    sample_dict = {
+        "etl": {"calls": {"concurrency": 3, "source": {"source_type": "csv"}}}
+    }
     config_dir = tmpdir.mkdir("config")
     config_file = config_dir.join("config.yml")
     config_file.write(yaml.dump(sample_dict))
 
-    config = get_config_from_file(config_filepath=Path(config_file))
+    config = get_config_from_file(config_filepath=config_file)
     assert config == sample_dict
+
+
+def test_loading_invalid_config_file_raises_error(tmpdir):
+    """
+    Test that the config is validated when loading from a file and errors are raised.
+    """
+    invalid_config = textwrap.dedent(
+        """
+        etl:
+          calls:
+            source:
+              source_type: sql
+              table_name: "sample_data_fdw"
+        """
+    )
+
+    config_file = tmpdir.join("config.yml")
+    config_file.write(invalid_config)
+
+    error_msg = "Each etl subsection must contain a 'source' and 'concurrency' subsection - not present for 'calls'."
+    with pytest.raises(ValueError, match=error_msg):
+        get_config_from_file(config_filepath=config_file)
 
 
 def test_extract_date_from_filename():
@@ -168,3 +238,26 @@ def test_extract_date_from_filename():
         ValueError, match="Filename 'foobar.csv.gz' does not match the pattern"
     ):
         extract_date_from_filename(filename, filename_pattern)
+
+
+def test_sql_find_available_dates(sample_config_dict):
+    sql = sample_config_dict["etl"]["mds"]["source"]["sql_find_available_dates"]
+    assert (
+        sql.strip() == "SELECT DISTINCT event_time::date as date FROM mds_raw_data_dump"
+    )
+
+    config_without_explicit_sql = textwrap.dedent(
+        """
+        etl:
+          calls:
+            concurrency: 4
+            source:
+              source_type: sql
+              table_name: "calls_raw_data_dump"
+        """
+    )
+    config_dict = yaml.safe_load(config_without_explicit_sql)
+
+    config_dict = fill_config_default_values(config_dict)
+    sql = config_dict["etl"]["calls"]["source"]["sql_find_available_dates"]
+    assert sql == "SELECT DISTINCT event_time::date as date FROM calls_raw_data_dump"

@@ -44,6 +44,42 @@
         ],
         "type": "object"
       },
+      "BernoulliRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "nullable": true,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "bernoulli"
+            ],
+            "type": "string"
+          },
+          "seed": {
+            "format": "float",
+            "type": "number"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query_kind",
+          "seed"
+        ],
+        "type": "object"
+      },
       "DFSTotalMetricAmount": {
         "properties": {
           "aggregation_unit": {
@@ -51,7 +87,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -95,7 +132,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -116,6 +154,14 @@
             ],
             "type": "string"
           },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
           "subscriber_subset": {
             "enum": [
               null
@@ -129,6 +175,61 @@
           "date",
           "method",
           "query_kind"
+        ],
+        "type": "object"
+      },
+      "Displacement": {
+        "properties": {
+          "query_kind": {
+            "enum": [
+              "displacement"
+            ],
+            "type": "string"
+          },
+          "reference_location": {
+            "$ref": "#/components/schemas/InputToDisplacement"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "statistic": {
+            "enum": [
+              "avg",
+              "max",
+              "median",
+              "min",
+              "mode",
+              "stddev",
+              "variance"
+            ],
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query_kind",
+          "start",
+          "statistic",
+          "stop"
         ],
         "type": "object"
       },
@@ -179,6 +280,14 @@
               "event_count"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start": {
             "format": "date",
@@ -275,7 +384,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -307,7 +417,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -324,6 +435,62 @@
         ],
         "type": "object"
       },
+      "Handset": {
+        "properties": {
+          "characteristic": {
+            "enum": [
+              "brand",
+              "hnd_type",
+              "model",
+              "software_os_name",
+              "software_os_vendor"
+            ],
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "method": {
+            "enum": [
+              "last",
+              "most-common"
+            ],
+            "type": "string"
+          },
+          "query_kind": {
+            "enum": [
+              "handset"
+            ],
+            "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
+          "start_date": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "end_date",
+          "query_kind",
+          "start_date"
+        ],
+        "type": "object"
+      },
       "InputToAggregateNetworkObjects": {
         "discriminator": {
           "mapping": {
@@ -334,6 +501,23 @@
         "oneOf": [
           {
             "$ref": "#/components/schemas/TotalNetworkObjects"
+          }
+        ]
+      },
+      "InputToDisplacement": {
+        "discriminator": {
+          "mapping": {
+            "daily_location": "#/components/schemas/DailyLocation",
+            "modal_location": "#/components/schemas/ModalLocation"
+          },
+          "propertyName": "query_kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DailyLocation"
+          },
+          {
+            "$ref": "#/components/schemas/ModalLocation"
           }
         ]
       },
@@ -387,8 +571,11 @@
       "JoinableMetrics": {
         "discriminator": {
           "mapping": {
+            "displacement": "#/components/schemas/Displacement",
             "event_count": "#/components/schemas/EventCount",
+            "handset": "#/components/schemas/Handset",
             "nocturnal_events": "#/components/schemas/NocturnalEvents",
+            "pareto_interactions": "#/components/schemas/ParetoInteractions",
             "radius_of_gyration": "#/components/schemas/RadiusOfGyration",
             "subscriber_degree": "#/components/schemas/SubscriberDegree",
             "topup_amount": "#/components/schemas/TopUpAmount",
@@ -399,10 +586,19 @@
         },
         "oneOf": [
           {
+            "$ref": "#/components/schemas/Displacement"
+          },
+          {
             "$ref": "#/components/schemas/EventCount"
           },
           {
+            "$ref": "#/components/schemas/Handset"
+          },
+          {
             "$ref": "#/components/schemas/NocturnalEvents"
+          },
+          {
+            "$ref": "#/components/schemas/ParetoInteractions"
           },
           {
             "$ref": "#/components/schemas/RadiusOfGyration"
@@ -429,6 +625,7 @@
           "method": {
             "enum": [
               "avg",
+              "distr",
               "max",
               "median",
               "min",
@@ -462,7 +659,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -535,7 +733,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -577,7 +776,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -659,7 +859,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -750,7 +951,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -835,7 +1037,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -851,6 +1054,14 @@
               "modal_location"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "subscriber_subset": {
             "enum": [
@@ -868,14 +1079,31 @@
       },
       "NocturnalEvents": {
         "properties": {
-          "hours": {
-            "type": "string"
+          "night_end_hour": {
+            "format": "int32",
+            "maximum": 23,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "night_start_hour": {
+            "format": "int32",
+            "maximum": 23,
+            "minimum": 0,
+            "type": "integer"
           },
           "query_kind": {
             "enum": [
               "nocturnal_events"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start": {
             "format": "date",
@@ -900,6 +1128,52 @@
         ],
         "type": "object"
       },
+      "ParetoInteractions": {
+        "properties": {
+          "proportion": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "query_kind": {
+            "enum": [
+              "pareto_interactions"
+            ],
+            "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
+          "start": {
+            "format": "date",
+            "type": "string"
+          },
+          "stop": {
+            "format": "date",
+            "type": "string"
+          },
+          "subscriber_subset": {
+            "enum": [
+              null
+            ],
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "proportion",
+          "query_kind",
+          "start",
+          "stop"
+        ],
+        "type": "object"
+      },
       "RadiusOfGyration": {
         "properties": {
           "end_date": {
@@ -911,6 +1185,14 @@
               "radius_of_gyration"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start_date": {
             "format": "date",
@@ -930,6 +1212,65 @@
           "start_date"
         ],
         "type": "object"
+      },
+      "RandomIDsRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "nullable": true,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "random_ids"
+            ],
+            "type": "string"
+          },
+          "seed": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": -1.0,
+            "type": "number"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query_kind",
+          "seed"
+        ],
+        "type": "object"
+      },
+      "RandomSample": {
+        "discriminator": {
+          "mapping": {
+            "bernoulli": "#/components/schemas/BernoulliRandomSample",
+            "random_ids": "#/components/schemas/RandomIDsRandomSample",
+            "system": "#/components/schemas/SystemRandomSample"
+          },
+          "propertyName": "sampling_method"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BernoulliRandomSample"
+          },
+          {
+            "$ref": "#/components/schemas/RandomIDsRandomSample"
+          },
+          {
+            "$ref": "#/components/schemas/SystemRandomSample"
+          }
+        ]
       },
       "SpatialAggregate": {
         "properties": {
@@ -965,6 +1306,14 @@
             ],
             "type": "string"
           },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
           "start": {
             "format": "date",
             "type": "string"
@@ -988,6 +1337,42 @@
         ],
         "type": "object"
       },
+      "SystemRandomSample": {
+        "properties": {
+          "estimate_count": {
+            "default": true,
+            "type": "boolean"
+          },
+          "fraction": {
+            "format": "float",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "nullable": true,
+            "type": "number"
+          },
+          "sampling_method": {
+            "enum": [
+              "system"
+            ],
+            "type": "string"
+          },
+          "seed": {
+            "format": "float",
+            "type": "number"
+          },
+          "size": {
+            "format": "int32",
+            "minimum": 1,
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query_kind",
+          "seed"
+        ],
+        "type": "object"
+      },
       "TopUpAmount": {
         "properties": {
           "query_kind": {
@@ -995,6 +1380,14 @@
               "topup_amount"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start": {
             "format": "date",
@@ -1044,6 +1437,14 @@
             ],
             "type": "string"
           },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
+          },
           "start_date": {
             "format": "date",
             "type": "string"
@@ -1083,7 +1484,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -1129,7 +1531,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },
@@ -1142,6 +1545,14 @@
               "unique_location_counts"
             ],
             "type": "string"
+          },
+          "sampling": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RandomSample"
+              }
+            ],
+            "nullable": true
           },
           "start_date": {
             "format": "date",
@@ -1170,7 +1581,8 @@
               "admin0",
               "admin1",
               "admin2",
-              "admin3"
+              "admin3",
+              "lon-lat"
             ],
             "type": "string"
           },

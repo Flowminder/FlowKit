@@ -103,7 +103,7 @@ class DistanceCounterparts(SubscriberFeature):
             subscriber_identifier="msisdn",
             hours=hours,
             subscriber_subset=subscriber_subset,
-        ).get_query()
+        )
 
         self.unioned_to_query = EventsTablesUnion(
             self.start,
@@ -113,7 +113,7 @@ class DistanceCounterparts(SubscriberFeature):
             subscriber_identifier="msisdn_counterpart",
             hours=hours,
             subscriber_subset=subscriber_subset,
-        ).get_query()
+        )
 
         self.distance_matrix = DistanceMatrix()
 
@@ -121,7 +121,7 @@ class DistanceCounterparts(SubscriberFeature):
 
     @property
     def column_names(self) -> List[str]:
-        return ["subscriber", f"distance_{self.statistic}"]
+        return ["subscriber", "value"]
 
     def _make_query(self):
 
@@ -137,17 +137,17 @@ class DistanceCounterparts(SubscriberFeature):
         sql = f"""
         SELECT
             U.subscriber AS subscriber,
-            {self.statistic}(D.distance) AS distance_{self.statistic}
+            {self.statistic}(D.value) AS value
         FROM
             (
                 SELECT A.subscriber, A.location_id AS location_id_from, B.location_id AS location_id_to FROM
-                ({self.unioned_from_query}) AS A
-                JOIN ({self.unioned_to_query}) AS B
+                ({self.unioned_from_query.get_query()}) AS A
+                JOIN ({self.unioned_to_query.get_query()}) AS B
                 ON A.id = B.id AND A.outgoing != B.outgoing {on_filters}
             ) U
         JOIN
             ({self.distance_matrix.get_query()}) D
-        ON U.location_id_from = D.location_id_from AND U.location_id_to = D.location_id_to
+        USING (location_id_from, location_id_to)
         GROUP BY U.subscriber
         """
 

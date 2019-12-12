@@ -7,8 +7,12 @@ from flowmachine.core.server.utils import (
     FM_EXAMPLE_MESSAGE,
 )
 from flowmachine.core import make_spatial_unit
-from flowmachine.features.utilities.spatial_aggregates import SpatialAggregate
+from flowmachine.features.location.spatial_aggregate import SpatialAggregate
+from flowmachine.features.location.redacted_spatial_aggregate import (
+    RedactedSpatialAggregate,
+)
 from flowmachine.features import daily_location
+from .helpers import poll_until_done
 
 
 def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
@@ -33,15 +37,17 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
     }
     assert msg_expected == FM_EXAMPLE_MESSAGE
 
-    q = SpatialAggregate(
-        locations=daily_location(
-            date="2016-01-01",
-            method="last",
-            spatial_unit=make_spatial_unit("admin", level=3),
-            subscriber_subset=None,
+    q = RedactedSpatialAggregate(
+        spatial_aggregate=SpatialAggregate(
+            locations=daily_location(
+                date="2016-01-01",
+                method="last",
+                spatial_unit=make_spatial_unit("admin", level=3),
+                subscriber_subset=None,
+            )
         )
     )
-    expected_query_id = q.md5
+    expected_query_id = q.query_id
 
     # Check that the flowmachine server sends the expected reply
     reply = send_zmq_message_and_receive_reply(
@@ -50,3 +56,9 @@ def test_send_zmq_message_and_receive_reply(zmq_host, zmq_port):
     assert expected_query_id == reply["payload"]["query_id"]
     # assert reply["status"] in ("executing", "queued", "completed")
     assert reply["status"] in ("success")
+
+    # FIXME: At the moment we have to explicitly wait for all running queries
+    # to finish before finishing the test, otherwise unexpected behaviour may
+    # occur when we reset the cache before the next test
+    # (see https://github.com/Flowminder/FlowKit/issues/1245).
+    poll_until_done(zmq_port, expected_query_id)

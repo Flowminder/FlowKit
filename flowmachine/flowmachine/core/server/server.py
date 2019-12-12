@@ -3,8 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import asyncio
-import os
+from concurrent.futures import Executor
 from json import JSONDecodeError
+import traceback
 
 import rapidjson
 
@@ -13,22 +14,73 @@ import signal
 import structlog
 import zmq
 from functools import partial
+from typing import NoReturn
 
 from marshmallow import ValidationError
 from zmq.asyncio import Context
 
 import flowmachine
+from flowmachine.core import Query, Connection
+from flowmachine.core.cache import watch_and_shrink_cache
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .zmq_helpers import ZMQReply
 from flowmachine.core.server.action_request_schema import ActionRequest
 from .action_handlers import perform_action
+from .server_config import get_server_config
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
 query_run_log = structlog.get_logger("flowmachine.query_run_log")
 
 
-def get_reply_for_message(msg_str: str) -> ZMQReply:
+async def update_available_dates(
+    *,
+    flowdb_connection: Connection,
+    pool: Executor,
+    sleep_time: int = 1800,
+    loop: bool = True,
+) -> None:
+    """
+    Background task to periodically refresh the cache entries for available dates
+    based on the content of the database.
+
+    Parameters
+    ----------
+    flowdb_connection : Connection
+        Flowdb connection to check dates on
+    pool : Executor
+        Executor to run the date check with
+    sleep_time : int, default 1800
+        Number of seconds to sleep for between checks
+    loop : bool, default True
+        Set to false to return after the first check
+
+    Returns
+    -------
+    None
+
+    """
+    check_func = partial(
+        flowdb_connection.available_dates.__wrapped__,
+        flowdb_connection,
+        table="all",
+        strictness=1,
+        schema="events",
+    )
+    while True:
+        logger.debug("Checking available dates.")
+        avail = await asyncio.get_running_loop().run_in_executor(
+            pool, check_func
+        )  # Note we're calling the uncached version here.
+        if not loop:
+            break
+        await asyncio.sleep(sleep_time)
+    return avail
+
+
+def get_reply_for_message(
+    *, msg_str: str, config: "FlowmachineServerConfig"
+) -> ZMQReply:
     """
     Parse the zmq message string, perform the desired action and return the result in JSON format.
 
@@ -36,6 +88,8 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
     ----------
     msg_str : str
         The message string as received from zmq. See the docstring of `parse_zmq_message` for valid structure.
+    config : FlowmachineServerConfig
+        Server config options
 
     Returns
     -------
@@ -44,7 +98,21 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
     """
 
     try:
-        action_request = ActionRequest().loads(msg_str)
+        try:
+            action_request = ActionRequest().loads(msg_str)
+        except ValidationError as exc:
+            # The dictionary of marshmallow errors can contain integers as keys,
+            # which will raise an error when converting to JSON (where the keys
+            # must be strings). Therefore we transform the keys to strings here.
+            error_msg = "Invalid action request."
+            validation_error_messages = convert_dict_keys_to_strings(exc.messages)
+            logger.error(
+                "Invalid action request while getting reply for ZMQ message.",
+                **validation_error_messages,
+            )
+            return ZMQReply(
+                status="error", msg=error_msg, payload=validation_error_messages
+            )
 
         query_run_log.info(
             f"Attempting to perform action: '{action_request.action}'",
@@ -53,7 +121,9 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
             params=action_request.params,
         )
 
-        reply = perform_action(action_request.action, action_request.params)
+        reply = perform_action(
+            action_request.action, action_request.params, config=config
+        )
 
         query_run_log.info(
             f"Action completed with status: '{reply.status}'",
@@ -65,17 +135,12 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
             reply_payload=reply.payload,
         )
     except FlowmachineServerError as exc:
-        return ZMQReply(status="error", msg=exc.error_msg)
-    except ValidationError as exc:
-        # The dictionary of marshmallow errors can contain integers as keys,
-        # which will raise an error when converting to JSON (where the keys
-        # must be strings). Therefore we transform the keys to strings here.
-        error_msg = "Invalid action request."
-        validation_error_messages = convert_dict_keys_to_strings(exc.messages)
-        return ZMQReply(
-            status="error", msg=error_msg, payload=validation_error_messages
+        logger.error(
+            f"Caught Flowmachine server error while getting reply for ZMQ message: {exc.error_msg}"
         )
+        return ZMQReply(status="error", msg=exc.error_msg)
     except JSONDecodeError as exc:
+        logger.error(f"Invalid JSON while getting reply for ZMQ message: {exc.msg}")
         return ZMQReply(
             status="error", msg="Invalid JSON.", payload={"decode_error": exc.msg}
         )
@@ -84,7 +149,9 @@ def get_reply_for_message(msg_str: str) -> ZMQReply:
     return reply
 
 
-async def receive_next_zmq_message_and_send_back_reply(socket):
+async def receive_next_zmq_message_and_send_back_reply(
+    *, socket: "zmq.asyncio.Socket", config: "FlowmachineServerConfig"
+) -> None:
     """
     Listen on the given zmq socket for the next multipart message, .
 
@@ -98,11 +165,8 @@ async def receive_next_zmq_message_and_send_back_reply(socket):
     ----------
     socket : zmq.asyncio.Socket
         zmq socket to use for sending the message
-
-    Returns
-    -------
-    flowmachine.core.server.zmq_interface.ZMQMultipartMessage
-        The message received over the socket
+    config : FlowmachineServerConfig
+        Server config options
     """
     logger.debug("Waiting for messages.")
     multipart_msg = await socket.recv_multipart()
@@ -135,11 +199,22 @@ async def receive_next_zmq_message_and_send_back_reply(socket):
         f"Creating background task to calculate reply and return it to the sender."
     )
     asyncio.create_task(
-        calculate_and_send_reply_for_message(socket, return_address, msg_contents)
+        calculate_and_send_reply_for_message(
+            socket=socket,
+            return_address=return_address,
+            msg_contents=msg_contents,
+            config=config,
+        )
     )
 
 
-async def calculate_and_send_reply_for_message(socket, return_address, msg_contents):
+async def calculate_and_send_reply_for_message(
+    *,
+    socket: "zmq.asyncio.Socket",
+    return_address: bytes,
+    msg_contents: str,
+    config: "FlowmachineServerConfig",
+) -> None:
     """
     Calculate the reply to a zmq message and return the result to the sender.
     This function is a small wrapper around `get_reply_for_message` which can
@@ -153,12 +228,23 @@ async def calculate_and_send_reply_for_message(socket, return_address, msg_conte
         The zmq return address to which to send the reply.
     msg_contents : str
         JSON string with the message contents.
+    config : FlowmachineServerConfig
+        Server config options
     """
-    reply_json = get_reply_for_message(msg_contents)
+    try:
+        reply_json = get_reply_for_message(msg_str=msg_contents, config=config)
+    except Exception as exc:
+        # Catch and log any unhandled errors, and send a generic error response to the API
+        # TODO: Ensure that FlowAPI always returns the correct error code when receiving an error reply
+        logger.error(
+            f"Unexpected error while getting reply for ZMQ message. Received exception: {type(exc).__name__}: {exc}",
+            traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
+        )
+        reply_json = ZMQReply(status="error", msg="Could not get reply for message")
     socket.send_multipart([return_address, b"", rapidjson.dumps(reply_json).encode()])
 
 
-def shutdown(socket):
+def shutdown(socket: "zmq.asyncio.Socket") -> None:
     """
     Handler for SIGTERM to allow test coverage data to be written during integration tests.
     """
@@ -174,43 +260,72 @@ def shutdown(socket):
     logger.debug("Cancelled all remaining tasks.")
 
 
-async def recv(port):
+async def recv(
+    *, config: "FlowmachineServerConfig", flowdb_connection: Connection
+) -> NoReturn:
     """
     Main receive-and-reply loop. Listens to zmq messages on the given port,
     processes them and sends back a reply with the result or an error message.
+
+    Parameters
+    ----------
+    config : FlowmachineServerConfig
+        Server config options
+    flowdb_connection : Connection
+        FlowDB connection
     """
-    logger.info(f"Flowmachine server is listening on port {port}")
+    logger.info(f"Flowmachine server is listening on port {config.port}")
 
     ctx = Context.instance()
     socket = ctx.socket(zmq.ROUTER)
-    socket.bind(f"tcp://*:{port}")
+    socket.bind(f"tcp://*:{config.port}")
 
     # Get the loop and attach a sigterm handler to allow coverage data to be written
     main_loop = asyncio.get_event_loop()
     main_loop.add_signal_handler(signal.SIGTERM, partial(shutdown, socket=socket))
 
+    main_loop.create_task(
+        update_available_dates(
+            flowdb_connection=flowdb_connection, pool=Query.thread_pool_executor
+        )
+    )
+    main_loop.create_task(
+        watch_and_shrink_cache(
+            flowdb_connection=flowdb_connection,
+            pool=Query.thread_pool_executor,
+            sleep_time=config.cache_pruning_frequency,
+            timeout=config.cache_pruning_timeout,
+        )
+    )
     try:
         while True:
-            await receive_next_zmq_message_and_send_back_reply(socket)
+            await receive_next_zmq_message_and_send_back_reply(
+                socket=socket, config=config
+            )
     except Exception as exc:
-        logger.debug(f"Received exception: {exc}")
+        logger.error(
+            f"Received exception: {type(exc).__name__}: {exc}",
+            traceback=traceback.format_list(traceback.extract_tb(exc.__traceback__)),
+        )
         logger.error("Flowmachine server died unexpectedly.")
         socket.close()
 
 
 def main():
-    # Set up internals and connect to flowdb
-    flowmachine.connect()
+    # Read config options from environment variables
+    config = get_server_config()
+    # Connect to flowdb
+    flowdb_connection = flowmachine.connect()
 
-    # Set debug mode if required
-    debug_mode = "true" == os.getenv("FLOWMACHINE_SERVER_DEBUG_MODE", "false").lower()
-    if debug_mode:
+    if not config.store_dependencies:
+        logger.info("Dependency caching is disabled.")
+    if config.debug_mode:
         logger.info("Enabling asyncio's debugging mode.")
 
     # Run receive loop which receives zmq messages and sends back replies
-    port = os.getenv("FLOWMACHINE_PORT", 5555)
     asyncio.run(
-        recv(port), debug=debug_mode
+        recv(config=config, flowdb_connection=flowdb_connection),
+        debug=config.debug_mode,
     )  # note: asyncio.run() requires Python 3.7+
 
 

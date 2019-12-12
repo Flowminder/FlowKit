@@ -11,31 +11,7 @@ from asynctest import Mock as AMock
 import pytest
 import zmq
 from flowmachine.core import Query
-
-
-@pytest.fixture
-def json_log(capsys):
-    def parse_json():
-        log_output = capsys.readouterr()
-        stdout = []
-        stderr = []
-        for l in log_output.out.split("\n"):
-            if l == "":
-                continue
-            try:
-                stdout.append(json.loads(l))
-            except JSONDecodeError:
-                stdout.append(l)
-        for l in log_output.err.split("\n"):
-            if l == "":
-                continue
-            try:
-                stderr.append(json.loads(l))
-            except JSONDecodeError:
-                stderr.append(l)
-        return CaptureResult(stdout, stderr)
-
-    return parse_json
+from flowmachine.core.server.server_config import FlowmachineServerConfig
 
 
 @pytest.fixture
@@ -73,3 +49,17 @@ def flowmachine_connect():
     Query.connection = Mock()
     Query.redis = Mock()
     print("Replacing connections with mocks.")
+
+
+@pytest.fixture(scope="session")
+def server_config():
+    """
+    Returns a FlowmachineServerConfig object, required as a parameter for server functions and action handlers.
+    """
+    return FlowmachineServerConfig(
+        port=5555,
+        debug_mode=False,
+        store_dependencies=True,
+        cache_pruning_frequency=86400,
+        cache_pruning_timeout=600,
+    )

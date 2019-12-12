@@ -8,11 +8,10 @@ Here you find metaclasses for building subscriber features.
 
 """
 
-import warnings
-
 from ...core.query import Query
-from ..utilities.spatial_aggregates import JoinedSpatialAggregate
-
+from flowmachine.features.location.joined_spatial_aggregate import (
+    JoinedSpatialAggregate,
+)
 
 import structlog
 

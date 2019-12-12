@@ -7,7 +7,6 @@
 Contains the definition of callables to be used in the production ETL dag.
 """
 import pendulum
-import re
 import structlog
 
 from pathlib import Path
@@ -16,13 +15,12 @@ from uuid import uuid1
 from airflow.models import DagRun
 from airflow.api.common.experimental.trigger_dag import trigger_dag
 
-from etl.model import ETLRecord
+from etl.model import ETLRecord, ETLPostQueryOutcome
 from etl.etl_utils import (
     CDRType,
     get_session,
     find_files_matching_pattern,
     extract_date_from_filename,
-    find_distinct_dates_in_table,
 )
 
 logger = structlog.get_logger("flowetl")
@@ -52,6 +50,47 @@ def record_ingestion_state__callable(*, dag_run: DagRun, to_state: str, **kwargs
 
 
 # pylint: disable=unused-argument
+def run_postload_queries__callable(*, queries: dict, dag_run: DagRun, **kwargs):
+    """
+    Function to deal with running and recording the outcome of informative
+    post-load ETL queries for the cdr_type of the running DAG.
+
+    Parameters
+    ----------
+    queries : dict
+        The dictionary that maps CDRType to the array of queries to run.
+    dag_run : DagRun
+        Passed as part of the Dag context - contains the config.
+    """
+    cdr_type = dag_run.conf["cdr_type"]
+    cdr_date = dag_run.conf["cdr_date"]
+
+    session = get_session()
+
+    if cdr_type not in queries:
+        raise ValueError(
+            f"Attempted to run queries for non-existing CDRType {cdr_type}"
+        )
+
+    for query in queries[cdr_type]:
+        query_result = query(cdr_type=cdr_type, cdr_date=cdr_date, session=session)
+        optional_comment_or_description = (
+            query_result["optional_comment_or_description"]
+            if "optional_comment_or_description" in query_result
+            else ""
+        )
+
+        ETLPostQueryOutcome.set_outcome(
+            cdr_type=cdr_type,
+            cdr_date=cdr_date,
+            type_of_query_or_check=query_result["type_of_query_or_check"],
+            outcome=query_result["outcome"],
+            optional_comment_or_description=optional_comment_or_description,
+            session=session,
+        )
+
+
+# pylint: disable=unused-argument
 def success_branch__callable(*, dag_run: DagRun, **kwargs):
     """
     Function to determine if we should follow the quarantine or
@@ -77,8 +116,9 @@ def production_trigger__callable(
     *, dag_run: DagRun, files_path: Path, cdr_type_config: dict, **kwargs
 ):
     """
-    Function that determines which files in files/ should be processed
-    and triggers the correct ETL dag with config based on filename.
+    Function that determines which files in files/ or which external database
+    tables should be processed and triggers the correct ETL dag with config based
+    on the CDR date derived from the filename or data present.
 
     Parameters
     ----------
@@ -120,10 +160,12 @@ def production_trigger__callable(
                 execution_date = pendulum.Pendulum(
                     cdr_date.year, cdr_date.month, cdr_date.day
                 )
+                full_file_path = str(files_path.joinpath(file).absolute())
                 config = {
                     "cdr_type": cdr_type,
                     "cdr_date": cdr_date,
                     "file_name": file,
+                    "full_file_path": full_file_path,
                     "template_path": f"etl/{cdr_type}",
                 }
                 trigger_dag(
@@ -135,16 +177,12 @@ def production_trigger__callable(
                 )
         elif source_type == "sql":
             source_table = cfg["source"]["table_name"]
+            sql_find_available_dates = cfg["source"]["sql_find_available_dates"]
 
-            # Extract unprocessed dates from source_table
-
-            # TODO: this requires a full parse of the existing data so may not be
-            # the most be efficient if a lot of data is present (esp. data that has
-            # already been processed). If it turns out too sluggish might be good to
-            # think about a more efficient way to determine dates with unprocessed data.
-            dates_present = find_distinct_dates_in_table(
-                session, source_table, event_time_col="event_time"
-            )
+            dates_present = [
+                pendulum.parse(row["date"].strftime("%Y-%m-%d"))
+                for row in session.execute(sql_find_available_dates).fetchall()
+            ]
             unprocessed_dates = [
                 date
                 for date in dates_present

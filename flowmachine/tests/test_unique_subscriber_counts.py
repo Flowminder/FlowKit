@@ -43,11 +43,7 @@ def test_correct_counts(get_dataframe):
             hours=(5, 17),
         )
     )
-    assert [
-        df["unique_subscriber_counts"][0],
-        df["unique_subscriber_counts"][1],
-        df["unique_subscriber_counts"][2],
-    ] == [
+    assert df.value[:3].tolist() == [
         len(dful[dful["location_id"] == df["location_id"][0]]["subscriber"].unique()),
         len(dful[dful["location_id"] == df["location_id"][1]]["subscriber"].unique()),
         len(dful[dful["location_id"] == df["location_id"][2]]["subscriber"].unique()),

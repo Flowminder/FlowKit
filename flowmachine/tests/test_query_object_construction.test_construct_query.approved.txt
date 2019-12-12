@@ -1,15 +1,33 @@
 {
-  "75d67100b0382c34b4661a5ec8950fa6": {
+  "22aa443470c5ba7e6f767a18a520b9f0": {
     "query_kind": "spatial_aggregate",
     "locations": {
       "query_kind": "daily_location",
       "date": "2016-01-01",
       "aggregation_unit": "admin3",
       "method": "last",
-      "subscriber_subset": null
+      "subscriber_subset": null,
+      "sampling": {
+        "sampling_method": "bernoulli",
+        "size": 10,
+        "seed": 0.5,
+        "fraction": null,
+        "estimate_count": false
+      }
     }
   },
-  "1a1e4e159d05f2ec1f081ac9c2bfd6d5": {
+  "36689ffe963d9a2fd244bacae1291d85": {
+    "query_kind": "spatial_aggregate",
+    "locations": {
+      "query_kind": "daily_location",
+      "date": "2016-01-01",
+      "aggregation_unit": "admin3",
+      "method": "last",
+      "subscriber_subset": null,
+      "sampling": null
+    }
+  },
+  "1fed61120ca8f85d75c9384707a82b73": {
     "query_kind": "location_event_counts",
     "start_date": "2016-01-01",
     "end_date": "2016-01-02",
@@ -19,7 +37,7 @@
     "event_types": null,
     "subscriber_subset": null
   },
-  "19419d8079d9c8e90afd057eb0871488": {
+  "42e26bdcf826ce0b19c798be7416368e": {
     "query_kind": "spatial_aggregate",
     "locations": {
       "query_kind": "modal_location",
@@ -46,7 +64,7 @@
     "query_kind": "geography",
     "aggregation_unit": "admin3"
   },
-  "de6836685ca2805baa1081c09f387e50": {
+  "4b59c6222d85b68e00a79d2d096131a6": {
     "query_kind": "meaningful_locations_aggregate",
     "aggregation_unit": "admin1",
     "start_date": "2016-01-01",
@@ -139,7 +157,7 @@
     "tower_cluster_call_threshold": 0,
     "subscriber_subset": null
   },
-  "639b435514358b3e2319333e5016f56e": {
+  "db637245dcdb9f000f7abc669ebb7679": {
     "query_kind": "meaningful_locations_between_label_od_matrix",
     "aggregation_unit": "admin1",
     "start_date": "2016-01-01",
@@ -233,7 +251,7 @@
     "tower_cluster_call_threshold": 0,
     "subscriber_subset": null
   },
-  "98dad1d308b631753b3d4e37c7a63861": {
+  "f507afe2b505537f24149bb53b5c1083": {
     "query_kind": "meaningful_locations_between_dates_od_matrix",
     "aggregation_unit": "admin1",
     "start_date_a": "2016-01-01",

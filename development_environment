@@ -59,6 +59,7 @@ REDIS_PORT=6379
 ## FlowMachine server settings
 #asyncio debug mode
 FLOWMACHINE_SERVER_DEBUG_MODE=false
+FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING=false
 
 #Port to listen on for zmq
 FLOWMACHINE_PORT=5555
@@ -79,9 +80,11 @@ FLOWMACHINE_FLOWDB_PASSWORD=foo
 # Password for flowapi user
 FLOWAPI_FLOWDB_PASSWORD=foo
 # Size in bytes to limit cache to
-CACHE_SIZE=""
+CACHE_SIZE=100000
 # Decay rate for cache records
 CACHE_HALF_LIFE=10000
+# Number of seconds to protect cache records from deletion
+CACHE_PROTECTED_PERIOD=3600
 # Max number of CPUs to use
 #MAX_CPUS
 # Max number of worker processes to use
@@ -132,6 +135,9 @@ FLOWETL_POSTGRES_USER=flowetl
 FLOWETL_POSTGRES_HOST=flowetl_db
 FLOWETL_POSTGRES_DB=flowetl
 FLOWETL_POSTGRES_PORT=9001
+FLOWETL_AIRFLOW_ADMIN_USERNAME=admin
+FLOWETL_AIRFLOW_ADMIN_PASSWORD=password
+FLOWETL_AIRFLOW_PG_POOL_SLOT_COUNT=4
 
 HOST_CONFIG_DIR=./flowetl/mounts/config
 HOST_FILES_DIR=./flowetl/mounts/files
@@ -144,3 +150,22 @@ PUBLIC_JWT_SIGNING_KEY=LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JSUNJakFOQmdrcWhra
 # Worked examples
 WORKED_EXAMPLES_PORT=8888
 
+## AutoFlow settings
+# Directory containing AutoFlow input files
+AUTOFLOW_INPUTS_DIR=./autoflow/examples/inputs
+# Directory to store AutoFlow output files
+AUTOFLOW_OUTPUTS_DIR=./autoflow/examples/outputs
+# Error and debugging log level
+AUTOFLOW_LOG_LEVEL=DEBUG
+# Path to prefect config file
+PREFECT__USER_CONFIG_PATH=./autoflow/config/config.toml
+# Path to asciidoc template
+PREFECT__ASCIIDOC_TEMPLATE_PATH=./autoflow/config/asciidoc_extended.tpl
+# FlowAPI URL
+FLOWAPI_URL=http://localhost:9090
+# URI of database for storing workflow run metadata
+AUTOFLOW_DB_URI=sqlite:////tmp/test.db
+# Password for AutoFlow database
+#AUTOFLOW_DB_PASSWORD
+# FlowAPI token
+#FLOWAPI_TOKEN

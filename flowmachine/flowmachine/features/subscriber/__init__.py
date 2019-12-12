@@ -22,7 +22,7 @@ from .displacement import Displacement
 from .event_count import EventCount
 from .event_count import EventCount
 from .subscriber_degree import SubscriberDegree
-from .subscriber_location_cluster import subscriber_location_cluster, HartiganCluster
+from .hartigan_cluster import HartiganCluster
 from .most_frequent_location import MostFrequentLocation
 from .last_location import LastLocation
 
@@ -46,7 +46,7 @@ from .subscriber_tacs import (
     SubscriberTACs,
     SubscriberHandsets,
     SubscriberHandset,
-    SubscriberPhoneType,
+    SubscriberHandsetCharacteristic,
 )
 
 from .subscriber_call_durations import (
@@ -56,11 +56,7 @@ from .subscriber_call_durations import (
     PairedPerLocationSubscriberCallDurations,
 )
 
-from .meaningful_locations import (
-    MeaningfulLocations,
-    MeaningfulLocationsAggregate,
-    MeaningfulLocationsOD,
-)
+from .meaningful_locations import MeaningfulLocations
 
 from .contact_reference_locations_stats import ContactReferenceLocationStats
 from .interevent_period import IntereventPeriod
@@ -71,59 +67,6 @@ from .event_type_proportion import ProportionEventType
 from .per_contact_event_stats import PerContactEventStats
 from .per_location_event_stats import PerLocationEventStats
 from .handset_stats import HandsetStats
-
-__all__ = [
-    "RadiusOfGyration",
-    "NocturnalEvents",
-    "FirstLocation",
-    "CallDays",
-    "ModalLocation",
-    "daily_location",
-    "DayTrajectories",
-    "LocationVisits",
-    "NewSubscribers",
-    "subscriber_location_cluster",
-    "HartiganCluster",
-    "UniqueLocationCounts",
-    "SubscriberDegree",
-    "TotalActivePeriodsSubscriber",
-    "ContactBalance",
-    "EventScore",
-    "LabelEventScore",
-    "SubscriberTACs",
-    "SubscriberTAC",
-    "SubscriberHandsets",
-    "SubscriberHandset",
-    "SubscriberPhoneType",
-    "ParetoInteractions",
-    "SubscriberCallDurations",
-    "PairedSubscriberCallDurations",
-    "PerLocationSubscriberCallDurations",
-    "PairedPerLocationSubscriberCallDurations",
-    "Displacement",
-    "MostFrequentLocation",
-    "LastLocation",
-    "PeriodicEntropy",
-    "LocationEntropy",
-    "ContactEntropy",
-    "EventCount",
-    "PerLocationEventStats",
-    "PerContactEventStats",
-    "MeaningfulLocations",
-    "MeaningfulLocationsAggregate",
-    "MeaningfulLocationsOD",
-    "ProportionEventType",
-    "PeriodicEntropy",
-    "LocationEntropy",
-    "ContactEntropy",
-    "DistanceCounterparts",
-    "ContactReferenceLocationStats",
-    "IntereventPeriod",
-    "TopUpAmount",
-    "TopUpBalance",
-    "MDSVolume",
-    "ContactReciprocal",
-    "ProportionEventReciprocal",
-    "ProportionContactReciprocal",
-    "HandsetStats",
-]
+from .interevent_interval import IntereventInterval
+from .distance_series import DistanceSeries
+from .imputed_distance_series import ImputedDistanceSeries

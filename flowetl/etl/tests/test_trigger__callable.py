@@ -23,11 +23,11 @@ def test_trigger__callable_bad_file_filtered(
     them. In this case we have one unseen file and one file that matches no
     pattern. We expect a single call of the trigger_dag_mock for the unseen file.
     """
-    files = tmpdir.mkdir("files")
+    files_dir = tmpdir.mkdir("files")
 
-    file1 = files.join("SMS_20160101.csv.gz")
+    file1 = files_dir.join("SMS_20160101.csv.gz")
     file1.write("blah")
-    file2 = files.join("bad_file.bad")
+    file2 = files_dir.join("bad_file.bad")
     file2.write("blah")
 
     cdr_type_config = sample_config_dict["etl"]
@@ -40,7 +40,9 @@ def test_trigger__callable_bad_file_filtered(
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
     production_trigger__callable(
-        dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
+        dag_run=fake_dag_run,
+        cdr_type_config=cdr_type_config,
+        files_path=Path(files_dir),
     )
 
     assert trigger_dag_mock.call_count == 1
@@ -51,6 +53,7 @@ def test_trigger__callable_bad_file_filtered(
         "cdr_type": cdr_type,
         "cdr_date": cdr_date,
         "file_name": "SMS_20160101.csv.gz",
+        "full_file_path": files_dir.join("SMS_20160101.csv.gz"),
         "template_path": "etl/sms",
     }
 
@@ -71,9 +74,9 @@ def test_trigger__callable_quarantined_file_not_filtered(
     them. In this case we have one previously seen and quarantined file.
     We expect a single call of the trigger_dag_mock for the quarantined file.
     """
-    files = tmpdir.mkdir("files")
+    files_dir = tmpdir.mkdir("files")
 
-    file1 = files.join("SMS_20160101.csv.gz")
+    file1 = files_dir.join("SMS_20160101.csv.gz")
     file1.write("blah")
 
     # add a some etl records
@@ -100,7 +103,9 @@ def test_trigger__callable_quarantined_file_not_filtered(
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
     production_trigger__callable(
-        dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
+        dag_run=fake_dag_run,
+        cdr_type_config=cdr_type_config,
+        files_path=Path(files_dir),
     )
 
     assert trigger_dag_mock.call_count == 1
@@ -111,6 +116,7 @@ def test_trigger__callable_quarantined_file_not_filtered(
         "cdr_type": cdr_type,
         "cdr_date": cdr_date,
         "file_name": "SMS_20160101.csv.gz",
+        "full_file_path": files_dir.join("SMS_20160101.csv.gz"),
         "template_path": "etl/sms",
     }
 
@@ -131,11 +137,11 @@ def test_trigger__callable_archive_file_filtered(
     them. In this case we have one previously seen file and one never seen file.
     We expect a single call of the trigger_dag_mock for the unseen file.
     """
-    files = tmpdir.mkdir("files")
+    files_dir = tmpdir.mkdir("files")
 
-    file1 = files.join("SMS_20160101.csv.gz")
+    file1 = files_dir.join("SMS_20160101.csv.gz")
     file1.write("blah")
-    file2 = files.join("SMS_20160102.csv.gz")
+    file2 = files_dir.join("SMS_20160102.csv.gz")
     file2.write("blah")
 
     # add a some etl records
@@ -163,7 +169,9 @@ def test_trigger__callable_archive_file_filtered(
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
     production_trigger__callable(
-        dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
+        dag_run=fake_dag_run,
+        cdr_type_config=cdr_type_config,
+        files_path=Path(files_dir),
     )
 
     assert trigger_dag_mock.call_count == 1
@@ -174,6 +182,7 @@ def test_trigger__callable_archive_file_filtered(
         "cdr_type": cdr_type,
         "cdr_date": cdr_date,
         "file_name": "SMS_20160102.csv.gz",
+        "full_file_path": files_dir.join("SMS_20160102.csv.gz"),
         "template_path": "etl/sms",
     }
 
@@ -247,11 +256,11 @@ def test_trigger__callable_multiple_triggers(
     Test that the trigger callable picks up files in files and is able to trigger
     multiple etl dag runs.
     """
-    files = tmpdir.mkdir("files")
+    files_dir = tmpdir.mkdir("files")
 
-    file1 = files.join("SMS_20160101.csv.gz")
+    file1 = files_dir.join("SMS_20160101.csv.gz")
     file1.write("blah")
-    file2 = files.join("CALLS_20160102.csv.gz")
+    file2 = files_dir.join("CALLS_20160102.csv.gz")
     file2.write("blah")
 
     cdr_type_config = sample_config_dict["etl"]
@@ -264,7 +273,9 @@ def test_trigger__callable_multiple_triggers(
     monkeypatch.setattr("etl.production_task_callables.trigger_dag", trigger_dag_mock)
 
     production_trigger__callable(
-        dag_run=fake_dag_run, cdr_type_config=cdr_type_config, files_path=Path(files)
+        dag_run=fake_dag_run,
+        cdr_type_config=cdr_type_config,
+        files_path=Path(files_dir),
     )
 
     assert trigger_dag_mock.call_count == 2
@@ -275,6 +286,7 @@ def test_trigger__callable_multiple_triggers(
         "cdr_type": cdr_type_file1,
         "cdr_date": cdr_date_file1,
         "file_name": "SMS_20160101.csv.gz",
+        "full_file_path": files_dir.join("SMS_20160101.csv.gz"),
         "template_path": "etl/sms",
     }
 
@@ -284,6 +296,7 @@ def test_trigger__callable_multiple_triggers(
         "cdr_type": cdr_type_file2,
         "cdr_date": cdr_date_file2,
         "file_name": "CALLS_20160102.csv.gz",
+        "full_file_path": files_dir.join("CALLS_20160102.csv.gz"),
         "template_path": "etl/calls",
     }
 

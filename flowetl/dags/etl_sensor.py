@@ -6,20 +6,15 @@
 import os
 import structlog
 
-# need to import and not use so that airflow looks here for a DAG
+# Need to import the DAG class (even if it is not directly
+# used in this file) so that Airflow looks here for a DAG.
 from airflow import DAG  # pylint: disable=unused-import
-
-from pendulum import parse
 
 from etl.etl_utils import construct_etl_sensor_dag
 from etl.dag_task_callable_mappings import (
     TEST_ETL_SENSOR_TASK_CALLABLE,
     PRODUCTION_ETL_SENSOR_TASK_CALLABLE,
 )
-
-logger = structlog.get_logger("flowetl")
-
-default_args = {"owner": "flowminder", "start_date": parse("1900-01-01")}
 
 ETL_SENSOR_TASK_CALLABLES = {
     "testing": TEST_ETL_SENSOR_TASK_CALLABLE,
@@ -36,7 +31,6 @@ except KeyError:
         f"Valid config names are: {list(ETL_SENSOR_TASK_CALLABLES.keys())}"
     )
 
+logger = structlog.get_logger("flowetl")
 logger.info(f"Running in {flowetl_runtime_config} environment")
-dag = construct_etl_sensor_dag(
-    callable=etl_sensor_task_callable, default_args=default_args
-)
+dag = construct_etl_sensor_dag(callable=etl_sensor_task_callable)

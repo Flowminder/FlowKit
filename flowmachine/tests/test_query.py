@@ -117,16 +117,16 @@ def test_exception_on_unstored():
 def test_iteration():
     """Test that we can iterate and it doesn't break hashing"""
     dl = daily_location("2016-01-01")
-    md5 = dl.md5
+    md5 = dl.query_id
     for _ in dl:
         pass
-    assert md5 == dl.md5
+    assert md5 == dl.query_id
 
 
 def test_limited_head():
     """Test that we can call head on a query with a limit clause."""
     dl = daily_location("2016-01-01")
-    dl.random_sample(2).head()
+    dl.random_sample(size=2, sampling_method="bernoulli").head()
 
 
 def test_make_sql_no_overwrite():

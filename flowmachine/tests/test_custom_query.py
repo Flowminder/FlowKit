@@ -10,5 +10,5 @@ def test_custom_query_hash():
                                  FROM foo""",
         [],
     )
-    assert base.md5 == case_mismatch.md5
-    assert base.md5 == space_mismatch.md5
+    assert base.query_id == case_mismatch.query_id
+    assert base.query_id == space_mismatch.query_id

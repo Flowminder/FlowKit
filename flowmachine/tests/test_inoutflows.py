@@ -21,10 +21,10 @@ def test_inoutflow_with_double_column_location():
     dl2 = daily_location("2016-01-02", spatial_unit=make_spatial_unit("versioned-site"))
 
     flow = Flows(dl1, dl2)
-    expected_columns = ["site_id_to", "version_to", "lon_to", "lat_to", "total"]
+    expected_columns = ["site_id_to", "version_to", "lon_to", "lat_to", "value"]
     assert flow.inflow().column_names == expected_columns
 
-    expected_columns = ["site_id_from", "version_from", "lon_from", "lat_from", "total"]
+    expected_columns = ["site_id_from", "version_from", "lon_from", "lat_from", "value"]
     assert flow.outflow().column_names == expected_columns
 
 

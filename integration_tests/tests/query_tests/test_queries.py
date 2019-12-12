@@ -180,6 +180,33 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
             },
         ),
         (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.displacement(
+                    start="2016-01-01",
+                    stop="2016-01-02",
+                    statistic="avg",
+                    reference_location=flowclient.daily_location(
+                        date="2016-01-01", aggregation_unit="lon-lat", method="last"
+                    ),
+                ),
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.pareto_interactions(
+                    start="2016-01-01", stop="2016-01-02", proportion="0.8"
+                ),
+            },
+        ),
+        (
             "spatial_aggregate",
             {
                 "locations": flowclient.modal_location_from_dates(
@@ -490,6 +517,70 @@ from flowkit_jwt_generator import permissions_types, aggregation_types
                 ),
             },
         ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "handset",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                    "characteristic": "hnd_type",
+                    "method": "last",
+                },
+                "method": "distr",
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": flowclient.daily_location(
+                    date="2016-01-01", aggregation_unit="admin3", method="last"
+                ),
+                "metric": flowclient.handset(
+                    start_date="2016-01-01",
+                    end_date="2016-01-02",
+                    characteristic="brand",
+                    method="last",
+                ),
+                "method": "distr",
+            },
+        ),
+        (
+            "spatial_aggregate",
+            {
+                "locations": flowclient.random_sample(
+                    query=flowclient.daily_location(
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="most-common",
+                    ),
+                    size=10,
+                    seed=0.5,
+                )
+            },
+        ),
+        (
+            "spatial_aggregate",
+            {
+                "locations": flowclient.random_sample(
+                    query=flowclient.daily_location(
+                        date="2016-01-01",
+                        aggregation_unit="admin3",
+                        method="most-common",
+                    ),
+                    sampling_method="bernoulli",
+                    fraction=0.5,
+                    estimate_count=False,
+                    seed=0.2,
+                )
+            },
+        ),
     ],
 )
 def test_run_query(query_kind, params, universal_access_token, flowapi_url):
@@ -499,8 +590,65 @@ def test_run_query(query_kind, params, universal_access_token, flowapi_url):
     query_spec = getattr(flowclient, query_kind)(**params)
     con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
 
-    result_dataframe = get_result(connection=con, query=query_spec)
-    assert len(result_dataframe) > 0
+    get_result(connection=con, query=query_spec)
+    # Ideally we'd check the contents, but several queries will be totally redacted and therefore empty
+    # so we can only check it runs without erroring
+
+
+@pytest.mark.parametrize(
+    "query_kind, params",
+    [
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "topup_balance",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                    "statistic": "avg",
+                },
+                "method": "distr",
+            },
+        ),
+        (
+            "joined_spatial_aggregate",
+            {
+                "locations": {
+                    "query_kind": "daily_location",
+                    "date": "2016-01-01",
+                    "aggregation_unit": "admin3",
+                    "method": "last",
+                },
+                "metric": {
+                    "query_kind": "handset",
+                    "start_date": "2016-01-01",
+                    "end_date": "2016-01-02",
+                    "characteristic": "hnd_type",
+                    "method": "last",
+                },
+                "method": "avg",
+            },
+        ),
+    ],
+)
+def test_fail_query_incorrect_parameters(
+    query_kind, params, universal_access_token, flowapi_url
+):
+    """
+    Test that queries fail with incorrect parameters.
+    """
+    query_spec = getattr(flowclient, query_kind)(**params)
+    con = flowclient.Connection(url=flowapi_url, token=universal_access_token)
+    with pytest.raises(
+        flowclient.client.FlowclientConnectionError, match="Must be one of:"
+    ):
+        result_dataframe = get_result(connection=con, query=query_spec)
 
 
 def test_get_geography(access_token_builder, flowapi_url):

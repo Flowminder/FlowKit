@@ -39,7 +39,7 @@ RUN PIPENV_PIPFILE=/tmp/Pipfile pipenv install --clear --system --deploy --three
 RUN mkdir -p /docker-entrypoint-initdb.d/sql/syntheticdata/ && \
     mkdir -p /opt/synthetic_data/
 
-COPY --chown=postgres ./bin/z_ingest_synthetic_data.sh /docker-entrypoint-initdb.d/
+COPY --chown=postgres ./bin/9900_ingest_synthetic_data.sh /docker-entrypoint-initdb.d/
 
 COPY --chown=postgres bin/generate_synthetic_data*.py /opt/synthetic_data/
 ADD --chown=postgres ./test_data/sql/admin*.sql /docker-entrypoint-initdb.d/sql/syntheticdata/

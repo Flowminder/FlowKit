@@ -30,10 +30,15 @@ from flowmachine.core.errors.flowmachine_errors import QueryResetFailedException
 from flowmachine.core.query_state import QueryStateMachine
 from abc import ABCMeta, abstractmethod
 
-from flowmachine.core.errors import NameTooLongError, NotConnectedError
+from flowmachine.core.errors import (
+    NameTooLongError,
+    NotConnectedError,
+    UnstorableQueryError,
+)
 
 import flowmachine
 from flowmachine.utils import _sleep
+from flowmachine.core.dependency_graph import store_all_unstored_dependencies
 
 from flowmachine.core.cache import write_query_to_cache
 
@@ -62,7 +67,7 @@ class Query(metaclass=ABCMeta):
     _QueryPool = weakref.WeakValueDictionary()
 
     def __init__(self, cache=True):
-        obj = Query._QueryPool.get(self.md5)
+        obj = Query._QueryPool.get(self.query_id)
         if obj is None:
             try:
                 self.connection
@@ -70,12 +75,12 @@ class Query(metaclass=ABCMeta):
                 raise NotConnectedError()
 
             self._cache = cache
-            Query._QueryPool[self.md5] = self
+            Query._QueryPool[self.query_id] = self
         else:
             self.__dict__ = obj.__dict__
 
     @property
-    def md5(self):
+    def query_id(self):
         """
         Generate a uniquely identifying hash of this query,
         based on the parameters of it and the subqueries it is
@@ -84,21 +89,22 @@ class Query(metaclass=ABCMeta):
         Returns
         -------
         str
-            md5 hash string
+            query_id hash string
         """
         try:
             return self._md5
         except:
             dependencies = self.dependencies
             state = self.__getstate__()
-            hashes = sorted([x.md5 for x in dependencies])
+            hashes = sorted([x.query_id for x in dependencies])
             for key, item in sorted(state.items()):
                 if isinstance(item, Query) and item in dependencies:
                     # this item is already included in `hashes`
                     continue
                 elif isinstance(item, list) or isinstance(item, tuple):
                     item = sorted(
-                        item, key=lambda x: x.md5 if isinstance(x, Query) else x
+                        item,
+                        key=lambda x: x.query_id if isinstance(x, Query) else str(x),
                     )
                 elif isinstance(item, dict):
                     item = json.dumps(item, sort_keys=True, default=str)
@@ -111,8 +117,6 @@ class Query(metaclass=ABCMeta):
             hashes.sort()
             self._md5 = md5(str(hashes).encode()).hexdigest()
             return self._md5
-
-    query_id = md5  # alias which is more meaningful to users than 'md5'
 
     @abstractmethod
     def _make_query(self):
@@ -230,7 +234,7 @@ class Query(metaclass=ABCMeta):
         flowmachine.core.query_state.QueryState
             The current query state
         """
-        state_machine = QueryStateMachine(self.redis, self.md5)
+        state_machine = QueryStateMachine(self.redis, self.query_id)
         return state_machine.current_query_state
 
     @property
@@ -260,13 +264,13 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
             schema, name = table_name.split(".")
-            state_machine = QueryStateMachine(self.redis, self.md5)
+            state_machine = QueryStateMachine(self.redis, self.query_id)
             state_machine.wait_until_complete()
             if state_machine.is_completed and self.connection.has_table(
                 schema=schema, name=name
             ):
                 try:
-                    touch_cache(self.connection, self.md5)
+                    touch_cache(self.connection, self.query_id)
                 except ValueError:
                     pass  # Cache record not written yet, which can happen for Models
                     # which will call through to this method from their `_make_query` method while writing metadata.
@@ -537,7 +541,12 @@ class Query(metaclass=ABCMeta):
             )
         return queries
 
-    def to_sql(self, name: str, schema: Union[str, None] = None) -> Future:
+    def to_sql(
+        self,
+        name: str,
+        schema: Union[str, None] = None,
+        store_dependencies: bool = False,
+    ) -> Future:
         """
         Store the result of the calculation back into the database.
 
@@ -548,6 +557,8 @@ class Query(metaclass=ABCMeta):
         schema : str, default None
             Name of an existing schema. If none will use the postgres default,
             see postgres docs for more info.
+        store_dependencies : bool, default False
+            If True, store the dependencies of this query.
 
         Returns
         -------
@@ -588,11 +599,20 @@ class Query(metaclass=ABCMeta):
             logger.debug("Executed queries.")
             return plan_time
 
+        if store_dependencies:
+
+            def ddl_ops_func(name: str, schema: Union[str, None] = None) -> List[str]:
+                store_all_unstored_dependencies(self)
+                return self._make_sql(name, schema)
+
+        else:
+            ddl_ops_func = self._make_sql
+
         current_state, changed_to_queue = QueryStateMachine(
-            self.redis, self.md5
+            self.redis, self.query_id
         ).enqueue()
         logger.debug(
-            f"Attempted to enqueue query '{self.md5}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
+            f"Attempted to enqueue query '{self.query_id}', query state is now {current_state} and change happened {'here and now' if changed_to_queue else 'elsewhere'}."
         )
         # name, redis, query, connection, ddl_ops_func, write_func, schema = None, sleep_duration = 1
         store_future = self.thread_pool_executor.submit(
@@ -602,7 +622,7 @@ class Query(metaclass=ABCMeta):
             query=self,
             connection=self.connection,
             redis=self.redis,
-            ddl_ops_func=self._make_sql,
+            ddl_ops_func=ddl_ops_func,
             write_func=write_query,
         )
         return store_future
@@ -667,7 +687,7 @@ class Query(metaclass=ABCMeta):
         str
             String form of the table's fqn
         """
-        return f"x{self.md5}"
+        return f"x{self.query_id}"
 
     @property
     def is_stored(self):
@@ -684,10 +704,15 @@ class Query(metaclass=ABCMeta):
         except NotImplementedError:
             return False
 
-    def store(self):
+    def store(self, store_dependencies: bool = False) -> Future:
         """
         Store the results of this computation with the correct table
         name using a background thread.
+
+        Parameters
+        ----------
+        store_dependencies : bool, default False
+            If True, store the dependencies of this query.
 
         Returns
         -------
@@ -699,69 +724,14 @@ class Query(metaclass=ABCMeta):
         try:
             table_name = self.fully_qualified_table_name
         except NotImplementedError:
-            raise ValueError("Cannot store an object of this type with these params")
+            raise UnstorableQueryError(self)
 
         schema, name = table_name.split(".")
 
-        store_future = self.to_sql(name, schema=schema)
+        store_future = self.to_sql(
+            name, schema=schema, store_dependencies=store_dependencies
+        )
         return store_future
-
-    def _db_store_cache_metadata(self, compute_time=None):
-        """
-        Helper function for store, updates flowmachine metadata table to
-        log that this query is stored, but does not actually store
-        the query.
-        """
-
-        from ..__init__ import __version__
-
-        con = self.connection.engine
-
-        self_storage = b""
-        try:
-            self_storage = pickle.dumps(self)
-        except:
-            logger.debug("Can't pickle, attempting to cache anyway.")
-            pass
-
-        try:
-            in_cache = bool(
-                self.connection.fetch(
-                    f"SELECT * FROM cache.cached WHERE query_id='{self.md5}'"
-                )
-            )
-
-            with con.begin():
-                cache_record_insert = """
-                INSERT INTO cache.cached 
-                (query_id, version, query, created, access_count, last_accessed, compute_time, 
-                cache_score_multiplier, class, schema, tablename, obj) 
-                VALUES (%s, %s, %s, NOW(), 0, NOW(), %s, 0, %s, %s, %s, %s)
-                 ON CONFLICT (query_id) DO UPDATE SET last_accessed = NOW();"""
-                con.execute(
-                    cache_record_insert,
-                    (
-                        self.md5,
-                        __version__,
-                        self._make_query(),
-                        compute_time,
-                        self.__class__.__name__,
-                        *self.fully_qualified_table_name.split("."),
-                        psycopg2.Binary(self_storage),
-                    ),
-                )
-                con.execute("SELECT touch_cache(%s);", self.md5)
-                logger.debug(
-                    "{} added to cache.".format(self.fully_qualified_table_name)
-                )
-                if not in_cache:
-                    for dep in self._get_stored_dependencies(exclude_self=True):
-                        con.execute(
-                            "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
-                            (self.md5, dep.md5),
-                        )
-        except NotImplementedError:
-            logger.debug("Table has no standard name.")
 
     @property
     def dependencies(self):
@@ -845,7 +815,7 @@ class Query(metaclass=ABCMeta):
         drop : bool
             Set to false to remove the cache record without dropping the table
         """
-        q_state_machine = QueryStateMachine(self.redis, self.md5)
+        q_state_machine = QueryStateMachine(self.redis, self.query_id)
         current_state, this_thread_is_owner = q_state_machine.reset()
         if this_thread_is_owner:
             con = self.connection.engine
@@ -862,12 +832,12 @@ class Query(metaclass=ABCMeta):
                     """SELECT obj FROM cache.cached LEFT JOIN cache.dependencies
                     ON cache.cached.query_id=cache.dependencies.query_id
                     WHERE depends_on='{}'""".format(
-                        self.md5
+                        self.query_id
                     )
                 )
                 with con.begin():
                     con.execute(
-                        "DELETE FROM cache.cached WHERE query_id=%s", (self.md5,)
+                        "DELETE FROM cache.cached WHERE query_id=%s", (self.query_id,)
                     )
                     logger.debug(
                         "Deleted cache record for {}.".format(
@@ -910,12 +880,12 @@ class Query(metaclass=ABCMeta):
             q_state_machine.finish_resetting()
         elif q_state_machine.is_resetting:
             logger.debug(
-                f"Query '{self.md5}' is being reset from elsewhere, waiting for reset to finish."
+                f"Query '{self.query_id}' is being reset from elsewhere, waiting for reset to finish."
             )
             while q_state_machine.is_resetting:
                 _sleep(1)
         if not q_state_machine.is_known:
-            raise QueryResetFailedException(self.md5)
+            raise QueryResetFailedException(self.query_id)
 
     @property
     def index_cols(self):
@@ -1026,24 +996,13 @@ class Query(metaclass=ABCMeta):
         objs = Query.connection.fetch(qry)
         return (pickle.loads(obj[0]) for obj in objs)
 
-    def random_sample(
-        self,
-        size=None,
-        fraction=None,
-        method="system_rows",
-        estimate_count=True,
-        seed=None,
-    ):
+    def random_sample(self, sampling_method="random_ids", **params):
         """
         Draws a random sample from this query.
 
         Parameters
         ----------
-        size : int
-            Number of rows to draw
-        fraction : float
-            Fraction of total rows to draw
-        method : {'system', 'system_rows', 'bernoulli', 'random_ids'}, default 'system_rows'
+        sampling_method : {'system', 'system_rows', 'bernoulli', 'random_ids'}, default 'random_ids'
             Specifies the method used to select the random sample.
             'system_rows': performs block-level sampling by randomly sampling
                 each physical storage page of the underlying relation. This
@@ -1058,15 +1017,20 @@ class Query(metaclass=ABCMeta):
             'bernoulli': samples directly on each row of the underlying
                 relation. This sampling method is slower and is not guaranteed to
                 generate a sample of the specified size, but an approximation
-            'random_ids': Assumes that the table contains a column named 'id'
-                with random numbers from 1 to the total number of rows in the
-                table. This method samples the ids from this table.
-        estimate_count : bool, default True
+            'random_ids': samples rows by randomly sampling the row number.
+        size : int, optional
+            The number of rows to draw.
+            Exactly one of the 'size' or 'fraction' arguments must be provided.
+        fraction : float, optional
+            Fraction of rows to draw.
+            Exactly one of the 'size' or 'fraction' arguments must be provided.
+        estimate_count : bool, default False
             Whether to estimate the number of rows in the table using
             information contained in the `pg_class` or whether to perform an
             actual count in the number of rows.
         seed : float, optional
-            Optionally provide a seed for repeatable random samples, which should be between -/+1.
+            Optionally provide a seed for repeatable random samples.
+            If using random_ids method, seed must be between -/+1.
             Not available in combination with the system_rows method.
 
         Returns
@@ -1076,28 +1040,13 @@ class Query(metaclass=ABCMeta):
 
         See Also
         --------
-        flowmachine.utils.random.random_factory
+        flowmachine.core.random.random_factory
 
         Notes
         -----
-
         Random samples may only be stored if a seed is supplied.
-
         """
-        if seed is not None:
-            if seed > 1 or seed < -1:
-                raise ValueError("Seed must be between -1 and 1.")
-            if method == "system_rows":
-                raise ValueError("Seed is not supported with system_rows method.")
-
         from .random import random_factory
 
-        random_class = random_factory(self.__class__)
-        return random_class(
-            query=self,
-            size=size,
-            fraction=fraction,
-            method=method,
-            estimate_count=estimate_count,
-            seed=seed,
-        )
+        random_class = random_factory(self.__class__, sampling_method=sampling_method)
+        return random_class(query=self, **params)

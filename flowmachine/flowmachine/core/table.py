@@ -7,13 +7,13 @@
 Simple utility class that represents arbitrary tables in the
 database.
 """
-
 from typing import List
 
 from flowmachine.core.query_state import QueryStateMachine
 from .errors import NotConnectedError
 from .query import Query
 from .subset import subset_factory
+from .cache import write_cache_metadata
 
 import structlog
 
@@ -114,18 +114,19 @@ class Table(Query):
                     )
                 )
 
-        # Record provided columns to ensure that md5 differs with different columns
+        # Record provided columns to ensure that query_id differs with different columns
         self.columns = columns
         super().__init__()
         # Table is immediately in a 'finished executing' state
-        q_state_machine = QueryStateMachine(self.redis, self.md5)
-        q_state_machine.enqueue()
-        q_state_machine.execute()
-        self._db_store_cache_metadata(compute_time=0)
-        q_state_machine.finish()
+        q_state_machine = QueryStateMachine(self.redis, self.query_id)
+        if not q_state_machine.is_completed:
+            q_state_machine.enqueue()
+            q_state_machine.execute()
+            write_cache_metadata(self.connection, self, compute_time=0)
+            q_state_machine.finish()
 
     def __format__(self, fmt):
-        return f"<Table: '{self.schema}.{self.name}', query_id: '{self.md5}'>"
+        return f"<Table: '{self.schema}.{self.name}', query_id: '{self.query_id}'>"
 
     @property
     def column_names(self) -> List[str]:
@@ -142,7 +143,7 @@ class Table(Query):
         with self.connection.engine.begin():
             self.connection.engine.execute(
                 "UPDATE cache.cached SET last_accessed = NOW(), access_count = access_count + 1 WHERE query_id ='{}'".format(
-                    self.md5
+                    self.query_id
                 )
             )
         return self._make_query()
@@ -238,19 +239,60 @@ class Table(Query):
             name=name, schema=schema, cascade=cascade, drop=drop
         )
 
-    def random_sample(
-        self, size=None, fraction=None, method="system_rows", estimate_count=True
-    ):
+    def random_sample(self, sampling_method="random_ids", **params):
+        """
+        Draws a random sample from this table.
+
+        Parameters
+        ----------
+        sampling_method : {'system', 'system_rows', 'bernoulli', 'random_ids'}, default 'random_ids'
+            Specifies the method used to select the random sample.
+            'system_rows': performs block-level sampling by randomly sampling
+                each physical storage page of the underlying relation. This
+                sampling method is guaranteed to provide a sample of the specified
+                size
+            'system': performs block-level sampling by randomly sampling each
+                physical storage page for the underlying relation. This
+                sampling method is not guaranteed to generate a sample of the
+                specified size, but an approximation. This method may not
+                produce a sample at all, so it might be worth running it again
+                if it returns an empty dataframe.
+            'bernoulli': samples directly on each row of the underlying
+                relation. This sampling method is slower and is not guaranteed to
+                generate a sample of the specified size, but an approximation
+            'random_ids': samples rows by randomly sampling the row number.
+        size : int, optional
+            The number of rows to draw.
+            Exactly one of the 'size' or 'fraction' arguments must be provided.
+        fraction : float, optional
+            Fraction of rows to draw.
+            Exactly one of the 'size' or 'fraction' arguments must be provided.
+        estimate_count : bool, default True
+            Whether to estimate the number of rows in the table using
+            information contained in the `pg_class` or whether to perform an
+            actual count in the number of rows.
+        seed : float, optional
+            Optionally provide a seed for repeatable random samples.
+            If using random_ids method, seed must be between -/+1.
+            Not available in combination with the system_rows method.
+
+        Returns
+        -------
+        Random
+            A special query object which contains a random sample from this table
+
+        See Also
+        --------
+        flowmachine.core.random.random_factory
+
+        Notes
+        -----
+        Random samples may only be stored if a seed is supplied.
+        """
         from .random import random_factory
 
-        random_class = random_factory(Query)
-        return random_class(
-            query=self,
-            size=size,
-            fraction=fraction,
-            method=method,
-            estimate_count=estimate_count,
-        )
+        random_class = random_factory(Query, sampling_method=sampling_method)
+        return random_class(query=self, **params)
 
     def subset(self, col, subset):
         """

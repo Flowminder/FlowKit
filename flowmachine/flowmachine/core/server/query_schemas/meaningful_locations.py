@@ -9,12 +9,20 @@ from typing import Union, Dict, List
 from flowmachine.core import make_spatial_unit
 from flowmachine.features import (
     MeaningfulLocations,
-    MeaningfulLocationsOD,
-    MeaningfulLocationsAggregate,
     HartiganCluster,
     CallDays,
     EventScore,
     SubscriberLocations,
+)
+from flowmachine.features.location.meaningful_locations_aggregate import (
+    MeaningfulLocationsAggregate,
+)
+from flowmachine.features.location.meaningful_locations_od import MeaningfulLocationsOD
+from flowmachine.features.location.redacted_meaningful_locations_aggregate import (
+    RedactedMeaningfulLocationsAggregate,
+)
+from flowmachine.features.location.redacted_meaningful_locations_od import (
+    RedactedMeaningfulLocationsOD,
 )
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import SubscriberSubset, TowerHourOfDayScores, TowerDayOfWeekScores
@@ -133,9 +141,11 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
             tower_day_of_week_scores=tower_day_of_week_scores,
             tower_hour_of_day_scores=tower_hour_of_day_scores,
         )
-        self.q_meaningful_locations_aggreate = MeaningfulLocationsAggregate(
-            meaningful_locations=q_meaningful_locations,
-            spatial_unit=get_spatial_unit_obj(aggregation_unit),
+        self.q_meaningful_locations_aggregate = RedactedMeaningfulLocationsAggregate(
+            meaningful_locations_aggregate=MeaningfulLocationsAggregate(
+                meaningful_locations=q_meaningful_locations,
+                spatial_unit=get_spatial_unit_obj(aggregation_unit),
+            )
         )
 
     @property
@@ -147,7 +157,7 @@ class MeaningfulLocationsAggregateExposed(BaseExposedQuery):
         -------
         ModalLocation
         """
-        return self.q_meaningful_locations_aggreate
+        return self.q_meaningful_locations_aggregate
 
 
 class MeaningfulLocationsBetweenLabelODMatrixSchema(Schema):
@@ -216,10 +226,12 @@ class MeaningfulLocationsBetweenLabelODMatrixExposed(BaseExposedQuery):
         locs_a = _make_meaningful_locations_object(label=label_a, **common_params)
         locs_b = _make_meaningful_locations_object(label=label_b, **common_params)
 
-        self.q_meaningful_locations_od = MeaningfulLocationsOD(
-            meaningful_locations_a=locs_a,
-            meaningful_locations_b=locs_b,
-            spatial_unit=get_spatial_unit_obj(aggregation_unit),
+        self.q_meaningful_locations_od = RedactedMeaningfulLocationsOD(
+            meaningful_locations_od=MeaningfulLocationsOD(
+                meaningful_locations_a=locs_a,
+                meaningful_locations_b=locs_b,
+                spatial_unit=get_spatial_unit_obj(aggregation_unit),
+            )
         )
 
     @property

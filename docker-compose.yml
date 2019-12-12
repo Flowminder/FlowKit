@@ -12,6 +12,7 @@ networks:
   redis:
   zero:
   flowetl_db:
+  api:
 
 
 
@@ -23,7 +24,7 @@ services:
     ports:
       - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
 
-    environment: &base-flowdb-environment
+    environment:
       POSTGRES_USER: ${POSTGRES_USER:?Must set POSTGRES_USER env var}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Must set POSTGRES_PASSWORD env var}
       FLOWMACHINE_FLOWDB_USER: ${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
@@ -33,52 +34,6 @@ services:
       CACHE_SIZE: ${CACHE_SIZE:-""}
       CACHE_HALF_LIFE: ${CACHE_HALF_LIFE:?Must set CACHE_HALF_LIFE env var}
       FLOWDB_ENABLE_POSTGRES_DEBUG_MODE: ${FLOWDB_ENABLE_POSTGRES_DEBUG_MODE:?Must set FLOWDB_ENABLE_POSTGRES_DEBUG_MODE env var}
-    shm_size: 1G
-    tty: true
-    stdin_open: true
-    restart: always
-    networks:
-      db:
-        aliases:
-          - flowdb
-
-  flowdb_testdata:
-    container_name: flowdb_testdata
-    image: flowminder/flowdb-testdata:${CONTAINER_TAG:-latest}
-    ports:
-      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
-    environment:
-      *base-flowdb-environment
-    shm_size: 1G
-    tty: true
-    stdin_open: true
-    restart: always
-    networks:
-      db:
-        aliases:
-          - flowdb
-
-  flowdb_synthetic_data:
-    container_name: flowdb_synthetic_data
-    image: flowminder/flowdb-synthetic-data:${CONTAINER_TAG:-latest}
-    ports:
-      - ${FLOWDB_PORT:?Must set FLOWDB_PORT env var}:5432
-    environment:
-      << : *base-flowdb-environment
-      SYNTHETIC_DATA_GENERATOR: ${SYNTHETIC_DATA_GENERATOR:?Must set SYNTHETIC_DATA_GENERATOR env var}
-      N_SITES: ${N_SITES:?Must set N_SITES env var}
-      N_CELLS: ${N_CELLS:?Must set N_CELLS env var}
-      N_SUBSCRIBERS: ${N_SUBSCRIBERS:?Must set N_SUBSCRIBERS env var}
-      N_DAYS: ${N_DAYS:?Must set N_DAYS env var}
-      N_CALLS: ${N_CALLS:?Must set N_CALLS env var}
-      N_SMS: ${N_SMS:?Must set N_SMS env var}
-      N_MDS: ${N_MDS:?Must set N_MDS env var}
-      N_TACS: ${N_TACS:?Must set N_TACS env var}
-      P_OUT_OF_AREA: ${P_OUT_OF_AREA:?Must set P_OUT_OF_AREA env var}
-      P_RELOCATE: ${P_RELOCATE:?Must set P_RELOCATE env var}
-      INTERACTIONS_MULTIPLIER: ${INTERACTIONS_MULTIPLIER:?Must set INTERACTIONS_MULTIPLIER env var}
-      DISASTER_START: ${DISASTER_START:?Must set DISASTER_START env var}
-      DISASTER_END: ${DISASTER_END:?Must set DISASTER_END env var}
     shm_size: 1G
     tty: true
     stdin_open: true
@@ -101,6 +56,7 @@ services:
       - FLOWMACHINE_PORT=5555
       - FLOWMACHINE_LOG_LEVEL=${FLOWMACHINE_LOG_LEVEL:?Must set FLOWMACHINE_LOG_LEVEL env var}
       - FLOWMACHINE_SERVER_DEBUG_MODE=${FLOWMACHINE_SERVER_DEBUG_MODE:?Must set FLOWMACHINE_SERVER_DEBUG_MODE env var}
+      - FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING=${FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING:?Must set FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING env var}
       - FLOWDB_PORT=5432
       - FLOWDB_HOST=flowdb
       - FLOWMACHINE_FLOWDB_USER=${FLOWMACHINE_FLOWDB_USER:?Must set FLOWMACHINE_FLOWDB_USER env var}
@@ -159,6 +115,7 @@ services:
     networks:
       - db
       - zero
+      - api
 
   flowauth:
     container_name: flowauth
@@ -208,6 +165,9 @@ services:
       POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
       POSTGRES_HOST: ${FLOWETL_POSTGRES_HOST:?Must set FLOWETL_POSTGRES_HOST env var}
       POSTGRES_DB: ${FLOWETL_POSTGRES_DB:?Must set FLOWETL_POSTGRES_DB env var}
+      FLOWETL_AIRFLOW_ADMIN_USERNAME: "admin"
+      FLOWETL_AIRFLOW_ADMIN_PASSWORD: "password"
+      FLOWETL_AIRFLOW_PG_POOL_SLOT_COUNT: 4
 
     networks:
       - db
@@ -231,3 +191,19 @@ services:
 
     networks:
       - flowetl_db
+
+  autoflow:
+    container_name: autoflow
+    image: flowminder/autoflow:${CONTAINER_TAG:-latest}
+    restart: always
+    volumes:
+      - ${AUTOFLOW_INPUTS_DIR:?Must set AUTOFLOW_INPUTS_DIR env var}:/mounts/inputs:ro
+      - ${AUTOFLOW_OUTPUTS_DIR:?Must set AUTOFLOW_OUTPUTS_DIR env var}:/mounts/outputs:rw
+    environment:
+      AUTOFLOW_LOG_LEVEL: ${AUTOFLOW_LOG_LEVEL:?Must set AUTOFLOW_LOG_LEVEL env var}
+      AUTOFLOW_DB_URI: ${AUTOFLOW_DB_URI:?Must set AUTOFLOW_DB_URI env var}
+      AUTOFLOW_DB_PASSWORD: ${AUTOFLOW_DB_PASSWORD}
+      FLOWAPI_URL: http://flowapi:${FLOWAPI_PORT:?Must set FLOWAPI_PORT env var}
+      FLOWAPI_TOKEN: $FLOWAPI_TOKEN
+    networks:
+      - api

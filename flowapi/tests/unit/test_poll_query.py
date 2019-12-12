@@ -13,7 +13,6 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
     """
     Test that correct status code and any redirect is returned when polling a running query
     """
-    client, db, log_dir, app = app
 
     token = access_token_builder(
         {
@@ -31,7 +30,7 @@ async def test_poll_bad_query(app, access_token_builder, dummy_zmq_server):
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "awol"},
         )
     )
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 404
@@ -55,7 +54,6 @@ async def test_poll_query(
     """
     Test that correct status code and any redirect is returned when polling a running query
     """
-    client, db, log_dir, app = app
 
     token = access_token_builder(
         {
@@ -89,7 +87,7 @@ async def test_poll_query(
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": query_state},
         ),
     )
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == http_code
@@ -102,7 +100,6 @@ async def test_poll_query_query_error(app, access_token_builder, dummy_zmq_serve
     """
     Test that correct status code and any redirect is returned when polling a query that errored
     """
-    client, db, log_dir, app = app
 
     token = access_token_builder({"modal_location": {"permissions": {"poll": True}}})
 
@@ -117,7 +114,7 @@ async def test_poll_query_query_error(app, access_token_builder, dummy_zmq_serve
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "error"},
         ),
     )
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 500

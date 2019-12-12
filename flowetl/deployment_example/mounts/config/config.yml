@@ -1,0 +1,11 @@
+etl:
+  calls:
+    concurrency: 4
+    source:
+      source_type: sql
+      table_name: "sample_data_fdw"
+  sms:
+    concurrency: 2
+    source:
+      source_type: csv
+      filename_pattern: SMS_(\d{8}).csv

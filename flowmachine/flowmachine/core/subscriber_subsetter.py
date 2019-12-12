@@ -25,7 +25,7 @@ class SubscriberSubsetterBase:
     """
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} (md5='{self.md5}')>"
+        return f"<{self.__class__.__name__} (query_id='{self.query_id}')>"
 
     @property
     @abstractmethod
@@ -35,12 +35,12 @@ class SubscriberSubsetterBase:
         )
 
     @property
-    def md5(self):
+    def query_id(self):
         try:
             return self._md5
         except AttributeError:
             raise NotImplementedError(
-                f"Class {self.__class__.__name__} does not implement 'md5'"
+                f"Class {self.__class__.__name__} does not implement 'query_id'"
             )
 
     @abstractmethod
@@ -108,7 +108,7 @@ class SubscriberSubsetterForFlowmachineQuery(SubscriberSubsetterBase):
 
         self._verify_that_subscriber_column_is_present(flowmachine_query)
         self.flowmachine_query = flowmachine_query
-        self._md5 = self.flowmachine_query.md5
+        self._md5 = self.flowmachine_query.query_id
         super().__init__()
 
     def _verify_that_subscriber_column_is_present(self, flowmachine_query):

@@ -13,13 +13,13 @@ async def test_get_geography(app, access_token_builder, dummy_zmq_server):
     """
     Test that JSON is returned when getting a query.
     """
-    client, db, log_dir, app = app
+
     aggregation_unit = "DUMMY_AGGREGATION"
     # Set the rows returned by iterating over the rows from the db
     # This is a long chain of mocks corresponding to getting a connection using
     # the pool's context manager, getting the cursor on that, and then looping
     # over the values in cursor
-    db.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
+    app.db_pool.acquire.return_value.__aenter__.return_value.cursor.return_value.__aiter__.return_value = [
         {"some": "valid"},
         {"json": "bits"},
     ]
@@ -36,7 +36,7 @@ async def test_get_geography(app, access_token_builder, dummy_zmq_server):
         status="success", payload={"query_state": "completed", "sql": "SELECT 1;"}
     )
     dummy_zmq_server.side_effect = (zmq_reply,)
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/geography/{aggregation_unit}",
         headers={"Authorization": f"Bearer {token}"},
     )
@@ -63,7 +63,6 @@ async def test_get_geography_status(
     """
     Test that correct status code is returned when server returns an error.
     """
-    client, db, log_dir, app = app
 
     token = access_token_builder(
         {
@@ -75,7 +74,7 @@ async def test_get_geography_status(
     )
     zmq_reply = ZMQReply(status="error", msg="Some error")
     dummy_zmq_server.side_effect = (zmq_reply,)
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/geography/DUMMY_AGGREGATION",
         headers={"Authorization": f"Bearer {token}"},
     )
@@ -88,7 +87,6 @@ async def test_geography_errors(response, app, dummy_zmq_server, access_token_bu
     """
     Test that status code 500 is returned for error and missing payload.
     """
-    client, db, log_dir, app = app
 
     token = access_token_builder(
         {
@@ -99,7 +97,7 @@ async def test_geography_errors(response, app, dummy_zmq_server, access_token_bu
         }
     )
     dummy_zmq_server.side_effect = (response,)
-    response = await client.get(
+    response = await app.client.get(
         f"/api/0/geography/DUMMY_AGGREGATION",
         headers={"Authorization": f"Bearer {token}"},
     )

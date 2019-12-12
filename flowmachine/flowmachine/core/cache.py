@@ -7,8 +7,10 @@
 """
 Functions which deal with inspecting and managing the query cache.
 """
-
+import asyncio
 import pickle
+from concurrent.futures import Executor, TimeoutError
+from functools import partial
 
 from typing import TYPE_CHECKING, Tuple, List, Callable, Optional
 
@@ -24,6 +26,7 @@ from flowmachine.core.errors.flowmachine_errors import (
     StoreFailedException,
 )
 from flowmachine.core.query_state import QueryStateMachine, QueryEvent
+from flowmachine import __version__
 
 if TYPE_CHECKING:
     from .query import Query
@@ -93,11 +96,11 @@ def write_query_to_cache(
     This is a _blocking function_, and will not return until the query is no longer in an executing state.
 
     """
-    logger.debug(f"Trying to switch '{query.md5}' to executing state.")
-    q_state_machine = QueryStateMachine(redis, query.md5)
+    logger.debug(f"Trying to switch '{query.query_id}' to executing state.")
+    q_state_machine = QueryStateMachine(redis, query.query_id)
     current_state, this_thread_is_owner = q_state_machine.execute()
     if this_thread_is_owner:
-        logger.debug(f"In charge of executing '{query.md5}'.")
+        logger.debug(f"In charge of executing '{query.query_id}'.")
         try:
             query_ddl_ops = ddl_ops_func(name, schema)
         except Exception as exc:
@@ -127,16 +130,16 @@ def write_query_to_cache(
     if q_state_machine.is_completed:
         return query
     elif q_state_machine.is_cancelled:
-        logger.error(f"Query '{query.md5}' was cancelled.")
-        raise QueryCancelledException(query.md5)
+        logger.error(f"Query '{query.query_id}' was cancelled.")
+        raise QueryCancelledException(query.query_id)
     elif q_state_machine.is_errored:
-        logger.error(f"Query '{query.md5}' finished with an error.")
-        raise QueryErroredException(query.md5)
+        logger.error(f"Query '{query.query_id}' finished with an error.")
+        raise QueryErroredException(query.query_id)
     else:
         logger.error(
-            f"Query '{query.md5}' not stored. State is {q_state_machine.current_query_state}"
+            f"Query '{query.query_id}' not stored. State is {q_state_machine.current_query_state}"
         )
-        raise StoreFailedException(query.md5)
+        raise StoreFailedException(query.query_id)
 
 
 def write_cache_metadata(
@@ -158,21 +161,22 @@ def write_cache_metadata(
 
     """
 
-    from ..__init__ import __version__
-
     con = connection.engine
 
     self_storage = b""
-    try:
-        self_storage = pickle.dumps(query)
-    except Exception as e:
-        logger.debug("Can't pickle ({e}), attempting to cache anyway.")
-        pass
 
     try:
         in_cache = bool(
-            connection.fetch(f"SELECT * FROM cache.cached WHERE query_id='{query.md5}'")
+            connection.fetch(
+                f"SELECT * FROM cache.cached WHERE query_id='{query.query_id}'"
+            )
         )
+        if not in_cache:
+            try:
+                self_storage = pickle.dumps(query)
+            except Exception as e:
+                logger.debug(f"Can't pickle ({e}), attempting to cache anyway.")
+                pass
 
         with con.begin():
             cache_record_insert = """
@@ -184,7 +188,7 @@ def write_cache_metadata(
             con.execute(
                 cache_record_insert,
                 (
-                    query.md5,
+                    query.query_id,
                     __version__,
                     query._make_query(),
                     compute_time,
@@ -193,15 +197,17 @@ def write_cache_metadata(
                     psycopg2.Binary(self_storage),
                 ),
             )
-            con.execute("SELECT touch_cache(%s);", query.md5)
-            con.execute("SELECT pg_notify(%s, 'Done.')", query.md5)
-            logger.debug("{} added to cache.".format(query.fully_qualified_table_name))
+            con.execute("SELECT touch_cache(%s);", query.query_id)
+
             if not in_cache:
                 for dep in query._get_stored_dependencies(exclude_self=True):
                     con.execute(
                         "INSERT INTO cache.dependencies values (%s, %s) ON CONFLICT DO NOTHING",
-                        (query.md5, dep.md5),
+                        (query.query_id, dep.query_id),
                     )
+                logger.debug(f"{query.fully_qualified_table_name} added to cache.")
+            else:
+                logger.debug(f"Touched cache for {query.fully_qualified_table_name}.")
     except NotImplementedError:
         logger.debug("Table has no standard name.")
 
@@ -214,7 +220,7 @@ def touch_cache(connection: "Connection", query_id: str) -> float:
     ----------
     connection : Connection
     query_id : str
-        md5 id of the query to touch
+        Unique id of the query to touch
 
     Returns
     -------
@@ -319,7 +325,7 @@ def invalidate_cache_by_id(
     ----------
     connection : Connection
     query_id : str
-        md5 id of the query
+        Unique id of the query
     cascade : bool, default False
         Set to true to remove any queries that depend on the one being removed
 
@@ -342,7 +348,7 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
     ----------
     connection : Connection
     query_id : str
-        md5 id of the query
+        Unique id of the query
 
     Returns
     -------
@@ -359,7 +365,7 @@ def get_query_object_by_id(connection: "Connection", query_id: str) -> "Query":
 
 
 def get_cached_query_objects_ordered_by_score(
-    connection: "Connection"
+    connection: "Connection", protected_period: Optional[int] = None,
 ) -> List[Tuple["Query", int]]:
     """
     Get all cached query objects in ascending cache score order.
@@ -367,6 +373,10 @@ def get_cached_query_objects_ordered_by_score(
     Parameters
     ----------
     connection : Connection
+    protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded. If None,
+        the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
+        completely.
 
     Returns
     -------
@@ -374,16 +384,26 @@ def get_cached_query_objects_ordered_by_score(
         Returns a list of cached Query objects with their on disk sizes
 
     """
-    qry = """SELECT obj, table_size(tablename, schema) as table_size
+    protected_period_clause = (
+        (f" AND NOW()-created > INTERVAL '{protected_period} seconds'")
+        if protected_period is not None
+        else " AND NOW()-created > (cache_protected_period()*INTERVAL '1 seconds')"
+    )
+    qry = f"""SELECT obj, table_size(tablename, schema) as table_size
         FROM cache.cached
         WHERE NOT cached.class='Table'
+        {protected_period_clause}
         ORDER BY cache_score(cache_score_multiplier, compute_time, table_size(tablename, schema)) ASC
         """
     cache_queries = connection.fetch(qry)
     return [(pickle.loads(obj), table_size) for obj, table_size in cache_queries]
 
 
-def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
+def shrink_one(
+    connection: "Connection",
+    dry_run: bool = False,
+    protected_period: Optional[int] = None,
+) -> "Query":
     """
     Remove the lowest scoring cached query from cache and return it and size of it
     in bytes.
@@ -393,16 +413,22 @@ def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
     connection : "Connection"
     dry_run : bool, default False
         Set to true to just report the object that would be removed and not remove it
+     protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded. If None,
+        the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
+        completely.
 
     Returns
     -------
     tuple of "Query", int
         The "Query" object that was removed from cache and the size of it
     """
-    obj_to_remove, obj_size = get_cached_query_objects_ordered_by_score(connection)[0]
+    obj_to_remove, obj_size = get_cached_query_objects_ordered_by_score(
+        connection, protected_period=protected_period
+    )[0]
 
     logger.info(
-        f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.md5} of type {obj_to_remove.__class__}"
+        f"{'Would' if dry_run else 'Will'} remove cache record for {obj_to_remove.query_id} of type {obj_to_remove.__class__}"
     )
     logger.info(
         f"Table {obj_to_remove.fully_qualified_table_name} ({obj_size} bytes) {'would' if dry_run else 'will'} be removed."
@@ -414,7 +440,10 @@ def shrink_one(connection: "Connection", dry_run: bool = False) -> "Query":
 
 
 def shrink_below_size(
-    connection: "Connection", size_threshold: int = None, dry_run: bool = False
+    connection: "Connection",
+    size_threshold: int = None,
+    dry_run: bool = False,
+    protected_period: Optional[int] = None,
 ) -> "Query":
     """
     Remove queries from the cache until it is below a specified size threshold.
@@ -426,6 +455,10 @@ def shrink_below_size(
         Optionally override the maximum cache size set in flowdb.
     dry_run : bool, default False
         Set to true to just report the objects that would be removed and not remove them
+    protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded. If None,
+        the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
+        completely.
 
     Returns
     -------
@@ -433,18 +466,27 @@ def shrink_below_size(
         List of the queries that were removed
     """
     initial_cache_size = get_size_of_cache(connection)
+    if size_threshold is None:
+        size_threshold = get_max_size_of_cache(connection)
     removed = []
     logger.info(
-        f"Shrinking cache from {initial_cache_size} to below {size_threshold}{' (dry run)' if dry_run else ''}."
+        f"Shrinking cache from {initial_cache_size} to below {size_threshold}{' (dry run)' if dry_run else ''}.",
+        initial_cache_size=initial_cache_size,
+        size_threshold=size_threshold,
+        dry_run=dry_run,
     )
 
     if dry_run:
-        cached_queries = iter(get_cached_query_objects_ordered_by_score(connection))
+        cached_queries = iter(
+            get_cached_query_objects_ordered_by_score(
+                connection, protected_period=protected_period
+            )
+        )
 
-        def dry_run_shrink(connection):
+        def dry_run_shrink(connection, protected_period):
             obj, obj_size = cached_queries.__next__()
             logger.info(
-                f"Would remove cache record for {obj.md5} of type {obj.__class__}"
+                f"Would remove cache record for {obj.query_id} of type {obj.__class__}"
             )
             logger.info(
                 f"Table {obj.fully_qualified_table_name} ({obj_size} bytes) would be removed."
@@ -455,15 +497,20 @@ def shrink_below_size(
     else:
         shrink = shrink_one
 
-    if size_threshold is None:
-        size_threshold = get_max_size_of_cache(connection)
-
-    while initial_cache_size > size_threshold:
-        obj_removed, cache_reduction = shrink(connection)
+    current_cache_size = initial_cache_size
+    while current_cache_size > size_threshold:
+        obj_removed, cache_reduction = shrink(
+            connection, protected_period=protected_period
+        )
         removed.append(obj_removed)
-        initial_cache_size -= cache_reduction
+        current_cache_size -= cache_reduction
     logger.info(
-        f"New cache size {'would' if dry_run else 'will'} be {initial_cache_size}."
+        f"New cache size {'would' if dry_run else 'will'} be {current_cache_size}.",
+        removed=[q.query_id for q in removed],
+        dry_run=dry_run,
+        initial_cache_size=initial_cache_size,
+        current_cache_size=current_cache_size,
+        size_threshold=size_threshold,
     )
     return removed
 
@@ -576,6 +623,40 @@ def set_cache_half_life(connection: "Connection", cache_half_life: float) -> Non
         trans.execute(sql)
 
 
+def get_cache_protected_period(connection: "Connection") -> float:
+    """
+    Get the current setting for cache protected period.
+
+    Parameters
+    ----------
+    connection : "Connection"
+
+    Returns
+    -------
+    int
+        Cache protected period
+
+    """
+    sql = "SELECT cache_protected_period()"
+    return float(connection.fetch(sql)[0][0])
+
+
+def set_cache_protected_period(connection: "Connection", protected_period: int) -> None:
+    """
+    Set the cache's half-life.
+
+    Parameters
+    ----------
+    connection : "Connection"
+    protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded.
+    """
+
+    sql = f"UPDATE cache.cache_config SET value='{int(protected_period)}' WHERE key='protected_period'"
+    with connection.engine.begin() as trans:
+        trans.execute(sql)
+
+
 def set_max_size_of_cache(connection: "Connection", cache_size_limit: int) -> None:
     """
     Set the upper limit set in FlowDB for the cache size, in bytes.
@@ -600,7 +681,7 @@ def get_compute_time(connection: "Connection", query_id: str) -> float:
     ----------
     connection : "Connection"
     query_id : str
-        md5 identifier of the query
+        Unique id of the query
 
     Returns
     -------
@@ -627,7 +708,7 @@ def get_score(connection: "Connection", query_id: str) -> float:
     ----------
     connection: "Connection"
     query_id : str
-        md5 id of the cached query
+        Unique id of the cached query
 
     Returns
     -------
@@ -655,7 +736,7 @@ def cache_table_exists(connection: "Connection", query_id: str) -> bool:
     ----------
     connection: "Connection"
     query_id : str
-        md5 id of the cached query
+        Unique id of the cached query
 
     Returns
     -------
@@ -666,3 +747,67 @@ def cache_table_exists(connection: "Connection", query_id: str) -> bool:
         return True
     except ValueError:
         return False
+
+
+async def watch_and_shrink_cache(
+    *,
+    flowdb_connection: "Connection",
+    pool: Executor,
+    sleep_time: int = 86400,
+    timeout: Optional[int] = 600,
+    loop: bool = True,
+    size_threshold: int = None,
+    dry_run: bool = False,
+    protected_period: Optional[int] = None,
+) -> None:
+    """
+    Background task to periodically trigger a shrink of the cache.
+
+    Parameters
+    ----------
+    flowdb_connection : Connection
+        Flowdb connection to check dates on
+    pool : Executor
+        Executor to run the date check with
+    sleep_time : int, default 86400
+        Number of seconds to sleep for between checks
+    timeout : int or None, default 600
+        Seconds to wait for a cache shrink to complete before cancelling it
+    loop : bool, default True
+        Set to false to return after the first check
+    size_threshold : int, default None
+        Optionally override the maximum cache size set in flowdb.
+    dry_run : bool, default False
+        Set to true to just report the objects that would be removed and not remove them
+    protected_period : int, default None
+        Optionally specify a number of seconds within which cache entries are excluded. If None,
+        the value stored in cache.cache_config will be used.Set to a negative number to ignore cache protection
+        completely.
+
+    Returns
+    -------
+    None
+
+    """
+    shrink_func = partial(
+        shrink_below_size,
+        connection=flowdb_connection,
+        size_threshold=size_threshold,
+        dry_run=dry_run,
+        protected_period=protected_period,
+    )
+    while True:
+        logger.debug("Checking if cache should be shrunk.")
+
+        try:
+            await asyncio.wait_for(
+                asyncio.get_running_loop().run_in_executor(pool, shrink_func),
+                timeout=timeout,
+            )
+        except TimeoutError:
+            logger.error(
+                f"Failed to complete cache shrink within {timeout}s. Trying again in {sleep_time}s."
+            )
+        if not loop:
+            break
+        await asyncio.sleep(sleep_time)

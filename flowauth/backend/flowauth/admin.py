@@ -636,11 +636,16 @@ def add_user():
     Returns the new user's id and group_id.
     """
     json = request.get_json()
-    if zxcvbn(json["password"])["score"] > 3:
-        user = User(**json)
+    if len(json["password"]) > 0:
+        if zxcvbn(json["password"])["score"] > 3:
+            user = User(**json)
+        else:
+            raise InvalidUsage(
+                "Password not complex enough.", payload={"bad_field": "password"}
+            )
     else:
         raise InvalidUsage(
-            "Password not complex enough.", payload={"bad_field": "password"}
+            "Password must be provided.", payload={"bad_field": "password"}
         )
     if User.query.filter(User.username == json["username"]).first() is not None:
         raise InvalidUsage(
@@ -672,9 +677,11 @@ def rm_user(user_id):
 
     """
     user = User.query.filter(User.id == user_id).first_or_404()
+    user_group = [g for g in user.groups if g.user_group][0]
     if user.is_admin and len(User.query.filter(User.is_admin).all()) == 1:
         raise InvalidUsage("Removing this user would leave no admins.")
     db.session.delete(user)
+    db.session.delete(user_group)
     db.session.commit()
     return jsonify({"poll": "OK"})
 
@@ -730,6 +737,14 @@ def edit_user(user_id):
             )
         else:
             user.is_admin = edits["is_admin"]
+    if "require_two_factor" in edits:
+        user.require_two_factor = edits["require_two_factor"]
+    if (
+        "has_two_factor" in edits
+        and not edits["has_two_factor"]
+        and user.two_factor_auth is not None
+    ):
+        db.session.delete(user.two_factor_auth)
     db.session.add(user)
     db.session.commit()
     return jsonify({"id": user.id, "group_id": user_group.id})
@@ -758,6 +773,9 @@ def user_details(user_id):
             "id": user.id,
             "name": user.username,
             "is_admin": user.is_admin,
+            "has_two_factor": user.two_factor_auth is not None
+            and user.two_factor_auth.enabled,
+            "require_two_factor": user.require_two_factor,
             "groups": [{"id": group.id, "name": group.name} for group in user.groups],
             "servers": [
                 {
@@ -858,7 +876,7 @@ def list_all_tokens():
             {
                 "id": token.id,
                 "name": token.name,
-                "token": token.token,
+                "token": token.decrypted_token,
                 "expires": token.expires,
                 "server_name": token.server.name,
                 "username": token.owner.username,

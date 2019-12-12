@@ -13,3 +13,4 @@ from .feature_collection import feature_collection
 from .sets import UniqueSubscribers, SubscriberLocationSubset
 from .event_table_subset import EventTableSubset
 from .events_tables_union import EventsTablesUnion
+from .histogram_aggregation import HistogramAggregation

@@ -39,7 +39,7 @@ from .zmq_helpers import ZMQReply
 __all__ = ["perform_action"]
 
 
-def action_handler__ping() -> ZMQReply:
+def action_handler__ping(config: "FlowmachineServerConfig") -> ZMQReply:
     """
     Handler for 'ping' action.
 
@@ -48,7 +48,9 @@ def action_handler__ping() -> ZMQReply:
     return ZMQReply(status="success", msg="pong")
 
 
-def action_handler__get_available_queries() -> ZMQReply:
+def action_handler__get_available_queries(
+    config: "FlowmachineServerConfig",
+) -> ZMQReply:
     """
     Handler for 'get_available_queries' action.
 
@@ -59,7 +61,7 @@ def action_handler__get_available_queries() -> ZMQReply:
 
 
 @functools.lru_cache(maxsize=1)
-def action_handler__get_query_schemas() -> ZMQReply:
+def action_handler__get_query_schemas(config: "FlowmachineServerConfig") -> ZMQReply:
     """
     Handler for the 'get_query_schemas' action.
 
@@ -77,7 +79,9 @@ def action_handler__get_query_schemas() -> ZMQReply:
     return ZMQReply(status="success", payload={"query_schemas": schemas_spec})
 
 
-def action_handler__run_query(**action_params: dict) -> ZMQReply:
+def action_handler__run_query(
+    config: "FlowmachineServerConfig", **action_params: dict
+) -> ZMQReply:
     """
     Handler for the 'run_query' action.
 
@@ -86,21 +90,20 @@ def action_handler__run_query(**action_params: dict) -> ZMQReply:
     parameters needed to construct the query.
     """
     try:
-        try:
-            query_obj = FlowmachineQuerySchema().load(action_params)
-        except TypeError as exc:
-            # We need to catch TypeError here, otherwise they propagate up to
-            # perform_action() and result in a very misleading error message.
-            orig_error_msg = exc.args[0]
-            error_msg = (
-                f"Internal flowmachine server error: could not create query object using query schema. "
-                f"The original error was: '{orig_error_msg}'"
-            )
-            return ZMQReply(
-                status="error",
-                msg=error_msg,
-                payload={"params": action_params, "orig_error_msg": orig_error_msg},
-            )
+        query_obj = FlowmachineQuerySchema().load(action_params)
+    except TypeError as exc:
+        # We need to catch TypeError here, otherwise they propagate up to
+        # perform_action() and result in a very misleading error message.
+        orig_error_msg = exc.args[0]
+        error_msg = (
+            f"Internal flowmachine server error: could not create query object using query schema. "
+            f"The original error was: '{orig_error_msg}'"
+        )
+        return ZMQReply(
+            status="error",
+            msg=error_msg,
+            payload={"params": action_params, "orig_error_msg": orig_error_msg},
+        )
     except ValidationError as exc:
         # The dictionary of marshmallow errors can contain integers as keys,
         # which will raise an error when converting to JSON (where the keys
@@ -124,9 +127,11 @@ def action_handler__run_query(**action_params: dict) -> ZMQReply:
     try:
         query_id = q_info_lookup.get_query_id(action_params)
     except QueryInfoLookupError:
-        # Set the query running (it's safe to call this even if the query was set running before)
         try:
-            query_id = query_obj.store_async()
+            # Set the query running (it's safe to call this even if the query was set running before)
+            query_id = query_obj.store_async(
+                store_dependencies=config.store_dependencies
+            )
         except Exception as e:
             return ZMQReply(
                 status="error",
@@ -165,7 +170,9 @@ def _get_query_kind_for_query_id(query_id: str) -> Union[None, str]:
         return None
 
 
-def action_handler__poll_query(query_id: str) -> ZMQReply:
+def action_handler__poll_query(
+    config: "FlowmachineServerConfig", query_id: str
+) -> ZMQReply:
     """
     Handler for the 'poll_query' action.
 
@@ -189,7 +196,9 @@ def action_handler__poll_query(query_id: str) -> ZMQReply:
         return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_query_kind(query_id: str) -> ZMQReply:
+def action_handler__get_query_kind(
+    config: "FlowmachineServerConfig", query_id: str
+) -> ZMQReply:
     """
     Handler for the 'get_query_kind' action.
 
@@ -205,7 +214,9 @@ def action_handler__get_query_kind(query_id: str) -> ZMQReply:
         return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_query_params(query_id: str) -> ZMQReply:
+def action_handler__get_query_params(
+    config: "FlowmachineServerConfig", query_id: str
+) -> ZMQReply:
     """
     Handler for the 'get_query_params' action.
 
@@ -224,7 +235,9 @@ def action_handler__get_query_params(query_id: str) -> ZMQReply:
     return ZMQReply(status="success", payload=payload)
 
 
-def action_handler__get_sql(query_id: str) -> ZMQReply:
+def action_handler__get_sql(
+    config: "FlowmachineServerConfig", query_id: str
+) -> ZMQReply:
     """
     Handler for the 'get_sql' action.
 
@@ -254,63 +267,55 @@ def action_handler__get_sql(query_id: str) -> ZMQReply:
         return ZMQReply(status="error", msg=msg, payload=payload)
 
 
-def action_handler__get_geography(aggregation_unit: str) -> ZMQReply:
+def action_handler__get_geography(
+    config: "FlowmachineServerConfig", aggregation_unit: str
+) -> ZMQReply:
     """
     Handler for the 'get_query_geography' action.
 
     Returns SQL to get geography for the given `aggregation_unit` as GeoJSON.
     """
     try:
-        try:
-            try:
-                query_obj = GeographySchema().load(
-                    {"aggregation_unit": aggregation_unit}
-                )
-            except TypeError as exc:
-                # We need to catch TypeError here, otherwise they propagate up to
-                # perform_action() and result in a very misleading error message.
-                orig_error_msg = exc.args[0]
-                error_msg = (
-                    f"Internal flowmachine server error: could not create query object using query schema. "
-                    f"The original error was: '{orig_error_msg}'"
-                )
-                return ZMQReply(
-                    status="error",
-                    msg=error_msg,
-                    payload={
-                        "params": {"aggregation_unit": aggregation_unit},
-                        "orig_error_msg": orig_error_msg,
-                    },
-                )
-        except ValidationError as exc:
-            # The dictionary of marshmallow errors can contain integers as keys,
-            # which will raise an error when converting to JSON (where the keys
-            # must be strings). Therefore we transform the keys to strings here.
-            error_msg = "Parameter validation failed."
-            validation_error_messages = convert_dict_keys_to_strings(exc.messages)
-            return ZMQReply(
-                status="error", msg=error_msg, payload=validation_error_messages
-            )
-
-        # We don't cache the query, because it just selects columns from a
-        # geography table. If we expose an aggregation unit which relies on another
-        # query to create the geometry (e.g. grid), we may want to reconsider this
-        # decision.
-
-        sql = query_obj.geojson_sql
-        # TODO: put query_run_log back in!
-        # query_run_log.info("get_geography", **run_log_dict)
-        payload = {"query_state": QueryState.COMPLETED, "sql": sql}
-        return ZMQReply(status="success", payload=payload)
-    except Exception as exc:
-        # If we don't catch exceptions here, the server will die and FlowAPI will hang indefinitely.
-        error_msg = f"Internal flowmachine server error: '{exc.args[0]}'"
+        query_obj = GeographySchema().load({"aggregation_unit": aggregation_unit})
+    except TypeError as exc:
+        # We need to catch TypeError here, otherwise they propagate up to
+        # perform_action() and result in a very misleading error message.
+        orig_error_msg = exc.args[0]
+        error_msg = (
+            f"Internal flowmachine server error: could not create query object using query schema. "
+            f"The original error was: '{orig_error_msg}'"
+        )
         return ZMQReply(
-            status="error", msg=error_msg, payload={"error_msg": exc.args[0]}
+            status="error",
+            msg=error_msg,
+            payload={
+                "params": {"aggregation_unit": aggregation_unit},
+                "orig_error_msg": orig_error_msg,
+            },
+        )
+    except ValidationError as exc:
+        # The dictionary of marshmallow errors can contain integers as keys,
+        # which will raise an error when converting to JSON (where the keys
+        # must be strings). Therefore we transform the keys to strings here.
+        error_msg = "Parameter validation failed."
+        validation_error_messages = convert_dict_keys_to_strings(exc.messages)
+        return ZMQReply(
+            status="error", msg=error_msg, payload=validation_error_messages
         )
 
+    # We don't cache the query, because it just selects columns from a
+    # geography table. If we expose an aggregation unit which relies on another
+    # query to create the geometry (e.g. grid), we may want to reconsider this
+    # decision.
 
-def action_handler__get_available_dates() -> ZMQReply:
+    sql = query_obj.geojson_sql
+    # TODO: put query_run_log back in!
+    # query_run_log.info("get_geography", **run_log_dict)
+    payload = {"query_state": QueryState.COMPLETED, "sql": sql}
+    return ZMQReply(status="success", payload=payload)
+
+
+def action_handler__get_available_dates(config: "FlowmachineServerConfig") -> ZMQReply:
     """
     Handler for the 'get_available_dates' action.
 
@@ -343,7 +348,9 @@ def get_action_handler(action: str) -> Callable:
         raise FlowmachineServerError(f"Unknown action: '{action}'")
 
 
-def perform_action(action_name: str, action_params: dict) -> ZMQReply:
+def perform_action(
+    action_name: str, action_params: dict, *, config: "FlowmachineServerConfig"
+) -> ZMQReply:
     """
     Perform action with the given action parameters.
 
@@ -353,6 +360,8 @@ def perform_action(action_name: str, action_params: dict) -> ZMQReply:
         The action to be performed.
     action_params : dict
         Parameters for the action handler.
+    config : FlowmachineServerConfig
+        Server config options
 
     Returns
     -------
@@ -365,7 +374,7 @@ def perform_action(action_name: str, action_params: dict) -> ZMQReply:
 
     # Run the action handler to obtain the reply
     try:
-        reply = action_handler_func(**action_params)
+        reply = action_handler_func(config=config, **action_params)
     except TypeError:
         error_msg = f"Internal flowmachine server error: wrong arguments passed to handler for action '{action_name}'."
         raise FlowmachineServerError(error_msg)

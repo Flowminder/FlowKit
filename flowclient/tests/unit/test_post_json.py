@@ -79,8 +79,8 @@ def test_generic_status_code_unknown_error(session_mock, token):
     """An error should be raised for status codes that aren't expected, with a default error message if not given."""
     session_mock.post.return_value.status_code = 418
     session_mock.post.return_value.json.side_effect = (
-        ValueError
-    )  # indicated that the resonse body doesn't contain valid JSON
+        ValueError  # indicated that the resonse body doesn't contain valid JSON
+    )
     connection = flowclient.connect(url="DUMMY_API", token=token)
     with pytest.raises(
         FlowclientConnectionError,

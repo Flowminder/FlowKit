@@ -27,38 +27,15 @@ def pytest_configure(config):
     )
 
 
-def get_string_with_test_parameter_values(item):
-    """
-    If `item` corresponds to a parametrized pytest test, return a string
-    containing the parameter values. Otherwise return an empty string.
-    """
-    if "parametrize" in item.keywords:
-        m = re.search(
-            "(\[[^\]]*\])$", item.name
-        )  # retrieve text in square brackets at the end of the item's name
-        if m:
-            param_values_str = f" {m.group(1)}"
-        else:
-            warnings.warn(
-                f"Test is parametrized but could not extract parameter values from name: '{item.name}'"
-            )
-    else:
-        param_values_str = ""
-
-    return param_values_str
-
-
 def pytest_itemcollected(item):
     """
     Custom hook which improves stdout logging from from pytest's default.
 
     Instead of just printing the filename and no description of the test
-    (as would be the default) it prints the docstring as the description
-    and also adds info about any parameters (if the test is parametrized).
+    (as would be the default) it also prints the docstring.
     """
     if item.obj.__doc__:
-        item._nodeid = "* " + " ".join(item.obj.__doc__.split())
-        item._nodeid += get_string_with_test_parameter_values(item)
+        item._nodeid = f'{item._nodeid} ({" ".join(item.obj.__doc__.split())})'
 
 
 class DBConn:

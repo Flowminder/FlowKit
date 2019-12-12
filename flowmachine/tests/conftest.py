@@ -6,26 +6,64 @@
 """
 Commonly used testing fixtures for flowmachine.
 """
-
+import json
 import os
+from functools import partial
+from json import JSONDecodeError
+from pathlib import Path
+
 import pandas as pd
 import pytest
 import re
 import logging
 from unittest.mock import Mock
+
+from _pytest.capture import CaptureResult
+from approvaltests import verify
 from approvaltests.reporters.generic_diff_reporter_factory import (
     GenericDiffReporterFactory,
 )
 
 import flowmachine
-from flowmachine.core import Query, make_spatial_unit
+from flowmachine.core import Query, make_spatial_unit, Connection
 from flowmachine.core.cache import reset_cache
 from flowmachine.features import EventTableSubset
 
 logger = logging.getLogger()
 
 here = os.path.dirname(os.path.abspath(__file__))
-flowkit_toplevel_dir = os.path.join(here, "..", "..")
+flowkit_toplevel_dir = Path(__file__).parent.parent.parent
+
+
+@pytest.fixture
+def meaningful_locations_labels():
+    return {
+        "evening": {
+            "type": "Polygon",
+            "coordinates": [[[1e-06, -0.5], [1e-06, -1.1], [1.1, -1.1], [1.1, -0.5]]],
+        },
+        "day": {
+            "type": "Polygon",
+            "coordinates": [[[-1.1, -0.5], [-1.1, 0.5], [-1e-06, 0.5], [0, -0.5]]],
+        },
+    }
+
+
+@pytest.fixture
+def json_log(caplog):
+    def parse_json():
+        loggers = dict(debug=[], query_run_log=[])
+        for logger, level, msg in caplog.record_tuples:
+            if msg == "":
+                continue
+            try:
+                parsed = json.loads(msg)
+                loggers[parsed["logger"].split(".")[1]].append(parsed)
+            except JSONDecodeError:
+                loggers["debug"].append(msg)
+        return CaptureResult(err=loggers["debug"], out=loggers["query_run_log"])
+
+    return parse_json
 
 
 @pytest.fixture(
@@ -68,38 +106,15 @@ def exemplar_spatial_unit_param(request):
     yield make_spatial_unit(**request.param)
 
 
-def get_string_with_test_parameter_values(item):
-    """
-    If `item` corresponds to a parametrized pytest test, return a string
-    containing the parameter values. Otherwise return an empty string.
-    """
-    if "parametrize" in item.keywords:
-        m = re.search(
-            "(\[.*\])$", item.name
-        )  # retrieve text in square brackets at the end of the item's name
-        if m:
-            param_values_str = f" {m.group(1)}"
-        else:
-            raise RuntimeError(
-                f"Test is parametrized but could not extract parameter values from name: '{item.name}'"
-            )
-    else:
-        param_values_str = ""
-
-    return param_values_str
-
-
 def pytest_itemcollected(item):
     """
     Custom hook which improves stdout logging from from pytest's default.
 
     Instead of just printing the filename and no description of the test
-    (as would be the default) it prints the docstring as the description
-    and also adds info about any parameters (if the test is parametrized).
+    (as would be the default) it also prints the docstring.
     """
     if item.obj.__doc__:
-        item._nodeid = "* " + " ".join(item.obj.__doc__.split())
-        item._nodeid += get_string_with_test_parameter_values(item)
+        item._nodeid = f'{item._nodeid} ({" ".join(item.obj.__doc__.split())})'
 
 
 @pytest.fixture(autouse=True)
@@ -142,13 +157,14 @@ def mocked_connections(monkeypatch):
         Mocks for init_logging, Connection, StrictRedis and _start_threadpool
 
     """
+
     logging_mock = Mock()
-    connection_mock = Mock(return_value=None)
+    connection_mock = Mock(spec=Connection)
     redis_mock = Mock()
     tp_mock = Mock()
     monkeypatch.delattr("flowmachine.core.query.Query.connection", raising=False)
     monkeypatch.setattr(flowmachine.core.init, "set_log_level", logging_mock)
-    monkeypatch.setattr(flowmachine.core.Connection, "__init__", connection_mock)
+    monkeypatch.setattr(flowmachine.core.init, "Connection", connection_mock)
     monkeypatch.setattr("redis.StrictRedis", redis_mock)
     monkeypatch.setattr(flowmachine.core.init, "_start_threadpool", tp_mock)
     yield logging_mock, connection_mock, redis_mock, tp_mock
@@ -244,7 +260,11 @@ def dummy_redis(monkeypatch):
 @pytest.fixture(scope="session")
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
-    diff_reporter_factory.load(
-        os.path.join(flowkit_toplevel_dir, "approvaltests_diff_reporters.json")
-    )
-    return diff_reporter_factory.get_first_working()
+    try:
+        with open(Path(__file__).parent / "reporters.json") as fin:
+            for config in json.load(fin):
+                diff_reporter_factory.add_default_reporter_config(config)
+    except FileNotFoundError:
+        pass
+    differ = diff_reporter_factory.get_first_working()
+    return partial(verify, reporter=differ)

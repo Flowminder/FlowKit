@@ -10,8 +10,9 @@
 # Now un-exclude only those folders and files that are needed for
 # building the flowdb_testdata image:
 #
-!./bin/z_ingest_test_data.sh
-!./bin/zz_run_synthetic_dfs_data_generation_script.sh
+!./bin/9900_ingest_test_data.sh
+!./bin/9900_run_synthetic_dfs_data_generation_script.sh
+!./bin/9910_migrate_test_data.sql
 !./test_data/Pipfile
 !./test_data/Pipfile.lock
 !./test_data/sql/
@@ -24,5 +25,5 @@
 !./synthetic_data/Pipfile.lock
 !./bin/generate_synthetic_data.py
 !./bin/generate_synthetic_data_sql.py
-!./bin/z_ingest_synthetic_data.sh
+!./bin/9900_ingest_synthetic_data.sh
 !./synthetic_data/data/

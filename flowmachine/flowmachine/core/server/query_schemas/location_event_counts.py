@@ -6,6 +6,7 @@ from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf, Length
 
 from flowmachine.features import TotalLocationEvents
+from flowmachine.features.location.redacted_total_events import RedactedTotalEvents
 from .base_exposed_query import BaseExposedQuery
 from .custom_fields import EventTypes, SubscriberSubset
 from .aggregation_unit import AggregationUnit, get_spatial_unit_obj
@@ -64,12 +65,14 @@ class LocationEventCountsExposed(BaseExposedQuery):
         -------
         Query
         """
-        return TotalLocationEvents(
-            start=self.start_date,
-            stop=self.end_date,
-            interval=self.interval,
-            direction=self.direction,
-            table=self.event_types,
-            spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
-            subscriber_subset=self.subscriber_subset,
+        return RedactedTotalEvents(
+            total_events=TotalLocationEvents(
+                start=self.start_date,
+                stop=self.end_date,
+                interval=self.interval,
+                direction=self.direction,
+                table=self.event_types,
+                spatial_unit=get_spatial_unit_obj(self.aggregation_unit),
+                subscriber_subset=self.subscriber_subset,
+            )
         )

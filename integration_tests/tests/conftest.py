@@ -1,7 +1,11 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import json
+from functools import partial
+from pathlib import Path
 
+from approvaltests import verify
 from approvaltests.reporters.generic_diff_reporter_factory import (
     GenericDiffReporterFactory,
 )
@@ -11,7 +15,6 @@ from time import sleep
 import pytest
 import os
 import pandas as pd
-import zmq
 
 import flowmachine
 from flowmachine.core import Connection, Query
@@ -59,6 +62,42 @@ def autostart_flowmachine_server(logging_config):
         sleep(
             2
         )  # Wait a moment to make sure coverage of subprocess finishes being written
+
+
+@pytest.fixture(params=["true", "false"])
+def start_flowmachine_server_with_or_without_dependency_caching(
+    request, logging_config, monkeypatch
+):
+    """
+    Starts a FlowMachine server in a separate process, with function scope
+    (i.e. a server will be started and stopped for each test that uses this fixture).
+    Tests using this fixture will run twice: once with dependency caching disabled,
+    and again with dependency caching enabled.
+    """
+    original_flowmachine_conn = Query.connection
+
+    # Ensure this server runs on a different port from the session-scoped server
+    main_zmq_port = os.getenv("FLOWMACHINE_PORT", "5555")
+    monkeypatch.setenv("FLOWMACHINE_PORT", str(int(main_zmq_port) + 1))
+    # Turn dependency caching on or off
+    monkeypatch.setenv("FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING", request.param)
+    # Start the server
+    fm_thread = Process(target=flowmachine.core.server.server.main)
+    fm_thread.start()
+
+    # Create a new flowmachine connection, because we can't use the old one after starting a new process.
+    new_conn = make_flowmachine_connection_object()
+    Query.connection = new_conn
+
+    yield
+
+    new_conn.close()
+
+    fm_thread.terminate()
+    sleep(2)  # Wait a moment to make sure coverage of subprocess finishes being written
+
+    # Switch flowmachine back to using the original connection for the remaining tests.
+    Query.connection = original_flowmachine_conn
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -139,49 +178,6 @@ def zmq_port():
 
 
 @pytest.fixture(scope="session")
-def zmq_url(zmq_host, zmq_port):
-    """
-    Return the URL where to connect to zeromq when running the tests.
-    This is constructed as "tcp://<zmq_host>:<zmq_port>", where the
-    host and port are provided by the `zmq_host` and `zmq_port`
-    fixtures (which read the values from the environment variables
-    `FLOWMACHINE_HOST` and `FLOWMACHINE_PORT`, respectively).
-    """
-    return f"tcp://{zmq_host}:{zmq_port}"
-
-
-@pytest.fixture
-def send_zmq_message_and_receive_reply(zmq_host, zmq_port):
-    def send_zmq_message_and_receive_reply_impl(msg):
-        """
-        Helper function to send JSON messages to the flowmachine server (via zmq) and receive a reply.
-
-        This is mainly useful for interactive testing and debugging.
-
-        Parameters
-        ----------
-        msg : dict
-            Dictionary representing a valid zmq message.
-
-        Example
-        -------
-        >>> msg = {"action": "ping"}
-        >>> send_zmq_message_and_receive_reply(msg)
-        {"status": "success", "msg": "pong"}
-        """
-
-        context = zmq.Context.instance()
-        socket = context.socket(zmq.REQ)
-        socket.connect(f"tcp://{zmq_host}:{zmq_port}")
-        print(f"Sending message: {msg}")
-        socket.send_json(msg)
-        reply = socket.recv_json()
-        return reply
-
-    return send_zmq_message_and_receive_reply_impl
-
-
-@pytest.fixture(scope="session")
 def redis():
     """
     Return redis instance to use when running the tests.
@@ -192,10 +188,9 @@ def redis():
     return Query.redis
 
 
-@pytest.fixture(scope="session")
-def fm_conn():
+def make_flowmachine_connection_object():
     """
-    Returns a flowmachine Connection object which
+    Return a flowmachine Connection object.
 
     Returns
     -------
@@ -207,7 +202,20 @@ def fm_conn():
     FLOWDB_PORT = os.getenv("FLOWDB_PORT", "9000")
     conn_str = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{FLOWDB_HOST}:{FLOWDB_PORT}/flowdb"
 
-    fm_conn = Connection(conn_str=conn_str)
+    conn = Connection(conn_str=conn_str)
+    return conn
+
+
+@pytest.fixture(scope="session")
+def fm_conn():
+    """
+    Create a flowmachine Connection object, and connect flowmachine.
+
+    Yields
+    ------
+    flowmachine.core.connection.Connection
+    """
+    fm_conn = make_flowmachine_connection_object()
     flowmachine.connect(conn=fm_conn)
 
     yield fm_conn
@@ -255,7 +263,11 @@ def get_dataframe(fm_conn):
 @pytest.fixture(scope="session")
 def diff_reporter():
     diff_reporter_factory = GenericDiffReporterFactory()
-    diff_reporter_factory.load(
-        os.path.join(flowkit_toplevel_dir, "approvaltests_diff_reporters.json")
-    )
-    return diff_reporter_factory.get_first_working()
+    try:
+        with open(Path(__file__).parent / "reporters.json") as fin:
+            for config in json.load(fin):
+                diff_reporter_factory.add_default_reporter_config(config)
+    except FileNotFoundError:
+        pass
+    differ = diff_reporter_factory.get_first_working()
+    return partial(verify, reporter=differ)

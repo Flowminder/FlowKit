@@ -1,0 +1,47 @@
+#
+# Example docker stack file for AutoFlow
+# Note: The autoflow container would need to be connected to a network on which the FlowAPI URL is accessible.
+#
+
+version: '3.7'
+
+secrets:
+  AUTOFLOW_DB_PASSWORD: # Password for AutoFlow's database
+    external: true
+  FLOWAPI_TOKEN: # Token for AutoFlow to connect to FlowAPI
+    external: true
+
+networks:
+  database:
+  api:
+
+services:
+
+  autoflow:
+    image: flowminder/autoflow:${CONTAINER_TAG:-latest}
+    environment:
+      AUTOFLOW_LOG_LEVEL: ${AUTOFLOW_LOG_LEVEL:-ERROR}
+      AUTOFLOW_DB_URI: postgresql://autoflow:{}@autoflow_postgres:5432/autoflow
+      FLOWAPI_URL: ${FLOWAPI_URL:?Must set FLOWAPI_URL env var}
+    secrets:
+      - AUTOFLOW_DB_PASSWORD
+      - FLOWAPI_TOKEN
+    volumes:
+      - ${AUTOFLOW_INPUTS_DIR:?Must set AUTOFLOW_INPUTS_DIR env var}:/mounts/inputs:ro
+      - ${AUTOFLOW_OUTPUTS_DIR:?Must set AUTOFLOW_OUTPUTS_DIR env var}:/mounts/outputs:rw
+    networks:
+      - database
+      - api
+  
+  autoflow_postgres:
+    image: postgres
+    tty: true
+    stdin_open: true
+    environment:
+      POSTGRES_USER: autoflow
+      POSTGRES_PASSWORD_FILE: /run/secrets/AUTOFLOW_DB_PASSWORD
+      POSTGRES_DB: autoflow
+    secrets:
+      - AUTOFLOW_DB_PASSWORD
+    networks:
+      - database

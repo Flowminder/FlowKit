@@ -32,6 +32,8 @@ secrets:
     external: true
   FLOWAUTH_DB_PASSWORD: # Password for flowauth's database
     external: true
+  SECRET_KEY: # Secret key for Flowauth's Flask
+    external: true
 networks:
   db:
   redis:
@@ -51,6 +53,7 @@ services:
         - FLOWAUTH_ADMIN_USERNAME
         - FLOWAUTH_ADMIN_PASSWORD
         - FLOWAUTH_DB_PASSWORD
+        - SECRET_KEY
       networks:
         - flowauth_database
 
@@ -95,6 +98,7 @@ services:
             FLOWDB_HOST: flowdb
             FLOWMACHINE_LOG_LEVEL: ${FLOWMACHINE_LOG_LEVEL:-error}
             FLOWMACHINE_SERVER_DEBUG_MODE: ${FLOWMACHINE_SERVER_DEBUG_MODE:-False}
+            FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING: ${FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING:-False}
             REDIS_HOST: flowmachine_query_locker
         secrets:
           - FLOWMACHINE_FLOWDB_USER

@@ -4,7 +4,6 @@
 
 import json
 import pytest
-from approvaltests.approvals import verify
 from marshmallow import ValidationError
 
 from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
@@ -23,6 +22,34 @@ def test_construct_query(diff_reporter):
                 "aggregation_unit": "admin3",
                 "method": "last",
                 "subscriber_subset": None,
+                "sampling": {
+                    "sampling_method": "bernoulli",
+                    "size": 10,
+                    "seed": 0.5,
+                    "fraction": None,
+                    "estimate_count": False,
+                },
+            },
+        },
+        {
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": None,
+            },
+        },
+        {
+            "query_kind": "spatial_aggregate",
+            "locations": {
+                "query_kind": "daily_location",
+                "date": "2016-01-01",
+                "aggregation_unit": "admin3",
+                "method": "last",
+                "subscriber_subset": None,
+                "sampling": None,
             },
         },
         {
@@ -249,7 +276,7 @@ def test_construct_query(diff_reporter):
         indent=2,
     )
 
-    verify(query_ids_and_specs_as_json_string, diff_reporter)
+    diff_reporter(query_ids_and_specs_as_json_string)
 
 
 # TODO: we should re-think how we want to test invalid values, now that these are validated using marshmallow
@@ -264,3 +291,48 @@ def test_wrong_geography_aggregation_unit_raises_error():
         _ = FlowmachineQuerySchema().load(
             {"query_kind": "geography", "aggregation_unit": "DUMMY_AGGREGATION_UNIT"}
         )
+
+
+@pytest.mark.parametrize(
+    "sampling, message",
+    [
+        (
+            {"sampling_method": "bernoulli", "size": 10, "fraction": 0.2},
+            "Missing data for required field.",
+        ),
+        (
+            {"sampling_method": "bernoulli", "size": 10, "fraction": 0.2, "seed": 0.1},
+            "Must provide exactly one of 'size' or 'fraction' for a random sample",
+        ),
+        (
+            {"sampling_method": "bernoulli", "seed": 0.1},
+            "Must provide exactly one of 'size' or 'fraction' for a random sample",
+        ),
+        (
+            {"sampling_method": "bernoulli", "fraction": 1.2, "seed": 0.1},
+            "Must be greater than 0.0 and less than 1.0.",
+        ),
+        (
+            {"sampling_method": "bernoulli", "size": -1, "seed": 0.1},
+            "Must be greater than or equal to 1.",
+        ),
+        (
+            {"sampling_method": "random_ids", "size": 10, "seed": 185},
+            "Must be greater than or equal to -1.0 and less than or equal to 1.0.",
+        ),
+    ],
+)
+def test_invalid_sampling_params_raises_error(sampling, message):
+    query_spec = {
+        "query_kind": "spatial_aggregate",
+        "locations": {
+            "query_kind": "daily_location",
+            "date": "2016-01-01",
+            "aggregation_unit": "admin3",
+            "method": "last",
+            "sampling": sampling,
+        },
+    }
+    with pytest.raises(ValidationError, match=message) as exc:
+        _ = FlowmachineQuerySchema().load(query_spec)
+    print(exc)
