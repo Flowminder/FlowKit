@@ -39,8 +39,7 @@ def test_gid(docker_client, container_tag):
         "bash -c 'id -g'",
         user=user,
         environment={
-            "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
-            "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
+            "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB"
         },
     )
     assert out.decode("utf-8").strip() == "1003"

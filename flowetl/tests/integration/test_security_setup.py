@@ -6,16 +6,14 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "env_var_to_remove",
-    ["FLOWETL_AIRFLOW_ADMIN_USERNAME", "FLOWETL_AIRFLOW_ADMIN_PASSWORD"],
+    "env_var_to_remove", ["AIRFLOW__CORE__SQL_ALCHEMY_CONN"],
 )
 def test_required_env_var(env_var_to_remove, docker_client, container_tag):
     """
     Test that an error is raised when one of the required env vars is not set.
     """
     env = {
-        "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
-        "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
+        "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://TEST_USER:TEST_PASSWORD@DUMMY_DB:5432/DUMMY_DB",
     }
     env.pop(env_var_to_remove)
     with pytest.raises(
