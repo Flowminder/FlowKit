@@ -29,10 +29,6 @@ RUN set -eux; \
         apt-get install -y --no-install-recommends libnss-wrapper; \
         rm -rf /var/lib/apt/lists/*
 
-ENV LD_PRELOAD /usr/lib/libnss_wrapper.so
-ENV NSS_WRAPPER_PASSWD /tmp/nsspasswd
-ENV NSS_WRAPPER_GROUP /tmp/nssgroup
-
 RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY ./entrypoint.sh /entrypoint.sh
 

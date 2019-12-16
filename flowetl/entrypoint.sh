@@ -20,6 +20,9 @@ if [ "$1" = 'webserver' ]; then
 fi
 
 if ! getent passwd "$(id -u)" &> /dev/null && [ -e /usr/lib/libnss_wrapper.so ]; then
+    export LD_PRELOAD='/usr/lib/libnss_wrapper.so'
+    export NSS_WRAPPER_PASSWD="$(mktemp)"
+    export NSS_WRAPPER_GROUP="$(mktemp)"
 		echo "airflow:x:$(id -u):$(id -g):Airflow:$HOME:/bin/false" > "$NSS_WRAPPER_PASSWD"
 		echo "airflow:x:$(id -g):" > "$NSS_WRAPPER_GROUP"
 fi
