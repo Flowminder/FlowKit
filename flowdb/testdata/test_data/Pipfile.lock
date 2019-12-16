@@ -200,10 +200,10 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:895796ea8df435b6f502bf122f2b2034a3d48e6d8ff52175606ac1051b0e3e12",
-                "sha256:e405d16c98fcf30725d0c9d493ed07302a18846b5452de5253030ccd18996f87"
+                "sha256:7543892c59720e36e4212180274d8f58dde36803bc1f6370fd09afa20b8f5892",
+                "sha256:f0ab01cf3ae5673d18f918700c0165e5fad0f26b5ebe4b34f62ead92686b5340"
             ],
-            "version": "==4.40.1"
+            "version": "==4.40.2"
         }
     },
     "develop": {}
