@@ -64,13 +64,6 @@ services:
       # automatically define a connection for the given database.
       # See: https://airflow.readthedocs.io/en/latest/howto/connection/index.html#creating-a-connection-with-environment-variables
       AIRFLOW_CONN_FLOWDB: postgres://${FLOWDB_ADMIN_USER}:${FLOWDB_ADMIN_PASSWORD}@flowdb:5432/flowdb
-      # Note: in order for Airflow to pickup the correct database it is necessary to set the following POSTGRES env vars
-      # See: https://github.com/puckel/docker-airflow/issues/149
-      # This will hopefully be unnecessary once this PR is merged: https://github.com/puckel/docker-airflow/pull/253
-      POSTGRES_USER: ${FLOWETL_POSTGRES_USER:?Must set FLOWETL_POSTGRES_USER env var}
-      POSTGRES_PASSWORD: ${FLOWETL_POSTGRES_PASSWORD:?Must set FLOWETL_POSTGRES_PASSWORD env var}
-      POSTGRES_HOST: flowetl_airflow_db
-      POSTGRES_DB: flowetl
       FLOWETL_RUNTIME_CONFIG: ${FLOWETL_RUNTIME_CONFIG:?Must set FLOWETL_RUNTIME_CONFIG env var}
       FLOWETL_AIRFLOW_ADMIN_USERNAME: ${FLOWETL_AIRFLOW_ADMIN_USERNAME:?}
       FLOWETL_AIRFLOW_ADMIN_PASSWORD: ${FLOWETL_AIRFLOW_ADMIN_PASSWORD:?}
