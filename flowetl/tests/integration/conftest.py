@@ -398,7 +398,7 @@ def airflow_local_setup(airflow_home):
 
 @pytest.fixture
 def airflow_home(tmpdir, monkeypatch, ensure_required_env_vars_are_set):
-    print(f"AIRFLOW_HOME={tmpdir}")
+    logger.info(f"AIRFLOW_HOME={tmpdir}")
     monkeypatch.setenv("AIRFLOW_HOME", str(tmpdir))
     yield tmpdir
 
@@ -489,7 +489,7 @@ def airflow_local_pipeline_run(airflow_home, request):
             if tries > 10:
                 raise Exception("Couldn't unpause.")
             tries += 1
-            print("Unpause failed. Retrying.")
+            logger.info("Unpause failed. Retrying.")
             sleep(0.1)
 
         p = run("airflow unpause etl_testing".split(), capture_output=True, env=env,)
@@ -499,14 +499,14 @@ def airflow_local_pipeline_run(airflow_home, request):
     initdb([])
 
     with open(airflow_home / "scheduler.log", "w") as fout:
-        print("Starting scheduler.")
+        logger.info("Starting scheduler.")
         with Popen(
             ["airflow", "scheduler"], shell=False, stdout=fout, stderr=fout, env=env,
         ) as scheduler:
             sleep(2)
-            print("Yielding run func.")
+            logger.info("Yielding run func.")
             yield run_func, expected_task_states
-    print("Stopped scheduler.")
+    logger.info("Stopped scheduler.")
 
 
 @pytest.fixture(scope="function")
@@ -534,7 +534,7 @@ def wait_for_completion(airflow_home):
         reached_end_state = False
         from airflow.models import DagRun
 
-        print(os.environ["AIRFLOW_HOME"])
+        logger.info(os.environ["AIRFLOW_HOME"])
         while len(DagRun.find(**kwargs_expected)) != 1:
             sleep(1)
             t1 = now()
