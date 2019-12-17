@@ -3,8 +3,6 @@ import os
 from pathlib import Path
 from pendulum import parse
 
-from etl.model import ETLRecord
-
 
 def test_single_file_previously_quarantined(
     write_files_to_files,
@@ -28,6 +26,8 @@ def test_single_file_previously_quarantined(
     6. Do child tables get created under the associated parent table in
     the events schema?
     """
+    from etl.model import ETLRecord
+
     write_files_to_files(
         file_names=[
             "CALLS_20160101.csv.gz",

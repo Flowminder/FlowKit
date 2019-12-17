@@ -18,7 +18,7 @@ from pathlib import Path
 
 
 from time import sleep
-from subprocess import DEVNULL, Popen, run
+from subprocess import Popen, run
 from pendulum import now, Interval
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -340,7 +340,14 @@ def trigger_dags(flowetl_container):
         dags = ["etl_sensor", "etl_sms", "etl_mds", "etl_calls", "etl_topups"]
 
         for dag in dags:
-            flowetl_container.exec_run(f"airflow unpause {dag}")
+            tries = 0
+            while True:
+                exit_code, result = flowetl_container.exec_run(f"airflow unpause {dag}")
+                if exit_code == 1:
+                    break
+                if tries > 10:
+                    Exception(f"Failed to unpause {dag}: {result}")
+                tries += 1
 
         flowetl_container.exec_run("airflow trigger_dag etl_sensor")
 
@@ -476,36 +483,34 @@ def airflow_local_pipeline_run(airflow_home, request):
         "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
     }
     env = {**os.environ, **default_env, **{"TASK_TO_FAIL": task_to_fail}}
-    from airflow.bin.cli import initdb
 
     def run_func():
         tries = 0
-        while (
-            run(
-                "airflow unpause etl_sensor".split(), capture_output=True, env=env
-            ).returncode
-            != 0
-        ):
-            if tries > 10:
-                raise Exception("Couldn't unpause.")
+        while True:
+            p = run("airflow unpause etl_sensor".split(), capture_output=True, env=env)
+            if p.returncode == 0:
+                break
+            if tries > 20:
+                raise Exception(f"Couldn't unpause: {p.stderr}")
             tries += 1
-            logger.info("Unpause failed. Retrying.")
-            sleep(0.1)
+            logger.info(f"Unpause failed. Retrying. {p.stderr}")
+            sleep(0.5)
 
         p = run("airflow unpause etl_testing".split(), capture_output=True, env=env,)
 
         p = run("airflow trigger_dag etl_sensor".split(), capture_output=True, env=env,)
 
-    initdb([])
+    p = run("airflow initdb".split(), capture_output=True, env=env)
 
     with open(airflow_home / "scheduler.log", "w") as fout:
         logger.info("Starting scheduler.")
         with Popen(
             ["airflow", "scheduler"], shell=False, stdout=fout, stderr=fout, env=env,
         ) as scheduler:
-            sleep(2)
+            sleep(10)
             logger.info("Yielding run func.")
             yield run_func, expected_task_states
+            scheduler.kill()
     logger.info("Stopped scheduler.")
 
 
@@ -518,7 +523,7 @@ def wait_for_completion(airflow_home):
     """
 
     def wait_func(
-        end_state, fail_state, dag_id, session=None, time_out=Interval(minutes=10)
+        end_state, fail_state, dag_id, session=None, time_out=Interval(minutes=5)
     ):
         # if you actually pass None to DagRun.find it thinks None is the session
         # you want to use - need to not pass at all if you want airflow to pick
@@ -531,7 +536,6 @@ def wait_for_completion(airflow_home):
             kwargs_fail = {"dag_id": dag_id, "state": fail_state, "session": session}
 
         t0 = now()
-        reached_end_state = False
         from airflow.models import DagRun
 
         logger.info(os.environ["AIRFLOW_HOME"])
