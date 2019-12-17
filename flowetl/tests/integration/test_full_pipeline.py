@@ -7,7 +7,6 @@ from etl.model import ETLRecord
 
 
 def test_single_file_previously_quarantined(
-    flowetl_container,
     write_files_to_files,
     trigger_dags,
     wait_for_completion,
@@ -54,7 +53,7 @@ def test_single_file_previously_quarantined(
         session=flowdb_session,
     )
 
-    trigger_dags(flowetl_container=flowetl_container)
+    trigger_dags()
 
     # 1 calls, 1 sms, 1 mds and 1 topups DAG should run and we wait for
     # their completion

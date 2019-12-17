@@ -7,76 +7,8 @@
 Test dag run logic
 """
 
-import pytest
 
-from airflow.models import DagRun
-
-
-@pytest.mark.parametrize(
-    "task_to_fail,expected_task_states",
-    [
-        (
-            "init",
-            {
-                "init": "failed",
-                "extract": "upstream_failed",
-                "transform": "upstream_failed",
-                "success_branch": "success",
-                "load": "upstream_failed",
-                "postload": "skipped",
-                "archive": "skipped",
-                "quarantine": "success",
-                "clean": "success",
-                "fail": "failed",
-            },
-        ),
-        # (
-        #     "extract",
-        #     {
-        #         "init": "success",
-        #         "extract": "failed",
-        #         "transform": "upstream_failed",
-        #         "success_branch": "success",
-        #         "load": "upstream_failed",
-        #         "archive": "skipped",
-        #         "quarantine": "success",
-        #         "clean": "success",
-        #         "fail": "failed",
-        #     },
-        # ),
-        # (
-        #     "transform",
-        #     {
-        #         "init": "success",
-        #         "extract": "success",
-        #         "transform": "failed",
-        #         "success_branch": "success",
-        #         "load": "upstream_failed",
-        #         "archive": "skipped",
-        #         "quarantine": "success",
-        #         "clean": "success",
-        #         "fail": "failed",
-        #     },
-        # ),
-        # (
-        #     "load",
-        #     {
-        #         "init": "success",
-        #         "extract": "success",
-        #         "transform": "success",
-        #         "success_branch": "success",
-        #         "load": "failed",
-        #         "archive": "skipped",
-        #         "quarantine": "success",
-        #         "clean": "success",
-        #         "fail": "failed",
-        #     },
-        # ),
-    ],
-)
-def test_quarantine_branch(
-    airflow_local_pipeline_run, wait_for_completion, task_to_fail, expected_task_states
-):
+def test_quarantine_branch(airflow_local_pipeline_run, wait_for_completion):
     """
     Tests that correct tasks run, with correct end state, when ETL is
     not successful. We fail each of the tasks init, extract, transform and load.
@@ -85,11 +17,13 @@ def test_quarantine_branch(
     fail_state = "success"
     dag_type = "testing"
 
-    airflow_local_pipeline_run({"TASK_TO_FAIL": task_to_fail})
+    airflow_local_pipeline_run, expected_task_states = airflow_local_pipeline_run
+    airflow_local_pipeline_run()
     final_etl_state = wait_for_completion(
         end_state=end_state, fail_state=fail_state, dag_id=f"etl_{dag_type}"
     )
     assert final_etl_state == end_state
+    from airflow.models import DagRun
 
     etl_dag = DagRun.find(f"etl_{dag_type}", state=end_state)[0]
 

@@ -6,44 +6,38 @@
 """
 Conftest for flowetl integration tests
 """
+import warnings
+
 import docker
 import os
-import shutil
 import structlog
 import pytest
 import requests
 
 from pathlib import Path
+
+
 from time import sleep
-from subprocess import DEVNULL, Popen
+from subprocess import DEVNULL, Popen, run
 from pendulum import now, Interval
-from airflow.models import DagRun
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from docker.types import Mount
-from shutil import rmtree
 from requests.exceptions import RequestException
 
 here = os.path.dirname(os.path.abspath(__file__))
 logger = structlog.get_logger("flowetl-tests")
 
 
-@pytest.fixture(scope="session", autouse=True)
-def ensure_required_env_vars_are_set():
-    if "AIRFLOW_HOME" not in os.environ:
-        raise RuntimeError(
-            "Must set environment variable AIRFLOW_HOME to run the flowetl tests."
-        )
+@pytest.fixture
+def ensure_required_env_vars_are_set(monkeypatch):
 
-    if "testing" != os.getenv("FLOWETL_RUNTIME_CONFIG", "").lower():
-        raise RuntimeError(
-            "Must set environment variable FLOWETL_RUNTIME_CONFIG='testing' to run the flowetl tests."
-        )
+    monkeypatch.setenv("FLOWETL_RUNTIME_CONFIG", "testing")
 
     if "FLOWETL_TESTS_CONTAINER_TAG" not in os.environ:
-        raise RuntimeError(
-            "Must explicitly set environment variable FLOWETL_TESTS_CONTAINER_TAG to run the flowetl tests. "
-            "(Use `FLOWETL_TESTS_CONTAINER_TAG=latest` if you don't need a specific version.)"
+        monkeypatch.setenv("FLOWETL_TESTS_CONTAINER_TAG", "latest")
+        warnings.warn(
+            "You should explicitly set environment variable FLOWETL_TESTS_CONTAINER_TAG to run the flowetl tests. Using 'latest'."
         )
 
 
@@ -68,16 +62,16 @@ def docker_api_client():
     return docker.APIClient()
 
 
-@pytest.fixture(scope="session")
-def container_tag():
+@pytest.fixture
+def container_tag(ensure_required_env_vars_are_set):
     """
     Get tag to use for containers
     """
     return os.environ["FLOWETL_TESTS_CONTAINER_TAG"]
 
 
-@pytest.fixture(scope="session")
-def container_env():
+@pytest.fixture
+def container_env(ensure_required_env_vars_are_set):
     """
     Environments for each container
     """
@@ -102,7 +96,6 @@ def container_env():
         "AIRFLOW__CORE__FERNET_KEY": "ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=",
         "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
         "AIRFLOW_CONN_FLOWDB": f"postgres://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
-        "AIRFLOW_HOME": os.environ["AIRFLOW_HOME"],
         "AIRFLOW__WEBSERVER__WEB_SERVER_HOST": "0.0.0.0",  # helpful for circle debugging,
         "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
         "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
@@ -138,21 +131,7 @@ def container_network(docker_client):
 
 
 @pytest.fixture(scope="function")
-def postgres_data_dir_for_tests():
-    """
-    Creates and cleans up a directory for storing pg data.
-    Used by Flowdb because on unix changing flowdb user is
-    incompatible with using a volume for the DB's data.
-    """
-    path = f"{os.getcwd()}/pg_data"
-    if not os.path.exists(path):
-        os.makedirs(path)
-    yield path
-    rmtree(path)
-
-
-@pytest.fixture(scope="function")
-def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
+def mounts(tmpdir, flowetl_mounts_dir):
     """
     Various mount objects needed by containers
     """
@@ -161,16 +140,14 @@ def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
     logs_mount = Mount("/mounts/logs", f"{flowetl_mounts_dir}/logs", type="bind")
     flowetl_mounts = [config_mount, files_mount, logs_mount]
 
-    data_mount = Mount(
-        "/var/lib/postgresql/data", postgres_data_dir_for_tests, type="bind"
-    )
+    data_mount = Mount("/var/lib/postgresql/data", str(tmpdir), type="bind")
     files_mount = Mount("/files", f"{flowetl_mounts_dir}/files", type="bind")
     flowdb_mounts = [data_mount, files_mount]
 
     return {"flowetl": flowetl_mounts, "flowdb": flowdb_mounts}
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture
 def pull_docker_images(docker_client, container_tag):
     disable_pulling_docker_images = (
         os.getenv(
@@ -193,6 +170,7 @@ def pull_docker_images(docker_client, container_tag):
 
 @pytest.fixture(scope="function")
 def flowdb_container(
+    pull_docker_images,
     docker_client,
     docker_api_client,
     container_tag,
@@ -250,7 +228,7 @@ def flowdb_container(
 
 @pytest.fixture(scope="function")
 def flowetl_db_container(
-    docker_client, container_env, container_ports, container_network
+    pull_docker_images, docker_client, container_env, container_ports, container_network
 ):
     """
     Start (and clean up) flowetl_db just a vanilla pg 11
@@ -270,6 +248,7 @@ def flowetl_db_container(
 
 @pytest.fixture(scope="function")
 def flowetl_container(
+    pull_docker_images,
     flowdb_container,
     flowetl_db_container,
     docker_client,
@@ -325,6 +304,7 @@ def flowetl_container(
         mounts=mounts["flowetl"],
         user=user,
         detach=True,
+        stderr=True,
     )
     wait_for_container()
     yield container
@@ -349,13 +329,13 @@ def flowetl_container(
 
 
 @pytest.fixture(scope="function")
-def trigger_dags():
+def trigger_dags(flowetl_container):
     """
     Returns a function that unpauses all DAGs and then triggers
     the etl_sensor DAG.
     """
 
-    def trigger_dags_function(*, flowetl_container):
+    def trigger_dags_function():
 
         dags = ["etl_sensor", "etl_sms", "etl_mds", "etl_calls", "etl_topups"]
 
@@ -388,8 +368,8 @@ def write_files_to_files(flowetl_mounts_dir):
     [file.unlink() for file in files_to_remove]
 
 
-@pytest.fixture(scope="module")
-def airflow_local_setup():
+@pytest.fixture
+def airflow_local_setup(airflow_home):
     """
     Init the airflow sqlitedb and start the scheduler with minimal env.
     Clean up afterwards by removing the AIRFLOW_HOME and stopping the
@@ -397,109 +377,140 @@ def airflow_local_setup():
     test invocation otherwise it gets created somewhere else.
     """
     extra_env = {
-        "AIRFLOW__CORE__DAGS_FOLDER": "./dags",
+        "AIRFLOW__CORE__DAGS_FOLDER": str(Path(__file__).parent.parent.parent / "dags"),
         "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
     }
     env = {**os.environ, **extra_env}
-    # make test Airflow home dir
-    airflow_home_dir_for_tests = os.environ["AIRFLOW_HOME"]
-    if not os.path.exists(airflow_home_dir_for_tests):
-        os.makedirs(airflow_home_dir_for_tests)
 
-    initdb = Popen(
-        ["airflow", "initdb"], shell=False, stdout=DEVNULL, stderr=DEVNULL, env=env
-    )
-    initdb.wait()
+    from airflow.bin.cli import initdb
 
-    with open("scheduler.log", "w") as fout:
-        scheduler = Popen(
+    initdb([])
+
+    with open(airflow_home / "scheduler.log", "w") as fout:
+        with Popen(
             ["airflow", "scheduler"], shell=False, stdout=fout, stderr=fout, env=env
-        )
+        ) as scheduler:
 
-    sleep(2)
+            sleep(2)
 
-    yield
-
-    scheduler.terminate()
-
-    shutil.rmtree(airflow_home_dir_for_tests)
-    os.unlink("./scheduler.log")
+            yield
 
 
-@pytest.fixture(scope="function")
-def airflow_local_pipeline_run():
+@pytest.fixture
+def airflow_home(tmpdir, monkeypatch, ensure_required_env_vars_are_set):
+    print(f"AIRFLOW_HOME={tmpdir}")
+    monkeypatch.setenv("AIRFLOW_HOME", str(tmpdir))
+    yield tmpdir
+
+
+@pytest.fixture(
+    params=[
+        (
+            "init",
+            {
+                "init": "failed",
+                "extract": "upstream_failed",
+                "transform": "upstream_failed",
+                "success_branch": "success",
+                "load": "upstream_failed",
+                "postload": "skipped",
+                "archive": "skipped",
+                "quarantine": "success",
+                "clean": "success",
+                "fail": "failed",
+            },
+        ),
+        # (
+        #     "extract",
+        #     {
+        #         "init": "success",
+        #         "extract": "failed",
+        #         "transform": "upstream_failed",
+        #         "success_branch": "success",
+        #         "load": "upstream_failed",
+        #         "archive": "skipped",
+        #         "quarantine": "success",
+        #         "clean": "success",
+        #         "fail": "failed",
+        #     },
+        # ),
+        # (
+        #     "transform",
+        #     {
+        #         "init": "success",
+        #         "extract": "success",
+        #         "transform": "failed",
+        #         "success_branch": "success",
+        #         "load": "upstream_failed",
+        #         "archive": "skipped",
+        #         "quarantine": "success",
+        #         "clean": "success",
+        #         "fail": "failed",
+        #     },
+        # ),
+        # (
+        #     "load",
+        #     {
+        #         "init": "success",
+        #         "extract": "success",
+        #         "transform": "success",
+        #         "success_branch": "success",
+        #         "load": "failed",
+        #         "archive": "skipped",
+        #         "quarantine": "success",
+        #         "clean": "success",
+        #         "fail": "failed",
+        #     },
+        # ),
+    ]
+)
+def airflow_local_pipeline_run(airflow_home, request):
     """
     As in `airflow_local_setup` but starts the scheduler with some extra env
     determined in the test. Also triggers the etl_sensor dag causing a
     subsequent trigger of the etl dag.
     """
-    scheduler_to_clean_up = None
-    airflow_home_dir_for_tests = None
+    task_to_fail, expected_task_states = request.param
+    default_env = {
+        "AIRFLOW__CORE__DAGS_FOLDER": str(Path(__file__).parent.parent.parent / "dags"),
+        "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
+    }
+    env = {**os.environ, **default_env, **{"TASK_TO_FAIL": task_to_fail}}
+    from airflow.bin.cli import initdb
 
-    def run_func(extra_env):
-        nonlocal scheduler_to_clean_up
-        nonlocal airflow_home_dir_for_tests
-        default_env = {
-            "AIRFLOW__CORE__DAGS_FOLDER": "./dags",
-            "AIRFLOW__CORE__LOAD_EXAMPLES": "false",
-        }
-        env = {**os.environ, **default_env, **extra_env}
+    def run_func():
+        tries = 0
+        while (
+            run(
+                "airflow unpause etl_sensor".split(), capture_output=True, env=env
+            ).returncode
+            != 0
+        ):
+            if tries > 10:
+                raise Exception("Couldn't unpause.")
+            tries += 1
+            print("Unpause failed. Retrying.")
+            sleep(0.1)
 
-        # make test Airflow home dir
-        airflow_home_dir_for_tests = os.environ["AIRFLOW_HOME"]
-        if not os.path.exists(airflow_home_dir_for_tests):
-            os.makedirs(airflow_home_dir_for_tests)
+        p = run("airflow unpause etl_testing".split(), capture_output=True, env=env,)
 
-        initdb = Popen(
-            ["airflow", "initdb"], shell=False, stdout=DEVNULL, stderr=DEVNULL, env=env
-        )
-        initdb.wait()
+        p = run("airflow trigger_dag etl_sensor".split(), capture_output=True, env=env,)
 
-        with open("scheduler.log", "w") as fout:
-            scheduler = Popen(
-                ["airflow", "scheduler"], shell=False, stdout=fout, stderr=fout, env=env
-            )
-            scheduler_to_clean_up = scheduler
+    initdb([])
 
-        sleep(2)
-
-        p = Popen(
-            "airflow unpause etl_sensor".split(),
-            shell=False,
-            stdout=DEVNULL,
-            stderr=DEVNULL,
-            env=env,
-        )
-        p.wait()
-
-        p = Popen(
-            "airflow unpause etl_testing".split(),
-            shell=False,
-            stdout=DEVNULL,
-            stderr=DEVNULL,
-            env=env,
-        )
-        p.wait()
-
-        p = Popen(
-            "airflow trigger_dag etl_sensor".split(),
-            shell=False,
-            stdout=DEVNULL,
-            stderr=DEVNULL,
-            env=env,
-        )
-        p.wait()
-
-    yield run_func
-
-    scheduler_to_clean_up.terminate()
-
-    shutil.rmtree(airflow_home_dir_for_tests)
-    os.unlink("./scheduler.log")
+    with open(airflow_home / "scheduler.log", "w") as fout:
+        print("Starting scheduler.")
+        with Popen(
+            ["airflow", "scheduler"], shell=False, stdout=fout, stderr=fout, env=env,
+        ) as scheduler:
+            sleep(2)
+            print("Yielding run func.")
+            yield run_func, expected_task_states
+    print("Stopped scheduler.")
 
 
 @pytest.fixture(scope="function")
-def wait_for_completion():
+def wait_for_completion(airflow_home):
     """
     Return a function that waits for the etl dag to be in a specific
     end state. If dag does not reach this state within (arbitrarily but
@@ -521,6 +532,9 @@ def wait_for_completion():
 
         t0 = now()
         reached_end_state = False
+        from airflow.models import DagRun
+
+        print(os.environ["AIRFLOW_HOME"])
         while len(DagRun.find(**kwargs_expected)) != 1:
             sleep(1)
             t1 = now()

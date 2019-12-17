@@ -21,5 +21,5 @@ def test_required_env_var(env_var_to_remove, docker_client, container_tag):
         match=f"{env_var_to_remove} env var or secret must be set.",
     ):
         out = docker_client.containers.run(
-            f"flowminder/flowetl:{container_tag}", environment=env,
+            f"flowminder/flowetl:{container_tag}", environment=env, stderr=True
         )
