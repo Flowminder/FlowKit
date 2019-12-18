@@ -61,10 +61,7 @@ TRY_LOOP="20"
 
 # Make sure we have a db connection specified
 
-if [ -z "$AIRFLOW__CORE__SQL_ALCHEMY_CONN" ]; then
-  echo "AIRFLOW__CORE__SQL_ALCHEMY_CONN env var or secret must be set."
-  exit 1
-fi
+${$AIRFLOW__CORE__SQL_ALCHEMY_CONN:?AIRFLOW__CORE__SQL_ALCHEMY_CONN env var or secret must be set.}
 
 # Defaults and back-compat
 : "${AIRFLOW_HOME:="/usr/local/airflow"}"
