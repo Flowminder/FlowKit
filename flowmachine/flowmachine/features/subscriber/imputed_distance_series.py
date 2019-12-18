@@ -11,6 +11,7 @@ from typing import List
 from flowmachine.core import Query
 from flowmachine.features.subscriber.distance_series import DistanceSeries
 from flowmachine.features.subscriber.distance_series import valid_time_buckets
+from flowmachine.features.utilities.validators import valid_median_window
 
 
 class ImputedDistanceSeries(Query):
@@ -23,7 +24,7 @@ class ImputedDistanceSeries(Query):
     distance_series : DistanceSeries
         A subscriber distance series which may contain gaps.
     window_size : int, default 3
-        Number of observations to use for imputation. Must be odd and positive.
+        Number of observations to use for imputation. Must be odd, positive and greater than 1.
 
 
     References
@@ -33,11 +34,7 @@ class ImputedDistanceSeries(Query):
 
     def __init__(self, *, distance_series: DistanceSeries, window_size: int = 3):
         self.distance_series = distance_series
-        self.window_size = window_size
-        if self.window_size <= 1:
-            raise ValueError("Window size should be positive and greater than 1.")
-        if self.window_size % 2 == 0:
-            raise ValueError("Window size must be odd.")
+        self.window_size = valid_median_window("window_size", window_size)
 
         super().__init__()
 
