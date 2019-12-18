@@ -262,6 +262,7 @@ def flowetl_container(
     flowdb_container,
     flowetl_db_container,
     docker_client,
+    docker_api_client,
     container_tag,
     container_env,
     container_network,
