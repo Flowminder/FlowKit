@@ -249,7 +249,7 @@ def flowetl_db_container(
         name="flowetl_db",
         network="testing",
         healthcheck={
-            "test": f"pg_isready -h localhost -p 5432 -U {container_env['flowetl_db']['POSTGRES_USER']})",
+            "test": f"pg_isready -h localhost -p 5432 -U {container_env['flowetl_db']['POSTGRES_USER']}",
             "interval": 1000000000,
         },
         detach=True,
