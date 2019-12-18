@@ -11,13 +11,13 @@ set -euo pipefail
 
 # allow the container to be started with `--user`
 if [ "$1" = 'webserver' ] && [ "$(id -u)" = '0' ]; then
-	  chown -R postgres "$AIRFLOW_HOME"
+	  chown -R airflow "$AIRFLOW_HOME"
 	  chmod 700 "$AIRFLOW_HOME"
 fi
 
 if [ "$1" = 'webserver' ]; then
     # allow to fail if not uid 0
-	  chown -R postgres "$AIRFLOW_HOME" 2>/dev/null || :
+	  chown -R airflow "$AIRFLOW_HOME" 2>/dev/null || :
 	  chmod 700 "$AIRFLOW_HOME" 2>/dev/null || :
 fi
 

@@ -99,6 +99,7 @@ def container_env(ensure_required_env_vars_are_set):
         "AIRFLOW__WEBSERVER__WEB_SERVER_HOST": "0.0.0.0",  # helpful for circle debugging,
         "FLOWETL_AIRFLOW_ADMIN_USERNAME": "admin",
         "FLOWETL_AIRFLOW_ADMIN_PASSWORD": "password",
+        "AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC": 10,
     }
 
     return {"flowetl": flowetl, "flowdb": flowdb, "flowetl_db": flowetl_db}
@@ -239,12 +240,17 @@ def flowetl_db_container(
         ports={"5432": container_ports["flowetl_db"]},
         name="flowetl_db",
         network="testing",
+        healthcheck={
+            "test": f"pg_isready -h 127.0.0.1 -p 5432 -U {container_env['flowetl_db']['POSTGRES_USER']})"
+        },
         detach=True,
     )
     # Wait for container to be ready
-    container.exec_run(
-        f"bash i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432 -U {container_env['flowetl_db']['POSTGRES_USER']});do let i=i+1; echo Waiting 10s; sleep 10;done"
-    )
+    healthy = False
+    while not healthy:
+        container_info = docker_api_client.inspect_container(container.id)
+        healthy = container_info["State"]["Health"]["Status"] == "healthy"
+
     yield
     container.kill()
     container.remove()
@@ -347,6 +353,7 @@ def trigger_dags(flowetl_container):
             tries = 0
             while True:
                 exit_code, result = flowetl_container.exec_run(f"airflow unpause {dag}")
+                logger.info(f"Triggered: {dag}. {result}")
                 if exit_code == 1:
                     break
                 if tries > 10:
