@@ -338,7 +338,9 @@ def flowetl_container(
                 "Saving airflow logs to /mounts/logs/ and outputting to stdout "
                 "(because FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS=TRUE)."
             )
-            container.exec_run("bash -c 'cp -r $AIRFLOW_HOME/logs/* /mounts/logs/'")
+            container.exec_run(
+                "bash -c 'cp -r $AIRFLOW_HOME/logs/* /mounts/logs/'", user="airflow"
+            )
             airflow_logs = container.exec_run(
                 "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
             )
@@ -362,15 +364,17 @@ def trigger_dags(flowetl_container):
         for dag in dags:
             tries = 0
             while True:
-                exit_code, result = flowetl_container.exec_run(f"airflow unpause {dag}")
+                exit_code, result = flowetl_container.exec_run(
+                    f"airflow unpause {dag}", user="airflow"
+                )
                 logger.info(f"Triggered: {dag}. {result}")
-                if exit_code == 1:
+                if exit_code == 0:
                     break
                 if tries > 10:
                     Exception(f"Failed to unpause {dag}: {result}")
                 tries += 1
 
-        flowetl_container.exec_run("airflow trigger_dag etl_sensor")
+        flowetl_container.exec_run("airflow trigger_dag etl_sensor", user="airflow")
 
     return trigger_dags_function
 
