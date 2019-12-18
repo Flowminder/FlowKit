@@ -229,7 +229,12 @@ def flowdb_container(
 
 @pytest.fixture(scope="function")
 def flowetl_db_container(
-    pull_docker_images, docker_client, container_env, container_ports, container_network
+    pull_docker_images,
+    docker_client,
+    docker_api_client,
+    container_env,
+    container_ports,
+    container_network,
 ):
     """
     Start (and clean up) flowetl_db just a vanilla pg 11
@@ -262,7 +267,6 @@ def flowetl_container(
     flowdb_container,
     flowetl_db_container,
     docker_client,
-    docker_api_client,
     container_tag,
     container_env,
     container_network,
@@ -317,26 +321,27 @@ def flowetl_container(
         detach=True,
         stderr=True,
     )
-    wait_for_container()
-    yield container
+    try:
+        wait_for_container()
+        yield container
 
-    save_airflow_logs = (
-        os.getenv("FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS", "FALSE").upper()
-        == "TRUE"
-    )
-    if save_airflow_logs:
-        logger.info(
-            "Saving airflow logs to /mounts/logs/ and outputting to stdout "
-            "(because FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS=TRUE)."
+        save_airflow_logs = (
+            os.getenv("FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS", "FALSE").upper()
+            == "TRUE"
         )
-        container.exec_run("bash -c 'cp -r $AIRFLOW_HOME/logs/* /mounts/logs/'")
-        airflow_logs = container.exec_run(
-            "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
-        )
-        logger.info(airflow_logs)
-
-    container.kill()
-    container.remove()
+        if save_airflow_logs:
+            logger.info(
+                "Saving airflow logs to /mounts/logs/ and outputting to stdout "
+                "(because FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS=TRUE)."
+            )
+            container.exec_run("bash -c 'cp -r $AIRFLOW_HOME/logs/* /mounts/logs/'")
+            airflow_logs = container.exec_run(
+                "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
+            )
+            logger.info(airflow_logs)
+    finally:
+        container.kill()
+        container.remove()
 
 
 @pytest.fixture(scope="function")
