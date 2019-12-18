@@ -194,7 +194,7 @@ def flowdb_container(
         name="flowdb",
         network="testing",
         mounts=mounts["flowdb"],
-        healthcheck={"test": "pg_isready -h localhost -U flowdb"},
+        healthcheck={"test": "pg_isready -h localhost -U flowdb", "interval": 1},
         user=user,
         detach=True,
     )
@@ -246,7 +246,8 @@ def flowetl_db_container(
         name="flowetl_db",
         network="testing",
         healthcheck={
-            "test": f"pg_isready -h 127.0.0.1 -p 5432 -U {container_env['flowetl_db']['POSTGRES_USER']})"
+            "test": f"pg_isready -h localhost -p 5432 -U {container_env['flowetl_db']['POSTGRES_USER']})",
+            "interval": 1,
         },
         detach=True,
     )
