@@ -81,9 +81,9 @@ def test_impute(get_dataframe):
 @pytest.mark.parametrize(
     "size, match",
     [
-        (1, "window_size must be positive and greater than 1"),
-        (0, "window_size must be positive and greater than 1"),
-        (-1, "window_size must be positive and greater than 1"),
+        (1, "window_size must be odd and greater than 1"),
+        (0, "window_size must be odd and greater than 1"),
+        (-1, "window_size must be odd and greater than 1"),
         (4, "window_size must be odd"),
     ],
 )

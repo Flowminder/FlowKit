@@ -27,7 +27,7 @@ def valid_median_window(arg_name: str, value: int):
 
     """
     if value < 3:
-        raise ValueError(f"{arg_name} must be positive and greater than 1.")
+        raise ValueError(f"{arg_name} must be odd and greater than 1.")
     if (value % 2) == 0:
         raise ValueError(f"{arg_name} must be odd.")
     return value
