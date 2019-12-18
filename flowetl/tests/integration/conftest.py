@@ -241,6 +241,10 @@ def flowetl_db_container(
         network="testing",
         detach=True,
     )
+    # Wait for container to be ready
+    container.exec_run(
+        f"bash i=0;until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432 -U {container_env['flowetl_db']['POSTGRES_USER']});do let i=i+1; echo Waiting 10s; sleep 10;done"
+    )
     yield
     container.kill()
     container.remove()
