@@ -6,6 +6,7 @@ import datetime
 
 import pytest
 from pytest import approx
+from werkzeug.http import http_date
 
 
 def test_user_group_listing(client, auth, test_user):
@@ -58,7 +59,11 @@ def test_list_tokens(client, auth, test_admin):
             "id": 1,
             "name": "DUMMY_TOKEN",
             "token": "DUMMY_TOKEN_STRING",
-            "expires": "Tue, 01 Jan 2019 00:00:00 GMT",
+            "expires": http_date(
+                (
+                    datetime.datetime.now().date() + datetime.timedelta(days=1)
+                ).timetuple()
+            ),
             "server_name": "DUMMY_SERVER_B",
             "username": "TEST_ADMIN",
         }
@@ -79,7 +84,11 @@ def test_list_tokens_for_server(client, auth, test_admin):
             "id": 1,
             "name": "DUMMY_TOKEN",
             "token": "DUMMY_TOKEN_STRING",
-            "expires": "Tue, 01 Jan 2019 00:00:00 GMT",
+            "expires": http_date(
+                (
+                    datetime.datetime.now().date() + datetime.timedelta(days=1)
+                ).timetuple()
+            ),
             "server_name": "DUMMY_SERVER_B",
             "username": "TEST_ADMIN",
         }
