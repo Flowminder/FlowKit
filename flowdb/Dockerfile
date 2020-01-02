@@ -97,7 +97,7 @@ RUN apt-get update \
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        libsybdb5 freetds-dev freetds-common gnupg gcc make postgresql-server-dev-$PG_MAJOR wget && \
+        libsybdb5 freetds-dev freetds-common gnupg gcc postgresql-server-dev-$PG_MAJOR wget && \
     wget https://github.com/tds-fdw/tds_fdw/archive/v${TDS_FDW_VERSION}.tar.gz && \
     tar -xvzf v${TDS_FDW_VERSION}.tar.gz && \
     rm v${TDS_FDW_VERSION}.tar.gz && \
@@ -105,7 +105,7 @@ RUN apt-get update && \
     make USE_PGXS=1 && \
     make USE_PGXS=1 install && \
     cd .. && rm -rf tds_fdw-${TDS_FDW_VERSION} && \
-    apt-get remove -y gnupg gcc make postgresql-server-dev-$PG_MAJOR && \
+    apt-get remove -y gnupg gcc postgresql-server-dev-$PG_MAJOR && \
     apt purge -y --auto-remove  &&\
     rm -rf /var/lib/apt/lists/*
 
