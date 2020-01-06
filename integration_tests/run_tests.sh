@@ -13,6 +13,7 @@ TrapQuit() {
 	    echo "Bringing down containers."
 	    (pushd .. &&  make down && popd)
 	fi
+    rm Gemfile Gemfile.lock
 }
 
 trap TrapQuit EXIT
@@ -25,6 +26,9 @@ if [ "$CI" != "true" ]; then
     docker exec flowdb bash -c 'i=0; until [ $i -ge 24 ] || (pg_isready -h 127.0.0.1 -p 5432); do let i=i+1; echo Waiting 10s; sleep 10; done'
 fi
 echo "Installing."
+# Copy Gemfile from autoflow dir to ensure we run tests with the same gem versions as in the AutoFlow Docker container.
+cp ../autoflow/{Gemfile,Gemfile.lock} ./
+bundle install --deployment
 pipenv install --deploy
 echo "Running tests."
 pipenv run pytest $@
