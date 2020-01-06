@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+ruby ">= 2.5"
+
+gem "asciidoctor"
+gem "asciidoctor-pdf", "~> 1.5.0.rc.1"
