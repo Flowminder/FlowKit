@@ -28,7 +28,7 @@ fi
 echo "Installing."
 # Copy Gemfile from autoflow dir to ensure we run tests with the same gem versions as in the AutoFlow Docker container.
 cp ../autoflow/{Gemfile,Gemfile.lock} ./
-bundle install --deployment
+bundle install
 pipenv install --deploy
 echo "Running tests."
 pipenv run pytest $@
