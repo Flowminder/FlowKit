@@ -13,7 +13,6 @@ TrapQuit() {
 	    echo "Bringing down containers."
 	    (pushd .. &&  make down && popd)
 	fi
-    rm Gemfile Gemfile.lock
 }
 
 trap TrapQuit EXIT
@@ -27,7 +26,6 @@ if [ "$CI" != "true" ]; then
 fi
 echo "Installing."
 # Copy Gemfile from autoflow dir to ensure we run tests with the same gem versions as in the AutoFlow Docker container.
-cp ../autoflow/{Gemfile,Gemfile.lock} ./
 bundle install
 pipenv install --deploy
 echo "Running tests."
