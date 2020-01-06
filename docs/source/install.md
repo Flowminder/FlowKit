@@ -109,7 +109,7 @@ During development, you will typically also want to run FlowMachine, FlowAPI, Fl
 - [Pipenv](https://pipenv.readthedocs.io/en/latest/) (to manage separate pipenv environment for each FlowKit component)
 - FlowMachine server: `Python >= 3.7`
 - FlowAuth: `npm` (we recommend installing it via [nvm](https://github.com/nvm-sh/nvm)); [Cypress](https://www.cypress.io/) for testing
-- AutoFlow: [pandoc](https://pandoc.org/installing.html), [ruby](https://www.ruby-lang.org/en/downloads/), and the [asciidoctor](https://asciidoctor.org/) and [asciidoctor-pdf](https://asciidoctor.org/docs/asciidoctor-pdf/#install-the-published-gem) ruby gems.
+- AutoFlow: [pandoc](https://pandoc.org/installing.html), `Ruby` (we recommend installing Ruby via [RVM](https://rvm.io/)), and [Bundler](https://bundler.io/) (to manage Ruby package dependencies).
 
 ### Setting up FlowKit for development
 
@@ -130,6 +130,15 @@ To run the tests in the `flowapi`, `flowclient`, `flowdb`, `flowmachine`, `autof
 
 ```bash
 cd <directory>
+pipenv install --dev
+pipenv run pytest
+```
+
+AutoFlow additionally has dependencies on Ruby packages, which we manage using [Bundler](https://bundler.io/) which works similarly to pipenv. To run the tests in the `autoflow` directory:
+
+```bash
+cd autoflow
+bundle install
 pipenv install --dev
 pipenv run pytest
 ```
