@@ -599,12 +599,14 @@ jobs:
           name: Install non-python autoflow dependencies
           command: |
             sudo apt-get update && sudo apt-get install -y postgresql pandoc ruby
-            sudo gem install asciidoctor
-            sudo gem install asciidoctor-pdf --pre
+            sudo gem install bundler
       - run:
           name: Install python dependencies
           command: |
             pipenv install --deploy --dev
+      - run:
+          name: Install Ruby gems
+          command: bundle install --deployment
       - save_cache:
           key: autoflow-deps-1-{{ checksum "Pipfile.lock" }}
           paths:
