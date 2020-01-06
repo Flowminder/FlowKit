@@ -11,12 +11,14 @@ ENV AUTOFLOW_OUTPUTS_DIR=/mounts/outputs
 ENV PREFECT__USER_CONFIG_PATH=/${SOURCE_TREE}/autoflow/config/config.toml
 ENV PREFECT__ASCIIDOC_TEMPLATE_PATH=/${SOURCE_TREE}/autoflow/config/asciidoc_extended.tpl
 
+WORKDIR /${SOURCE_TREE}/autoflow
+
 RUN apt-get update -yqq \
     && apt-get upgrade -yqq \
     && apt-get upgrade -yqq git \
-    && apt-get install -yqq pandoc ruby  gcc \
-    && gem install asciidoctor \
-    && gem install asciidoctor-pdf --pre \
+    && apt-get install -yqq pandoc ruby gcc \
+    && gem install bundler \
+    && bundle install \
     && apt-get clean \
     && rm -rf \
     /var/lib/apt/lists/* \
@@ -26,7 +28,6 @@ RUN apt-get update -yqq \
     /usr/share/doc \
     /usr/share/doc-base
 
-WORKDIR /${SOURCE_TREE}/autoflow
 RUN pip install -U pip && pip install .[postgres,examples]
 
 CMD ["python", "-m", "autoflow"]
