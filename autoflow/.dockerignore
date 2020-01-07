@@ -16,3 +16,5 @@
 !setup.py
 !versioneer.py
 !README.md
+!Gemfile
+!Gemfile.lock

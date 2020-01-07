@@ -70,8 +70,9 @@ class RedactedJoinedSpatialAggregate(GeoDataMixin, Query):
         return f"""
         SELECT jsa.* FROM
         ({self.joined_spatial_aggregate.get_query()}) as jsa
-        NATURAL JOIN
+        INNER JOIN
         ({self.redacted_spatial_agg.get_query()}) as redact
+        USING ({','.join(self.spatial_unit.location_id_columns)})
         """
 
     @property
