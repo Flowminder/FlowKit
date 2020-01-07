@@ -367,7 +367,7 @@ if __name__ == "__main__":
             ):
                 with open(f"{dir}/../synthetic_data/data/geom.dat", "r") as f:
                     # First truncate the tables
-                    connection.execute("TRUNCATE infrastructure.sites;")
+                    connection.execute("TRUNCATE infrastructure.sites CASCADE;")
                     connection.execute("TRUNCATE TABLE infrastructure.cells CASCADE;")
 
                     cell_id = start_id
