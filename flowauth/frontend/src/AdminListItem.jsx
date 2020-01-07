@@ -29,6 +29,8 @@ function AdminListItem(props) {
               color="inherit"
               onClick={() => editAction(id)}
               id={"edit_" + id}
+              data-item-name={name}
+              data-action={"edit"}
             >
               <EditIcon />
             </IconButton>
@@ -39,6 +41,8 @@ function AdminListItem(props) {
             color="inherit"
             onClick={() => deleteAction(id)}
             id={"rm_" + id}
+            data-item-name={name}
+            data-action={"rm"}
           >
             <DeleteIcon />
           </IconButton>

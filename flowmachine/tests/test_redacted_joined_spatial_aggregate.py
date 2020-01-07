@@ -22,6 +22,7 @@ def test_all_above_threshold(get_dataframe):
             )
         )
     ).pcod
+    assert len(in_agg) > 0
     under_15 = get_dataframe(
         daily_location("2016-01-01")
         .aggregate()

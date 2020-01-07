@@ -1,8 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+import datetime
 
 import pytest
+from werkzeug.http import http_date
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
@@ -42,7 +44,9 @@ def test_get_server_time_limits(client, auth, app):
     assert 200 == response.status_code  # Should get an OK
     assert {
         "longest_token_life": 2,
-        "latest_token_expiry": "Wed, 01 Jan 2020 00:00:00 GMT",
+        "latest_token_expiry": http_date(
+            (datetime.datetime.now().date() + datetime.timedelta(days=365)).timetuple()
+        ),
     } == response.get_json()
 
 
@@ -298,7 +302,12 @@ def test_group_server_time_limits(client, auth, test_admin, test_group):
     assert 200 == response.status_code
     json = response.get_json()
     assert 2 == json["longest_token_life"]
-    assert "Wed, 01 Jan 2020 00:00:00 GMT" == json["latest_token_expiry"]
+    assert (
+        http_date(
+            (datetime.datetime.now().date() + datetime.timedelta(days=365)).timetuple()
+        )
+        == json["latest_token_expiry"]
+    )
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")

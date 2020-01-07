@@ -70,3 +70,4 @@ from .handset_stats import HandsetStats
 from .interevent_interval import IntereventInterval
 from .distance_series import DistanceSeries
 from .imputed_distance_series import ImputedDistanceSeries
+from .iterative_median_filter import IterativeMedianFilter

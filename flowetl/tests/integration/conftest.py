@@ -102,6 +102,7 @@ def container_env():
         "AIRFLOW__CORE__FERNET_KEY": "ssgBqImdmQamCrM9jNhxI_IXSzvyVIfqvyzES67qqVU=",
         "AIRFLOW__CORE__SQL_ALCHEMY_CONN": f"postgres://{flowetl_db['POSTGRES_USER']}:{flowetl_db['POSTGRES_PASSWORD']}@flowetl_db:5432/{flowetl_db['POSTGRES_DB']}",
         "AIRFLOW_CONN_FLOWDB": f"postgres://{flowdb['POSTGRES_USER']}:{flowdb['POSTGRES_PASSWORD']}@flowdb:5432/flowdb",
+        "AIRFLOW_HOME": os.environ["AIRFLOW_HOME"],
         "POSTGRES_USER": "flowetl",
         "POSTGRES_PASSWORD": "flowetl",
         "POSTGRES_DB": "flowetl",
@@ -161,7 +162,8 @@ def mounts(postgres_data_dir_for_tests, flowetl_mounts_dir):
     """
     config_mount = Mount("/mounts/config", f"{flowetl_mounts_dir}/config", type="bind")
     files_mount = Mount("/mounts/files", f"{flowetl_mounts_dir}/files", type="bind")
-    flowetl_mounts = [config_mount, files_mount]
+    logs_mount = Mount("/mounts/logs", f"{flowetl_mounts_dir}/logs", type="bind")
+    flowetl_mounts = [config_mount, files_mount, logs_mount]
 
     data_mount = Mount(
         "/var/lib/postgresql/data", postgres_data_dir_for_tests, type="bind"
@@ -330,6 +332,22 @@ def flowetl_container(
     )
     wait_for_container()
     yield container
+
+    save_airflow_logs = (
+        os.getenv("FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS", "FALSE").upper()
+        == "TRUE"
+    )
+    if save_airflow_logs:
+        logger.info(
+            "Saving airflow logs to /mounts/logs/ and outputting to stdout "
+            "(because FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS=TRUE)."
+        )
+        container.exec_run("bash -c 'cp -r $AIRFLOW_HOME/logs/* /mounts/logs/'")
+        airflow_logs = container.exec_run(
+            "bash -c 'find /mounts/logs -type f -exec cat {} \;'"
+        )
+        logger.info(airflow_logs)
+
     container.kill()
     container.remove()
 

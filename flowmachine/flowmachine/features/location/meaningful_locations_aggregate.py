@@ -6,7 +6,7 @@ from typing import Optional, List
 
 from flowmachine.core import Query, make_spatial_unit
 from flowmachine.core.spatial_unit import AnySpatialUnit
-from flowmachine.features import MeaningfulLocations
+from flowmachine.features.subscriber import MeaningfulLocations
 
 
 class MeaningfulLocationsAggregate(Query):
