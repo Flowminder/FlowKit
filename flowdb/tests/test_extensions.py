@@ -22,6 +22,7 @@ import pytest
         "pldbgapi",
         "pg_median_utils",
         "ogr_fdw",
+        "tds_fdw",
     ],
 )
 def test_extension_available(pg_available_extensions, extension):
