@@ -45,15 +45,24 @@ describe("Two-factor setup", function() {
                   .get("[data-button-id=submit]")
                   .click();
                 cy.contains("My Servers").should("be.visible");
+                cy.get("#logout").click();
+                cy.get("#username")
+                  .type(username)
+                  .get("#password")
+                  .type(password)
+                  .get("button")
+                  .click()
+                  .get("#two_factor_code")
+                  .type(mfaCode.stdout) // Log in using backup code because we don't want to wait for a new mfa code
+                  .get("button")
+                  .click()
+                  .get("#error-dialog-description")
+                  .should("have.text", "Code not valid.");
+                cy.get("#error-dialog-ok").click();
               }
             );
           });
-        cy.get("#logout").click();
-        cy.get("#username")
-          .type(username)
-          .get("#password")
-          .type(password)
-          .get("button")
+        cy.get("#signin-button")
           .click()
           .get("#two_factor_code")
           .type(text) // Log in using backup code because we don't want to wait for a new mfa code

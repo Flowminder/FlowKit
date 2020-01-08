@@ -32,3 +32,6 @@ COPY backend .
 RUN python setup.py bdist_wheel && pip install dist/*.whl
 WORKDIR /app
 COPY backend/uwsgi.ini .
+
+ENV FLOWAUTH_CACHE_BACKEND FILE
+ENV FLOWAUTH_CACHE_FILE /dev/shm/flowauth_last_used_cache
