@@ -158,12 +158,14 @@ def test_data(app, test_admin, test_user, test_group):
         dummy_server_a = Server(
             name="DUMMY_SERVER_A",
             longest_token_life=2,
-            latest_token_expiry=datetime.datetime(2020, 1, 1),
+            latest_token_expiry=datetime.datetime.now().date()
+            + datetime.timedelta(days=365),
         )
         dummy_server_b = Server(
             name="DUMMY_SERVER_B",
             longest_token_life=2,
-            latest_token_expiry=datetime.datetime(2021, 1, 1),
+            latest_token_expiry=datetime.datetime.now().date()
+            + datetime.timedelta(days=700),
         )
         db.session.add(dummy_server_a)
         db.session.add(dummy_server_b)
@@ -192,7 +194,8 @@ def test_data(app, test_admin, test_user, test_group):
             GroupServerTokenLimits(
                 group=test_group,
                 longest_life=2,
-                latest_end=datetime.datetime(2020, 1, 1),
+                latest_end=datetime.datetime.now().date()
+                + datetime.timedelta(days=365),
                 server=dummy_server_a,
             )
         )
@@ -202,7 +205,7 @@ def test_data(app, test_admin, test_user, test_group):
         t = Token(
             name="DUMMY_TOKEN",
             token="DUMMY_TOKEN_STRING",
-            expires=datetime.datetime(2019, 1, 1),
+            expires=datetime.datetime.now().date() + datetime.timedelta(days=1),
             owner=User.query.all()[0],
             server=dummy_server_b,
         )

@@ -33,6 +33,7 @@ ARG POSTGRES_USER=flowdb
 ENV POSTGRES_USER=$POSTGRES_USER
 ENV LC_ALL=en_US.UTF-8
 ENV LC_CTYPE=en_US.UTF-8
+ENV TDS_FDW_VERSION=2.0.1
 
 
 RUN apt-get update \
@@ -92,6 +93,23 @@ RUN apt-get update \
         && apt purge -y --auto-remove \
         && rm -rf /var/lib/apt/lists/*
 
+# TDS_FDW
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libsybdb5 freetds-dev freetds-common gnupg gcc postgresql-server-dev-$PG_MAJOR wget && \
+    wget https://github.com/tds-fdw/tds_fdw/archive/v${TDS_FDW_VERSION}.tar.gz && \
+    tar -xvzf v${TDS_FDW_VERSION}.tar.gz && \
+    rm v${TDS_FDW_VERSION}.tar.gz && \
+    cd tds_fdw-${TDS_FDW_VERSION}/ && \
+    make USE_PGXS=1 && \
+    make USE_PGXS=1 install && \
+    cd .. && rm -rf tds_fdw-${TDS_FDW_VERSION} && \
+    apt-get remove -y gnupg gcc postgresql-server-dev-$PG_MAJOR && \
+    apt purge -y --auto-remove  &&\
+    rm -rf /var/lib/apt/lists/*
+
+
 
 #
 #  CONFIGURATION
@@ -141,7 +159,6 @@ ENV FLOWAPI_FLOWDB_USER=flowapi
 
 # Default location table
 ENV LOCATION_TABLE=infrastructure.cells
-
 
 #
 #  Copy file spinup build scripts to be execed.

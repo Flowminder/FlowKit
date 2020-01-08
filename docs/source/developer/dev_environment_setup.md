@@ -146,7 +146,7 @@ successfully and are wired up correctly so that they can talk to each other.
 
 You can run the integration tests as follows. If these pass, this is a good indication that everything is set up correctly.
 ```bash
-$ cd integretion_tests
+$ cd integration_tests
 $ pipenv install  # only needed once to install dependencies
 $ pipenv run pytest
 ```
