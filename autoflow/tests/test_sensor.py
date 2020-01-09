@@ -37,7 +37,7 @@ def test_workflow_config_defaults():
     workflow_config = WorkflowConfig(workflow_name="DUMMY_FLOW")
     assert workflow_config.parameters is None
     assert workflow_config.earliest_date is None
-    assert workflow_config.date_stencil._intervals == ((0, 0),)
+    assert workflow_config.date_stencil._intervals == ((0, 1),)
 
 
 def test_get_available_dates(monkeypatch, test_logger):
@@ -226,7 +226,7 @@ def test_get_parametrised_workflows(test_logger):
         assert parametrised_workflows[i][0].name == "WORKFLOW_1"
         assert parametrised_workflows[i][1] == {
             "reference_date": refdate,
-            "date_ranges": [(refdate, refdate)],
+            "date_ranges": [(refdate, refdate.add(days=1))],
         }
     for i in [3, 4]:
         assert parametrised_workflows[i][0].name == "WORKFLOW_2"
@@ -234,8 +234,8 @@ def test_get_parametrised_workflows(test_logger):
             "DUMMY_PARAM": "DUMMY_VALUE",
             "reference_date": pendulum.date(2016, 1, i + 1),
             "date_ranges": [
-                (pendulum.date(2016, 1, i), pendulum.date(2016, 1, i)),
-                (pendulum.date(2016, 1, i + 1), pendulum.date(2016, 1, i + 1)),
+                (pendulum.date(2016, 1, i), pendulum.date(2016, 1, i+1)),
+                (pendulum.date(2016, 1, i + 1), pendulum.date(2016, 1, i + 2)),
             ],
         }
 
@@ -442,7 +442,7 @@ def test_available_dates_sensor(monkeypatch, postgres_test_db):
         WorkflowConfig(
             workflow_name="WORKFLOW_2",
             parameters={"DUMMY_PARAM_2": "DUMMY_VALUE_2"},
-            date_stencil=DateStencil([[pendulum.date(2016, 1, 3), -2], -1, 0]),
+            date_stencil=DateStencil([[pendulum.date(2016, 1, 3), -1], -1, 0]),
         ),
     ]
 
@@ -463,7 +463,7 @@ def test_available_dates_sensor(monkeypatch, postgres_test_db):
             call(
                 parameters=dict(
                     reference_date=d,
-                    date_ranges=[(d, d)],
+                    date_ranges=[(d, d.add(days=1))],
                     DUMMY_PARAM_1="DUMMY_VALUE_1",
                 ),
                 run_on_schedule=False,
@@ -479,9 +479,9 @@ def test_available_dates_sensor(monkeypatch, postgres_test_db):
                 parameters=dict(
                     reference_date=d,
                     date_ranges=[
-                        (pendulum.date(2016, 1, 3), d.subtract(days=2)),
-                        (d.subtract(days=1), d.subtract(days=1)),
-                        (d, d),
+                        (pendulum.date(2016, 1, 3), d.subtract(days=1)),
+                        (d.subtract(days=1), d),
+                        (d, d.add(days=1)),
                     ],
                     DUMMY_PARAM_2="DUMMY_VALUE_2",
                 ),
@@ -527,7 +527,7 @@ def test_available_dates_sensor(monkeypatch, postgres_test_db):
     workflow_1.run.assert_called_once_with(
         parameters=dict(
             reference_date=pendulum.date(2016, 1, 8),
-            date_ranges=[(pendulum.date(2016, 1, 8), pendulum.date(2016, 1, 8))],
+            date_ranges=[(pendulum.date(2016, 1, 8), pendulum.date(2016, 1, 9))],
             DUMMY_PARAM_1="DUMMY_VALUE_1",
         ),
         run_on_schedule=False,
@@ -536,9 +536,9 @@ def test_available_dates_sensor(monkeypatch, postgres_test_db):
         parameters=dict(
             reference_date=pendulum.date(2016, 1, 8),
             date_ranges=[
-                (pendulum.date(2016, 1, 3), pendulum.date(2016, 1, 6)),
-                (pendulum.date(2016, 1, 7), pendulum.date(2016, 1, 7)),
-                (pendulum.date(2016, 1, 8), pendulum.date(2016, 1, 8)),
+                (pendulum.date(2016, 1, 3), pendulum.date(2016, 1, 7)),
+                (pendulum.date(2016, 1, 7), pendulum.date(2016, 1, 8)),
+                (pendulum.date(2016, 1, 8), pendulum.date(2016, 1, 9)),
             ],
             DUMMY_PARAM_2="DUMMY_VALUE_2",
         ),
@@ -583,7 +583,7 @@ def test_available_dates_sensor_retries(monkeypatch, postgres_test_db):
     dummy_workflow.run.assert_has_calls(
         [
             call(
-                parameters=dict(reference_date=d, date_ranges=[(d, d)]),
+                parameters=dict(reference_date=d, date_ranges=[(d, d.add(days=1))]),
                 run_on_schedule=False,
             )
             for d in pendulum.period(
@@ -610,7 +610,7 @@ def test_available_dates_sensor_retries(monkeypatch, postgres_test_db):
     dummy_workflow.run.assert_called_once_with(
         parameters=dict(
             reference_date=pendulum.date(2016, 1, 1),
-            date_ranges=[(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 1))],
+            date_ranges=[(pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 2))],
         ),
         run_on_schedule=False,
     )

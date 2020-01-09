@@ -97,10 +97,12 @@ def test_as_date_pairs():
     """
     date_stencil = DateStencil(
         [
-            [-1, 1],
-            [pendulum.date(2016, 1, 1), 1],
-            [-1, pendulum.date(2016, 1, 3)],
-            [pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 3)],
+            -1,
+            pendulum.date(2016, 1, 1),
+            [-1, 0],
+            [pendulum.date(2016, 1, 1), 0],
+            [-1, pendulum.date(2016, 1, 2)],
+            [pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 2)],
         ]
     )
     reference_date = pendulum.date(2016, 1, 2)
