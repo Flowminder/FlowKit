@@ -70,7 +70,7 @@ def test_date_stencil_field():
     assert date_stencil._intervals == (
         (datetime.date(2016, 1, 1), datetime.date(2016, 1, 3)),
         (-2, -1),
-        (0, 0),
+        (0, 1),
     )
 
 

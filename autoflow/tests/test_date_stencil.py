@@ -21,15 +21,15 @@ def test_date_stencil_intervals():
         [pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)],
         [-3, -1],
         [pendulum.date(2016, 1, 1), -1],
-        [0, 0],
+        [0, 1],
     ]
     expected_intervals = (
-        (pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 1)),
-        (-4, -4),
+        (pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 2)),
+        (-4, -3),
         (pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 3)),
         (-3, -1),
         (pendulum.date(2016, 1, 1), -1),
-        (0, 0),
+        (0, 1),
     )
     date_stencil = DateStencil(raw_stencil)
     assert date_stencil._intervals == expected_intervals
@@ -43,8 +43,9 @@ def test_date_stencil_intervals():
         (-1, TypeError),
         ([[-3, -2, -1]], ValueError),
         ([[-1, -2]], InvalidDateIntervalError),
+        ([[-1, -1]], InvalidDateIntervalError),
         (
-            [[pendulum.date(2016, 1, 2), pendulum.date(2016, 1, 1)]],
+            [[pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 1)]],
             InvalidDateIntervalError,
         ),
     ],
@@ -96,6 +97,8 @@ def test_as_date_pairs():
     """
     date_stencil = DateStencil(
         [
+            -1,
+            pendulum.date(2016, 1, 1),
             [-1, 0],
             [pendulum.date(2016, 1, 1), 0],
             [-1, pendulum.date(2016, 1, 2)],
@@ -104,7 +107,7 @@ def test_as_date_pairs():
     )
     reference_date = pendulum.date(2016, 1, 2)
     date_pairs = date_stencil.as_date_pairs(reference_date)
-    assert len(date_pairs) == 4
+    assert len(date_pairs) == 6
     assert all(
         pair == (pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 2))
         for pair in date_pairs
@@ -119,7 +122,7 @@ def test_as_date_pairs_errors():
     date_stencil = DateStencil([[0, pendulum.date(2016, 1, 1)]])
     with pytest.raises(InvalidDateIntervalError):
         date_pairs = date_stencil.as_date_pairs(
-            reference_date=pendulum.date(2016, 1, 2)
+            reference_date=pendulum.date(2016, 1, 1)
         )
 
 
@@ -129,7 +132,7 @@ def test_as_set_of_dates():
     """
     reference_date = pendulum.date(2016, 1, 7)
     date_stencil = DateStencil([[pendulum.date(2016, 1, 1), -3], -1, 0])
-    expected_set = set(pendulum.date(2016, 1, d) for d in [1, 2, 3, 4, 6, 7])
+    expected_set = set(pendulum.date(2016, 1, d) for d in [1, 2, 3, 6, 7])
     set_of_dates = date_stencil.as_set_of_dates(reference_date)
     assert set_of_dates == expected_set
 
@@ -146,7 +149,7 @@ def test_dates_are_available(reference_date, available):
     """
     Test that DateStencil.dates_are_available correctly reports whether all dates in the stencil are available.
     """
-    date_stencil = DateStencil([[pendulum.date(2016, 1, 2), -4], [-3, -1]])
+    date_stencil = DateStencil([[pendulum.date(2016, 1, 2), -3], [-3, 0]])
     available_dates = [pendulum.date(2016, 1, d) for d in range(1, 6)]
     assert available == date_stencil.dates_are_available(
         reference_date, available_dates
