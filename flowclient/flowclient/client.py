@@ -1013,7 +1013,8 @@ def modal_location_from_dates(
 
     """
     dates = [
-        d.strftime("%Y-%m-%d") for d in pd.date_range(start_date, end_date, freq="D", closed="left")
+        d.strftime("%Y-%m-%d")
+        for d in pd.date_range(start_date, end_date, freq="D", closed="left")
     ]
     daily_locations = [
         daily_location(
