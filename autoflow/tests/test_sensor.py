@@ -234,7 +234,7 @@ def test_get_parametrised_workflows(test_logger):
             "DUMMY_PARAM": "DUMMY_VALUE",
             "reference_date": pendulum.date(2016, 1, i + 1),
             "date_ranges": [
-                (pendulum.date(2016, 1, i), pendulum.date(2016, 1, i+1)),
+                (pendulum.date(2016, 1, i), pendulum.date(2016, 1, i + 1)),
                 (pendulum.date(2016, 1, i + 1), pendulum.date(2016, 1, i + 2)),
             ],
         }
