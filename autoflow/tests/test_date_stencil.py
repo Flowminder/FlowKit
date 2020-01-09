@@ -107,7 +107,7 @@ def test_as_date_pairs():
     )
     reference_date = pendulum.date(2016, 1, 2)
     date_pairs = date_stencil.as_date_pairs(reference_date)
-    assert len(date_pairs) == 4
+    assert len(date_pairs) == 6
     assert all(
         pair == (pendulum.date(2016, 1, 1), pendulum.date(2016, 1, 2))
         for pair in date_pairs
