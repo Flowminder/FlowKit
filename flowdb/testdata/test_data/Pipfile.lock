@@ -25,10 +25,10 @@
         },
         "bidict": {
             "hashes": [
-                "sha256:1742a25a9ef1b1ac4000683406879a3e1a6577faa02f31e482e6c84e2e3bf628",
-                "sha256:621db384daef94b7031897ca479f4feed025989a64e91c6fae88fb88a842488c"
+                "sha256:754756ef233b3c71984b185b7028fdd6f402382e84c9d3e89b0b866d40dd5d45",
+                "sha256:ef7461a18fb4a6f3ccaa73f43ffe2e98661fba4b43b647ec7886b3298c8e9187"
             ],
-            "version": "==0.18.3"
+            "version": "==0.19.0"
         },
         "faker": {
             "hashes": [
