@@ -23,6 +23,7 @@ marshmallow = "*"
 marshmallow-oneofschema = "*"
 apispec-oneofschema = "*"
 get_secret_or_env_var = "*"
+redis = "*"
 
 [dev-packages]
 ipykernel = "*"

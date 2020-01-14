@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   To use the new generator, set the `SYNTHETIC_DATA_GENERATOR` environment variable to `realistic`.  
 - `FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS` environment variable added to allow copying the Airflow logs in FlowETL integration tests into the /mounts/logs directory for debugging. [#1019](https://github.com/Flowminder/FlowKit/issues/1019)
 - Added new `IterativeMedianFilter` query to Flowmachine, which applies an iterative median filter to the output of another query. [#1339](https://github.com/Flowminder/FlowKit/issues/1339)
+- FlowDB now includes the [TDS foreign data wrapper](https://github.com/tds-fdw). [#1729](https://github.com/Flowminder/FlowKit/issues/1729) 
 
 ### Changed
 - FlowDB is now built on PostgreSQL 12 [#1396](https://github.com/Flowminder/FlowKit/issues/1313) and PostGIS 3.
@@ -24,7 +25,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowETL now defaults to disabling Airflow's REST API, and enables RBAC for the webui. [#1516](https://github.com/Flowminder/FlowKit/issues/1516)
 - FlowETL now requires that the `FLOWETL_AIRFLOW_ADMIN_USERNAME` and `FLOWETL_AIRFLOW_ADMIN_PASSWORD` environment variables be set, which specify the default web ui account. [#1516](https://github.com/Flowminder/FlowKit/issues/1516)
 - FlowAPI will no longer return a result for rows in spatial aggregate, joined spatial aggregate, flows, total events, meaningful locations aggregate, meaningful locations od, or unique subscriber count where the aggregate would contain less than 16 sims. [#1026](https://github.com/Flowminder/FlowKit/issues/1026)
+- FlowAuth now records last used two-factor authentication codes in an expiring cache, which supports either a file-based, or redis backend. [#1173](https://github.com/Flowminder/FlowKit/issues/1173)
 - AutoFlow now uses [Bundler](https://bundler.io/) to manage Ruby dependencies.
+- The `end_date` parameter of `flowclient.modal_location_from_dates` now refers to the day _after_ the final date included in the range, so is now consistent with other queries that have start/end date parameters. [#819](https://github.com/Flowminder/FlowKit/issues/819)
+- Date intervals in AutoFlow date stencils are now interpreted as half-open intervals (i.e. including start date, excluding end date), for consistency with date ranges elsewhere in FlowKit.
 
 ### Fixed
 - Quickstart should no longer fail on systems which do not include the `netstat` tool. [#1472](https://github.com/Flowminder/FlowKit/issues/1472)
@@ -33,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAuth backend now sends a meaningful 400 response when trying to create a user with an empty password. [#1637](https://github.com/Flowminder/FlowKit/issues/1637)
 - Usernames of deleted users can now be re-used as usernames for new users. [#1638](https://github.com/Flowminder/FlowKit/issues/1638)
 - RedactedJoinedSpatialAggregate now only redacts rows with too few subscribers. [#1747](https://github.com/Flowminder/FlowKit/issues/1747)
+- FlowDB now uses a more conservative default setting for `tcp_keepalives_idle` of 10 minutes, to avoid connections being killed after 15 minutes when running in a docker swarm. [#1771](https://github.com/Flowminder/FlowKit/issues/1771) 
 
 ### Removed
 - Removed pg_cron.
