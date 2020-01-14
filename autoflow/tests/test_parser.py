@@ -60,7 +60,7 @@ def test_parse_workflows_yaml(tmp_path):
                   parameters:
                     dummy_param: 123
                   earliest_date: 2016-01-01
-                  date_stencil: [[2016-01-01, 2016-01-02], -1, 0]
+                  date_stencil: [[2016-01-01, 2016-01-03], -1, 0]
                 - workflow_name: workflow2
             """
         )
@@ -79,7 +79,7 @@ def test_parse_workflows_yaml(tmp_path):
             parameters={"dummy_param": 123},
             earliest_date=datetime.date(2016, 1, 1),
             date_stencil=DateStencil(
-                [[datetime.date(2016, 1, 1), datetime.date(2016, 1, 2)], -1, 0]
+                [[datetime.date(2016, 1, 1), datetime.date(2016, 1, 3)], -1, 0]
             ),
         ),
         WorkflowConfig(workflow_name="workflow2"),

@@ -65,7 +65,7 @@ Each element of the list of workflows defined in the `available_dates_sensor` bl
 
 - an absolute date (e.g.`2016-01-01`);  
 - an integer representing an offset (in days) from a reference date. For example, `-1` would refer to the day before a reference date, so a workflow containing `-1` would only run for date `2016-01-03` if date `2016-01-02` was available;  
-- a pair of dates/offsets representing a date interval (inclusive of both limits) for which all dates must be available. Absolute dates and offsets can be mixed (e.g. `[2016-01-01, -3]`).  
+- a pair of dates/offsets representing a half-open date interval (inclusive of lower limit) for which all dates must be available. Absolute dates and offsets can be mixed (e.g. `[2016-01-01, -3]`).  
 
 If the `date_stencil` parameter is not provided, the default value is `[0]` (i.e. only the reference date itself needs to be available).
 
@@ -82,10 +82,11 @@ then the internal `date_ranges` parameter for reference date `2016-01-07` would 
 ```python
 [
     ["2016-01-01", "2016-01-03"],
-    ["2016-01-04", "2016-01-04"],
+    ["2016-01-04", "2016-01-05"],
     ["2016-01-05", "2016-01-07"],
 ]
 ```
+and the workflow will only run for reference date `2016-01-07` if all of the dates `2016-01-01`, `2016-01-02`, `2016-01-04`, `2016-01-05` and `2016-01-06` are available.
 
 ### Preparing notebooks for automated execution
 

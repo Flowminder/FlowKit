@@ -25,6 +25,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowETL now requires that `AIRFLOW__CORE__SQL_ALCHEMY_CONN` be provided as an environment variable or secret. [#1702](https://github.com/Flowminder/FlowKit/issues/1702), [#1703](https://github.com/Flowminder/FlowKit/issues/1703)
 - FlowAuth now records last used two-factor authentication codes in an expiring cache, which supports either a file-based, or redis backend. [#1173](https://github.com/Flowminder/FlowKit/issues/1173)
 - AutoFlow now uses [Bundler](https://bundler.io/) to manage Ruby dependencies.
+- The `end_date` parameter of `flowclient.modal_location_from_dates` now refers to the day _after_ the final date included in the range, so is now consistent with other queries that have start/end date parameters. [#819](https://github.com/Flowminder/FlowKit/issues/819)
+- Date intervals in AutoFlow date stencils are now interpreted as half-open intervals (i.e. including start date, excluding end date), for consistency with date ranges elsewhere in FlowKit.
 
 ### Fixed
 - Quickstart should no longer fail on systems which do not include the `netstat` tool. [#1472](https://github.com/Flowminder/FlowKit/issues/1472)
@@ -33,6 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAuth backend now sends a meaningful 400 response when trying to create a user with an empty password. [#1637](https://github.com/Flowminder/FlowKit/issues/1637)
 - Usernames of deleted users can now be re-used as usernames for new users. [#1638](https://github.com/Flowminder/FlowKit/issues/1638)
 - RedactedJoinedSpatialAggregate now only redacts rows with too few subscribers. [#1747](https://github.com/Flowminder/FlowKit/issues/1747)
+- FlowDB now uses a more conservative default setting for `tcp_keepalives_idle` of 10 minutes, to avoid connections being killed after 15 minutes when running in a docker swarm. [#1771](https://github.com/Flowminder/FlowKit/issues/1771) 
 
 ### Removed
 - Removed pg_cron.

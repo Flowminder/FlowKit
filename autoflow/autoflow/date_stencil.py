@@ -33,7 +33,7 @@ class DateStencil:
             - a date object corresponding to an absolute date,
             - an int corresponding to an offset (in days) relative to a reference date,
             - a length-2 sequence [start, end] of dates or offsets,
-              corresponding to a date interval (inclusive of both limits).
+              corresponding to a half-open date interval (inclusive of lower limit).
     """
 
     def __init__(
@@ -58,20 +58,30 @@ class DateStencil:
                         isinstance(element[0], datetime.date)
                         and isinstance(element[1], datetime.date)
                     )
-                ) and element[0] > element[1]:
+                ) and element[1] <= element[0]:
                     raise InvalidDateIntervalError(
                         f"Date stencil contains invalid interval ({element[0]}, {element[1]})."
                     )
                 intervals.append((element[0], element[1]))
             else:
                 self._validate_date_element(element)
-                intervals.append((element, element))
+                intervals.append((element, self._next_day(element)))
         self._intervals = tuple(intervals)
 
     @staticmethod
     def _validate_date_element(element):
         if not isinstance(element, (int, datetime.date)):
             raise TypeError(f"{element} is not an integer or date.")
+
+    @staticmethod
+    def _next_day(element: Union[int, datetime.date]) -> Union[int, datetime.date]:
+        """
+        Given a date element (absolute date or integer offset), increment it by 1 day.
+        """
+        if isinstance(element, datetime.date):
+            return element + pendulum.duration(days=1)
+        else:
+            return element + 1
 
     @staticmethod
     def _offset_to_date(
@@ -120,8 +130,8 @@ class DateStencil:
     ) -> List[Tuple[pendulum.Date, pendulum.Date]]:
         """
         Given a reference date to calculate the offsets relative to, return
-        this date stencil as a list of tuples representing date intervals
-        (inclusive of both limits).
+        this date stencil as a list of tuples representing half-open date intervals
+        (inclusive of lower limit).
 
         Parameters
         ----------
@@ -136,13 +146,13 @@ class DateStencil:
         Raises
         ------
         InvalidDateIntervalError
-            If the stencil results in a date pair with start_date > end_date
+            If the stencil results in a date pair with end_date <= start_date
         """
         date_pairs = []
         for element in self._intervals:
             start_date = self._offset_to_date(element[0], reference_date)
             end_date = self._offset_to_date(element[1], reference_date)
-            if start_date > end_date:
+            if end_date <= start_date:
                 raise InvalidDateIntervalError(
                     f"Date stencil contains invalid date pair ({start_date}, {end_date}) for reference date {reference_date}."
                 )
@@ -165,7 +175,10 @@ class DateStencil:
             Set of dates represented by the stencil
         """
         date_pairs = self.as_date_pairs(reference_date=reference_date)
-        dates = set().union(*[pendulum.period(pair[0], pair[1]) for pair in date_pairs])
+        # Have to subtract a day from pair[1] here because pendulum.Period.range returns a range inclusive of both limits
+        dates = set().union(
+            *[pendulum.period(pair[0], pair[1].subtract(days=1)) for pair in date_pairs]
+        )
         return dates
 
     def dates_are_available(

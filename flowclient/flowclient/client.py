@@ -685,7 +685,7 @@ def meaningful_locations_aggregate(
     start_date : str
         ISO format date that begins the period, e.g. "2016-01-01"
     end_date : str
-        ISO format date that begins the period, e.g. "2016-01-07"
+        ISO format date for the day _after_ the final date of the period, e.g. "2016-01-08"
     label : str
         One of the labels specified in `labels`, or 'unknown'. Locations with this
         label are returned.
@@ -783,7 +783,7 @@ def meaningful_locations_between_label_od_matrix(
     start_date : str
         ISO format date that begins the period, e.g. "2016-01-01"
     end_date : str
-        ISO format date that begins the period, e.g. "2016-01-07"
+        ISO format date for the day _after_ the final date of the period, e.g. "2016-01-08"
     label_a, label_b : str
         One of the labels specified in `labels`, or 'unknown'. Calculates the OD between these two labels.
     labels : dict of dicts
@@ -886,7 +886,7 @@ def meaningful_locations_between_dates_od_matrix(
     start_date_a, start_date_b : str
         ISO format date that begins the period, e.g. "2016-01-01"
     end_date_a, end_date_b : str
-        ISO format date that begins the period, e.g. "2016-01-07"
+        ISO format date for the day _after_ the final date of the period, e.g. "2016-01-08"
     label : str
         One of the labels specified in `labels`, or 'unknown'. Locations with this
         label are returned.
@@ -988,7 +988,7 @@ def modal_location_from_dates(
     subscriber_subset: Union[dict, None] = None,
 ) -> dict:
     """
-    Return query spec for a modal location query for an (inclusive) date range and unit of aggregation.
+    Return query spec for a modal location query for a date range and unit of aggregation.
     Must be passed to `spatial_aggregate` to retrieve a result from the aggregates API.
 
     Parameters
@@ -996,7 +996,7 @@ def modal_location_from_dates(
     start_date : str
         ISO format date that begins the period, e.g. "2016-01-01"
     end_date : str
-        ISO format date that ends the period, e.g. "2016-01-07"
+        ISO format date for the day _after_ the final date of the period, e.g. "2016-01-08"
     aggregation_unit : str
         Unit of aggregation, e.g. "admin3"
     method : str
@@ -1013,7 +1013,8 @@ def modal_location_from_dates(
 
     """
     dates = [
-        d.strftime("%Y-%m-%d") for d in pd.date_range(start_date, end_date, freq="D")
+        d.strftime("%Y-%m-%d")
+        for d in pd.date_range(start_date, end_date, freq="D", closed="left")
     ]
     daily_locations = [
         daily_location(
