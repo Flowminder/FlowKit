@@ -12,7 +12,7 @@ Here are some important resources:
 
 We :green_heart: testing and CI. We mostly use [pytest](https://docs.pytest.org/en/latest/) for testing the Python parts of the codebase, and [Cypress.io](https://cypress.io) to test our Javascript components. You can take a look at our CI pipeline on [CircleCI](https://circleci.com/gh/Flowminder/workflows/FlowKit), [Travis](https://travis-ci.com/Flowminder/FlowKit), and [Cypress](https://dashboard.cypress.io/projects/67obxt/runs) to get a sense of how we test the complete project.
 
-Because FlowKit includes several components, each one has it's own tests, which usually live in the `tests` subdirectory of the component under the main repo.
+Because FlowKit includes several components, each one has its own tests, which usually live in the `tests` subdirectory of the component under the main repo.
 
 To run the tests yourself, or start hacking on the code, you'll want to follow the instructions for [setting up a developer environment](https://flowkit.xyz/developer/dev_environment_setup/).
 
@@ -36,7 +36,7 @@ Before any change gets merged into the codebase, it needs to:
 
 We try where possible to make sure pull requests are reviewed by two people, and ideally by three - including the person who's making the request.
 
-Once a pull request is marked as ready, approved and all tests are passing, it will get merged automatically. The automatic merge process will also (try) to ensure the branch is up to date with master, but on occasion you may need to intervene to make sure.
+Once a pull request is marked as ready, approved and all tests are passing, it will get merged automatically. The automatic merge process will also (try to) ensure the branch is up to date with master, but on occasion you may need to intervene to make sure.
 
 When preparing your branch for a pull request, it would be awesome if you took the time to clean up the history, and in general we prefer that you have kept up to date with master by rebasing as often as necessary.
     
