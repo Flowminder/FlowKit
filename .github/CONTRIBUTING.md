@@ -44,7 +44,7 @@ When preparing your branch for a pull request, it would be awesome if you took t
 
 We :heart: bug reports. Please have a quick look through the [issue tracker](https://github.com/Flowminder/FlowKit/issues?utf8=✓&q=is%3Aissue+is%3Aopen+label%3Abug+) to see if you're hitting something new, and [open up a new one](https://github.com/Flowminder/FlowKit/issues/new?template=bug_report.md) if you don't find anything.
 
-It is super helpful if you follow the template provided, but don't worry to much if you can't fill out all the fields. 
+It is super helpful if you follow the template provided, but don't worry too much if you can't fill out all the fields. 
 
 ## Requesting new features :rocket:
 
