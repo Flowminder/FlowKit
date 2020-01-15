@@ -14,7 +14,7 @@ We :green_heart: testing and CI. We mostly use [pytest](https://docs.pytest.org/
 
 Because FlowKit includes several components, each one has it's own tests, which usually live in the `tests` subdirectory of the component under the main repo.
 
-To run the tests yourself, or start hacking on the code, you'll want to follow the instructions for [setting up  a developer environment](https://flowkit.xyz/developer/dev_environment_setup/).
+To run the tests yourself, or start hacking on the code, you'll want to follow the instructions for [setting up a developer environment](https://flowkit.xyz/developer/dev_environment_setup/).
 
 ## Submitting changes :hammer:
 
