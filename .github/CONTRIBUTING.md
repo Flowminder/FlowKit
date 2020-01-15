@@ -56,4 +56,10 @@ You can also [request one](https://github.com/Flowminder/FlowKit/issues/new?temp
 
 For Python, we use [black](https://github.com/python/black), and for JS/JSX we use [prettier](https://github.com/prettier/prettier).
 
+## License
 
+[MPL2](https://github.com/Flowminder/FlowKit/blob/master/LICENSE)
+
+## Code of conduct
+
+We follow the [contributor covenant code of conduct](https://github.com/Flowminder/FlowKit/blob/master/.github/CODE_OF_CONDUCT.md). Please follow it too, and report any breaches by [email](mailto:flowkit@flowminder.org[?subject=Conduct]) so we can investigate.
