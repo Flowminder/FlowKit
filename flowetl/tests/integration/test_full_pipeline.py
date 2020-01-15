@@ -3,11 +3,8 @@ import os
 from pathlib import Path
 from pendulum import parse
 
-from etl.model import ETLRecord
-
 
 def test_single_file_previously_quarantined(
-    flowetl_container,
     write_files_to_files,
     trigger_dags,
     wait_for_completion,
@@ -29,6 +26,8 @@ def test_single_file_previously_quarantined(
     6. Do child tables get created under the associated parent table in
     the events schema?
     """
+    from etl.model import ETLRecord
+
     write_files_to_files(
         file_names=[
             "CALLS_20160101.csv.gz",
@@ -54,7 +53,7 @@ def test_single_file_previously_quarantined(
         session=flowdb_session,
     )
 
-    trigger_dags(flowetl_container=flowetl_container)
+    trigger_dags()
 
     # 1 calls, 1 sms, 1 mds and 1 topups DAG should run and we wait for
     # their completion
