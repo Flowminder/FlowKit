@@ -16,7 +16,7 @@ Because FlowKit includes several components, each one has it's own tests, which 
 
 To run the tests yourself, or start hacking on the code, you'll want to follow the instructions for [setting up  a developer environment](https://flowkit.xyz/developer/dev_environment_setup/).
 
-## Submitting changes :spanner:
+## Submitting changes :hammer:
 
 For small changes to the code or documentation (e.g. correcting a typo), please feel free to open a pull request directly.
 
