@@ -56,6 +56,8 @@ You can also [request one](https://github.com/Flowminder/FlowKit/issues/new?temp
 
 For Python, we use [black](https://github.com/python/black), and for JS/JSX we use [prettier](https://github.com/prettier/prettier).
 
+Python code should be [type hinted](https://www.python.org/dev/peps/pep-0484/), and we use [numpy style docstrings](https://numpydoc.readthedocs.io/en/latest/format.html).
+
 ## License
 
 [MPL2](https://github.com/Flowminder/FlowKit/blob/master/LICENSE)
