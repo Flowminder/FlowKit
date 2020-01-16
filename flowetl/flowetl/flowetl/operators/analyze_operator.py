@@ -1,9 +1,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from airflow.operators.postgres_operator import PostgresOperator
+from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
 
-from flowetl.mixins.fixed_sql_with_params_mixin import fixed_sql_operator_with_params
 
-AnalyzeOperator = fixed_sql_operator_with_params(
-    class_name="AnalyzeOperator", sql="ANALYZE {{ params.target }};", params=["target"]
-)
+class AnalyzeOperator(TableNameMacrosMixin, PostgresOperator):
+    def __init__(self, *, target, **kwargs) -> None:
+        super().__init__(
+            sql=f"ANALYZE {target};", **kwargs
+        )  # Need an f-string to let us use templating with the target
