@@ -1047,6 +1047,12 @@ workflows:
             - install_flowmachine_deps
           <<: *run_always_org_context
       - build_python_wheel:
+          name: build_flowetl_wheel
+          project_name: flowetl/flowetl
+          requires:
+            - install_flowmachine_deps
+          <<: *run_always_org_context
+      - build_python_wheel:
           name: build_flowmachine_wheel
           project_name: flowmachine
           requires:
@@ -1110,6 +1116,12 @@ workflows:
       - push_wheel:
           name: push_flowclient_wheel
           project_name: flowclient
+          requires:
+            - retag_tagged_build
+          <<: *tag_only_org_context
+      - push_wheel:
+          name: push_flowetl_wheel
+          project_name: flowetl/flowetl
           requires:
             - retag_tagged_build
           <<: *tag_only_org_context
