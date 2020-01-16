@@ -32,4 +32,3 @@ dag = create_dag(
 )
 
 dag.is_paused_upon_creation = False
-print(dag.template_searchpath)
