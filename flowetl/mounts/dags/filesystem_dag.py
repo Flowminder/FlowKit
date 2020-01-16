@@ -26,9 +26,10 @@ dag = create_dag(
     indexes=["msisdn_counterpart", "location_id", "datetime", "tac"],
     cluster_field="msisdn",
     program="zcat",
-    filename="/ingestion/{{ cdr_type }}_{{ ds_nodash }}.csv.gz",
+    filename="/files/{{ params.cdr_type }}_{{ ds_nodash }}.csv.gz",
     fields={"msisdn": "TEXT", "cell_id": "TEXT", "event_time": "TIMESTAMPTZ",},
     null="Undefined",
 )
 
 dag.is_paused_upon_creation = False
+print(dag.template_searchpath)
