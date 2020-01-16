@@ -1,0 +1,37 @@
+import pytest
+
+
+@pytest.mark.parametrize("header, expected", [(True, "TRUE"), (False, "FALSE")])
+def test_foreign_staging_table_header_param(header, expected):
+    from flowetl.operators.create_foreign_staging_table_operator import (
+        CreateForeignStagingTableOperator,
+    )
+
+    op = CreateForeignStagingTableOperator(
+        task_id="DUMMY_ID", filename="DUMMY_FILE", fields=dict(), header=header
+    )
+    assert op.params["header"] == expected
+
+
+@pytest.mark.parametrize("program, expected", [(None, False), ("foo", "foo")])
+def test_foreign_staging_table_program_param(program, expected):
+    from flowetl.operators.create_foreign_staging_table_operator import (
+        CreateForeignStagingTableOperator,
+    )
+
+    op = CreateForeignStagingTableOperator(
+        task_id="DUMMY_ID", filename="DUMMY_FILE", fields=dict(), program=program
+    )
+    assert op.params.get("program", False) == expected
+
+
+@pytest.mark.parametrize("encoding, expected", [(None, False), ("foo", "foo")])
+def test_foreign_staging_table_encoding_param(encoding, expected):
+    from flowetl.operators.create_foreign_staging_table_operator import (
+        CreateForeignStagingTableOperator,
+    )
+
+    op = CreateForeignStagingTableOperator(
+        task_id="DUMMY_ID", filename="DUMMY_FILE", fields=dict(), encoding=encoding
+    )
+    assert op.params.get("encoding", False) == expected
