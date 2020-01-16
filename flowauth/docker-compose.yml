@@ -16,9 +16,7 @@ networks:
   web:
   flowauth_database:
 volumes:
-    vhost:
-    nginx_home:
-    certs:
+  pgdata:
 services:
   flowauth:
     image: flowminder/flowauth:${CONTAINER_TAG:-latest}
@@ -47,30 +45,9 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/FLOWAUTH_DB_PASSWORD
       POSTGRES_USER: flowauth
       POSTGRES_DB: flowauth
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     secrets:
       - FLOWAUTH_DB_PASSWORD
     networks:
       - flowauth_database
-
-  nginx-proxy:
-    image: jwilder/nginx-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - vhost:/etc/nginx/vhost.d
-      - nginx_home:/usr/share/nginx/html
-      - certs:/etc/nginx/certs
-      - "/var/run/docker.sock:/tmp/docker.sock:ro"
-    networks:
-      web:
-        aliases:
-          - proxy
-
-  letsencrypt-nginx-proxy-companion:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    volumes:
-      - vhost:/etc/nginx/vhost.d
-      - nginx_home:/usr/share/nginx/html
-      - certs:/etc/nginx/certs
-      - "/var/run/docker.sock:/tmp/docker.sock:ro"
