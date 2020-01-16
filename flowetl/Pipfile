@@ -8,6 +8,7 @@ apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.7"}
 Click = "*"
 
 [dev-packages]
+structlog = "*"
 flowetl = {editable = true,path = "./flowetl"}
 pytest = "*"
 SQLAlchemy = "*"
