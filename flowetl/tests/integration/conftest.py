@@ -6,26 +6,24 @@
 """
 Conftest for flowetl integration tests
 """
+import os
 import warnings
+from pathlib import Path
+from subprocess import Popen, run
+from time import sleep
 
 import docker
-import os
-import structlog
-import pytest
 import requests
-
-from pathlib import Path
-
-
-from time import sleep
-from subprocess import Popen, run
-from pendulum import now, Interval
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import structlog
 from docker.types import Mount
 from requests.exceptions import RequestException
 
-here = os.path.dirname(os.path.abspath(__file__))
+import pytest
+from pendulum import Interval, now
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+here = Path(__file__).parent
 logger = structlog.get_logger("flowetl-tests")
 
 
@@ -122,12 +120,19 @@ def container_ports():
 
 
 @pytest.fixture(scope="function")
-def container_network(docker_client):
+def container_network(docker_client, request):
     """
     A docker network for containers to communicate on
     """
-    network = docker_client.networks.create("testing", driver="bridge")
-    yield
+    network = docker_client.networks.create(
+        f"testing_{request.node.name}", driver="bridge"
+    )
+    yield network
+    for container in network.containers:
+        try:
+            network.disconnect(container=container, force=True)
+        except docker.errors.APIError:
+            pass  # Probably already disconnected
     network.remove()
 
 
@@ -136,13 +141,19 @@ def mounts(tmpdir, flowetl_mounts_dir):
     """
     Various mount objects needed by containers
     """
-    config_mount = Mount("/mounts/config", f"{flowetl_mounts_dir}/config", type="bind")
-    files_mount = Mount("/mounts/files", f"{flowetl_mounts_dir}/files", type="bind")
-    logs_mount = Mount("/mounts/logs", f"{flowetl_mounts_dir}/logs", type="bind")
-    flowetl_mounts = [config_mount, files_mount, logs_mount]
+    Path(tmpdir / "logs").mkdir(parents=True)
+    Path(tmpdir / "files").mkdir(parents=True)
+    Path(tmpdir / "pgdata").mkdir(parents=True)
 
-    data_mount = Mount("/var/lib/postgresql/data", str(tmpdir), type="bind")
-    files_mount = Mount("/files", f"{flowetl_mounts_dir}/files", type="bind")
+    dags_mount = Mount(
+        "/usr/local/airflow/dags", f"{flowetl_mounts_dir}/dags", type="bind"
+    )
+
+    logs_mount = Mount("/mounts/logs", str(tmpdir / "logs"), type="bind")
+    flowetl_mounts = [dags_mount, logs_mount]
+
+    data_mount = Mount("/var/lib/postgresql/data", str(tmpdir / "pgdata"), type="bind")
+    files_mount = Mount("/files", str(tmpdir / "files"), type="bind")
     flowdb_mounts = [data_mount, files_mount]
 
     return {"flowetl": flowetl_mounts, "flowdb": flowdb_mounts}
@@ -179,6 +190,7 @@ def flowdb_container(
     container_ports,
     container_network,
     mounts,
+    request,
 ):
     """
     Starts flowdb (and cleans up) and waits until healthy
@@ -187,45 +199,57 @@ def flowdb_container(
     for ingestion.
     """
     user = f"{os.getuid()}:{os.getgid()}"
+    logger.info("Starting FlowDB")
     container = docker_client.containers.run(
         f"flowminder/flowdb:{container_tag}",
         environment=container_env["flowdb"],
         ports={"5432": container_ports["flowdb"]},
-        name="flowdb",
-        network="testing",
+        name=f"flowdb_{request.node.name}",
         mounts=mounts["flowdb"],
         healthcheck={
             "test": "pg_isready -h localhost -U flowdb",
-            "interval": 1000000000,
+            "interval": 100000000,
         },
         user=user,
         detach=True,
     )
+    container_network.connect(container, aliases=["flowdb"])
 
-    healthy = False
-    while not healthy:
-        container_info = docker_api_client.inspect_container(container.id)
-        healthy = container_info["State"]["Health"]["Status"] == "healthy"
+    def await_container():
+        # Wait for container to be ready
+        healthy = False
+        while not healthy:
+            container_info = docker_api_client.inspect_container(container.id)
+            healthy = container_info["State"]["Health"]["Status"] == "healthy"
+        logger.info("Started FlowDB container")
+        # Add a single line of raw SMS data into a postgres table which is used in the full-pipeline test.
+        engine = create_engine(
+            f"postgresql://flowdb:flowflow@localhost:{container_ports['flowdb']}/flowdb"
+        )
+        engine.execute(
+            """
+            CREATE TABLE IF NOT EXISTS mds_raw_data_dump (
+                imei TEXT,
+                msisdn TEXT,
+                event_time TIMESTAMPTZ,
+                cell_id TEXT
+            );
 
-    # Add a single line of raw SMS data into a postgres table which is used in the full-pipeline test.
+            INSERT INTO mds_raw_data_dump VALUES
+            ('BDED3095A2759089134DDA5CB7968764', '9824B87CDEEAD5ED5AC959D74F3C81C5', '2016-01-01 13:23:29', 'C44BEF');
+            """
+        )
+
+    yield await_container
+
     engine = create_engine(
         f"postgresql://flowdb:flowflow@localhost:{container_ports['flowdb']}/flowdb"
     )
     engine.execute(
         """
-        CREATE TABLE IF NOT EXISTS mds_raw_data_dump (
-            imei TEXT,
-            msisdn TEXT,
-            event_time TIMESTAMPTZ,
-            cell_id TEXT
-        );
-
-        INSERT INTO mds_raw_data_dump VALUES
-        ('BDED3095A2759089134DDA5CB7968764', '9824B87CDEEAD5ED5AC959D74F3C81C5', '2016-01-01 13:23:29', 'C44BEF');
+        DROP TABLE IF EXISTS mds_raw_data_dump;
         """
     )
-
-    yield
     container.kill()
     container.remove()
 
@@ -238,29 +262,34 @@ def flowetl_db_container(
     container_env,
     container_ports,
     container_network,
+    request,
 ):
     """
     Start (and clean up) flowetl_db just a vanilla pg 11
     """
+    logger.info("Starting FlowETL db container")
     container = docker_client.containers.run(
         f"postgres:11.0",
         environment=container_env["flowetl_db"],
         ports={"5432": container_ports["flowetl_db"]},
-        name="flowetl_db",
-        network="testing",
+        name=f"flowetl_db_{request.node.name}",
         healthcheck={
             "test": f"pg_isready -h localhost -p 5432 -U {container_env['flowetl_db']['POSTGRES_USER']}",
             "interval": 1000000000,
         },
         detach=True,
     )
-    # Wait for container to be ready
-    healthy = False
-    while not healthy:
-        container_info = docker_api_client.inspect_container(container.id)
-        healthy = container_info["State"]["Health"]["Status"] == "healthy"
+    container_network.connect(container, aliases=["flowetl_db"])
 
-    yield
+    def await_container():
+        # Wait for container to be ready
+        healthy = False
+        while not healthy:
+            container_info = docker_api_client.inspect_container(container.id)
+            healthy = container_info["State"]["Health"]["Status"] == "healthy"
+        logger.info("Started FlowETL db container")
+
+    yield await_container
     container.kill()
     container.remove()
 
@@ -276,6 +305,7 @@ def flowetl_container(
     container_network,
     mounts,
     container_ports,
+    request,
 ):
     """
     Start (and clean up) flowetl. Setting user to uid/gid of
@@ -313,11 +343,11 @@ def flowetl_container(
                 )
 
     user = f"{os.getuid()}:{os.getgid()}"
+    logger.info("Starting FlowETL container")
     container = docker_client.containers.run(
         f"flowminder/flowetl:{container_tag}",
         environment=container_env["flowetl"],
-        name="flowetl",
-        network="testing",
+        name=f"flowetl_{request.node.name}",
         restart_policy={"Name": "always"},
         ports={"8080": container_ports["flowetl_airflow"]},
         mounts=mounts["flowetl"],
@@ -325,8 +355,12 @@ def flowetl_container(
         detach=True,
         stderr=True,
     )
+    container_network.connect(container, aliases=["flowetl"])
     try:
         wait_for_container()
+        flowdb_container()
+        flowetl_db_container()
+        logger.info("Started FlowETL container")
         yield container
 
         save_airflow_logs = (
@@ -579,10 +613,11 @@ def wait_for_completion(airflow_home):
 
 
 @pytest.fixture(scope="function")
-def flowdb_connection_engine(container_env, container_ports):
+def flowdb_connection_engine(container_env, container_ports, flowdb_container):
     """
     Engine for flowdb
     """
+    flowdb_container()
     conn_str = f"postgresql://{container_env['flowdb']['POSTGRES_USER']}:{container_env['flowdb']['POSTGRES_PASSWORD']}@localhost:{container_ports['flowdb']}/flowdb"
     engine = create_engine(conn_str)
 
@@ -631,3 +666,38 @@ def flowetl_db_session(flowetl_db_connection_engine):
     session = sessionmaker(bind=flowetl_db_connection_engine)()
     yield session
     session.close()
+
+
+@pytest.fixture
+def run_task(flowetl_container):
+    """
+    Produces a function that will run a single task within a dag at a given execution date on the airflow container.
+
+    Yields
+    ------
+    function
+    """
+
+    yield lambda dag_id, task_id, exec_date: flowetl_container.exec_run(
+        f"airflow test {dag_id} {task_id} {exec_date}"
+    )
+
+
+@pytest.fixture
+def run_dag(flowetl_container):
+    """
+    Produces a function that will run a single  dag at a given execution date on the airflow container.
+
+    Yields
+    ------
+    function
+    """
+
+    def trigger_dag(*, dag_id, exec_date, run_id=None):
+        trigger_cmd = ["airflow", "trigger_dag", "-e", exec_date]
+        if run_id is not None:
+            trigger_cmd += ["-r", run_id]
+
+        return flowetl_container.exec_run([*trigger_cmd, dag_id])
+
+    yield trigger_dag
