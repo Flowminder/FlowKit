@@ -32,11 +32,29 @@ RUN set -eux; \
 RUN mv /entrypoint.sh /defaultentrypoint.sh
 COPY ./entrypoint.sh /entrypoint.sh
 
-COPY ./etl /opt/etl
-RUN pip install /opt/etl
+# Install FlowETL module
 
-USER airflow
-COPY --chown=airflow:airflow ./dags/* ${AIRFLOW__CORE__DAGS_FOLDER}/
+ARG SOURCE_VERSION=0+unknown
+ENV SOURCE_VERSION=${SOURCE_VERSION}
+ENV SOURCE_TREE=FlowKit-${SOURCE_VERSION}
+WORKDIR /${SOURCE_TREE}/flowetl
+
+COPY Pipfile* ./
+
+RUN apt-get update && \
+        apt-get install -y --no-install-recommends git && \
+        pip install --no-cache-dir pipenv && pipenv install --clear --deploy --system && \
+        apt-get -y remove git && \
+        apt purge -y --auto-remove && \
+        rm -rf /var/lib/apt/lists/*
+
+COPY ./flowetl /${SOURCE_TREE}/flowetl
+RUN apt-get update && \
+        apt-get install -y --no-install-recommends git && \
+        python setup.py install && \
+        apt-get -y remove git && \
+        apt purge -y --auto-remove && \
+        rm -rf /var/lib/apt/lists/*
 
 # Needed on $AIRFLOW_HOME so that different users passed through --user
 # have the permission to create and use their files for Airflow
@@ -44,8 +62,11 @@ COPY --chown=airflow:airflow ./dags/* ${AIRFLOW__CORE__DAGS_FOLDER}/
 # When possible, this will get changed to 700 at runtime (uid 0)
 RUN chmod -R 777 ${AIRFLOW_HOME}
 
+USER airflow
+
 WORKDIR ${AIRFLOW_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["webserver"] # set default arg for entrypoint
+# set default arg for entrypoint
+CMD ["webserver"]
 
 
