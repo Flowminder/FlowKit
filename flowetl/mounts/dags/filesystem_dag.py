@@ -14,7 +14,7 @@ from flowetl.util import create_dag
 dag = create_dag(
     dag_id="filesystem_dag",
     schedule_interval=None,
-    retries=10,
+    retries=0,
     retry_delay=timedelta(days=1),
     start_date=datetime(2016, 3, 1),
     end_date=datetime(2016, 6, 17),
