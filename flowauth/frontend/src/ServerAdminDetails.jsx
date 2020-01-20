@@ -146,44 +146,37 @@ class ServerAdminDetails extends React.Component {
     this.setState(state);
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const { item_id } = this.props;
     var name, rights;
-    if (item_id !== -1) {
-      getServer(item_id)
-        .then(json => {
-          name = json.name;
-          return getCapabilities(item_id);
-        })
-        .then(json => {
-          rights = json;
-          return getTimeLimits(item_id);
-        })
-        .then(json => {
-          this.setState({
-            name: name,
-            rights: rights,
-            latest_expiry: json.latest_token_expiry,
-            max_life: json.longest_token_life,
-            edit_mode: true
-          });
-          return getAllCapabilities();
-        })
-        .then(json => this.setState({ permitted: json }))
-        .catch(err => {
-          this.setState({ hasError: true, error: err });
+    try {
+      const all_capabilities = getAllCapabilities();
+      const all_aggregations = getAllAggregationUnits();
+      if (item_id !== -1) {
+        const server = getServer(item_id);
+        const capabilities = getCapabilities(item_id);
+        const time_limits = getTimeLimits(item_id);
+        this.setState({
+          name: (await server).name,
+          rights: await capabilities,
+          latest_expiry: (await time_limits).latest_token_expiry,
+          max_life: (await time_limits).longest_token_life,
+          edit_mode: true
         });
-    } else {
-      getAllCapabilities()
-        .then(json => {
-          this.setState({
-            rights: json,
-            permitted: JSON.parse(JSON.stringify(json || {}))
-          });
-        })
-        .catch(err => {
-          this.setState({ hasError: true, error: err });
-        });
+      }
+      const all_units = (await all_aggregations).map(agg => agg.name);
+      console.log(all_units);
+      const capabilities = await all_capabilities;
+      /* Explicitly enable all capabilities because this is for configuring a server. */
+      Object.entries(capabilities).forEach(([route, route_setup]) => {
+        Object.keys(route_setup.permissions).forEach(
+          p => (route_setup.permissions[p] = true)
+        );
+        route_setup.spatial_aggregation = all_units;
+      });
+      this.setState({ permitted: capabilities });
+    } catch (err) {
+      this.setState({ hasError: true, error: err });
     }
   }
 
