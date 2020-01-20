@@ -4,8 +4,8 @@
 
 from flowetl.mixins.fixed_sql_with_params_mixin import fixed_sql_operator_with_params
 
-FluxSensor = fixed_sql_operator_with_params(
-    class_name="FluxSensor",
+TableFluxSensor = fixed_sql_operator_with_params(
+    class_name="TableFluxSensor",
     sql="""
                 CREATE TEMPORARY TABLE {{ staging_table_name }}_count AS
                 SELECT count(*) FROM {{ staging_table }};

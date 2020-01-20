@@ -184,7 +184,8 @@ def create_dag(
     from flowetl.operators.extract_from_view_operator import ExtractFromViewOperator
     from flowetl.operators.update_etl_table_operator import UpdateETLTableOperator
     from flowetl.sensors.data_present_sensor import DataPresentSensor
-    from flowetl.sensors.flux_sensor import FluxSensor
+    from flowetl.sensors.file_flux_sensor import FileFluxSensor
+    from flowetl.sensors.table_flux_sensor import TableFluxSensor
 
     args = {
         "owner": "airflow",
@@ -240,13 +241,23 @@ def create_dag(
             poke_interval=data_present_poke_interval,
             timeout=data_present_timeout,
         )
-        check_not_in_flux = FluxSensor(
-            task_id="check_not_in_flux",
-            mode="reschedule",
-            poke_interval=flux_check_poke_interval,
-            flux_check_interval=flux_check_wait_interval,
-            timeout=flux_check_timeout,
-        )
+        if filename is not None:
+            check_not_in_flux = FileFluxSensor(
+                task_id="check_not_in_flux",
+                filename=filename,
+                mode="reschedule",
+                poke_interval=flux_check_poke_interval,
+                flux_check_interval=flux_check_wait_interval,
+                timeout=flux_check_timeout,
+            )
+        else:
+            check_not_in_flux = TableFluxSensor(
+                task_id="check_not_in_flux",
+                mode="reschedule",
+                poke_interval=flux_check_poke_interval,
+                flux_check_interval=flux_check_wait_interval,
+                timeout=flux_check_timeout,
+            )
 
         add_constraints = AddConstraintsOperator(
             task_id="add_constraints", pool="postgres_etl"
