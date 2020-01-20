@@ -38,7 +38,7 @@ def test_source_table_macro_added():
 
 
 @pytest.mark.parametrize(
-    "args, expected_view_type, expected_extract_type",
+    "args, expected_view_type, expected_extract_type, expected_flux_sensor_type",
     [
         (
             dict(
@@ -46,15 +46,19 @@ def test_source_table_macro_added():
             ),
             "CreateStagingViewOperator",
             "ExtractFromViewOperator",
+            "TableFluxSensor",
         ),
         (
             dict(filename="DUMMY FILE PATTERN", fields=dict(DUMMY_FIELD="DUMMY_TYPE")),
             "CreateForeignStagingTableOperator",
             "ExtractFromForeignTableOperator",
+            "FileFluxSensor",
         ),
     ],
 )
-def test_inferred_op_types(args, expected_view_type, expected_extract_type):
+def test_inferred_op_types(
+    args, expected_view_type, expected_extract_type, expected_flux_sensor_type
+):
     dag = create_dag(
         dag_id="TEST",
         cdr_type="TEST",
@@ -64,6 +68,9 @@ def test_inferred_op_types(args, expected_view_type, expected_extract_type):
     )
     assert dag.task_dict["create_staging_view"].__class__.__name__ == expected_view_type
     assert dag.task_dict["extract"].__class__.__name__ == expected_extract_type
+    assert (
+        dag.task_dict["check_not_in_flux"].__class__.__name__ == expected_extract_type
+    )
 
 
 def test_no_cluster_by_default():

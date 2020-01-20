@@ -7,7 +7,7 @@ from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
 
 class FileFluxSensor(TableNameMacrosMixin, SqlSensor):
     def __init__(
-        self, conn_id: str, *, flux_check_interval: int, filename: str, **kwargs
+        self, conn_id: str, flux_check_interval: int, filename: str, **kwargs
     ) -> None:
         self.filename = filename
         self.flux_check_interval = flux_check_interval
