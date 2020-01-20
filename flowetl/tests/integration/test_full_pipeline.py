@@ -1,192 +1,165 @@
-import os
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+from time import sleep
 
-from pathlib import Path
-from pendulum import parse
+import pandas as pd
 
 
-def test_single_file_previously_quarantined(
-    write_files_to_files,
-    trigger_dags,
-    wait_for_completion,
-    flowetl_db_session,
-    flowdb_session,
-    flowdb_connection,
+def test_file_pipeline(
+    run_dag, dag_status, task_status, flowdb_transaction,
 ):
     """
-    Test for full pipeline. We want to test the following things;
+    Test full run of file pipeline, and ensure that:
 
-    1. Do files in the files location get picked up?
-    2. Do files that do not match a configuration pattern get ignored?
-    3. Do files (cdr_type, cdr_date pairs) that have a state of archive
-    in etl.etl_records get ignored?
-    4. Do files (cdr_type, cdr_date pairs) that have a state of quarantine
-    in etl.etl_records get picked up to be reprocessed?
-    5. Do files of different CDR types cause the correct etl_{cdr_type}
-    DAG to run?
-    6. Do child tables get created under the associated parent table in
-    the events schema?
+    1. Data is there
+    2. Table is proper subtable
+    3. Table is correctly named
+    4. QA checks are run
+    5. ETL metadata is recorded
+    6. Table is indexed
+    7. Table is clustered
+    8. Table is date constrained
+
     """
-    from etl.model import ETLRecord
+    exit_code, output = run_dag(dag_id="filesystem_dag", exec_date="2016-03-01")
+    assert exit_code == 0
+    for check_attempt in range(100):  # Wait for dag to stop running
+        exit_code, status = dag_status(dag_id="filesystem_dag", exec_date="2016-03-01")
+        if b"running" not in status:
+            break
+        sleep(5)
+    assert b"success" in status
 
-    write_files_to_files(
-        file_names=[
-            "CALLS_20160101.csv.gz",
-            "CALLS_20160102.csv.gz",
-            "SMS_20160101.csv.gz",
-            "bad_file.bad",
-            "MDS_20160101.csv.gz",
-            "TOPUPS_20160101.csv.gz",
-        ]
+    # Check data present
+    date_present = flowdb_transaction.execute(
+        "SELECT count(*) FROM events.calls WHERE datetime::date = '2016-03-01';"
+    ).fetchall()
+    assert date_present[0][0] > 0
+
+    date_present = flowdb_transaction.execute(
+        "SELECT count(*) FROM events.calls_20160301;"
+    ).fetchall()
+    assert date_present[0][0] > 0
+
+    # Check table is inherited
+
+    exists_query = f"""SELECT EXISTS(SELECT relname 
+        FROM 
+            pg_inherits i 
+        JOIN 
+            pg_class c 
+        ON 
+            c.oid = inhrelid 
+        WHERE 
+            inhparent = 'events.calls'::regclass
+        AND
+            relname = 'calls_20160301')"""
+    assert flowdb_transaction.execute(exists_query).fetchall()[0][0]
+
+    # Check table is clustered on the right field
+
+    clustered_query = f"""SELECT EXISTS(
+    SELECT
+        i.relname
+    FROM
+        pg_index AS idx
+    JOIN
+        pg_class AS i
+    ON
+        i.oid = idx.indexrelid
+    WHERE
+        idx.indisclustered
+    AND 
+        idx.indrelid::regclass = 'events.calls_20160301'::regclass
+    AND
+        i.relname = 'calls_20160301_msisdn_idx')
+    """
+    assert flowdb_transaction.execute(clustered_query).fetchall()[0][0]
+
+    # Check table has date constraints
+
+    constraint_query = f"""SELECT 
+        pg_get_constraintdef(c.oid)
+    FROM   
+        pg_constraint c
+    JOIN   
+        pg_namespace n 
+    ON 
+        n.oid = c.connamespace
+    WHERE  
+        contype ='c' 
+    AND 
+        conrelid::regclass = 'events.calls_20160301'::regclass
+    """
+    constraint_string = f"CHECK (((datetime >= 2016-03-01 00:00:00+00'::timestamp with time zone) AND (datetime < '2016-03-02 2016-03-01 00:00:00+00'::timestamp with time zone)))"
+    assert (
+        flowdb_transaction.execute(constraint_query).fetchall()[0][0]
+        == constraint_string
     )
 
-    # set CALLS_20160101 as archived and SMS_20160101 as quarantined
-    ETLRecord.set_state(
-        cdr_type="calls",
-        cdr_date=parse("2016-01-01").date(),
-        state="archive",
-        session=flowdb_session,
-    )
-    ETLRecord.set_state(
-        cdr_type="sms",
-        cdr_date=parse("2016-01-01").date(),
-        state="quarantine",
-        session=flowdb_session,
-    )
+    # Check ETL meta
 
-    trigger_dags()
+    etl_meta_query = "SELECT EXISTS(SELECT * FROM etl.etl_records WHERE cdr_date='2016-03-01' AND state='ingested' and cdr_type='calls');"
+    assert flowdb_transaction.execute(etl_meta_query).fetchall()[0][0]
 
-    # 1 calls, 1 sms, 1 mds and 1 topups DAG should run and we wait for
-    # their completion
-    wait_for_completion(
-        end_state="success",
-        fail_state="failed",
-        dag_id="etl_calls",
-        session=flowetl_db_session,
-    )
-    wait_for_completion(
-        end_state="success",
-        fail_state="failed",
-        dag_id="etl_sms",
-        session=flowetl_db_session,
-    )
-    wait_for_completion(
-        end_state="success",
-        fail_state="failed",
-        dag_id="etl_mds",
-        session=flowetl_db_session,
-    )
-    wait_for_completion(
-        end_state="success",
-        fail_state="failed",
-        dag_id="etl_topups",
-        session=flowetl_db_session,
-    )
+    # Check qa checks
 
-    # make sure files are where they should be
+    qa_check_query = "SELECT count(*)=5 from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
+    assert flowdb_transaction.execute(etl_meta_query).fetchall()[0][0]
 
-    all_files = [
-        "CALLS_20160101.csv.gz",
-        "bad_file.bad",
-        "CALLS_20160102.csv.gz",
-        "SMS_20160101.csv.gz",
-        "MDS_20160101.csv.gz",
-        "TOPUPS_20160101.csv.gz",
-    ]  # all files
 
-    files = [file.name for file in Path(f"{os.getcwd()}/mounts/files").glob("*")]
+def test_file_pipeline_bad_file(
+    run_dag, dag_status, task_status, flowdb_transaction,
+):
+    """
+    Test fail for bad data file.
+    """
+    exit_code, output = run_dag(dag_id="filesystem_dag", exec_date="2016-03-02")
+    assert exit_code == 0
+    for check_attempt in range(100):  # Wait for dag to stop running
+        exit_code, status = dag_status(dag_id="filesystem_dag", exec_date="2016-03-02")
+        if b"running" not in status:
+            break
+        sleep(5)
+    assert b"failed" in status
+    date_present = flowdb_transaction.execute(
+        "SELECT count(*) FROM events.calls WHERE datetime::date = '2016-03-02';"
+    ).fetchall()
+    assert date_present[0][0] == 0
 
-    assert set(all_files) == (set(files) - set(["README.md"]))
 
-    def expected_table_exists(*, table_name):
-        """
-        Return True if the expected table exists in flowdb, otherwise False.
-        """
-
-        connection, _ = flowdb_connection
-        sql = """
-        select
-            count(*)
-        from
-            information_schema.tables
-        where
-            table_schema = 'events'
-            and
-            table_name = '{table_name}'
-        """
-        res = connection.execute(sql.format(table_name=table_name)).fetchone()[0]
-        return res == 1
-
-    assert expected_table_exists(table_name="calls_20160102")
-    assert expected_table_exists(table_name="sms_20160101")
-    assert expected_table_exists(table_name="mds_20160101")
-    assert expected_table_exists(table_name="topups_20160101")
-
-    def expected_postetl_outcome_exists(
-        *,
-        cdr_type,
-        cdr_date,
-        outcome,
-        type_of_query_or_check,
-        optional_comment_or_description,
-    ):
-        """
-        Return True if the expected outcome exists in flowdb, otherwise False.
-        """
-
-        connection, _ = flowdb_connection
-        sql = f"""
-        SELECT 1
-        FROM etl.post_etl_queries
-        WHERE cdr_type = '{cdr_type}'
-        AND cdr_date = '{cdr_date}'
-        AND type_of_query_or_check = '{type_of_query_or_check}'
-        AND outcome = '{outcome}'
-        AND optional_comment_or_description = '{optional_comment_or_description}'
-        """
-        res = connection.execute(sql).fetchone()[0]
-        return res == 1
-
-    assert expected_postetl_outcome_exists(
-        cdr_type="calls",
-        cdr_date="20160102",
-        outcome="0",
-        type_of_query_or_check="num_total_events",
-        optional_comment_or_description="Total number of events for this CDR type and date",
-    )
-
-    def get_etl_states(*, cdr_type, cdr_date):
-        """
-        Return the ETL states present for the given cdr type and date.
-        """
-
-        res = (
-            flowdb_session.query(ETLRecord.state)
-            .filter(ETLRecord.cdr_type == cdr_type, ETLRecord.cdr_date == cdr_date)
-            .all()
+def test_get_only_one_day(populated_test_data_table, run_task, all_tasks):
+    """
+    Test that only data for the one day is returned even if other data is present.
+    """
+    for task_id in all_tasks:
+        return_code, result = run_task(
+            dag_id="remote_table_dag", task_id=task_id, exec_date="2016-06-15"
         )
-        return sorted([row[0] for row in res])
+        print(
+            f"Dag: remote_table_dag, task: {task_id}, exec date: 2016-06-15.\n\n{result}\n\n"
+        )
+    db_content = pd.read_sql_table(
+        "calls_20160615", populated_test_data_table, "events"
+    )
+    assert len(db_content) == 1
 
-    # calls,20160101 -> archive
-    etl_states = set(get_etl_states(cdr_type="calls", cdr_date="2016-01-01"))
-    etl_states_expected = set(["archive"])
-    assert etl_states_expected == etl_states
 
-    # calls,20160102 -> ingest + archive
-    etl_states = get_etl_states(cdr_type="calls", cdr_date="2016-01-02")
-    etl_states_expected = ["archive", "ingest"]
-    assert etl_states_expected == etl_states
+def test_wait_when_in_flux(growing_test_data_table, run_task):
+    """
+    Test the table flux sensor waits if the table is still being written to.
+    """
+    for task_id in ["create_staging_view", "wait_for_data"]:
+        return_code, result = run_task(
+            dag_id="remote_table_dag", task_id=task_id, exec_date="2016-06-15"
+        )
+        print(
+            f"Dag: remote_table_dag, task: {task_id}, exec date: 2016-06-15.\n\n{result}\n\n"
+        )
 
-    # sms,20160101 -> quarantine + ingest + archive
-    etl_states = get_etl_states(cdr_type="sms", cdr_date="2016-01-01")
-    etl_states_expected = ["archive", "ingest", "quarantine"]
-    assert etl_states_expected == etl_states
-
-    # mds,20160101 -> ingest + archive
-    etl_states = get_etl_states(cdr_type="mds", cdr_date="2016-01-01")
-    etl_states_expected = ["archive", "ingest"]
-    assert etl_states_expected == etl_states
-
-    # topups,20160101 -> ingest + archive
-    etl_states = get_etl_states(cdr_type="topups", cdr_date="2016-01-01")
-    etl_states_expected = ["archive", "ingest"]
-    assert etl_states_expected == etl_states
+    return_code, result = run_task(
+        dag_id="remote_table_dag", task_id="check_not_in_flux", exec_date="2016-06-15"
+    )
+    assert "Success criteria met. Exiting." not in str(result)
+    assert return_code == 0
