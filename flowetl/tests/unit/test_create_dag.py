@@ -69,7 +69,8 @@ def test_inferred_op_types(
     assert dag.task_dict["create_staging_view"].__class__.__name__ == expected_view_type
     assert dag.task_dict["extract"].__class__.__name__ == expected_extract_type
     assert (
-        dag.task_dict["check_not_in_flux"].__class__.__name__ == expected_extract_type
+        dag.task_dict["check_not_in_flux"].__class__.__name__
+        == expected_flux_sensor_type
     )
 
 

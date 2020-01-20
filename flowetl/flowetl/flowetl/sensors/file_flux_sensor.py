@@ -2,12 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from airflow.operators.sensors import SqlSensor
+from airflow.utils import apply_defaults
 from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
 
 
 class FileFluxSensor(TableNameMacrosMixin, SqlSensor):
+    @apply_defaults
     def __init__(
-        self, conn_id: str, flux_check_interval: int, filename: str, **kwargs
+        self, *, conn_id: str, flux_check_interval: int, filename: str, **kwargs
     ) -> None:
         self.filename = filename
         self.flux_check_interval = flux_check_interval
