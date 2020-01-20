@@ -4,8 +4,11 @@
 
 from typing import List, Type
 
+from airflow.utils.decorators import apply_defaults
+
 
 class ParamsMixin:
+    @apply_defaults
     def __init__(self, *args, **kwargs) -> None:
         params = kwargs.setdefault("params", {})
         for arg in self.named_params:
