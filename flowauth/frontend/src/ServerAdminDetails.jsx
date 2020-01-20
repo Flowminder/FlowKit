@@ -151,7 +151,6 @@ class ServerAdminDetails extends React.Component {
     var name, rights;
     try {
       const all_capabilities = getAllCapabilities();
-      const all_aggregations = getAllAggregationUnits();
       if (item_id !== -1) {
         const server = getServer(item_id);
         const capabilities = getCapabilities(item_id);
@@ -164,17 +163,9 @@ class ServerAdminDetails extends React.Component {
           edit_mode: true
         });
       }
-      const all_units = (await all_aggregations).map(agg => agg.name);
-      console.log(all_units);
-      const capabilities = await all_capabilities;
-      /* Explicitly enable all capabilities because this is for configuring a server. */
-      Object.entries(capabilities).forEach(([route, route_setup]) => {
-        Object.keys(route_setup.permissions).forEach(
-          p => (route_setup.permissions[p] = true)
-        );
-        route_setup.spatial_aggregation = all_units;
-      });
-      this.setState({ permitted: capabilities });
+      const capabilities = all_capabilities;
+
+      this.setState({ permitted: await capabilities });
     } catch (err) {
       this.setState({ hasError: true, error: err });
     }

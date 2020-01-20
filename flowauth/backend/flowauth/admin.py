@@ -2,13 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from cryptography.hazmat.primitives import serialization
-from flask import jsonify, Blueprint, request, current_app
+from flask import Blueprint, current_app, jsonify, request
+
 from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 from zxcvbn import zxcvbn
 
-from .models import *
 from .invalid_usage import InvalidUsage
+from .models import *
 
 blueprint = Blueprint(__name__, __name__)
 admin_permission = Permission(RoleNeed("admin"))
@@ -48,23 +49,15 @@ def list_all_capabilities():
 
     Notes
     -----
-    Responds with {<capability_name>: {"id":<capability_id>, "permissions":{<right>:False}}}
+    Responds with {<capability_name>: {"id":<capability_id>, "permissions":{<right>:True}}}
     """
-    default_permission_setting: bool = current_app.config["DEMO_MODE"]
-    aggregations = (
-        [agg.name for agg in SpatialAggregationUnit.query.all()]
-        if current_app.config["DEMO_MODE"]
-        else []
-    )
+    aggregations = [agg.name for agg in SpatialAggregationUnit.query.all()]
+
     return jsonify(
         {
             cap.name: {
                 "id": cap.id,
-                "permissions": {
-                    "get_result": default_permission_setting,
-                    "run": default_permission_setting,
-                    "poll": default_permission_setting,
-                },
+                "permissions": {"get_result": True, "run": True, "poll": True,},
                 "spatial_aggregation": aggregations,
             }
             for cap in Capability.query.all()

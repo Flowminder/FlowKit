@@ -16,13 +16,13 @@ def test_list_capabilities(client, auth):
     assert {
         "DUMMY_ROUTE_A": {
             "id": 1,
-            "permissions": {"get_result": False, "run": False, "poll": False},
-            "spatial_aggregation": [],
+            "permissions": {"get_result": True, "run": True, "poll": True},
+            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
         },
         "DUMMY_ROUTE_B": {
             "id": 2,
-            "permissions": {"get_result": False, "run": False, "poll": False},
-            "spatial_aggregation": [],
+            "permissions": {"get_result": True, "run": True, "poll": True},
+            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
         },
     } == response.get_json()
 
@@ -67,18 +67,18 @@ def test_add_capability(client, auth, app):
     assert {
         "DUMMY_ROUTE_A": {
             "id": 1,
-            "permissions": {"get_result": False, "run": False, "poll": False},
-            "spatial_aggregation": [],
+            "permissions": {"get_result": True, "run": True, "poll": True},
+            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
         },
         "DUMMY_ROUTE_B": {
             "id": 2,
-            "permissions": {"get_result": False, "run": False, "poll": False},
-            "spatial_aggregation": [],
+            "permissions": {"get_result": True, "run": True, "poll": True},
+            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
         },
         "DUMMY_ROUTE_C": {
             "id": 3,
-            "permissions": {"get_result": False, "run": False, "poll": False},
-            "spatial_aggregation": [],
+            "permissions": {"get_result": True, "run": True, "poll": True},
+            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
         },
     } == response.get_json()  # Newly added capacity should appear in the list of servers
 
@@ -97,8 +97,8 @@ def test_remove_capability(client, auth, app):
     assert {
         "DUMMY_ROUTE_B": {
             "id": 2,
-            "permissions": {"get_result": False, "run": False, "poll": False},
-            "spatial_aggregation": [],
+            "permissions": {"get_result": True, "run": True, "poll": True},
+            "spatial_aggregation": ["admin0", "admin1", "admin2", "admin3"],
         }
     } == response.get_json()  # Capacity should be gone from the list
 
