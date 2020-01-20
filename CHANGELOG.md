@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - AutoFlow now uses [Bundler](https://bundler.io/) to manage Ruby dependencies.
 - The `end_date` parameter of `flowclient.modal_location_from_dates` now refers to the day _after_ the final date included in the range, so is now consistent with other queries that have start/end date parameters. [#819](https://github.com/Flowminder/FlowKit/issues/819)
 - Date intervals in AutoFlow date stencils are now interpreted as half-open intervals (i.e. including start date, excluding end date), for consistency with date ranges elsewhere in FlowKit.
+- `flowmachine` user now has read access to ETL metadata tables in FlowDB
 
 ### Fixed
 - Quickstart should no longer fail on systems which do not include the `netstat` tool. [#1472](https://github.com/Flowminder/FlowKit/issues/1472)
