@@ -17,6 +17,6 @@ class FileFluxSensor(TableNameMacrosMixin, SqlSensor):
                 CREATE TEMPORARY TABLE {{{{ staging_table_name }}}}_mod_date AS
                 SELECT (pg_stat_file('{filename}')).modification;
                 SELECT pg_sleep({ flux_check_interval });
-                SELECT 1 WHERE (SELECT * FROM {{{{ staging_table_name }}}}_count) = ((pg_stat_file('{filename}')).modification);
+                SELECT 1 WHERE (SELECT * FROM {{{{ staging_table_name }}}}}_mod_date) = ((pg_stat_file('{filename}')).modification);
                 """
         super().__init__(conn_id=conn_id, sql=sql, **kwargs)
