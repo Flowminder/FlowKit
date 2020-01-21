@@ -1,0 +1,39 @@
+version: '3.7'
+volumes:
+    vhost:
+    nginx_home:
+    certs:
+services:
+  flowauth:
+    environment:
+      VIRTUAL_HOST: ${DOMAIN_NAME:?}
+      LETSENCRYPT_HOST: ${DOMAIN_NAME:?}
+      LETSENCRYPT_EMAIL: ${EMAIL_ADDRESS}
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    environment:
+      DHPARAM_BITS: 0 # Have to set this because of https://github.com/jwilder/nginx-proxy/issues/1361
+      DHPARAM_GENERATION: "false"
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - vhost:/etc/nginx/vhost.d
+      - nginx_home:/usr/share/nginx/html
+      - certs:/etc/nginx/certs
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    networks:
+      web:
+        aliases:
+          - proxy
+
+  letsencrypt-nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - vhost:/etc/nginx/vhost.d
+      - nginx_home:/usr/share/nginx/html
+      - certs:/etc/nginx/certs
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
