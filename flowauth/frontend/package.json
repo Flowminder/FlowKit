@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "cypress": "^3.8.2",
-    "husky": "^4.1.0",
+    "husky": "^4.2.0",
     "otp-cli": "^0.2.0",
     "prettier": "^1.19.1",
     "pretty-quick": "^2.0.1"
