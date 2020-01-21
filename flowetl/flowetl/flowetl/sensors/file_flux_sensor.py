@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from airflow.operators.sensors import SqlSensor
-from airflow.utils import apply_defaults
+from airflow.utils.decorators import apply_defaults
 from flowetl.mixins.table_name_macros_mixin import TableNameMacrosMixin
 
 
