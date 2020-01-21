@@ -25,5 +25,6 @@ def test_required_env_var(env_var_to_remove, docker_client, container_tag):
             f"flowminder/flowetl:{container_tag}",
             environment=env,
             stderr=True,
-            auto_remove=True,
+            user="airflow",
+            remove=True,
         )
