@@ -399,7 +399,7 @@ echo "
 Deploying stack
 "
 
-docker stack deploy -c docker-stack.yml secrets_test
+docker stack deploy -c docker-stack.yml -c ../flowauth/docker-compose.yml secrets_test
 
 echo "
 
