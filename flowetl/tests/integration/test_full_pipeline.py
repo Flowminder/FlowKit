@@ -92,7 +92,7 @@ def test_file_pipeline(
     AND 
         conrelid::regclass = 'events.calls_20160301'::regclass
     """
-    constraint_string = f"CHECK (((datetime >= '2016-03-01 00:00:00+00'::timestamp with time zone) AND (datetime < '2016-03-02 2016-03-01 00:00:00+00'::timestamp with time zone)))"
+    constraint_string = f"CHECK (((datetime >= '2016-03-01 00:00:00+00'::timestamp with time zone) AND (datetime < '2016-03-02 00:00:00+00'::timestamp with time zone)))"
     assert (
         flowdb_transaction.execute(constraint_query).fetchall()[0][0].replace("\n", "")
         == constraint_string
@@ -106,7 +106,7 @@ def test_file_pipeline(
     # Check qa checks
 
     qa_check_query = "SELECT count(*)=5 from etl.post_etl_queries WHERE cdr_date='2016-03-01' AND cdr_type='calls'"
-    assert flowdb_transaction.execute(etl_meta_query).fetchall()[0][0]
+    assert flowdb_transaction.execute(qa_check_query).fetchall()[0][0]
 
 
 def test_file_pipeline_bad_file(
