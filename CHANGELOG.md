@@ -14,7 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added a new component, AutoFlow, to automate running Jupyter notebooks when new data is added to FlowDB. [#1570](https://github.com/Flowminder/FlowKit/issues/1570)
 - `FLOWETL_INTEGRATION_TESTS_SAVE_AIRFLOW_LOGS` environment variable added to allow copying the Airflow logs in FlowETL integration tests into the /mounts/logs directory for debugging. [#1019](https://github.com/Flowminder/FlowKit/issues/1019)
 - Added new `IterativeMedianFilter` query to Flowmachine, which applies an iterative median filter to the output of another query. [#1339](https://github.com/Flowminder/FlowKit/issues/1339)
-- FlowDB now includes the [TDS foreign data wrapper](https://github.com/tds-fdw). [#1729](https://github.com/Flowminder/FlowKit/issues/1729) 
+- FlowDB now includes the [TDS foreign data wrapper](https://github.com/tds-fdw). [#1729](https://github.com/Flowminder/FlowKit/issues/1729)
+- Added contributing and support instructions. [#1791](https://github.com/Flowminder/FlowKit/issues/1791)
 
 ### Changed
 - FlowDB is now built on PostgreSQL 12 [#1396](https://github.com/Flowminder/FlowKit/issues/1313) and PostGIS 3.
@@ -35,7 +36,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - FlowAuth backend now sends a meaningful 400 response when trying to create a user with an empty password. [#1637](https://github.com/Flowminder/FlowKit/issues/1637)
 - Usernames of deleted users can now be re-used as usernames for new users. [#1638](https://github.com/Flowminder/FlowKit/issues/1638)
 - RedactedJoinedSpatialAggregate now only redacts rows with too few subscribers. [#1747](https://github.com/Flowminder/FlowKit/issues/1747)
-- FlowDB now uses a more conservative default setting for `tcp_keepalives_idle` of 10 minutes, to avoid connections being killed after 15 minutes when running in a docker swarm. [#1771](https://github.com/Flowminder/FlowKit/issues/1771) 
+- FlowDB now uses a more conservative default setting for `tcp_keepalives_idle` of 10 minutes, to avoid connections being killed after 15 minutes when running in a docker swarm. [#1771](https://github.com/Flowminder/FlowKit/issues/1771)
+- Aggregation units and api routes can now be added to servers. [#1815](https://github.com/Flowminder/FlowKit/issues/1815)
 
 ### Removed
 - Removed pg_cron.
