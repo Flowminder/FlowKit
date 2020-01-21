@@ -36,7 +36,7 @@ services:
     restart: always
     volumes:
       - data_volume_flowdb:/var/lib/postgresql/data
-      - ${FLOWETL_HOST_FILES_DIR:?Must set FLOWETL_HOST_FILES_DIR env var}:/mounts/files:ro
+      - ${FLOWDB_HOST_FILES_DIR:?Must set FLOWDB_HOST_FILES_DIR env var}:/mounts/files:ro
     networks:
       - flowdb
       - ingestion_db_overlay
@@ -53,8 +53,7 @@ services:
     ports:
       - ${FLOWETL_PORT:?Must set FLOWETL_PORT env var}:8080
     volumes:
-      - ${FLOWETL_HOST_CONFIG_DIR:?Must set FLOWETL_HOST_CONFIG_DIR env var}:/mounts/config:ro
-      - ${FLOWETL_HOST_FILES_DIR:?Must set FLOWETL_HOST_FILES_DIR env var}:/mounts/files:ro
+      - ${FLOWETL_HOST_DAG_DIR:?Must set FLOWETL_HOST_DAG_DIR env var}:/usr/local/airflow/dags:ro
 
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor

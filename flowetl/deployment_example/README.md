@@ -54,7 +54,7 @@ set -a && source ./defaults_ingestion_db.env && set +a
 ```
 
 Then we can build and deploy the database.
-```
+```bash
 make build-and-deploy-ingestion_db
 ```
 
@@ -94,50 +94,6 @@ ingestion_db=# SELECT * FROM events.cdr LIMIT 3;
  2019-08-16 11:02:23.606812+00 | c81e728d9d4c2f636f067f89cc14862cc81e728d9d4c2f636f067f89cc14862c |  94994
 (3 rows)
 ``` 
-
-### Create a view to determine available dates in IngestionDB
-
-FlowETL needs to be able to determine which dates are available for ingestion.
-A convenient way to do this is to create a view in the ingestion database which lists all available dates.
-Since our ingestion database is based on [TimescaleDB](https://docs.timescale.com/latest/main) and the table `events.cdr`
-is a [hypertable](https://docs.timescale.com/latest/using-timescaledb/hypertables) with chunk size of 1 day, we can
-extract this information from the chunk ranges. Further down we will
-
-Connect to the ingestion database (`make connect-ingestion_db`) and then run the following SQL snippet
-to create the `available_dates view.
-```
-CREATE VIEW available_dates AS (
-    WITH chunk_ranges_as_strings AS (
-        SELECT unnest(ranges) as ranges
-        FROM chunk_relation_size_pretty('events.cdr')
-    ),
-    chunk_ranges AS (
-        SELECT
-            substring(ranges, 2, 24)::TIMESTAMPTZ as chunk_start,
-            substring(ranges, 25, 24)::TIMESTAMPTZ as chunk_end
-        FROM chunk_ranges_as_strings
-    )
-    SELECT
-        chunk_start::DATE as cdr_date
-    FROM chunk_ranges
-    ORDER BY cdr_date
-);
-```
-
-Let's confirm that it works as expected.
-```
-ingestion_db=# SELECT * FROM available_dates;
-  cdr_date
-------------
- 2019-09-02
- 2019-09-03
- 2019-09-04
- 2019-09-05
- 2019-09-06
- 2019-09-07
- 2019-09-08
-(7 rows)
-```
 
 ### Set up a docker stack with FlowDB and FlowETL
 
@@ -231,12 +187,6 @@ CREATE USER MAPPING IF NOT EXISTS FOR flowdb
         password 'etletl'
     );
 
-CREATE FOREIGN TABLE sample_data_available_dates_fdw (
-        cdr_date DATE
-    )
-    SERVER ingestion_db_server
-    OPTIONS (table_name 'available_dates');
-
 CREATE FOREIGN TABLE sample_data_fdw (
         event_time TIMESTAMPTZ,
         msisdn TEXT,
@@ -246,24 +196,10 @@ CREATE FOREIGN TABLE sample_data_fdw (
     OPTIONS (schema_name 'events', table_name 'cdr');
 ```
 
-This creates two foreign data wrappers within `flowdb`. The first one (`sample_data_available_dates_fdw`) allows
-to determine the dates for which CDR data is available, so that FlowETL can schedule ingestion for any unprocessed dates.
-The second one (`sample_data_fdw`) wraps the actual data itself and acts as the "source" in the ETL pipeline.
+This one foreign data wrappers within `flowdb`: `sample_data_fdw` wraps the actual data itself and acts as the "source" in the ETL pipeline.
 
-Let's verify that these were set up correctly, so that `flowdb` can now read data remotely from `ingestion_db`:
+Let's verify that this was set up correctly, so that `flowdb` can now read data remotely from `ingestion_db`:
 ```
-flowdb=# SELECT * FROM sample_data_available_dates_fdw;
-  cdr_date
-------------
- 2019-09-02
- 2019-09-03
- 2019-09-04
- 2019-09-05
- 2019-09-06
- 2019-09-07
- 2019-09-08
-(7 rows)
-
 flowdb=# SELECT * FROM sample_data_fdw LIMIT 3;
           event_time           |                              msisdn                              | cell_id
 -------------------------------+------------------------------------------------------------------+---------
@@ -286,24 +222,21 @@ Let's start the ingestion DAGs via the Airflow web interface.
 
 - Navigate to http://localhost:8080, which should present you with the Airflow web interface.
 - Log in using the username and password specified by `FLOWETL_AIRFLOW_ADMIN_USERNAME` and `FLOWETL_AIRFLOW_ADMIN_PASSWORD`. (The default stackfile sets these to `admin` and `password`.)
-- Activate the `etl_sensor`, `etl_calls` and `etl_sms` DAGs (by clicking on the "Off" buttons next to them so that they show "On" instead).
-- Click on the "Trigger Dag" button for the `etl_sensor` DAG. (This is the leftmost arrow button in the "Links" column.)
-   - Airflow will present you with a dialog, asking "Are you sure you want to run 'etl_sensor' now?".
-   - Click "OK" to confirm this.
-- Airflow will now run the `etl_sensor` DAG, which will look for any unprocessed dates,
-  and trigger runs of the `etl_calls` and `etl_sms` DAGs for any unprocessed date it finds.
+- Activate the `calls` and `sms` DAGs (by clicking on the "Off" buttons next to them so that they show "On" instead).
+- Airflow will now run both DAGs, attempting to fill in any unprocessed dates,
+  and trigger runs of the `calls` and `sms` DAGs for any unprocessed date it finds.
   
   This may take a minute or so - in order to see the progress, either reload your browser
   page, or click the "Refresh" button on one of the DAGs in the Airflow UI. (This is the
   button with the two circular arrows next to the button with the red cross.)
 
-  You can also click on `etl_calls` or `etl_sms` in the "DAG" column (or alternativey navigate
-  to http://localhost:8080/admin/airflow/tree?dag_id=etl_calls or http://localhost:8080/admin/airflow/tree?dag_id=etl_sms)
+  You can also click on `calls` or `sms` in the "DAG" column (or alternatively navigate
+  to http://localhost:8080/admin/airflow/tree?dag_id=calls or http://localhost:8080/admin/airflow/tree?dag_id=sms)
   to see a grid of squares indicating the various ingestion stages for each day of data found.
 
 If all goes well, after a little while all the DAGs will have been completed and the data
 will have been ingested into the `events.calls` and `events.sms` table. If you click on the
-`etl_calls`/`etl_sms` DAGs you should see a bunch of green squares for the successfully
+`calls`/`sms` DAGs you should see a bunch of green squares for the successfully
 completed tasks for each ingestion date.
 
 The result in `flowdb` should look something like this:
@@ -316,20 +249,14 @@ Type "help" for help.
 flowdb=# SELECT date, COUNT(*) FROM (SELECT datetime::date as date FROM events.calls) _ GROUP BY date ORDER BY DATE;
     date    | count
 ------------+-------
- 2019-07-04 | 46446
- 2019-07-05 | 86400
- 2019-07-06 | 86400
- 2019-07-07 | 86400
- 2019-07-08 | 86400
- 2019-07-09 | 86400
- 2019-07-10 | 86400
- 2019-07-11 | 86400
- 2019-07-12 | 86400
- 2019-07-13 | 86400
- 2019-07-14 | 86400
- 2019-07-15 | 86400
- 2019-07-16 |  3155
-(13 rows)
+ 2019-12-21 | 16368
+ 2019-12-22 | 86400
+ 2019-12-23 | 86400
+ 2019-12-24 | 86400
+ 2019-12-25 | 86400
+ 2019-12-26 | 86400
+ 2019-12-27 | 51632
+(7 rows)
 
 flowdb=# SELECT date, COUNT(*) FROM (SELECT datetime::date as date FROM events.sms) _ GROUP BY date ORDER BY DATE;
     date    | count
@@ -343,16 +270,19 @@ The ETL process also runs some informative "post-ETL" queries after the ingestio
 The results are stored in the table `etl.post_etl_queries`:
 ```
 flowdb=# SELECT * FROM etl.post_etl_queries;
- id |  cdr_date  | cdr_type | type_of_query_or_check | outcome |          optional_comment_or_description          |           timestamp
-----+------------+----------+------------------------+---------+---------------------------------------------------+-------------------------------
-  1 | 2019-01-02 | sms      | num_total_events       | 120     | Total number of events for this CDR type and date | 2019-09-17 11:25:38.385034+00
-  2 | 2019-01-01 | sms      | num_total_events       | 100     | Total number of events for this CDR type and date | 2019-09-17 11:25:51.849039+00
-  3 | 2019-08-22 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:25:55.23984+00
-  4 | 2019-08-21 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:25:57.450631+00
-  5 | 2019-08-18 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:25:57.924872+00
-  6 | 2019-08-20 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:25:58.019103+00
-  7 | 2019-08-23 | calls    | num_total_events       | 20272   | Total number of events for this CDR type and date | 2019-09-17 11:25:58.897846+00
-  8 | 2019-08-17 | calls    | num_total_events       | 47729   | Total number of events for this CDR type and date | 2019-09-17 11:26:01.551755+00
-  9 | 2019-08-19 | calls    | num_total_events       | 86400   | Total number of events for this CDR type and date | 2019-09-17 11:26:05.426472+00
-(9 rows)
+  id |  cdr_date  | cdr_type | type_of_query_or_check | outcome | optional_comment_or_description |           timestamp
+----+------------+----------+------------------------+---------+---------------------------------+-------------------------------
+  1 | 2019-12-21 | calls    | count_location_ids     | 15101   |                                 | 2020-01-21 20:18:47.148012+00
+  2 | 2019-12-21 | calls    | count_msisdns          | 16368   |                                 | 2020-01-21 20:18:48.14307+00
+  3 | 2019-12-21 | calls    | count_duplicates       | 0       |                                 | 2020-01-21 20:18:48.334891+00
+  4 | 2019-12-21 | calls    | count_added_rows       | 16368   |                                 | 2020-01-21 20:18:49.47824+00
+  5 | 2019-12-21 | calls    | count_duplicated       | 0       |                                 | 2020-01-21 20:18:49.491777+00
+  6 | 2019-12-22 | calls    | count_duplicated       | 0       |                                 | 2020-01-21 20:18:54.505273+00
+  7 | 2019-12-22 | calls    | count_location_ids     | 57928   |                                 | 2020-01-21 20:18:55.078766+00
+  9 | 2019-12-22 | calls    | count_added_rows       | 86400   |                                 | 2020-01-21 20:18:55.596859+00
+  8 | 2019-12-22 | calls    | count_duplicates       | 0       |                                 | 2020-01-21 20:18:55.372054+00
+ 10 | 2019-12-22 | calls    | count_msisdns          | 86400   |                                 | 2020-01-21 20:19:10.088318+00
+ 11 | 2019-12-24 | calls    | count_added_rows       | 86400   |                                 | 2020-01-21 20:19:22.511206+00
+ 12 | 2019-12-24 | calls    | count_duplicated       | 0       |                                 | 2020-01-21 20:19:23.818199+00
+ 13 | 2019-12-23 | calls    | count_added_rows       | 86400   |                                 | 2020-01-21 20:19:24.470541+00
 ```
