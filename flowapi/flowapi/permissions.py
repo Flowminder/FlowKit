@@ -1,12 +1,12 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from itertools import product, chain, repeat
+from itertools import chain, product, repeat
+from typing import Any, FrozenSet, Iterable, List, Optional, Set, Tuple, Union
+
+from flowapi.flowapi_errors import BadQueryError, MissingQueryKindError
 from prance import ResolvingParser
 from rapidjson import dumps
-from typing import List, Iterable, Set, FrozenSet, Tuple, Optional, Union, Any
-
-from flowapi.flowapi_errors import MissingQueryKindError, BadQueryError
 
 
 def enum_paths(
@@ -310,7 +310,7 @@ def q_to_subscopes(
     """
     Translate a query into contiguous 'subscopes', which when combined in
     the correct order form a complete scope.
-
+ 
     Parameters
     ----------
     query : dict
