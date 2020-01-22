@@ -1,24 +1,22 @@
 [[source]]
-name = "pypi"
-url = "https://pypi.org/simple"
+url = "https://pypi.python.org/simple"
 verify_ssl = true
-
-[dev-packages]
-black = "==19.10b0"
-apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.7"}
-pylint = "*"
-pytest = "*"
-docker = "*"
-ipython = "*"
-etl = {editable = true,path = "./etl"}
-pytest-cov = "*"
-structlog = "*"
-requests = "*"
-psycopg2-binary = "*"
-testing-postgresql = "*"
-sqlalchemy-utils = "*"
+name = "pypi"
 
 [packages]
+apache-airflow = {extras = ["postgres", "crypto"],version = "==1.10.7"}
+Click = "*"
+
+[dev-packages]
+structlog = "*"
+flowetl = {editable = true,path = "./flowetl"}
+pytest = "*"
+SQLAlchemy = "*"
+"psycopg2-binary" = "*"
+pandas = "*"
+docker = "*"
+versioneer = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.7"

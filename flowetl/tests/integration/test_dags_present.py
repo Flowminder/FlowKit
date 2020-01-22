@@ -10,43 +10,68 @@ from pathlib import Path
 
 import pytest
 
+dag_folder = str(Path(__file__).parent.parent.parent / "mounts" / "dags")
 
-# pylint: disable=unused-argument
 
-
-def test_dags_present(airflow_local_setup):
+@pytest.mark.usefixtures("airflow_local_setup")
+def test_dags_present():
     """
     Test that the correct dags are parsed
     """
     from airflow.models import DagBag
 
-    assert set(
-        DagBag(
-            dag_folder=str(Path(__file__).parent.parent.parent / "dags"),
-            include_examples=False,
-        ).dag_ids
-    ) == set(["etl_testing", "etl_sensor"])
+    assert set(DagBag(dag_folder=dag_folder, include_examples=False,).dag_ids) == set(
+        ["remote_table_dag", "filesystem_dag"]
+    )
 
 
+@pytest.mark.usefixtures("airflow_local_setup")
 @pytest.mark.parametrize(
     "dag_name,expected_task_list",
     [
         (
-            "etl_testing",
-            [
-                "init",
+            "remote_table_dag",
+            {
+                "add_constraints",
+                "add_indexes",
+                "analyze",
+                "analyze_parent",
+                "analyze_parent_only_for_new",
+                "attach",
+                "check_not_in_flux",
+                "count_added_rows",
+                "count_duplicated",
+                "count_duplicates",
+                "count_location_ids",
+                "count_msisdns",
+                "create_staging_view",
                 "extract",
-                "transform",
-                "success_branch",
-                "load",
-                "postload",
-                "archive",
-                "quarantine",
-                "clean",
-                "fail",
-            ],
+                "update_records",
+                "wait_for_data",
+            },
         ),
-        ("etl_sensor", ["sense"]),
+        (
+            "filesystem_dag",
+            {
+                "add_constraints",
+                "add_indexes",
+                "analyze",
+                "analyze_parent",
+                "analyze_parent_only_for_new",
+                "attach",
+                "check_not_in_flux",
+                "count_added_rows",
+                "count_duplicated",
+                "count_duplicates",
+                "count_location_ids",
+                "count_msisdns",
+                "cluster",
+                "create_staging_view",
+                "extract",
+                "update_records",
+                "wait_for_data",
+            },
+        ),
     ],
 )
 def test_correct_tasks(airflow_local_setup, dag_name, expected_task_list):
@@ -55,8 +80,5 @@ def test_correct_tasks(airflow_local_setup, dag_name, expected_task_list):
     """
     from airflow.models import DagBag
 
-    dag = DagBag(
-        dag_folder=str(Path(__file__).parent.parent.parent / "dags"),
-        include_examples=False,
-    ).dags[dag_name]
-    assert set(dag.task_ids) == set(expected_task_list)
+    dag = DagBag(dag_folder=dag_folder, include_examples=False,).dags[dag_name]
+    assert set(dag.task_ids) == expected_task_list

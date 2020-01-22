@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import docker
+
 import pytest
 
 
@@ -21,5 +22,9 @@ def test_required_env_var(env_var_to_remove, docker_client, container_tag):
         match=f"{env_var_to_remove} env var or secret must be set.",
     ):
         out = docker_client.containers.run(
-            f"flowminder/flowetl:{container_tag}", environment=env, stderr=True
+            f"flowminder/flowetl:{container_tag}",
+            environment=env,
+            stderr=True,
+            user="airflow",
+            remove=True,
         )
