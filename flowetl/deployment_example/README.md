@@ -196,7 +196,7 @@ CREATE FOREIGN TABLE sample_data_fdw (
     OPTIONS (schema_name 'events', table_name 'cdr');
 ```
 
-This one foreign data wrappers within `flowdb`: `sample_data_fdw` wraps the actual data itself and acts as the "source" in the ETL pipeline.
+This creates one foreign data wrapper within `flowdb`: `sample_data_fdw` wraps the actual data itself and acts as the "source" in the ETL pipeline.
 
 Let's verify that this was set up correctly, so that `flowdb` can now read data remotely from `ingestion_db`:
 ```
