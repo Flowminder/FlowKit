@@ -172,7 +172,7 @@ def squashed_scopes(scopes: List[str]) -> Iterable[str]:
         Merged scope string
 
     """
-    yield from squash(scopes)
+    yield from scopes  # squash(scopes)
 
 
 # Duplicated in FlowAuth (cannot use this implementation there because

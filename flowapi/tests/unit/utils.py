@@ -14,10 +14,10 @@ exemplar_query_params = {
             "aggregation_unit": "admin3",
             "method": "last",
         },
-        "token": "daily_location:aggregation_unit:admin3",
+        "token": "daily_location.aggregation_unit.admin3",
     },
     "modal_location": {
-        "token": "modal_location:locations:daily_location:aggregation_unit:admin3",
+        "token": "modal_location.locations.daily_location.aggregation_unit.admin3",
         "params": {
             "query_kind": "modal_location",
             "locations": [
@@ -52,6 +52,6 @@ exemplar_query_params = {
                 "method": "last",
             },
         },
-        "token": "flow:from_location:daily_location:aggregation_unit:admin3:to_location:daily_location:aggregation_unit:admin3",
+        "token": "flow.from_location.daily_location.aggregation_unit.admin3&flow.to_location.daily_location.aggregation_unit.admin3",
     },
 }

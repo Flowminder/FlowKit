@@ -65,6 +65,7 @@ class ServerAdminDetails extends React.Component {
 
       this.setState({
         rights: scopes,
+        scopeGraph: scopeGraph,
         fullRights: Object.keys(specScopes),
         enabledRights: enabledKeys,
         name: parsedSpec["components"]["securitySchemes"]["token"]["x-audience"]

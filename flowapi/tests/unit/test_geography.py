@@ -2,10 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
 from json import loads
 
 from tests.unit.zmq_helpers import ZMQReply
+
+import pytest
 
 
 @pytest.mark.asyncio
@@ -24,7 +25,7 @@ async def test_get_geography(app, access_token_builder, dummy_zmq_server):
         {"json": "bits"},
     ]
     token = access_token_builder(
-        [f"get_result:geography:aggregation_unit:{aggregation_unit}"]
+        [f"get_result&geography.aggregation_unit.{aggregation_unit}"]
     )
 
     zmq_reply = ZMQReply(
@@ -60,7 +61,7 @@ async def test_get_geography_status(
     """
 
     token = access_token_builder(
-        ["get_result:geography:aggregation_unit:DUMMY_AGGREGATION"]
+        ["get_result&geography.aggregation_unit.DUMMY_AGGREGATION"]
     )
     zmq_reply = ZMQReply(status="error", msg="Some error")
     dummy_zmq_server.side_effect = (zmq_reply,)
@@ -79,7 +80,7 @@ async def test_geography_errors(response, app, dummy_zmq_server, access_token_bu
     """
 
     token = access_token_builder(
-        ["get_result:geography:aggregation_unit:DUMMY_AGGREGATION"]
+        ["get_result&geography.aggregation_unit.DUMMY_AGGREGATION"]
     )
 
     dummy_zmq_server.side_effect = (response,)

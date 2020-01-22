@@ -2,16 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from itertools import permutations
-
-from flask_jwt_extended.exceptions import UserClaimsVerificationError
 from typing import List
 
 from quart_jwt_extended import get_jwt_claims, get_jwt_identity
+from quart_jwt_extended.exceptions import UserClaimsVerificationError
 from quart import current_app, request
 
 from flowapi.flowapi_errors import BadQueryError, MissingQueryKindError
-from flowapi.permissions import q_to_subscopes, expand_scopes
+from flowapi.permissions import expand_scopes, query_to_scope_list
 from flowapi.utils import get_query_parameters_from_flowmachine
+from quart import current_app, request
 
 
 class UserObject:
@@ -35,21 +35,13 @@ class UserObject:
     def has_access(self, *, actions: List[str], query_json: dict) -> bool:
 
         try:
-            subscopes = q_to_subscopes(query=query_json)
+            scopes = set(query_to_scope_list(query_json))
         except:
             raise BadQueryError
         if "query_kind" not in query_json:
             raise MissingQueryKindError
-        start, *rest = subscopes
         for action in actions:
-            if len(rest) > 0:
-                possible_scopes = (
-                    f"{action}:{start}:{':'.join(candidate)}"
-                    for candidate in permutations(rest)
-                )
-            else:
-                possible_scopes = [f"{action}:{start}"]
-            if any(scope in self.scopes for scope in possible_scopes):
+            if {*scopes, action} in self.scopes:
                 return True
         raise UserClaimsVerificationError
 

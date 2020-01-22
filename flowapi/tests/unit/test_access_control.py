@@ -4,7 +4,8 @@
 
 
 import pytest
-from .utils import query_kinds, exemplar_query_params
+
+from .utils import exemplar_query_params, query_kinds
 
 
 @pytest.mark.asyncio
@@ -40,7 +41,7 @@ async def test_granular_run_access(
 
     """
 
-    token = access_token_builder([f"run:{exemplar_query_params[query_kind]['token']}"])
+    token = access_token_builder([f"run&{exemplar_query_params[query_kind]['token']}"])
     expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 202
     dummy_zmq_server.return_value = {
@@ -67,14 +68,8 @@ async def test_granular_poll_access(
     Test that tokens grant granular access to checking query status.
 
     """
-    middle = (
-        f":from_location:daily_location:aggregation_unit:admin3:to_location:daily_location:admin3"
-        if query_kind == "flow"
-        else ""
-    )
-    token = access_token_builder(
-        [f"run,get_result:{exemplar_query_params[query_kind]['token']}"]
-    )
+
+    token = access_token_builder([f"run&{exemplar_query_params[query_kind]['token']}"])
 
     expected_responses = dict.fromkeys(query_kinds, 403)
     expected_responses[query_kind] = 303
@@ -120,7 +115,7 @@ async def test_granular_json_access(
     """
 
     token = access_token_builder(
-        [f"get_result:{exemplar_query_params[query_kind]['token']}"]
+        [f"get_result&{exemplar_query_params[query_kind]['token']}"]
     )
 
     expected_responses = dict.fromkeys(query_kinds, 403)

@@ -2,9 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pytest
-
 from tests.unit.zmq_helpers import ZMQReply
+
+import pytest
 
 
 @pytest.mark.asyncio
@@ -13,7 +13,12 @@ async def test_post_query(app, dummy_zmq_server, access_token_builder):
     Test that correct status of 202 & redirect is returned when sending a query.
     """
 
-    token = access_token_builder(["run:daily_location:aggregation_unit:admin2,admin3"])
+    token = access_token_builder(
+        [
+            "run&daily_location.aggregation_unit.admin2",
+            "run&daily_location.aggregation_unit.admin3",
+        ]
+    )
     dummy_zmq_server.return_value = ZMQReply(
         status="success", payload={"query_id": "DUMMY_QUERY_ID"}
     )

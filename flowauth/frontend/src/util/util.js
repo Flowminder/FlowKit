@@ -2,46 +2,84 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+function zip() {
+  /* https://stackoverflow.com/a/10284006 */
+  var args = [].slice.call(arguments);
+  var longest = args.reduce(function(a, b) {
+    return a.length > b.length ? a : b;
+  }, []);
+
+  return longest.map(function(_, i) {
+    return args.map(function(array) {
+      return array[i];
+    });
+  });
+}
+
 export function scopesGraph(array) {
   const nested = {};
   Object.keys(array).forEach(scope => {
     let obj = nested;
-    scope.split(":").forEach(k => {
-      if (!(k in obj)) {
-        obj[k] = {};
-      }
-      obj = obj[k];
+    let last_split = [];
+    let parents = [];
+    scope.split("&").forEach(sub_scope => {
+      obj["parent"] = parents.join("&");
+      let split = sub_scope.split(".");
+      split = zip(last_split, split)
+        .filter(x => x[0] !== x[1])
+        .map(x => x[1])
+        .filter(x => x !== undefined);
+      split.forEach(k => {
+        if (!(k in obj)) {
+          obj[k] = {};
+        }
+        obj = obj[k];
+        obj["parent"] = parents.join("&");
+      });
+      last_split = split;
+      parents.push(sub_scope);
     });
   });
   return nested;
 }
 
 export function jsonify(tree, labels, enabled, enabledKeys) {
-  const list = Object.keys(tree).map(k => {
-    const ll = labels.concat([k]);
-    const v = tree[k];
-    if (Object.keys(v).length === 0) {
-      return {
-        label: k,
-        value: ll.join(":"),
-        enabled: enabled.includes(ll.join(":"))
-      };
-    } else {
-      const children = jsonify(v, ll, enabled, enabledKeys);
-      const allEnabled = children.every(child => child.enabled);
-      if (!allEnabled) {
-        children
-          .filter(child => child.enabled)
-          .forEach(child => enabledKeys.push(child.value));
+  const parent = tree.parent;
+  const list = Object.keys(tree)
+    .filter(k => k !== "parent")
+    .map(k => {
+      const ll = labels.concat([k]);
+      const v = tree[k];
+      const val = parent ? [parent, ll.join(".")].join("&") : ll.join(".");
+      if (Object.keys(v).filter(k => k !== "parent").length === 0) {
+        return {
+          label: k,
+          value: val,
+          parents: parent,
+          enabled: enabled.includes(val)
+        };
+      } else {
+        const children = jsonify(
+          v,
+          v.parent === parent ? ll : [],
+          enabled,
+          enabledKeys
+        );
+        const allEnabled = children.every(child => child.enabled);
+        if (!allEnabled) {
+          children
+            .filter(child => child.enabled)
+            .forEach(child => enabledKeys.push(child.value));
+        }
+        return {
+          label: k,
+          value: val,
+          children: children,
+          parents: parent,
+          enabled: allEnabled
+        };
       }
-      return {
-        label: k,
-        value: ll.join(":"),
-        children: children,
-        enabled: allEnabled
-      };
-    }
-  });
+    });
   if (labels.length === 0) {
     list.filter(obj => obj.enabled).forEach(obj => enabledKeys.push(obj.value));
   }
