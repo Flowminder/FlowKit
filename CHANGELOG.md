@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added new `IterativeMedianFilter` query to Flowmachine, which applies an iterative median filter to the output of another query. [#1339](https://github.com/Flowminder/FlowKit/issues/1339)
 - FlowDB now includes the [TDS foreign data wrapper](https://github.com/tds-fdw). [#1729](https://github.com/Flowminder/FlowKit/issues/1729)
 - Added contributing and support instructions. [#1791](https://github.com/Flowminder/FlowKit/issues/1791)
+- New FlowETL module installable via pip to aid in ETL dag creation.
 
 ### Changed
 - FlowDB is now built on PostgreSQL 12 [#1396](https://github.com/Flowminder/FlowKit/issues/1313) and PostGIS 3.
@@ -39,6 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - RedactedJoinedSpatialAggregate now only redacts rows with too few subscribers. [#1747](https://github.com/Flowminder/FlowKit/issues/1747)
 - FlowDB now uses a more conservative default setting for `tcp_keepalives_idle` of 10 minutes, to avoid connections being killed after 15 minutes when running in a docker swarm. [#1771](https://github.com/Flowminder/FlowKit/issues/1771)
 - Aggregation units and api routes can now be added to servers. [#1815](https://github.com/Flowminder/FlowKit/issues/1815)
+- Fixed several issues with FlowETL. [#1529](https://github.com/Flowminder/FlowKit/issues/1529) [#1499](https://github.com/Flowminder/FlowKit/issues/1499) [#1498](https://github.com/Flowminder/FlowKit/issues/1498) [#1497](https://github.com/Flowminder/FlowKit/issues/1497)
 
 ### Removed
 - Removed pg_cron.
