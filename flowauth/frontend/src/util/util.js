@@ -29,13 +29,14 @@ export function scopesGraph(array) {
         .filter(x => x[0] !== x[1])
         .map(x => x[1])
         .filter(x => x !== undefined);
-      split.forEach(k => {
+      split.forEach((k, ix) => {
         if (!(k in obj)) {
           obj[k] = {};
         }
         obj = obj[k];
         obj["parent"] = parents.join("&");
       });
+      obj["full_path"] = sub_scope;
       last_split = split;
       parents.push(sub_scope);
     });
@@ -45,18 +46,23 @@ export function scopesGraph(array) {
 
 export function jsonify(tree, labels, enabled, enabledKeys) {
   const parent = tree.parent;
+
   const list = Object.keys(tree)
-    .filter(k => k !== "parent")
+    .filter(k => k !== "parent" && k !== "full_path")
     .map(k => {
       const ll = labels.concat([k]);
       const v = tree[k];
       const val = parent ? [parent, ll.join(".")].join("&") : ll.join(".");
-      if (Object.keys(v).filter(k => k !== "parent").length === 0) {
+      if (
+        Object.keys(v).filter(k => k !== "parent" && k !== "full_path")
+          .length === 0
+      ) {
+        const value = [parent, v.full_path].join("&");
         return {
           label: k,
-          value: val,
+          value: value,
           parents: parent,
-          enabled: enabled.includes(val)
+          enabled: enabled.includes(value)
         };
       } else {
         const children = jsonify(
@@ -80,7 +86,7 @@ export function jsonify(tree, labels, enabled, enabledKeys) {
         };
       }
     });
-  if (labels.length === 0) {
+  if (parent === "") {
     list.filter(obj => obj.enabled).forEach(obj => enabledKeys.push(obj.value));
   }
   return list;
