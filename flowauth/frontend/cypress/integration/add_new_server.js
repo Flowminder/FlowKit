@@ -98,7 +98,7 @@ describe("Server management", function() {
           ] = server_name;
           content["components"]["securitySchemes"]["token"][
             "x-security-scopes"
-          ] = ["test_scope"];
+          ] = ["get_result&test_scope"];
           const testFile = new File([JSON.stringify(content)], "api_spec.json");
           const dataTransfer = new DataTransfer();
 
@@ -108,14 +108,14 @@ describe("Server management", function() {
         });
       })
       .wait(1);
-    cy.get(".rs-picker-toggle-value").should("have.text", "test_scope");
+    cy.get(".rs-picker-toggle-value").should("have.text", "get_result (All)");
     cy.contains("Save")
       .click({ force: true })
       .wait(1);
     cy.get("[data-action=edit][data-item-name=" + server_name + "]")
       .click()
       .wait(1);
-    cy.get(".rs-picker-toggle-value").should("have.text", "test_scope");
+    cy.get(".rs-picker-toggle-value").should("have.text", "get_result (All)");
     cy.contains("Save")
       .click({ force: true })
       .wait(1);
