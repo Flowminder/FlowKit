@@ -1,10 +1,10 @@
-## Logging and Audit Trails
+Title: Logging and audit trails
 
 FlowKit supports structured logging in JSON form throughout FlowMachine and FlowAPI. By default both FlowMachine and FlowAPI will only log errors, and audit logs.
 
 Audit trail logs are _always_ written to stdout. Error and debugging logs are, by default, only written to stderr. 
 
-### Audit Trail Logs
+### Audit trail logs
 
 Three kinds of access log are written on each request handled by FlowAPI: authentication, data access at API side, and data access on the FlowMachine side.
 

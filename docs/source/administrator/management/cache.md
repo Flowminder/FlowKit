@@ -1,8 +1,8 @@
-## Caching in FlowKit
+Title: Caching in FlowKit
 
 FlowKit implements a caching system to enhance performance. Queries requested via FlowAPI are cached in FlowDB, under the `cache` schema.
 
-Once cached, a query will not be recalulated - the cached version will simply be returned instead, which can save significant computation time. In addition to queries which are _directly_ returned, FlowKit may cache queries which are used in calculating other queries. For example, calculating a modal location aggregate, and a daily location aggregate will both use the same underlying query when the dates (and other parameters) overlap. Hence, caching the underlying query allows both the aggregate and the modal location aggregate to be produced faster.
+Once cached, a query will not be recalculated - the cached version will simply be returned instead, which can save significant computation time. In addition to queries which are _directly_ returned, FlowKit may cache queries which are used in calculating other queries. For example, calculating a modal location aggregate, and a daily location aggregate will both use the same underlying query when the dates (and other parameters) overlap. Hence, caching the underlying query allows both the aggregate and the modal location aggregate to be produced faster.
 
 This performance boost is achieved at the cost of disk space usage. Flowmachine automatically manages the size of the on-disk cache, and will remove seldom used cache entries periodically. The frequency of this check can be configured using the `FLOWMACHINE_CACHE_PRUNING_FREQUENCY` environment variable. By default, this is set to `86400`, or 24 hours in seconds. For heavily used servers, it may be desirable to set this to a lower threshold. Automatic cache clearance follows the procedure described in the following section. 
 

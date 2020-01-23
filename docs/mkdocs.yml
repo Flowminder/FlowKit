@@ -59,7 +59,13 @@ nav:
         - developer/adr/0010-prefect-for-autoflow.md
   - System Administrators:
     - administrator/index.md
-    - api-docs-flowetl
+    - administrator/deployment.md
+    - System management:
+        - administrator/management/cache.md
+        - administrator/management/etl.md
+        - administrator/management/logging.md
+        - administrator/management/users.md
+        - api-docs-flowetl
   - license.md
 
 theme:

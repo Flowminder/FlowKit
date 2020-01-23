@@ -1,3 +1,5 @@
+Title: Deploying FlowKit
+
 ## Production Install
 
 Contact Flowminder on [flowkit@flowminder.org](mailto:flowkit@flowminder.org) for full instructions. Instructions on FlowAuth production deployment and dealing with docker secrets is described below. Note that these instructions are likely subject to change.
@@ -25,6 +27,29 @@ openssl genrsa -out flowauth-private-key.key 4096
 And then create a public key from the key file (`openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub`), or download it from FlowAuth once started. Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. `base64 -i flowauth-private-key.key`). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.
 
 By default `SECRET_KEY` may be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.
+
+#### Two-factor authentication
+
+FlowAuth supports optional two-factor authentication for user accounts, using the Google Authenticator app or similar. This can be enabled either by an administrator, or by individual users.
+
+To safeguard two-factor codes, FlowAuth prevents users from authenticating more than once with the same code within a short window. When deploying to production, you may wish to deploy a redis backend to support this feature - for example if you are deploying multiple instances of the FlowAuth container which need to be able to record the last used codes for users in a common place.
+
+To configure FlowAuth for use with redis, set the `FLOWAUTH_CACHE_BACKEND` environment variable to `redis`. You will also need to set the following environment variables, or docker secrets:
+
+- `FLOWAUTH_REDIS_HOST`
+   
+   The hostname to connect to redis on.
+- `FLOWAUTH_REDIS_PORT`
+    
+    The port to use to connect to redis, defaults to `6379`.
+- `FLOWAUTH_REDIS_PASSWORD`
+    
+    The password for the redis database.
+- `FLOWAUTH_REDIS_DB`
+    
+    The database _number_ to connect to, defaults to `0`.
+    
+By default, FlowAuth will use a dbm file backend to track last used two-factor codes. This file will be created at `/dev/shm/flowauth_last_used_cache` inside the container (i.e. in Docker's shared memory area), and can be mounted to a volume or pointed to an alternative location by setting the  `FLOWAUTH_CACHE_FILE` environment variable.
 
 ### Running with Secrets
 
@@ -299,6 +324,56 @@ conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", s
 ```
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
+
+### Caveats
+
+#### Shared Memory
+
+You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting `shm_size` for the FlowDB container in your compose or stack file, or by passing the `--shm-size` argument to the `docker run` command.
+
+#### Bind Mounts and User Permissions
+
+By default, FlowDB will create and attach a docker volume that contains all data. In some cases, this will be sufficient for use.
+
+However, you will often wish to set up bind mounts to hold the data and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.
+
+Adding a bind mount using `docker-compose` is simple:
+
+```yaml
+services:
+    flowdb:
+    ...
+        user: HOST_USER_ID:HOST_GROUP_ID
+        volumes:
+          - /path/to/store/data/on/host:/var/lib/postgresql/data
+          - /path/to/consume/data/from/host:/etl:ro
+```
+
+This creates two bind mounts, the first is FlowDB's internal storage, and the second is a *read only* mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified.
+
+!!! warning
+    If the bind mounted directories do not exist, docker will create them and you will need to `chown` them to the correct user.
+
+And similarly when using `docker run`:
+
+```bash
+docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
+ --publish 9000:5432 \
+ --user HOST_USER_ID:HOST_GROUP_ID \
+ -v /path/to/store/data/on/host:/var/lib/postgresql/data \
+ -v /path/to/consume/data/from/host:/etl:ro \
+ --detach flowminder/flowdb-testdata:latest
+```
+
+!!! tip
+    To run as the current user, you can simply replace `HOST_USER_ID:HOST_GROUP_ID` with `$(id -u):$(id -g)`.
+
+
+!!! warning
+    Using the `--user` flag without a bind mount specified will not work, and you will see an error
+    like this: `initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted`.
+
+    When using docker volumes, docker will manage the permissions for you.
 
 ### AutoFlow Production Deployment
 
