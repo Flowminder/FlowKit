@@ -12,4 +12,4 @@ pip install flowmachine
 
 See the [mobile data usage example](worked_examples/mobile-data-usage.ipynb) for a case which uses Flowmachine directly to produce a metric.
 
-As with the [other worked examples](../worked_examples), you can try this using the [quick start setup](../../../install.md#quickinstall) which includes JupyterLab. Alternatively, the Jupyter notebooks for this examples can be found [here](https://github.com/Flowminder/FlowKit/tree/master/docs/source/analyst/advanced_usage/worked_examples/).
+As with the [other worked examples](../worked_examples), you can try this using the [quick start setup](../../install.md#quickinstall) which includes JupyterLab. Alternatively, the Jupyter notebooks for this examples can be found [here](https://github.com/Flowminder/FlowKit/tree/master/docs/source/analyst/advanced_usage/worked_examples/).
