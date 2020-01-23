@@ -32,3 +32,20 @@ FlowAuth is the tool which analysts will use to generate tokens which will allow
 The user can then log into FlowAuth and generate a token (see the [analyst section](../analyst/index.md#flowauth) for instructions).
 
 ## Managing access to FlowDB
+
+Because FlowDB is built using [PostgreSQL](https://postgresql.org), you can use standard Postgres commands to [manage users]Because FlowDB is built using [PostgreSQL](https://postgresql.org), you can use standard Postgres commands to [manage users](https://www.postgresql.org/docs/current/sql-createrole.html). FlowDB contains some default roles which you can use as group templates using `CREATE ROLE INHERIT`:
+
+| Schema | Read access | Write access |
+| ------ | ----------- | ------------ |
+| cache | flowmachine, flowapi | flowmachine |
+| results | flowmachine | flowmachine |
+| features | flowmachine | flowmachine |
+| geography | flowmachine, flowapi | |
+| population | flowmachine | |
+| elevation | flowmachine | |
+| events | flowmachine | |
+| dfs | flowmachine | |
+| infrastructure | flowmachine | |
+| routing | flowmachine | |
+| interactions | flowmachine | |
+| etl | flowmachine | |
