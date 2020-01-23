@@ -13,6 +13,9 @@ plugins:
         flowclient:
           section: flowclient
           source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowclient"
+        flowetl:
+          section: flowetl
+          source_repo: "https://github.com/Flowminder/FlowKit/tree/$DOCS_BRANCH/flowetl/flowetl"
   - mknotebooks:
       execute: true
       preamble: "notebook_preamble.py"
@@ -56,6 +59,7 @@ nav:
         - developer/adr/0010-prefect-for-autoflow.md
   - System Administrators:
     - administrator/index.md
+    - api-docs-flowetl
   - license.md
 
 theme:

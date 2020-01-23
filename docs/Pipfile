@@ -27,6 +27,7 @@ mktheapidocs = "*"
 mknotebooks = "*"
 flask-jwt-extended = "*"
 mapboxgl = "*"
+flowetl = {editable = true,path = "./../flowetl/flowetl"}
 
 [dev-packages]
 jupyterlab = "*"
