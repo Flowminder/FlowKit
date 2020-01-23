@@ -49,3 +49,13 @@ Because FlowDB is built using [PostgreSQL](https://postgresql.org), you can use 
 | routing | flowmachine | |
 | interactions | flowmachine | |
 | etl | flowmachine | |
+
+It is recommended that after creating a user with a temporary password that they connect using psql, and use the `\password` command to set a new password.
+
+!!!note
+
+    You can manage FlowDB using psql from inside the docker container:
+    
+    ```bash
+    docker exec -it <container_name> psql -U flowdb
+    ```
