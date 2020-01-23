@@ -10,7 +10,33 @@ We strongly recommend using [docker swarm](https://docs.docker.com/engine/swarm/
 
 FlowDB can be used with FlowDB independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.
 
-#### Caveats
+#### FlowDB
+
+FlowDB is distributed as a docker container. To run it, you will need to provide several secrets:
+
+| Secret name | Secret purpose | Notes |
+| ----------- | -------------- | ----- |
+| FLOWAPI_FLOWDB_USER | Database user used by FlowAPI | Role with _read_ access to tables under the cache and geography schemas | 
+| FLOWAPI_FLOWDB_PASSWORD | Password for the FlowAPI database user | |
+| FLOWMACHINE_FLOWDB_USER | Database user for FlowMachine | Role with _write_ access to tables under the cache schema, and _read_ access to events, infrastructure, cache and geography schemas |
+| FLOWMACHINE_FLOWDB_PASSWORD | Password for flowmachine user | |
+| FLOWDB_POSTGRES_PASSWORD | Postgres superuser password for flowdb | Username `flowdb`, user with super user access to flowdb database |
+
+You may also provide the following environment variables:
+
+| Variable name | Purpose | Default value |
+| ------------- | ------- | ------------- |
+| CACHE_SIZE | Maximum size of the cache schema | 1 tenth of available space in pgdata directory |
+| CACHE_PROTECTED_PERIOD | Amount of time to protect cache tables from being cleaned up | 86400 (24 hours) |
+| CACHE_HALF_LIFE | Speed at which cache tables expire when not used | 1000 |
+| MAX_CPUS | Maximum number of CPUs that may be used for parallelising queries | The greater of 1 or 1 less than all CPUs |
+| SHARED_BUFFERS_SIZE | Size of shared buffers | 16GB |
+| MAX_WORKERS |  Maximum number of CPUs that may be used for parallelising one query | MAX_CPUS/2 |
+| MAX_WORKERS_PER_GATHER |  Maximum number of CPUs that may be used for parallelising part of one query | MAX_CPUS/2 |
+| EFFECTIVE_CACHE_SIZE | Postgres cache size | 25% of total RAM |
+| FLOWDB_ENABLE_POSTGRES_DEBUG_MODE | When set to TRUE, enables use of the [pgadmin debugger](https://www.pgadmin.org/docs/pgadmin4/4.13/debugger.html) | FALSE |
+
+However in most cases, the defaults will be adequate.
 
 ##### Shared memory
 
@@ -20,7 +46,7 @@ You will typically need to increase the default shared memory available to docke
 
 By default, FlowDB will create and attach a docker volume that contains all data. In some cases, this will be sufficient for use.
 
-However, you will often wish to set up bind mounts to hold the data and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.
+However, you will often wish to set up bind mounts to hold the data, allow access to the postgres logs, and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.
 
 Adding a bind mount using `docker-compose` is simple:
 
@@ -59,6 +85,30 @@ docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_
     like this: `initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted`.
 
     When using docker volumes, docker will manage the permissions for you.
+
+##### Sample stack files
+###### FlowDB
+
+You can find a sample FlowDB stack file [here](https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowdb.yml). To use it, you should first create the secrets, and additionally set the following environment variables:
+
+| Variable name | Purpose | 
+| ------------- | ------- |
+| FLOWDB_HOST_PORT | Localhost port where FlowDB will be accessible |
+| FLOWDB_HOST_USER_ID | uid of the host user for FlowDB |
+| FLOWDB_HOST_GROUP_ID | gid of the host user for FlowDB |
+| FLOWDB_DATA_DIR | Path on the host to a directory owned by FLOWDB_HOST_USER_ID where FlowDB will store data and write logs |
+| FLOWDB_ETL_DIR | Path on the host to a directory readable by FLOWDB_HOST_USER_ID from which data may be loaded, mounted inside the container at /etl |
+
+###### FlowETL
+
+You can find a sample FlowETL stack file [here](https://github.com/Flowminder/FlowKit/blob/master/secrets_quickstart/flowetl.yml) which should be used with FlowDB stack file. To use it, you should first create the required secrets, and additionally set the following environment variables:
+
+| Variable name | Purpose | 
+| ------------- | ------- |
+| FLOWETL_HOST_PORT | Localhost port on which the FlowETL airflow web interface will be available | 
+| FLOWETL_HOST_USER_ID | uid of the host user for FlowETL |
+| FLOWETL_HOST_GROUP_ID | gid of the host user for FlowETL |
+| FLOWETL_HOST_DAG_DIR | Path on the host to a directory where dag files will be stored | 
 
 ### FlowDB, FlowETL and FlowMachine
 

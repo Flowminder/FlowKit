@@ -122,7 +122,7 @@ echo "AIRFLOW__CORE__FERNET_KEY"| docker secret create AIRFLOW__CORE__FERNET_KEY
 
 FLOWETL_POSTGRES_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
 echo "$FLOWETL_POSTGRES_PASSWORD" | docker secret create FLOWETL_POSTGRES_PASSWORD -
-AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql://flowetl:$FLOWETL_POSTGRES_PASSWORD@flowetl_db:5432/flowetl"
+AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgres://flowetl:$FLOWETL_POSTGRES_PASSWORD@flowetl_db:5432/flowetl"
 echo "AIRFLOW__CORE__SQL_ALCHEMY_CONN" | docker secret create AIRFLOW__CORE__SQL_ALCHEMY_CONN -
 
 

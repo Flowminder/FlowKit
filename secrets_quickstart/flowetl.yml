@@ -31,6 +31,7 @@ services:
     restart: always
     tty: true
     stdin_open: true
+    user: ${FLOWETL_HOST_USER_ID:?}:${FLOWETL_HOST_GROUP_ID:?}
     secrets:
       - AIRFLOW__CORE__FERNET_KEY
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN
