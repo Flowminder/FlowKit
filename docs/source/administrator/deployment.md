@@ -1,8 +1,24 @@
 Title: Deploying FlowKit
 
-## Production Install
+A complete FlowKit deployment consists of FlowDB, FlowMachine, FlowETL, FlowAPI, FlowAuth, and redis. FlowDB, FlowMachine, FlowETL, FlowAPI and redis are deployed inside your firewall and work together to provide a complete running system. FlowAuth can be installed _outside_ your firewall, and does not require a direct connection to the rest of the system.
 
-Contact Flowminder on [flowkit@flowminder.org](mailto:flowkit@flowminder.org) for full instructions. Instructions on FlowAuth production deployment and dealing with docker secrets is described below. Note that these instructions are likely subject to change.
+We strongly recommend using [docker swarm](https://docs.docker.com/engine/swarm/) to deploy all the components, to support you in safely managing secrets to ensure a secure system.
+
+# Deployment scenarios
+
+## FlowDB and FlowETL only
+
+FlowDB can be used with FlowDB independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.
+
+## FlowDB, FlowETL and FlowMachine
+
+For cases where your users require individual level data access, you support the use of FlowMachine as a library. In this mode, users connect directly to FlowDB via the FlowMachine Python module. Many of the benefits of a complete FlowKit deployment are available in this scenario, including query caching.
+
+## FlowKit
+
+A complete FlowKit deployment makes aggregated insights easily available to end users via a web API and FlowClient, while allowing administrators granular control over who can access what data, and for how long.
+
+To deploy a complete FlowKit system, you will first need to deploy FlowAuth. Once FlowAuth is running, you use it to manage multiple servers and users. 
 
 ### FlowAuth Production Deployment
 
@@ -382,3 +398,7 @@ For a production deployment, you would typically want to deploy AutoFlow with a 
 ### Demonstrating successful deployment
 
 Once FlowKit installation is complete, we suggest running the provided [worked examples](analyst/worked_examples/index.md) against the deployed FlowKit to check that everything is working correctly.
+
+# Additional support
+
+If you require more assistance to get up and running, please reach out to us by [email](mailto:flowkit@flowminder.org) and we will try to assist.
