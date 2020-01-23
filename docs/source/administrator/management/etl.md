@@ -1,5 +1,11 @@
 Title: ETL
 
+## Working with FlowETL
+
+### Creating ETL pipelines
+
+### Customising ETL pipelines
+
 ## Connecting to different CDR data sources
 
 ### Remote PostgreSQL database
