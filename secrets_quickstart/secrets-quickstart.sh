@@ -60,6 +60,7 @@ docker secret rm FLOWAUTH_REDIS_PASSWORD || true
 docker secret rm AIRFLOW__CORE__FERNET_KEY || true
 docker secret rm AIRFLOW__CORE__SQL_ALCHEMY_CONN || true
 docker secret rm FLOWETL_POSTGRES_PASSWORD || true
+docker secret rm AIRFLOW_CONN_FLOWDB || true
 
 # Add new secrets
 
@@ -125,6 +126,8 @@ echo "$FLOWETL_POSTGRES_PASSWORD" | docker secret create FLOWETL_POSTGRES_PASSWO
 AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgres://flowetl:$FLOWETL_POSTGRES_PASSWORD@flowetl_db:5432/flowetl"
 echo "AIRFLOW__CORE__SQL_ALCHEMY_CONN" | docker secret create AIRFLOW__CORE__SQL_ALCHEMY_CONN -
 echo "postgres://flowdb:$FLOWDB_POSTGRES_PASSWORD@flowdb:5432/flowdb" | docker secret create AIRFLOW_CONN_FLOWDB -
+export FLOWETL_HOST_GROUP_ID=$(id -g)
+export FLOWETL_HOST_USER_ID=$(id -u)
 
 
 # Ports

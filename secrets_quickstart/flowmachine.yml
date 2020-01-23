@@ -7,12 +7,15 @@ secrets:
   REDIS_PASSWORD: # Redis password
     external: true
 networks:
-  db:
+  flowdb:
   redis:
   zero:
 volumes:
   data_volume_redis:
 services:
+    flowdb:
+      networks:
+        - flowdb
     flowmachine:
         image: "flowminder/flowmachine:${CONTAINER_TAG:-latest}"
         environment:
@@ -27,7 +30,7 @@ services:
           - FLOWMACHINE_FLOWDB_PASSWORD
           - REDIS_PASSWORD
         networks:
-          - db
+          - flowdb
           - redis
           - zero
     flowmachine_query_locker:
