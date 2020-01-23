@@ -136,6 +136,7 @@ export FLOWETL_HOST_PORT=8080
 export FLOWDB_HOST_GROUP_ID=$(id -g)
 export FLOWDB_HOST_USER_ID=$(id -u)
 export FLOWDB_DATA_DIR=$(mktemp -d -t flowdb_pgdata-$(date +%Y-%m-%d-%H-%M-%S)-XXXXXXXXXX)
+mkdir $FLOWDB_DATA_DIR
 export FLOWDB_ETL_DIR=./../flowetl/mounts/files/
 export FLOWETL_HOST_DAG_DIR=./../flowetl/mounts/dags/
 
