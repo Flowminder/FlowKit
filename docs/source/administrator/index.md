@@ -1,8 +1,6 @@
 Title: Administrator
 
-# Administration Tools
-
-This section contains information relevant to system administrators. This includes setting up [FlowAuth](#granting-user-permissions-in-flowauth) to allow users to generate FlowAPI access tokens, and managing the [cache](#caching-in-flowkit) and [log files](#logging-and-audit-trails).
+This section contains information for those who are managing or deploying FlowKit installations to run a humanitarian DaaS system to allow others to safely access insights while protecting individual level data.
 
 
 

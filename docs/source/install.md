@@ -4,9 +4,9 @@ Title: Installation
 
 <a name="installationrequirements">
 
-## Installation Requirements
+## Installation requirements
 
-Most FlowKit components (FlowDB, FlowMachine, FlowAPI, FlowAuth) are distributed as docker containers. To install these, you need:
+Most FlowKit components (FlowDB, FlowMachine, FlowAPI, FlowAuth, FlowETL, AutoFlow) are distributed as docker containers. To install these, you need:
 
 - `docker >= 17.12.0`
 - `docker-compose >= 1.21.0`
@@ -15,11 +15,11 @@ In addition, running FlowClient requires:
 
 - `Python >= 3.6`
 
-There are additional requirements for a development setup. See the [Developer install](#developers) section below for details.
+There are additional requirements for a [development setup](developer/dev_environment_setup.md), and we strongly recommend reviewing the [administrator section](administrator) in detail if you are planning to deploy FlowKit in production.
 
 <a name="quickinstall">
 
-## Quick Install
+## Quick install
 
 This quick install guide will install the major components of FlowKit together with an initial setup and example analysis query.
 
@@ -74,7 +74,7 @@ bash <(curl -s https://raw.githubusercontent.com/Flowminder/FlowKit/master/quick
 
 In order to use the test system, now [install FlowClient](#flowclient), and generate a token using FlowAuth.
 
-### FlowAuth Quickstart
+### FlowAuth quickstart
 
 Visit <a href="http://localhost:9091/" target="_blank">http://localhost:9091</a> and log in with either `TEST_ADMIN:DUMMY_PASSWORD` or `TEST_USER:DUMMY_PASSWORD`. `TEST_USER` is already set up to generate tokens for the FlowAPI instance started by the quick start script.
 
