@@ -1,0 +1,62 @@
+#
+# FlowETL stackfile, for use with flowdb stackfile
+#
+
+version: '3.7'
+secrets:
+  FLOWETL_AIRFLOW_ADMIN_USERNAME:
+    external: true
+  FLOWETL_AIRFLOW_ADMIN_PASSWORD:
+    external: true
+  AIRFLOW__CORE__SQL_ALCHEMY_CONN:
+    external: true
+  AIRFLOW__CORE__FERNET_KEY:
+    external: true
+  AIRFLOW_CONN_FLOWDB:
+    external: true
+  FLOWETL_POSTGRES_PASSWORD:
+    external: true
+networks:
+  flowdb:
+  flowetl_airflow_db:
+volumes:
+  data_volume_flowetl_airflow_db:
+services:
+  flowdb:
+    networks:
+      - flowdb
+
+  flowetl:
+    image: "flowminder/flowetl:${CONTAINER_TAG:-latest}"
+    restart: always
+    tty: true
+    stdin_open: true
+    secrets:
+      - AIRFLOW__CORE__FERNET_KEY
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN
+    ports:
+      - ${FLOWETL_HOST_PORT:?}:8080
+    volumes:
+      - ${FLOWETL_HOST_DAG_DIR:?}:/usr/local/airflow/dags:ro
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    networks:
+      - flowdb
+      - flowetl_airflow_db
+
+  flowetl_airflow_db:
+    image: postgres:11
+    tty: true
+    stdin_open: true
+    restart: always
+    secrets:
+      - FLOWETL_POSTGRES_PASSWORD
+    environment:
+      POSTGRES_USER: flowetl
+      POSTGRES_PASSWORD_FILE: /run/secrets/FLOWETL_POSTGRES_PASSWORD
+      POSTGRES_DB: flowetl
+    volumes:
+      - data_volume_flowetl_airflow_db:/var/lib/postgresql/data
+    networks:
+      - flowetl_airflow_db
+

@@ -63,7 +63,7 @@ nav:
     - System management:
         - administrator/management/cache.md
         - ETL:
-          - administrator/management/etl.md
+          - administrator/management/etl/etl.md
           - api-docs-flowetl
         - administrator/management/logging.md
         - administrator/management/users.md

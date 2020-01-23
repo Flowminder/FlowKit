@@ -1,0 +1,34 @@
+#
+# Flomachine stackfile
+#
+
+version: '3.7'
+secrets:
+  cert-flowkit.pem: # SSL Certificate used to serve FlowAPI over https
+    external: true
+  PUBLIC_JWT_SIGNING_KEY: # Public key to verify api tokens
+    external: true
+  FLOWAPI_IDENTIFIER: # Secret used in combination with secret key for decoding JWTs, should be unique per FlowAPI server
+    external: true
+services:
+    flowapi:
+        image: "flowminder/flowapi:${CONTAINER_TAG:-latest}"
+        ports:
+          - ${FLOWAPI_HOST_PORT:?}:9090
+        environment:
+            - FLOWMACHINE_HOST=flowmachine
+            - FLOWMACHINE_PORT=5555
+            - FLOWDB_HOST=flowdb
+            - FLOWDB_PORT=5432
+            - FLOWAPI_FLOWDB_USER=flowapi
+            - FLOWAPI_LOG_LEVEL=${FLOWAPI_LOG_LEVEL:-error}
+        secrets:
+          - cert-flowkit.pem
+          - PUBLIC_JWT_SIGNING_KEY
+          - FLOWAPI_FLOWDB_USER
+          - FLOWAPI_FLOWDB_PASSWORD
+          - FLOWAPI_IDENTIFIER
+        networks:
+          - zero
+          - db
+

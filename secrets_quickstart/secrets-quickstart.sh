@@ -56,6 +56,10 @@ docker secret rm PRIVATE_JWT_SIGNING_KEY || true
 docker secret rm PUBLIC_JWT_SIGNING_KEY || true
 docker secret rm FLOWAUTH_FERNET_KEY || true
 docker secret rm SECRET_KEY || true
+docker secret rm FLOWAUTH_REDIS_PASSWORD || true
+docker secret rm AIRFLOW__CORE__FERNET_KEY || true
+docker secret rm AIRFLOW__CORE__SQL_ALCHEMY_CONN || true
+docker secret rm FLOWETL_POSTGRES_PASSWORD || true
 
 # Add new secrets
 
@@ -66,6 +70,8 @@ FLOWAUTH_DB_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
 echo "$FLOWAUTH_DB_PASSWORD" | docker secret create FLOWAUTH_DB_PASSWORD -
 FLOWAUTH_ADMIN_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
 echo "$FLOWAUTH_ADMIN_PASSWORD"| docker secret create FLOWAUTH_ADMIN_PASSWORD -
+FLOWAUTH_REDIS_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
+echo "$FLOWAUTH_REDIS_PASSWORD"| docker secret create FLOWAUTH_REDIS_PASSWORD -
 SECRET_KEY=$(openssl rand -base64 64)
 echo "$SECRET_KEY"| docker secret create SECRET_KEY -
 echo "admin" | docker secret create FLOWAUTH_ADMIN_USERNAME -
@@ -110,6 +116,30 @@ fi
 cat cert.key cert.pem > cert-flowkit.pem
 docker secret create cert-flowkit.pem cert-flowkit.pem
 
+# FlowETL
+AIRFLOW__CORE__FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+echo "AIRFLOW__CORE__FERNET_KEY"| docker secret create AIRFLOW__CORE__FERNET_KEY -
+
+FLOWETL_POSTGRES_PASSWORD=$(openssl rand -base64 16 | tr -cd '0-9-a-z-A-Z')
+echo "$FLOWETL_POSTGRES_PASSWORD" | docker secret create FLOWETL_POSTGRES_PASSWORD -
+AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql://flowetl:$FLOWETL_POSTGRES_PASSWORD@flowetl_db:5432/flowetl"
+echo "AIRFLOW__CORE__SQL_ALCHEMY_CONN" | docker secret create AIRFLOW__CORE__SQL_ALCHEMY_CONN -
+
+
+# Ports
+export FLOWDB_HOST_PORT=9000
+export FLOWAPI_HOST_PORT=9090
+export FLOWETL_HOST_PORT=8080
+
+# Bind mounts
+
+export FLOWDB_HOST_GROUP_ID=$(id -g)
+export FLOWDB_HOST_USER_ID=$(id -u)
+export FLOWDB_DATA_DIR=$(mktemp -d -t flowdb_pgdata-$(date +%Y-%m-%d-%H-%M-%S)-XXXXXXXXXX)
+export FLOWDB_ETL_DIR=./../flowetl/mounts/files/
+export FLOWETL_HOST_DAG_DIR=./../flowetl/mounts/dags/
+
+
 # Deploy the stack
 
 echo "
@@ -118,7 +148,7 @@ echo "
 Deploying stack
 "
 
-docker stack deploy -c docker-stack.yml -c ../flowauth/docker-compose.yml secrets_test
+docker stack deploy -c flowdb.yml -c flowetl.yml -c flowmachine.yml -c flowapi.yml -c ../flowauth/docker-compose.yml secrets_test
 
 echo "
 
@@ -143,8 +173,20 @@ $FLOWAUTH_FERNET_KEY
 FlowAuth secret Key
 $SECRET_KEY
 
-Redis password
+FlowAuth redis password
+$FLOWAUTH_REDIS_PASSWORD
+
+FlowMachine redis password
 $REDIS_PASSWORD
+
+FlowETL Fernet Key
+$AIRFLOW__CORE__FERNET_KEY
+
+FlowETL DB connection
+$AIRFLOW__CORE__SQL_ALCHEMY_CONN
+
+FlowDB data dir
+$FLOWDB_DATA_DIR
 
 ===============
 "

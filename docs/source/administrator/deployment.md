@@ -2,37 +2,77 @@ Title: Deploying FlowKit
 
 A complete FlowKit deployment consists of FlowDB, FlowMachine, FlowETL, FlowAPI, FlowAuth, and redis. FlowDB, FlowMachine, FlowETL, FlowAPI and redis are deployed inside your firewall and work together to provide a complete running system. FlowAuth can be installed _outside_ your firewall, and does not require a direct connection to the rest of the system.
 
-We strongly recommend using [docker swarm](https://docs.docker.com/engine/swarm/) to deploy all the components, to support you in safely managing secrets to ensure a secure system.
+We strongly recommend using [docker swarm](https://docs.docker.com/engine/swarm/) to deploy all the components, to support you in safely managing [secrets](https://docs.docker.com/engine/swarm/secrets/) to ensure a secure system. Ensure you understand how to [create a swarm](https://docs.docker.com/engine/reference/commandline/swarm_init/), [manage secrets](https://docs.docker.com/engine/swarm/secrets/#read-more-about-docker-secret-commands), and [deploy stacks using compose files](https://docs.docker.com/engine/reference/commandline/stack_deploy/#compose-file) before continuing.
 
-# Deployment scenarios
+## Deployment scenarios
 
-## FlowDB and FlowETL only
+### FlowDB and FlowETL only
 
 FlowDB can be used with FlowDB independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.
 
-## FlowDB, FlowETL and FlowMachine
+#### Caveats
+
+##### Shared memory
+
+You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting `shm_size` for the FlowDB container in your compose or stack file, or by passing the `--shm-size` argument to the `docker run` command.
+
+##### Bind Mounts and user permissions
+
+By default, FlowDB will create and attach a docker volume that contains all data. In some cases, this will be sufficient for use.
+
+However, you will often wish to set up bind mounts to hold the data and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.
+
+Adding a bind mount using `docker-compose` is simple:
+
+```yaml
+services:
+    flowdb:
+    ...
+        user: HOST_USER_ID:HOST_GROUP_ID
+        volumes:
+          - /path/to/store/data/on/host:/var/lib/postgresql/data
+          - /path/to/consume/data/from/host:/etl:ro
+```
+
+This creates two bind mounts, the first is FlowDB's internal storage, and the second is a *read only* mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified.
+
+!!! warning
+    If the bind mounted directories do not exist, docker will create them and you will need to `chown` them to the correct user.
+
+And similarly when using `docker run`:
+
+```bash
+docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
+ --publish 9000:5432 \
+ --user HOST_USER_ID:HOST_GROUP_ID \
+ -v /path/to/store/data/on/host:/var/lib/postgresql/data \
+ -v /path/to/consume/data/from/host:/etl:ro \
+ --detach flowminder/flowdb-testdata:latest
+```
+
+!!! tip
+    To run as the current user, you can simply replace `HOST_USER_ID:HOST_GROUP_ID` with `$(id -u):$(id -g)`.
+
+
+!!! warning
+    Using the `--user` flag without a bind mount specified will not work, and you will see an error
+    like this: `initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted`.
+
+    When using docker volumes, docker will manage the permissions for you.
+
+### FlowDB, FlowETL and FlowMachine
 
 For cases where your users require individual level data access, you support the use of FlowMachine as a library. In this mode, users connect directly to FlowDB via the FlowMachine Python module. Many of the benefits of a complete FlowKit deployment are available in this scenario, including query caching.
 
-## FlowKit
+### FlowKit
 
 A complete FlowKit deployment makes aggregated insights easily available to end users via a web API and FlowClient, while allowing administrators granular control over who can access what data, and for how long.
 
-To deploy a complete FlowKit system, you will first need to deploy FlowAuth. Once FlowAuth is running, you use it to manage multiple servers and users. 
+To deploy a complete FlowKit system, you will first need to generate a key pair which will be used to connect FlowAuth and FlowAPI. (If you have an existing FlowAuth deployment, you do not need to generate a new key pair - you can use the _same_ public key with all the FlowAPI servers managed by that FlowAuth server).
 
-### FlowAuth Production Deployment
+#### Generating a key pair
 
-FlowAuth is designed to be deployed as a single Docker container working in cooperation with a database and, typically, an ssl reverse proxy (e.g. [nginx-proxy](https://github.com/jwilder/nginx-proxy) combined with [letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion)).
-
-FlowAuth supports any database supported by [SQLAlchemy](https://sqlalche.me), and to connect you will only need to supply a correct URI for the database either using the `DB_URI` environment variable, or by setting the `DB_URI` secret. If `DB_URI` is not set, a temporary sqlite database will be created. For database backends which require a username and password, you may supply the URI with `{}` in place of the password and provide the password using the `FLOWAUTH_DB_PASSWORD` secret or environment variable.
-
-FlowAuth will attempt to create all necessary tables when first accessed, but will not overwrite any existing tables. To wipe any existing data, you can either set the `RESET_FLOWAUTH_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
-
-FlowAuth requires you to create at least one admin user by setting the `FLOWAUTH_ADMIN_USER` and `FLOWAUTH_ADMIN_PASSWORD` environment variables or providing them as secrets. You can combine these environment variables with the `INIT_DB` environment variable. If the user already exists, their password will be reset to the provided value and they will be promoted to admin.
-
-You _must_ also provide three additional environment variables or secrets: `FLOWAUTH_FERNET_KEY`, `SECRET_KEY`, and `PRIVATE_JWT_SIGNING_KEY`. `FLOWAUTH_FERNET_KEY` is used to encrypt tokens while 'at rest' in the database, and decrypt them for use. `SECRET_KEY` is used to secure session and CSRF protection cookies.
-
-`PRIVATE_JWT_SIGNING_KEY` is used to sign the tokens generated by FlowAuth, which ensures that they can be trusted by FlowAPI. When deploying instances of FlowAPI, you will need to supply them with the corresponding _public_ key, to allow them to verify the tokens were produced by this instance of FlowAuth.
+FlowAuth uses a private key to sign the tokens it generates, which ensures that they can be trusted by FlowAPI. When deploying instances of FlowAPI, you will need to supply them with the corresponding _public_ key, to allow them to verify the tokens were produced by the right instance of FlowAuth.
 
 You can use `openssl` to generate a private key:
 
@@ -40,11 +80,35 @@ You can use `openssl` to generate a private key:
 openssl genrsa -out flowauth-private-key.key 4096
 ```
 
-And then create a public key from the key file (`openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub`), or download it from FlowAuth once started. Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. `base64 -i flowauth-private-key.key`). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.
+And then create a public key from the key file (`openssl rsa -pubout -in flowauth-private-key.key -out flowapi-public-key.pub`). Should you need to supply the key using environment variables, rather than secrets (not recommended), you should base64 encode the key (e.g. `base64 -i flowauth-private-key.key`). FlowAuth and FlowAPI will automatically decode base64 encoded keys for use.
 
-By default `SECRET_KEY` may be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key. A convenience command is provided to generate one - `flask get-fernet`.
+!!!warning 
+    _Always keep your private key secure_ 
 
-#### Two-factor authentication
+    If your key is destroyed, you will need to generate a new one and redeploy any instances of FlowAuth and FlowAPI. If you key is _leaked_, unauthorised parties will be able to sign tokens for your instances of FlowAPI. 
+
+#### FlowAuth Production Deployment
+
+FlowAuth is designed to be deployed as a single Docker container working in cooperation with a database and, typically, an ssl reverse proxy (e.g. [nginx-proxy](https://github.com/jwilder/nginx-proxy) combined with [letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion)).  
+
+FlowAuth supports any database supported by [SQLAlchemy](https://sqlalche.me), and to connect you will only need to supply a correct URI for the database either using the `DB_URI` environment variable, or by setting the `DB_URI` secret. If `DB_URI` is not set, a temporary sqlite database will be created. For database backends which require a username and password, you may supply the URI with `{}` in place of the password and provide the password using the `FLOWAUTH_DB_PASSWORD` secret or environment variable.
+
+FlowAuth will attempt to create all necessary tables when first accessed, but will not overwrite any existing tables. To wipe any existing data, you can either set the `RESET_FLOWAUTH_DB` environment variable to `true`, or run `flask init-db` from inside the container (`docker exec <container-id> flask init-db`).
+
+FlowAuth requires you to create at least one admin user by setting the `FLOWAUTH_ADMIN_USER` and `FLOWAUTH_ADMIN_PASSWORD` environment variables or providing them as secrets. You can combine these environment variables with the `RESET_FLOWAUTH_DB` environment variable. If the user already exists, their password will be reset to the provided value and they will be promoted to admin.
+
+You _must_ also provide three additional environment variables or secrets: `FLOWAUTH_FERNET_KEY`, `SECRET_KEY`, and `PRIVATE_JWT_SIGNING_KEY`. `FLOWAUTH_FERNET_KEY` is used to encrypt tokens while 'at rest' in the database, and decrypt them for use. `SECRET_KEY` is used to secure session and CSRF protection cookies.
+
+`PRIVATE_JWT_SIGNING_KEY` is used to sign the tokens generated by FlowAuth, which ensures that they can be trusted by FlowAPI. When deploying instances of FlowAPI, you will need to supply them with the corresponding _public_ key, to allow them to verify the tokens were produced by this instance of FlowAuth.
+
+By default `SECRET_KEY` may be any arbitrary string, `FLOWAUTH_FERNET_KEY` should be a valid Fernet key.
+
+!!!note 
+    Generating Fernet keys
+    
+    A convenient way to generate Fernet keys is to use the python [cryptography](https://cryptography.io/) package. After installing, you can generate a new key by running `python -c "from cryptography.fernet import Fernet;print(Fernet.generate_key().decode())"`.
+
+##### Two-factor authentication
 
 FlowAuth supports optional two-factor authentication for user accounts, using the Google Authenticator app or similar. This can be enabled either by an administrator, or by individual users.
 
@@ -67,7 +131,15 @@ To configure FlowAuth for use with redis, set the `FLOWAUTH_CACHE_BACKEND` envir
     
 By default, FlowAuth will use a dbm file backend to track last used two-factor codes. This file will be created at `/dev/shm/flowauth_last_used_cache` inside the container (i.e. in Docker's shared memory area), and can be mounted to a volume or pointed to an alternative location by setting the  `FLOWAUTH_CACHE_FILE` environment variable.
 
-### Running with Secrets
+##### Sample stack files
+
+You can find an example docker stack file for FlowAuth [here](https://github.com/Flowminder/FlowKit/blob/master/flowauth/docker-compose.yml). This will bring up instances of FlowAuth, redis, and postgres. You can combine this with the [letsencrypt](https://github.com/Flowminder/FlowKit/blob/master/flowauth/docker-compose.letsencrypt.yml) stack file to automatically acquire an SSL certificate.
+
+#### FlowMachine and FlowAPI
+
+Once you have FlowAuth, FlowDB, and FlowETL running, you are ready to add FlowMachine and FlowAPI.
+
+#### Running with Secrets
 
 The standard Docker compose file supplies a number of 'secret' values as environment variables. Typically, this is a bad idea.
 
@@ -168,7 +240,9 @@ import flowclient
 conn = flowclient.Connection("https://localhost:9090", "JWT_STRING", ssl_certificate="/home/username/flowkit/integration_tests/client_cert.pem")
 ```
 
-#### Secrets Quickstart
+#### Flow
+
+##### Secrets Quickstart
 
 ```bash
 #!/usr/bin/env bash
@@ -341,64 +415,16 @@ conn = flowclient.Connection(url="https://localhost:9090", token="JWT_STRING", s
 
 (This generates a certificate valid for the `flow.api` domain as well, which you can use by adding a corresponding entry to your `/etc/hosts` file.)
 
-### Caveats
-
-#### Shared Memory
-
-You will typically need to increase the default shared memory available to docker containers when running FlowDB. You can do this either by setting `shm_size` for the FlowDB container in your compose or stack file, or by passing the `--shm-size` argument to the `docker run` command.
-
-#### Bind Mounts and User Permissions
-
-By default, FlowDB will create and attach a docker volume that contains all data. In some cases, this will be sufficient for use.
-
-However, you will often wish to set up bind mounts to hold the data and allow FlowDB to consume new data. To avoid sticky situations with permissions, you will want to specify the uid and gid that FlowDB runs with to match an existing user on the host system.
-
-Adding a bind mount using `docker-compose` is simple:
-
-```yaml
-services:
-    flowdb:
-    ...
-        user: HOST_USER_ID:HOST_GROUP_ID
-        volumes:
-          - /path/to/store/data/on/host:/var/lib/postgresql/data
-          - /path/to/consume/data/from/host:/etl:ro
-```
-
-This creates two bind mounts, the first is FlowDB's internal storage, and the second is a *read only* mount for loading new data. The user FlowDB runs as inside the container will also be changed to the uid specified.
-
-!!! warning
-    If the bind mounted directories do not exist, docker will create them and you will need to `chown` them to the correct user.
-
-And similarly when using `docker run`:
-
-```bash
-docker run --name flowdb_testdata -e FLOWMACHINE_FLOWDB_PASSWORD=foo -e FLOWAPI_FLOWDB_PASSWORD=foo \
- --publish 9000:5432 \
- --user HOST_USER_ID:HOST_GROUP_ID \
- -v /path/to/store/data/on/host:/var/lib/postgresql/data \
- -v /path/to/consume/data/from/host:/etl:ro \
- --detach flowminder/flowdb-testdata:latest
-```
-
-!!! tip
-    To run as the current user, you can simply replace `HOST_USER_ID:HOST_GROUP_ID` with `$(id -u):$(id -g)`.
 
 
-!!! warning
-    Using the `--user` flag without a bind mount specified will not work, and you will see an error
-    like this: `initdb: could not change permissions of directory "/var/lib/postgresql/data": Operation not permitted`.
-
-    When using docker volumes, docker will manage the permissions for you.
-
-### AutoFlow Production Deployment
+#### AutoFlow Production Deployment
 
 For a production deployment, you would typically want to deploy AutoFlow with a separate database, instead of the default SQLite database created within the AutoFlow container. It is also advisable to set `AUTOFLOW_DB_PASSWORD` and `FLOWAPI_TOKEN` as docker secrets. An example Docker stack file for deploying AutoFlow in this way is provided at https://raw.githubusercontent.com/Flowminder/FlowKit/master/autoflow/docker-stack.yml.
 
-### Demonstrating successful deployment
+#### Demonstrating successful deployment
 
 Once FlowKit installation is complete, we suggest running the provided [worked examples](analyst/worked_examples/index.md) against the deployed FlowKit to check that everything is working correctly.
 
-# Additional support
+## Additional support
 
 If you require more assistance to get up and running, please reach out to us by [email](mailto:flowkit@flowminder.org) and we will try to assist.
