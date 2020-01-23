@@ -62,10 +62,11 @@ nav:
     - administrator/deployment.md
     - System management:
         - administrator/management/cache.md
-        - administrator/management/etl.md
+        - ETL:
+          - administrator/management/etl.md
+          - api-docs-flowetl
         - administrator/management/logging.md
         - administrator/management/users.md
-        - api-docs-flowetl
   - license.md
 
 theme:
