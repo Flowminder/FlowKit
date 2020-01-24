@@ -33,7 +33,7 @@ The user can then log into FlowAuth and generate a token (see the [analyst secti
 
 ## Managing access to FlowDB
 
-Because FlowDB is built using [PostgreSQL](https://postgresql.org), you can use standard Postgres commands to [manage users]Because FlowDB is built using [PostgreSQL](https://postgresql.org), you can use standard Postgres commands to [manage users](https://www.postgresql.org/docs/current/sql-createrole.html). FlowDB contains some default roles which you can use as group templates using `CREATE ROLE INHERIT`:
+Because FlowDB is built using [PostgreSQL](https://postgresql.org), you can use standard Postgres commands to [manage users](https://www.postgresql.org/docs/current/sql-createrole.html). FlowDB contains some default roles which you can use as group templates using `CREATE ROLE INHERIT`:
 
 | Schema | Read access | Write access |
 | ------ | ----------- | ------------ |
