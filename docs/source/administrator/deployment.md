@@ -8,7 +8,7 @@ We strongly recommend using [docker swarm](https://docs.docker.com/engine/swarm/
 
 ### FlowDB and FlowETL only
 
-FlowDB can be used with FlowDB independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.
+FlowDB can be used with FlowETL independently of the other components, to provide a system which allows access to individual level data via a harmonised schema and SQL access. Because FlowDB is built on PostgreSQL, standard SQL based tools and workflows will work just fine.
 
 #### FlowDB
 
@@ -97,7 +97,7 @@ To run FlowETL, you will need to provide the following secrets:
 | AIRFLOW__CORE__SQL_ALCHEMY_CONN | Connection string for the backing database | Should take the form `postgres://flowetl:<FLOWETL_POSTGRES_PASSWORD>@flowetl_db:5432/flowetl` |
 | AIRFLOW__CORE__FERNET_KEY | Ferney key used to encrypt (at rest) database credentials | |
 | AIRFLOW_CONN_FLOWDB | Connection string for the FlowDB database | Should take the form `postgres://flowdb:<FLOWDB_POSTGRES_PASSWORD>@flowdb:5432/flowdb` |
-| FLOWETL_POSTGRES_PASSWORD | Superuser password FlowETL's backing database | |
+| FLOWETL_POSTGRES_PASSWORD | Superuser password for FlowETL's backing database | |
 
 !!!note 
     Generating Fernet keys
@@ -183,7 +183,7 @@ You may also set the following environment variables:
 
 | Variable name | Purpose | Notes |
 | ------------- | ------- | ----- |
-| DB_URI | URI for the backing database | Should be of the form `postgres://flowauth:{}@flowauth_postgres:5432/flowauth`. If not set, a temporary sqlite database will be created. The `{}` will be populated using the value of the `FLOWAUTH_ADMIN_PASSWORD` secret. | 
+| DB_URI | URI for the backing database | Should be of the form `postgres://flowauth:{}@flowauth_postgres:5432/flowauth`. If not set, a temporary sqlite database will be created. The `{}` will be populated using the value of the `FLOWAUTH_DB_PASSWORD` secret. | 
 | RESET_FLOWAUTH_DB | Set to true to reset the database | |
 | FLOWAUTH_CACHE_BACKEND | Backend to use for two factor auth last used key cache | Defaults to 'file'. May be set to 'memory' if deploying a single instance on only one CPU, or to 'redis' for larger deployments |
 
@@ -225,7 +225,7 @@ You may also set the following environment variables:
 | FLOWMACHINE_SERVER_DISABLE_DEPENDENCY_CACHING | Set to True to disable automatically pre-caching dependencies of running queries | False |
 | FLOWMACHINE_CACHE_PRUNING_FREQUENCY | How often to automatically clean up the cache |  86400 (24 hours) |
 | FLOWMACHINE_CACHE_PRUNING_TIMEOUT | Number of seconds to wait before halting a cache prune | 600 |
-| LOG_LEVEL | Verbosity of logging (critical, error, info, or debug) | error |
+| FLOWMACHINE_LOG_LEVEL | Verbosity of logging (critical, error, info, or debug) | error |
 
 #### FlowAPI
 
