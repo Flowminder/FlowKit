@@ -146,15 +146,39 @@ SELECT event_time, msisdn, cell_id FROM {{ source_table }}
 WHERE event_time >= '{{ ds_nodash }}' AND event_time < '{{ tomorrow_ds_nodash }}';
 ```
 
-Note the use of the `{{ source_table }}`, which you should provide as an argument to either `create_dag`, or `CreateStagingViewOperator`, and the datetime constraint using the `{{ ds_nodash }}` and  `{{ tomorrow_ds_nodash }}` [Airflow macros](https://airflow.apache.org/docs/stable/macros.html). Remote database extraction in FlowETL works by selecting a time delimited segment of your source table. If your source table is complex, or you will need to use multiple tables to contruct a suitable query, we recommend creating a view in your source database and connecting to the view. 
+Note the use of the `{{ source_table }}`, which you should provide as an argument to either `create_dag`, or `CreateStagingViewOperator`, and the datetime constraint using the `{{ ds_nodash }}` and  `{{ tomorrow_ds_nodash }}` [Airflow macros](https://airflow.apache.org/docs/stable/macros.html). Remote database extraction in FlowETL works by selecting a time delimited segment of your source table. If your source table is complex, or you will need to use multiple tables to contruct a suitable query, we recommend creating a view in your source database and connecting to the view.
+
+You will also need to be to to connect to the remote database from inside FlowDB's docker container. If the remote database is also running as a container, you can achieve this by creating an overlay network and attaching both containers to it. 
 
 #### PostgreSQL database
 
+The [`postgres_fdw` extension](https://www.postgresql.org/docs/current/postgres-fdw.html) allows FlowDB to communicate with other databases built on PostgreSQL. This makes data extraction from remote PostgreSQL-compatible databases (e.g. [TimescaleDB](https://www.timescale.com)) simple. You will need to create a foreign server, map a user for it, and then specify the table and schema on the remote database you would like to make available within FlowDB:
 
+```sql
+CREATE SERVER IF NOT EXISTS ingestion_db_server
+    FOREIGN DATA WRAPPER postgres_fdw
+    OPTIONS (
+        host '<foreign_host>',
+        port '<foreign_port>>',
+        dbname '<foreign_db_name>'
+    );
+
+CREATE USER MAPPING IF NOT EXISTS FOR flowdb
+    SERVER foreign_db
+    OPTIONS (
+        user '<postgres_db_user>',
+        password '<postgres_db_password>'
+    );
+
+IMPORT FOREIGN SCHEMA <source_table_schema> LIMIT TO (<source_table>)
+    FROM SERVER foreign_db INTO etl;
+```
+
+You can then use the remote table as a data source in FlowETL, by providing `"<source_table_schema>.<source_table>"` as the source table.
 
 #### Oracle database
 
-FlowDB supports the [oracle_fdw](https://github.com/laurenz/oracle_fdw) connector, but we do not distribute a container which includes it to conform with Oracle's licensing. You will need to supply Oracle client binaries, and build the container by downloading the [Dockerfile and script](https://github.com/Flowminder/FlowKit/tree/master/flowdb/oracle_fdw) and running:
+FlowDB supports the [oracle_fdw](https://github.com/laurenz/oracle_fdw) connector, but to conform with Oracle's licensing we do not distribute a container which includes it. You will need to supply Oracle client binaries, and build the container by downloading the [Dockerfile and script](https://github.com/Flowminder/FlowKit/tree/master/flowdb/oracle_fdw) and running:
 
 ```bash
 docker build --build-arg ORACLE_BINARY_SOURCE=<oracle_binary_url> \
