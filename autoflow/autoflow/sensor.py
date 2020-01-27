@@ -74,7 +74,7 @@ def get_available_dates(
     conn = flowclient.connect(
         url=prefect.config.flowapi_url,
         token=environ["FLOWAPI_TOKEN"],
-        ssl_certificate=getenv("SSL_CERTIFICATE_FILE", None),
+        ssl_certificate=getenv("SSL_CERTIFICATE_FILE"),
     )
     dates = flowclient.get_available_dates(connection=conn)
     prefect.context.logger.debug(f"Available dates: {dates}")

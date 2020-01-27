@@ -135,7 +135,7 @@ from get_secret_or_env_var import environ, getenv
 conn = flowclient.connect(
     url=flowapi_url,
     token=environ["FLOWAPI_TOKEN"],
-    ssl_certificate=getenv("SSL_CERTIFICATE_FILE", None),
+    ssl_certificate=getenv("SSL_CERTIFICATE_FILE"),
 )
 ```
 
