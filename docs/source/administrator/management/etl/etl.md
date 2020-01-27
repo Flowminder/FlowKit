@@ -4,6 +4,25 @@ Title: ETL
 
 FlowETL manages the loading of CDR data into FlowDB. It is built on [Apache Airflow](https://airflow.apache.org), and a basic understanding of how to use Airflow will be very helpful in making the best use of FlowETL. We recommend you familiarise yourself with the Airflow [tutorial](https://airflow.apache.org/docs/stable/tutorial.html), and [key concepts](https://airflow.apache.org/docs/stable/concepts.html) before continuing. You should also have some familiarity with SQL.
 
+### Macros
+
+To help you write the SQL you'll need to create your data pipeline, FlowETL supplies several macros, in additional to those [provided by Airflow](https://airflow.apache.org/docs/stable/macros.html). These macros are filled in when a task is run.
+
+| Macro | Purpose | Example |
+| ----- | ------- | ------- |
+| `{{ params.cdr_type }}` | The category of CDR data being loaded | `"calls"` |
+| `{{ table_name }}` | The base name of the table from the date and cdr type | `"mds_20200101"` |
+| `{{ etl_schema }}` | Name of the schema used for etl tables | `"etl"` |
+| `{{ final_schema }}` |  Schema under which the final table will be created | `"events"` |
+| `{{ parent_table }}` |  Supertable that the final table will inherit from | `"calls"` |
+| `{{ extract_table_name }}` | Name of the table created to extract to | `"extract_sms_20200101"` |
+| `{{ staging_table_name }}` | Name of the table or view created to extract _from_ | `"staging_sms_20200101"` |
+| `{{ final_table }}` | Schema qualified name of the final table | `"events.mds_20200101"` |
+| `{{ extract_table }}` | Schema qualified name of the table to be extracted to | `"etl.extract_mds_20200101"` |
+| `{{ staging_table }}` | Schema qualified name of the table to be extracted _from_ | `"etl.staging_mds_20200101"` |
+
+These macros are available when using the FlowETL [operators](../../../../flowetl/flowetl/operators) and [sensors](../../../../flowetl/flowetl/sensors).
+
 ### Creating ETL pipelines
 
 As with any Airflow-based system, you will need to create dag files to define your ETL pipelines. FlowETL provides a convenient helper function, [`create_dag`](../../../../flowetl/flowetl/util/#create_dag), which automates this for most common usage scenarios. To create a pipeline, you will need to create a new file in the directory which you have bind mounted to the FlowETL container's DAG directory. This file will specify one data pipeline - we recommend creating a separate data pipeline for each CDR variant you expect to encounter.
@@ -148,22 +167,7 @@ SQL files under the `qa_checks` directory are treated as applicable for all CDR 
     
     To be a valid QA check, your select statement should return a single value.
 
-When writing your QA check, you're almost certain to need to be able to refer to the table of data that's just been loaded. Because the SQL file will be [templated](https://airflow.apache.org/docs/stable/concepts.html#id1), you can use a macro which will be filled in when the check is run. The macro for the final table is `{{ final_table }}`, but there are several others:
-
-| Macro | Purpose | Example |
-| ----- | ------- | ------- |
-| `{{ params.cdr_type }}` | The category of CDR data being loaded | `"calls"` |
-| `{{ table_name }}` | The base name of the table from the date and cdr type | `"mds_20200101"` |
-| `{{ etl_schema }}` | Name of the schema used for etl tables | `"etl"` |
-| `{{ final_schema }}` |  Schema under which the final table will be created | `"events"` |
-| `{{ parent_table }}` |  Supertable that the final table will inherit from | `"calls"` |
-| `{{ extract_table_name }}` | Name of the table created to extract to | `"extract_sms_20200101"` |
-| `{{ staging_table_name }}` | Name of the table or view created to extract _from_ | `"staging_sms_20200101"` |
-| `{{ final_table }}` | Schema qualified name of the final table | `"events.mds_20200101"` |
-| `{{ extract_table }}` | Schema qualified name of the table to be extracted to | `"etl.extract_mds_20200101"` |
-| `{{ staging_table }}` | Schema qualified name of the table to be extracted _from_ | `"etl.staging_mds_20200101"` |
-
-These macros are available when using the FlowETL [operators](../../../../flowetl/flowetl/operators) and [sensors](../../../../flowetl/flowetl/sensors).
+When writing your QA check, you're almost certain to need to be able to refer to the table of data that's just been loaded. Because the SQL file will be [templated](https://airflow.apache.org/docs/stable/concepts.html#id1), you can use a macro which will be filled in when the check is run. The macro for the final table is `{{ final_table }}`.
 
 Here's an example of a valid QA check; one of the defaults which records the number of just-added rows:
 
