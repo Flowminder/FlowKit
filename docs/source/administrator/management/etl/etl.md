@@ -259,6 +259,38 @@ Where site information is not available, we advise that you populate the sites t
 
 ## Loading GIS data
 
+Good spatial data is critical to successful analysis using FlowKit, and you will want to obtain, at a minimum admin 0-3 boundaries for your country of interest. At this time, we recommend using the [OGR foreign data wrapper](https://github.com/pramsey/pgsql-ogr-fdw) to load shapefiles.
+
+Administrative boundaries should be loaded under the `geography` schema, and named as `admin<level>`. They should at a minimum contain `adminXname`, `adminXpcod` and `geom` fields. While it is possible to directly mount boundary data into the database using the OGR foreign data wrapper, we would recommend creating in-database tables and using the wrapper only for extraction, for example:
+
+
+```sql
+CREATE SERVER admin_boundaries_source
+		FOREIGN DATA WRAPPER ogr_fdw
+		OPTIONS (
+			datasource '<path_inside_container_to_admin_3_file',
+			format 'ESRI Shapefile' );
+
+CREATE FOREIGN TABLE tmp_admin3 (
+    gid integer,
+    geom geometry(Point, 4326),
+    admin3name varchar,
+    admin3pcod integer
+    )
+    SERVER admin_3_source
+    OPTIONS (layer 'admin3');
+
+CREATE TABLE geography.admin3 AS (
+    SELECT gid, geom, admin3name, admin3pcod FROM
+    tmp_admin3);
+```
+
+You should also create an index on the `geom` column:
+
+```sql
+CREATE INDEX admin3_geom_gist ON geography.admin3 USING gist (geom);
+```
+
 ## Data QA checks
 
 FlowETL includes a small number of built in QA checks. These checks are not designed to pass or fail newly arriving data, but to provide you and your analysts with important caveats and metadata about the data you are working with. QA checks will run automatically if you are using the [`create_dag`](../../../../flowetl/flowetl/util/#create_dag) function, and their results will be available inside FlowDB in the `etl.post_etl_queries` table to both superusers, and the `flowmachine` role. If you are manually composing a DAG, you can use the [`get_qa_checks`](../../../../flowetl/flowetl/util/#get_qa_checks) function to return a list of QA check tasks, which can be scheduled in relation to the other tasks in the dag.
