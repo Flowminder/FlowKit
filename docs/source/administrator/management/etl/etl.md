@@ -16,6 +16,10 @@ Title: ETL
 
 ### CSV Files
 
+FlowETL can also be used to load data from files - useful if you're receiving data as a daily file dump. To load from a file, you'll need to ensure that the files have a predictable date based name, for example `calls_data_2019_05_01.csv.gz`, which you can capture using a ([templated](https://airflow.apache.org/docs/stable/concepts.html#id1)) string. The filename pattern should include the absolute path to the files from _inside_ your FlowDB container, for example a complete pattern to capture files with names like `calls_data_2019-05-01.csv.gz` in the `/etl/calls` data root might be `/etl/{{ params.cdr_type }}/{{ params.cdr_type }}_data_{{ ds }}`. This uses a combination of Airflow's [built-in macros](https://airflow.apache.org/docs/stable/macros.html#default-variables), and the `{{ params.cdr_type }}` macro supplied by FlowETL.
+
+You will also need to specify the names and types of the fields your CSV will contain as a dict.  
+
 ## Loading GIS data
 
 ## Data QA checks
@@ -34,7 +38,7 @@ When writing your QA check, you're almost certain to need to be able to refer to
 
 | Macro | Purpose | Example |
 | ----- | ------- | ------- |
-| `{{ cdr_type }}` | The category of CDR data being loaded | `"calls"` |
+| `{{ params.cdr_type }}` | The category of CDR data being loaded | `"calls"` |
 | `{{ table_name }}` | The base name of the table from the date and cdr type | `"mds_20200101"` |
 | `{{ etl_schema }}` | Name of the schema used for etl tables | `"etl"` |
 | `{{ final_schema }}` |  Schema under which the final table will be created | `"events"` |
